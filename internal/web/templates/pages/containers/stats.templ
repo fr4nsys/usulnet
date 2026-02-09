@@ -1,0 +1,270 @@
+package containers
+
+import (
+	"github.com/fr4nsys/usulnet/internal/web/templates/layouts"
+)
+
+type ContainerStatsData struct {
+	PageData    layouts.PageData
+	ContainerID string
+	Name        string
+	State       string
+	Image       string
+}
+
+templ ContainerStats(data ContainerStatsData) {
+	@layouts.Base(data.PageData) {
+		<!-- Breadcrumb -->
+		<nav class="flex items-center gap-2 text-sm text-gray-400 mb-4">
+			<a href="/containers" class="hover:text-primary-400 transition-colors">Containers</a>
+			<i class="fas fa-chevron-right text-xs"></i>
+			<a href={ templ.SafeURL("/containers/" + data.ContainerID) } class="hover:text-primary-400 transition-colors">{ data.Name }</a>
+			<i class="fas fa-chevron-right text-xs"></i>
+			<span class="text-white">Stats</span>
+		</nav>
+
+		<!-- Header -->
+		<div class="flex items-center justify-between mb-6">
+			<div class="flex items-center gap-4">
+				<div class={ "w-10 h-10 rounded-lg flex items-center justify-center", stateIconBg(data.State) }>
+					<i class="fas fa-chart-line text-lg text-gray-300"></i>
+				</div>
+				<div>
+					<h1 class="text-2xl font-bold font-display text-white">Resource Stats</h1>
+					<p class="text-gray-400 text-sm">{ data.Name } &middot; { data.Image }</p>
+				</div>
+			</div>
+			<a href={ templ.SafeURL("/containers/" + data.ContainerID) } class="px-4 py-2 bg-dark-700 hover:bg-dark-600 text-gray-300 rounded-lg transition-colors">
+				<i class="fas fa-arrow-left mr-2"></i>Back
+			</a>
+		</div>
+
+		if data.State != "running" {
+			<div class="bg-yellow-500/10 border border-yellow-500/30 rounded-xl p-6 text-center">
+				<i class="fas fa-exclamation-triangle text-3xl text-yellow-400 mb-3"></i>
+				<p class="text-yellow-300 font-medium">Container is not running</p>
+				<p class="text-gray-400 text-sm mt-1">Stats are only available for running containers.</p>
+			</div>
+		} else {
+			<!-- Stats Dashboard -->
+			<div 
+				x-data="statsViewer()"
+				data-container-id={ data.ContainerID }
+			>
+				<!-- Top Cards -->
+				<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+					<!-- CPU -->
+					<div class="bg-dark-800 border border-dark-600 rounded-xl p-4">
+						<div class="flex items-center justify-between mb-2">
+							<span class="text-gray-400 text-sm">CPU Usage</span>
+							<i class="fas fa-microchip text-blue-400"></i>
+						</div>
+						<div class="text-2xl font-bold text-white" x-text="cpuPercent.toFixed(2) + '%'">-</div>
+						<div class="mt-2 bg-dark-700 rounded-full h-2">
+							<div class="bg-blue-500 h-2 rounded-full transition-all duration-500" :style="'width:' + Math.min(cpuPercent, 100) + '%'"></div>
+						</div>
+					</div>
+					
+					<!-- Memory -->
+					<div class="bg-dark-800 border border-dark-600 rounded-xl p-4">
+						<div class="flex items-center justify-between mb-2">
+							<span class="text-gray-400 text-sm">Memory</span>
+							<i class="fas fa-memory text-green-400"></i>
+						</div>
+						<div class="text-2xl font-bold text-white" x-text="formatBytes(memoryUsage)">-</div>
+						<div class="text-xs text-gray-500 mt-1" x-text="'/ ' + formatBytes(memoryLimit) + ' (' + memoryPct.toFixed(1) + '%)'"></div>
+						<div class="mt-2 bg-dark-700 rounded-full h-2">
+							<div class="h-2 rounded-full transition-all duration-500" 
+								:class="memoryPct > 90 ? 'bg-red-500' : memoryPct > 70 ? 'bg-yellow-500' : 'bg-green-500'"
+								:style="'width:' + Math.min(memoryPct, 100) + '%'"></div>
+						</div>
+					</div>
+					
+					<!-- Network -->
+					<div class="bg-dark-800 border border-dark-600 rounded-xl p-4">
+						<div class="flex items-center justify-between mb-2">
+							<span class="text-gray-400 text-sm">Network I/O</span>
+							<i class="fas fa-network-wired text-purple-400"></i>
+						</div>
+						<div class="flex items-center gap-3">
+							<div>
+								<div class="text-xs text-gray-500">↓ RX</div>
+								<div class="text-sm font-bold text-white" x-text="formatBytes(netRx)">-</div>
+							</div>
+							<div>
+								<div class="text-xs text-gray-500">↑ TX</div>
+								<div class="text-sm font-bold text-white" x-text="formatBytes(netTx)">-</div>
+							</div>
+						</div>
+					</div>
+					
+					<!-- Block I/O + PIDs -->
+					<div class="bg-dark-800 border border-dark-600 rounded-xl p-4">
+						<div class="flex items-center justify-between mb-2">
+							<span class="text-gray-400 text-sm">Block I/O &middot; PIDs</span>
+							<i class="fas fa-hdd text-orange-400"></i>
+						</div>
+						<div class="flex items-center gap-3">
+							<div>
+								<div class="text-xs text-gray-500">Read</div>
+								<div class="text-sm font-bold text-white" x-text="formatBytes(blockRead)">-</div>
+							</div>
+							<div>
+								<div class="text-xs text-gray-500">Write</div>
+								<div class="text-sm font-bold text-white" x-text="formatBytes(blockWrite)">-</div>
+							</div>
+							<div>
+								<div class="text-xs text-gray-500">PIDs</div>
+								<div class="text-sm font-bold text-white" x-text="pids">-</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				
+				<!-- Charts -->
+				<div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+					<!-- CPU History -->
+					<div class="bg-dark-800 border border-dark-600 rounded-xl p-4">
+						<h3 class="text-sm font-medium text-gray-300 mb-3">CPU History (last 5 min)</h3>
+						<div class="h-48 flex items-end gap-0.5">
+							<template x-for="(val, i) in cpuHistory" :key="i">
+								<div class="flex-1 bg-blue-500/60 hover:bg-blue-400/80 rounded-t transition-all duration-300 min-h-[2px]"
+									:style="'height:' + Math.max(val, 0.5) + '%'"
+									:title="val.toFixed(2) + '%'"></div>
+							</template>
+						</div>
+						<div class="flex justify-between text-xs text-gray-500 mt-1">
+							<span>-5m</span>
+							<span>now</span>
+						</div>
+					</div>
+					
+					<!-- Memory History -->
+					<div class="bg-dark-800 border border-dark-600 rounded-xl p-4">
+						<h3 class="text-sm font-medium text-gray-300 mb-3">Memory History (last 5 min)</h3>
+						<div class="h-48 flex items-end gap-0.5">
+							<template x-for="(val, i) in memHistory" :key="i">
+								<div class="flex-1 rounded-t transition-all duration-300 min-h-[2px]"
+									:class="val > 90 ? 'bg-red-500/60 hover:bg-red-400/80' : val > 70 ? 'bg-yellow-500/60 hover:bg-yellow-400/80' : 'bg-green-500/60 hover:bg-green-400/80'"
+									:style="'height:' + Math.max(val, 0.5) + '%'"
+									:title="val.toFixed(1) + '%'"></div>
+							</template>
+						</div>
+						<div class="flex justify-between text-xs text-gray-500 mt-1">
+							<span>-5m</span>
+							<span>now</span>
+						</div>
+					</div>
+				</div>
+				
+				<!-- Connection Status -->
+				<div class="mt-4 flex items-center justify-between text-xs text-gray-500">
+					<span x-show="connected" class="flex items-center gap-1.5">
+						<span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+						Live streaming
+					</span>
+					<span x-show="!connected" class="flex items-center gap-1.5">
+						<span class="w-2 h-2 bg-red-500 rounded-full"></span>
+						Disconnected
+					</span>
+					<span x-text="'Last update: ' + lastUpdate"></span>
+				</div>
+			</div>
+			
+			<script>
+				function statsViewer() {
+					return {
+						connected: false,
+						ws: null,
+						containerId: '',
+						cpuPercent: 0,
+						memoryUsage: 0,
+						memoryLimit: 0,
+						memoryPct: 0,
+						netRx: 0,
+						netTx: 0,
+						blockRead: 0,
+						blockWrite: 0,
+						pids: 0,
+						lastUpdate: '-',
+						cpuHistory: new Array(60).fill(0),
+						memHistory: new Array(60).fill(0),
+						_initialized: false,
+						_destroyed: false,
+						
+						init() {
+							if (this._initialized) return;
+							this._initialized = true;
+							this.containerId = this.$el.dataset.containerId;
+							this.connect();
+						},
+						
+						destroy() {
+							this._destroyed = true;
+							if (this.ws) {
+								this.ws.onclose = null;
+								this.ws.close();
+								this.ws = null;
+							}
+						},
+						
+						connect() {
+							const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+							const url = `${protocol}//${window.location.host}/ws/stats/${this.containerId}`;
+							
+							this.ws = new WebSocket(url);
+							
+							this.ws.onopen = () => {
+								this.connected = true;
+							};
+							
+							this.ws.onmessage = (event) => {
+								try {
+									const msg = JSON.parse(event.data);
+									if (msg.type === 'stats') {
+										this.cpuPercent = msg.cpu_percent || 0;
+										this.memoryUsage = msg.memory_usage || 0;
+										this.memoryLimit = msg.memory_limit || 0;
+										this.memoryPct = msg.memory_percent || 0;
+										this.netRx = msg.net_rx || 0;
+										this.netTx = msg.net_tx || 0;
+										this.blockRead = msg.block_read || 0;
+										this.blockWrite = msg.block_write || 0;
+										this.pids = msg.pids || 0;
+										this.lastUpdate = new Date().toLocaleTimeString();
+										
+										// Push to history
+										this.cpuHistory.push(this.cpuPercent);
+										if (this.cpuHistory.length > 60) this.cpuHistory.shift();
+										
+										this.memHistory.push(this.memoryPct);
+										if (this.memHistory.length > 60) this.memHistory.shift();
+									}
+								} catch(e) {}
+							};
+							
+							this.ws.onclose = () => {
+								this.connected = false;
+								if (!this._destroyed) {
+									setTimeout(() => this.connect(), 5000);
+								}
+							};
+							
+							this.ws.onerror = () => {
+								this.connected = false;
+							};
+						},
+						
+						formatBytes(bytes) {
+							if (bytes === 0) return '0 B';
+							const k = 1024;
+							const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
+							const i = Math.floor(Math.log(bytes) / Math.log(k));
+							return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+						}
+					};
+				}
+			</script>
+		}
+	}
+}

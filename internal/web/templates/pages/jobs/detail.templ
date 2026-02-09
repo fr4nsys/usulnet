@@ -1,0 +1,288 @@
+package jobs
+
+import (
+	"fmt"
+	"github.com/fr4nsys/usulnet/internal/web/templates/layouts"
+)
+
+// JobDetailView holds the full detail of a single job.
+type JobDetailView struct {
+	ID          string
+	Type        string
+	TypeLabel   string
+	TypeIcon    string
+	Status      string
+	StatusColor string
+	Progress    int
+	Error       string
+	CreatedBy   string
+	ScheduledAt string
+	StartedAt   string
+	CompletedAt string
+	Duration    string
+	PayloadInfo string
+	PayloadJSON string // Raw payload JSON for display
+	ResultJSON  string // Raw result JSON for display
+	Output      string // Full output text
+}
+
+// JobDetailData holds data for the job detail page.
+type JobDetailData struct {
+	PageData layouts.PageData
+	Job      JobDetailView
+}
+
+templ JobDetail(data JobDetailData) {
+	@layouts.Base(data.PageData) {
+		<div class="space-y-6" x-data={ fmt.Sprintf("jobDetail('%s', '%s')", data.Job.ID, data.Job.Status) }>
+			<!-- Header -->
+			<div class="flex items-center justify-between">
+				<div class="flex items-center gap-4">
+					<a href="/jobs" class="text-gray-400 hover:text-white transition-colors">
+						<i class="fas fa-arrow-left"></i>
+					</a>
+					<div>
+						<h1 class="text-2xl font-bold text-white flex items-center gap-3">
+							<i class={ data.Job.TypeIcon + " text-primary-400" }></i>
+							{ data.Job.TypeLabel }
+						</h1>
+						<p class="text-gray-500 text-sm font-mono mt-1">{ data.Job.ID }</p>
+					</div>
+				</div>
+				<div class="flex items-center gap-3">
+					if data.Job.Status == "pending" || data.Job.Status == "running" {
+						<form method="post" action={ templ.SafeURL(fmt.Sprintf("/jobs/%s/cancel", data.Job.ID)) }>
+							<input type="hidden" name="csrf_token" value={ data.PageData.CSRFToken }/>
+							<button
+								type="submit"
+								class="flex items-center gap-2 bg-yellow-500/10 text-yellow-400 hover:bg-yellow-500/20 px-4 py-2 rounded-lg transition-colors"
+								onclick="return confirm('Cancel this job?')"
+							>
+								<i class="fas fa-ban"></i>
+								Cancel
+							</button>
+						</form>
+					}
+					if data.Job.Status == "completed" || data.Job.Status == "failed" || data.Job.Status == "cancelled" {
+						<form method="post" action={ templ.SafeURL(fmt.Sprintf("/jobs/%s/delete", data.Job.ID)) }>
+							<input type="hidden" name="csrf_token" value={ data.PageData.CSRFToken }/>
+							<button
+								type="submit"
+								class="flex items-center gap-2 bg-red-500/10 text-red-400 hover:bg-red-500/20 px-4 py-2 rounded-lg transition-colors"
+								onclick="return confirm('Delete this job permanently?')"
+							>
+								<i class="fas fa-trash-alt"></i>
+								Delete
+							</button>
+						</form>
+					}
+				</div>
+			</div>
+
+			<!-- Status + Progress -->
+			<div class="bg-dark-800 border border-dark-700 rounded-xl p-6">
+				<div class="flex items-center justify-between mb-4">
+					<span class={ "inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium", statusBadge(data.Job.Status) }>
+						<i class={ statusIcon(data.Job.Status) }></i>
+						<span x-text="currentStatus || ''" class="capitalize">{ data.Job.Status }</span>
+					</span>
+					if data.Job.Status == "running" {
+						<span class="text-sm text-gray-400">
+							<i class="fas fa-circle text-blue-400 text-xs animate-pulse mr-1"></i>
+							Live
+						</span>
+					}
+				</div>
+
+				<!-- Progress Bar -->
+				<div class="mb-4">
+					<div class="flex items-center justify-between mb-1">
+						<span class="text-sm text-gray-400">Progress</span>
+						<span class="text-sm font-medium" :class="currentProgress >= 100 ? 'text-green-400' : 'text-primary-400'" x-text="currentProgress + '%'">
+							{ fmt.Sprintf("%d%%", data.Job.Progress) }
+						</span>
+					</div>
+					<div class="bg-dark-600 rounded-full h-3 overflow-hidden">
+						<div
+							class="h-full rounded-full transition-all duration-500"
+							:class="currentProgress >= 100 ? 'bg-green-500' : 'bg-primary-500'"
+							:style="'width: ' + currentProgress + '%'"
+							style={ fmt.Sprintf("width: %d%%", data.Job.Progress) }
+						></div>
+					</div>
+				</div>
+
+				if data.Job.Error != "" {
+					<div class="bg-red-500/5 border border-red-500/20 rounded-lg p-4 mt-4">
+						<div class="flex items-start gap-3">
+							<i class="fas fa-exclamation-triangle text-red-400 mt-0.5"></i>
+							<div>
+								<p class="text-sm font-medium text-red-400">Error</p>
+								<p class="text-sm text-red-300/70 mt-1 font-mono whitespace-pre-wrap">{ data.Job.Error }</p>
+							</div>
+						</div>
+					</div>
+				}
+			</div>
+
+			<!-- Metadata Grid -->
+			<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+				<!-- Info Card -->
+				<div class="bg-dark-800 border border-dark-700 rounded-xl p-6">
+					<h3 class="text-sm font-medium text-gray-400 uppercase tracking-wider mb-4">
+						<i class="fas fa-info-circle mr-2"></i> Job Information
+					</h3>
+					<dl class="space-y-3">
+						@metaRow("Type", data.Job.TypeLabel)
+						@metaRow("Created By", data.Job.CreatedBy)
+						@metaRow("Scheduled", data.Job.ScheduledAt)
+						if data.Job.StartedAt != "" {
+							@metaRow("Started", data.Job.StartedAt)
+						}
+						if data.Job.CompletedAt != "" {
+							@metaRow("Completed", data.Job.CompletedAt)
+						}
+						if data.Job.Duration != "" {
+							@metaRow("Duration", data.Job.Duration)
+						}
+						if data.Job.PayloadInfo != "" {
+							@metaRow("Summary", data.Job.PayloadInfo)
+						}
+					</dl>
+				</div>
+
+				<!-- Payload/Result Card -->
+				<div class="bg-dark-800 border border-dark-700 rounded-xl p-6">
+					<div x-data="{ tab: 'payload' }">
+						<div class="flex items-center gap-4 mb-4">
+							<button
+								@click="tab = 'payload'"
+								:class="tab === 'payload' ? 'text-primary-400 border-primary-500' : 'text-gray-400 border-transparent'"
+								class="text-sm font-medium uppercase tracking-wider pb-2 border-b-2 transition-colors"
+							>
+								<i class="fas fa-file-code mr-1"></i> Payload
+							</button>
+							<button
+								@click="tab = 'result'"
+								:class="tab === 'result' ? 'text-primary-400 border-primary-500' : 'text-gray-400 border-transparent'"
+								class="text-sm font-medium uppercase tracking-wider pb-2 border-b-2 transition-colors"
+							>
+								<i class="fas fa-file-alt mr-1"></i> Result
+							</button>
+						</div>
+						<div x-show="tab === 'payload'">
+							if data.Job.PayloadJSON != "" {
+								<pre class="bg-dark-900 rounded-lg p-4 text-xs text-gray-300 font-mono overflow-x-auto max-h-48">{ data.Job.PayloadJSON }</pre>
+							} else {
+								<p class="text-gray-500 text-sm">No payload data</p>
+							}
+						</div>
+						<div x-show="tab === 'result'" x-cloak>
+							if data.Job.ResultJSON != "" {
+								<pre class="bg-dark-900 rounded-lg p-4 text-xs text-gray-300 font-mono overflow-x-auto max-h-48">{ data.Job.ResultJSON }</pre>
+							} else {
+								<p class="text-gray-500 text-sm">No result data yet</p>
+							}
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- Output -->
+			if data.Job.Output != "" || data.Job.Status == "running" {
+				<div class="bg-dark-800 border border-dark-700 rounded-xl overflow-hidden">
+					<div class="flex items-center justify-between px-4 py-3 border-b border-dark-700">
+						<h3 class="text-sm font-medium text-gray-400 uppercase tracking-wider">
+							<i class="fas fa-terminal mr-2"></i> Output
+						</h3>
+						<button
+							@click="copyOutput()"
+							class="text-gray-500 hover:text-gray-300 text-sm transition-colors"
+						>
+							<i class="fas fa-copy mr-1"></i> Copy
+						</button>
+					</div>
+					<div
+						x-ref="outputBox"
+						class="bg-dark-900 p-4 font-mono text-xs text-gray-300 overflow-y-auto whitespace-pre-wrap"
+						style="max-height: 50vh; min-height: 200px;"
+					>
+						<span x-text="outputText">{ data.Job.Output }</span>
+						if data.Job.Status == "running" {
+							<span class="inline-block w-2 h-4 bg-primary-400 animate-pulse ml-0.5"></span>
+						}
+					</div>
+				</div>
+			}
+		</div>
+
+		<script>
+			function jobDetail(jobId, initialStatus) {
+				return {
+					currentStatus: initialStatus,
+					currentProgress: 0,
+					outputText: '',
+					socket: null,
+
+					init() {
+						this.currentProgress = parseInt(this.$el.querySelector('[\\:style*="currentProgress"]')?.style.width || '0');
+						this.outputText = this.$refs.outputBox?.textContent?.trim() || '';
+
+						// Connect WebSocket for live updates if job is running
+						if (initialStatus === 'running' || initialStatus === 'pending') {
+							this.connectWS();
+						}
+					},
+
+					connectWS() {
+						const proto = location.protocol === 'https:' ? 'wss:' : 'ws:';
+						const url = `${proto}//${location.host}/ws/jobs/${jobId}`;
+						this.socket = new WebSocket(url);
+
+						this.socket.onmessage = (event) => {
+							try {
+								const msg = JSON.parse(event.data);
+								if (msg.progress !== undefined) this.currentProgress = msg.progress;
+								if (msg.status) this.currentStatus = msg.status;
+								if (msg.output) {
+									this.outputText += msg.output + '\n';
+									this.$nextTick(() => {
+										const el = this.$refs.outputBox;
+										if (el) el.scrollTop = el.scrollHeight;
+									});
+								}
+								if (msg.status === 'completed' || msg.status === 'failed' || msg.status === 'cancelled') {
+									this.socket?.close();
+								}
+							} catch(e) {
+								// Plain text output
+								this.outputText += event.data + '\n';
+							}
+						};
+
+						this.socket.onclose = () => {
+							this.socket = null;
+						};
+					},
+
+					copyOutput() {
+						navigator.clipboard.writeText(this.outputText).then(() => {
+							// Brief visual feedback could be added
+						});
+					},
+
+					destroy() {
+						this.socket?.close();
+					},
+				};
+			}
+		</script>
+	}
+}
+
+templ metaRow(label string, value string) {
+	<div class="flex items-center justify-between py-1">
+		<dt class="text-sm text-gray-500">{ label }</dt>
+		<dd class="text-sm text-white">{ value }</dd>
+	</div>
+}

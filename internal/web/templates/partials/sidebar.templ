@@ -1,0 +1,253 @@
+package partials
+
+import (
+	"fmt"
+	
+	"github.com/fr4nsys/usulnet/internal/web/templates/types"
+)
+
+// NavItem represents a navigation item
+type NavItem struct {
+	Label  string
+	Icon   string
+	URL    string
+	Active string
+	Badge  int
+}
+
+templ Sidebar(active string, user *types.UserData, stats *types.StatsData, edition string, editionName string) {
+	<nav class="fixed top-0 left-0 bottom-0 w-64 bg-dark-800 border-r border-dark-600 flex flex-col z-40">
+		<!-- Logo -->
+		<div class="p-4 border-b border-dark-600">
+			<a href="/" class="flex items-center gap-3 group">
+				<div class="w-10 h-10 bg-gradient-to-br from-primary-500 to-primary-600 rounded-xl flex items-center justify-center text-black font-bold text-lg shadow-lg shadow-primary-500/20 group-hover:shadow-primary-500/30 transition-shadow">
+					U
+				</div>
+				<div>
+					<span class="font-display font-bold text-lg text-white">usulnet</span>
+					<span class="block text-[10px] text-gray-500 -mt-0.5 font-medium tracking-wide">FEAR IS THE MIND-KILLER</span>
+				</div>
+			</a>
+		</div>
+		
+		<!-- Navigation -->
+		<div class="flex-1 overflow-y-auto py-4 px-3 space-y-6">
+			<!-- Overview -->
+			<div>
+				<p class="px-3 mb-2 text-[10px] font-semibold text-gray-500 uppercase tracking-widest">Overview</p>
+				<div class="space-y-1">
+					@navItem("Dashboard", "fa-th-large", "/", active == "dashboard", 0)
+					@navItem("Nodes", "fa-server", "/nodes", active == "nodes", 0)
+					@navItem("Swarm", "fa-network-wired", "/swarm", active == "swarm", 0)
+				</div>
+			</div>
+
+			<!-- Resources -->
+			<div>
+				<p class="px-3 mb-2 text-[10px] font-semibold text-gray-500 uppercase tracking-widest">Resources</p>
+				<div class="space-y-1">
+					@navItem("Containers", "fa-cube", "/containers", active == "containers", getBadge(stats, "containers"))
+					@navItem("Images", "fa-layer-group", "/images", active == "images", 0)
+					@navItem("Volumes", "fa-hdd", "/volumes", active == "volumes", 0)
+					@navItem("Networks", "fa-network-wired", "/networks", active == "networks", 0)
+					@navItem("Stacks", "fa-cubes", "/stacks", active == "stacks", 0)
+				</div>
+			</div>
+
+			<!-- Operations -->
+			<div>
+				<p class="px-3 mb-2 text-[10px] font-semibold text-gray-500 uppercase tracking-widest">Operations</p>
+				<div class="space-y-1">
+					@navItemDanger("Security", "fa-shield-alt", "/security", active == "security", getBadge(stats, "security"))
+					@navItemPrimary("Updates", "fa-sync-alt", "/updates", active == "updates", getBadge(stats, "updates"))
+					@navItem("Backups", "fa-archive", "/backups", active == "backups", 0)
+					@navItem("Config", "fa-cogs", "/config", active == "config", 0)
+				</div>
+			</div>
+
+			<!-- Connections -->
+			<div>
+				<p class="px-3 mb-2 text-[10px] font-semibold text-gray-500 uppercase tracking-widest">Connections</p>
+				<div class="space-y-1">
+					@navItem("Databases", "fa-database", "/connections/database", active == "connections-database", 0)
+					@navItem("LDAP", "fa-sitemap", "/connections/ldap", active == "connections-ldap", 0)
+					@navItem("SSH", "fa-terminal", "/connections/ssh", active == "connections-ssh", 0)
+					@navItem("RDP", "fa-desktop", "/connections/rdp", active == "connections-rdp", 0)
+					@navItem("SSH Keys", "fa-key", "/connections/keys", active == "connections-keys", 0)
+					@navItem("Shortcuts", "fa-external-link-alt", "/connections/shortcuts", active == "connections-shortcuts", 0)
+				</div>
+			</div>
+
+			<!-- Tools -->
+			<div>
+				<p class="px-3 mb-2 text-[10px] font-semibold text-gray-500 uppercase tracking-widest">Tools</p>
+				<div class="space-y-1">
+					@navItem("Terminal Hub", "fa-terminal", "/terminal", active == "terminal", 0)
+					@navItem("Editor", "fa-edit", "/editor", active == "editor", 0)
+					@navItem("Cheat Sheet", "fa-book", "/tools/cheatsheet", active == "cheatsheet", 0)
+					@navItem("Ansible", "fa-cogs", "/tools/ansible", active == "ansible", 0)
+					@navItem("Packet Capture", "fa-satellite-dish", "/tools/capture", active == "capture", 0)
+				</div>
+			</div>
+
+			<!-- Integrations -->
+			<div>
+				<p class="px-3 mb-2 text-[10px] font-semibold text-gray-500 uppercase tracking-widest">Integrations</p>
+				<div class="space-y-1">
+					@navItem("Reverse Proxy", "fa-random", "/proxy", active == "proxy", 0)
+					@navItem("Repositories", "fa-code-branch", "/integrations/gitea", active == "gitea", 0)
+					@navItem("S3 Storage", "fa-database", "/storage", active == "storage", 0)
+					@navItem("Notifications", "fa-bell", "/notifications", active == "notifications", 0)
+				</div>
+			</div>
+
+			<!-- Monitoring -->
+			<div>
+				<p class="px-3 mb-2 text-[10px] font-semibold text-gray-500 uppercase tracking-widest">Monitoring</p>
+				<div class="space-y-1">
+					@navItem("Alerts", "fa-bell", "/alerts", active == "alerts", 0)
+					@navItem("Logs", "fa-file-alt", "/logs", active == "logs", 0)
+					@navItem("Log Analysis", "fa-search-plus", "/logs/management", active == "log-management", 0)
+					@navItem("Events", "fa-stream", "/events", active == "events", 0)
+					@navItem("Topology", "fa-project-diagram", "/topology", active == "topology", 0)
+				</div>
+			</div>
+			
+			<!-- Admin (only for admin users) -->
+			if user != nil && user.Role == "admin" {
+				<div>
+					<p class="px-3 mb-2 text-[10px] font-semibold text-gray-500 uppercase tracking-widest">Admin</p>
+					<div class="space-y-1">
+						@navItem("Teams", "fa-users-cog", "/teams", active == "teams", 0)
+						@navItem("Users", "fa-users", "/users", active == "users", 0)
+						@navItem("Roles", "fa-user-shield", "/admin/roles", active == "roles", 0)
+						@navItem("Settings", "fa-sliders-h", "/settings", active == "settings", 0)
+						@navItem("Webhooks", "fa-plug", "/webhooks", active == "webhooks", 0)
+						@navItem("Runbooks", "fa-book-open", "/runbooks", active == "runbooks", 0)
+						@navItem("Registries", "fa-box", "/registries", active == "registries", 0)
+						@navItem("Jobs", "fa-tasks", "/jobs", active == "jobs", 0)
+						@navItem("License", "fa-key", "/license", active == "license", 0)
+					</div>
+				</div>
+			}
+		</div>
+		
+		<!-- Edition Info -->
+		<div class="px-4 py-2 border-t border-dark-600">
+			<a href="/license" class="flex items-center gap-2 text-[10px] text-gray-600 hover:text-gray-400 transition-colors">
+				if edition == "biz" {
+					<span class="font-medium uppercase tracking-wide text-blue-500/60">Business</span>
+				} else if edition == "ee" {
+					<span class="font-medium uppercase tracking-wide text-primary-500/60">Enterprise</span>
+				} else {
+					<span class="font-medium uppercase tracking-wide">Community Edition</span>
+					<span>·</span>
+					<span>AGPLv3</span>
+				}
+			</a>
+		</div>
+
+		<!-- User Section -->
+		<div class="p-4 border-t border-dark-600">
+			<div class="flex items-center gap-3">
+				<div class="w-9 h-9 rounded-full bg-gradient-to-br from-primary-500/20 to-primary-600/20 flex items-center justify-center text-primary-400 font-medium text-sm">
+					{ getUserInitial(user) }
+				</div>
+				<div class="flex-1 min-w-0">
+					<p class="text-sm font-medium text-white truncate">{ getUserName(user) }</p>
+					<p class="text-xs text-gray-500 truncate">{ getUserRole(user) }</p>
+				</div>
+				<a href="/logout" class="p-2 text-gray-400 hover:text-red-400 transition-colors" title="Logout">
+					<i class="fas fa-sign-out-alt"></i>
+				</a>
+			</div>
+		</div>
+	</nav>
+}
+
+templ navItem(label, icon, url string, isActive bool, badge int) {
+	<a 
+		href={ templ.SafeURL(url) }
+		class={ "nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors",
+			templ.KV("active bg-primary-500/10 text-primary-400", isActive),
+			templ.KV("text-gray-300 hover:bg-dark-700 hover:text-primary-400", !isActive) }
+	>
+		<i class={ "fas " + icon + " w-5 text-center text-sm" }></i>
+		<span class="text-sm font-medium">{ label }</span>
+		if badge > 0 {
+			<span class="ml-auto text-xs bg-dark-600 text-gray-300 px-2 py-0.5 rounded-full">{ itoa(badge) }</span>
+		}
+	</a>
+}
+
+templ navItemDanger(label, icon, url string, isActive bool, badge int) {
+	<a 
+		href={ templ.SafeURL(url) }
+		class={ "nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors",
+			templ.KV("active bg-primary-500/10 text-primary-400", isActive),
+			templ.KV("text-gray-300 hover:bg-dark-700 hover:text-primary-400", !isActive) }
+	>
+		<i class={ "fas " + icon + " w-5 text-center text-sm" }></i>
+		<span class="text-sm font-medium">{ label }</span>
+		if badge > 0 {
+			<span class="ml-auto text-xs bg-red-500/20 text-red-400 px-2 py-0.5 rounded-full">{ itoa(badge) }</span>
+		}
+	</a>
+}
+
+templ navItemPrimary(label, icon, url string, isActive bool, badge int) {
+	<a 
+		href={ templ.SafeURL(url) }
+		class={ "nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors",
+			templ.KV("active bg-primary-500/10 text-primary-400", isActive),
+			templ.KV("text-gray-300 hover:bg-dark-700 hover:text-primary-400", !isActive) }
+	>
+		<i class={ "fas " + icon + " w-5 text-center text-sm" }></i>
+		<span class="text-sm font-medium">{ label }</span>
+		if badge > 0 {
+			<span class="ml-auto text-xs bg-primary-500/20 text-primary-400 px-2 py-0.5 rounded-full">{ itoa(badge) }</span>
+		}
+	</a>
+}
+
+// Helper functions
+func getBadge(stats *types.StatsData, key string) int {
+	if stats == nil {
+		return 0
+	}
+	switch key {
+	case "containers":
+		return stats.ContainersRunning
+	case "security":
+		return stats.SecurityIssues
+	case "updates":
+		return stats.UpdatesAvailable
+	default:
+		return 0
+	}
+}
+
+func getUserInitial(user *types.UserData) string {
+	if user == nil || user.Username == "" {
+		return "?"
+	}
+	return string([]rune(user.Username)[0])
+}
+
+func getUserName(user *types.UserData) string {
+	if user == nil {
+		return "Unknown"
+	}
+	return user.Username
+}
+
+func getUserRole(user *types.UserData) string {
+	if user == nil {
+		return ""
+	}
+	return user.Role
+}
+
+func itoa(n int) string {
+	return fmt.Sprintf("%d", n)
+}

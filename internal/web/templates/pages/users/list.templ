@@ -1,0 +1,339 @@
+package users
+
+import (
+	"fmt"
+	"github.com/fr4nsys/usulnet/internal/web/templates/layouts"
+)
+
+type UsersData struct {
+	PageData layouts.PageData
+	Users    []UserItem
+	Stats    UserStats
+	Filter   string // "all", "local", "ldap"
+}
+
+type UserItem struct {
+	ID          string
+	Username    string
+	Email       string
+	Role        string // Display name
+	RoleID      string // UUID for selection
+	RoleName    string // Name (admin, operator, viewer, or custom)
+	IsActive    bool
+	IsLDAP      bool
+	LDAPDN      string
+	IsLocked    bool
+	LastLogin   string
+	CreatedAt   string
+}
+
+type UserStats struct {
+	Total    int64
+	Active   int64
+	Inactive int64
+	LDAP     int64
+	Local    int64
+	Locked   int64
+	Admins   int64
+}
+
+templ List(data UsersData) {
+	@layouts.Base(data.PageData) {
+		<div class="space-y-6">
+			<!-- Header -->
+			<div class="flex items-center justify-between">
+				<div>
+					<h1 class="text-2xl font-display font-bold text-white">Users</h1>
+					<p class="text-gray-400 mt-1">
+						{ fmt.Sprintf("%d users (%d local, %d LDAP)", data.Stats.Total, data.Stats.Local, data.Stats.LDAP) }
+					</p>
+				</div>
+				<a href="/users/new" class="btn-primary">
+					<i class="fas fa-plus mr-2"></i>New User
+				</a>
+			</div>
+
+			<!-- Stats Cards -->
+			<div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+				<div class="card p-4">
+					<div class="text-2xl font-bold text-white">{ fmt.Sprintf("%d", data.Stats.Total) }</div>
+					<div class="text-sm text-gray-400">Total</div>
+				</div>
+				<div class="card p-4">
+					<div class="text-2xl font-bold text-green-400">{ fmt.Sprintf("%d", data.Stats.Active) }</div>
+					<div class="text-sm text-gray-400">Active</div>
+				</div>
+				<div class="card p-4">
+					<div class="text-2xl font-bold text-blue-400">{ fmt.Sprintf("%d", data.Stats.LDAP) }</div>
+					<div class="text-sm text-gray-400">LDAP</div>
+				</div>
+				if data.Stats.Locked > 0 {
+					<div class="card p-4 border border-red-500/30">
+						<div class="text-2xl font-bold text-red-400">{ fmt.Sprintf("%d", data.Stats.Locked) }</div>
+						<div class="text-sm text-gray-400">Locked</div>
+					</div>
+				} else {
+					<div class="card p-4">
+						<div class="text-2xl font-bold text-yellow-400">{ fmt.Sprintf("%d", data.Stats.Admins) }</div>
+						<div class="text-sm text-gray-400">Admins</div>
+					</div>
+				}
+			</div>
+
+			<!-- Filter Tabs -->
+			<div class="flex gap-2">
+				<a href="/users" class={ "px-3 py-1.5 rounded-lg text-sm font-medium transition-colors", templ.KV("bg-primary-500/20 text-primary-400", data.Filter == "" || data.Filter == "all"), templ.KV("text-gray-400 hover:text-white hover:bg-dark-700", data.Filter != "" && data.Filter != "all") }>
+					All
+				</a>
+				<a href="/users?filter=local" class={ "px-3 py-1.5 rounded-lg text-sm font-medium transition-colors", templ.KV("bg-primary-500/20 text-primary-400", data.Filter == "local"), templ.KV("text-gray-400 hover:text-white hover:bg-dark-700", data.Filter != "local") }>
+					Local
+				</a>
+				<a href="/users?filter=ldap" class={ "px-3 py-1.5 rounded-lg text-sm font-medium transition-colors", templ.KV("bg-blue-500/20 text-blue-400", data.Filter == "ldap"), templ.KV("text-gray-400 hover:text-white hover:bg-dark-700", data.Filter != "ldap") }>
+					LDAP
+				</a>
+			</div>
+
+			<!-- Users Table -->
+			<div class="card">
+				<div class="overflow-x-auto">
+					<table class="table">
+						<thead>
+							<tr>
+								<th>User</th>
+								<th>Source</th>
+								<th>Role</th>
+								<th>Status</th>
+								<th>Last Login</th>
+								<th>Created</th>
+								<th>Actions</th>
+							</tr>
+						</thead>
+						<tbody>
+							if len(data.Users) == 0 {
+								<tr>
+									<td colspan="7" class="text-center text-gray-500 py-8">No users found</td>
+								</tr>
+							}
+							for _, user := range data.Users {
+								<tr class={ templ.KV("opacity-50", !user.IsActive) }>
+									<td>
+										<div class="flex items-center gap-3">
+											<div class={ "w-8 h-8 rounded-full flex items-center justify-center font-medium", templ.KV("bg-primary-500/20 text-primary-400", !user.IsLDAP), templ.KV("bg-blue-500/20 text-blue-400", user.IsLDAP) }>
+												{ string([]rune(user.Username)[0]) }
+											</div>
+											<div>
+												<div class="font-medium text-white">{ user.Username }</div>
+												if user.Email != "" {
+													<div class="text-sm text-gray-400">{ user.Email }</div>
+												}
+											</div>
+										</div>
+									</td>
+									<td>
+										if user.IsLDAP {
+											<span class="badge bg-blue-500/20 text-blue-400 border border-blue-500/30" title={ user.LDAPDN }>
+												<i class="fas fa-sitemap mr-1 text-xs"></i>LDAP
+											</span>
+										} else {
+											<span class="badge bg-gray-500/20 text-gray-400">
+												<i class="fas fa-key mr-1 text-xs"></i>Local
+											</span>
+										}
+									</td>
+									<td>
+										<span class={ "badge", templ.KV("badge-danger", user.Role == "admin"), templ.KV("badge-info", user.Role == "operator"), templ.KV("badge-success", user.Role == "viewer") }>
+											{ user.Role }
+										</span>
+									</td>
+									<td>
+										if user.IsLocked {
+											<span class="badge bg-red-500/20 text-red-400 border border-red-500/30">
+												<i class="fas fa-lock mr-1 text-xs"></i>Locked
+											</span>
+										} else if user.IsActive {
+											<span class="badge badge-success">Active</span>
+										} else {
+											<span class="badge badge-danger">Disabled</span>
+										}
+									</td>
+									<td class="text-gray-400 text-sm">{ user.LastLogin }</td>
+									<td class="text-gray-400 text-sm">{ user.CreatedAt }</td>
+									<td>
+										<div class="flex items-center gap-2">
+											if !user.IsLDAP {
+												<a href={ templ.SafeURL("/users/" + user.ID) } class="text-primary-400 hover:text-primary-300 text-sm">
+													Edit
+												</a>
+											}
+											if user.IsLocked {
+												<button
+													hx-post={ "/users/" + user.ID + "/enable" }
+													hx-target="body"
+													class="text-orange-400 hover:text-orange-300 text-sm"
+												>
+													Unlock
+												</button>
+											} else if user.IsActive {
+												<button
+													hx-post={ "/users/" + user.ID + "/disable" }
+													hx-target="body"
+													hx-confirm="Disable this user?"
+													class="text-yellow-400 hover:text-yellow-300 text-sm"
+												>
+													Disable
+												</button>
+											} else {
+												<button
+													hx-post={ "/users/" + user.ID + "/enable" }
+													hx-target="body"
+													class="text-green-400 hover:text-green-300 text-sm"
+												>
+													Enable
+												</button>
+											}
+											<button
+												hx-delete={ "/users/" + user.ID }
+												hx-target="body"
+												hx-confirm={ "Delete user '" + user.Username + "'? This cannot be undone." }
+												class="text-red-400 hover:text-red-300 text-sm"
+											>
+												Delete
+											</button>
+										</div>
+									</td>
+								</tr>
+							}
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	}
+}
+
+type UserNewData struct {
+	PageData layouts.PageData
+	Roles    []RoleOption
+	Error    string
+}
+
+type RoleOption struct {
+	ID          string
+	Name        string
+	DisplayName string
+	Description string
+	IsSystem    bool
+}
+
+templ New(data UserNewData) {
+	@layouts.Base(data.PageData) {
+		<div class="max-w-lg mx-auto space-y-6">
+			<div class="flex items-center gap-4">
+				<a href="/users" class="p-2 text-gray-400 hover:text-white hover:bg-dark-700 rounded-lg">
+					<i class="fas fa-arrow-left"></i>
+				</a>
+				<h1 class="text-2xl font-display font-bold text-white">New User</h1>
+			</div>
+
+			if data.Error != "" {
+				<div class="bg-red-500/10 border border-red-500/20 rounded-lg p-4 text-red-400">
+					{ data.Error }
+				</div>
+			}
+
+			<form action="/users" method="POST" class="card p-6 space-y-4">
+				<input type="hidden" name="csrf_token" value={ data.PageData.CSRFToken }/>
+				<div>
+					<label class="block text-sm font-medium text-gray-300 mb-2">Username</label>
+					<input type="text" name="username" required minlength="3" maxlength="50" class="input" placeholder="e.g. jsmith"/>
+				</div>
+				<div>
+					<label class="block text-sm font-medium text-gray-300 mb-2">Email</label>
+					<input type="email" name="email" class="input" placeholder="Optional"/>
+				</div>
+				<div>
+					<label class="block text-sm font-medium text-gray-300 mb-2">Password</label>
+					<input type="password" name="password" required minlength="8" class="input"/>
+					<p class="text-xs text-gray-500 mt-1">Minimum 8 characters</p>
+				</div>
+				<div>
+					<label class="block text-sm font-medium text-gray-300 mb-2">Role</label>
+					<select name="role_id" class="input">
+						for _, role := range data.Roles {
+							<option value={ role.ID }>
+								{ role.DisplayName }
+								if role.Description != "" {
+									— { role.Description }
+								}
+							</option>
+						}
+					</select>
+				</div>
+				<div class="flex justify-end gap-3 pt-4">
+					<a href="/users" class="btn-secondary">Cancel</a>
+					<button type="submit" class="btn-primary">Create User</button>
+				</div>
+			</form>
+		</div>
+	}
+}
+
+type UserEditData struct {
+	PageData layouts.PageData
+	User     UserItem
+	Roles    []RoleOption
+	Error    string
+}
+
+templ Edit(data UserEditData) {
+	@layouts.Base(data.PageData) {
+		<div class="max-w-lg mx-auto space-y-6">
+			<div class="flex items-center gap-4">
+				<a href="/users" class="p-2 text-gray-400 hover:text-white hover:bg-dark-700 rounded-lg">
+					<i class="fas fa-arrow-left"></i>
+				</a>
+				<div>
+					<h1 class="text-2xl font-display font-bold text-white">Edit User</h1>
+					<p class="text-gray-400 text-sm">{ data.User.Username }</p>
+				</div>
+			</div>
+
+			if data.Error != "" {
+				<div class="bg-red-500/10 border border-red-500/20 rounded-lg p-4 text-red-400">
+					{ data.Error }
+				</div>
+			}
+
+			<form action={ templ.SafeURL("/users/" + data.User.ID) } method="POST" class="card p-6 space-y-4">
+				<input type="hidden" name="csrf_token" value={ data.PageData.CSRFToken }/>
+				<div>
+					<label class="block text-sm font-medium text-gray-300 mb-2">Username</label>
+					<input type="text" value={ data.User.Username } disabled class="input opacity-60"/>
+					<p class="text-xs text-gray-500 mt-1">Username cannot be changed</p>
+				</div>
+				<div>
+					<label class="block text-sm font-medium text-gray-300 mb-2">Email</label>
+					<input type="email" name="email" value={ data.User.Email } class="input"/>
+				</div>
+				<div>
+					<label class="block text-sm font-medium text-gray-300 mb-2">Role</label>
+					<select name="role_id" class="input">
+						for _, role := range data.Roles {
+							<option value={ role.ID } selected?={ data.User.RoleID == role.ID }>
+								{ role.DisplayName }
+							</option>
+						}
+					</select>
+				</div>
+				<div>
+					<label class="block text-sm font-medium text-gray-300 mb-2">New Password</label>
+					<input type="password" name="password" minlength="8" class="input" placeholder="Leave blank to keep current"/>
+				</div>
+				<div class="flex justify-end gap-3 pt-4">
+					<a href="/users" class="btn-secondary">Cancel</a>
+					<button type="submit" class="btn-primary">Save Changes</button>
+				</div>
+			</form>
+		</div>
+	}
+}

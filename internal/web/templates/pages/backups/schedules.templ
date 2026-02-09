@@ -1,0 +1,239 @@
+package backups
+
+import (
+	"fmt"
+	"github.com/fr4nsys/usulnet/internal/web/templates/layouts"
+)
+
+type SchedulesData struct {
+	PageData   layouts.PageData
+	Schedules  []ScheduleItem
+	Containers []TargetOption
+	Volumes    []TargetOption
+	Stacks     []TargetOption
+}
+
+type ScheduleItem struct {
+	ID            string
+	Type          string
+	TargetName    string
+	Schedule      string
+	Compression   string
+	Encrypted     bool
+	RetentionDays int
+	MaxBackups    int
+	IsEnabled     bool
+	LastRunAt     string
+	LastRunStatus string
+	NextRunAt     string
+}
+
+templ Schedules(data SchedulesData) {
+	@layouts.Base(data.PageData) {
+		<div class="space-y-6">
+			<!-- Header -->
+			<div class="flex items-center justify-between">
+				<div>
+					<h1 class="text-2xl font-display font-bold text-white">Backup Schedules</h1>
+					<p class="text-gray-400 mt-1">Automated backup schedules with cron expressions</p>
+				</div>
+				<div class="flex items-center gap-2">
+					<a href="/backups" class="btn-secondary">
+						<i class="fas fa-arrow-left mr-2"></i>Back to Backups
+					</a>
+					<button onclick="document.getElementById('new-schedule-modal').showModal()" class="btn-primary">
+						<i class="fas fa-plus mr-2"></i>New Schedule
+					</button>
+				</div>
+			</div>
+
+			<!-- Schedules List -->
+			<div class="card">
+				<div class="overflow-x-auto">
+					<table class="table">
+						<thead>
+							<tr>
+								<th>Target</th>
+								<th>Type</th>
+								<th>Schedule</th>
+								<th>Compression</th>
+								<th>Retention</th>
+								<th>Status</th>
+								<th>Last Run</th>
+								<th>Next Run</th>
+								<th>Actions</th>
+							</tr>
+						</thead>
+						<tbody>
+							if len(data.Schedules) == 0 {
+								<tr>
+									<td colspan="9" class="text-center text-gray-500 py-8">
+										<i class="fas fa-calendar-alt text-3xl mb-3 block"></i>
+										<p>No backup schedules configured</p>
+										<p class="text-sm mt-1">Create a schedule to automate your backups</p>
+									</td>
+								</tr>
+							}
+							for _, s := range data.Schedules {
+								<tr>
+									<td class="font-medium text-white">{ s.TargetName }</td>
+									<td>
+										<span class={ "badge", templ.KV("badge-info", s.Type == "container"), templ.KV("badge-success", s.Type == "volume"), templ.KV("badge-warning", s.Type == "stack") }>
+											{ s.Type }
+										</span>
+									</td>
+									<td class="font-mono text-sm text-gray-400">{ s.Schedule }</td>
+									<td class="text-gray-400">{ s.Compression }</td>
+									<td class="text-gray-400">{ fmt.Sprintf("%dd / %d max", s.RetentionDays, s.MaxBackups) }</td>
+									<td>
+										if s.IsEnabled {
+											<span class="badge badge-success">Active</span>
+										} else {
+											<span class="badge badge-warning">Paused</span>
+										}
+									</td>
+									<td class="text-gray-400 text-sm">
+										if s.LastRunAt != "" {
+											<div>{ s.LastRunAt }</div>
+											if s.LastRunStatus != "" {
+												<span class={ "text-xs", templ.KV("text-green-400", s.LastRunStatus == "completed"), templ.KV("text-red-400", s.LastRunStatus == "failed") }>
+													{ s.LastRunStatus }
+												</span>
+											}
+										} else {
+											<span class="text-gray-500">Never</span>
+										}
+									</td>
+									<td class="text-gray-400 text-sm">
+										if s.NextRunAt != "" {
+											{ s.NextRunAt }
+										} else {
+											<span class="text-gray-500">-</span>
+										}
+									</td>
+									<td>
+										<div class="flex items-center gap-2">
+											<form method="POST" action={ templ.SafeURL("/backups/schedules/" + s.ID + "/run") } class="inline">
+												<input type="hidden" name="csrf_token" value={ data.PageData.CSRFToken }/>
+												<button type="submit" class="text-primary-400 hover:text-primary-300 text-sm" title="Run Now">
+													<i class="fas fa-play"></i>
+												</button>
+											</form>
+											<form method="POST" action={ templ.SafeURL("/backups/schedules/" + s.ID + "/delete") } class="inline">
+												<input type="hidden" name="csrf_token" value={ data.PageData.CSRFToken }/>
+												<button type="submit" class="text-red-400 hover:text-red-300 text-sm" onclick="return confirm('Delete this schedule?')" title="Delete">
+													<i class="fas fa-trash"></i>
+												</button>
+											</form>
+										</div>
+									</td>
+								</tr>
+							}
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+
+		<!-- New Schedule Modal -->
+		<dialog id="new-schedule-modal" class="bg-dark-800 rounded-xl p-0 backdrop:bg-black/50 max-w-lg w-full">
+			<form action="/backups/schedules" method="POST">
+				<input type="hidden" name="csrf_token" value={ data.PageData.CSRFToken }/>
+				<div class="px-6 py-4 border-b border-dark-700">
+					<h3 class="text-lg font-medium text-white">New Backup Schedule</h3>
+				</div>
+				<div class="p-6 space-y-4">
+					<!-- Type -->
+					<div>
+						<label class="block text-sm font-medium text-gray-300 mb-2">Backup Type</label>
+						<select name="type" required class="input" id="schedule-type-select">
+							<option value="container">Container</option>
+							<option value="volume">Volume</option>
+							<option value="stack">Stack</option>
+						</select>
+					</div>
+
+					<!-- Target -->
+					<div id="sched-target-container">
+						<label class="block text-sm font-medium text-gray-300 mb-2">Container</label>
+						<select name="target_id" class="input">
+							<option value="">Select...</option>
+							for _, c := range data.Containers {
+								<option value={ c.ID }>{ c.Name }</option>
+							}
+						</select>
+					</div>
+
+					<div id="sched-target-volume" class="hidden">
+						<label class="block text-sm font-medium text-gray-300 mb-2">Volume</label>
+						<select name="target_volume" class="input">
+							<option value="">Select...</option>
+							for _, v := range data.Volumes {
+								<option value={ v.Name }>{ v.Name }</option>
+							}
+						</select>
+					</div>
+
+					<div id="sched-target-stack" class="hidden">
+						<label class="block text-sm font-medium text-gray-300 mb-2">Stack</label>
+						<select name="target_stack" class="input">
+							<option value="">Select...</option>
+							for _, s := range data.Stacks {
+								<option value={ s.Name }>{ s.Name }</option>
+							}
+						</select>
+					</div>
+
+					<!-- Cron Schedule -->
+					<div>
+						<label class="block text-sm font-medium text-gray-300 mb-2">Schedule (Cron)</label>
+						<input type="text" name="schedule" required class="input font-mono" placeholder="0 2 * * *"/>
+						<p class="text-xs text-gray-500 mt-1">Cron expression. Examples: <code class="text-gray-400">0 2 * * *</code> (daily 2am), <code class="text-gray-400">0 */6 * * *</code> (every 6h)</p>
+					</div>
+
+					<!-- Options -->
+					<div class="grid grid-cols-2 gap-4">
+						<div>
+							<label class="block text-sm font-medium text-gray-300 mb-2">Compression</label>
+							<select name="compression" class="input">
+								<option value="gzip">Gzip</option>
+								<option value="zstd">Zstd</option>
+								<option value="none">None</option>
+							</select>
+						</div>
+						<div>
+							<label class="block text-sm font-medium text-gray-300 mb-2">Retention (days)</label>
+							<input type="number" name="retention_days" value="30" min="1" max="365" class="input"/>
+						</div>
+					</div>
+
+					<div class="grid grid-cols-2 gap-4">
+						<div>
+							<label class="block text-sm font-medium text-gray-300 mb-2">Max Backups</label>
+							<input type="number" name="max_backups" value="10" min="1" max="100" class="input"/>
+						</div>
+						<div class="flex items-end pb-1">
+							<div class="flex items-center gap-2">
+								<input type="checkbox" id="sched_encrypted" name="encrypted" value="true" class="rounded border-dark-600 bg-dark-700 text-primary-500"/>
+								<label for="sched_encrypted" class="text-sm text-gray-300">Encrypt backups</label>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="px-6 py-4 border-t border-dark-700 flex justify-end gap-3">
+					<button type="button" onclick="this.closest('dialog').close()" class="btn-secondary">Cancel</button>
+					<button type="submit" class="btn-primary">Create Schedule</button>
+				</div>
+			</form>
+		</dialog>
+
+		<script>
+			document.getElementById('schedule-type-select').addEventListener('change', function() {
+				document.getElementById('sched-target-container').classList.add('hidden');
+				document.getElementById('sched-target-volume').classList.add('hidden');
+				document.getElementById('sched-target-stack').classList.add('hidden');
+				document.getElementById('sched-target-' + this.value).classList.remove('hidden');
+			});
+		</script>
+	}
+}

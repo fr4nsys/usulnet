@@ -1,0 +1,187 @@
+package proxy
+
+import (
+	"fmt"
+	"github.com/fr4nsys/usulnet/internal/web/templates/layouts"
+)
+
+type CertListData struct {
+	PageData     layouts.PageData
+	Connected    bool
+	Certificates []CertView
+}
+
+type CertView struct {
+	ID          int
+	NiceName    string
+	Provider    string   // "letsencrypt" | "other"
+	DomainNames []string
+	ExpiresOn   string
+	DaysLeft    int
+	IsExpired   bool
+}
+
+func certProviderLabel(provider string) string {
+	if provider == "letsencrypt" {
+		return "Let's Encrypt"
+	}
+	return "Custom"
+}
+
+func certProviderIcon(provider string) string {
+	if provider == "letsencrypt" {
+		return "fas fa-robot"
+	}
+	return "fas fa-upload"
+}
+
+func certExpiryClass(daysLeft int, isExpired bool) string {
+	if isExpired {
+		return "text-red-400"
+	}
+	if daysLeft < 14 {
+		return "text-yellow-400"
+	}
+	return "text-green-400"
+}
+
+func certDomainsDisplay(domains []string) string {
+	if len(domains) == 0 {
+		return "-"
+	}
+	if len(domains) == 1 {
+		return domains[0]
+	}
+	return fmt.Sprintf("%s +%d more", domains[0], len(domains)-1)
+}
+
+templ CertList(data CertListData) {
+	@layouts.Base(data.PageData) {
+		<div class="space-y-6">
+			<div class="flex items-center justify-between">
+				<div>
+					<h1 class="text-2xl font-display font-bold text-white">Reverse Proxy</h1>
+					<p class="text-gray-400 mt-1">SSL Certificates management</p>
+				</div>
+				<div class="flex items-center gap-2">
+					if data.Connected {
+						<span class="badge badge-success">
+							<i class="fas fa-link mr-1"></i>Connected
+						</span>
+						<div class="relative group">
+							<button class="btn-primary">
+								<i class="fas fa-plus mr-2"></i>New Certificate
+								<i class="fas fa-chevron-down ml-2 text-xs"></i>
+							</button>
+							<div class="absolute right-0 mt-1 w-56 bg-dark-800 border border-dark-600 rounded-lg shadow-lg hidden group-hover:block z-10">
+								<a href="/proxy/certificates/new/letsencrypt" class="flex items-center gap-3 px-4 py-3 text-sm text-gray-300 hover:bg-dark-700 hover:text-white rounded-t-lg">
+									<i class="fas fa-robot text-green-400"></i>
+									Let's Encrypt
+								</a>
+								<a href="/proxy/certificates/new/custom" class="flex items-center gap-3 px-4 py-3 text-sm text-gray-300 hover:bg-dark-700 hover:text-white rounded-b-lg">
+									<i class="fas fa-upload text-blue-400"></i>
+									Custom Certificate
+								</a>
+							</div>
+						</div>
+					}
+				</div>
+			</div>
+
+			@Nav("certificates", data.Connected)
+
+			if data.Connected {
+				if len(data.Certificates) > 0 {
+					<div class="card">
+						<div class="overflow-x-auto">
+							<table class="table">
+								<thead>
+									<tr>
+										<th>Name</th>
+										<th>Domains</th>
+										<th>Provider</th>
+										<th>Expires</th>
+										<th>Actions</th>
+									</tr>
+								</thead>
+								<tbody>
+									for _, cert := range data.Certificates {
+										<tr>
+											<td>
+												<a href={ templ.SafeURL(fmt.Sprintf("/proxy/certificates/%d", cert.ID)) } class="text-white hover:text-primary-400 font-medium">
+													{ cert.NiceName }
+												</a>
+											</td>
+											<td class="text-sm text-gray-400 font-mono">
+												{ certDomainsDisplay(cert.DomainNames) }
+											</td>
+											<td>
+												<span class="inline-flex items-center gap-1 text-sm text-gray-300">
+													<i class={ certProviderIcon(cert.Provider) }></i>
+													{ certProviderLabel(cert.Provider) }
+												</span>
+											</td>
+											<td>
+												<span class={ "text-sm", certExpiryClass(cert.DaysLeft, cert.IsExpired) }>
+													if cert.IsExpired {
+														Expired
+													} else {
+														{ fmt.Sprintf("%d days left", cert.DaysLeft) }
+													}
+												</span>
+												<div class="text-xs text-gray-500">{ cert.ExpiresOn }</div>
+											</td>
+											<td>
+												<div class="flex items-center gap-2">
+													if cert.Provider == "letsencrypt" {
+														<button
+															hx-post={ fmt.Sprintf("/proxy/certificates/%d/renew", cert.ID) }
+															hx-confirm="Renew this certificate?"
+															class="text-green-400 hover:text-green-300 text-sm"
+														>
+															Renew
+														</button>
+													}
+													<button
+														hx-delete={ fmt.Sprintf("/proxy/certificates/%d", cert.ID) }
+														hx-confirm="Delete this certificate? Proxy hosts using it will lose SSL."
+														class="text-red-400 hover:text-red-300 text-sm"
+													>
+														Delete
+													</button>
+												</div>
+											</td>
+										</tr>
+									}
+								</tbody>
+							</table>
+						</div>
+					</div>
+				} else {
+					<div class="card p-8 text-center">
+						<i class="fas fa-certificate text-4xl text-gray-600 mb-4"></i>
+						<h3 class="text-lg font-medium text-white mb-2">No SSL certificates</h3>
+						<p class="text-gray-400 mb-4">Add a Let's Encrypt or custom certificate</p>
+						<div class="flex items-center justify-center gap-3">
+							<a href="/proxy/certificates/new/letsencrypt" class="btn-primary">
+								<i class="fas fa-robot mr-2"></i>Let's Encrypt
+							</a>
+							<a href="/proxy/certificates/new/custom" class="btn-secondary">
+								<i class="fas fa-upload mr-2"></i>Custom
+							</a>
+						</div>
+					</div>
+				}
+			} else {
+				<div class="card p-8 text-center">
+					<i class="fas fa-plug text-4xl text-gray-600 mb-4"></i>
+					<h3 class="text-lg font-medium text-white mb-2">NPM Not Connected</h3>
+					<p class="text-gray-400 mb-4">Connect to NPM to manage SSL certificates.</p>
+					<a href="/proxy/setup" class="btn-primary">
+						<i class="fas fa-link mr-2"></i>Setup Connection
+					</a>
+				</div>
+			}
+		</div>
+	}
+}

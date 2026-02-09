@@ -1,0 +1,168 @@
+package proxy
+
+import (
+	"fmt"
+	"github.com/fr4nsys/usulnet/internal/web/templates/layouts"
+)
+
+type ProxyData struct {
+	PageData   layouts.PageData
+	Connected  bool
+	ProxyHosts []ProxyHost
+}
+
+type ProxyHost struct {
+	ID            string
+	DomainName    string
+	ForwardHost   string
+	ForwardPort   int
+	SSLEnabled    bool
+	SSLForced     bool
+	Enabled       bool
+	ContainerName string
+	LastSync      string
+}
+
+templ List(data ProxyData) {
+	@layouts.Base(data.PageData) {
+		<div class="space-y-6">
+			<!-- Header -->
+			<div class="flex items-center justify-between">
+				<div>
+					<h1 class="text-2xl font-display font-bold text-white">Reverse Proxy</h1>
+					<p class="text-gray-400 mt-1">Nginx Proxy Manager integration</p>
+				</div>
+				<div class="flex items-center gap-2">
+					if data.Connected {
+						<span class="badge badge-success">
+							<i class="fas fa-link mr-1"></i>Connected
+						</span>
+						<form action="/proxy/sync" method="POST" class="inline">
+							<input type="hidden" name="csrf_token" value={ data.PageData.CSRFToken }/>
+							<button type="submit" class="btn-secondary" title="Sync with NPM">
+								<i class="fas fa-sync-alt"></i>
+							</button>
+						</form>
+						<a href="/proxy/setup" class="btn-secondary" title="Connection settings">
+							<i class="fas fa-cog"></i>
+						</a>
+						<a href="/proxy/new" class="btn-primary">
+							<i class="fas fa-plus mr-2"></i>New Host
+						</a>
+					} else {
+						<span class="badge badge-danger">
+							<i class="fas fa-unlink mr-1"></i>Disconnected
+						</span>
+					}
+				</div>
+			</div>
+
+			@Nav("hosts", data.Connected)
+
+			if !data.Connected {
+				<div class="card p-8 text-center">
+					<i class="fas fa-plug text-4xl text-gray-600 mb-4"></i>
+					<h3 class="text-lg font-medium text-white mb-2">NPM Not Connected</h3>
+					<p class="text-gray-400 mb-4">
+						Connect to your Nginx Proxy Manager instance to manage reverse proxy hosts.
+					</p>
+					<a href="/proxy/setup" class="btn-primary">
+						<i class="fas fa-link mr-2"></i>Setup Connection
+					</a>
+				</div>
+			} else {
+				<!-- Proxy Hosts -->
+				<div class="card">
+					<div class="overflow-x-auto">
+						<table class="table">
+							<thead>
+								<tr>
+									<th>Domain</th>
+									<th>Forward To</th>
+									<th>Container</th>
+									<th>SSL</th>
+									<th>Status</th>
+									<th>Actions</th>
+								</tr>
+							</thead>
+							<tbody>
+								for _, host := range data.ProxyHosts {
+									<tr>
+										<td>
+											<div class="flex items-center gap-2">
+												if host.SSLEnabled {
+													<i class="fas fa-lock text-green-400" title="SSL Enabled"></i>
+												} else {
+													<i class="fas fa-lock-open text-gray-500" title="No SSL"></i>
+												}
+												<a href={ templ.SafeURL("https://" + host.DomainName) } target="_blank" class="text-white hover:text-primary-400">
+													{ host.DomainName }
+												</a>
+											</div>
+										</td>
+										<td class="font-mono text-sm text-gray-400">
+											{ host.ForwardHost }:{ fmt.Sprintf("%d", host.ForwardPort) }
+										</td>
+										<td>
+											if host.ContainerName != "" {
+												<a href={ templ.SafeURL("/containers/" + host.ContainerName) } class="text-primary-400 hover:text-primary-300">
+													{ host.ContainerName }
+												</a>
+											} else {
+												<span class="text-gray-500">-</span>
+											}
+										</td>
+										<td>
+											if host.SSLEnabled {
+												<span class="badge badge-success">Enabled</span>
+											} else {
+												<span class="badge badge-warning">Disabled</span>
+											}
+										</td>
+										<td>
+											if host.Enabled {
+												<span class="badge badge-success">Active</span>
+											} else {
+												<span class="badge badge-danger">Disabled</span>
+											}
+										</td>
+										<td>
+											<div class="flex items-center gap-2">
+												<a href={ templ.SafeURL("/proxy/" + host.ID + "/edit") } class="text-primary-400 hover:text-primary-300 text-sm">
+													Edit
+												</a>
+												if host.Enabled {
+													<button hx-post={ "/proxy/hosts/" + host.ID + "/disable" } class="text-yellow-400 hover:text-yellow-300 text-sm">
+														Disable
+													</button>
+												} else {
+													<button hx-post={ "/proxy/hosts/" + host.ID + "/enable" } class="text-green-400 hover:text-green-300 text-sm">
+														Enable
+													</button>
+												}
+												<button hx-delete={ "/proxy/hosts/" + host.ID } hx-confirm="Delete this proxy host?" class="text-red-400 hover:text-red-300 text-sm">
+													Delete
+												</button>
+											</div>
+										</td>
+									</tr>
+								}
+							</tbody>
+						</table>
+					</div>
+				</div>
+
+				if len(data.ProxyHosts) == 0 {
+					<div class="card p-8 text-center">
+						<i class="fas fa-globe text-4xl text-gray-600 mb-4"></i>
+						<h3 class="text-lg font-medium text-white mb-2">No proxy hosts</h3>
+						<p class="text-gray-400 mb-4">Create your first reverse proxy host</p>
+						<a href="/proxy/new" class="btn-primary">
+							<i class="fas fa-plus mr-2"></i>New Host
+						</a>
+					</div>
+				}
+			}
+		</div>
+	}
+}

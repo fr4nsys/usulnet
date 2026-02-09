@@ -1,0 +1,219 @@
+package proxy
+
+import (
+	"fmt"
+	"strings"
+	"github.com/fr4nsys/usulnet/internal/web/templates/layouts"
+)
+
+type RedirFormData struct {
+	PageData     layouts.PageData
+	IsEdit       bool
+	Redir        *RedirView       // nil for new
+	Certificates []CertView
+	Error        string
+}
+
+func redirFormAction(isEdit bool, id int) string {
+	if isEdit {
+		return fmt.Sprintf("/proxy/redirections/%d", id)
+	}
+	return "/proxy/redirections"
+}
+
+func redirFormTitle(isEdit bool) string {
+	if isEdit {
+		return "Edit Redirection Host"
+	}
+	return "New Redirection Host"
+}
+
+func isHTTPCodeSelected(code int, value int, isEdit bool) bool {
+	if isEdit {
+		return code == value
+	}
+	return code == 302 // default
+}
+
+func redirDomainValue(r *RedirView) string {
+	if r == nil {
+		return ""
+	}
+	return strings.Join(r.DomainNames, ", ")
+}
+
+templ RedirForm(data RedirFormData) {
+	@layouts.Base(data.PageData) {
+		<div class="max-w-2xl mx-auto space-y-6">
+			<div class="flex items-center gap-4">
+				<a href="/proxy/redirections" class="p-2 text-gray-400 hover:text-white hover:bg-dark-700 rounded-lg">
+					<i class="fas fa-arrow-left"></i>
+				</a>
+				<div>
+					<h1 class="text-2xl font-display font-bold text-white">{ redirFormTitle(data.IsEdit) }</h1>
+					<p class="text-gray-400 mt-1">Redirect traffic from one domain to another</p>
+				</div>
+			</div>
+
+			if data.Error != "" {
+				<div class="bg-red-500/10 border border-red-500/20 rounded-lg p-4 text-red-400">
+					<i class="fas fa-exclamation-triangle mr-2"></i>{ data.Error }
+				</div>
+			}
+
+			<form
+				action={ templ.SafeURL(redirFormAction(data.IsEdit, redirID(data.Redir))) }
+				method="POST"
+				class="card p-6 space-y-6"
+			>
+				<input type="hidden" name="csrf_token" value={ data.PageData.CSRFToken }/>
+				<!-- Domain Names -->
+				<div>
+					<label class="block text-sm font-medium text-gray-300 mb-2">Source Domain Names</label>
+					<input type="text" name="domain_names" required
+						placeholder="old.example.com, legacy.example.com"
+						value={ redirDomainValue(data.Redir) }
+						class="input w-full"
+					/>
+					<p class="text-xs text-gray-500 mt-1">Comma-separated domains that will be redirected.</p>
+				</div>
+
+				<!-- Forward Scheme -->
+				<div class="grid grid-cols-3 gap-4">
+					<div>
+						<label class="block text-sm font-medium text-gray-300 mb-2">Scheme</label>
+						<select name="forward_scheme" class="input w-full">
+							<option value="https" selected?={ data.Redir != nil && data.Redir.ForwardScheme == "https" }>https://</option>
+							<option value="http" selected?={ data.Redir != nil && data.Redir.ForwardScheme == "http" }>http://</option>
+						</select>
+					</div>
+					<div class="col-span-2">
+						<label class="block text-sm font-medium text-gray-300 mb-2">Destination Domain</label>
+						<input type="text" name="forward_domain" required
+							placeholder="new.example.com"
+							if data.Redir != nil {
+								value={ data.Redir.ForwardDomain }
+							}
+							class="input w-full"
+						/>
+					</div>
+				</div>
+
+				<!-- HTTP Code -->
+				<div>
+					<label class="block text-sm font-medium text-gray-300 mb-2">HTTP Status Code</label>
+					<div class="grid grid-cols-2 gap-3">
+						for _, code := range []struct{ V int; L string; D string }{
+							{301, "301", "Permanent redirect — browsers cache"},
+							{302, "302", "Temporary redirect — default"},
+							{307, "307", "Temporary — preserves POST method"},
+							{308, "308", "Permanent — preserves POST method"},
+						} {
+							<label class="card p-3 cursor-pointer border-2 border-transparent has-[:checked]:border-primary-500">
+								<input type="radio" name="forward_http_code"
+									value={ fmt.Sprintf("%d", code.V) }
+									checked?={ isHTTPCodeSelected(code.V, redirHTTPCode(data.Redir), data.IsEdit) }
+									class="sr-only"
+								/>
+								<div class="text-sm font-medium text-white">{ code.L }</div>
+								<div class="text-xs text-gray-400">{ code.D }</div>
+							</label>
+						}
+					</div>
+				</div>
+
+				<!-- Preserve Path -->
+				<div class="flex items-center gap-3">
+					<input type="checkbox" name="preserve_path" id="preserve-path"
+						checked?={ data.Redir != nil && data.Redir.PreservePath }
+						class="rounded border-gray-600 bg-dark-700 text-primary-500 focus:ring-primary-500"
+					/>
+					<label for="preserve-path" class="text-sm text-gray-300">
+						Preserve path — append original path to destination
+					</label>
+				</div>
+
+				<!-- SSL -->
+				<div class="space-y-3">
+					<label class="block text-sm font-medium text-gray-300">SSL Configuration</label>
+					<div class="flex items-center gap-3">
+						<input type="checkbox" name="ssl_forced" id="ssl-forced"
+							checked?={ data.Redir == nil || data.Redir.SSLForced }
+							class="rounded border-gray-600 bg-dark-700 text-primary-500 focus:ring-primary-500"
+						/>
+						<label for="ssl-forced" class="text-sm text-gray-300">Force SSL</label>
+					</div>
+					if len(data.Certificates) > 0 {
+						<div>
+							<label class="block text-sm font-medium text-gray-300 mb-2">SSL Certificate</label>
+							<select name="certificate_id" class="input w-full">
+								<option value="0">None (use default)</option>
+								for _, cert := range data.Certificates {
+									<option value={ fmt.Sprintf("%d", cert.ID) }
+										selected?={ data.Redir != nil && data.Redir.CertificateID == cert.ID }
+									>
+										{ cert.NiceName } — { certDomainsDisplay(cert.DomainNames) }
+									</option>
+								}
+							</select>
+						</div>
+					}
+				</div>
+
+				if data.IsEdit {
+					<div class="flex items-center gap-3">
+						<input type="checkbox" name="enabled" id="redir-enabled"
+							checked?={ data.Redir != nil && data.Redir.Enabled }
+							class="rounded border-gray-600 bg-dark-700 text-primary-500 focus:ring-primary-500"
+						/>
+						<label for="redir-enabled" class="text-sm text-gray-300">Enabled</label>
+					</div>
+				}
+
+				<div class="flex items-center justify-end gap-3">
+					<a href="/proxy/redirections" class="btn-secondary">Cancel</a>
+					<button type="submit" class="btn-primary">
+						if data.IsEdit {
+							<i class="fas fa-save mr-2"></i>Save Changes
+						} else {
+							<i class="fas fa-plus mr-2"></i>Create Redirection
+						}
+					</button>
+				</div>
+			</form>
+
+			if data.IsEdit && data.Redir != nil {
+				<div class="card border border-red-500/20 p-6">
+					<h3 class="text-sm font-medium text-red-400 uppercase tracking-wider mb-4">Danger Zone</h3>
+					<div class="flex items-center justify-between">
+						<div>
+							<div class="text-sm font-medium text-white">Delete Redirection</div>
+							<div class="text-xs text-gray-400">This cannot be undone.</div>
+						</div>
+						<button
+							hx-delete={ fmt.Sprintf("/proxy/redirections/%d", data.Redir.ID) }
+							hx-confirm="Delete this redirection host?"
+							class="btn-danger"
+						>
+							<i class="fas fa-trash mr-2"></i>Delete
+						</button>
+					</div>
+				</div>
+			}
+		</div>
+	}
+}
+
+func redirID(r *RedirView) int {
+	if r == nil {
+		return 0
+	}
+	return r.ID
+}
+
+func redirHTTPCode(r *RedirView) int {
+	if r == nil {
+		return 302
+	}
+	return r.ForwardHTTPCode
+}

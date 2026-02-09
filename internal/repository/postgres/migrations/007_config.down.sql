@@ -1,0 +1,5 @@
+DROP TABLE IF EXISTS config_audit_log CASCADE;
+DROP TABLE IF EXISTS config_syncs CASCADE;
+DROP TABLE IF EXISTS config_variable_history CASCADE;
+DROP TABLE IF EXISTS config_templates CASCADE;
+DROP TABLE IF EXISTS config_variables CASCADE;

@@ -1,0 +1,194 @@
+package stacks
+
+import (
+	"github.com/fr4nsys/usulnet/internal/web/templates/layouts"
+)
+
+type CatalogDeployData struct {
+	PageData   layouts.PageData
+	App        CatalogAppDetail
+	Error      string
+	Errors     []string
+	Values     map[string]string
+	ComposeTPL string
+}
+
+type CatalogAppDetail struct {
+	Slug        string
+	Name        string
+	Description string
+	Icon        string
+	IconColor   string
+	Category    string
+	Version     string
+	Website     string
+	Source      string
+	Notes       string
+	Fields      []CatalogFieldItem
+}
+
+type CatalogFieldItem struct {
+	Key         string
+	Label       string
+	Description string
+	Type        string
+	Default     string
+	Required    bool
+	Options     []string
+	Placeholder string
+	Pattern     string
+}
+
+func getFieldValue(values map[string]string, key, fallback string) string {
+	if values == nil {
+		return fallback
+	}
+	if v, ok := values[key]; ok && v != "" {
+		return v
+	}
+	return fallback
+}
+
+templ CatalogDeploy(data CatalogDeployData) {
+	@layouts.Base(data.PageData) {
+		<div class="max-w-3xl mx-auto space-y-6">
+			<!-- Header -->
+			<div class="flex items-center gap-4">
+				<a href="/stacks/catalog" class="p-2 text-gray-400 hover:text-white hover:bg-dark-700 rounded-lg">
+					<i class="fas fa-arrow-left"></i>
+				</a>
+				<div class={ "w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0", data.App.IconColor }>
+					<i class={ "fas " + data.App.Icon + " text-xl" }></i>
+				</div>
+				<div>
+					<h1 class="text-2xl font-display font-bold text-white">Install { data.App.Name }</h1>
+					<p class="text-gray-400 mt-0.5 text-sm">{ data.App.Description }</p>
+				</div>
+			</div>
+
+			<!-- App Info Bar -->
+			<div class="flex items-center gap-4 text-sm text-gray-400">
+				<span><i class="fas fa-tag mr-1.5"></i>{ data.App.Category }</span>
+				<span><i class="fas fa-code-branch mr-1.5"></i>{ data.App.Version }</span>
+				if data.App.Website != "" {
+					<a href={ templ.SafeURL(data.App.Website) } target="_blank" rel="noopener" class="text-primary-400 hover:text-primary-300">
+						<i class="fas fa-external-link-alt mr-1.5"></i>Web
+					</a>
+				}
+				if data.App.Source != "" {
+					<a href={ templ.SafeURL(data.App.Source) } target="_blank" rel="noopener" class="text-primary-400 hover:text-primary-300">
+						<i class="fab fa-github mr-1.5"></i>Source
+					</a>
+				}
+			</div>
+
+			<!-- Errors -->
+			if data.Error != "" {
+				<div class="bg-red-500/10 border border-red-500/20 rounded-lg p-4 text-red-400">
+					<i class="fas fa-exclamation-circle mr-2"></i>{ data.Error }
+				</div>
+			}
+			if len(data.Errors) > 0 {
+				<div class="bg-red-500/10 border border-red-500/20 rounded-lg p-4 text-red-400 space-y-1">
+					<p class="font-medium"><i class="fas fa-exclamation-triangle mr-2"></i>Corrige los siguientes errores:</p>
+					for _, e := range data.Errors {
+						<p class="text-sm ml-6">• { e }</p>
+					}
+				</div>
+			}
+
+			<!-- Notes -->
+			if data.App.Notes != "" {
+				<div class="bg-blue-500/10 border border-blue-500/20 rounded-lg p-4 text-blue-300 text-sm">
+					<i class="fas fa-info-circle mr-2"></i>{ data.App.Notes }
+				</div>
+			}
+
+			<!-- Configuration Form -->
+			<form action={ templ.SafeURL("/stacks/catalog/" + data.App.Slug + "/deploy") } method="POST" class="space-y-6">
+				<input type="hidden" name="csrf_token" value={ data.PageData.CSRFToken }/>
+				<div class="card p-6 space-y-5">
+					<h2 class="font-medium text-white text-lg border-b border-dark-700 pb-3">
+						<i class="fas fa-sliders-h mr-2 text-primary-400"></i>Configuration
+					</h2>
+
+					for _, field := range data.App.Fields {
+						<div>
+							<label for={ "field_" + field.Key } class="block text-sm font-medium text-gray-300 mb-1.5">
+								{ field.Label }
+								if field.Required {
+									<span class="text-red-400 ml-0.5">*</span>
+								}
+							</label>
+							if field.Description != "" {
+								<p class="text-xs text-gray-500 mb-2">{ field.Description }</p>
+							}
+
+							if field.Type == "select" {
+								<select
+									id={ "field_" + field.Key }
+									name={ field.Key }
+									class="input"
+								>
+									for _, opt := range field.Options {
+										if getFieldValue(data.Values, field.Key, field.Default) == opt {
+											<option value={ opt } selected>{ opt }</option>
+										} else {
+											<option value={ opt }>{ opt }</option>
+										}
+									}
+								</select>
+							} else if field.Type == "checkbox" {
+								<div class="flex items-center gap-3">
+									if getFieldValue(data.Values, field.Key, field.Default) == "true" {
+										<input
+											type="checkbox"
+											id={ "field_" + field.Key }
+											name={ field.Key }
+											value="true"
+											checked
+											class="rounded border-dark-600 bg-dark-700 text-primary-500 focus:ring-primary-500"
+										/>
+									} else {
+										<input
+											type="checkbox"
+											id={ "field_" + field.Key }
+											name={ field.Key }
+											value="true"
+											class="rounded border-dark-600 bg-dark-700 text-primary-500 focus:ring-primary-500"
+										/>
+									}
+								</div>
+							} else {
+								<input
+									type={ field.Type }
+									id={ "field_" + field.Key }
+									name={ field.Key }
+									value={ getFieldValue(data.Values, field.Key, field.Default) }
+									class="input"
+									placeholder={ field.Placeholder }
+								/>
+							}
+						</div>
+					}
+				</div>
+
+				<!-- Compose Template Preview -->
+				<details class="card">
+					<summary class="px-5 py-4 cursor-pointer text-sm text-gray-400 hover:text-white transition-colors select-none">
+						<i class="fas fa-code mr-2"></i>View docker-compose.yml template
+					</summary>
+					<pre class="px-5 pb-4 text-xs font-mono text-gray-500 overflow-x-auto whitespace-pre">{ data.ComposeTPL }</pre>
+				</details>
+
+				<!-- Deploy Actions -->
+				<div class="flex justify-end gap-3">
+					<a href="/stacks/catalog" class="btn-secondary">Cancel</a>
+					<button type="submit" class="btn-primary">
+						<i class="fas fa-rocket mr-2"></i>Deploy { data.App.Name }
+					</button>
+				</div>
+			</form>
+		</div>
+	}
+}

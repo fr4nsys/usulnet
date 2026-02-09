@@ -1,0 +1,178 @@
+package backups
+
+import (
+	"github.com/fr4nsys/usulnet/internal/web/templates/layouts"
+)
+
+type CreateData struct {
+	PageData   layouts.PageData
+	Containers []TargetOption
+	Volumes    []TargetOption
+	Stacks     []TargetOption
+}
+
+type TargetOption struct {
+	ID   string
+	Name string
+}
+
+templ Create(data CreateData) {
+	@layouts.Base(data.PageData) {
+		<div class="space-y-6">
+			<!-- Header -->
+			<div class="flex items-center justify-between">
+				<div>
+					<h1 class="text-2xl font-display font-bold text-white">New Backup</h1>
+					<p class="text-gray-400 mt-1">Create a new backup of a container, volume, or stack</p>
+				</div>
+				<a href="/backups" class="btn-secondary">
+					<i class="fas fa-arrow-left mr-2"></i>Back
+				</a>
+			</div>
+
+			<!-- Create Form -->
+			<form action="/backups/create" method="POST" class="card">
+				<input type="hidden" name="csrf_token" value={ data.PageData.CSRFToken }/>
+				<div class="px-6 py-4 border-b border-dark-700">
+					<h2 class="font-medium text-white">Backup Configuration</h2>
+				</div>
+				<div class="p-6 space-y-6">
+					<!-- Backup Type -->
+					<div>
+						<label class="block text-sm font-medium text-gray-300 mb-2">Backup Type</label>
+						<div class="grid grid-cols-3 gap-3">
+							<label class="relative">
+								<input type="radio" name="type" value="container" class="peer sr-only" checked/>
+								<div class="border border-dark-600 rounded-lg p-4 cursor-pointer peer-checked:border-primary-500 peer-checked:bg-primary-500/10 transition-colors">
+									<div class="flex items-center gap-3">
+										<i class="fas fa-cube text-primary-400 text-lg"></i>
+										<div>
+											<div class="font-medium text-white">Container</div>
+											<div class="text-xs text-gray-400">Backup container data</div>
+										</div>
+									</div>
+								</div>
+							</label>
+							<label class="relative">
+								<input type="radio" name="type" value="volume" class="peer sr-only"/>
+								<div class="border border-dark-600 rounded-lg p-4 cursor-pointer peer-checked:border-primary-500 peer-checked:bg-primary-500/10 transition-colors">
+									<div class="flex items-center gap-3">
+										<i class="fas fa-database text-blue-400 text-lg"></i>
+										<div>
+											<div class="font-medium text-white">Volume</div>
+											<div class="text-xs text-gray-400">Backup volume data</div>
+										</div>
+									</div>
+								</div>
+							</label>
+							<label class="relative">
+								<input type="radio" name="type" value="stack" class="peer sr-only"/>
+								<div class="border border-dark-600 rounded-lg p-4 cursor-pointer peer-checked:border-primary-500 peer-checked:bg-primary-500/10 transition-colors">
+									<div class="flex items-center gap-3">
+										<i class="fas fa-layer-group text-green-400 text-lg"></i>
+										<div>
+											<div class="font-medium text-white">Stack</div>
+											<div class="text-xs text-gray-400">Backup entire stack</div>
+										</div>
+									</div>
+								</div>
+							</label>
+						</div>
+					</div>
+
+					<!-- Target Selection -->
+					<div id="target-container">
+						<label class="block text-sm font-medium text-gray-300 mb-2">Target Container</label>
+						<select name="target_id" required class="input">
+							<option value="">Select a container...</option>
+							for _, c := range data.Containers {
+								<option value={ c.ID }>{ c.Name }</option>
+							}
+						</select>
+					</div>
+
+					<div id="target-volume" class="hidden">
+						<label class="block text-sm font-medium text-gray-300 mb-2">Target Volume</label>
+						<select name="target_volume" class="input">
+							<option value="">Select a volume...</option>
+							for _, v := range data.Volumes {
+								<option value={ v.Name }>{ v.Name }</option>
+							}
+						</select>
+					</div>
+
+					<div id="target-stack" class="hidden">
+						<label class="block text-sm font-medium text-gray-300 mb-2">Target Stack</label>
+						<select name="target_stack" class="input">
+							<option value="">Select a stack...</option>
+							for _, s := range data.Stacks {
+								<option value={ s.Name }>{ s.Name }</option>
+							}
+						</select>
+					</div>
+
+					<!-- Compression -->
+					<div>
+						<label class="block text-sm font-medium text-gray-300 mb-2">Compression</label>
+						<select name="compression" class="input">
+							<option value="gzip" selected>Gzip (recommended)</option>
+							<option value="zstd">Zstd (faster)</option>
+							<option value="none">None</option>
+						</select>
+						<p class="text-xs text-gray-500 mt-1">Gzip provides good compression ratio; Zstd is faster with similar results</p>
+					</div>
+
+					<!-- Options Row -->
+					<div class="grid grid-cols-2 gap-6">
+						<!-- Retention -->
+						<div>
+							<label class="block text-sm font-medium text-gray-300 mb-2">Retention (days)</label>
+							<input type="number" name="retention_days" value="30" min="1" max="365" class="input"/>
+							<p class="text-xs text-gray-500 mt-1">Backup will be automatically deleted after this period</p>
+						</div>
+
+						<!-- Encryption & Stop -->
+						<div class="space-y-3 pt-7">
+							<div class="flex items-center gap-2">
+								<input type="checkbox" id="encrypt" name="encrypt" value="true" class="rounded border-dark-600 bg-dark-700 text-primary-500"/>
+								<label for="encrypt" class="text-sm text-gray-300">Encrypt backup</label>
+							</div>
+							<div class="flex items-center gap-2">
+								<input type="checkbox" id="stop_container" name="stop_container" value="true" class="rounded border-dark-600 bg-dark-700 text-primary-500"/>
+								<label for="stop_container" class="text-sm text-gray-300">Stop container during backup</label>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- Actions -->
+				<div class="px-6 py-4 border-t border-dark-700 flex justify-end gap-3">
+					<a href="/backups" class="btn-secondary">Cancel</a>
+					<button type="submit" class="btn-primary">
+						<i class="fas fa-download mr-2"></i>Create Backup
+					</button>
+				</div>
+			</form>
+		</div>
+
+		<!-- Target switching script -->
+		<script>
+			document.querySelectorAll('input[name="type"]').forEach(radio => {
+				radio.addEventListener('change', function() {
+					// Hide all target divs and remove required
+					['container', 'volume', 'stack'].forEach(t => {
+						const div = document.getElementById('target-' + t);
+						div.classList.add('hidden');
+						const sel = div.querySelector('select');
+						if (sel) sel.removeAttribute('required');
+					});
+					// Show selected target and add required
+					const activeDiv = document.getElementById('target-' + this.value);
+					activeDiv.classList.remove('hidden');
+					const activeSel = activeDiv.querySelector('select');
+					if (activeSel) activeSel.setAttribute('required', '');
+				});
+			});
+		</script>
+	}
+}

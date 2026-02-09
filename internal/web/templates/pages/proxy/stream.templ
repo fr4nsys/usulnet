@@ -1,0 +1,262 @@
+package proxy
+
+import (
+	"fmt"
+	"github.com/fr4nsys/usulnet/internal/web/templates/layouts"
+)
+
+type StreamListData struct {
+	PageData  layouts.PageData
+	Connected bool
+	Streams   []StreamView
+}
+
+type StreamView struct {
+	ID             int
+	IncomingPort   int
+	ForwardingHost string
+	ForwardingPort int
+	TCPForwarding  bool
+	UDPForwarding  bool
+	CertificateID  int
+	Enabled        bool
+}
+
+func streamProtocol(tcp, udp bool) string {
+	if tcp && udp {
+		return "TCP + UDP"
+	}
+	if tcp {
+		return "TCP"
+	}
+	if udp {
+		return "UDP"
+	}
+	return "-"
+}
+
+templ StreamList(data StreamListData) {
+	@layouts.Base(data.PageData) {
+		<div class="space-y-6">
+			<div class="flex items-center justify-between">
+				<div>
+					<h1 class="text-2xl font-display font-bold text-white">Reverse Proxy</h1>
+					<p class="text-gray-400 mt-1">TCP/UDP stream forwarding</p>
+				</div>
+				<div class="flex items-center gap-2">
+					if data.Connected {
+						<span class="badge badge-success"><i class="fas fa-link mr-1"></i>Connected</span>
+						<a href="/proxy/streams/new" class="btn-primary">
+							<i class="fas fa-plus mr-2"></i>New Stream
+						</a>
+					}
+				</div>
+			</div>
+
+			@Nav("streams", data.Connected)
+
+			if data.Connected {
+				if len(data.Streams) > 0 {
+					<div class="card">
+						<div class="overflow-x-auto">
+							<table class="table">
+								<thead>
+									<tr>
+										<th>Incoming Port</th>
+										<th>Forward To</th>
+										<th>Protocol</th>
+										<th>Status</th>
+										<th>Actions</th>
+									</tr>
+								</thead>
+								<tbody>
+									for _, s := range data.Streams {
+										<tr>
+											<td>
+												<span class="font-mono text-white font-medium">:{ fmt.Sprintf("%d", s.IncomingPort) }</span>
+											</td>
+											<td class="font-mono text-sm text-gray-400">
+												{ s.ForwardingHost }:{ fmt.Sprintf("%d", s.ForwardingPort) }
+											</td>
+											<td>
+												<span class="badge badge-info">{ streamProtocol(s.TCPForwarding, s.UDPForwarding) }</span>
+											</td>
+											<td>
+												if s.Enabled {
+													<span class="badge badge-success">Active</span>
+												} else {
+													<span class="badge badge-danger">Disabled</span>
+												}
+											</td>
+											<td>
+												<div class="flex items-center gap-2">
+													<a href={ templ.SafeURL(fmt.Sprintf("/proxy/streams/%d/edit", s.ID)) } class="text-primary-400 hover:text-primary-300 text-sm">Edit</a>
+													<button hx-delete={ fmt.Sprintf("/proxy/streams/%d", s.ID) } hx-confirm="Delete this stream?" class="text-red-400 hover:text-red-300 text-sm">Delete</button>
+												</div>
+											</td>
+										</tr>
+									}
+								</tbody>
+							</table>
+						</div>
+					</div>
+				} else {
+					<div class="card p-8 text-center">
+						<i class="fas fa-stream text-4xl text-gray-600 mb-4"></i>
+						<h3 class="text-lg font-medium text-white mb-2">No streams</h3>
+						<p class="text-gray-400 mb-4">Create a TCP/UDP stream to forward traffic on specific ports</p>
+						<a href="/proxy/streams/new" class="btn-primary"><i class="fas fa-plus mr-2"></i>New Stream</a>
+					</div>
+				}
+			} else {
+				<div class="card p-8 text-center">
+					<i class="fas fa-plug text-4xl text-gray-600 mb-4"></i>
+					<h3 class="text-lg font-medium text-white mb-2">NPM Not Connected</h3>
+					<p class="text-gray-400 mb-4">Connect to NPM to manage streams.</p>
+					<a href="/proxy/setup" class="btn-primary"><i class="fas fa-link mr-2"></i>Setup Connection</a>
+				</div>
+			}
+		</div>
+	}
+}
+
+type StreamFormData struct {
+	PageData  layouts.PageData
+	IsEdit    bool
+	Stream    *StreamView
+	Error     string
+}
+
+func streamFormAction(isEdit bool, id int) string {
+	if isEdit {
+		return fmt.Sprintf("/proxy/streams/%d", id)
+	}
+	return "/proxy/streams"
+}
+
+templ StreamForm(data StreamFormData) {
+	@layouts.Base(data.PageData) {
+		<div class="max-w-2xl mx-auto space-y-6">
+			<div class="flex items-center gap-4">
+				<a href="/proxy/streams" class="p-2 text-gray-400 hover:text-white hover:bg-dark-700 rounded-lg">
+					<i class="fas fa-arrow-left"></i>
+				</a>
+				<div>
+					if data.IsEdit {
+						<h1 class="text-2xl font-display font-bold text-white">Edit Stream</h1>
+					} else {
+						<h1 class="text-2xl font-display font-bold text-white">New Stream</h1>
+					}
+					<p class="text-gray-400 mt-1">Forward TCP/UDP traffic on a specific port</p>
+				</div>
+			</div>
+
+			if data.Error != "" {
+				<div class="bg-red-500/10 border border-red-500/20 rounded-lg p-4 text-red-400">
+					<i class="fas fa-exclamation-triangle mr-2"></i>{ data.Error }
+				</div>
+			}
+
+			<form action={ templ.SafeURL(streamFormAction(data.IsEdit, streamID(data.Stream))) } method="POST" class="card p-6 space-y-6">
+				<input type="hidden" name="csrf_token" value={ data.PageData.CSRFToken }/>
+				<div>
+					<label class="block text-sm font-medium text-gray-300 mb-2">Incoming Port</label>
+					<input type="number" name="incoming_port" required min="1" max="65535"
+						if data.Stream != nil {
+							value={ fmt.Sprintf("%d", data.Stream.IncomingPort) }
+						}
+						placeholder="3306"
+						class="input w-40"
+					/>
+					<p class="text-xs text-gray-500 mt-1">Port NPM will listen on for this stream.</p>
+				</div>
+
+				<div class="grid grid-cols-3 gap-4">
+					<div class="col-span-2">
+						<label class="block text-sm font-medium text-gray-300 mb-2">Forwarding Host</label>
+						<input type="text" name="forwarding_host" required
+							if data.Stream != nil {
+								value={ data.Stream.ForwardingHost }
+							}
+							placeholder="192.168.1.100 or container-name"
+							class="input w-full"
+						/>
+					</div>
+					<div>
+						<label class="block text-sm font-medium text-gray-300 mb-2">Port</label>
+						<input type="number" name="forwarding_port" required min="1" max="65535"
+							if data.Stream != nil {
+								value={ fmt.Sprintf("%d", data.Stream.ForwardingPort) }
+							}
+							placeholder="3306"
+							class="input w-full"
+						/>
+					</div>
+				</div>
+
+				<div>
+					<label class="block text-sm font-medium text-gray-300 mb-3">Protocol</label>
+					<div class="flex items-center gap-6">
+						<div class="flex items-center gap-2">
+							<input type="checkbox" name="tcp_forwarding" id="tcp-fwd"
+								checked?={ data.Stream == nil || data.Stream.TCPForwarding }
+								class="rounded border-gray-600 bg-dark-700 text-primary-500 focus:ring-primary-500"
+							/>
+							<label for="tcp-fwd" class="text-sm text-gray-300">TCP</label>
+						</div>
+						<div class="flex items-center gap-2">
+							<input type="checkbox" name="udp_forwarding" id="udp-fwd"
+								checked?={ data.Stream != nil && data.Stream.UDPForwarding }
+								class="rounded border-gray-600 bg-dark-700 text-primary-500 focus:ring-primary-500"
+							/>
+							<label for="udp-fwd" class="text-sm text-gray-300">UDP</label>
+						</div>
+					</div>
+				</div>
+
+				if data.IsEdit {
+					<div class="flex items-center gap-3">
+						<input type="checkbox" name="enabled" id="stream-enabled"
+							checked?={ data.Stream != nil && data.Stream.Enabled }
+							class="rounded border-gray-600 bg-dark-700 text-primary-500 focus:ring-primary-500"
+						/>
+						<label for="stream-enabled" class="text-sm text-gray-300">Enabled</label>
+					</div>
+				}
+
+				<div class="flex items-center justify-end gap-3">
+					<a href="/proxy/streams" class="btn-secondary">Cancel</a>
+					<button type="submit" class="btn-primary">
+						if data.IsEdit {
+							<i class="fas fa-save mr-2"></i>Save Changes
+						} else {
+							<i class="fas fa-plus mr-2"></i>Create Stream
+						}
+					</button>
+				</div>
+			</form>
+
+			if data.IsEdit && data.Stream != nil {
+				<div class="card border border-red-500/20 p-6">
+					<h3 class="text-sm font-medium text-red-400 uppercase tracking-wider mb-4">Danger Zone</h3>
+					<div class="flex items-center justify-between">
+						<div>
+							<div class="text-sm font-medium text-white">Delete Stream</div>
+							<div class="text-xs text-gray-400">This cannot be undone.</div>
+						</div>
+						<button hx-delete={ fmt.Sprintf("/proxy/streams/%d", data.Stream.ID) } hx-confirm="Delete this stream?" class="btn-danger">
+							<i class="fas fa-trash mr-2"></i>Delete
+						</button>
+					</div>
+				</div>
+			}
+		</div>
+	}
+}
+
+func streamID(s *StreamView) int {
+	if s == nil {
+		return 0
+	}
+	return s.ID
+}

@@ -1,0 +1,199 @@
+package pages
+
+import (
+	"github.com/fr4nsys/usulnet/internal/web/templates/layouts"
+)
+
+type EventsData struct {
+	PageData layouts.PageData
+	Events   []EventItem
+}
+
+type EventItem struct {
+	ID            string
+	Type          string
+	Action        string
+	Actor         string
+	ActorType     string
+	Target        string
+	TargetType    string
+	Message       string
+	Timestamp     string
+	TimestampUnix int64
+}
+
+func eventTypeIcon(eventType string) string {
+	switch eventType {
+	case "container":
+		return "fa-box"
+	case "image":
+		return "fa-layer-group"
+	case "volume":
+		return "fa-database"
+	case "network":
+		return "fa-network-wired"
+	case "system":
+		return "fa-server"
+	default:
+		return "fa-bell"
+	}
+}
+
+func actionColor(action string) string {
+	switch action {
+	case "start", "create", "connect":
+		return "text-green-400"
+	case "stop", "kill", "destroy", "remove", "delete", "disconnect":
+		return "text-red-400"
+	case "restart", "update", "pull":
+		return "text-yellow-400"
+	default:
+		return "text-blue-400"
+	}
+}
+
+templ Events(data EventsData) {
+	@layouts.Base(data.PageData) {
+		<div class="space-y-6">
+			<!-- Header -->
+			<div class="flex items-center justify-between">
+				<div>
+					<h1 class="text-2xl font-display font-bold text-white">Events</h1>
+					<p class="text-gray-400 mt-1">Real-time Docker events stream</p>
+				</div>
+				<div class="flex items-center gap-2">
+					<select id="event-filter" class="input w-40" onchange="filterEvents(this.value)">
+						<option value="">All Events</option>
+						<option value="container">Containers</option>
+						<option value="image">Images</option>
+						<option value="volume">Volumes</option>
+						<option value="network">Networks</option>
+					</select>
+				</div>
+			</div>
+
+			<!-- Connection Status -->
+			<div id="ws-status" class="hidden bg-yellow-500/10 border border-yellow-500/20 rounded-lg p-3 text-yellow-400 text-sm">
+				<i class="fas fa-plug mr-2"></i>Connecting to event stream...
+			</div>
+
+			<!-- Events List -->
+			<div class="card">
+				<div id="events-list" class="divide-y divide-dark-700 max-h-[70vh] overflow-y-auto">
+					for _, event := range data.Events {
+						<div class="p-4 flex items-start gap-4" data-event-type={ event.Type }>
+							<div class={ "w-10 h-10 rounded-lg flex items-center justify-center bg-dark-700", actionColor(event.Action) }>
+								<i class={ "fas", eventTypeIcon(event.Type) }></i>
+							</div>
+							<div class="flex-1 min-w-0">
+								<div class="flex items-center gap-2 mb-1">
+									<span class={ "font-medium", actionColor(event.Action) }>{ event.Action }</span>
+									<span class="text-gray-400">{ event.TargetType }</span>
+									<span class="text-white font-medium truncate">{ event.Target }</span>
+								</div>
+								if event.Message != "" {
+									<p class="text-sm text-gray-400">{ event.Message }</p>
+								}
+								<div class="text-xs text-gray-500 mt-1">{ event.Timestamp }</div>
+							</div>
+						</div>
+					}
+					<div id="empty-state" class="p-8 text-center text-gray-400">
+						if len(data.Events) == 0 {
+							<i class="fas fa-stream text-3xl mb-3"></i>
+							<p>Waiting for events... Events will appear here in real-time.</p>
+						}
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<script>
+			(function() {
+				const eventsList = document.getElementById('events-list');
+				const emptyState = document.getElementById('empty-state');
+				const wsStatus = document.getElementById('ws-status');
+				let ws = null;
+				let activeFilter = '';
+
+				const iconMap = {
+					container: 'fa-box', image: 'fa-layer-group',
+					volume: 'fa-database', network: 'fa-network-wired',
+					system: 'fa-server'
+				};
+				const colorMap = {
+					start: 'text-green-400', create: 'text-green-400', connect: 'text-green-400',
+					stop: 'text-red-400', kill: 'text-red-400', destroy: 'text-red-400',
+					remove: 'text-red-400', delete: 'text-red-400', disconnect: 'text-red-400',
+					restart: 'text-yellow-400', update: 'text-yellow-400', pull: 'text-yellow-400'
+				};
+
+				function connectWS() {
+					const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+					ws = new WebSocket(`${protocol}//${window.location.host}/ws/events`);
+
+					ws.onopen = function() {
+						wsStatus.classList.add('hidden');
+					};
+
+					ws.onmessage = function(e) {
+						try {
+							const msg = JSON.parse(e.data);
+							if (msg.type === 'event') {
+								addEvent(msg);
+							}
+						} catch(err) {}
+					};
+
+					ws.onclose = function() {
+						wsStatus.textContent = 'Disconnected from event stream. Reconnecting...';
+						wsStatus.classList.remove('hidden');
+						setTimeout(connectWS, 3000);
+					};
+
+					ws.onerror = function() {
+						wsStatus.textContent = 'Event stream error. Retrying...';
+						wsStatus.classList.remove('hidden');
+					};
+				}
+
+				function addEvent(msg) {
+					if (emptyState) emptyState.remove();
+					const icon = iconMap[msg.event_type] || 'fa-bell';
+					const color = colorMap[msg.action] || 'text-blue-400';
+					const display = activeFilter && msg.event_type !== activeFilter ? 'none' : '';
+
+					const html = `<div class="p-4 flex items-start gap-4" data-event-type="${msg.event_type}" style="display:${display}">
+						<div class="w-10 h-10 rounded-lg flex items-center justify-center bg-dark-700 ${color}">
+							<i class="fas ${icon}"></i>
+						</div>
+						<div class="flex-1 min-w-0">
+							<div class="flex items-center gap-2 mb-1">
+								<span class="font-medium ${color}">${msg.action}</span>
+								<span class="text-gray-400">${msg.event_type}</span>
+								<span class="text-white font-medium truncate">${msg.actor_name || ''}</span>
+							</div>
+							<p class="text-sm text-gray-400">${msg.message || ''}</p>
+							<div class="text-xs text-gray-500 mt-1">${msg.time_human || msg.timestamp || ''}</div>
+						</div>
+					</div>`;
+					eventsList.insertAdjacentHTML('afterbegin', html);
+
+					// Keep max 500 events
+					while (eventsList.children.length > 500) {
+						eventsList.removeChild(eventsList.lastChild);
+					}
+				}
+
+				window.filterEvents = function(type) {
+					activeFilter = type;
+					document.querySelectorAll('[data-event-type]').forEach(item => {
+						item.style.display = (!type || item.dataset.eventType === type) ? '' : 'none';
+					});
+				};
+
+				connectWS();
+			})();
+		</script>
+	}
+}

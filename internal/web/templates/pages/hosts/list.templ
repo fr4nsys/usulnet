@@ -1,0 +1,135 @@
+package hosts
+
+import (
+	"fmt"
+	"github.com/fr4nsys/usulnet/internal/web/templates/layouts"
+)
+
+type HostsData struct {
+	PageData layouts.PageData
+	Hosts    []HostItem
+}
+
+type HostItem struct {
+	ID                string
+	Name              string
+	URL               string
+	Status            string
+	EndpointType      string
+	Containers        int
+	ContainersRunning int
+	CPUs              int
+	MemTotalStr       string
+	Images            int
+	DockerVersion     string
+	OS                string
+	KernelVersion     string
+	Architecture      string
+	LastSeen          string
+}
+
+templ List(data HostsData) {
+	@layouts.Base(data.PageData) {
+		<div class="space-y-6">
+			<!-- Header -->
+			<div class="flex items-center justify-between">
+				<div>
+					<h1 class="text-2xl font-display font-bold text-white">Nodes</h1>
+					<p class="text-gray-400 mt-1">Docker nodes and system information</p>
+				</div>
+				<a href="/nodes/new" class="btn btn-primary">
+					<i class="fas fa-plus mr-2"></i>Add Node
+				</a>
+			</div>
+
+			<!-- Nodes Grid -->
+			<div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+				for _, host := range data.Hosts {
+					<a href={ templ.SafeURL("/nodes/" + host.ID) } class="card p-5 hover:border-primary-500/50 transition-colors block">
+						<div class="flex items-start justify-between mb-4">
+							<div class="flex items-center gap-3">
+								<div class={ "w-11 h-11 rounded-xl flex items-center justify-center", templ.KV("bg-green-500/10", host.Status == "online"), templ.KV("bg-red-500/10", host.Status != "online") }>
+									<i class={ "fas fa-server text-lg", templ.KV("text-green-400", host.Status == "online"), templ.KV("text-red-400", host.Status != "online") }></i>
+								</div>
+								<div>
+									<div class="flex items-center gap-2">
+										<h3 class="font-medium text-white">{ host.Name }</h3>
+										<span class={ "w-2 h-2 rounded-full", templ.KV("bg-green-500", host.Status == "online"), templ.KV("bg-red-500", host.Status != "online") }></span>
+									</div>
+									<p class="text-sm text-gray-400 font-mono">{ host.URL }</p>
+								</div>
+							</div>
+							if host.EndpointType == "local" {
+								<span class="px-2 py-0.5 rounded text-xs font-medium bg-primary-500/20 text-primary-400"><i class="fas fa-home mr-1"></i>Local</span>
+							} else if host.EndpointType == "tcp" {
+								<span class="px-2 py-0.5 rounded text-xs font-medium bg-blue-500/20 text-blue-400"><i class="fas fa-network-wired mr-1"></i>TCP</span>
+							} else if host.EndpointType == "agent" {
+								<span class="px-2 py-0.5 rounded text-xs font-medium bg-green-500/20 text-green-400"><i class="fas fa-satellite-dish mr-1"></i>Agent</span>
+							}
+						</div>
+
+						<!-- System info row -->
+						<div class="flex flex-wrap gap-x-4 gap-y-1 text-xs text-gray-400 mb-4 pb-3 border-b border-dark-700">
+							if host.OS != "" {
+								<span><i class="fas fa-desktop mr-1"></i>{ host.OS }</span>
+							}
+							if host.Architecture != "" {
+								<span><i class="fas fa-microchip mr-1"></i>{ host.Architecture }</span>
+							}
+							if host.KernelVersion != "" {
+								<span><i class="fas fa-code-branch mr-1"></i>{ host.KernelVersion }</span>
+							}
+						</div>
+
+						<!-- Stats row -->
+						<div class="grid grid-cols-5 gap-3">
+							<div class="text-center">
+								<p class="text-lg font-bold text-white">{ fmt.Sprintf("%d", host.Containers) }</p>
+								<p class="text-xs text-gray-500">Containers</p>
+							</div>
+							<div class="text-center">
+								<p class="text-lg font-bold text-green-400">{ fmt.Sprintf("%d", host.ContainersRunning) }</p>
+								<p class="text-xs text-gray-500">Running</p>
+							</div>
+							<div class="text-center">
+								<p class="text-lg font-bold text-white">{ fmt.Sprintf("%d", host.Images) }</p>
+								<p class="text-xs text-gray-500">Images</p>
+							</div>
+							<div class="text-center">
+								<p class="text-lg font-bold text-white">{ fmt.Sprintf("%d", host.CPUs) }</p>
+								<p class="text-xs text-gray-500">CPUs</p>
+							</div>
+							<div class="text-center">
+								<p class="text-lg font-bold text-white">{ host.MemTotalStr }</p>
+								<p class="text-xs text-gray-500">Memory</p>
+							</div>
+						</div>
+
+						<!-- Docker version footer -->
+						<div class="flex justify-between text-xs pt-3 mt-3 border-t border-dark-700">
+							<span class="text-gray-500">
+								<i class="fab fa-docker mr-1"></i>Docker { host.DockerVersion }
+							</span>
+							if host.LastSeen != "" {
+								<span class="text-gray-500">
+									<i class="fas fa-clock mr-1"></i>{ host.LastSeen }
+								</span>
+							}
+						</div>
+					</a>
+				}
+			</div>
+
+			if len(data.Hosts) == 0 {
+				<div class="card p-12 text-center">
+					<i class="fas fa-server text-4xl text-gray-600 mb-4"></i>
+					<h3 class="text-lg font-medium text-white mb-2">No nodes configured</h3>
+					<p class="text-gray-400 mb-4">Add a local, remote, or agent-managed Docker node to get started</p>
+					<a href="/nodes/new" class="btn btn-primary">
+						<i class="fas fa-plus mr-2"></i>Add Your First Node
+					</a>
+				</div>
+			}
+		</div>
+	}
+}

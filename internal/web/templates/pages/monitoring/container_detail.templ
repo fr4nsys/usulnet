@@ -1,0 +1,371 @@
+package monitoring
+
+import (
+	"fmt"
+	"github.com/fr4nsys/usulnet/internal/web/templates/layouts"
+)
+
+// ============================================================================
+// Data Types
+// ============================================================================
+
+type ProcessInfo struct {
+	PID     int
+	User    string
+	CPU     float64
+	Mem     float64
+	VSZ     uint64
+	RSS     uint64
+	Command string
+}
+
+type ContainerDetailData struct {
+	PageData   layouts.PageData
+	Container  ContainerStat
+	Processes  []ProcessInfo
+	HostMemory uint64 // total host memory for context
+}
+
+// ============================================================================
+// Template
+// ============================================================================
+
+templ ContainerDetail(data ContainerDetailData) {
+	@layouts.Base(data.PageData) {
+		<div class="space-y-6">
+			<!-- Breadcrumb + Header -->
+			<div class="flex items-center justify-between">
+				<div>
+					<div class="flex items-center gap-2 text-sm text-gray-500 mb-1">
+						<a href="/monitoring" class="hover:text-gray-300 transition-colors">Monitoring</a>
+						<i class="fas fa-chevron-right text-[10px]"></i>
+						<span class="text-gray-300">{ data.Container.Name }</span>
+					</div>
+					<div class="flex items-center gap-3">
+						<span class={ "w-3 h-3 rounded-full", stateDot(data.Container.State) }></span>
+						<h1 class="text-2xl font-display font-bold text-white">{ data.Container.Name }</h1>
+						<span class={ "text-sm font-medium px-2 py-0.5 rounded", stateColor(data.Container.State) }>
+							{ data.Container.State }
+						</span>
+					</div>
+					<p class="text-gray-400 mt-1 text-sm">{ data.Container.Image } &middot; Uptime: { data.Container.Uptime }</p>
+				</div>
+				<div class="flex items-center gap-3">
+					<div id="ws-status" class="flex items-center gap-2 px-3 py-1.5 bg-dark-800 border border-dark-600 rounded-lg text-xs">
+						<span id="ws-dot" class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+						<span id="ws-label" class="text-gray-400">Connecting...</span>
+					</div>
+					<a href={ templ.SafeURL(fmt.Sprintf("/containers/%s", data.Container.ID)) }
+						class="px-3 py-1.5 bg-dark-700 hover:bg-dark-600 text-gray-300 rounded-lg transition-colors text-sm font-medium">
+						<i class="fas fa-cube mr-1.5"></i>Container
+					</a>
+					<a href={ templ.SafeURL(fmt.Sprintf("/containers/%s/logs", data.Container.ID)) }
+						class="px-3 py-1.5 bg-dark-700 hover:bg-dark-600 text-gray-300 rounded-lg transition-colors text-sm font-medium">
+						<i class="fas fa-file-alt mr-1.5"></i>Logs
+					</a>
+				</div>
+			</div>
+
+			<!-- Summary Cards -->
+			<div class="grid grid-cols-2 lg:grid-cols-5 gap-4">
+				<div class="bg-dark-800 rounded-xl border border-dark-600 p-4">
+					<span class="text-xs text-gray-500 font-medium uppercase tracking-wider">CPU</span>
+					<div id="card-cpu" class={ "text-xl font-display font-bold mt-1", cpuColor(data.Container.CPUPercent) }>
+						{ fmt.Sprintf("%.2f%%", data.Container.CPUPercent) }
+					</div>
+				</div>
+				<div class="bg-dark-800 rounded-xl border border-dark-600 p-4">
+					<span class="text-xs text-gray-500 font-medium uppercase tracking-wider">Memory</span>
+					<div class="mt-1">
+						<span id="card-mem" class={ "text-xl font-display font-bold", cpuColor(data.Container.MemPercent) }>
+							{ formatBytes(data.Container.MemUsage) }
+						</span>
+						<span class="text-xs text-gray-500 ml-1">/ { formatBytes(data.Container.MemLimit) }</span>
+					</div>
+				</div>
+				<div class="bg-dark-800 rounded-xl border border-dark-600 p-4">
+					<span class="text-xs text-gray-500 font-medium uppercase tracking-wider">Network Rx</span>
+					<div id="card-netrx" class="text-xl font-display font-bold text-gray-300 mt-1">
+						{ formatBytes(data.Container.NetRx) }
+					</div>
+				</div>
+				<div class="bg-dark-800 rounded-xl border border-dark-600 p-4">
+					<span class="text-xs text-gray-500 font-medium uppercase tracking-wider">Network Tx</span>
+					<div id="card-nettx" class="text-xl font-display font-bold text-gray-300 mt-1">
+						{ formatBytes(data.Container.NetTx) }
+					</div>
+				</div>
+				<div class="bg-dark-800 rounded-xl border border-dark-600 p-4">
+					<span class="text-xs text-gray-500 font-medium uppercase tracking-wider">PIDs</span>
+					<div id="card-pids" class="text-xl font-display font-bold text-gray-300 mt-1">
+						{ fmt.Sprintf("%d", data.Container.PIDs) }
+					</div>
+				</div>
+			</div>
+
+			<!-- Charts: CPU + Memory -->
+			<div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+				<div class="bg-dark-800 rounded-xl border border-dark-600 p-4">
+					<div class="flex items-center justify-between mb-3">
+						<h2 class="text-sm font-semibold text-white">CPU Usage</h2>
+						<span id="chart-cpu-label" class="text-xs text-gray-400"></span>
+					</div>
+					<div class="h-56">
+						<canvas id="chart-cpu"></canvas>
+					</div>
+				</div>
+				<div class="bg-dark-800 rounded-xl border border-dark-600 p-4">
+					<div class="flex items-center justify-between mb-3">
+						<h2 class="text-sm font-semibold text-white">Memory Usage</h2>
+						<span id="chart-mem-label" class="text-xs text-gray-400"></span>
+					</div>
+					<div class="h-56">
+						<canvas id="chart-mem"></canvas>
+					</div>
+				</div>
+			</div>
+
+			<!-- Charts: Network + Block I/O -->
+			<div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+				<div class="bg-dark-800 rounded-xl border border-dark-600 p-4">
+					<div class="flex items-center justify-between mb-3">
+						<h2 class="text-sm font-semibold text-white">Network I/O</h2>
+						<span id="chart-net-label" class="text-xs text-gray-400"></span>
+					</div>
+					<div class="h-48">
+						<canvas id="chart-net"></canvas>
+					</div>
+				</div>
+				<div class="bg-dark-800 rounded-xl border border-dark-600 p-4">
+					<div class="flex items-center justify-between mb-3">
+						<h2 class="text-sm font-semibold text-white">Block I/O</h2>
+						<span id="chart-blk-label" class="text-xs text-gray-400"></span>
+					</div>
+					<div class="h-48">
+						<canvas id="chart-blk"></canvas>
+					</div>
+				</div>
+			</div>
+
+			<!-- Process List -->
+			if len(data.Processes) > 0 {
+				<div class="bg-dark-800 rounded-xl border border-dark-600 overflow-hidden">
+					<div class="px-4 py-3 border-b border-dark-600">
+						<h2 class="text-sm font-semibold text-white">Processes</h2>
+					</div>
+					<div class="overflow-x-auto">
+						<table class="w-full text-sm">
+							<thead>
+								<tr class="text-xs text-gray-500 uppercase tracking-wider border-b border-dark-700">
+									<th class="px-4 py-2 text-left font-medium">PID</th>
+									<th class="px-4 py-2 text-left font-medium">User</th>
+									<th class="px-4 py-2 text-right font-medium">CPU %</th>
+									<th class="px-4 py-2 text-right font-medium">MEM %</th>
+									<th class="px-4 py-2 text-right font-medium">VSZ</th>
+									<th class="px-4 py-2 text-right font-medium">RSS</th>
+									<th class="px-4 py-2 text-left font-medium">Command</th>
+								</tr>
+							</thead>
+							<tbody id="process-table">
+								for _, p := range data.Processes {
+									<tr class="border-b border-dark-700/50 hover:bg-dark-700/30">
+										<td class="px-4 py-1.5 font-mono text-xs text-gray-400">{ fmt.Sprintf("%d", p.PID) }</td>
+										<td class="px-4 py-1.5 text-xs text-gray-400">{ p.User }</td>
+										<td class={ "px-4 py-1.5 text-right font-mono text-xs", cpuColor(p.CPU) }>{ fmt.Sprintf("%.1f", p.CPU) }</td>
+										<td class={ "px-4 py-1.5 text-right font-mono text-xs", cpuColor(p.Mem) }>{ fmt.Sprintf("%.1f", p.Mem) }</td>
+										<td class="px-4 py-1.5 text-right font-mono text-xs text-gray-400">{ formatBytes(p.VSZ) }</td>
+										<td class="px-4 py-1.5 text-right font-mono text-xs text-gray-400">{ formatBytes(p.RSS) }</td>
+										<td class="px-4 py-1.5 font-mono text-xs text-gray-300 max-w-md truncate">{ p.Command }</td>
+									</tr>
+								}
+							</tbody>
+						</table>
+					</div>
+				</div>
+			}
+		</div>
+
+		<!-- Chart.js -->
+		<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+
+		<script>
+		(function() {
+			'use strict';
+
+			const CONTAINER_ID = { templ.JSONString(data.Container.ID) };
+			const MAX_POINTS = 180; // 6 min at 2s
+			let ws = null;
+			let charts = {};
+			let prevNetRx = 0, prevNetTx = 0;
+			let prevBlkR = 0, prevBlkW = 0;
+
+			Chart.defaults.color = '#9ca3af';
+			Chart.defaults.borderColor = '#1f2937';
+			Chart.defaults.font.family = "'IBM Plex Mono', monospace";
+			Chart.defaults.font.size = 11;
+
+			const C = {
+				primary: '#ff6b35', primaryF: 'rgba(255,107,53,0.08)',
+				blue: '#3b82f6', blueF: 'rgba(59,130,246,0.08)',
+				green: '#10b981', greenF: 'rgba(16,185,129,0.08)',
+				purple: '#8b5cf6', purpleF: 'rgba(139,92,246,0.08)',
+				red: '#ef4444', redF: 'rgba(239,68,68,0.08)',
+				grid: '#1e293b',
+			};
+
+			function mkChart(id, datasets, yMax, yLabel) {
+				const ctx = document.getElementById(id);
+				if (!ctx) return null;
+				return new Chart(ctx.getContext('2d'), {
+					type: 'line',
+					data: { labels: [], datasets: datasets },
+					options: {
+						responsive: true, maintainAspectRatio: false, animation: false,
+						interaction: { mode: 'index', intersect: false },
+						plugins: {
+							legend: { display: datasets.length > 1, position: 'top', labels: { boxWidth: 10, padding: 12, usePointStyle: true } },
+							tooltip: { backgroundColor: '#0d1117', borderColor: '#30363d', borderWidth: 1, padding: 8 }
+						},
+						scales: {
+							x: { grid: { color: C.grid, drawTicks: false }, ticks: { maxTicksLimit: 8, maxRotation: 0 } },
+							y: {
+								beginAtZero: true, max: yMax || undefined,
+								grid: { color: C.grid, drawTicks: false },
+								title: yLabel ? { display: true, text: yLabel, padding: 4 } : undefined,
+								ticks: { callback: yLabel === 'bytes/s' ? fmtB : undefined }
+							}
+						},
+						elements: { point: { radius: 0, hoverRadius: 3 }, line: { borderWidth: 1.5 } }
+					}
+				});
+			}
+
+			function fmtB(v) {
+				if (v === 0) return '0';
+				const u = ['B','K','M','G']; let i=0;
+				while (v >= 1024 && i < u.length-1) { v /= 1024; i++; }
+				return v.toFixed(i>0?1:0) + u[i];
+			}
+
+			function push(chart, label, vals) {
+				if (!chart) return;
+				chart.data.labels.push(label);
+				vals.forEach((v,i) => { if (chart.data.datasets[i]) chart.data.datasets[i].data.push(v); });
+				while (chart.data.labels.length > MAX_POINTS) {
+					chart.data.labels.shift();
+					chart.data.datasets.forEach(ds => ds.data.shift());
+				}
+				chart.update('none');
+			}
+
+			function initCharts() {
+				charts.cpu = mkChart('chart-cpu', [
+					{ label: 'CPU %', borderColor: C.primary, backgroundColor: C.primaryF, fill: true, tension: 0.3, data: [] }
+				], 100, '%');
+				charts.mem = mkChart('chart-mem', [
+					{ label: 'Memory %', borderColor: C.blue, backgroundColor: C.blueF, fill: true, tension: 0.3, data: [] }
+				], 100, '%');
+				charts.net = mkChart('chart-net', [
+					{ label: 'Rx', borderColor: C.green, backgroundColor: C.greenF, fill: true, tension: 0.3, data: [] },
+					{ label: 'Tx', borderColor: C.purple, backgroundColor: C.purpleF, fill: true, tension: 0.3, data: [] }
+				], undefined, 'bytes/s');
+				charts.blk = mkChart('chart-blk', [
+					{ label: 'Read', borderColor: C.blue, backgroundColor: C.blueF, fill: true, tension: 0.3, data: [] },
+					{ label: 'Write', borderColor: C.red, backgroundColor: C.redF, fill: true, tension: 0.3, data: [] }
+				], undefined, 'bytes/s');
+			}
+
+			function connect() {
+				const proto = location.protocol === 'https:' ? 'wss:' : 'ws:';
+				ws = new WebSocket(proto + '//' + location.host + '/ws/monitoring/container/' + CONTAINER_ID);
+
+				ws.onopen = () => {
+					document.getElementById('ws-dot').className = 'w-2 h-2 rounded-full bg-emerald-400';
+					document.getElementById('ws-label').textContent = 'Live';
+				};
+				ws.onclose = () => {
+					document.getElementById('ws-dot').className = 'w-2 h-2 rounded-full bg-red-400';
+					document.getElementById('ws-label').textContent = 'Disconnected';
+					setTimeout(connect, 3000);
+				};
+				ws.onerror = () => ws.close();
+
+				ws.onmessage = (evt) => {
+					try {
+						const msg = JSON.parse(evt.data);
+						if (msg.type === 'container_stats') handleStats(msg.data);
+						if (msg.type === 'processes') handleProcesses(msg.data);
+					} catch(e) { console.error('WS parse:', e); }
+				};
+			}
+
+			function handleStats(d) {
+				const now = new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit',second:'2-digit'});
+
+				// Cards
+				setText('card-cpu', d.cpu_percent.toFixed(2) + '%');
+				setText('card-mem', fmtB(d.mem_usage));
+				setText('card-netrx', fmtB(d.net_rx));
+				setText('card-nettx', fmtB(d.net_tx));
+				setText('card-pids', d.pids);
+
+				// Charts
+				push(charts.cpu, now, [d.cpu_percent]);
+				push(charts.mem, now, [d.mem_percent]);
+
+				setText('chart-cpu-label', d.cpu_percent.toFixed(2) + '%');
+				setText('chart-mem-label', d.mem_percent.toFixed(1) + '% — ' + fmtB(d.mem_usage) + ' / ' + fmtB(d.mem_limit));
+
+				// Network rates
+				if (prevNetRx > 0) {
+					const rxR = Math.max(0, (d.net_rx - prevNetRx) / 2);
+					const txR = Math.max(0, (d.net_tx - prevNetTx) / 2);
+					push(charts.net, now, [rxR, txR]);
+					setText('chart-net-label', 'Rx: ' + fmtB(rxR) + '/s | Tx: ' + fmtB(txR) + '/s');
+				}
+				prevNetRx = d.net_rx; prevNetTx = d.net_tx;
+
+				// Block I/O rates
+				if (prevBlkR > 0) {
+					const rR = Math.max(0, (d.block_read - prevBlkR) / 2);
+					const wR = Math.max(0, (d.block_write - prevBlkW) / 2);
+					push(charts.blk, now, [rR, wR]);
+					setText('chart-blk-label', 'R: ' + fmtB(rR) + '/s | W: ' + fmtB(wR) + '/s');
+				}
+				prevBlkR = d.block_read; prevBlkW = d.block_write;
+			}
+
+			function handleProcesses(procs) {
+				const tbody = document.getElementById('process-table');
+				if (!tbody || !procs) return;
+				tbody.innerHTML = procs.map(p => {
+					const cpuC = p.cpu > 80 ? 'text-red-400' : p.cpu > 50 ? 'text-amber-400' : 'text-gray-300';
+					const memC = p.mem > 80 ? 'text-red-400' : p.mem > 50 ? 'text-amber-400' : 'text-gray-300';
+					return '<tr class="border-b border-dark-700/50 hover:bg-dark-700/30">' +
+						'<td class="px-4 py-1.5 font-mono text-xs text-gray-400">' + p.pid + '</td>' +
+						'<td class="px-4 py-1.5 text-xs text-gray-400">' + esc(p.user) + '</td>' +
+						'<td class="px-4 py-1.5 text-right font-mono text-xs ' + cpuC + '">' + p.cpu.toFixed(1) + '</td>' +
+						'<td class="px-4 py-1.5 text-right font-mono text-xs ' + memC + '">' + p.mem.toFixed(1) + '</td>' +
+						'<td class="px-4 py-1.5 text-right font-mono text-xs text-gray-400">' + fmtB(p.vsz) + '</td>' +
+						'<td class="px-4 py-1.5 text-right font-mono text-xs text-gray-400">' + fmtB(p.rss) + '</td>' +
+						'<td class="px-4 py-1.5 font-mono text-xs text-gray-300 max-w-md truncate">' + esc(p.command) + '</td>' +
+					'</tr>';
+				}).join('');
+			}
+
+			function setText(id, val) {
+				const el = document.getElementById(id);
+				if (el) el.textContent = val;
+			}
+
+			function esc(s) {
+				const d = document.createElement('div');
+				d.appendChild(document.createTextNode(s || ''));
+				return d.innerHTML;
+			}
+
+			document.addEventListener('DOMContentLoaded', () => { initCharts(); connect(); });
+		})();
+		</script>
+	}
+}

@@ -1,0 +1,128 @@
+package pages
+
+import (
+	"fmt"
+	"net/http"
+)
+
+type ErrorData struct {
+	Code    int
+	Title   string
+	Message string
+	Version string
+}
+
+templ Error(data ErrorData) {
+	<!DOCTYPE html>
+	<html lang="en" class="dark">
+		<head>
+			<meta charset="UTF-8"/>
+			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+			<title>{ data.Title } | usulnet</title>
+			<link rel="stylesheet" href="/static/css/style.css"/>
+			<link rel="preconnect" href="https://fonts.googleapis.com"/>
+			<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+			<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono&display=swap" rel="stylesheet"/>
+		</head>
+		<body class="bg-dark-900 min-h-screen flex items-center justify-center font-body text-gray-300">
+			<div class="text-center px-4">
+				<!-- Error Code -->
+				<div class="mb-8">
+					<span class="text-8xl font-bold font-display text-gradient">{ fmt.Sprintf("%d", data.Code) }</span>
+				</div>
+				
+				<!-- Status Text -->
+				<h1 class="text-3xl font-bold font-display text-white mb-4">{ data.Title }</h1>
+				
+				<!-- Message -->
+				<p class="text-gray-400 text-lg max-w-md mx-auto mb-8">{ data.Message }</p>
+				
+				<!-- Actions -->
+				<div class="flex items-center justify-center gap-4">
+					<a 
+						href="/"
+						class="px-6 py-3 bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-black font-medium rounded-lg shadow-lg shadow-primary-500/25 transition-all"
+					>
+						<i class="fas fa-home mr-2"></i>
+						Go Home
+					</a>
+					<button 
+						onclick="history.back()"
+						class="px-6 py-3 bg-dark-700 hover:bg-dark-600 text-gray-300 font-medium rounded-lg transition-colors"
+					>
+						<i class="fas fa-arrow-left mr-2"></i>
+						Go Back
+					</button>
+				</div>
+				
+				<!-- Additional help for specific errors -->
+				if data.Code == http.StatusNotFound {
+					<div class="mt-12 text-sm text-gray-500">
+						<p>The page you're looking for doesn't exist or has been moved.</p>
+						<p class="mt-2">
+							Try searching or check the 
+							<a href="/containers" class="text-primary-400 hover:text-primary-300">containers list</a>.
+						</p>
+					</div>
+				}
+				
+				if data.Code == http.StatusForbidden {
+					<div class="mt-12 text-sm text-gray-500">
+						<p>You don't have permission to access this resource.</p>
+						<p class="mt-2">
+							Please contact your administrator if you believe this is a mistake.
+						</p>
+					</div>
+				}
+				
+				if data.Code == http.StatusInternalServerError {
+					<div class="mt-12 text-sm text-gray-500">
+						<p>Something went wrong on our end.</p>
+						<p class="mt-2">
+							Please try again later or 
+							<a href="https://github.com/fr4nsys/usulnet/issues" class="text-primary-400 hover:text-primary-300" target="_blank">report this issue</a>.
+						</p>
+					</div>
+				}
+				
+				<!-- Version -->
+				<div class="mt-16 text-xs text-gray-600">
+					usulnet { data.Version }
+				</div>
+			</div>
+			
+			<!-- Font Awesome -->
+			<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+		</body>
+	</html>
+}
+
+// Error404 renders a 404 Not Found page
+templ Error404(version string) {
+	@Error(ErrorData{
+		Code:    404,
+		Title:   "Page Not Found",
+		Message: "The page you're looking for doesn't exist or has been moved.",
+		Version: version,
+	})
+}
+
+// Error403 renders a 403 Forbidden page
+templ Error403(version string) {
+	@Error(ErrorData{
+		Code:    403,
+		Title:   "Access Denied",
+		Message: "You don't have permission to access this resource.",
+		Version: version,
+	})
+}
+
+// Error500 renders a 500 Internal Server Error page
+templ Error500(version, message string) {
+	@Error(ErrorData{
+		Code:    500,
+		Title:   "Server Error",
+		Message: message,
+		Version: version,
+	})
+}

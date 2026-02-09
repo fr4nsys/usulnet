@@ -1,0 +1,925 @@
+package containers
+
+import (
+	"fmt"
+	"strings"
+
+	"github.com/fr4nsys/usulnet/internal/web/templates/layouts"
+)
+
+type ContainerSettingsData struct {
+	PageData  layouts.PageData
+	Container ContainerSettingsInfo
+	Networks  []string // Available networks for dropdown
+	Images    []string // Available images for autocomplete
+}
+
+type ContainerSettingsInfo struct {
+	ID            string
+	Name          string
+	Image         string
+	Tag           string
+	State         string
+	IconURL       string
+	WebUIProtocol string
+	WebUIHost     string
+	WebUIPort     string
+	WebUIPath     string
+	NetworkMode   string
+	Hostname      string
+	Ports         []PortSettingInfo
+	Volumes       []VolumeSettingInfo
+	EnvVars       []EnvSettingInfo
+	Devices       []DeviceSettingInfo
+	Command       string
+	Privileged    bool
+	MemoryLimit   int64
+	CPUShares     int64
+	NanoCPUs      int64
+	RestartPolicy string
+	CapAdd        []string
+	CapDrop       []string
+}
+
+type PortSettingInfo struct {
+	HostPort      string
+	ContainerPort string
+	Protocol      string
+}
+
+type VolumeSettingInfo struct {
+	HostPath      string
+	ContainerPath string
+	Mode          string
+}
+
+type EnvSettingInfo struct {
+	Key   string
+	Value string
+}
+
+type DeviceSettingInfo struct {
+	HostPath      string
+	ContainerPath string
+}
+
+func getImageName(image string) string {
+	lastColon := strings.LastIndex(image, ":")
+	if lastColon == -1 {
+		return image
+	}
+	lastSlash := strings.LastIndex(image, "/")
+	if lastSlash > lastColon {
+		return image
+	}
+	return image[:lastColon]
+}
+
+func getImageTag(image string) string {
+	lastColon := strings.LastIndex(image, ":")
+	if lastColon == -1 {
+		return "latest"
+	}
+	lastSlash := strings.LastIndex(image, "/")
+	if lastSlash > lastColon {
+		return "latest"
+	}
+	return image[lastColon+1:]
+}
+
+func formatNanoCPUs(n int64) string {
+	if n <= 0 {
+		return ""
+	}
+	return fmt.Sprintf("%.2f", float64(n)/1e9)
+}
+
+func formatMemoryMB(b int64) string {
+	if b == 0 {
+		return ""
+	}
+	mb := b / (1024 * 1024)
+	return fmt.Sprintf("%d", mb)
+}
+
+templ ContainerSettings(data ContainerSettingsData) {
+	@layouts.Base(data.PageData) {
+		<!-- Breadcrumb -->
+		<nav class="flex items-center gap-2 text-sm text-gray-400 mb-4">
+			<a href="/containers" class="hover:text-primary-400 transition-colors">Containers</a>
+			<i class="fas fa-chevron-right text-xs"></i>
+			<a href={ templ.SafeURL("/containers/" + data.Container.ID) } class="hover:text-primary-400 transition-colors">{ data.Container.Name }</a>
+			<i class="fas fa-chevron-right text-xs"></i>
+			<span class="text-white">Settings</span>
+		</nav>
+
+		<!-- Header -->
+		<div class="flex items-start justify-between mb-6">
+			<div class="flex items-center gap-4">
+				<div class={ "w-12 h-12 rounded-xl flex items-center justify-center", stateIconBg(data.Container.State) }>
+					<i class={ "fas fa-cog text-xl", stateIconColor(data.Container.State) }></i>
+				</div>
+				<div>
+					<div class="flex items-center gap-3">
+						<h1 class="text-2xl font-bold font-display text-white">{ data.Container.Name } Settings</h1>
+						<span class={ "px-2.5 py-1 rounded-full text-xs font-medium", stateBadge(data.Container.State) }>
+							{ data.Container.State }
+						</span>
+					</div>
+					<p class="text-gray-400 mt-1 text-sm">Container configuration - changes will recreate the container</p>
+				</div>
+			</div>
+		</div>
+
+		<!-- Tabs -->
+		<div class="border-b border-dark-600 mb-6">
+			<nav class="flex gap-1 -mb-px">
+				@tab("Overview", "overview", "settings", "/containers/" + data.Container.ID)
+				@tab("Logs", "logs", "settings", "/containers/" + data.Container.ID + "/logs")
+				@tab("Stats", "stats", "settings", "/containers/" + data.Container.ID + "/stats")
+				@tab("Inspect", "inspect", "settings", "/containers/" + data.Container.ID + "/inspect")
+				@tab("Files", "files", "settings", "/containers/" + data.Container.ID + "/files")
+				@tab("Terminal", "exec", "settings", "/containers/" + data.Container.ID + "/exec")
+				@tab("Settings", "settings", "settings", "/containers/" + data.Container.ID + "/settings")
+			</nav>
+		</div>
+
+		<!-- Settings Form -->
+		<form method="POST" action={ templ.SafeURL("/containers/" + data.Container.ID + "/settings") } id="container-settings-form">
+			<input type="hidden" name="csrf_token" value={ data.PageData.CSRFToken }/>
+			<input type="hidden" name="container_id" value={ data.Container.ID }/>
+
+			<div class="space-y-6">
+				<!-- Image & Basic Info -->
+				<div class="bg-dark-800 rounded-xl border border-dark-600 p-5">
+					<h2 class="text-lg font-semibold text-white mb-4">
+						<i class="fas fa-box mr-2 text-primary-400"></i>Image & Basic Info
+					</h2>
+					<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+						<div>
+							<label class="block text-sm font-medium text-gray-300 mb-2">Docker Image *</label>
+							<input
+								type="text"
+								name="image"
+								value={ getImageName(data.Container.Image) }
+								class="w-full px-3 py-2 bg-dark-900 border border-dark-500 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+								placeholder="e.g. pihole/pihole"
+								required
+							/>
+						</div>
+						<div>
+							<label class="block text-sm font-medium text-gray-300 mb-2">Tag</label>
+							<input
+								type="text"
+								name="tag"
+								value={ getImageTag(data.Container.Image) }
+								class="w-full px-3 py-2 bg-dark-900 border border-dark-500 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+								placeholder="latest"
+							/>
+						</div>
+						<div>
+							<label class="block text-sm font-medium text-gray-300 mb-2">Container Name *</label>
+							<input
+								type="text"
+								name="name"
+								value={ data.Container.Name }
+								class="w-full px-3 py-2 bg-dark-900 border border-dark-500 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+								required
+							/>
+						</div>
+						<div>
+							<label class="block text-sm font-medium text-gray-300 mb-2">Hostname</label>
+							<input
+								type="text"
+								name="hostname"
+								value={ data.Container.Hostname }
+								class="w-full px-3 py-2 bg-dark-900 border border-dark-500 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+								placeholder="Container hostname"
+							/>
+						</div>
+					</div>
+				</div>
+
+				<!-- Web UI Access -->
+				<div class="bg-dark-800 rounded-xl border border-dark-600 p-5">
+					<h2 class="text-lg font-semibold text-white mb-4">
+						<i class="fas fa-globe mr-2 text-primary-400"></i>Web UI Access
+					</h2>
+					<p class="text-sm text-gray-400 mb-4">Configure a direct link to this container's web interface. If left empty, the first exposed host port will be used automatically.</p>
+					<div class="flex flex-wrap items-end gap-2">
+						<div class="w-28">
+							<label class="block text-sm font-medium text-gray-300 mb-2">Protocol</label>
+							<select
+								name="webui_protocol"
+								class="w-full px-3 py-2 bg-dark-900 border border-dark-500 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+							>
+								<option value="" selected?={ data.Container.WebUIProtocol == "" }>Auto</option>
+								<option value="http" selected?={ data.Container.WebUIProtocol == "http" }>http://</option>
+								<option value="https" selected?={ data.Container.WebUIProtocol == "https" }>https://</option>
+							</select>
+						</div>
+						<div class="flex-1 min-w-[120px]">
+							<label class="block text-sm font-medium text-gray-300 mb-2">Host</label>
+							<input
+								type="text"
+								name="webui_host"
+								value={ data.Container.WebUIHost }
+								class="w-full px-3 py-2 bg-dark-900 border border-dark-500 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+								placeholder="(auto-detect)"
+							/>
+						</div>
+						<div class="w-24">
+							<label class="block text-sm font-medium text-gray-300 mb-2">Port</label>
+							<input
+								type="text"
+								name="webui_port"
+								value={ data.Container.WebUIPort }
+								class="w-full px-3 py-2 bg-dark-900 border border-dark-500 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+								placeholder="(auto)"
+							/>
+						</div>
+						<div class="w-32">
+							<label class="block text-sm font-medium text-gray-300 mb-2">Path</label>
+							<input
+								type="text"
+								name="webui_path"
+								value={ data.Container.WebUIPath }
+								class="w-full px-3 py-2 bg-dark-900 border border-dark-500 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+								placeholder="/admin"
+							/>
+						</div>
+						<div>
+							<a
+								href={ templ.SafeURL(buildWebUIURL(data.Container)) }
+								target="_blank"
+								rel="noopener noreferrer"
+								class={ "inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors",
+									templ.KV("bg-primary-600 hover:bg-primary-700 text-white", buildWebUIURL(data.Container) != ""),
+									templ.KV("bg-dark-600 text-gray-500 cursor-not-allowed pointer-events-none", buildWebUIURL(data.Container) == "") }
+							>
+								<i class="fas fa-external-link-alt"></i>Open Web UI
+							</a>
+						</div>
+					</div>
+				</div>
+
+				<!-- Network -->
+				<div class="bg-dark-800 rounded-xl border border-dark-600 p-5">
+					<h2 class="text-lg font-semibold text-white mb-4">
+						<i class="fas fa-network-wired mr-2 text-primary-400"></i>Network
+					</h2>
+					<div>
+						<label class="block text-sm font-medium text-gray-300 mb-2">Network Mode</label>
+						<select
+							name="network_mode"
+							class="w-full max-w-xs px-3 py-2 bg-dark-900 border border-dark-500 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+						>
+							<option value="bridge" selected?={ data.Container.NetworkMode == "bridge" || data.Container.NetworkMode == "" }>bridge</option>
+							<option value="host" selected?={ data.Container.NetworkMode == "host" }>host</option>
+							<option value="none" selected?={ data.Container.NetworkMode == "none" }>none</option>
+							for _, net := range data.Networks {
+								if net != "bridge" && net != "host" && net != "none" {
+									<option value={ net } selected?={ data.Container.NetworkMode == net }>{ net }</option>
+								}
+							}
+						</select>
+					</div>
+				</div>
+
+				<!-- Port Mappings -->
+				<div class="bg-dark-800 rounded-xl border border-dark-600 p-5" x-data={ fmt.Sprintf("portSettings(%s)", portSettingsJSON(data.Container.Ports)) }>
+					<div class="flex items-center justify-between mb-4">
+						<h2 class="text-lg font-semibold text-white">
+							<i class="fas fa-plug mr-2 text-primary-400"></i>Port Mappings
+						</h2>
+						<button type="button" @click="addPort()" class="text-sm px-3 py-1.5 bg-primary-600 hover:bg-primary-700 text-white rounded-lg transition-colors">
+							<i class="fas fa-plus mr-1"></i>Add Port
+						</button>
+					</div>
+					<div class="space-y-2">
+						<div class="grid grid-cols-12 gap-2 text-xs text-gray-400 font-medium px-1">
+							<div class="col-span-4">Host Port</div>
+							<div class="col-span-4">Container Port</div>
+							<div class="col-span-3">Protocol</div>
+							<div class="col-span-1"></div>
+						</div>
+						<template x-for="(port, index) in ports" :key="index">
+							<div class="grid grid-cols-12 gap-2 items-center">
+								<div class="col-span-4">
+									<input
+										type="text"
+										:name="'port_host_' + index"
+										x-model="port.host"
+										class="w-full px-3 py-2 bg-dark-900 border border-dark-500 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+										placeholder="8080"
+									/>
+								</div>
+								<div class="col-span-4">
+									<input
+										type="text"
+										:name="'port_container_' + index"
+										x-model="port.container"
+										class="w-full px-3 py-2 bg-dark-900 border border-dark-500 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+										placeholder="80"
+									/>
+								</div>
+								<div class="col-span-3">
+									<select
+										:name="'port_protocol_' + index"
+										x-model="port.protocol"
+										class="w-full px-3 py-2 bg-dark-900 border border-dark-500 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+									>
+										<option value="tcp">TCP</option>
+										<option value="udp">UDP</option>
+									</select>
+								</div>
+								<div class="col-span-1 text-center">
+									<button type="button" @click="removePort(index)" class="text-red-400 hover:text-red-300 p-1">
+										<i class="fas fa-trash text-sm"></i>
+									</button>
+								</div>
+							</div>
+						</template>
+						<template x-if="ports.length === 0">
+							<p class="text-sm text-gray-500 text-center py-3">No port mappings configured</p>
+						</template>
+					</div>
+					<input type="hidden" name="ports_json" :value="JSON.stringify(ports)"/>
+				</div>
+
+				<!-- Volume Mounts -->
+				<div class="bg-dark-800 rounded-xl border border-dark-600 p-5" x-data={ fmt.Sprintf("volumeSettings(%s)", volumeSettingsJSON(data.Container.Volumes)) }>
+					<div class="flex items-center justify-between mb-4">
+						<h2 class="text-lg font-semibold text-white">
+							<i class="fas fa-hdd mr-2 text-primary-400"></i>Volume Mounts
+						</h2>
+						<button type="button" @click="addVolume()" class="text-sm px-3 py-1.5 bg-primary-600 hover:bg-primary-700 text-white rounded-lg transition-colors">
+							<i class="fas fa-plus mr-1"></i>Add Volume
+						</button>
+					</div>
+					<div class="space-y-2">
+						<div class="grid grid-cols-12 gap-2 text-xs text-gray-400 font-medium px-1">
+							<div class="col-span-5">Host Path / Volume</div>
+							<div class="col-span-5">Container Path</div>
+							<div class="col-span-1">RW</div>
+							<div class="col-span-1"></div>
+						</div>
+						<template x-for="(vol, index) in volumes" :key="index">
+							<div class="grid grid-cols-12 gap-2 items-center">
+								<div class="col-span-5">
+									<input
+										type="text"
+										:name="'vol_host_' + index"
+										x-model="vol.host"
+										class="w-full px-3 py-2 bg-dark-900 border border-dark-500 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+										placeholder="/host/path or volume_name"
+									/>
+								</div>
+								<div class="col-span-5">
+									<input
+										type="text"
+										:name="'vol_container_' + index"
+										x-model="vol.container"
+										class="w-full px-3 py-2 bg-dark-900 border border-dark-500 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+										placeholder="/container/path"
+									/>
+								</div>
+								<div class="col-span-1 flex justify-center">
+									<input
+										type="checkbox"
+										:name="'vol_rw_' + index"
+										x-model="vol.rw"
+										class="rounded border-dark-500 bg-dark-900 text-primary-500"
+										checked
+									/>
+								</div>
+								<div class="col-span-1 text-center">
+									<button type="button" @click="removeVolume(index)" class="text-red-400 hover:text-red-300 p-1">
+										<i class="fas fa-trash text-sm"></i>
+									</button>
+								</div>
+							</div>
+						</template>
+						<template x-if="volumes.length === 0">
+							<p class="text-sm text-gray-500 text-center py-3">No volumes configured</p>
+						</template>
+					</div>
+					<input type="hidden" name="volumes_json" :value="JSON.stringify(volumes)"/>
+				</div>
+
+				<!-- Environment Variables -->
+				<div class="bg-dark-800 rounded-xl border border-dark-600 p-5" x-data={ fmt.Sprintf("envSettings(%s)", envSettingsJSON(data.Container.EnvVars)) }>
+					<div class="flex items-center justify-between mb-4">
+						<h2 class="text-lg font-semibold text-white">
+							<i class="fas fa-list mr-2 text-primary-400"></i>Environment Variables
+						</h2>
+						<button type="button" @click="addEnv()" class="text-sm px-3 py-1.5 bg-primary-600 hover:bg-primary-700 text-white rounded-lg transition-colors">
+							<i class="fas fa-plus mr-1"></i>Add Variable
+						</button>
+					</div>
+					<div class="space-y-2">
+						<div class="grid grid-cols-12 gap-2 text-xs text-gray-400 font-medium px-1">
+							<div class="col-span-5">Key</div>
+							<div class="col-span-6">Value</div>
+							<div class="col-span-1"></div>
+						</div>
+						<template x-for="(env, index) in envVars" :key="index">
+							<div class="grid grid-cols-12 gap-2 items-center">
+								<div class="col-span-5">
+									<input
+										type="text"
+										:name="'env_key_' + index"
+										x-model="env.key"
+										class="w-full px-3 py-2 bg-dark-900 border border-dark-500 rounded-lg text-white text-sm font-mono focus:outline-none focus:ring-2 focus:ring-primary-500"
+										placeholder="VARIABLE_NAME"
+									/>
+								</div>
+								<div class="col-span-6">
+									<input
+										type="text"
+										:name="'env_value_' + index"
+										x-model="env.value"
+										class="w-full px-3 py-2 bg-dark-900 border border-dark-500 rounded-lg text-white text-sm font-mono focus:outline-none focus:ring-2 focus:ring-primary-500"
+										placeholder="value"
+									/>
+								</div>
+								<div class="col-span-1 text-center">
+									<button type="button" @click="removeEnv(index)" class="text-red-400 hover:text-red-300 p-1">
+										<i class="fas fa-trash text-sm"></i>
+									</button>
+								</div>
+							</div>
+						</template>
+						<template x-if="envVars.length === 0">
+							<p class="text-sm text-gray-500 text-center py-3">No environment variables configured</p>
+						</template>
+					</div>
+					<input type="hidden" name="env_json" :value="JSON.stringify(envVars)"/>
+				</div>
+
+				<!-- Devices -->
+				<div class="bg-dark-800 rounded-xl border border-dark-600 p-5" x-data={ fmt.Sprintf("deviceSettings(%s)", deviceSettingsJSON(data.Container.Devices)) }>
+					<div class="flex items-center justify-between mb-4">
+						<h2 class="text-lg font-semibold text-white">
+							<i class="fas fa-microchip mr-2 text-primary-400"></i>Devices
+						</h2>
+						<button type="button" @click="addDevice()" class="text-sm px-3 py-1.5 bg-primary-600 hover:bg-primary-700 text-white rounded-lg transition-colors">
+							<i class="fas fa-plus mr-1"></i>Add Device
+						</button>
+					</div>
+					<div class="space-y-2">
+						<div class="grid grid-cols-12 gap-2 text-xs text-gray-400 font-medium px-1">
+							<div class="col-span-5">Host Device</div>
+							<div class="col-span-6">Container Device</div>
+							<div class="col-span-1"></div>
+						</div>
+						<template x-for="(dev, index) in devices" :key="index">
+							<div class="grid grid-cols-12 gap-2 items-center">
+								<div class="col-span-5">
+									<input
+										type="text"
+										:name="'dev_host_' + index"
+										x-model="dev.host"
+										class="w-full px-3 py-2 bg-dark-900 border border-dark-500 rounded-lg text-white text-sm font-mono focus:outline-none focus:ring-2 focus:ring-primary-500"
+										placeholder="/dev/dri"
+									/>
+								</div>
+								<div class="col-span-6">
+									<input
+										type="text"
+										:name="'dev_container_' + index"
+										x-model="dev.container"
+										class="w-full px-3 py-2 bg-dark-900 border border-dark-500 rounded-lg text-white text-sm font-mono focus:outline-none focus:ring-2 focus:ring-primary-500"
+										placeholder="/dev/dri"
+									/>
+								</div>
+								<div class="col-span-1 text-center">
+									<button type="button" @click="removeDevice(index)" class="text-red-400 hover:text-red-300 p-1">
+										<i class="fas fa-trash text-sm"></i>
+									</button>
+								</div>
+							</div>
+						</template>
+						<template x-if="devices.length === 0">
+							<p class="text-sm text-gray-500 text-center py-3">No devices configured</p>
+						</template>
+					</div>
+					<input type="hidden" name="devices_json" :value="JSON.stringify(devices)"/>
+				</div>
+
+				<!-- Command & Execution -->
+				<div class="bg-dark-800 rounded-xl border border-dark-600 p-5">
+					<h2 class="text-lg font-semibold text-white mb-4">
+						<i class="fas fa-terminal mr-2 text-primary-400"></i>Command & Execution
+					</h2>
+					<div class="space-y-4">
+						<div>
+							<label class="block text-sm font-medium text-gray-300 mb-2">Container Command</label>
+							<input
+								type="text"
+								name="command"
+								value={ data.Container.Command }
+								class="w-full px-3 py-2 bg-dark-900 border border-dark-500 rounded-lg text-white text-sm font-mono focus:outline-none focus:ring-2 focus:ring-primary-500"
+								placeholder="e.g. /bin/sh -c 'echo hello'"
+							/>
+							<p class="text-xs text-gray-500 mt-1">Override the default container command</p>
+						</div>
+					</div>
+				</div>
+
+				<!-- Resources -->
+				<div class="bg-dark-800 rounded-xl border border-dark-600 p-5">
+					<h2 class="text-lg font-semibold text-white mb-4">
+						<i class="fas fa-tachometer-alt mr-2 text-primary-400"></i>Resources
+					</h2>
+					<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+						<div>
+							<label class="block text-sm font-medium text-gray-300 mb-2">Memory Limit (MB)</label>
+							<input
+								type="number"
+								name="memory_limit"
+								value={ formatMemoryMB(data.Container.MemoryLimit) }
+								class="w-full px-3 py-2 bg-dark-900 border border-dark-500 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+								placeholder="0 = unlimited"
+								min="0"
+							/>
+						</div>
+						<div>
+							<label class="block text-sm font-medium text-gray-300 mb-2">CPU Shares</label>
+							<input
+								type="number"
+								name="cpu_shares"
+								value={ fmt.Sprintf("%d", data.Container.CPUShares) }
+								class="w-full px-3 py-2 bg-dark-900 border border-dark-500 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+								placeholder="1024 = default"
+								min="0"
+							/>
+						</div>
+						<div>
+							<label class="block text-sm font-medium text-gray-300 mb-2">CPUs (NanoCPUs / 1e9)</label>
+							<input
+								type="number"
+								name="nano_cpus"
+								value={ formatNanoCPUs(data.Container.NanoCPUs) }
+								class="w-full px-3 py-2 bg-dark-900 border border-dark-500 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+								placeholder="0 = unlimited"
+								min="0"
+								step="0.01"
+							/>
+						</div>
+					</div>
+				</div>
+
+				<!-- Security & Privileges -->
+				<div class="bg-dark-800 rounded-xl border border-dark-600 p-5">
+					<h2 class="text-lg font-semibold text-white mb-4">
+						<i class="fas fa-shield-alt mr-2 text-primary-400"></i>Security & Privileges
+					</h2>
+					<div class="space-y-4">
+						<div class="flex items-center gap-3">
+							<label class="relative inline-flex items-center cursor-pointer">
+								<input
+									type="checkbox"
+									name="privileged"
+									value="true"
+									class="sr-only peer"
+									if data.Container.Privileged {
+										checked
+									}
+								/>
+								<div class="w-11 h-6 bg-dark-600 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-primary-500 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-600"></div>
+								<span class="ms-3 text-sm font-medium text-gray-300">Privileged Mode</span>
+							</label>
+							<span class="text-xs text-yellow-400"><i class="fas fa-exclamation-triangle mr-1"></i>Full access to host</span>
+						</div>
+						<div>
+							<label class="block text-sm font-medium text-gray-300 mb-2">Restart Policy</label>
+							<select
+								name="restart_policy"
+								class="w-full max-w-xs px-3 py-2 bg-dark-900 border border-dark-500 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+							>
+								<option value="" selected?={ data.Container.RestartPolicy == "" || data.Container.RestartPolicy == "no" }>no</option>
+								<option value="always" selected?={ data.Container.RestartPolicy == "always" }>always</option>
+								<option value="unless-stopped" selected?={ data.Container.RestartPolicy == "unless-stopped" }>unless-stopped</option>
+								<option value="on-failure" selected?={ data.Container.RestartPolicy == "on-failure" }>on-failure</option>
+							</select>
+						</div>
+					</div>
+				</div>
+
+				<!-- Capabilities -->
+				<div class="bg-dark-800 rounded-xl border border-dark-600 p-5" x-data={ fmt.Sprintf("capSettings(%s)", capSettingsJSON(data.Container.CapAdd)) }>
+					<div class="flex items-center justify-between mb-4">
+						<h2 class="text-lg font-semibold text-white">
+							<i class="fas fa-key mr-2 text-primary-400"></i>Capabilities (cap-add)
+						</h2>
+						<button type="button" @click="addCap()" class="text-sm px-3 py-1.5 bg-primary-600 hover:bg-primary-700 text-white rounded-lg transition-colors">
+							<i class="fas fa-plus mr-1"></i>Add Capability
+						</button>
+					</div>
+					<div class="space-y-2">
+						<template x-for="(cap, index) in caps" :key="index">
+							<div class="flex items-center gap-2">
+								<select
+									:name="'cap_add_' + index"
+									x-model="cap.value"
+									class="flex-1 px-3 py-2 bg-dark-900 border border-dark-500 rounded-lg text-white text-sm font-mono focus:outline-none focus:ring-2 focus:ring-primary-500"
+								>
+									<option value="">Select capability...</option>
+									<option value="NET_ADMIN">NET_ADMIN</option>
+									<option value="NET_RAW">NET_RAW</option>
+									<option value="SYS_ADMIN">SYS_ADMIN</option>
+									<option value="SYS_TIME">SYS_TIME</option>
+									<option value="SYS_PTRACE">SYS_PTRACE</option>
+									<option value="SYS_RAWIO">SYS_RAWIO</option>
+									<option value="SYS_MODULE">SYS_MODULE</option>
+									<option value="IPC_LOCK">IPC_LOCK</option>
+									<option value="MKNOD">MKNOD</option>
+									<option value="AUDIT_WRITE">AUDIT_WRITE</option>
+									<option value="AUDIT_CONTROL">AUDIT_CONTROL</option>
+									<option value="DAC_OVERRIDE">DAC_OVERRIDE</option>
+									<option value="DAC_READ_SEARCH">DAC_READ_SEARCH</option>
+									<option value="FOWNER">FOWNER</option>
+									<option value="SETUID">SETUID</option>
+									<option value="SETGID">SETGID</option>
+									<option value="CHOWN">CHOWN</option>
+									<option value="KILL">KILL</option>
+								</select>
+								<button type="button" @click="removeCap(index)" class="text-red-400 hover:text-red-300 p-1">
+									<i class="fas fa-trash text-sm"></i>
+								</button>
+							</div>
+						</template>
+						<template x-if="caps.length === 0">
+							<p class="text-sm text-gray-500 text-center py-3">No additional capabilities</p>
+						</template>
+					</div>
+					<input type="hidden" name="caps_json" :value="JSON.stringify(caps)"/>
+				</div>
+
+				<!-- Actions -->
+				<div class="flex items-center justify-between bg-dark-800 rounded-xl border border-dark-600 p-5">
+					<div class="text-sm text-gray-400">
+						<i class="fas fa-info-circle mr-1"></i>
+						Saving settings will stop and recreate the container with the new configuration.
+					</div>
+					<div class="flex items-center gap-3">
+						<a href={ templ.SafeURL("/containers/" + data.Container.ID) } class="px-4 py-2 text-gray-400 hover:text-white transition-colors">
+							Cancel
+						</a>
+						<button
+							type="submit"
+							onclick="return confirm('This will recreate the container with the new settings. Continue?')"
+							class="px-6 py-2.5 bg-primary-600 hover:bg-primary-700 text-white font-medium rounded-lg transition-colors"
+						>
+							<i class="fas fa-save mr-2"></i>Save & Recreate
+						</button>
+					</div>
+				</div>
+			</div>
+		</form>
+
+		<script>
+			function portSettings(initial) {
+				return {
+					ports: initial || [],
+					addPort() { this.ports.push({ host: '', container: '', protocol: 'tcp' }); },
+					removePort(index) { this.ports.splice(index, 1); }
+				};
+			}
+
+			function volumeSettings(initial) {
+				return {
+					volumes: initial || [],
+					addVolume() { this.volumes.push({ host: '', container: '', rw: true }); },
+					removeVolume(index) { this.volumes.splice(index, 1); }
+				};
+			}
+
+			function envSettings(initial) {
+				return {
+					envVars: initial || [],
+					addEnv() { this.envVars.push({ key: '', value: '' }); },
+					removeEnv(index) { this.envVars.splice(index, 1); }
+				};
+			}
+
+			function deviceSettings(initial) {
+				return {
+					devices: initial || [],
+					addDevice() { this.devices.push({ host: '', container: '' }); },
+					removeDevice(index) { this.devices.splice(index, 1); }
+				};
+			}
+
+			function capSettings(initial) {
+				return {
+					caps: initial || [],
+					addCap() { this.caps.push({ value: '' }); },
+					removeCap(index) { this.caps.splice(index, 1); }
+				};
+			}
+		</script>
+	}
+}
+
+// ContainerSettingsSummary renders a read-only settings summary fragment (for HTMX in stack detail).
+templ ContainerSettingsSummary(data ContainerSettingsData) {
+	<div class="p-4 space-y-4 bg-dark-900/50 border-t border-dark-600">
+		<!-- Image & Network -->
+		<div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+			<div>
+				<span class="text-xs text-gray-500 block">Image</span>
+				<span class="text-sm text-white font-mono">{ data.Container.Image }:{ data.Container.Tag }</span>
+			</div>
+			<div>
+				<span class="text-xs text-gray-500 block">Network</span>
+				<span class="text-sm text-gray-300">{ data.Container.NetworkMode }</span>
+			</div>
+			<div>
+				<span class="text-xs text-gray-500 block">Restart Policy</span>
+				<span class="text-sm text-gray-300">
+					if data.Container.RestartPolicy != "" {
+						{ data.Container.RestartPolicy }
+					} else {
+						no
+					}
+				</span>
+			</div>
+			<div>
+				<span class="text-xs text-gray-500 block">Privileged</span>
+				if data.Container.Privileged {
+					<span class="text-sm text-yellow-400"><i class="fas fa-exclamation-triangle mr-1"></i>Yes</span>
+				} else {
+					<span class="text-sm text-gray-400">No</span>
+				}
+			</div>
+		</div>
+
+		<!-- Ports -->
+		if len(data.Container.Ports) > 0 {
+			<div>
+				<span class="text-xs text-gray-500 block mb-1"><i class="fas fa-plug mr-1"></i>Port Mappings</span>
+				<div class="flex flex-wrap gap-2">
+					for _, p := range data.Container.Ports {
+						<span class="px-2 py-1 bg-dark-700 rounded text-xs text-gray-300 font-mono">
+							{ p.HostPort }:{ p.ContainerPort }/{ p.Protocol }
+						</span>
+					}
+				</div>
+			</div>
+		}
+
+		<!-- Volumes -->
+		if len(data.Container.Volumes) > 0 {
+			<div>
+				<span class="text-xs text-gray-500 block mb-1"><i class="fas fa-hdd mr-1"></i>Volumes</span>
+				<div class="space-y-1">
+					for _, v := range data.Container.Volumes {
+						<div class="text-xs text-gray-300 font-mono">
+							{ v.HostPath } → { v.ContainerPath }
+							if v.Mode == "ro" {
+								<span class="text-yellow-400 ml-1">(ro)</span>
+							}
+						</div>
+					}
+				</div>
+			</div>
+		}
+
+		<!-- Env vars (count only) -->
+		if len(data.Container.EnvVars) > 0 {
+			<div>
+				<span class="text-xs text-gray-500"><i class="fas fa-list mr-1"></i>Environment Variables: { fmt.Sprintf("%d", len(data.Container.EnvVars)) } configured</span>
+			</div>
+		}
+
+		<!-- Resources -->
+		if data.Container.MemoryLimit > 0 || data.Container.CPUShares > 0 || data.Container.NanoCPUs > 0 {
+			<div class="flex flex-wrap gap-4">
+				if data.Container.MemoryLimit > 0 {
+					<span class="text-xs text-gray-400"><i class="fas fa-memory mr-1"></i>Memory: { formatMemoryMB(data.Container.MemoryLimit) }MB</span>
+				}
+				if data.Container.CPUShares > 0 {
+					<span class="text-xs text-gray-400"><i class="fas fa-microchip mr-1"></i>CPU Shares: { fmt.Sprintf("%d", data.Container.CPUShares) }</span>
+				}
+				if data.Container.NanoCPUs > 0 {
+					<span class="text-xs text-gray-400"><i class="fas fa-microchip mr-1"></i>CPUs: { formatNanoCPUs(data.Container.NanoCPUs) }</span>
+				}
+			</div>
+		}
+
+		<!-- Edit link -->
+		<div class="pt-2 border-t border-dark-700">
+			<a
+				href={ templ.SafeURL("/containers/" + data.Container.ID + "/settings") }
+				class="text-sm text-primary-400 hover:text-primary-300 transition-colors"
+			>
+				<i class="fas fa-edit mr-1"></i>Edit Full Settings
+			</a>
+		</div>
+	</div>
+}
+
+// Helper functions for JSON serialization in templates
+func portSettingsJSON(ports []PortSettingInfo) string {
+	if len(ports) == 0 {
+		return "[]"
+	}
+	var parts []string
+	for _, p := range ports {
+		parts = append(parts, fmt.Sprintf(`{"host":"%s","container":"%s","protocol":"%s"}`, escapeJSON(p.HostPort), escapeJSON(p.ContainerPort), escapeJSON(p.Protocol)))
+	}
+	return "[" + strings.Join(parts, ",") + "]"
+}
+
+func volumeSettingsJSON(volumes []VolumeSettingInfo) string {
+	if len(volumes) == 0 {
+		return "[]"
+	}
+	var parts []string
+	for _, v := range volumes {
+		rw := "true"
+		if v.Mode == "ro" {
+			rw = "false"
+		}
+		parts = append(parts, fmt.Sprintf(`{"host":"%s","container":"%s","rw":%s}`, escapeJSON(v.HostPath), escapeJSON(v.ContainerPath), rw))
+	}
+	return "[" + strings.Join(parts, ",") + "]"
+}
+
+func envSettingsJSON(envVars []EnvSettingInfo) string {
+	if len(envVars) == 0 {
+		return "[]"
+	}
+	var parts []string
+	for _, e := range envVars {
+		parts = append(parts, fmt.Sprintf(`{"key":"%s","value":"%s"}`, escapeJSON(e.Key), escapeJSON(e.Value)))
+	}
+	return "[" + strings.Join(parts, ",") + "]"
+}
+
+func deviceSettingsJSON(devices []DeviceSettingInfo) string {
+	if len(devices) == 0 {
+		return "[]"
+	}
+	var parts []string
+	for _, d := range devices {
+		parts = append(parts, fmt.Sprintf(`{"host":"%s","container":"%s"}`, escapeJSON(d.HostPath), escapeJSON(d.ContainerPath)))
+	}
+	return "[" + strings.Join(parts, ",") + "]"
+}
+
+func capSettingsJSON(caps []string) string {
+	if len(caps) == 0 {
+		return "[]"
+	}
+	var parts []string
+	for _, c := range caps {
+		parts = append(parts, fmt.Sprintf(`{"value":"%s"}`, escapeJSON(c)))
+	}
+	return "[" + strings.Join(parts, ",") + "]"
+}
+
+// buildWebUIURL constructs a URL to the container's web UI from config or first exposed port.
+func buildWebUIURL(c ContainerSettingsInfo) string {
+	protocol := c.WebUIProtocol
+	host := c.WebUIHost
+	port := c.WebUIPort
+	path := c.WebUIPath
+
+	// Auto-detect from first exposed port if not configured
+	if port == "" && len(c.Ports) > 0 {
+		for _, p := range c.Ports {
+			if p.HostPort != "" && p.HostPort != "0" {
+				port = p.HostPort
+				break
+			}
+		}
+	}
+
+	if port == "" {
+		return ""
+	}
+
+	if protocol == "" {
+		protocol = "http"
+	}
+	if host == "" {
+		host = "localhost"
+	}
+	if path != "" && !strings.HasPrefix(path, "/") {
+		path = "/" + path
+	}
+
+	return protocol + "://" + host + ":" + port + path
+}
+
+func escapeJSON(s string) string {
+	s = strings.ReplaceAll(s, `\`, `\\`)
+	s = strings.ReplaceAll(s, `"`, `\"`)
+	s = strings.ReplaceAll(s, "\n", `\n`)
+	s = strings.ReplaceAll(s, "\r", `\r`)
+	s = strings.ReplaceAll(s, "\t", `\t`)
+	return s
+}

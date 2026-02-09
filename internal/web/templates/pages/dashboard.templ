@@ -1,0 +1,364 @@
+package pages
+
+import (
+	"fmt"
+	
+	"github.com/fr4nsys/usulnet/internal/web/templates/layouts"
+	"github.com/fr4nsys/usulnet/internal/web/templates/components"
+)
+
+type DashboardData struct {
+	PageData        layouts.PageData
+	ContainersTotal int
+	ContainersRunning int
+	ContainersStopped int
+	ContainersPaused  int
+	ImagesCount     int
+	VolumesCount    int
+	NetworksCount   int
+	SecurityScore   int
+	SecurityGrade   string
+	SecurityIssues  int
+	UpdatesAvailable int
+	RecentContainers []ContainerSummary
+	RecentEvents    []EventSummary
+	SystemInfo      *SystemInfo
+}
+
+type ContainerSummary struct {
+	ID        string
+	Name      string
+	Image     string
+	State     string
+	Status    string
+	CreatedAt string
+	Ports     string
+}
+
+type EventSummary struct {
+	Type      string
+	Action    string
+	Actor     string
+	Time      string
+	TimeAgo   string
+}
+
+type SystemInfo struct {
+	DockerVersion string
+	APIVersion    string
+	OS            string
+	Arch          string
+	CPUs          int
+	Memory        string
+	Hostname      string
+}
+
+templ Dashboard(data DashboardData) {
+	@layouts.Base(data.PageData) {
+		<!-- Page Header -->
+		<div class="mb-6">
+			<div class="flex items-center gap-3">
+				<h1 class="text-2xl font-bold font-display text-white">Dashboard</h1>
+				@components.HostBadge(data.PageData.ActiveHostName)
+			</div>
+			<p class="text-gray-400 mt-1">Overview of your Docker infrastructure</p>
+		</div>
+
+		<!-- Stats Grid -->
+		<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+			<a href="/containers" class="block">
+				@components.StatCard("Containers", fmt.Sprintf("%d", data.ContainersTotal), "fa-cube", "primary", fmt.Sprintf("%d running", data.ContainersRunning))
+			</a>
+			<a href="/images" class="block">
+				@components.StatCard("Images", fmt.Sprintf("%d", data.ImagesCount), "fa-layer-group", "blue", "")
+			</a>
+			<a href="/volumes" class="block">
+				@components.StatCard("Volumes", fmt.Sprintf("%d", data.VolumesCount), "fa-hdd", "purple", "")
+			</a>
+			<a href="/networks" class="block">
+				@components.StatCard("Networks", fmt.Sprintf("%d", data.NetworksCount), "fa-network-wired", "yellow", "")
+			</a>
+		</div>
+
+		<!-- Secondary Stats -->
+		<div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+			<!-- Security Score -->
+			<div class="bg-dark-800 rounded-xl border border-dark-600 p-5">
+				<div class="flex items-center justify-between mb-3">
+					<h3 class="text-sm font-medium text-gray-400">Security Score</h3>
+					<a href="/security" class="text-xs text-primary-400 hover:text-primary-300">View details →</a>
+				</div>
+				<div class="flex items-center gap-4">
+					<div class={ "w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold", gradeClass(data.SecurityGrade) }>
+						{ data.SecurityGrade }
+					</div>
+					<div>
+						<p class="text-3xl font-bold text-white">{ fmt.Sprintf("%d", data.SecurityScore) }<span class="text-lg text-gray-500">/100</span></p>
+						if data.SecurityIssues > 0 {
+							<p class="text-sm text-red-400">{ fmt.Sprintf("%d issues found", data.SecurityIssues) }</p>
+						} else {
+							<p class="text-sm text-green-400">No issues found</p>
+						}
+					</div>
+				</div>
+			</div>
+
+			<!-- Updates Available -->
+			<div class="bg-dark-800 rounded-xl border border-dark-600 p-5">
+				<div class="flex items-center justify-between mb-3">
+					<h3 class="text-sm font-medium text-gray-400">Updates</h3>
+					<a href="/updates" class="text-xs text-primary-400 hover:text-primary-300">View all →</a>
+				</div>
+				<div class="flex items-center gap-4">
+					<div class={ "w-16 h-16 rounded-full flex items-center justify-center", templ.KV("bg-primary-500/20 text-primary-400", data.UpdatesAvailable > 0), templ.KV("bg-green-500/20 text-green-400", data.UpdatesAvailable == 0) }>
+						<i class={ "fas text-2xl", templ.KV("fa-sync-alt", data.UpdatesAvailable > 0), templ.KV("fa-check", data.UpdatesAvailable == 0) }></i>
+					</div>
+					<div>
+						<p class="text-3xl font-bold text-white">{ fmt.Sprintf("%d", data.UpdatesAvailable) }</p>
+						if data.UpdatesAvailable > 0 {
+							<p class="text-sm text-primary-400">updates available</p>
+						} else {
+							<p class="text-sm text-green-400">all up to date</p>
+						}
+					</div>
+				</div>
+			</div>
+
+			<!-- Container Status -->
+			<div class="bg-dark-800 rounded-xl border border-dark-600 p-5">
+				<div class="flex items-center justify-between mb-3">
+					<h3 class="text-sm font-medium text-gray-400">Container Status</h3>
+					<a href="/containers" class="text-xs text-primary-400 hover:text-primary-300">View all →</a>
+				</div>
+				<div class="flex items-center gap-6">
+					<div class="text-center">
+						<div class="w-10 h-10 mx-auto rounded-full bg-green-500/20 text-green-400 flex items-center justify-center mb-1">
+							<i class="fas fa-play text-sm"></i>
+						</div>
+						<p class="text-lg font-bold text-white">{ fmt.Sprintf("%d", data.ContainersRunning) }</p>
+						<p class="text-xs text-gray-500">Running</p>
+					</div>
+					<div class="text-center">
+						<div class="w-10 h-10 mx-auto rounded-full bg-red-500/20 text-red-400 flex items-center justify-center mb-1">
+							<i class="fas fa-stop text-sm"></i>
+						</div>
+						<p class="text-lg font-bold text-white">{ fmt.Sprintf("%d", data.ContainersStopped) }</p>
+						<p class="text-xs text-gray-500">Stopped</p>
+					</div>
+					<div class="text-center">
+						<div class="w-10 h-10 mx-auto rounded-full bg-yellow-500/20 text-yellow-400 flex items-center justify-center mb-1">
+							<i class="fas fa-pause text-sm"></i>
+						</div>
+						<p class="text-lg font-bold text-white">{ fmt.Sprintf("%d", data.ContainersPaused) }</p>
+						<p class="text-xs text-gray-500">Paused</p>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Main Content Grid -->
+		<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+			<!-- Recent Containers -->
+			<div class="lg:col-span-2 bg-dark-800 rounded-xl border border-dark-600">
+				<div class="flex items-center justify-between p-4 border-b border-dark-600">
+					<h2 class="font-semibold text-white">Recent Containers</h2>
+					<a href="/containers" class="text-sm text-primary-400 hover:text-primary-300">View all →</a>
+				</div>
+				<div class="divide-y divide-dark-600" hx-get="/partials/containers?limit=5" hx-trigger="every 30s" hx-swap="innerHTML">
+					if len(data.RecentContainers) == 0 {
+						<div class="p-8 text-center text-gray-500">
+							<i class="fas fa-cube text-3xl mb-3 opacity-50"></i>
+							<p>No containers found</p>
+						</div>
+					} else {
+						for _, c := range data.RecentContainers {
+							@containerRow(c)
+						}
+					}
+				</div>
+			</div>
+
+			<!-- Recent Events -->
+			<div class="bg-dark-800 rounded-xl border border-dark-600">
+				<div class="flex items-center justify-between p-4 border-b border-dark-600">
+					<h2 class="font-semibold text-white">Recent Events</h2>
+					<a href="/events" class="text-sm text-primary-400 hover:text-primary-300">View all →</a>
+				</div>
+				<div class="divide-y divide-dark-600 max-h-96 overflow-y-auto" hx-get="/partials/events?limit=10" hx-trigger="every 10s" hx-swap="innerHTML">
+					if len(data.RecentEvents) == 0 {
+						<div class="p-8 text-center text-gray-500">
+							<i class="fas fa-stream text-3xl mb-3 opacity-50"></i>
+							<p>No recent events</p>
+						</div>
+					} else {
+						for _, e := range data.RecentEvents {
+							@eventRow(e)
+						}
+					}
+				</div>
+			</div>
+		</div>
+
+		<!-- System Info -->
+		if data.SystemInfo != nil {
+			<div class="mt-6 bg-dark-800 rounded-xl border border-dark-600 p-4">
+				<h2 class="font-semibold text-white mb-4">System Information</h2>
+				<div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4 text-sm">
+					@systemInfoItem("Docker", data.SystemInfo.DockerVersion)
+					@systemInfoItem("API", data.SystemInfo.APIVersion)
+					@systemInfoItem("OS", data.SystemInfo.OS)
+					@systemInfoItem("Arch", data.SystemInfo.Arch)
+					@systemInfoItem("CPUs", fmt.Sprintf("%d", data.SystemInfo.CPUs))
+					@systemInfoItem("Memory", data.SystemInfo.Memory)
+					@systemInfoItem("Host", data.SystemInfo.Hostname)
+				</div>
+			</div>
+		}
+	}
+}
+
+templ containerRow(c ContainerSummary) {
+	<div class="flex items-center gap-4 p-4 hover:bg-dark-700/50 transition-colors">
+		<div class={ "w-2.5 h-2.5 rounded-full flex-shrink-0", stateColor(c.State) }></div>
+		<div class="flex-1 min-w-0">
+			<div class="flex items-center gap-2">
+				<a href={ templ.SafeURL("/containers/" + c.ID) } class="font-medium text-white hover:text-primary-400 truncate">
+					{ c.Name }
+				</a>
+				<span class={ "px-2 py-0.5 text-xs rounded", stateBadge(c.State) }>{ c.State }</span>
+			</div>
+			<p class="text-sm text-gray-500 truncate">{ c.Image }</p>
+		</div>
+		<div class="flex items-center gap-2">
+			if c.State == "running" {
+				<button 
+					hx-post={ "/containers/" + c.ID + "/stop" }
+					hx-swap="none"
+					class="p-2 text-gray-400 hover:text-red-400 transition-colors"
+					title="Stop"
+				>
+					<i class="fas fa-stop text-sm"></i>
+				</button>
+				<button 
+					hx-post={ "/containers/" + c.ID + "/restart" }
+					hx-swap="none"
+					class="p-2 text-gray-400 hover:text-yellow-400 transition-colors"
+					title="Restart"
+				>
+					<i class="fas fa-redo text-sm"></i>
+				</button>
+			} else {
+				<button 
+					hx-post={ "/containers/" + c.ID + "/start" }
+					hx-swap="none"
+					class="p-2 text-gray-400 hover:text-green-400 transition-colors"
+					title="Start"
+				>
+					<i class="fas fa-play text-sm"></i>
+				</button>
+			}
+			<a href={ templ.SafeURL("/containers/" + c.ID + "/logs") } class="p-2 text-gray-400 hover:text-primary-400 transition-colors" title="Logs">
+				<i class="fas fa-file-alt text-sm"></i>
+			</a>
+		</div>
+	</div>
+}
+
+templ eventRow(e EventSummary) {
+	<div class="flex items-start gap-3 p-3 hover:bg-dark-700/50 transition-colors">
+		<div class={ "w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0", eventTypeClass(e.Action) }>
+			<i class={ "fas text-xs", eventIcon(e.Action) }></i>
+		</div>
+		<div class="flex-1 min-w-0">
+			<p class="text-sm text-white">
+				<span class="font-medium">{ e.Action }</span>
+				<span class="text-gray-400"> { e.Actor }</span>
+			</p>
+			<p class="text-xs text-gray-500">{ e.TimeAgo }</p>
+		</div>
+	</div>
+}
+
+templ systemInfoItem(label, value string) {
+	<div>
+		<p class="text-gray-500 text-xs mb-1">{ label }</p>
+		<p class="text-white font-medium truncate">{ value }</p>
+	</div>
+}
+
+func gradeClass(grade string) string {
+	switch grade {
+	case "A":
+		return "bg-green-500/20 text-green-400"
+	case "B":
+		return "bg-blue-500/20 text-blue-400"
+	case "C":
+		return "bg-yellow-500/20 text-yellow-400"
+	case "D":
+		return "bg-orange-500/20 text-orange-400"
+	default:
+		return "bg-red-500/20 text-red-400"
+	}
+}
+
+func stateColor(state string) string {
+	switch state {
+	case "running":
+		return "bg-green-500"
+	case "paused":
+		return "bg-yellow-500"
+	case "restarting":
+		return "bg-blue-500"
+	default:
+		return "bg-red-500"
+	}
+}
+
+func stateBadge(state string) string {
+	switch state {
+	case "running":
+		return "bg-green-500/20 text-green-400"
+	case "paused":
+		return "bg-yellow-500/20 text-yellow-400"
+	case "restarting":
+		return "bg-blue-500/20 text-blue-400"
+	default:
+		return "bg-red-500/20 text-red-400"
+	}
+}
+
+func eventTypeClass(action string) string {
+	switch action {
+	case "start", "create":
+		return "bg-green-500/20 text-green-400"
+	case "stop", "kill", "die", "destroy":
+		return "bg-red-500/20 text-red-400"
+	case "restart":
+		return "bg-yellow-500/20 text-yellow-400"
+	case "pull":
+		return "bg-blue-500/20 text-blue-400"
+	default:
+		return "bg-gray-500/20 text-gray-400"
+	}
+}
+
+func eventIcon(action string) string {
+	switch action {
+	case "start":
+		return "fa-play"
+	case "stop":
+		return "fa-stop"
+	case "kill", "die":
+		return "fa-skull"
+	case "create":
+		return "fa-plus"
+	case "destroy":
+		return "fa-trash"
+	case "restart":
+		return "fa-redo"
+	case "pull":
+		return "fa-download"
+	default:
+		return "fa-info"
+	}
+}

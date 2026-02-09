@@ -1,0 +1,252 @@
+package connections
+
+import (
+	"github.com/fr4nsys/usulnet/internal/web/templates/layouts"
+)
+
+// SSHConnectionNew renders the new SSH connection form.
+templ SSHConnectionNew(data SSHConnectionNewData) {
+	@layouts.Base(data.PageData) {
+		<div class="max-w-2xl mx-auto space-y-6">
+			@ConnectionsNav("ssh")
+
+			<!-- Header -->
+			<div class="flex items-center space-x-4">
+				<a href="/connections/ssh" class="text-gray-400 hover:text-white">
+					<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+					</svg>
+				</a>
+				<div>
+					<h1 class="text-2xl font-display font-bold text-white">New SSH Connection</h1>
+					<p class="text-gray-400 mt-1">Add a new SSH connection to a remote server</p>
+				</div>
+			</div>
+
+			<!-- Form -->
+			<form
+				action="/connections/ssh"
+				method="POST"
+				class="bg-dark-800 rounded-lg border border-dark-700 p-6 space-y-6"
+			>
+				<input type="hidden" name="csrf_token" value={ data.PageData.CSRFToken }/>
+				<!-- Basic Info -->
+				<div class="space-y-4">
+					<h3 class="text-white font-medium">Connection Details</h3>
+
+					<div>
+						<label class="block text-sm font-medium text-gray-300 mb-1">Connection Name</label>
+						<input
+							type="text"
+							name="name"
+							required
+							placeholder="My Server"
+							class="w-full px-3 py-2 bg-dark-700 border border-dark-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+						/>
+					</div>
+
+					<div class="grid grid-cols-3 gap-4">
+						<div class="col-span-2">
+							<label class="block text-sm font-medium text-gray-300 mb-1">Host / IP Address</label>
+							<input
+								type="text"
+								name="host"
+								required
+								placeholder="192.168.1.100 or server.example.com"
+								class="w-full px-3 py-2 bg-dark-700 border border-dark-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+							/>
+						</div>
+						<div>
+							<label class="block text-sm font-medium text-gray-300 mb-1">Port</label>
+							<input
+								type="number"
+								name="port"
+								value="22"
+								min="1"
+								max="65535"
+								class="w-full px-3 py-2 bg-dark-700 border border-dark-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+							/>
+						</div>
+					</div>
+
+					<div>
+						<label class="block text-sm font-medium text-gray-300 mb-1">Username</label>
+						<input
+							type="text"
+							name="username"
+							placeholder="root (leave empty to prompt on connect)"
+							class="w-full px-3 py-2 bg-dark-700 border border-dark-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+						/>
+					</div>
+				</div>
+
+				<!-- Authentication -->
+				<div class="space-y-4">
+					<h3 class="text-white font-medium">Authentication</h3>
+
+					<div>
+						<label class="block text-sm font-medium text-gray-300 mb-2">Authentication Method</label>
+						<div class="space-y-2" id="auth-methods">
+							<label class="flex items-center p-3 bg-dark-700 border border-dark-600 rounded-lg cursor-pointer hover:border-dark-500 has-[:checked]:border-primary-500">
+								<input type="radio" name="auth_type" value="password" class="mr-3 text-primary-500 focus:ring-primary-500" checked onchange="toggleAuthFields()"/>
+								<div>
+									<span class="text-white font-medium">Password</span>
+									<p class="text-gray-400 text-sm">Authenticate with username and password</p>
+								</div>
+							</label>
+							<label class="flex items-center p-3 bg-dark-700 border border-dark-600 rounded-lg cursor-pointer hover:border-dark-500 has-[:checked]:border-primary-500">
+								<input type="radio" name="auth_type" value="key" class="mr-3 text-primary-500 focus:ring-primary-500" onchange="toggleAuthFields()"/>
+								<div>
+									<span class="text-white font-medium">SSH Key</span>
+									<p class="text-gray-400 text-sm">Authenticate with a private key</p>
+								</div>
+							</label>
+							<label class="flex items-center p-3 bg-dark-700 border border-dark-600 rounded-lg cursor-pointer hover:border-dark-500 has-[:checked]:border-primary-500">
+								<input type="radio" name="auth_type" value="agent" class="mr-3 text-primary-500 focus:ring-primary-500" onchange="toggleAuthFields()"/>
+								<div>
+									<span class="text-white font-medium">SSH Agent</span>
+									<p class="text-gray-400 text-sm">Use keys from the SSH agent</p>
+								</div>
+							</label>
+						</div>
+					</div>
+
+					<!-- Password Field -->
+					<div id="password-field">
+						<label class="block text-sm font-medium text-gray-300 mb-1">Password</label>
+						<input
+							type="password"
+							name="password"
+							placeholder="Enter password"
+							class="w-full px-3 py-2 bg-dark-700 border border-dark-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+						/>
+					</div>
+
+					<!-- Key Selection -->
+					<div id="key-field" class="hidden">
+						<label class="block text-sm font-medium text-gray-300 mb-1">SSH Key</label>
+						if len(data.Keys) > 0 {
+							<select
+								name="key_id"
+								class="w-full px-3 py-2 bg-dark-700 border border-dark-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+							>
+								<option value="">Select a key...</option>
+								for _, key := range data.Keys {
+									<option value={ key.ID }>{ key.Name } ({ key.Type })</option>
+								}
+							</select>
+							<p class="mt-1 text-sm text-gray-500">
+								<a href="/connections/keys/new" class="text-primary-400 hover:text-primary-300">Generate a new key</a>
+							</p>
+						} else {
+							<p class="text-gray-400 text-sm">
+								No SSH keys available.
+								<a href="/connections/keys/new" class="text-primary-400 hover:text-primary-300">Generate one first</a>
+							</p>
+						}
+					</div>
+				</div>
+
+				<!-- Advanced Options -->
+				<div class="space-y-4">
+					<button type="button" class="text-primary-400 hover:text-primary-300 text-sm flex items-center" onclick="toggleAdvanced()">
+						<svg id="advanced-icon" class="w-4 h-4 mr-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+						</svg>
+						Advanced Options
+					</button>
+
+					<div id="advanced-options" class="hidden space-y-4 pl-5 border-l-2 border-dark-600">
+						<!-- Jump Host -->
+						<div>
+							<label class="block text-sm font-medium text-gray-300 mb-1">Jump Host (Bastion)</label>
+							<select
+								name="jump_host_id"
+								class="w-full px-3 py-2 bg-dark-700 border border-dark-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+							>
+								<option value="">None (direct connection)</option>
+								for _, host := range data.JumpHosts {
+									<option value={ host.ID }>{ host.Name } ({ host.Host })</option>
+								}
+							</select>
+							<p class="mt-1 text-sm text-gray-500">Connect through another server (ProxyJump)</p>
+						</div>
+
+						<!-- Connection Timeout -->
+						<div>
+							<label class="block text-sm font-medium text-gray-300 mb-1">Connection Timeout (seconds)</label>
+							<input
+								type="number"
+								name="timeout"
+								value="30"
+								min="5"
+								max="300"
+								class="w-full px-3 py-2 bg-dark-700 border border-dark-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+							/>
+						</div>
+
+						<!-- Tags -->
+						<div>
+							<label class="block text-sm font-medium text-gray-300 mb-1">Tags</label>
+							<input
+								type="text"
+								name="tags"
+								placeholder="production, web-server, linux"
+								class="w-full px-3 py-2 bg-dark-700 border border-dark-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+							/>
+							<p class="mt-1 text-sm text-gray-500">Comma-separated tags for organization</p>
+						</div>
+					</div>
+				</div>
+
+				<!-- Actions -->
+				<div class="flex items-center justify-between pt-4 border-t border-dark-700">
+					<button
+						type="button"
+						onclick="testConnection()"
+						class="px-4 py-2 text-gray-400 hover:text-white border border-dark-600 rounded-lg hover:bg-dark-700 transition-colors"
+					>
+						Test Connection
+					</button>
+					<div class="flex items-center space-x-3">
+						<a
+							href="/connections/ssh"
+							class="px-4 py-2 text-gray-400 hover:text-white"
+						>
+							Cancel
+						</a>
+						<button
+							type="submit"
+							class="px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors"
+						>
+							Save Connection
+						</button>
+					</div>
+				</div>
+			</form>
+		</div>
+
+		<script>
+			function toggleAuthFields() {
+				const authType = document.querySelector('input[name="auth_type"]:checked').value;
+				document.getElementById('password-field').classList.toggle('hidden', authType !== 'password');
+				document.getElementById('key-field').classList.toggle('hidden', authType !== 'key');
+			}
+
+			function toggleAdvanced() {
+				const options = document.getElementById('advanced-options');
+				const icon = document.getElementById('advanced-icon');
+				options.classList.toggle('hidden');
+				icon.classList.toggle('rotate-90');
+			}
+
+			function testConnection() {
+				const form = document.querySelector('form');
+				const formData = new FormData(form);
+				const data = Object.fromEntries(formData.entries());
+
+				alert('Test connection functionality coming soon');
+			}
+		</script>
+	}
+}

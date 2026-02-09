@@ -1,0 +1,2 @@
+DROP TABLE IF EXISTS ldap_configs CASCADE;
+DROP TABLE IF EXISTS oauth_configs CASCADE;

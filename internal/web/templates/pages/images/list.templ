@@ -1,0 +1,241 @@
+package images
+
+import (
+	"fmt"
+	
+	"github.com/fr4nsys/usulnet/internal/web/templates/layouts"
+	"github.com/fr4nsys/usulnet/internal/web/templates/components"
+)
+
+type ImagesListData struct {
+	PageData   layouts.PageData
+	Images     []Image
+	TotalSize  string
+	Filters    ImageFilters
+	Pagination PaginationData
+}
+
+type Image struct {
+	ID           string
+	ShortID      string
+	Tags         []string
+	PrimaryTag   string
+	Size         int64
+	SizeHuman    string
+	Created      string
+	CreatedAgo   string
+	InUse        bool
+	Containers   int
+	Architecture string
+	OS           string
+}
+
+type ImageFilters struct {
+	Search   string
+	InUse    string
+	Dangling string
+	Sort     string
+	Dir      string
+}
+
+type PaginationData struct {
+	CurrentPage int
+	TotalPages  int
+	TotalItems  int
+	PerPage     int
+}
+
+templ ImagesList(data ImagesListData) {
+	@layouts.Base(data.PageData) {
+		<!-- Page Header -->
+		<div class="flex items-center justify-between mb-6">
+			<div>
+				<div class="flex items-center gap-3">
+					<h1 class="text-2xl font-bold font-display text-white">Images</h1>
+					@components.HostBadge(data.PageData.ActiveHostName)
+				</div>
+				<p class="text-gray-400 mt-1">Manage Docker images ({ data.TotalSize } total)</p>
+			</div>
+			<div class="flex items-center gap-3">
+				<a href="/images/pull" class="px-4 py-2 bg-dark-700 hover:bg-dark-600 text-gray-300 rounded-lg transition-colors">
+					<i class="fas fa-download mr-2"></i>
+					Pull Image
+				</a>
+				<button 
+					hx-post="/images/prune"
+					hx-confirm="Remove all unused images? This cannot be undone."
+					hx-swap="none"
+					class="px-4 py-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-lg transition-colors"
+				>
+					<i class="fas fa-broom mr-2"></i>
+					Prune
+				</button>
+			</div>
+		</div>
+
+		<!-- Filters -->
+		<div class="bg-dark-800 rounded-xl border border-dark-600 p-4 mb-6">
+			<div class="flex flex-col md:flex-row gap-4">
+				<!-- Search -->
+				<div class="flex-1">
+					<div class="relative">
+						<input 
+							type="search"
+							name="search"
+							placeholder="Search images..."
+							value={ data.Filters.Search }
+							class="w-full pl-10 pr-4 py-2 bg-dark-700 border border-dark-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500/50"
+							hx-get="/images"
+							hx-trigger="keyup changed delay:300ms"
+							hx-target="#image-table"
+							hx-select="#image-table"
+							hx-push-url="true"
+						/>
+						<i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-500"></i>
+					</div>
+				</div>
+				
+				<!-- In Use Filter -->
+				<div class="w-full md:w-40">
+					<select 
+						name="in_use"
+						class="w-full px-4 py-2 bg-dark-700 border border-dark-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-primary-500/50 appearance-none"
+						hx-get="/images"
+						hx-trigger="change"
+						hx-target="#image-table"
+						hx-select="#image-table"
+						hx-push-url="true"
+					>
+						<option value="" selected?={ data.Filters.InUse == "" }>All Images</option>
+						<option value="true" selected?={ data.Filters.InUse == "true" }>In Use</option>
+						<option value="false" selected?={ data.Filters.InUse == "false" }>Unused</option>
+					</select>
+				</div>
+				
+				<!-- Dangling Filter -->
+				<div class="w-full md:w-40">
+					<select 
+						name="dangling"
+						class="w-full px-4 py-2 bg-dark-700 border border-dark-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-primary-500/50 appearance-none"
+						hx-get="/images"
+						hx-trigger="change"
+						hx-target="#image-table"
+						hx-select="#image-table"
+						hx-push-url="true"
+					>
+						<option value="" selected?={ data.Filters.Dangling == "" }>All</option>
+						<option value="true" selected?={ data.Filters.Dangling == "true" }>Dangling</option>
+						<option value="false" selected?={ data.Filters.Dangling == "false" }>Tagged</option>
+					</select>
+				</div>
+			</div>
+		</div>
+
+		<!-- Images Table -->
+		<div id="image-table" class="bg-dark-800 rounded-xl border border-dark-600 overflow-hidden">
+			@components.Table() {
+				@components.TableHead() {
+					@components.TableHeaderSortable("Image", "name", data.Filters.Sort, data.Filters.Dir)
+					@components.TableHeader("Tags", "")
+					@components.TableHeaderSortable("Size", "size", data.Filters.Sort, data.Filters.Dir)
+					@components.TableHeaderSortable("Created", "created", data.Filters.Sort, data.Filters.Dir)
+					@components.TableHeader("Used", "w-20")
+					@components.TableHeader("Actions", "w-32")
+				}
+				@components.TableBody() {
+					if len(data.Images) == 0 {
+						@components.TableEmpty("No images found", "fa-layer-group")
+					} else {
+						for _, img := range data.Images {
+							@imageRow(img)
+						}
+					}
+				}
+			}
+			
+			if data.Pagination.TotalPages > 1 {
+				@components.Pagination(
+					data.Pagination.CurrentPage,
+					data.Pagination.TotalPages,
+					data.Pagination.TotalItems,
+					"/images",
+				)
+			}
+		</div>
+	}
+}
+
+templ imageRow(img Image) {
+	<tr class="hover:bg-dark-700/50 transition-colors group">
+		<td class="px-4 py-3">
+			<div class="flex items-center gap-3">
+				<div class="w-10 h-10 rounded-lg bg-blue-500/20 flex items-center justify-center flex-shrink-0">
+					<i class="fas fa-layer-group text-blue-400"></i>
+				</div>
+				<div>
+					<a href={ templ.SafeURL("/images/" + img.ID) } class="font-medium text-white hover:text-primary-400 transition-colors">
+						{ img.PrimaryTag }
+					</a>
+					<p class="text-xs text-gray-500 font-mono">{ img.ShortID }</p>
+				</div>
+			</div>
+		</td>
+		<td class="px-4 py-3">
+			<div class="flex flex-wrap gap-1 max-w-xs">
+				for i, tag := range img.Tags {
+					if i < 3 {
+						<span class="px-2 py-0.5 text-xs bg-dark-600 text-gray-300 rounded font-mono truncate max-w-[150px]">
+							{ tag }
+						</span>
+					}
+				}
+				if len(img.Tags) > 3 {
+					<span class="px-2 py-0.5 text-xs bg-dark-700 text-gray-500 rounded">
+						+{ fmt.Sprintf("%d", len(img.Tags)-3) }
+					</span>
+				}
+				if len(img.Tags) == 0 {
+					<span class="text-gray-500 text-sm italic">&lt;none&gt;</span>
+				}
+			</div>
+		</td>
+		<td class="px-4 py-3 text-sm text-gray-300 font-mono">
+			{ img.SizeHuman }
+		</td>
+		<td class="px-4 py-3 text-sm text-gray-400">
+			{ img.CreatedAgo }
+		</td>
+		<td class="px-4 py-3">
+			if img.InUse {
+				<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-green-500/10 text-green-400">
+					<span class="w-1.5 h-1.5 rounded-full bg-green-500"></span>
+					{ fmt.Sprintf("%d", img.Containers) }
+				</span>
+			} else {
+				<span class="text-gray-500 text-sm">-</span>
+			}
+		</td>
+		<td class="px-4 py-3">
+			<div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+				<a 
+					href={ templ.SafeURL("/images/" + img.ID) }
+					class="p-2 text-gray-400 hover:text-primary-400 hover:bg-primary-500/10 rounded-lg transition-colors"
+					title="Details"
+				>
+					<i class="fas fa-info-circle text-sm"></i>
+				</a>
+				if !img.InUse {
+					<button 
+						hx-post={ "/images/" + img.ID + "/remove" }
+						hx-confirm="Remove this image?"
+						hx-swap="none"
+						class="p-2 text-gray-400 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
+						title="Remove"
+					>
+						<i class="fas fa-trash text-sm"></i>
+					</button>
+				}
+			</div>
+		</td>
+	</tr>
+}

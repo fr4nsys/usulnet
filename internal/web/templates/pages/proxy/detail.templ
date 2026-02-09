@@ -1,0 +1,109 @@
+package proxy
+
+import (
+	"fmt"
+	"github.com/fr4nsys/usulnet/internal/web/templates/layouts"
+)
+
+type DetailData struct {
+	PageData    layouts.PageData
+	Connected   bool
+	Host        ProxyHost
+	Error       string
+}
+
+templ Detail(data DetailData) {
+	@layouts.Base(data.PageData) {
+		<div class="space-y-6">
+			@Nav("hosts", data.Connected)
+			<div class="max-w-3xl">
+				<div class="flex items-center justify-between mb-6">
+					<div class="flex items-center gap-3">
+						<a href="/proxy" class="text-gray-400 hover:text-white">
+							<i class="fas fa-arrow-left"></i>
+						</a>
+						<div>
+							<h2 class="text-xl font-display font-bold text-white">{ data.Host.DomainName }</h2>
+							<p class="text-gray-400 text-sm">Proxy Host Details</p>
+						</div>
+					</div>
+					<div class="flex items-center gap-2">
+						if data.Host.Enabled {
+							<span class="badge badge-success">Enabled</span>
+						} else {
+							<span class="badge badge-danger">Disabled</span>
+						}
+						<a href={ templ.SafeURL(fmt.Sprintf("/proxy/%s/edit", data.Host.ID)) } class="btn btn-sm btn-secondary">
+							<i class="fas fa-edit mr-1"></i> Edit
+						</a>
+					</div>
+				</div>
+
+				if data.Error != "" {
+					<div class="bg-red-500/10 border border-red-500/20 rounded-lg p-4 mb-4">
+						<p class="text-red-400 text-sm">{ data.Error }</p>
+					</div>
+				}
+
+				<div class="bg-dark-800 border border-dark-700 rounded-lg divide-y divide-dark-700">
+					<div class="p-4 flex justify-between">
+						<span class="text-gray-400">Domain</span>
+						<span class="text-white font-mono">{ data.Host.DomainName }</span>
+					</div>
+					<div class="p-4 flex justify-between">
+						<span class="text-gray-400">Forward To</span>
+						<span class="text-white font-mono">{ data.Host.ForwardHost }:{ fmt.Sprintf("%d", data.Host.ForwardPort) }</span>
+					</div>
+					<div class="p-4 flex justify-between">
+						<span class="text-gray-400">SSL</span>
+						if data.Host.SSLEnabled {
+							<span class="text-green-400"><i class="fas fa-lock mr-1"></i> Enabled</span>
+						} else {
+							<span class="text-gray-500"><i class="fas fa-lock-open mr-1"></i> Disabled</span>
+						}
+					</div>
+					<div class="p-4 flex justify-between">
+						<span class="text-gray-400">Force SSL</span>
+						if data.Host.SSLForced {
+							<span class="text-green-400">Yes</span>
+						} else {
+							<span class="text-gray-500">No</span>
+						}
+					</div>
+					if data.Host.ContainerName != "" {
+						<div class="p-4 flex justify-between">
+							<span class="text-gray-400">Container</span>
+							<span class="text-white">{ data.Host.ContainerName }</span>
+						</div>
+					}
+				</div>
+
+				<div class="flex gap-2 mt-6">
+					if data.Host.Enabled {
+						<form method="POST" action={ templ.SafeURL(fmt.Sprintf("/proxy/hosts/%s/disable", data.Host.ID)) }>
+							<input type="hidden" name="csrf_token" value={ data.PageData.CSRFToken }/>
+							<button type="submit" class="btn btn-sm btn-warning">
+								<i class="fas fa-pause mr-1"></i> Disable
+							</button>
+						</form>
+					} else {
+						<form method="POST" action={ templ.SafeURL(fmt.Sprintf("/proxy/hosts/%s/enable", data.Host.ID)) }>
+							<input type="hidden" name="csrf_token" value={ data.PageData.CSRFToken }/>
+							<button type="submit" class="btn btn-sm btn-success">
+								<i class="fas fa-play mr-1"></i> Enable
+							</button>
+						</form>
+					}
+					<form method="POST" action={ templ.SafeURL(fmt.Sprintf("/proxy/hosts/%s", data.Host.ID)) }
+						  onsubmit="return confirm('Delete this proxy host?')">
+									<input type="hidden" name="csrf_token" value={ data.PageData.CSRFToken }/>
+						<input type="hidden" name="_method" value="DELETE"/>
+						<button type="submit" class="btn btn-sm btn-danger">
+							<i class="fas fa-trash mr-1"></i> Delete
+						</button>
+					</form>
+				</div>
+			</div>
+		</div>
+	}
+}

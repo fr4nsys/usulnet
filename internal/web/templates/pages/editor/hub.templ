@@ -1,0 +1,293 @@
+package editor
+
+import (
+	"fmt"
+	"github.com/fr4nsys/usulnet/internal/web/templates/layouts"
+)
+
+// ============================================================================
+// Hub Data Types
+// ============================================================================
+
+type HubData struct {
+	PageData    layouts.PageData
+	Connections []HubConnection
+	HasGitea    bool
+	Snippets    []SnippetItem
+}
+
+type HubConnection struct {
+	ID         string
+	Name       string
+	URL        string
+	Provider   string // "gitea", "github", "gitlab"
+	Status     string
+	ReposCount int
+}
+
+type SnippetItem struct {
+	ID          string
+	Name        string
+	Path        string
+	Language    string
+	Size        int64
+	SizeHuman   string
+	UpdatedAt   string
+}
+
+// ============================================================================
+// Editor Hub Template
+// ============================================================================
+
+templ Hub(data HubData) {
+	@layouts.Base(data.PageData) {
+		<div class="space-y-6">
+			<!-- Header -->
+			<div class="flex items-center justify-between">
+				<div>
+					<h1 class="text-2xl font-display font-bold text-white">
+						<i class="fas fa-edit text-blue-400 mr-2"></i>Editor
+					</h1>
+					<p class="text-gray-400 mt-1">Edit files from git repositories or open a scratch pad</p>
+				</div>
+			</div>
+
+			<!-- Quick Actions -->
+			<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+				<!-- Scratch Pad -->
+				<a href="/editor/monaco" class="card p-6 hover:border-blue-500/50 transition-colors group cursor-pointer">
+					<div class="flex items-center gap-4">
+						<div class="w-12 h-12 rounded-xl bg-blue-500/10 flex items-center justify-center">
+							<i class="fas fa-file-code text-blue-400 text-xl"></i>
+						</div>
+						<div>
+							<h3 class="font-semibold text-white group-hover:text-blue-400 transition-colors">Monaco Editor</h3>
+							<p class="text-sm text-gray-400 mt-0.5">Open a scratch pad with full IDE features</p>
+						</div>
+					</div>
+				</a>
+
+				<!-- Nvim -->
+				<a href="/editor/nvim" class="card p-6 hover:border-green-500/50 transition-colors group cursor-pointer">
+					<div class="flex items-center gap-4">
+						<div class="w-12 h-12 rounded-xl bg-green-500/10 flex items-center justify-center">
+							<i class="fas fa-terminal text-green-400 text-xl"></i>
+						</div>
+						<div>
+							<h3 class="font-semibold text-white group-hover:text-green-400 transition-colors">Neovim Terminal</h3>
+							<p class="text-sm text-gray-400 mt-0.5">Terminal-based editor via xterm.js</p>
+						</div>
+					</div>
+				</a>
+
+				<!-- Git Repos -->
+				<a href="/integrations/gitea" class="card p-6 hover:border-purple-500/50 transition-colors group cursor-pointer">
+					<div class="flex items-center gap-4">
+						<div class="w-12 h-12 rounded-xl bg-purple-500/10 flex items-center justify-center">
+							<i class="fas fa-code-branch text-purple-400 text-xl"></i>
+						</div>
+						<div>
+							<h3 class="font-semibold text-white group-hover:text-purple-400 transition-colors">Repositories</h3>
+							<p class="text-sm text-gray-400 mt-0.5">Browse and edit files from git providers</p>
+						</div>
+					</div>
+				</a>
+			</div>
+
+			<!-- Saved Snippets -->
+			<div class="card">
+				<div class="p-4 border-b border-gray-700/50 flex items-center justify-between">
+					<h2 class="text-lg font-semibold text-white">
+						<i class="fas fa-file-alt text-yellow-400 mr-2"></i>Saved Snippets
+					</h2>
+					<button
+						onclick="document.getElementById('new-snippet-modal').classList.remove('hidden')"
+						class="btn-sm bg-yellow-500/10 text-yellow-400 hover:bg-yellow-500/20"
+					>
+						<i class="fas fa-plus mr-1"></i>New Snippet
+					</button>
+				</div>
+				if len(data.Snippets) > 0 {
+					<div class="divide-y divide-gray-700/50">
+						for _, snip := range data.Snippets {
+							<div class="flex items-center justify-between p-4 hover:bg-gray-800/30 transition-colors group">
+								<a href={ templ.SafeURL("/editor/monaco?snippet=" + snip.ID) } class="flex items-center gap-3 flex-1">
+									<div class={ "w-8 h-8 rounded-lg flex items-center justify-center", langBgColor(snip.Language) }>
+										<i class={ langIcon(snip.Language) }></i>
+									</div>
+									<div>
+										<span class="font-medium text-white group-hover:text-yellow-400 transition-colors">{ snip.Name }</span>
+										<div class="flex items-center gap-2 text-sm text-gray-500">
+											<span>{ snip.Path }</span>
+											<span>·</span>
+											<span>{ snip.SizeHuman }</span>
+											<span>·</span>
+											<span>{ snip.UpdatedAt }</span>
+										</div>
+									</div>
+								</a>
+								<button
+									hx-delete={ "/api/snippets/" + snip.ID }
+									hx-target="body"
+									hx-confirm="Delete this snippet?"
+									class="opacity-0 group-hover:opacity-100 text-red-400 hover:text-red-300 p-2 transition-opacity"
+								>
+									<i class="fas fa-trash-alt"></i>
+								</button>
+							</div>
+						}
+					</div>
+				} else {
+					<div class="p-8 text-center">
+						<i class="fas fa-file-alt text-4xl text-gray-600 mb-3"></i>
+						<p class="text-gray-400">No saved snippets</p>
+						<p class="text-sm text-gray-500 mt-1">Create snippets to save code for later</p>
+					</div>
+				}
+			</div>
+
+			<!-- New Snippet Modal -->
+			<div id="new-snippet-modal" class="hidden fixed inset-0 z-50 overflow-y-auto">
+				<div class="fixed inset-0 bg-black/50" onclick="document.getElementById('new-snippet-modal').classList.add('hidden')"></div>
+				<div class="relative min-h-screen flex items-center justify-center p-4">
+					<div class="relative bg-dark-800 rounded-xl border border-dark-600 max-w-md w-full p-6">
+						<div class="flex items-center justify-between mb-6">
+							<h2 class="text-xl font-display font-bold text-white">New Snippet</h2>
+							<button
+								onclick="document.getElementById('new-snippet-modal').classList.add('hidden')"
+								class="text-gray-400 hover:text-white"
+							>
+								<i class="fas fa-times"></i>
+							</button>
+						</div>
+						<form action="/api/snippets" method="POST" class="space-y-4">
+							<input type="hidden" name="csrf_token" value={ data.PageData.CSRFToken }/>
+							<div>
+								<label class="block text-sm font-medium text-gray-300 mb-2">Name</label>
+								<input type="text" name="name" required class="input" placeholder="my-snippet"/>
+							</div>
+							<div>
+								<label class="block text-sm font-medium text-gray-300 mb-2">File Path</label>
+								<input type="text" name="path" required class="input" placeholder="scripts/example.sh"/>
+							</div>
+							<div>
+								<label class="block text-sm font-medium text-gray-300 mb-2">Language</label>
+								<select name="language" class="input">
+									<option value="plaintext">Plain Text</option>
+									<option value="shell">Shell</option>
+									<option value="go">Go</option>
+									<option value="python">Python</option>
+									<option value="javascript">JavaScript</option>
+									<option value="typescript">TypeScript</option>
+									<option value="yaml">YAML</option>
+									<option value="json">JSON</option>
+									<option value="dockerfile">Dockerfile</option>
+									<option value="sql">SQL</option>
+									<option value="markdown">Markdown</option>
+								</select>
+							</div>
+							<div class="flex justify-end gap-3 pt-4">
+								<button type="button" onclick="document.getElementById('new-snippet-modal').classList.add('hidden')" class="btn-secondary">Cancel</button>
+								<button type="submit" class="btn-primary">Create & Edit</button>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+
+			<!-- Connected repos (if any) -->
+			if len(data.Connections) > 0 {
+				<div class="card">
+					<div class="p-4 border-b border-gray-700/50">
+						<h2 class="text-lg font-semibold text-white">
+							<i class="fas fa-plug text-green-400 mr-2"></i>Connected Providers
+						</h2>
+					</div>
+					<div class="divide-y divide-gray-700/50">
+						for _, conn := range data.Connections {
+							<a href="/integrations/gitea" class="flex items-center justify-between p-4 hover:bg-gray-800/30 transition-colors">
+								<div class="flex items-center gap-3">
+									<i class={ "fas text-lg", providerIcon(conn.Provider) }></i>
+									<div>
+										<span class="font-medium text-white">{ conn.Name }</span>
+										<span class="text-sm text-gray-400 ml-2">{ conn.URL }</span>
+									</div>
+								</div>
+								<span class="text-sm text-gray-400">
+									{ fmt.Sprintf("%d repos", conn.ReposCount) }
+								</span>
+							</a>
+						}
+					</div>
+				</div>
+			} else {
+				<div class="card p-8 text-center">
+					<i class="fas fa-plug text-4xl text-gray-600 mb-3"></i>
+					<p class="text-gray-400">No git providers connected</p>
+					<p class="text-sm text-gray-500 mt-1">
+						<a href="/integrations/gitea" class="text-blue-400 hover:text-blue-300">Add a connection</a> to browse remote repositories
+					</p>
+				</div>
+			}
+		</div>
+	}
+}
+
+func providerIcon(provider string) string {
+	switch provider {
+	case "github":
+		return "fa-github text-white"
+	case "gitlab":
+		return "fa-gitlab text-orange-400"
+	case "gitea":
+		return "fa-code-branch text-green-400"
+	default:
+		return "fa-code-branch text-gray-400"
+	}
+}
+
+func langIcon(lang string) string {
+	switch lang {
+	case "go":
+		return "fab fa-golang text-cyan-400"
+	case "python":
+		return "fab fa-python text-yellow-400"
+	case "javascript", "typescript":
+		return "fab fa-js text-yellow-400"
+	case "shell", "bash":
+		return "fas fa-terminal text-green-400"
+	case "yaml", "json":
+		return "fas fa-file-code text-blue-400"
+	case "dockerfile":
+		return "fab fa-docker text-blue-400"
+	case "sql":
+		return "fas fa-database text-purple-400"
+	case "markdown":
+		return "fab fa-markdown text-white"
+	default:
+		return "fas fa-file text-gray-400"
+	}
+}
+
+func langBgColor(lang string) string {
+	switch lang {
+	case "go":
+		return "bg-cyan-500/10"
+	case "python":
+		return "bg-yellow-500/10"
+	case "javascript", "typescript":
+		return "bg-yellow-500/10"
+	case "shell", "bash":
+		return "bg-green-500/10"
+	case "yaml", "json":
+		return "bg-blue-500/10"
+	case "dockerfile":
+		return "bg-blue-500/10"
+	case "sql":
+		return "bg-purple-500/10"
+	case "markdown":
+		return "bg-gray-500/10"
+	default:
+		return "bg-gray-500/10"
+	}
+}

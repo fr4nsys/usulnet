@@ -1,0 +1,164 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ========================================
+   usulnet - Custom Styles
+   ======================================== */
+
+@layer base {
+  html {
+    @apply scroll-smooth;
+    transition: background-color 0.2s ease, color 0.2s ease;
+  }
+  
+  body {
+    font-family: 'IBM Plex Sans', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  
+  h1, h2, h3, .font-display {
+    font-family: 'Space Grotesk', system-ui, sans-serif;
+  }
+  
+  code, pre, .font-mono {
+    font-family: 'IBM Plex Mono', monospace;
+  }
+  
+  /* Scrollbar dark mode */
+  .dark ::-webkit-scrollbar { width: 8px; height: 8px; }
+  .dark ::-webkit-scrollbar-track { background: #0d1117; }
+  .dark ::-webkit-scrollbar-thumb { background: #30363d; border-radius: 4px; }
+  .dark ::-webkit-scrollbar-thumb:hover { background: #484f58; }
+
+  /* Scrollbar light mode */
+  .light ::-webkit-scrollbar { width: 8px; height: 8px; }
+  .light ::-webkit-scrollbar-track { background: #f1f5f9; }
+  .light ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+  .light ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+  
+  /* Firefox scrollbar */
+  * { scrollbar-width: thin; }
+  .dark * { scrollbar-color: #30363d #0d1117; }
+  .light * { scrollbar-color: #cbd5e1 #f1f5f9; }
+}
+
+@layer components {
+  /* Buttons */
+  .btn-primary {
+    @apply px-4 py-2 text-sm font-medium text-white 
+           bg-gradient-to-r from-primary-500 to-primary-600 
+           hover:from-primary-600 hover:to-primary-700 
+           rounded-lg shadow-lg shadow-primary-500/25 
+           transition-all duration-200;
+  }
+  
+  .btn-secondary {
+    @apply px-4 py-2 text-sm font-medium rounded-lg transition-colors duration-200;
+  }
+  .dark .btn-secondary {
+    @apply text-gray-300 bg-dark-700 hover:bg-dark-600;
+  }
+  .light .btn-secondary {
+    @apply text-gray-700 bg-slate-100 hover:bg-slate-200;
+  }
+  
+  .btn-danger {
+    @apply px-4 py-2 text-sm font-medium text-red-400
+           border border-red-500/30 rounded-lg
+           hover:bg-red-500/10 transition-colors;
+  }
+
+  .btn-ghost {
+    @apply px-4 py-2 text-sm font-medium rounded-lg transition-colors duration-200;
+    color: rgb(156 163 175 / var(--tw-text-opacity, 1));
+  }
+  .btn-ghost:hover {
+    @apply bg-gray-500/10;
+  }
+  
+  /* Card */
+  .card {
+    @apply rounded-xl border;
+  }
+  .dark .card {
+    @apply bg-dark-800 border-dark-700;
+  }
+  .light .card {
+    @apply bg-white border-slate-200;
+  }
+  
+  /* Input */
+  .input {
+    @apply w-full px-4 py-2 rounded-lg border
+           placeholder-gray-500 
+           focus:outline-none focus:ring-2 focus:ring-primary-500/50;
+  }
+  .dark .input {
+    @apply bg-dark-700 border-dark-600 text-white;
+  }
+  .light .input {
+    @apply bg-slate-50 border-slate-300 text-gray-900;
+  }
+  
+  /* Badge */
+  .badge {
+    @apply inline-flex items-center px-2.5 py-1 
+           rounded-full text-xs font-medium border;
+  }
+  .badge-success { @apply bg-green-500/10 text-green-400 border-green-500/20; }
+  .badge-warning { @apply bg-yellow-500/10 text-yellow-400 border-yellow-500/20; }
+  .badge-danger { @apply bg-red-500/10 text-red-400 border-red-500/20; }
+  .badge-info { @apply bg-blue-500/10 text-blue-400 border-blue-500/20; }
+  
+  /* Nav item */
+  .nav-item {
+    @apply flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all;
+  }
+  .dark .nav-item {
+    @apply text-gray-400 hover:bg-dark-700 hover:text-white;
+  }
+  .light .nav-item {
+    @apply text-gray-600 hover:bg-slate-100 hover:text-gray-900;
+  }
+  .nav-item-active {
+    @apply border-r-2 border-primary-500;
+  }
+  .dark .nav-item-active {
+    @apply bg-primary-500/10 text-primary-400;
+  }
+  .light .nav-item-active {
+    @apply bg-primary-50 text-primary-600;
+  }
+  
+  /* Table */
+  .table { @apply w-full; }
+  .table thead { @apply border-b; }
+  .dark .table thead { @apply bg-dark-700/50 border-dark-700; }
+  .light .table thead { @apply bg-slate-50 border-slate-200; }
+  .table th {
+    @apply px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider;
+  }
+  .dark .table th { @apply text-gray-400; }
+  .light .table th { @apply text-gray-500; }
+  .table tbody { @apply divide-y; }
+  .dark .table tbody { @apply divide-dark-700; }
+  .light .table tbody { @apply divide-slate-100; }
+  .table tbody tr { @apply transition-colors; }
+  .dark .table tbody tr:hover { @apply bg-dark-700/30; }
+  .light .table tbody tr:hover { @apply bg-slate-50; }
+  .table td { @apply px-5 py-4; }
+}
+
+/* HTMX states */
+.htmx-indicator { opacity: 0; transition: opacity 150ms ease-in-out; }
+.htmx-request .htmx-indicator, .htmx-request.htmx-indicator { opacity: 1; }
+
+/* Alpine.js */
+[x-cloak] { display: none !important; }
+
+/* Log output */
+.log-output .log-info { @apply text-blue-400; }
+.log-output .log-warn { @apply text-yellow-400; }
+.log-output .log-error { @apply text-red-400; }

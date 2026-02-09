@@ -1,0 +1,172 @@
+package proxy
+
+import "github.com/fr4nsys/usulnet/internal/web/templates/layouts"
+
+type CertNewLEData struct {
+	PageData  layouts.PageData
+	Error     string
+}
+
+templ CertNewLE(data CertNewLEData) {
+	@layouts.Base(data.PageData) {
+		<div class="max-w-2xl mx-auto space-y-6">
+			<div class="flex items-center gap-4">
+				<a href="/proxy/certificates" class="p-2 text-gray-400 hover:text-white hover:bg-dark-700 rounded-lg">
+					<i class="fas fa-arrow-left"></i>
+				</a>
+				<div>
+					<h1 class="text-2xl font-display font-bold text-white">New Let's Encrypt Certificate</h1>
+					<p class="text-gray-400 mt-1">Request a free SSL certificate via HTTP or DNS challenge</p>
+				</div>
+			</div>
+
+			if data.Error != "" {
+				<div class="bg-red-500/10 border border-red-500/20 rounded-lg p-4 text-red-400">
+					<i class="fas fa-exclamation-triangle mr-2"></i>{ data.Error }
+				</div>
+			}
+
+			<form action="/proxy/certificates/letsencrypt" method="POST" class="card p-6 space-y-6">
+				<input type="hidden" name="csrf_token" value={ data.PageData.CSRFToken }/>
+				<!-- Domain Names -->
+				<div>
+					<label class="block text-sm font-medium text-gray-300 mb-2">Domain Names</label>
+					<input type="text" name="domain_names" required
+						placeholder="example.com, *.example.com"
+						class="input w-full"
+					/>
+					<p class="text-xs text-gray-500 mt-1">Comma-separated. Wildcards (*.domain.com) require DNS challenge.</p>
+				</div>
+
+				<!-- Email -->
+				<div>
+					<label class="block text-sm font-medium text-gray-300 mb-2">Let's Encrypt Email</label>
+					<input type="email" name="email" required
+						placeholder="admin@example.com"
+						class="input w-full"
+					/>
+					<p class="text-xs text-gray-500 mt-1">Used for certificate expiration notifications.</p>
+				</div>
+
+				<!-- Challenge Type -->
+				<div>
+					<label class="block text-sm font-medium text-gray-300 mb-2">Validation Method</label>
+					<div class="grid grid-cols-2 gap-3">
+						<label class="card p-4 cursor-pointer border-2 border-transparent has-[:checked]:border-primary-500">
+							<input type="radio" name="challenge_type" value="http" checked class="sr-only" onchange="toggleDNS(false)"/>
+							<div class="flex items-center gap-3">
+								<i class="fas fa-globe text-xl text-blue-400"></i>
+								<div>
+									<div class="text-sm font-medium text-white">HTTP Challenge</div>
+									<div class="text-xs text-gray-400">Port 80 must be open</div>
+								</div>
+							</div>
+						</label>
+						<label class="card p-4 cursor-pointer border-2 border-transparent has-[:checked]:border-primary-500">
+							<input type="radio" name="challenge_type" value="dns" class="sr-only" onchange="toggleDNS(true)"/>
+							<div class="flex items-center gap-3">
+								<i class="fas fa-dns text-xl text-green-400"></i>
+								<div>
+									<div class="text-sm font-medium text-white">DNS Challenge</div>
+									<div class="text-xs text-gray-400">Supports wildcards</div>
+								</div>
+							</div>
+						</label>
+					</div>
+				</div>
+
+				<!-- DNS Provider (hidden by default) -->
+				<div id="dns-options" class="hidden space-y-4">
+					<div>
+						<label class="block text-sm font-medium text-gray-300 mb-2">DNS Provider</label>
+						<select name="dns_provider" class="input w-full" onchange="updateCredentials(this.value)">
+							<option value="">Select provider...</option>
+							<option value="cloudflare">Cloudflare</option>
+							<option value="route53">AWS Route 53</option>
+							<option value="digitalocean">DigitalOcean</option>
+							<option value="hetzner">Hetzner</option>
+							<option value="ovh">OVH</option>
+							<option value="gandi">Gandi</option>
+							<option value="duckdns">DuckDNS</option>
+							<option value="namecheap">Namecheap</option>
+							<option value="linode">Linode</option>
+							<option value="vultr">Vultr</option>
+							<option value="godaddy">GoDaddy</option>
+							<option value="desec">deSEC</option>
+							<option value="luadns">LuaDNS</option>
+						</select>
+					</div>
+
+					<div id="credentials-help" class="hidden">
+						<label class="block text-sm font-medium text-gray-300 mb-2">
+							DNS Provider Credentials
+						</label>
+						<textarea name="dns_credentials" rows="4"
+							placeholder="Paste provider-specific credentials JSON..."
+							class="input w-full font-mono text-sm"
+						></textarea>
+						<div id="credentials-hint" class="text-xs text-gray-500 mt-1"></div>
+					</div>
+
+					<div>
+						<label class="block text-sm font-medium text-gray-300 mb-2">Propagation Wait (seconds)</label>
+						<input type="number" name="propagation_seconds" value="30" min="0" max="600"
+							class="input w-32"
+						/>
+						<p class="text-xs text-gray-500 mt-1">Time to wait for DNS propagation. Increase if validation fails.</p>
+					</div>
+				</div>
+
+				<!-- Agreement -->
+				<div class="flex items-start gap-3">
+					<input type="checkbox" name="agree" id="le-agree" required
+						class="mt-1 rounded border-gray-600 bg-dark-700 text-primary-500 focus:ring-primary-500"
+					/>
+					<label for="le-agree" class="text-sm text-gray-400">
+						I agree to the <a href="https://letsencrypt.org/documents/LE-SA-v1.3-September-21-2022.pdf" target="_blank" class="text-primary-400 hover:underline">Let's Encrypt Terms of Service</a>
+					</label>
+				</div>
+
+				<div class="flex items-center justify-end gap-3">
+					<a href="/proxy/certificates" class="btn-secondary">Cancel</a>
+					<button type="submit" class="btn-primary">
+						<i class="fas fa-certificate mr-2"></i>Request Certificate
+					</button>
+				</div>
+			</form>
+		</div>
+
+		<script>
+			function toggleDNS(show) {
+				document.getElementById('dns-options').classList.toggle('hidden', !show);
+			}
+
+			const credentialsHints = {
+				'cloudflare': '{"dns_cloudflare_email":"...","dns_cloudflare_api_key":"..."}',
+				'route53': '{"dns_aws_access_key_id":"...","dns_aws_secret_access_key":"..."}',
+				'digitalocean': '{"dns_digitalocean_token":"..."}',
+				'hetzner': '{"dns_hetzner_api_token":"..."}',
+				'ovh': '{"dns_ovh_endpoint":"...","dns_ovh_application_key":"...","dns_ovh_application_secret":"...","dns_ovh_consumer_key":"..."}',
+				'gandi': '{"dns_gandi_api_token":"..."}',
+				'duckdns': '{"dns_duckdns_token":"..."}',
+				'namecheap': '{"dns_namecheap_api_user":"...","dns_namecheap_api_key":"..."}',
+				'linode': '{"dns_linode_token":"..."}',
+				'vultr': '{"dns_vultr_api_key":"..."}',
+				'godaddy': '{"dns_godaddy_api_key":"...","dns_godaddy_api_secret":"..."}',
+				'desec': '{"dns_desec_token":"..."}',
+				'luadns': '{"dns_luadns_email":"...","dns_luadns_api_key":"..."}'
+			};
+
+			function updateCredentials(provider) {
+				const helpDiv = document.getElementById('credentials-help');
+				const hintDiv = document.getElementById('credentials-hint');
+				if (provider && credentialsHints[provider]) {
+					helpDiv.classList.remove('hidden');
+					hintDiv.textContent = 'Format: ' + credentialsHints[provider];
+				} else {
+					helpDiv.classList.add('hidden');
+				}
+			}
+		</script>
+	}
+}

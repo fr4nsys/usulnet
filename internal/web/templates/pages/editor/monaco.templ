@@ -1,0 +1,393 @@
+package editor
+
+import (
+	"fmt"
+	"path/filepath"
+	"github.com/fr4nsys/usulnet/internal/web/templates/layouts"
+)
+
+// ============================================================================
+// Data Types
+// ============================================================================
+
+type MonacoData struct {
+	PageData    layouts.PageData
+	RepoID      string
+	RepoName    string
+	FilePath    string
+	Ref         string // branch
+	Content     string
+	Language    string // monaco language id
+	ReadOnly    bool
+	SnippetID   string // if set, editor is in snippet mode
+	SnippetName string // display name for snippet
+}
+
+// ============================================================================
+// Monaco Editor Template
+// ============================================================================
+
+templ Monaco(data MonacoData) {
+	@layouts.Base(data.PageData) {
+		<div class="flex flex-col h-full">
+			<!-- Editor Toolbar -->
+			<div class="flex items-center justify-between px-4 py-2 bg-dark-800 border-b border-dark-600">
+				<div class="flex items-center gap-3 min-w-0">
+					<!-- Back button -->
+					if data.RepoID != "" {
+						<a href={ templ.SafeURL(fmt.Sprintf("/integrations/gitea/repos/%s?ref=%s", data.RepoID, data.Ref)) }
+							class="text-gray-400 hover:text-white transition-colors" title="Back to repo">
+							<i class="fas fa-arrow-left"></i>
+						</a>
+					} else {
+						<a href="/editor"
+							class="text-gray-400 hover:text-white transition-colors" title="Back to editor">
+							<i class="fas fa-arrow-left"></i>
+						</a>
+					}
+					<!-- File info -->
+					<div class="flex items-center gap-2 min-w-0">
+						<i class="fas fa-file-code text-blue-400"></i>
+						<span class="text-sm text-white font-medium truncate">{ data.FilePath }</span>
+						if data.Ref != "" {
+							<span class="text-xs px-1.5 py-0.5 rounded bg-gray-700 text-gray-400 whitespace-nowrap">
+								<i class="fas fa-code-branch mr-1"></i>{ data.Ref }
+							</span>
+						}
+						if data.RepoName != "" {
+							<span class="text-xs text-gray-500">{ data.RepoName }</span>
+						} else if data.SnippetID != "" {
+							<span class="text-xs px-1.5 py-0.5 rounded bg-yellow-500/10 text-yellow-400">
+								<i class="fas fa-file-alt mr-1"></i>snippet
+							</span>
+						} else {
+							<span class="text-xs px-1.5 py-0.5 rounded bg-blue-500/10 text-blue-400">scratch</span>
+						}
+					</div>
+				</div>
+				<div class="flex items-center gap-2">
+					<!-- Save indicator -->
+					<span id="save-status" class="text-xs text-gray-500 hidden">
+						<i class="fas fa-check text-green-400 mr-1"></i>Saved
+					</span>
+					<span id="save-dirty" class="text-xs text-yellow-400 hidden">
+						<i class="fas fa-circle text-[6px] mr-1"></i>Modified
+					</span>
+					<!-- Language indicator -->
+					<span class="text-xs px-2 py-1 rounded bg-dark-700 text-gray-400">{ data.Language }</span>
+					<!-- Save button (git mode) -->
+					if data.RepoID != "" && !data.ReadOnly {
+						<button id="btn-save" onclick="saveFile()" class="btn-primary text-sm" title="Ctrl+S">
+							<i class="fas fa-save mr-1"></i>Save & Commit
+						</button>
+					}
+					<!-- Save button (snippet mode) -->
+					if data.SnippetID != "" {
+						<button id="btn-save-snippet" onclick="saveSnippet()" class="btn-primary text-sm" title="Ctrl+S">
+							<i class="fas fa-save mr-1"></i>Save
+						</button>
+					}
+					<!-- Open in nvim -->
+					if data.RepoID != "" {
+						<a href={ templ.SafeURL(fmt.Sprintf("/editor/nvim?repo=%s&file=%s&ref=%s", data.RepoID, data.FilePath, data.Ref)) }
+							class="btn-ghost text-sm" title="Open in Neovim">
+							<i class="fas fa-terminal mr-1"></i>nvim
+						</a>
+					} else {
+						<a href="/editor/nvim"
+							class="btn-ghost text-sm" title="Open Neovim">
+							<i class="fas fa-terminal mr-1"></i>nvim
+						</a>
+					}
+				</div>
+			</div>
+
+			<!-- Monaco Container -->
+			<div id="monaco-container"
+				class="flex-1 overflow-hidden"
+				data-repo-id={ data.RepoID }
+				data-file-path={ data.FilePath }
+				data-ref={ data.Ref }
+				data-language={ data.Language }
+				data-read-only={ fmt.Sprintf("%v", data.ReadOnly) }
+				data-snippet-id={ data.SnippetID }
+				data-content={ data.Content }></div>
+
+			<!-- Commit Modal -->
+			<div id="commit-modal" class="hidden fixed inset-0 z-50 overflow-y-auto">
+				<div class="flex min-h-screen items-center justify-center p-4">
+					<div class="fixed inset-0 bg-black/60" onclick="closeCommitModal()"></div>
+					<div class="relative card w-full max-w-md p-6">
+						<h3 class="text-lg font-semibold text-white mb-4">
+							<i class="fas fa-code-commit text-green-400 mr-2"></i>Commit Changes
+						</h3>
+						<div class="space-y-4">
+							<div>
+								<label class="block text-sm font-medium text-gray-300 mb-1">Commit message</label>
+								<input type="text" id="commit-message"
+									placeholder={ fmt.Sprintf("Update %s", filepath.Base(data.FilePath)) }
+									class="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-500 focus:border-blue-500 focus:ring-1 focus:ring-blue-500"/>
+							</div>
+							<div class="flex justify-end gap-3">
+								<button onclick="closeCommitModal()" class="btn-ghost">Cancel</button>
+								<button onclick="doCommit()" class="btn-primary">
+									<i class="fas fa-check mr-1"></i>Commit
+								</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Monaco Editor CDN -->
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.52.2/min/vs/loader.min.js"></script>
+		<script>
+		// ====================================================================
+		// usulnet Monaco Theme + Init
+		// ====================================================================
+		var monacoEditor = null;
+		var isDirty = false;
+		var monacoContainer = document.getElementById('monaco-container');
+		var repoID = monacoContainer.dataset.repoId || '';
+		var filePath = monacoContainer.dataset.filePath || '';
+		var ref = monacoContainer.dataset.ref || '';
+		var lang = monacoContainer.dataset.language || 'plaintext';
+		var readOnly = monacoContainer.dataset.readOnly === 'true';
+		var snippetID = monacoContainer.dataset.snippetId || '';
+		var initialContent = monacoContainer.dataset.content || '';
+
+		console.log('[Monaco] Init mode:', repoID ? 'git' : (snippetID ? 'snippet' : 'scratch'), 'readOnly:', readOnly, 'lang:', lang, 'file:', filePath);
+
+		require.config({
+			paths: { vs: 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.52.2/min/vs' }
+		});
+
+		require(['vs/editor/editor.main'], function() {
+			console.log('[Monaco] Editor module loaded');
+			// Define usulnet theme
+			monaco.editor.defineTheme('usulnet-dark', {
+				base: 'vs-dark',
+				inherit: true,
+				rules: [
+					{ token: '', foreground: 'e6edf3', background: '0d1117' },
+					{ token: 'comment', foreground: '8b949e', fontStyle: 'italic' },
+					{ token: 'keyword', foreground: 'ff7b72' },
+					{ token: 'string', foreground: 'a5d6ff' },
+					{ token: 'number', foreground: '79c0ff' },
+					{ token: 'type', foreground: 'ffa657' },
+					{ token: 'function', foreground: 'd2a8ff' },
+					{ token: 'variable', foreground: 'ffa657' },
+					{ token: 'constant', foreground: '79c0ff' },
+					{ token: 'operator', foreground: 'ff7b72' },
+					{ token: 'delimiter', foreground: 'e6edf3' },
+					{ token: 'tag', foreground: '7ee787' },
+					{ token: 'attribute.name', foreground: '79c0ff' },
+					{ token: 'attribute.value', foreground: 'a5d6ff' },
+					{ token: 'regexp', foreground: '7ee787' },
+				],
+				colors: {
+					'editor.background': '#0d1117',
+					'editor.foreground': '#e6edf3',
+					'editor.lineHighlightBackground': '#161b2233',
+					'editor.selectionBackground': '#ff6b3540',
+					'editor.selectionHighlightBackground': '#ff6b3520',
+					'editorCursor.foreground': '#ff6b35',
+					'editorLineNumber.foreground': '#484f58',
+					'editorLineNumber.activeForeground': '#e6edf3',
+					'editorIndentGuide.background': '#21262d',
+					'editorIndentGuide.activeBackground': '#30363d',
+					'editor.inactiveSelectionBackground': '#ff6b3520',
+					'editorBracketMatch.background': '#ff6b3530',
+					'editorBracketMatch.border': '#ff6b35',
+					'editorGutter.background': '#0d1117',
+					'editorWidget.background': '#161b22',
+					'editorWidget.border': '#30363d',
+					'editorSuggestWidget.background': '#161b22',
+					'editorSuggestWidget.border': '#30363d',
+					'editorSuggestWidget.selectedBackground': '#ff6b3530',
+					'input.background': '#0d1117',
+					'input.border': '#30363d',
+					'input.foreground': '#e6edf3',
+					'scrollbar.shadow': '#0008',
+					'scrollbarSlider.background': '#484f5866',
+					'scrollbarSlider.hoverBackground': '#484f58aa',
+					'scrollbarSlider.activeBackground': '#484f58dd',
+					'minimap.background': '#0d1117',
+					'minimapSlider.background': '#484f5833',
+				}
+			});
+
+			// Get content from data attribute
+			var content = initialContent;
+			// Try to decode as base64 if it looks like base64
+			if (content && /^[A-Za-z0-9+/=]+$/.test(content) && content.length > 20) {
+				try {
+					content = atob(content);
+				} catch(e) {
+					// Not base64, use as-is
+				}
+			}
+
+			monacoEditor = monaco.editor.create(monacoContainer, {
+				value: content,
+				language: lang,
+				theme: 'usulnet-dark',
+				readOnly: readOnly,
+				fontSize: 14,
+				fontFamily: "'IBM Plex Mono', 'JetBrains Mono', 'Fira Code', monospace",
+				fontLigatures: true,
+				minimap: { enabled: true, scale: 1 },
+				scrollBeyondLastLine: false,
+				smoothScrolling: true,
+				cursorBlinking: 'smooth',
+				cursorSmoothCaretAnimation: 'on',
+				renderLineHighlight: 'all',
+				bracketPairColorization: { enabled: true },
+				guides: { bracketPairs: true, indentation: true },
+				padding: { top: 12, bottom: 12 },
+				wordWrap: 'off',
+				tabSize: 4,
+				insertSpaces: false,
+				automaticLayout: true,
+			});
+
+			console.log('[Monaco] Editor created, readOnly:', monacoEditor.getOption(monaco.editor.EditorOption.readOnly));
+			// Focus editor for immediate typing
+			monacoEditor.focus();
+
+			// Ctrl+S → save (git or snippet mode)
+			monacoEditor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS, function() {
+				if (snippetID) {
+					saveSnippet();
+				} else {
+					saveFile();
+				}
+			});
+
+			// Track dirty state
+			monacoEditor.onDidChangeModelContent(function() {
+				if (!isDirty) {
+					isDirty = true;
+					document.getElementById('save-dirty').classList.remove('hidden');
+					document.getElementById('save-status').classList.add('hidden');
+				}
+			});
+		});
+
+		// ====================================================================
+		// Save / Commit
+		// ====================================================================
+
+		function saveFile() {
+			if (readOnly || !isDirty) return;
+			document.getElementById('commit-modal').classList.remove('hidden');
+			var msgInput = document.getElementById('commit-message');
+			if (msgInput.value === '') {
+				msgInput.value = 'Update ' + filePath.split('/').pop() + ' via usulnet editor';
+			}
+			msgInput.focus();
+			msgInput.select();
+		}
+
+		function closeCommitModal() {
+			document.getElementById('commit-modal').classList.add('hidden');
+		}
+
+		function doCommit() {
+			var message = document.getElementById('commit-message').value.trim();
+			if (!message) {
+				message = 'Update ' + filePath.split('/').pop() + ' via usulnet editor';
+			}
+
+			var btn = document.querySelector('#commit-modal .btn-primary');
+			btn.disabled = true;
+			btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i>Committing...';
+
+			var content = monacoEditor.getValue();
+			var form = new FormData();
+			form.append('path', filePath);
+			form.append('ref', ref);
+			form.append('content', content);
+			form.append('message', message);
+
+			fetch('/integrations/gitea/repos/' + repoID + '/file', {
+				method: 'POST',
+				body: form,
+			})
+			.then(function(resp) { return resp.json(); })
+			.then(function(data) {
+				if (data.error) {
+					alert('Commit failed: ' + data.error);
+				} else {
+					isDirty = false;
+					document.getElementById('save-dirty').classList.add('hidden');
+					document.getElementById('save-status').classList.remove('hidden');
+					setTimeout(function() {
+						document.getElementById('save-status').classList.add('hidden');
+					}, 3000);
+				}
+				closeCommitModal();
+			})
+			.catch(function(err) {
+				alert('Error: ' + err.message);
+			})
+			.finally(function() {
+				btn.disabled = false;
+				btn.innerHTML = '<i class="fas fa-check mr-1"></i>Commit';
+			});
+		}
+
+		// ====================================================================
+		// Save Snippet
+		// ====================================================================
+
+		function saveSnippet() {
+			if (!snippetID || !isDirty) return;
+
+			var btn = document.getElementById('btn-save-snippet');
+			if (btn) {
+				btn.disabled = true;
+				btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i>Saving...';
+			}
+
+			var content = monacoEditor.getValue();
+
+			fetch('/api/snippets/' + snippetID, {
+				method: 'PUT',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ content: content }),
+			})
+			.then(function(resp) {
+				if (!resp.ok) throw new Error('Save failed: ' + resp.statusText);
+				return resp.json();
+			})
+			.then(function(data) {
+				isDirty = false;
+				document.getElementById('save-dirty').classList.add('hidden');
+				document.getElementById('save-status').classList.remove('hidden');
+				setTimeout(function() {
+					document.getElementById('save-status').classList.add('hidden');
+				}, 3000);
+			})
+			.catch(function(err) {
+				alert('Error saving snippet: ' + err.message);
+			})
+			.finally(function() {
+				if (btn) {
+					btn.disabled = false;
+					btn.innerHTML = '<i class="fas fa-save mr-1"></i>Save';
+				}
+			});
+		}
+
+		// Warn before leaving with unsaved changes
+		window.addEventListener('beforeunload', function(e) {
+			if (isDirty) {
+				e.preventDefault();
+				e.returnValue = '';
+			}
+		});
+		</script>
+	}
+}

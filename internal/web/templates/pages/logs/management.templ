@@ -1,0 +1,814 @@
+package logs
+
+import (
+	"fmt"
+	"github.com/fr4nsys/usulnet/internal/web/templates/layouts"
+)
+
+// ============================================================================
+// Log Management Data Types
+// ============================================================================
+
+type LogManagementData struct {
+	PageData    layouts.PageData
+	Tab         string // "live", "search", "uploads", "patterns", "aggregation"
+	Containers  []ContainerBasicView
+	Uploads     []UploadedLogFile
+	Patterns    []DetectedPattern
+	Aggregation LogAggregationView
+}
+
+type UploadedLogFile struct {
+	ID          string
+	Filename    string
+	Size        string
+	Format      string
+	LineCount   int
+	ErrorCount  int
+	UploadedAt  string
+	Description string
+}
+
+type DetectedPattern struct {
+	ID          string
+	Pattern     string
+	Type        string
+	Count       int
+	FirstSeen   string
+	LastSeen    string
+	Severity    string
+	Sources     []string
+	Example     string
+}
+
+type LogAggregationView struct {
+	Timeframe   string
+	TotalLogs   int64
+	BySeverity  map[string]int64
+	BySource    map[string]int64
+	ErrorRate   float64
+	TopPatterns []DetectedPattern
+}
+
+// ============================================================================
+// Log Management Page
+// ============================================================================
+
+templ LogManagement(data LogManagementData) {
+	@layouts.Base(data.PageData) {
+		<div class="space-y-6">
+			<!-- Header -->
+			<div class="flex items-center justify-between">
+				<div>
+					<h1 class="text-2xl font-display font-bold text-white">Log Management</h1>
+					<p class="text-gray-400 mt-1">Centralized logging with parsing, analysis, and pattern detection</p>
+				</div>
+				<div class="flex items-center gap-3">
+					<button
+						onclick="document.getElementById('upload-modal').classList.remove('hidden')"
+						class="btn-secondary"
+					>
+						<i class="fas fa-upload mr-2"></i>Upload Logs
+					</button>
+					<a href="/logs" class="btn-primary">
+						<i class="fas fa-stream mr-2"></i>Live Stream
+					</a>
+				</div>
+			</div>
+
+			<!-- Tabs -->
+			<div class="flex gap-2 border-b border-dark-600 pb-0">
+				<a
+					href="/logs/management?tab=aggregation"
+					class={ "px-4 py-2.5 text-sm font-medium border-b-2 transition-colors -mb-px",
+						templ.KV("border-primary-400 text-primary-400", data.Tab == "aggregation" || data.Tab == ""),
+						templ.KV("border-transparent text-gray-400 hover:text-white", data.Tab != "aggregation" && data.Tab != "") }
+				>
+					<i class="fas fa-chart-bar mr-2"></i>Aggregation
+				</a>
+				<a
+					href="/logs/management?tab=patterns"
+					class={ "px-4 py-2.5 text-sm font-medium border-b-2 transition-colors -mb-px",
+						templ.KV("border-primary-400 text-primary-400", data.Tab == "patterns"),
+						templ.KV("border-transparent text-gray-400 hover:text-white", data.Tab != "patterns") }
+				>
+					<i class="fas fa-exclamation-triangle mr-2"></i>Error Patterns ({ fmt.Sprintf("%d", len(data.Patterns)) })
+				</a>
+				<a
+					href="/logs/management?tab=uploads"
+					class={ "px-4 py-2.5 text-sm font-medium border-b-2 transition-colors -mb-px",
+						templ.KV("border-primary-400 text-primary-400", data.Tab == "uploads"),
+						templ.KV("border-transparent text-gray-400 hover:text-white", data.Tab != "uploads") }
+				>
+					<i class="fas fa-file-upload mr-2"></i>Uploaded Logs ({ fmt.Sprintf("%d", len(data.Uploads)) })
+				</a>
+				<a
+					href="/logs/management?tab=search"
+					class={ "px-4 py-2.5 text-sm font-medium border-b-2 transition-colors -mb-px",
+						templ.KV("border-primary-400 text-primary-400", data.Tab == "search"),
+						templ.KV("border-transparent text-gray-400 hover:text-white", data.Tab != "search") }
+				>
+					<i class="fas fa-search mr-2"></i>Search
+				</a>
+			</div>
+
+			<!-- Tab Content -->
+			if data.Tab == "patterns" {
+				@patternsTab(data)
+			} else if data.Tab == "uploads" {
+				@uploadsTab(data)
+			} else if data.Tab == "search" {
+				@searchTab(data)
+			} else {
+				@aggregationTab(data)
+			}
+
+			<!-- Upload Modal -->
+			@uploadModal(data.PageData.CSRFToken)
+		</div>
+	}
+}
+
+// ============================================================================
+// Aggregation Tab
+// ============================================================================
+
+templ aggregationTab(data LogManagementData) {
+	<div class="space-y-6">
+		<!-- Stats Row -->
+		<div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+			<div class="card p-4">
+				<div class="text-2xl font-bold text-white">{ fmt.Sprintf("%d", data.Aggregation.TotalLogs) }</div>
+				<div class="text-sm text-gray-400">Total Logs</div>
+			</div>
+			<div class="card p-4">
+				<div class="text-2xl font-bold text-red-400">
+					{ fmt.Sprintf("%d", data.Aggregation.BySeverity["error"]+data.Aggregation.BySeverity["critical"]) }
+				</div>
+				<div class="text-sm text-gray-400">Errors</div>
+			</div>
+			<div class="card p-4">
+				<div class="text-2xl font-bold text-yellow-400">{ fmt.Sprintf("%d", data.Aggregation.BySeverity["warning"]) }</div>
+				<div class="text-sm text-gray-400">Warnings</div>
+			</div>
+			<div class="card p-4">
+				<div class="text-2xl font-bold text-blue-400">{ fmt.Sprintf("%d", len(data.Aggregation.BySource)) }</div>
+				<div class="text-sm text-gray-400">Sources</div>
+			</div>
+			<div class="card p-4">
+				<div class="text-2xl font-bold text-purple-400">{ fmt.Sprintf("%.2f/min", data.Aggregation.ErrorRate) }</div>
+				<div class="text-sm text-gray-400">Error Rate</div>
+			</div>
+		</div>
+
+		<!-- Severity Distribution -->
+		<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+			<div class="card p-6">
+				<h3 class="text-lg font-semibold text-white mb-4">
+					<i class="fas fa-chart-pie text-primary-400 mr-2"></i>Severity Distribution
+				</h3>
+				<div class="space-y-3">
+					@severityBar("Critical", data.Aggregation.BySeverity["critical"], data.Aggregation.TotalLogs, "bg-red-600")
+					@severityBar("Error", data.Aggregation.BySeverity["error"], data.Aggregation.TotalLogs, "bg-red-500")
+					@severityBar("Warning", data.Aggregation.BySeverity["warning"], data.Aggregation.TotalLogs, "bg-yellow-500")
+					@severityBar("Info", data.Aggregation.BySeverity["info"], data.Aggregation.TotalLogs, "bg-blue-500")
+					@severityBar("Debug", data.Aggregation.BySeverity["debug"], data.Aggregation.TotalLogs, "bg-gray-500")
+				</div>
+			</div>
+
+			<div class="card p-6">
+				<h3 class="text-lg font-semibold text-white mb-4">
+					<i class="fas fa-server text-primary-400 mr-2"></i>Top Sources
+				</h3>
+				<div class="space-y-2">
+					for source, count := range data.Aggregation.BySource {
+						<div class="flex items-center justify-between py-2 border-b border-dark-600 last:border-0">
+							<span class="text-white font-mono text-sm">{ source }</span>
+							<span class="text-gray-400 text-sm">{ fmt.Sprintf("%d logs", count) }</span>
+						</div>
+					}
+					if len(data.Aggregation.BySource) == 0 {
+						<div class="text-center text-gray-500 py-4">No sources found</div>
+					}
+				</div>
+			</div>
+		</div>
+
+		<!-- Top Error Patterns -->
+		<div class="card">
+			<div class="p-4 border-b border-dark-600">
+				<h3 class="text-lg font-semibold text-white">
+					<i class="fas fa-bug text-red-400 mr-2"></i>Top Error Patterns
+				</h3>
+			</div>
+			<div class="overflow-x-auto">
+				<table class="table">
+					<thead>
+						<tr>
+							<th>Pattern</th>
+							<th>Type</th>
+							<th>Count</th>
+							<th>Last Seen</th>
+							<th>Actions</th>
+						</tr>
+					</thead>
+					<tbody>
+						if len(data.Aggregation.TopPatterns) == 0 {
+							<tr>
+								<td colspan="5" class="text-center text-gray-500 py-8">
+									No error patterns detected. This is good!
+								</td>
+							</tr>
+						}
+						for _, pattern := range data.Aggregation.TopPatterns {
+							<tr>
+								<td>
+									<div class="max-w-md">
+										<div class="font-medium text-white truncate">{ pattern.Pattern }</div>
+										<div class="text-xs text-gray-500 font-mono truncate mt-1">{ pattern.Example }</div>
+									</div>
+								</td>
+								<td>
+									<span class={ "badge text-xs", patternTypeBadge(pattern.Type) }>
+										{ pattern.Type }
+									</span>
+								</td>
+								<td>
+									<span class="text-white font-medium">{ fmt.Sprintf("%d", pattern.Count) }</span>
+								</td>
+								<td class="text-gray-400 text-sm">{ pattern.LastSeen }</td>
+								<td>
+									<a
+										href={ templ.SafeURL("/logs/management?tab=patterns&id=" + pattern.ID) }
+										class="text-primary-400 hover:text-primary-300 text-sm"
+									>
+										View Details
+									</a>
+								</td>
+							</tr>
+						}
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+}
+
+templ severityBar(label string, count int64, total int64, color string) {
+	<div class="flex items-center gap-3">
+		<span class="w-20 text-sm text-gray-400">{ label }</span>
+		<div class="flex-1 bg-dark-600 rounded-full h-3 overflow-hidden">
+			if total > 0 {
+				<div
+					class={ "h-full rounded-full transition-all", color }
+					style={ fmt.Sprintf("width: %d%%", int(float64(count)/float64(total)*100)) }
+				></div>
+			}
+		</div>
+		<span class="w-16 text-sm text-gray-400 text-right">{ fmt.Sprintf("%d", count) }</span>
+	</div>
+}
+
+// ============================================================================
+// Patterns Tab
+// ============================================================================
+
+templ patternsTab(data LogManagementData) {
+	<div class="space-y-4">
+		<!-- Pattern Summary -->
+		<div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+			<div class="card p-4 border-l-4 border-red-500">
+				<div class="text-xl font-bold text-red-400">
+					{ fmt.Sprintf("%d", countPatternsByType(data.Patterns, "exception")) }
+				</div>
+				<div class="text-sm text-gray-400">Exceptions</div>
+			</div>
+			<div class="card p-4 border-l-4 border-orange-500">
+				<div class="text-xl font-bold text-orange-400">
+					{ fmt.Sprintf("%d", countPatternsByType(data.Patterns, "timeout")) }
+				</div>
+				<div class="text-sm text-gray-400">Timeouts</div>
+			</div>
+			<div class="card p-4 border-l-4 border-yellow-500">
+				<div class="text-xl font-bold text-yellow-400">
+					{ fmt.Sprintf("%d", countPatternsByType(data.Patterns, "connection")) }
+				</div>
+				<div class="text-sm text-gray-400">Connection Issues</div>
+			</div>
+			<div class="card p-4 border-l-4 border-purple-500">
+				<div class="text-xl font-bold text-purple-400">
+					{ fmt.Sprintf("%d", len(data.Patterns)) }
+				</div>
+				<div class="text-sm text-gray-400">Total Patterns</div>
+			</div>
+		</div>
+
+		<!-- Patterns Table -->
+		<div class="card">
+			<div class="overflow-x-auto">
+				<table class="table">
+					<thead>
+						<tr>
+							<th>Error Pattern</th>
+							<th>Type</th>
+							<th>Severity</th>
+							<th>Occurrences</th>
+							<th>Sources</th>
+							<th>Time Range</th>
+						</tr>
+					</thead>
+					<tbody>
+						if len(data.Patterns) == 0 {
+							<tr>
+								<td colspan="6" class="text-center text-gray-500 py-8">
+									<i class="fas fa-check-circle text-green-400 text-2xl mb-2"></i>
+									<p>No error patterns detected</p>
+								</td>
+							</tr>
+						}
+						for _, p := range data.Patterns {
+							<tr>
+								<td>
+									<div class="max-w-sm">
+										<div class="font-medium text-white">{ p.Pattern }</div>
+										<div class="text-xs text-gray-500 font-mono mt-1 truncate">{ p.Example }</div>
+									</div>
+								</td>
+								<td>
+									<span class={ "badge text-xs", patternTypeBadge(p.Type) }>
+										<i class={ "mr-1", patternTypeIcon(p.Type) }></i>
+										{ p.Type }
+									</span>
+								</td>
+								<td>
+									<span class={ "badge text-xs", severityBadge(p.Severity) }>
+										{ p.Severity }
+									</span>
+								</td>
+								<td class="font-medium text-white">{ fmt.Sprintf("%d", p.Count) }</td>
+								<td>
+									<div class="flex flex-wrap gap-1">
+										for _, src := range p.Sources {
+											<span class="text-xs bg-dark-600 text-gray-300 px-2 py-0.5 rounded">{ src }</span>
+										}
+									</div>
+								</td>
+								<td class="text-sm text-gray-400">
+									<div>{ p.FirstSeen }</div>
+									<div class="text-xs text-gray-500">to { p.LastSeen }</div>
+								</td>
+							</tr>
+						}
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+}
+
+// ============================================================================
+// Uploads Tab
+// ============================================================================
+
+templ uploadsTab(data LogManagementData) {
+	<div class="space-y-4">
+		<!-- Upload Area -->
+		<div class="card p-8 border-2 border-dashed border-dark-500 hover:border-primary-500/50 transition-colors">
+			<div class="text-center">
+				<i class="fas fa-cloud-upload-alt text-4xl text-gray-500 mb-4"></i>
+				<h3 class="text-lg font-medium text-white mb-2">Upload Log Files</h3>
+				<p class="text-gray-400 text-sm mb-4">
+					Drag and drop log files here, or click to browse.
+					Supports .log, .txt, .json, and compressed archives.
+				</p>
+				<button
+					onclick="document.getElementById('upload-modal').classList.remove('hidden')"
+					class="btn-primary"
+				>
+					<i class="fas fa-upload mr-2"></i>Select Files
+				</button>
+			</div>
+		</div>
+
+		<!-- Uploaded Files Table -->
+		<div class="card">
+			<div class="p-4 border-b border-dark-600">
+				<h3 class="text-lg font-semibold text-white">Uploaded Log Files</h3>
+			</div>
+			<div class="overflow-x-auto">
+				<table class="table">
+					<thead>
+						<tr>
+							<th>Filename</th>
+							<th>Format</th>
+							<th>Lines</th>
+							<th>Errors</th>
+							<th>Size</th>
+							<th>Uploaded</th>
+							<th>Actions</th>
+						</tr>
+					</thead>
+					<tbody>
+						if len(data.Uploads) == 0 {
+							<tr>
+								<td colspan="7" class="text-center text-gray-500 py-8">
+									No uploaded log files. Upload one to analyze.
+								</td>
+							</tr>
+						}
+						for _, upload := range data.Uploads {
+							<tr>
+								<td>
+									<div class="flex items-center gap-3">
+										<i class={ "fas text-lg", formatIcon(upload.Format) }></i>
+										<div>
+											<div class="font-medium text-white">{ upload.Filename }</div>
+											if upload.Description != "" {
+												<div class="text-xs text-gray-500">{ upload.Description }</div>
+											}
+										</div>
+									</div>
+								</td>
+								<td>
+									<span class="badge bg-primary-500/10 text-primary-400 text-xs">{ upload.Format }</span>
+								</td>
+								<td class="text-gray-400">{ fmt.Sprintf("%d", upload.LineCount) }</td>
+								<td>
+									if upload.ErrorCount > 0 {
+										<span class="text-red-400 font-medium">{ fmt.Sprintf("%d", upload.ErrorCount) }</span>
+									} else {
+										<span class="text-green-400">0</span>
+									}
+								</td>
+								<td class="text-gray-400">{ upload.Size }</td>
+								<td class="text-gray-400 text-sm">{ upload.UploadedAt }</td>
+								<td>
+									<div class="flex items-center gap-2">
+										<a
+											href={ templ.SafeURL("/logs/uploads/" + upload.ID) }
+											class="text-primary-400 hover:text-primary-300 text-sm"
+										>
+											Analyze
+										</a>
+										<button
+											hx-delete={ "/logs/uploads/" + upload.ID }
+											hx-target="body"
+											hx-confirm="Delete this uploaded file?"
+											class="text-red-400 hover:text-red-300 text-sm"
+										>
+											Delete
+										</button>
+									</div>
+								</td>
+							</tr>
+						}
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+}
+
+// ============================================================================
+// Search Tab
+// ============================================================================
+
+templ searchTab(data LogManagementData) {
+	<div class="space-y-4" x-data="logSearch()">
+		<!-- Search Form -->
+		<div class="card p-6">
+			<form @submit.prevent="search()" class="space-y-4">
+				<div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+					<div class="lg:col-span-2">
+						<label class="block text-sm font-medium text-gray-300 mb-2">Search Query</label>
+						<input
+							type="text"
+							x-model="query"
+							class="input"
+							placeholder="Enter search terms, regex, or field:value..."
+						/>
+					</div>
+					<div>
+						<label class="block text-sm font-medium text-gray-300 mb-2">Time Range</label>
+						<select x-model="timeRange" class="input">
+							<option value="1h">Last 1 hour</option>
+							<option value="6h">Last 6 hours</option>
+							<option value="24h">Last 24 hours</option>
+							<option value="7d">Last 7 days</option>
+							<option value="30d">Last 30 days</option>
+							<option value="custom">Custom range</option>
+						</select>
+					</div>
+				</div>
+
+				<div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+					<div>
+						<label class="block text-sm font-medium text-gray-300 mb-2">Severity</label>
+						<select x-model="severity" class="input">
+							<option value="">All</option>
+							<option value="critical">Critical</option>
+							<option value="error">Error</option>
+							<option value="warning">Warning</option>
+							<option value="info">Info</option>
+							<option value="debug">Debug</option>
+						</select>
+					</div>
+					<div>
+						<label class="block text-sm font-medium text-gray-300 mb-2">Source</label>
+						<select x-model="source" class="input">
+							<option value="">All Sources</option>
+							for _, c := range data.Containers {
+								<option value={ c.ID }>{ c.Name }</option>
+							}
+						</select>
+					</div>
+					<div>
+						<label class="block text-sm font-medium text-gray-300 mb-2">Format</label>
+						<select x-model="format" class="input">
+							<option value="">All</option>
+							<option value="json">JSON</option>
+							<option value="syslog">Syslog</option>
+							<option value="apache">Apache/Nginx</option>
+							<option value="plain">Plain Text</option>
+						</select>
+					</div>
+					<div class="flex items-end">
+						<button type="submit" class="btn-primary w-full">
+							<i class="fas fa-search mr-2"></i>Search
+						</button>
+					</div>
+				</div>
+			</form>
+		</div>
+
+		<!-- Results -->
+		<div class="card">
+			<div class="p-4 border-b border-dark-600 flex items-center justify-between">
+				<h3 class="text-lg font-semibold text-white">
+					Search Results
+					<span x-show="results.length > 0" class="text-sm text-gray-400 font-normal ml-2">
+						(<span x-text="results.length"></span> logs found)
+					</span>
+				</h3>
+				<div class="flex items-center gap-2">
+					<button @click="exportResults()" x-show="results.length > 0" class="btn-sm btn-secondary">
+						<i class="fas fa-download mr-1"></i>Export
+					</button>
+				</div>
+			</div>
+			<div class="divide-y divide-dark-600 max-h-[600px] overflow-y-auto" id="search-results">
+				<template x-if="loading">
+					<div class="p-8 text-center text-gray-500">
+						<i class="fas fa-spinner fa-spin text-2xl mb-2"></i>
+						<p>Searching...</p>
+					</div>
+				</template>
+				<template x-if="!loading && results.length === 0">
+					<div class="p-8 text-center text-gray-500">
+						<i class="fas fa-search text-2xl mb-2"></i>
+						<p>No results. Try adjusting your search criteria.</p>
+					</div>
+				</template>
+				<template x-for="log in results" :key="log.id">
+					<div class="p-4 hover:bg-dark-700/50">
+						<div class="flex items-start gap-3">
+							<span :class="severityDot(log.severity)" class="w-2 h-2 rounded-full mt-2 flex-shrink-0"></span>
+							<div class="flex-1 min-w-0">
+								<div class="flex items-center gap-2 text-sm mb-1">
+									<span class="text-gray-500" x-text="log.timestamp"></span>
+									<span class="text-primary-400" x-text="log.source_name"></span>
+									<span :class="severityBadgeClass(log.severity)" class="badge text-xs" x-text="log.severity"></span>
+								</div>
+								<pre class="text-white text-sm font-mono whitespace-pre-wrap break-all" x-text="log.message"></pre>
+								<template x-if="log.fields && Object.keys(log.fields).length > 0">
+									<div class="mt-2 flex flex-wrap gap-2">
+										<template x-for="(value, key) in log.fields" :key="key">
+											<span class="text-xs bg-dark-600 text-gray-300 px-2 py-0.5 rounded">
+												<span class="text-gray-500" x-text="key + ': '"></span>
+												<span x-text="value"></span>
+											</span>
+										</template>
+									</div>
+								</template>
+							</div>
+						</div>
+					</div>
+				</template>
+			</div>
+		</div>
+
+		<script>
+			function logSearch() {
+				return {
+					query: '',
+					timeRange: '24h',
+					severity: '',
+					source: '',
+					format: '',
+					loading: false,
+					results: [],
+					async search() {
+						this.loading = true;
+						try {
+							const params = new URLSearchParams({
+								query: this.query,
+								time_range: this.timeRange,
+								severity: this.severity,
+								source: this.source,
+								format: this.format
+							});
+							const resp = await fetch('/api/logs/search?' + params);
+							const data = await resp.json();
+							this.results = data.logs || [];
+						} catch (e) {
+							console.error('Search failed:', e);
+							this.results = [];
+						}
+						this.loading = false;
+					},
+					severityDot(sev) {
+						const colors = {
+							critical: 'bg-red-600',
+							error: 'bg-red-400',
+							warning: 'bg-yellow-400',
+							info: 'bg-blue-400',
+							debug: 'bg-gray-400'
+						};
+						return colors[sev] || 'bg-gray-500';
+					},
+					severityBadgeClass(sev) {
+						const classes = {
+							critical: 'bg-red-500/20 text-red-400',
+							error: 'bg-red-500/20 text-red-400',
+							warning: 'bg-yellow-500/20 text-yellow-400',
+							info: 'bg-blue-500/20 text-blue-400',
+							debug: 'bg-gray-500/20 text-gray-400'
+						};
+						return classes[sev] || 'bg-gray-500/20 text-gray-400';
+					},
+					exportResults() {
+						const blob = new Blob([JSON.stringify(this.results, null, 2)], {type: 'application/json'});
+						const url = URL.createObjectURL(blob);
+						const a = document.createElement('a');
+						a.href = url;
+						a.download = 'log-search-results.json';
+						a.click();
+					}
+				};
+			}
+		</script>
+	</div>
+}
+
+// ============================================================================
+// Upload Modal
+// ============================================================================
+
+templ uploadModal(csrfToken string) {
+	<div id="upload-modal" class="hidden fixed inset-0 z-50 overflow-y-auto">
+		<div class="fixed inset-0 bg-black/50" onclick="document.getElementById('upload-modal').classList.add('hidden')"></div>
+		<div class="relative min-h-screen flex items-center justify-center p-4">
+			<div class="relative bg-dark-800 rounded-xl border border-dark-600 max-w-lg w-full p-6">
+				<div class="flex items-center justify-between mb-6">
+					<h2 class="text-xl font-display font-bold text-white">Upload Log File</h2>
+					<button
+						onclick="document.getElementById('upload-modal').classList.add('hidden')"
+						class="text-gray-400 hover:text-white"
+					>
+						<i class="fas fa-times"></i>
+					</button>
+				</div>
+
+				<form action="/logs/uploads" method="POST" enctype="multipart/form-data" class="space-y-4">
+					<input type="hidden" name="csrf_token" value={ csrfToken }/>
+
+					<div>
+						<label class="block text-sm font-medium text-gray-300 mb-2">Log File</label>
+						<input
+							type="file"
+							name="file"
+							required
+							accept=".log,.txt,.json,.gz,.tar.gz,.zip"
+							class="input file:mr-4 file:py-1 file:px-3 file:rounded-lg file:border-0 file:bg-primary-500 file:text-black file:font-medium file:cursor-pointer"
+						/>
+						<p class="text-xs text-gray-500 mt-1">Max file size: 100MB. Supported: .log, .txt, .json, .gz, .tar.gz, .zip</p>
+					</div>
+
+					<div>
+						<label class="block text-sm font-medium text-gray-300 mb-2">Description (optional)</label>
+						<input type="text" name="description" class="input" placeholder="e.g. Production server logs from incident"/>
+					</div>
+
+					<div class="grid grid-cols-2 gap-4">
+						<div>
+							<label class="block text-sm font-medium text-gray-300 mb-2">Log Format</label>
+							<select name="format" class="input">
+								<option value="auto">Auto-detect</option>
+								<option value="json">JSON</option>
+								<option value="syslog">Syslog</option>
+								<option value="apache">Apache/Nginx</option>
+								<option value="plain">Plain Text</option>
+							</select>
+						</div>
+						<div>
+							<label class="block text-sm font-medium text-gray-300 mb-2">Severity Filter</label>
+							<select name="min_severity" class="input">
+								<option value="">All levels</option>
+								<option value="debug">Debug+</option>
+								<option value="info">Info+</option>
+								<option value="warning">Warning+</option>
+								<option value="error">Error+</option>
+								<option value="critical">Critical only</option>
+							</select>
+						</div>
+					</div>
+
+					<div class="flex justify-end gap-3 pt-4 border-t border-dark-600">
+						<button
+							type="button"
+							onclick="document.getElementById('upload-modal').classList.add('hidden')"
+							class="btn-secondary"
+						>
+							Cancel
+						</button>
+						<button type="submit" class="btn-primary">
+							<i class="fas fa-upload mr-2"></i>Upload & Analyze
+						</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+}
+
+// ============================================================================
+// Helper Functions
+// ============================================================================
+
+func countPatternsByType(patterns []DetectedPattern, patternType string) int {
+	count := 0
+	for _, p := range patterns {
+		if p.Type == patternType {
+			count++
+		}
+	}
+	return count
+}
+
+func patternTypeBadge(t string) string {
+	switch t {
+	case "exception", "panic", "fatal":
+		return "bg-red-500/20 text-red-400"
+	case "timeout", "connection":
+		return "bg-orange-500/20 text-orange-400"
+	case "oom", "segfault":
+		return "bg-purple-500/20 text-purple-400"
+	default:
+		return "bg-gray-500/20 text-gray-400"
+	}
+}
+
+func patternTypeIcon(t string) string {
+	switch t {
+	case "exception", "panic":
+		return "fas fa-bomb"
+	case "timeout":
+		return "fas fa-clock"
+	case "connection":
+		return "fas fa-plug"
+	case "oom":
+		return "fas fa-memory"
+	default:
+		return "fas fa-exclamation-triangle"
+	}
+}
+
+func severityBadge(s string) string {
+	switch s {
+	case "critical":
+		return "bg-red-600/20 text-red-400 border border-red-500/30"
+	case "error":
+		return "bg-red-500/20 text-red-400"
+	case "warning":
+		return "bg-yellow-500/20 text-yellow-400"
+	case "info":
+		return "bg-blue-500/20 text-blue-400"
+	case "debug":
+		return "bg-gray-500/20 text-gray-400"
+	default:
+		return "bg-gray-500/20 text-gray-400"
+	}
+}
+
+func formatIcon(format string) string {
+	switch format {
+	case "json":
+		return "fa-file-code text-yellow-400"
+	case "syslog":
+		return "fa-file-alt text-blue-400"
+	case "apache", "nginx":
+		return "fa-server text-green-400"
+	default:
+		return "fa-file text-gray-400"
+	}
+}

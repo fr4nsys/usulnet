@@ -1,0 +1,124 @@
+package stacks
+
+import (
+	"github.com/fr4nsys/usulnet/internal/web/templates/layouts"
+)
+
+type CatalogData struct {
+	PageData   layouts.PageData
+	Apps       []CatalogAppItem
+	Categories []string
+}
+
+type CatalogAppItem struct {
+	Slug        string
+	Name        string
+	Description string
+	Icon        string
+	IconColor   string
+	Category    string
+	Version     string
+	Website     string
+}
+
+templ Catalog(data CatalogData) {
+	@layouts.Base(data.PageData) {
+		<div class="space-y-6">
+			<!-- Header -->
+			<div class="flex items-center justify-between">
+				<div>
+					<h1 class="text-2xl font-display font-bold text-white">Apps</h1>
+					<p class="text-gray-400 mt-1">Deploy pre-configured applications with one click</p>
+				</div>
+				<div class="flex items-center gap-3">
+					<a href="/stacks/new" class="btn-secondary">
+						<i class="fas fa-code mr-2"></i>Manual Compose
+					</a>
+					<a href="/stacks" class="btn-secondary">
+						<i class="fas fa-cubes mr-2"></i>My Stacks
+					</a>
+				</div>
+			</div>
+
+			<!-- Category Filter -->
+			<div id="catalog-filters" class="flex items-center gap-2 flex-wrap">
+				<button
+					class="catalog-filter active px-3 py-1.5 text-sm font-medium rounded-lg bg-primary-500/10 text-primary-400 border border-primary-500/20"
+					data-filter="all"
+				>
+					All
+				</button>
+				for _, cat := range data.Categories {
+					<button
+						class="catalog-filter px-3 py-1.5 text-sm font-medium rounded-lg text-gray-400 hover:text-white hover:bg-dark-700 border border-dark-600"
+						data-filter={ cat }
+					>
+						{ cat }
+					</button>
+				}
+			</div>
+
+			<!-- Apps Grid -->
+			if len(data.Apps) == 0 {
+				<div class="card p-12 text-center">
+					<i class="fas fa-store text-4xl text-gray-600 mb-4"></i>
+					<h3 class="text-lg font-medium text-white mb-2">No applications available</h3>
+					<p class="text-gray-400">The application catalog is empty.</p>
+				</div>
+			} else {
+				<div id="catalog-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+					for _, app := range data.Apps {
+						<a href={ templ.SafeURL("/stacks/catalog/" + app.Slug) } class="catalog-card card p-5 hover:border-primary-500/50 transition-all group cursor-pointer block" data-category={ app.Category }>
+							<div class="flex items-start gap-4">
+								<div class={ "w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0", app.IconColor }>
+									<i class={ "fas " + app.Icon + " text-xl" }></i>
+								</div>
+								<div class="flex-1 min-w-0">
+									<div class="flex items-center gap-2 mb-1">
+										<h3 class="font-medium text-white group-hover:text-primary-400 transition-colors">{ app.Name }</h3>
+										<span class="text-xs text-gray-500 bg-dark-600 px-2 py-0.5 rounded-full">{ app.Version }</span>
+									</div>
+									<p class="text-sm text-gray-400 line-clamp-2">{ app.Description }</p>
+								</div>
+							</div>
+							<div class="mt-4 flex items-center justify-between">
+								<span class="text-xs text-gray-500 font-medium">
+									<i class="fas fa-tag mr-1"></i>{ app.Category }
+								</span>
+								<span class="text-xs text-primary-400 opacity-0 group-hover:opacity-100 transition-opacity font-medium">
+									Install <i class="fas fa-arrow-right ml-1"></i>
+								</span>
+							</div>
+						</a>
+					}
+				</div>
+			}
+		</div>
+
+		<!-- Filter script -->
+		<script>
+		document.getElementById('catalog-filters').addEventListener('click', function(e) {
+			var btn = e.target.closest('.catalog-filter');
+			if (!btn) return;
+			var category = btn.dataset.filter;
+
+			// Update active button
+			document.querySelectorAll('.catalog-filter').forEach(function(b) {
+				b.classList.remove('active', 'bg-primary-500/10', 'text-primary-400', 'border-primary-500/20');
+				b.classList.add('text-gray-400', 'hover:text-white', 'hover:bg-dark-700', 'border-dark-600');
+			});
+			btn.classList.add('active', 'bg-primary-500/10', 'text-primary-400', 'border-primary-500/20');
+			btn.classList.remove('text-gray-400', 'hover:text-white', 'hover:bg-dark-700', 'border-dark-600');
+
+			// Filter cards
+			document.querySelectorAll('.catalog-card').forEach(function(card) {
+				if (category === 'all' || card.dataset.category === category) {
+					card.style.display = '';
+				} else {
+					card.style.display = 'none';
+				}
+			});
+		});
+		</script>
+	}
+}

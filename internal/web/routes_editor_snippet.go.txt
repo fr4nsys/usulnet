@@ -1,0 +1,62 @@
+package web
+
+// ============================================================================
+// Editor Routes — add to routes_frontend.go
+// ============================================================================
+
+// Add inside the authenticated router group:
+//
+//   r.Route("/editor", func(r chi.Router) {
+//       r.Get("/", h.EditorHub)
+//       r.Get("/monaco", h.EditorMonaco)
+//       r.Get("/nvim", h.EditorNvim)
+//   })
+//
+// Add to RegisterWebSocketRoutes:
+//
+//   r.Get("/ws/editor/nvim", h.WSEditorNvim)
+
+// ============================================================================
+// Full context example (within RegisterFrontendRoutes):
+// ============================================================================
+
+// r.Group(func(r chi.Router) {
+//     r.Use(m.RequireAuth)
+//
+//     // ... existing routes ...
+//
+//     // Gitea integration (Phase 6)
+//     r.Route("/integrations/gitea", func(r chi.Router) {
+//         r.Get("/", h.GiteaTempl)
+//         r.Post("/connections", h.GiteaCreateConnection)
+//         r.Post("/connections/{id}/test", h.GiteaTestConnection)
+//         r.Post("/connections/{id}/sync", h.GiteaSyncRepos)
+//         r.Post("/connections/{id}/delete", h.GiteaDeleteConnection)
+//         r.Get("/repos/{id}", h.GiteaRepoDetail)
+//         r.Get("/repos/{id}/files", h.GiteaRepoFiles)
+//         r.Get("/repos/{id}/file", h.GiteaFileContent)
+//         r.Post("/repos/{id}/file", h.GiteaFileSave)
+//     })
+//
+//     // Editor (Phase 7) — NEW
+//     r.Route("/editor", func(r chi.Router) {
+//         r.Get("/", h.EditorHub)           // redirect to Monaco or Gitea
+//         r.Get("/monaco", h.EditorMonaco)  // Monaco quick editor
+//         r.Get("/nvim", h.EditorNvim)      // Neovim terminal editor
+//     })
+// })
+
+// ============================================================================
+// WebSocket routes (add to RegisterWebSocketRoutes):
+// ============================================================================
+
+// func RegisterWebSocketRoutes(r chi.Router, h *Handler, m *Middleware) {
+//     r.Group(func(r chi.Router) {
+//         r.Get("/ws/logs/{id}", h.WSContainerLogs)
+//         r.Get("/ws/exec/{id}", h.WSContainerExec)
+//         r.Get("/ws/stats/{id}", h.WSContainerStats)
+//         r.Get("/ws/events", h.WSEvents)
+//         r.Get("/ws/jobs/{id}", h.WSJobProgress)
+//         r.Get("/ws/editor/nvim", h.WSEditorNvim)  // NEW
+//     })
+// }

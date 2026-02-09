@@ -1,0 +1,70 @@
+# =============================================================================
+# usulnet Agent - Lightweight Docker management agent
+# Connects to master via NATS, executes Docker commands on remote hosts
+# =============================================================================
+
+# Stage 1: Build Go binary
+FROM golang:1.25.7-alpine AS builder
+
+RUN apk add --no-cache git ca-certificates tzdata
+
+# Install templ CLI (required for compilation even if agent doesn't use templates)
+RUN go install github.com/a-h/templ/cmd/templ@v0.3.977
+
+WORKDIR /build
+
+# Copy dependency files first for caching
+COPY go.mod go.sum ./
+RUN go mod download
+
+# Copy source code
+COPY . .
+
+# Generate templ files (needed for shared packages to compile)
+RUN templ generate
+
+# Tidy modules
+RUN go mod tidy
+
+# Build the agent binary
+ARG VERSION=dev
+ARG COMMIT=unknown
+ARG BUILD_TIME=unknown
+
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build \
+    -ldflags="-w -s \
+        -X main.Version=${VERSION} \
+        -X main.Commit=${COMMIT} \
+        -X main.BuildDate=${BUILD_TIME}" \
+    -o usulnet-agent \
+    ./cmd/usulnet-agent
+
+# =============================================================================
+# Stage 2: Runtime image (minimal - no frontend, no editor)
+# =============================================================================
+FROM alpine:3.21
+
+RUN apk add --no-cache ca-certificates tzdata curl su-exec
+
+RUN addgroup -g 1000 usulnet && \
+    adduser -u 1000 -G usulnet -s /bin/sh -D usulnet
+
+RUN mkdir -p /app/data /app/config /app/certs && \
+    chown -R usulnet:usulnet /app
+
+WORKDIR /app
+
+# Copy agent binary
+COPY --from=builder /build/usulnet-agent /app/usulnet-agent
+
+# Agent entrypoint
+COPY docker-entrypoint.agent.sh /app/docker-entrypoint.agent.sh
+RUN chmod +x /app/docker-entrypoint.agent.sh
+
+EXPOSE 0
+
+HEALTHCHECK --interval=30s --timeout=10s --start-period=10s --retries=3 \
+    CMD test -f /app/data/agent.pid || exit 1
+
+ENTRYPOINT ["/app/docker-entrypoint.agent.sh"]
+CMD ["/app/usulnet-agent", "--config", "/app/config/agent.yaml"]

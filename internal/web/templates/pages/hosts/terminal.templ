@@ -1,0 +1,313 @@
+package hosts
+
+import (
+	"github.com/fr4nsys/usulnet/internal/web/templates/layouts"
+)
+
+type HostTerminalData struct {
+	PageData layouts.PageData
+	HostID   string
+	HostName string
+	User     string
+	Shell    string
+	Ready    bool
+}
+
+templ HostTerminal(data HostTerminalData) {
+	@layouts.Base(data.PageData) {
+		<nav class="flex items-center gap-2 text-sm text-gray-400 mb-4">
+			<a href="/nodes" class="hover:text-primary-400 transition-colors">Nodes</a>
+			<i class="fas fa-chevron-right text-xs"></i>
+			<a href={ templ.SafeURL("/nodes/" + data.HostID) } class="hover:text-primary-400 transition-colors">{ data.HostName }</a>
+			<i class="fas fa-chevron-right text-xs"></i>
+			<span class="text-white">Terminal</span>
+		</nav>
+		<div class="flex items-center justify-between mb-6">
+			<div class="flex items-center gap-4">
+				<div class="w-10 h-10 rounded-lg bg-dark-700 flex items-center justify-center">
+					<i class="fas fa-terminal text-lg text-primary-400"></i>
+				</div>
+				<div>
+					<h1 class="text-2xl font-bold font-display text-white">Node Terminal</h1>
+					<p class="text-gray-400 text-sm">{ data.HostName } &mdash; { data.User + "@node" }</p>
+				</div>
+			</div>
+			<div class="flex items-center gap-2">
+				<a href={ templ.SafeURL("/nodes/" + data.HostID) } class="px-4 py-2 bg-dark-700 hover:bg-dark-600 text-gray-300 rounded-lg transition-colors">
+					<i class="fas fa-arrow-left mr-2"></i>Back
+				</a>
+			</div>
+		</div>
+		if !data.Ready {
+			<div class="bg-yellow-500/10 border border-yellow-500/20 rounded-xl p-6 text-center">
+				<i class="fas fa-exclamation-triangle text-4xl text-yellow-400 mb-4"></i>
+				<h2 class="text-lg font-semibold text-white mb-2">Host PID Namespace Not Available</h2>
+				<p class="text-gray-400 mb-4">
+					The usulnet container needs <span class="text-primary-400 font-mono">pid: host</span> in docker-compose.yml to access the host terminal.
+				</p>
+				<p class="text-gray-400 mb-2">
+					Add the following to your docker-compose.yml service:
+				</p>
+				<div class="bg-dark-900 rounded-lg p-4 text-left max-w-lg mx-auto mb-4 font-mono text-sm text-gray-300">
+					<p>pid: host</p>
+					<p>cap_add:</p>
+					<p class="pl-4">- SYS_PTRACE</p>
+					<p class="pl-4">- SYS_ADMIN</p>
+				</div>
+				<p class="text-gray-500 text-sm">After updating docker-compose, recreate the container.</p>
+			</div>
+		} else {
+			<div class="bg-dark-700/50 border border-dark-600 rounded-lg px-4 py-3 mb-4 flex items-center gap-3">
+				<i class="fas fa-shield-alt text-primary-400"></i>
+				<span class="text-sm text-gray-400">
+					Session as <span class="text-white font-medium">{ data.User }</span> — unprivileged user, no sudo.
+				</span>
+			</div>
+			<div
+				x-data="hostTerminal()"
+				data-host-id={ data.HostID }
+				class="bg-dark-800 rounded-xl border border-dark-600 overflow-hidden"
+			>
+				<div class="flex items-center justify-between px-4 py-3 border-b border-dark-600 bg-dark-850">
+					<div class="flex items-center gap-3">
+						<div class="flex items-center gap-1.5">
+							<span class="w-3 h-3 rounded-full bg-red-500"></span>
+							<span class="w-3 h-3 rounded-full bg-yellow-500"></span>
+							<span class="w-3 h-3 rounded-full bg-green-500"></span>
+						</div>
+						<span class="text-sm text-gray-400">{ data.User + "@" + data.HostName } — { data.Shell }</span>
+					</div>
+					<div class="flex items-center gap-2">
+						<span x-show="connected" class="flex items-center gap-1.5 text-xs text-green-400">
+							<span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+							Connected
+						</span>
+						<span x-show="!connected && !connecting" class="flex items-center gap-1.5 text-xs text-red-400">
+							<span class="w-2 h-2 bg-red-500 rounded-full"></span>
+							Disconnected
+						</span>
+						<span x-show="connecting" class="flex items-center gap-1.5 text-xs text-yellow-400">
+							<i class="fas fa-spinner fa-spin"></i>
+							Connecting...
+						</span>
+						<button
+							@click="reconnect()"
+							class="p-2 text-gray-400 hover:text-white hover:bg-dark-600 rounded-lg transition-colors"
+							title="Reconnect"
+						>
+							<i class="fas fa-redo"></i>
+						</button>
+						<button
+							@click="toggleFullscreen()"
+							class="p-2 text-gray-400 hover:text-white hover:bg-dark-600 rounded-lg transition-colors"
+							title="Fullscreen"
+						>
+							<i class="fas fa-expand"></i>
+						</button>
+					</div>
+				</div>
+				<div
+					x-ref="terminalContainer"
+					id="terminal"
+					class="h-[500px]"
+				></div>
+			</div>
+		}
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm@5.3.0/css/xterm.min.css"/>
+		<script src="https://cdn.jsdelivr.net/npm/xterm@5.3.0/lib/xterm.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/xterm-addon-fit@0.8.0/lib/xterm-addon-fit.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/xterm-addon-web-links@0.9.0/lib/xterm-addon-web-links.min.js"></script>
+		<script>
+			function hostTerminal() {
+				return {
+					term: null,
+					ws: null,
+					fitAddon: null,
+					connected: false,
+					connecting: false,
+					hostId: '',
+					_initialized: false,
+					_resizeHandler: null,
+
+					init() {
+						if (this._initialized) return;
+						this._initialized = true;
+
+						this.hostId = this.$el.dataset.hostId;
+
+						this.term = new Terminal({
+							cursorBlink: true,
+							cursorStyle: 'block',
+							fontSize: 14,
+							fontFamily: "'IBM Plex Mono', 'Fira Code', 'Menlo', monospace",
+							theme: {
+								background: '#0d1117',
+								foreground: '#e6edf3',
+								cursor: '#ff6b35',
+								cursorAccent: '#0d1117',
+								selection: 'rgba(255, 107, 53, 0.3)',
+								black: '#0d1117',
+								red: '#f85149',
+								green: '#3fb950',
+								yellow: '#d29922',
+								blue: '#58a6ff',
+								magenta: '#bc8cff',
+								cyan: '#76e3ea',
+								white: '#e6edf3',
+								brightBlack: '#484f58',
+								brightRed: '#ff7b72',
+								brightGreen: '#56d364',
+								brightYellow: '#e3b341',
+								brightBlue: '#79c0ff',
+								brightMagenta: '#d2a8ff',
+								brightCyan: '#a5d6ff',
+								brightWhite: '#ffffff'
+							},
+							scrollback: 10000,
+							convertEol: true,
+						});
+
+						this.fitAddon = new FitAddon.FitAddon();
+						this.term.loadAddon(this.fitAddon);
+						this.term.loadAddon(new WebLinksAddon.WebLinksAddon());
+
+						this.term.open(this.$refs.terminalContainer);
+						this.fitAddon.fit();
+
+						this.connect();
+
+						this._resizeHandler = () => {
+							if (this.fitAddon) {
+								this.fitAddon.fit();
+								this.sendResize();
+							}
+						};
+						window.addEventListener('resize', this._resizeHandler);
+
+						this.term.onData(data => {
+							if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+								this.ws.send(JSON.stringify({ type: 'input', data: data }));
+							}
+						});
+
+						this.term.onResize(({ cols, rows }) => {
+							this.sendResize();
+						});
+					},
+
+					destroy() {
+						if (this._resizeHandler) {
+							window.removeEventListener('resize', this._resizeHandler);
+						}
+						if (this.ws) {
+							this.ws.onclose = null;
+							this.ws.close();
+							this.ws = null;
+						}
+						if (this.term) {
+							this.term.dispose();
+							this.term = null;
+						}
+					},
+
+					connect() {
+						this.connecting = true;
+
+						const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+						const { cols, rows } = this.term;
+						const url = `${protocol}//${window.location.host}/ws/host-exec/${this.hostId}?cols=${cols}&rows=${rows}`;
+
+						this.ws = new WebSocket(url);
+
+						this.ws.onopen = () => {
+							this.connected = true;
+							this.connecting = false;
+							this.term.focus();
+						};
+
+						this.ws.onmessage = (event) => {
+							try {
+								const msg = JSON.parse(event.data);
+								if (msg.type === 'output') {
+									this.term.write(msg.data);
+								} else if (msg.type === 'error') {
+									this.term.write('\r\n\x1b[31mError: ' + (msg.data || msg.message || 'Unknown error') + '\x1b[0m\r\n');
+								} else if (msg.type === 'connected') {
+									// Connection established
+								}
+							} catch(e) {
+								this.term.write(event.data);
+							}
+						};
+
+						this.ws.onclose = () => {
+							this.connected = false;
+							this.connecting = false;
+							this.term.write('\r\n\x1b[31mDisconnected from host\x1b[0m\r\n');
+						};
+
+						this.ws.onerror = () => {
+							this.connected = false;
+							this.connecting = false;
+							this.term.write('\r\n\x1b[31mConnection error\x1b[0m\r\n');
+						};
+					},
+
+					sendResize() {
+						if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+							const { cols, rows } = this.term;
+							this.ws.send(JSON.stringify({ type: 'resize', cols: cols, rows: rows }));
+						}
+					},
+
+					reconnect() {
+						if (this.ws) this.ws.close();
+						this.term.clear();
+						this.term.write('\x1b[33mReconnecting...\x1b[0m\r\n');
+						this.connect();
+					},
+
+					toggleFullscreen() {
+						const container = this.$refs.terminalContainer;
+						if (document.fullscreenElement) {
+							document.exitFullscreen();
+						} else {
+							container.requestFullscreen();
+						}
+						setTimeout(() => {
+							this.fitAddon.fit();
+							this.sendResize();
+						}, 100);
+					}
+				};
+			}
+		</script>
+		<style>
+			#terminal {
+				padding: 8px;
+				background: #0d1117;
+			}
+
+			#terminal:fullscreen {
+				padding: 16px;
+			}
+
+			.xterm-viewport::-webkit-scrollbar {
+				width: 8px;
+			}
+
+			.xterm-viewport::-webkit-scrollbar-track {
+				background: #0d1117;
+			}
+
+			.xterm-viewport::-webkit-scrollbar-thumb {
+				background: #30363d;
+				border-radius: 4px;
+			}
+
+			.xterm-viewport::-webkit-scrollbar-thumb:hover {
+				background: #484f58;
+			}
+		</style>
+	}
+}

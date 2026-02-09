@@ -1,0 +1,139 @@
+# =============================================================================
+# usulnet Docker Management Platform
+# Templ-based frontend (no Pongo2)
+# =============================================================================
+
+# Stage 1: Build Go binary with Templ compilation
+FROM golang:1.25.7-alpine AS builder
+
+RUN apk add --no-cache git ca-certificates tzdata
+
+# Install templ CLI (must match go.mod version)
+RUN go install github.com/a-h/templ/cmd/templ@v0.3.977
+
+WORKDIR /build
+
+# Copy dependency files first for caching
+COPY go.mod go.sum ./
+RUN go mod download
+
+# Copy source code
+COPY . .
+
+# Generate Go code from .templ files
+RUN templ generate
+
+# Tidy modules after templ generate (adds templ runtime dependency)
+RUN go mod tidy
+
+# Build the binary
+ARG VERSION=dev
+ARG COMMIT=unknown
+ARG BUILD_TIME=unknown
+
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build \
+    -ldflags="-w -s \
+        -X github.com/fr4nsys/usulnet/internal/app.Version=${VERSION} \
+        -X github.com/fr4nsys/usulnet/internal/app.Commit=${COMMIT} \
+        -X github.com/fr4nsys/usulnet/internal/app.BuildTime=${BUILD_TIME}" \
+    -o usulnet \
+    ./cmd/usulnet
+
+# =============================================================================
+# Stage 2: Compile Tailwind CSS (standalone binary, no Node.js/npm)
+# =============================================================================
+FROM alpine:3.21 AS frontend
+
+RUN apk add --no-cache curl
+
+WORKDIR /frontend
+
+# Download Tailwind CSS standalone CLI (no Node.js dependency)
+ARG TAILWIND_VERSION=3.4.17
+RUN curl -fsSL -o /usr/local/bin/tailwindcss \
+    "https://github.com/tailwindlabs/tailwindcss/releases/download/v${TAILWIND_VERSION}/tailwindcss-linux-x64" && \
+    chmod +x /usr/local/bin/tailwindcss
+
+# Copy Tailwind source, config, and templates for class scanning
+COPY web/static/src/input.css ./src/input.css
+COPY web/static/tailwind.docker.config.js ./tailwind.config.js
+COPY internal/web/templates ./templates
+
+# Compile CSS (config scans .templ files for classes)
+RUN mkdir -p css && \
+    tailwindcss --config ./tailwind.config.js -i src/input.css -o css/style.css --minify
+
+# =============================================================================
+# Stage 3: Runtime image
+# =============================================================================
+FROM alpine:3.21
+
+# All runtime packages in a single layer (includes nvim editor deps)
+RUN apk add --no-cache \
+    ca-certificates tzdata curl su-exec util-linux \
+    docker-cli docker-cli-compose \
+    neovim git ripgrep fd \
+    musl-locales musl-locales-lang && \
+    # Install Trivy vulnerability scanner
+    curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin
+
+# Overwrite Alpine's docker-cli (27.x, API 1.47) with Docker 29.2.0 (API 1.53)
+# to match host daemon. Compose plugin stays from Alpine package.
+RUN rm -f /usr/bin/docker && \
+    curl -fsSL "https://download.docker.com/linux/static/stable/x86_64/docker-29.2.0.tgz" | \
+    tar xz --strip-components=1 -C /usr/bin docker/docker && \
+    chmod +x /usr/bin/docker
+
+# Locale for nvim unicode support (musl-based)
+ENV LANG=en_US.UTF-8
+ENV MUSL_LOCPATH=/usr/share/i18n/locales/musl
+
+RUN addgroup -g 1000 usulnet && \
+    adduser -u 1000 -G usulnet -s /bin/sh -D usulnet
+
+RUN mkdir -p /app/data /app/config /app/web/static/css /var/lib/usulnet/trivy && \
+    chown -R usulnet:usulnet /app /var/lib/usulnet
+
+WORKDIR /app
+
+# Copy binary (Templ templates compiled into it)
+COPY --from=builder /build/usulnet /app/usulnet
+
+# Copy compiled CSS
+COPY --from=frontend /frontend/css/style.css /app/web/static/css/style.css
+
+# Copy favicon if exists
+COPY --from=builder /build/web/static/favicon.ico /app/web/static/favicon.ico
+
+# --- Neovim editor support (Phase 7) ---
+COPY nvim/ /opt/usulnet/nvim-config/
+
+# Pre-install lazy.nvim + plugins so first session is instant.
+# Runs as root during build, data copied to shared location.
+RUN set -e && \
+    mkdir -p /tmp/nvim-setup/.config/nvim && \
+    cp -a /opt/usulnet/nvim-config/. /tmp/nvim-setup/.config/nvim/ && \
+    HOME=/tmp/nvim-setup \
+      XDG_CONFIG_HOME=/tmp/nvim-setup/.config \
+      XDG_DATA_HOME=/tmp/nvim-setup/.local/share \
+      XDG_STATE_HOME=/tmp/nvim-setup/.local/state \
+      XDG_CACHE_HOME=/tmp/nvim-setup/.cache \
+      nvim --headless "+Lazy! install" +qa 2>&1 && \
+    mkdir -p /opt/usulnet/nvim-data && \
+    cp -a /tmp/nvim-setup/.local/share/nvim/. /opt/usulnet/nvim-data/ && \
+    rm -rf /tmp/nvim-setup
+
+# Fix ownership: /app for the binary, /opt/usulnet for nvim config+plugins
+RUN chown -R usulnet:usulnet /app /opt/usulnet
+
+# Entrypoint auto-detects Docker socket GID and drops to usulnet
+COPY docker-entrypoint.sh /app/docker-entrypoint.sh
+RUN chmod +x /app/docker-entrypoint.sh
+
+EXPOSE 8080 7443
+
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD curl -f http://localhost:8080/health || exit 1
+
+ENTRYPOINT ["/app/docker-entrypoint.sh"]
+CMD ["/app/usulnet", "serve", "--config", "/app/config/config.yaml"]

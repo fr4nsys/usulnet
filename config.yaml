@@ -1,0 +1,108 @@
+# usulnet Configuration
+# Structure must match Go Config struct in internal/app/config.go
+
+# Operation mode: standalone | master | agent
+mode: "standalone"
+
+# Server settings
+server:
+  host: "0.0.0.0"
+  port: 8080
+  https_port: 7443
+  read_timeout: "30s"
+  write_timeout: "30s"
+  idle_timeout: "120s"
+  shutdown_timeout: "10s"
+  # TLS / HTTPS configuration
+  # When enabled, the server listens on both :8080 (HTTP) and :7443 (HTTPS)
+  tls:
+    enabled: true               # HTTPS enabled on port 7443 (auto-generates self-signed cert)
+    auto_tls: true              # Auto-generate self-signed cert from internal CA
+    # cert_file: ""             # Custom certificate path (overrides auto-generated)
+    # key_file: ""              # Custom private key path
+    # data_dir: ""              # PKI data directory (default: <storage.path>/pki)
+
+# Database (PostgreSQL)
+database:
+  url: "postgres://usulnet:usulnet_dev@postgres:5432/usulnet?sslmode=disable"
+  max_open_conns: 25
+  max_idle_conns: 10
+  conn_max_lifetime: "30m"
+  conn_max_idle_time: "5m"
+
+# Redis (caching and sessions)
+redis:
+  url: "redis://redis:6379"
+  password: ""
+  db: 0
+
+# NATS (messaging)
+nats:
+  url: "nats://nats:4222"
+  name: "usulnet"
+  # token: ""              # NATS auth token (if server requires it)
+  # username: ""           # NATS username (alternative to token)
+  # password: ""           # NATS password
+  jetstream:
+    enabled: true
+  # tls:                   # TLS encryption for NATS connections
+  #   enabled: false
+  #   cert_file: ""        # Client certificate path (for mutual TLS)
+  #   key_file: ""         # Client private key path
+  #   ca_file: ""          # CA certificate path (for server verification)
+  #   skip_verify: false   # Skip server certificate verification (dev only)
+
+# Security (JWT, encryption, passwords)
+# This is the section the app validates - NOT "auth"
+security:
+  # Generate with: openssl rand -hex 32
+  jwt_secret: "edbdbc0721315fc2529c04509d65c62e7c51ce9b10941078f2fae131acfb0e96"
+  jwt_expiry: "24h"
+  refresh_expiry: "168h"
+  # Generate with: openssl rand -hex 32 (must be 64 hex chars = 32 bytes)
+  config_encryption_key: "ed2cb601a830465890822d80d13668530b5af3c1c372799310339e8daf02e2e6"
+  cookie_secure: false
+  cookie_samesite: "lax"
+  password_min_length: 8
+
+# Storage (backups)
+storage:
+  type: "local"
+  path: "/app/data"
+  backup:
+    compression: "gzip"
+    default_retention_days: 30
+
+# Trivy (security scanning)
+trivy:
+  enabled: true
+  cache_dir: "/var/lib/usulnet/trivy"
+  timeout: "5m"
+  severity: "CRITICAL,HIGH,MEDIUM"
+  ignore_unfixed: false
+  update_db_on_start: true
+
+# Nginx Proxy Manager integration (connect via Settings UI)
+npm:
+  enabled: false
+
+# Caddy reverse proxy integration (connect via Settings UI)
+caddy:
+  enabled: false                    # Enable Caddy reverse proxy integration (or env USULNET_CADDY_ENABLED)
+  admin_url: ""                     # Caddy admin API (or env USULNET_CADDY_ADMIN_URL)
+  acme_email: ""                    # ACME email for Let's Encrypt (or env USULNET_CADDY_ACME_EMAIL)
+  listen_http: ":80"
+  listen_https: ":443"
+
+# MinIO/S3 storage (connect via Settings UI)
+minio:
+  enabled: false
+
+# Docker settings (passed via socket mount, not config)
+# docker:
+#   socket: "/var/run/docker.sock"
+
+# Logging
+logging:
+  level: "info"
+  format: "json"

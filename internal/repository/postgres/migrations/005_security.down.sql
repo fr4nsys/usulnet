@@ -1,0 +1,2 @@
+DROP TABLE IF EXISTS security_issues CASCADE;
+DROP TABLE IF EXISTS security_scans CASCADE;

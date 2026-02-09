@@ -1,0 +1,166 @@
+package containers
+
+import "github.com/fr4nsys/usulnet/internal/web/templates/layouts"
+
+type ContainerNewData struct {
+	PageData  layouts.PageData
+	Error     string
+	Images    []string
+	Networks  []string
+	Volumes   []string
+}
+
+templ New(data ContainerNewData) {
+	@layouts.Base(data.PageData) {
+		<div class="max-w-4xl mx-auto space-y-6">
+			<div class="flex items-center gap-4">
+				<a href="/containers" class="p-2 text-gray-400 hover:text-white hover:bg-dark-700 rounded-lg">
+					<i class="fas fa-arrow-left"></i>
+				</a>
+				<div>
+					<h1 class="text-2xl font-display font-bold text-white">Create Container</h1>
+					<p class="text-gray-400 mt-1">Deploy a new Docker container</p>
+				</div>
+			</div>
+
+			if data.Error != "" {
+				<div class="bg-red-500/10 border border-red-500/20 rounded-lg p-4 text-red-400">
+					<i class="fas fa-exclamation-circle mr-2"></i>{ data.Error }
+				</div>
+			}
+
+			<form action="/containers/create" method="POST" class="space-y-6">
+				<input type="hidden" name="csrf_token" value={ data.PageData.CSRFToken }/>
+				<!-- Basic -->
+				<div class="card p-6">
+					<h2 class="text-lg font-medium text-white mb-4">Basic Configuration</h2>
+					<div class="grid grid-cols-2 gap-4">
+						<div>
+							<label class="block text-sm font-medium text-gray-300 mb-2">Container Name</label>
+							<input type="text" name="name" required class="input" placeholder="my-container"/>
+						</div>
+						<div>
+							<label class="block text-sm font-medium text-gray-300 mb-2">Image</label>
+							<input type="text" name="image" required list="images" class="input" placeholder="nginx:alpine"/>
+							<datalist id="images">
+								for _, img := range data.Images {
+									<option value={ img }/>
+								}
+							</datalist>
+						</div>
+					</div>
+				</div>
+
+				<!-- Ports -->
+				<div class="card p-6">
+					<h2 class="text-lg font-medium text-white mb-4">Port Mapping</h2>
+					<div id="ports-container" class="space-y-2">
+						<div class="flex items-center gap-2">
+							<input type="text" name="ports[]" class="input flex-1 font-mono" placeholder="8080:80"/>
+							<button type="button" onclick="addPort()" class="btn-secondary">
+								<i class="fas fa-plus"></i>
+							</button>
+						</div>
+					</div>
+					<p class="text-xs text-gray-500 mt-2">Format: host_port:container_port (e.g., 8080:80)</p>
+				</div>
+
+				<!-- Environment -->
+				<div class="card p-6">
+					<h2 class="text-lg font-medium text-white mb-4">Environment Variables</h2>
+					<textarea name="environment" rows="4" class="input font-mono text-sm" placeholder="KEY=value&#10;ANOTHER=variable"></textarea>
+					<p class="text-xs text-gray-500 mt-2">One variable per line in KEY=value format</p>
+				</div>
+
+				<!-- Volumes -->
+				<div class="card p-6">
+					<h2 class="text-lg font-medium text-white mb-4">Volumes</h2>
+					<div id="volumes-container" class="space-y-2">
+						<div class="flex items-center gap-2">
+							<input type="text" name="volumes[]" class="input flex-1 font-mono" placeholder="/host/path:/container/path"/>
+							<button type="button" onclick="addVolume()" class="btn-secondary">
+								<i class="fas fa-plus"></i>
+							</button>
+						</div>
+					</div>
+				</div>
+
+				<!-- Network -->
+				<div class="card p-6">
+					<h2 class="text-lg font-medium text-white mb-4">Network</h2>
+					<select name="network" class="input">
+						<option value="">Default (bridge)</option>
+						for _, net := range data.Networks {
+							<option value={ net }>{ net }</option>
+						}
+					</select>
+				</div>
+
+				<!-- Advanced -->
+				<div class="card p-6">
+					<h2 class="text-lg font-medium text-white mb-4">Advanced Options</h2>
+					<div class="space-y-4">
+						<div>
+							<label class="block text-sm font-medium text-gray-300 mb-2">Command (optional)</label>
+							<input type="text" name="command" class="input font-mono" placeholder="/bin/sh -c 'echo hello'"/>
+						</div>
+						<div>
+							<label class="block text-sm font-medium text-gray-300 mb-2">Restart Policy</label>
+							<select name="restart" class="input">
+								<option value="no">No</option>
+								<option value="always">Always</option>
+								<option value="unless-stopped" selected>Unless Stopped</option>
+								<option value="on-failure">On Failure</option>
+							</select>
+						</div>
+						<div class="flex items-center gap-4">
+							<label class="flex items-center gap-2">
+								<input type="checkbox" name="privileged" class="rounded border-dark-600 bg-dark-700 text-primary-500"/>
+								<span class="text-sm text-gray-300">Privileged</span>
+							</label>
+							<label class="flex items-center gap-2">
+								<input type="checkbox" name="auto_remove" class="rounded border-dark-600 bg-dark-700 text-primary-500"/>
+								<span class="text-sm text-gray-300">Auto Remove</span>
+							</label>
+						</div>
+					</div>
+				</div>
+
+				<div class="flex justify-end gap-3">
+					<a href="/containers" class="btn-secondary">Cancel</a>
+					<button type="submit" class="btn-primary">
+						<i class="fas fa-play mr-2"></i>Create & Start
+					</button>
+				</div>
+			</form>
+		</div>
+
+		<script>
+			function addPort() {
+				const container = document.getElementById('ports-container');
+				const div = document.createElement('div');
+				div.className = 'flex items-center gap-2';
+				div.innerHTML = `
+					<input type="text" name="ports[]" class="input flex-1 font-mono" placeholder="8080:80"/>
+					<button type="button" onclick="this.parentElement.remove()" class="btn-secondary text-red-400">
+						<i class="fas fa-minus"></i>
+					</button>
+				`;
+				container.appendChild(div);
+			}
+
+			function addVolume() {
+				const container = document.getElementById('volumes-container');
+				const div = document.createElement('div');
+				div.className = 'flex items-center gap-2';
+				div.innerHTML = `
+					<input type="text" name="volumes[]" class="input flex-1 font-mono" placeholder="/host/path:/container/path"/>
+					<button type="button" onclick="this.parentElement.remove()" class="btn-secondary text-red-400">
+						<i class="fas fa-minus"></i>
+					</button>
+				`;
+				container.appendChild(div);
+			}
+		</script>
+	}
+}

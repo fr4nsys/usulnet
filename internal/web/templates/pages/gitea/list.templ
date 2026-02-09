@@ -1,0 +1,670 @@
+package gitea
+
+import (
+	"fmt"
+	"github.com/fr4nsys/usulnet/internal/web/templates/layouts"
+)
+
+// ============================================================================
+// Data Types
+// ============================================================================
+
+type GiteaData struct {
+	PageData    layouts.PageData
+	Connections []ConnectionItem
+	Repos       []RepoItem
+	Stats       GiteaStats
+	CSRFToken   string  // For forms
+}
+
+type ConnectionItem struct {
+	ID            string
+	Name          string
+	URL           string
+	ProviderType  string // "gitea", "github", "gitlab"
+	Status        string // "connected", "error", "pending"
+	StatusMsg     string
+	ProviderVersion string // Version of Gitea/GitLab or "github.com"
+	ReposCount    int
+	AutoSync      bool
+}
+
+type RepoItem struct {
+	ID             string
+	ConnectionID   string  // For repo creation
+	ConnectionName string
+	ProviderType   string  // "gitea", "github", "gitlab"
+	FullName       string
+	Description    string
+	DefaultBranch  string
+	IsPrivate      bool
+	IsFork         bool
+	IsArchived     bool
+	Stars          int
+	Forks          int
+	HTMLURL        string
+}
+
+type GiteaStats struct {
+	TotalConnections int
+	ActiveConnections int
+	TotalRepos       int
+	PrivateRepos     int
+}
+
+type ConnectionNewData struct {
+	PageData layouts.PageData
+	Error    string
+}
+
+// ============================================================================
+// List Template
+// ============================================================================
+
+templ List(data GiteaData) {
+	@layouts.Base(data.PageData) {
+		<div class="space-y-6">
+			<!-- Header -->
+			<div class="flex items-center justify-between">
+				<div>
+					<h1 class="text-2xl font-display font-bold text-white">
+						<i class="fas fa-code-branch text-blue-400 mr-2"></i>Repositories
+					</h1>
+					<p class="text-gray-400 mt-1">
+						{ fmt.Sprintf("%d connections, %d repositories", data.Stats.TotalConnections, data.Stats.TotalRepos) }
+					</p>
+				</div>
+				<div class="flex items-center gap-2">
+					if len(data.Connections) > 0 {
+						<button
+							onclick="document.getElementById('new-repo-modal').classList.remove('hidden')"
+							class="btn-primary bg-green-600 hover:bg-green-700"
+						>
+							<i class="fas fa-plus mr-2"></i>New Repository
+						</button>
+					}
+					<button
+						onclick="document.getElementById('new-connection-modal').classList.remove('hidden')"
+						class="btn-primary"
+					>
+						<i class="fas fa-plug mr-2"></i>Add Connection
+					</button>
+				</div>
+			</div>
+
+			<!-- Stats Cards -->
+			<div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+				<div class="card p-4">
+					<div class="text-2xl font-bold text-white">{ fmt.Sprintf("%d", data.Stats.TotalConnections) }</div>
+					<div class="text-sm text-gray-400">Connections</div>
+				</div>
+				<div class="card p-4">
+					<div class="text-2xl font-bold text-green-400">{ fmt.Sprintf("%d", data.Stats.ActiveConnections) }</div>
+					<div class="text-sm text-gray-400">Active</div>
+				</div>
+				<div class="card p-4">
+					<div class="text-2xl font-bold text-blue-400">{ fmt.Sprintf("%d", data.Stats.TotalRepos) }</div>
+					<div class="text-sm text-gray-400">Repositories</div>
+				</div>
+				<div class="card p-4">
+					<div class="text-2xl font-bold text-yellow-400">{ fmt.Sprintf("%d", data.Stats.PrivateRepos) }</div>
+					<div class="text-sm text-gray-400">Private</div>
+				</div>
+			</div>
+
+			<!-- Connections -->
+			<div class="card">
+				<div class="p-4 border-b border-gray-700/50">
+					<h2 class="text-lg font-semibold text-white">Connections</h2>
+				</div>
+				if len(data.Connections) == 0 {
+					<div class="p-8 text-center">
+						<i class="fas fa-plug text-4xl text-gray-600 mb-3"></i>
+						<p class="text-gray-400">No Git connections configured</p>
+						<p class="text-sm text-gray-500 mt-1">Add a connection to Gitea, GitHub, or GitLab to start syncing repositories</p>
+					</div>
+				} else {
+					<div class="divide-y divide-gray-700/50">
+						for _, conn := range data.Connections {
+							@connectionRow(conn, data.CSRFToken)
+						}
+					</div>
+				}
+			</div>
+
+			<!-- Repositories -->
+			if len(data.Repos) > 0 {
+				<div class="card">
+					<div class="p-4 border-b border-gray-700/50">
+						<h2 class="text-lg font-semibold text-white">Repositories</h2>
+					</div>
+					<div class="divide-y divide-gray-700/50">
+						for _, repo := range data.Repos {
+							@repoRow(repo)
+						}
+					</div>
+				</div>
+			}
+
+			<!-- New Connection Modal -->
+			@newConnectionModal(data.CSRFToken)
+			
+			<!-- New Repository Modal -->
+			if len(data.Connections) > 0 {
+				@newRepoModal(data.Connections, data.CSRFToken)
+			}
+		</div>
+	}
+}
+
+// ============================================================================
+// Connection Row
+// ============================================================================
+
+templ connectionRow(conn ConnectionItem, csrfToken string) {
+	<div class="p-4 hover:bg-gray-800/30 transition-colors">
+		<div class="flex items-center justify-between">
+			<div class="flex items-center gap-4">
+				<!-- Provider icon + status -->
+				<div class="relative">
+					<i class={ "text-2xl", providerIconClass(conn.ProviderType), providerIcon(conn.ProviderType), providerColor(conn.ProviderType) }></i>
+					<div class={ "absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full border-2 border-gray-900", connectionStatusColor(conn.Status) }></div>
+				</div>
+				<div>
+					<div class="flex items-center gap-2">
+						<span class="font-medium text-white">{ conn.Name }</span>
+						<span class={ "text-xs px-1.5 py-0.5 rounded", providerBadgeClass(conn.ProviderType) }>
+							{ providerName(conn.ProviderType) }
+						</span>
+						if conn.ProviderVersion != "" {
+							<span class="text-xs px-1.5 py-0.5 rounded bg-gray-700 text-gray-400">
+								v{ conn.ProviderVersion }
+							</span>
+						}
+						if conn.AutoSync {
+							<span class="text-xs px-1.5 py-0.5 rounded bg-blue-500/10 text-blue-400">
+								<i class="fas fa-sync-alt mr-1"></i>auto-sync
+							</span>
+						}
+					</div>
+					<div class="text-sm text-gray-400 mt-0.5">
+						<a href={ templ.SafeURL(conn.URL) } target="_blank" class="hover:text-gray-300">
+							{ conn.URL } <i class="fas fa-external-link-alt text-[10px] ml-1"></i>
+						</a>
+					</div>
+					if conn.Status == "error" && conn.StatusMsg != "" {
+						<div class="text-xs text-red-400 mt-1">
+							<i class="fas fa-exclamation-triangle mr-1"></i>{ conn.StatusMsg }
+						</div>
+					}
+				</div>
+			</div>
+			<div class="flex items-center gap-3">
+				<span class="text-sm text-gray-400">
+					{ fmt.Sprintf("%d repos", conn.ReposCount) }
+				</span>
+				<!-- Actions -->
+				<form method="post" action={ templ.SafeURL(fmt.Sprintf("/integrations/git/connections/%s/test", conn.ID)) } class="inline">
+					<input type="hidden" name="csrf_token" value={ csrfToken }/>
+					<button type="submit" class="btn-sm btn-ghost" title="Test connection">
+						<i class="fas fa-heartbeat"></i>
+					</button>
+				</form>
+				<form method="post" action={ templ.SafeURL(fmt.Sprintf("/integrations/git/connections/%s/sync", conn.ID)) } class="inline">
+					<input type="hidden" name="csrf_token" value={ csrfToken }/>
+					<button type="submit" class="btn-sm btn-ghost" title="Sync repositories">
+						<i class="fas fa-sync-alt"></i>
+					</button>
+				</form>
+				<form method="post" action={ templ.SafeURL(fmt.Sprintf("/integrations/git/connections/%s/delete", conn.ID)) } class="inline"
+					onsubmit="return confirm('Delete this connection and all synced repos?')">
+					<input type="hidden" name="csrf_token" value={ csrfToken }/>
+					<button type="submit" class="btn-sm btn-ghost text-red-400 hover:text-red-300" title="Delete">
+						<i class="fas fa-trash"></i>
+					</button>
+				</form>
+			</div>
+		</div>
+	</div>
+}
+
+// ============================================================================
+// Repository Row
+// ============================================================================
+
+templ repoRow(repo RepoItem) {
+	<div class="p-4 hover:bg-gray-800/30 transition-colors">
+		<div class="flex items-center justify-between">
+			<div class="flex items-center gap-3">
+				<!-- Provider icon small -->
+				<div class="relative">
+					<i class={ "fas text-lg", repoIcon(repo) }></i>
+					<i class={ "absolute -bottom-1 -right-1 text-[10px]", providerIconClass(repo.ProviderType), providerIcon(repo.ProviderType), providerColor(repo.ProviderType) }></i>
+				</div>
+				<div>
+					<div class="flex items-center gap-2">
+						<a href={ templ.SafeURL(fmt.Sprintf("/integrations/git/repos/%s", repo.ID)) }
+							class="font-medium text-white hover:text-blue-400 transition-colors">
+							{ repo.FullName }
+						</a>
+						if repo.IsPrivate {
+							<span class="text-xs px-1.5 py-0.5 rounded bg-yellow-500/10 text-yellow-400">
+								<i class="fas fa-lock mr-0.5"></i>private
+							</span>
+						}
+						if repo.IsArchived {
+							<span class="text-xs px-1.5 py-0.5 rounded bg-gray-500/10 text-gray-400">
+								<i class="fas fa-archive mr-0.5"></i>archived
+							</span>
+						}
+						if repo.IsFork {
+							<span class="text-xs px-1.5 py-0.5 rounded bg-purple-500/10 text-purple-400">
+								<i class="fas fa-code-branch mr-0.5"></i>fork
+							</span>
+						}
+					</div>
+					if repo.Description != "" {
+						<p class="text-sm text-gray-400 mt-0.5 line-clamp-1">{ repo.Description }</p>
+					}
+					<div class="flex items-center gap-3 mt-1 text-xs text-gray-500">
+						<span><i class="fas fa-code-branch mr-1"></i>{ repo.DefaultBranch }</span>
+						<span class="text-gray-600">via { repo.ConnectionName }</span>
+					</div>
+				</div>
+			</div>
+			<div class="flex items-center gap-4 text-sm text-gray-400">
+				if repo.Stars > 0 {
+					<span><i class="fas fa-star text-yellow-500 mr-1"></i>{ fmt.Sprintf("%d", repo.Stars) }</span>
+				}
+				if repo.Forks > 0 {
+					<span><i class="fas fa-code-branch mr-1"></i>{ fmt.Sprintf("%d", repo.Forks) }</span>
+				}
+				if repo.HTMLURL != "" {
+					<a href={ templ.SafeURL(repo.HTMLURL) } target="_blank"
+						class="hover:text-gray-300" title={ "Open in " + providerName(repo.ProviderType) }>
+						<i class="fas fa-external-link-alt"></i>
+					</a>
+				}
+			</div>
+		</div>
+	</div>
+}
+
+// ============================================================================
+// New Connection Modal
+// ============================================================================
+
+templ newConnectionModal(csrfToken string) {
+	<div id="new-connection-modal" class="hidden fixed inset-0 z-50 overflow-y-auto">
+		<div class="flex min-h-screen items-center justify-center p-4">
+			<!-- Backdrop -->
+			<div class="fixed inset-0 bg-black/60" onclick="this.parentElement.parentElement.classList.add('hidden')"></div>
+			<!-- Modal -->
+			<div class="relative card w-full max-w-lg p-6">
+				<div class="flex items-center justify-between mb-6">
+					<h3 class="text-lg font-semibold text-white">
+						<i class="fas fa-plug text-blue-400 mr-2"></i>Add Git Connection
+					</h3>
+					<button onclick="document.getElementById('new-connection-modal').classList.add('hidden')"
+						class="text-gray-400 hover:text-white">
+						<i class="fas fa-times"></i>
+					</button>
+				</div>
+				<form method="post" action="/integrations/git/connections" id="new-connection-form" class="space-y-4">
+					<input type="hidden" name="csrf_token" value={ csrfToken }/>
+					
+					<!-- Provider Selection -->
+					<div>
+						<label class="block text-sm font-medium text-gray-300 mb-2">Provider</label>
+						<div class="grid grid-cols-3 gap-3">
+							<label class="provider-option">
+								<input type="radio" name="provider_type" value="gitea" class="sr-only peer" checked
+									onchange="updateConnectionForm('gitea')"/>
+								<div class="flex flex-col items-center p-3 rounded-lg border-2 border-gray-600 cursor-pointer
+									peer-checked:border-green-500 peer-checked:bg-green-500/10 hover:border-gray-500 transition-colors">
+									<i class="fas fa-mug-hot text-2xl text-green-400 mb-1"></i>
+									<span class="text-sm text-gray-300">Gitea</span>
+								</div>
+							</label>
+							<label class="provider-option">
+								<input type="radio" name="provider_type" value="github" class="sr-only peer"
+									onchange="updateConnectionForm('github')"/>
+								<div class="flex flex-col items-center p-3 rounded-lg border-2 border-gray-600 cursor-pointer
+									peer-checked:border-gray-100 peer-checked:bg-gray-100/10 hover:border-gray-500 transition-colors">
+									<i class="fab fa-github text-2xl text-gray-100 mb-1"></i>
+									<span class="text-sm text-gray-300">GitHub</span>
+								</div>
+							</label>
+							<label class="provider-option">
+								<input type="radio" name="provider_type" value="gitlab" class="sr-only peer"
+									onchange="updateConnectionForm('gitlab')"/>
+								<div class="flex flex-col items-center p-3 rounded-lg border-2 border-gray-600 cursor-pointer
+									peer-checked:border-orange-500 peer-checked:bg-orange-500/10 hover:border-gray-500 transition-colors">
+									<i class="fab fa-gitlab text-2xl text-orange-400 mb-1"></i>
+									<span class="text-sm text-gray-300">GitLab</span>
+								</div>
+							</label>
+						</div>
+					</div>
+					
+					<div>
+						<label for="conn-name" class="block text-sm font-medium text-gray-300 mb-1">Connection Name</label>
+						<input type="text" id="conn-name" name="name" required
+							placeholder="e.g. My Git Server"
+							class="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-500 focus:border-blue-500 focus:ring-1 focus:ring-blue-500"/>
+					</div>
+					
+					<!-- URL field (hidden for GitHub, shown for Gitea/GitLab) -->
+					<div id="conn-url-wrapper">
+						<label for="conn-url" class="block text-sm font-medium text-gray-300 mb-1">Server URL</label>
+						<input type="url" id="conn-url" name="url"
+							placeholder="https://gitea.example.com"
+							class="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-500 focus:border-blue-500 focus:ring-1 focus:ring-blue-500"/>
+						<p id="conn-url-hint" class="text-xs text-gray-500 mt-1">Leave empty to use the default server</p>
+					</div>
+					
+					<div>
+						<label for="conn-token" class="block text-sm font-medium text-gray-300 mb-1">
+							<span id="token-label">API Token</span>
+						</label>
+						<input type="password" id="conn-token" name="api_token" required
+							placeholder="Your personal access token"
+							class="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-500 focus:border-blue-500 focus:ring-1 focus:ring-blue-500"/>
+						<p id="token-hint" class="text-xs text-gray-500 mt-1">
+							Generate in Settings → Developer settings → Personal access tokens
+						</p>
+					</div>
+					
+					<div>
+						<label for="conn-secret" class="block text-sm font-medium text-gray-300 mb-1">Webhook Secret <span class="text-gray-500">(optional)</span></label>
+						<input type="password" id="conn-secret" name="webhook_secret"
+							placeholder="For validating webhook payloads"
+							class="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-500 focus:border-blue-500 focus:ring-1 focus:ring-blue-500"/>
+					</div>
+					
+					<div class="flex justify-end gap-3 pt-2">
+						<button type="button"
+							onclick="document.getElementById('new-connection-modal').classList.add('hidden')"
+							class="btn-ghost">
+							Cancel
+						</button>
+						<button type="submit" class="btn-primary">
+							<i class="fas fa-plus mr-2"></i>Create Connection
+						</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+	
+	<script>
+	function updateConnectionForm(provider) {
+		const urlWrapper = document.getElementById('conn-url-wrapper');
+		const urlInput = document.getElementById('conn-url');
+		const urlHint = document.getElementById('conn-url-hint');
+		const tokenHint = document.getElementById('token-hint');
+		const nameInput = document.getElementById('conn-name');
+		
+		switch(provider) {
+			case 'github':
+				urlWrapper.classList.add('hidden');
+				urlInput.required = false;
+				urlInput.value = 'https://api.github.com';
+				tokenHint.textContent = 'Generate at github.com → Settings → Developer settings → Personal access tokens (classic). Needs repo scope.';
+				nameInput.placeholder = 'e.g. GitHub Personal';
+				break;
+			case 'gitlab':
+				urlWrapper.classList.remove('hidden');
+				urlInput.required = false;
+				urlInput.placeholder = 'https://gitlab.com';
+				urlHint.textContent = 'Leave empty for gitlab.com or enter your self-hosted GitLab URL';
+				tokenHint.textContent = 'Generate at GitLab → User Settings → Access Tokens. Needs api scope.';
+				nameInput.placeholder = 'e.g. GitLab SaaS';
+				break;
+			case 'gitea':
+			default:
+				urlWrapper.classList.remove('hidden');
+				urlInput.required = true;
+				urlInput.placeholder = 'https://gitea.example.com';
+				urlHint.textContent = 'Your Gitea server URL';
+				tokenHint.textContent = 'Generate in Gitea → Settings → Applications → Generate New Token';
+				nameInput.placeholder = 'e.g. My Gitea Server';
+				break;
+		}
+	}
+	
+	// Initialize form on load
+	document.addEventListener('DOMContentLoaded', () => {
+		updateConnectionForm('gitea');
+	});
+	</script>
+}
+
+// ============================================================================
+// Create Repository Modal
+// ============================================================================
+
+templ newRepoModal(connections []ConnectionItem, csrfToken string) {
+	<div id="new-repo-modal" class="hidden fixed inset-0 z-50 overflow-y-auto">
+		<div class="flex min-h-screen items-center justify-center p-4">
+			<!-- Backdrop -->
+			<div class="fixed inset-0 bg-black/60" onclick="this.parentElement.parentElement.classList.add('hidden')"></div>
+			<!-- Modal -->
+			<div class="relative card w-full max-w-lg p-6">
+				<div class="flex items-center justify-between mb-6">
+					<h3 class="text-lg font-semibold text-white">
+						<i class="fas fa-folder-plus text-green-400 mr-2"></i>Create Repository
+					</h3>
+					<button onclick="document.getElementById('new-repo-modal').classList.add('hidden')"
+						class="text-gray-400 hover:text-white">
+						<i class="fas fa-times"></i>
+					</button>
+				</div>
+				<form method="post" action="/integrations/git/repos" class="space-y-4">
+					<input type="hidden" name="csrf_token" value={ csrfToken }/>
+					<div>
+						<label class="block text-sm font-medium text-gray-300 mb-1">Connection</label>
+						<select name="connection_id" required
+							id="repo-connection-select"
+							onchange="loadTemplates(this.value)"
+							class="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
+							for _, conn := range connections {
+								if conn.Status == "connected" {
+									<option value={ conn.ID }>{ conn.Name } ({ conn.URL })</option>
+								}
+							}
+						</select>
+					</div>
+					<div>
+						<label class="block text-sm font-medium text-gray-300 mb-1">Repository Name</label>
+						<input type="text" name="name" required
+							placeholder="my-awesome-project"
+							pattern="^[a-zA-Z0-9_.-]+$"
+							class="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-500 focus:border-blue-500 focus:ring-1 focus:ring-blue-500"/>
+						<p class="text-xs text-gray-500 mt-1">Letters, numbers, hyphens, underscores, and dots only</p>
+					</div>
+					<div>
+						<label class="block text-sm font-medium text-gray-300 mb-1">Description <span class="text-gray-500">(optional)</span></label>
+						<textarea name="description" rows="2"
+							placeholder="A brief description of your repository"
+							class="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-500 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 resize-none"></textarea>
+					</div>
+					<div class="grid grid-cols-2 gap-4">
+						<div>
+							<label class="block text-sm font-medium text-gray-300 mb-1">.gitignore</label>
+							<select name="gitignore" id="repo-gitignore"
+								class="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
+								<option value="">None</option>
+								<!-- Populated via JS -->
+							</select>
+						</div>
+						<div>
+							<label class="block text-sm font-medium text-gray-300 mb-1">License</label>
+							<select name="license" id="repo-license"
+								class="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
+								<option value="">None</option>
+								<!-- Populated via JS -->
+							</select>
+						</div>
+					</div>
+					<div class="flex items-center gap-6">
+						<label class="flex items-center gap-2 cursor-pointer">
+							<input type="checkbox" name="private" value="true"
+								class="rounded bg-gray-800 border-gray-600 text-blue-500 focus:ring-blue-500"/>
+							<span class="text-sm text-gray-300">Private repository</span>
+						</label>
+						<label class="flex items-center gap-2 cursor-pointer">
+							<input type="checkbox" name="auto_init" value="true" checked
+								class="rounded bg-gray-800 border-gray-600 text-blue-500 focus:ring-blue-500"/>
+							<span class="text-sm text-gray-300">Initialize with README</span>
+						</label>
+					</div>
+					<div class="flex justify-end gap-3 pt-2">
+						<button type="button"
+							onclick="document.getElementById('new-repo-modal').classList.add('hidden')"
+							class="btn-ghost">
+							Cancel
+						</button>
+						<button type="submit" class="btn-primary bg-green-600 hover:bg-green-700">
+							<i class="fas fa-plus mr-2"></i>Create Repository
+						</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+	
+	<script>
+	// Load gitignore and license templates when connection changes
+	async function loadTemplates(connectionID) {
+		if (!connectionID) return;
+		
+		try {
+			const resp = await fetch(`/integrations/git/connections/${connectionID}/templates`);
+			if (!resp.ok) throw new Error('Failed to load templates');
+			const data = await resp.json();
+			
+			// Populate gitignore select
+			const gitignoreSelect = document.getElementById('repo-gitignore');
+			gitignoreSelect.innerHTML = '<option value="">None</option>';
+			(data.gitignores || []).forEach(g => {
+				const opt = document.createElement('option');
+				opt.value = g;
+				opt.textContent = g;
+				gitignoreSelect.appendChild(opt);
+			});
+			
+			// Populate license select
+			const licenseSelect = document.getElementById('repo-license');
+			licenseSelect.innerHTML = '<option value="">None</option>';
+			(data.licenses || []).forEach(l => {
+				const opt = document.createElement('option');
+				opt.value = l.key;
+				opt.textContent = l.name;
+				licenseSelect.appendChild(opt);
+			});
+		} catch (err) {
+			console.error('Error loading templates:', err);
+		}
+	}
+	
+	// Load templates for first connection on page load
+	document.addEventListener('DOMContentLoaded', () => {
+		const select = document.getElementById('repo-connection-select');
+		if (select && select.value) {
+			loadTemplates(select.value);
+		}
+	});
+	</script>
+}
+
+// ============================================================================
+// Helpers
+// ============================================================================
+
+func connectionStatusColor(status string) string {
+	switch status {
+	case "connected":
+		return "bg-green-400"
+	case "error":
+		return "bg-red-400"
+	default:
+		return "bg-yellow-400"
+	}
+}
+
+func repoIcon(repo RepoItem) string {
+	if repo.IsArchived {
+		return "fa-archive text-gray-500"
+	}
+	if repo.IsFork {
+		return "fa-code-branch text-purple-400"
+	}
+	if repo.IsPrivate {
+		return "fa-lock text-yellow-400"
+	}
+	return "fa-book text-blue-400"
+}
+
+// Provider helpers
+
+func providerIconClass(providerType string) string {
+	switch providerType {
+	case "github", "gitlab":
+		return "fab" // Brand icons
+	default:
+		return "fas" // Solid icons for gitea and others
+	}
+}
+
+func providerIcon(providerType string) string {
+	switch providerType {
+	case "github":
+		return "fa-github"
+	case "gitlab":
+		return "fa-gitlab"
+	case "gitea":
+		return "fa-mug-hot" // Tea cup icon for Gitea (Git + Tea)
+	default:
+		return "fa-code-branch"
+	}
+}
+
+func providerColor(providerType string) string {
+	switch providerType {
+	case "github":
+		return "text-gray-100"
+	case "gitlab":
+		return "text-orange-400"
+	case "gitea":
+		return "text-green-400"
+	default:
+		return "text-blue-400"
+	}
+}
+
+func providerName(providerType string) string {
+	switch providerType {
+	case "github":
+		return "GitHub"
+	case "gitlab":
+		return "GitLab"
+	case "gitea":
+		return "Gitea"
+	default:
+		return providerType
+	}
+}
+
+func providerBadgeClass(providerType string) string {
+	switch providerType {
+	case "github":
+		return "bg-gray-700 text-gray-100"
+	case "gitlab":
+		return "bg-orange-500/10 text-orange-400"
+	case "gitea":
+		return "bg-green-500/10 text-green-400"
+	default:
+		return "bg-blue-500/10 text-blue-400"
+	}
+}

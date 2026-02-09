@@ -1,0 +1,305 @@
+package storage
+
+import (
+	"fmt"
+	"github.com/fr4nsys/usulnet/internal/web/templates/layouts"
+)
+
+// Data types for storage templates
+type StorageConnectionData struct {
+	ID           string
+	Name         string
+	Endpoint     string
+	Region       string
+	UsePathStyle bool
+	UseSSL       bool
+	IsDefault    bool
+	Status       string
+	StatusMsg    string
+	CreatedAt    string
+	LastChecked  string
+	BucketCount  int64
+	TotalSize    int64
+	TotalObjects int64
+}
+
+type StorageListData struct {
+	PageData    layouts.PageData
+	Connections []StorageConnectionData
+}
+
+type StorageBucketData struct {
+	Name        string
+	Region      string
+	SizeBytes   int64
+	SizeHuman   string
+	ObjectCount int64
+	IsPublic    bool
+	Versioning  bool
+	CreatedAt   string
+}
+
+type StorageBucketsData struct {
+	PageData   layouts.PageData
+	Connection StorageConnectionData
+	Buckets    []StorageBucketData
+}
+
+type StorageObjectData struct {
+	Key          string
+	Name         string
+	Size         int64
+	SizeHuman    string
+	LastModified string
+	ContentType  string
+	IsDir        bool
+}
+
+type BreadcrumbItem struct {
+	Label  string
+	Prefix string
+}
+
+type StorageBrowserData struct {
+	PageData       layouts.PageData
+	ConnectionID   string
+	ConnectionName string
+	Bucket         string
+	Prefix         string
+	Breadcrumbs    []BreadcrumbItem
+	Objects        []StorageObjectData
+}
+
+type StorageAuditEntryData struct {
+	Action       string
+	ResourceType string
+	ResourceName string
+	UserID       string
+	CreatedAt    string
+}
+
+type StorageAuditData struct {
+	PageData       layouts.PageData
+	ConnectionID   string
+	ConnectionName string
+	Entries        []StorageAuditEntryData
+	Page           int
+	TotalPages     int
+}
+
+templ ConnectionsList(data StorageListData) {
+	@layouts.Base(data.PageData) {
+		<div class="space-y-6">
+			<!-- Header -->
+			<div class="flex items-center justify-between">
+				<div>
+					<h1 class="text-2xl font-display font-bold text-white">Object Storage</h1>
+					<p class="text-gray-400 mt-1">S3-compatible storage connections (MinIO, AWS, etc.)</p>
+				</div>
+				<button
+					onclick="document.getElementById('create-modal').classList.remove('hidden')"
+					class="btn-primary"
+				>
+					<i class="fas fa-plus mr-2"></i>Add Connection
+				</button>
+			</div>
+
+			if len(data.Connections) == 0 {
+				<!-- Empty state -->
+				<div class="card p-12 text-center">
+					<div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-primary-500/10 flex items-center justify-center">
+						<i class="fas fa-cloud text-2xl text-primary-400"></i>
+					</div>
+					<h3 class="text-lg font-medium text-white mb-2">No storage connections</h3>
+					<p class="text-gray-400 mb-6">Add a MinIO or S3-compatible storage endpoint to manage buckets and objects.</p>
+					<button
+						onclick="document.getElementById('create-modal').classList.remove('hidden')"
+						class="btn-primary"
+					>
+						<i class="fas fa-plus mr-2"></i>Add Connection
+					</button>
+				</div>
+			} else {
+				<!-- Connections grid -->
+				<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+					for _, conn := range data.Connections {
+						@connectionCard(conn, data.PageData.CSRFToken)
+					}
+				</div>
+			}
+		</div>
+
+		<!-- Create connection modal -->
+		@createConnectionModal(data.PageData.CSRFToken)
+	}
+}
+
+templ connectionCard(conn StorageConnectionData, csrfToken string) {
+	<div class="card p-5 hover:border-primary-500/30 transition-colors group">
+		<div class="flex items-start justify-between mb-4">
+			<div class="flex items-center gap-3">
+				<div class={ "w-10 h-10 rounded-xl flex items-center justify-center",
+					templ.KV("bg-green-500/10", conn.Status == "active"),
+					templ.KV("bg-red-500/10", conn.Status == "error"),
+					templ.KV("bg-yellow-500/10", conn.Status == "pending") }>
+					<i class={ "fas fa-cloud",
+						templ.KV("text-green-400", conn.Status == "active"),
+						templ.KV("text-red-400", conn.Status == "error"),
+						templ.KV("text-yellow-400", conn.Status == "pending") }></i>
+				</div>
+				<div>
+					<h3 class="font-medium text-white">{ conn.Name }</h3>
+					<p class="text-xs text-gray-500 font-mono">{ conn.Endpoint }</p>
+				</div>
+			</div>
+			if conn.IsDefault {
+				<span class="text-[10px] font-semibold bg-primary-500/20 text-primary-400 px-2 py-0.5 rounded-full uppercase tracking-wide">Default</span>
+			}
+		</div>
+
+		<div class="grid grid-cols-3 gap-3 mb-4 text-center">
+			<div class="bg-dark-700/50 rounded-lg p-2">
+				<p class="text-lg font-bold text-white">{ fmt.Sprintf("%d", conn.BucketCount) }</p>
+				<p class="text-[10px] text-gray-500 uppercase">Buckets</p>
+			</div>
+			<div class="bg-dark-700/50 rounded-lg p-2">
+				<p class="text-lg font-bold text-white">{ formatBytes(conn.TotalSize) }</p>
+				<p class="text-[10px] text-gray-500 uppercase">Size</p>
+			</div>
+			<div class="bg-dark-700/50 rounded-lg p-2">
+				<p class="text-lg font-bold text-white">{ formatCount(conn.TotalObjects) }</p>
+				<p class="text-[10px] text-gray-500 uppercase">Objects</p>
+			</div>
+		</div>
+
+		<div class="flex items-center gap-2 text-xs text-gray-500 mb-4">
+			<span class="flex items-center gap-1">
+				<i class="fas fa-globe-americas"></i>{ conn.Region }
+			</span>
+			if conn.UseSSL {
+				<span class="flex items-center gap-1 text-green-400">
+					<i class="fas fa-lock"></i>SSL
+				</span>
+			}
+			if conn.StatusMsg != "" {
+				<span class="text-red-400 truncate" title={ conn.StatusMsg }>
+					<i class="fas fa-exclamation-triangle mr-1"></i>{ conn.StatusMsg }
+				</span>
+			}
+		</div>
+
+		<div class="flex items-center gap-2">
+			<a href={ templ.SafeURL("/storage/" + conn.ID + "/buckets") } class="btn-primary text-xs flex-1 text-center">
+				<i class="fas fa-folder-open mr-1"></i>Buckets
+			</a>
+			<form method="POST" action={ templ.SafeURL("/storage/" + conn.ID + "/test") }>
+				<input type="hidden" name="csrf_token" value={ csrfToken }/>
+				<button type="submit" class="btn-secondary text-xs" title="Test connection">
+					<i class="fas fa-plug"></i>
+				</button>
+			</form>
+			<form method="POST" action={ templ.SafeURL("/storage/" + conn.ID + "/delete") }
+				onsubmit="return confirm('Delete this connection and remove all tracking data?')">
+				<input type="hidden" name="csrf_token" value={ csrfToken }/>
+				<button type="submit" class="btn-danger text-xs" title="Delete">
+					<i class="fas fa-trash"></i>
+				</button>
+			</form>
+		</div>
+	</div>
+}
+
+templ createConnectionModal(csrfToken string) {
+	<div id="create-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+		<div class="card w-full max-w-lg mx-4 p-6">
+			<div class="flex items-center justify-between mb-6">
+				<h2 class="text-lg font-display font-bold text-white">New Storage Connection</h2>
+				<button onclick="document.getElementById('create-modal').classList.add('hidden')" class="text-gray-400 hover:text-white">
+					<i class="fas fa-times"></i>
+				</button>
+			</div>
+
+			<form method="POST" action="/storage/connections" class="space-y-4">
+				<input type="hidden" name="csrf_token" value={ csrfToken }/>
+
+				<div>
+					<label class="label">Connection Name</label>
+					<input type="text" name="name" required placeholder="My MinIO" class="input"/>
+				</div>
+
+				<div class="grid grid-cols-2 gap-4">
+					<div>
+						<label class="label">Endpoint</label>
+						<input type="text" name="endpoint" required placeholder="minio:9000" class="input"/>
+					</div>
+					<div>
+						<label class="label">Region</label>
+						<input type="text" name="region" value="us-east-1" class="input"/>
+					</div>
+				</div>
+
+				<div class="grid grid-cols-2 gap-4">
+					<div>
+						<label class="label">Access Key</label>
+						<input type="text" name="access_key" required class="input" autocomplete="off"/>
+					</div>
+					<div>
+						<label class="label">Secret Key</label>
+						<input type="password" name="secret_key" required class="input" autocomplete="off"/>
+					</div>
+				</div>
+
+				<div class="flex items-center gap-6">
+					<label class="flex items-center gap-2 text-sm text-gray-300 cursor-pointer">
+						<input type="checkbox" name="use_path_style" checked class="form-checkbox rounded bg-dark-700 border-dark-500 text-primary-500"/>
+						Path Style
+					</label>
+					<label class="flex items-center gap-2 text-sm text-gray-300 cursor-pointer">
+						<input type="checkbox" name="use_ssl" class="form-checkbox rounded bg-dark-700 border-dark-500 text-primary-500"/>
+						Use SSL
+					</label>
+					<label class="flex items-center gap-2 text-sm text-gray-300 cursor-pointer">
+						<input type="checkbox" name="is_default" class="form-checkbox rounded bg-dark-700 border-dark-500 text-primary-500"/>
+						Default
+					</label>
+				</div>
+
+				<div class="flex items-center gap-3 pt-2">
+					<button type="submit" class="btn-primary flex-1">
+						<i class="fas fa-plus mr-2"></i>Create Connection
+					</button>
+					<button type="button" onclick="document.getElementById('create-modal').classList.add('hidden')" class="btn-secondary">
+						Cancel
+					</button>
+				</div>
+			</form>
+		</div>
+	</div>
+}
+
+func formatBytes(b int64) string {
+	if b == 0 {
+		return "0 B"
+	}
+	const unit = 1024
+	if b < unit {
+		return fmt.Sprintf("%d B", b)
+	}
+	div, exp := int64(unit), 0
+	for n := b / unit; n >= unit; n /= unit {
+		div *= unit
+		exp++
+	}
+	units := []string{"KB", "MB", "GB", "TB"}
+	return fmt.Sprintf("%.1f %s", float64(b)/float64(div), units[exp])
+}
+
+func formatCount(n int64) string {
+	if n < 1000 {
+		return fmt.Sprintf("%d", n)
+	}
+	if n < 1000000 {
+		return fmt.Sprintf("%.1fK", float64(n)/1000)
+	}
+	return fmt.Sprintf("%.1fM", float64(n)/1000000)
+}

@@ -1,0 +1,565 @@
+package profile
+
+import (
+	"fmt"
+	"github.com/fr4nsys/usulnet/internal/web/templates/layouts"
+)
+
+// ============================================================================
+// Data Types
+// ============================================================================
+
+type SelectOption struct {
+	Value    string
+	Label    string
+	Selected bool
+}
+
+type UserProfileData struct {
+	ID       string
+	Username string
+	Email    string
+	Role     string
+	IsActive bool
+	Created  string // formatted
+	LastLogin string // formatted
+}
+
+type SessionInfo struct {
+	ID        string
+	IP        string
+	UserAgent string
+	Created   string
+	LastUsed  string
+	IsCurrent bool
+}
+
+type PreferencesData struct {
+	// Appearance
+	Theme    string
+	Language string
+
+	// Regional
+	Timezone   string
+	DateFormat string
+	TimeFormat string
+
+	// Dashboard & UI
+	ContainerView         string
+	DefaultLogLines       int
+	RefreshInterval       int
+	ShowStoppedContainers bool
+
+	// Notifications
+	NotifyUpdates   bool
+	NotifySecurity  bool
+	NotifyBackups   bool
+	NotifyContainer bool
+
+	// Editor
+	EditorMode     string
+	EditorFontSize int
+	EditorTabSize  int
+}
+
+type ProfilePageData struct {
+	PageData    layouts.PageData
+	User        UserProfileData
+	Prefs       PreferencesData
+	Timezones   []SelectOption
+	Languages   []SelectOption
+	Sessions    []SessionInfo
+	ActiveTab   string // "profile", "preferences", "security"
+	FlashMsg    string
+	FlashType   string // "success", "error"
+	CSRFToken   string
+}
+
+// ============================================================================
+// Template
+// ============================================================================
+
+templ Profile(data ProfilePageData) {
+	@layouts.Base(data.PageData) {
+		<div class="max-w-4xl mx-auto space-y-6">
+			<!-- Header -->
+			<div class="flex items-center gap-4">
+				<div class="w-14 h-14 rounded-xl bg-gradient-to-br from-primary-500/20 to-primary-600/30 flex items-center justify-center text-primary-400 font-display font-bold text-xl border border-primary-500/20">
+					{ string([]rune(data.User.Username)[0:1]) }
+				</div>
+				<div>
+					<h1 class="text-2xl font-display font-bold text-white">{ data.User.Username }</h1>
+					<div class="flex items-center gap-3 mt-0.5">
+						<span class="text-sm text-gray-400 capitalize">{ data.User.Role }</span>
+						<span class="text-gray-600">&middot;</span>
+						if data.User.IsActive {
+							<span class="inline-flex items-center gap-1 text-xs text-emerald-400">
+								<span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>Active
+							</span>
+						} else {
+							<span class="inline-flex items-center gap-1 text-xs text-red-400">
+								<span class="w-1.5 h-1.5 rounded-full bg-red-400"></span>Disabled
+							</span>
+						}
+					</div>
+				</div>
+			</div>
+
+			<!-- Flash message -->
+			if data.FlashMsg != "" {
+				<div id="flash" class={ "px-4 py-3 rounded-lg text-sm font-medium flex items-center gap-2",
+					templ.KV("bg-emerald-500/10 text-emerald-400 border border-emerald-500/20", data.FlashType == "success"),
+					templ.KV("bg-red-500/10 text-red-400 border border-red-500/20", data.FlashType == "error") }>
+					if data.FlashType == "success" {
+						<i class="fas fa-check-circle"></i>
+					} else {
+						<i class="fas fa-exclamation-circle"></i>
+					}
+					{ data.FlashMsg }
+					<button onclick="this.parentElement.remove()" class="ml-auto text-current opacity-60 hover:opacity-100">
+						<i class="fas fa-times"></i>
+					</button>
+				</div>
+			}
+
+			<!-- Tabs -->
+			<div class="border-b border-dark-600">
+				<nav class="flex gap-6 -mb-px">
+					@profileTab("profile", "fa-user", "Profile", data.ActiveTab)
+					@profileTab("preferences", "fa-sliders-h", "Preferences", data.ActiveTab)
+					@profileTab("security", "fa-shield-alt", "Security", data.ActiveTab)
+				</nav>
+			</div>
+
+			<!-- Tab Content -->
+			if data.ActiveTab == "" || data.ActiveTab == "profile" {
+				@profileInfoTab(data)
+			}
+			if data.ActiveTab == "preferences" {
+				@preferencesTab(data)
+			}
+			if data.ActiveTab == "security" {
+				@securityTab(data)
+			}
+		</div>
+	}
+}
+
+// ============================================================================
+// Tab Navigation
+// ============================================================================
+
+templ profileTab(id string, icon string, label string, active string) {
+	<a href={ templ.SafeURL("/profile?tab=" + id) }
+		class={ "flex items-center gap-2 px-1 py-3 text-sm font-medium border-b-2 transition-colors",
+			templ.KV("border-primary-500 text-primary-400", active == id || (active == "" && id == "profile")),
+			templ.KV("border-transparent text-gray-400 hover:text-gray-200 hover:border-gray-600", active != id && !(active == "" && id == "profile")) }>
+		<i class={ "fas " + icon, "text-xs" }></i>
+		{ label }
+	</a>
+}
+
+// ============================================================================
+// Tab: Profile Info
+// ============================================================================
+
+templ profileInfoTab(data ProfilePageData) {
+	<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+		<!-- Main form -->
+		<div class="lg:col-span-2">
+			<form hx-put="/profile" hx-swap="none" class="bg-dark-800 rounded-xl border border-dark-600 p-6 space-y-5">
+				<input type="hidden" name="csrf_token" value={ data.CSRFToken }/>
+				<h2 class="text-base font-semibold text-white mb-4">Profile Information</h2>
+
+				<div>
+					<label class="block text-sm font-medium text-gray-300 mb-1.5">Username</label>
+					<input type="text" name="username" value={ data.User.Username }
+						class="w-full px-3.5 py-2 rounded-lg bg-dark-700 border border-dark-500 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500 text-sm"/>
+				</div>
+
+				<div>
+					<label class="block text-sm font-medium text-gray-300 mb-1.5">Email</label>
+					<input type="email" name="email" value={ data.User.Email }
+						class="w-full px-3.5 py-2 rounded-lg bg-dark-700 border border-dark-500 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500 text-sm"/>
+				</div>
+
+				<div>
+					<label class="block text-sm font-medium text-gray-300 mb-1.5">Role</label>
+					<div class="px-3.5 py-2 rounded-lg bg-dark-900 border border-dark-600 text-gray-400 text-sm capitalize cursor-not-allowed">
+						{ data.User.Role }
+					</div>
+					<p class="text-xs text-gray-500 mt-1">Role can only be changed by an administrator.</p>
+				</div>
+
+				<div class="pt-2">
+					<button type="submit" class="px-4 py-2 text-sm font-medium text-white bg-primary-500 hover:bg-primary-600 rounded-lg transition-colors">
+						Save Changes
+					</button>
+				</div>
+			</form>
+		</div>
+
+		<!-- Activity sidebar -->
+		<div class="space-y-4">
+			<div class="bg-dark-800 rounded-xl border border-dark-600 p-5">
+				<h3 class="text-sm font-semibold text-white mb-3">Activity</h3>
+				<dl class="space-y-3 text-sm">
+					<div>
+						<dt class="text-gray-500">Member Since</dt>
+						<dd class="text-gray-300 mt-0.5">{ data.User.Created }</dd>
+					</div>
+					<div>
+						<dt class="text-gray-500">Last Login</dt>
+						<dd class="text-gray-300 mt-0.5">
+							if data.User.LastLogin != "" {
+								{ data.User.LastLogin }
+							} else {
+								<span class="text-gray-600">—</span>
+							}
+						</dd>
+					</div>
+					<div>
+						<dt class="text-gray-500">User ID</dt>
+						<dd class="text-gray-500 font-mono text-xs mt-0.5">{ data.User.ID }</dd>
+					</div>
+				</dl>
+			</div>
+
+			<!-- Danger zone -->
+			<div class="bg-dark-800 rounded-xl border border-red-500/20 p-5">
+				<h3 class="text-sm font-semibold text-red-400 mb-3">Danger Zone</h3>
+				<p class="text-xs text-gray-400 mb-3">Export your data or delete your account. These actions cannot be undone.</p>
+				<div class="space-y-2">
+					<button hx-post="/profile/export" hx-swap="none"
+						class="w-full px-3 py-1.5 text-xs font-medium text-gray-300 bg-dark-700 hover:bg-dark-600 rounded-lg transition-colors border border-dark-500">
+						<i class="fas fa-download mr-1.5"></i>Export Data
+					</button>
+					<button hx-delete="/profile" hx-confirm="This will permanently delete your account. Type your username to confirm." hx-swap="none"
+						class="w-full px-3 py-1.5 text-xs font-medium text-red-400 bg-red-500/10 hover:bg-red-500/20 rounded-lg transition-colors border border-red-500/20">
+						<i class="fas fa-trash-alt mr-1.5"></i>Delete Account
+					</button>
+				</div>
+			</div>
+		</div>
+	</div>
+}
+
+// ============================================================================
+// Tab: Preferences
+// ============================================================================
+
+templ preferencesTab(data ProfilePageData) {
+	<form hx-put="/profile/preferences" hx-swap="none" class="space-y-6">
+		<input type="hidden" name="csrf_token" value={ data.CSRFToken }/>
+
+		<!-- Appearance -->
+		<div class="bg-dark-800 rounded-xl border border-dark-600 p-6">
+			<h2 class="text-base font-semibold text-white mb-5">Appearance</h2>
+			<div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+				<div>
+					<label class="block text-sm font-medium text-gray-300 mb-1.5">Theme</label>
+					<div class="grid grid-cols-3 gap-2">
+						@themeOption("dark", "fa-moon", "Dark", data.Prefs.Theme)
+						@themeOption("light", "fa-sun", "Light", data.Prefs.Theme)
+						@themeOption("system", "fa-desktop", "System", data.Prefs.Theme)
+					</div>
+				</div>
+				<div>
+					<label class="block text-sm font-medium text-gray-300 mb-1.5">Language</label>
+					<select name="language" class="w-full px-3.5 py-2 rounded-lg bg-dark-700 border border-dark-500 text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/50">
+						for _, lang := range data.Languages {
+							<option value={ lang.Value } selected?={ lang.Selected }>{ lang.Label }</option>
+						}
+					</select>
+				</div>
+			</div>
+		</div>
+
+		<!-- Regional -->
+		<div class="bg-dark-800 rounded-xl border border-dark-600 p-6">
+			<h2 class="text-base font-semibold text-white mb-5">Regional</h2>
+			<div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+				<div>
+					<label class="block text-sm font-medium text-gray-300 mb-1.5">Timezone</label>
+					<select name="timezone" class="w-full px-3.5 py-2 rounded-lg bg-dark-700 border border-dark-500 text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/50">
+						for _, tz := range data.Timezones {
+							<option value={ tz.Value } selected?={ tz.Selected }>{ tz.Label }</option>
+						}
+					</select>
+				</div>
+				<div>
+					<label class="block text-sm font-medium text-gray-300 mb-1.5">Date Format</label>
+					<select name="date_format" class="w-full px-3.5 py-2 rounded-lg bg-dark-700 border border-dark-500 text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/50">
+						@dateFormatOption("2006-01-02", "ISO 8601 (2025-01-29)", data.Prefs.DateFormat)
+						@dateFormatOption("02/01/2006", "DD/MM/YYYY (29/01/2025)", data.Prefs.DateFormat)
+						@dateFormatOption("01/02/2006", "MM/DD/YYYY (01/29/2025)", data.Prefs.DateFormat)
+						@dateFormatOption("02 Jan 2006", "02 Jan 2025", data.Prefs.DateFormat)
+						@dateFormatOption("Monday, 02 Jan 2006", "Wednesday, 29 Jan 2025", data.Prefs.DateFormat)
+					</select>
+				</div>
+				<div>
+					<label class="block text-sm font-medium text-gray-300 mb-1.5">Time Format</label>
+					<select name="time_format" class="w-full px-3.5 py-2 rounded-lg bg-dark-700 border border-dark-500 text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/50">
+						@timeFormatOption("15:04", "24h (14:30)", data.Prefs.TimeFormat)
+						@timeFormatOption("03:04 PM", "12h (02:30 PM)", data.Prefs.TimeFormat)
+					</select>
+				</div>
+			</div>
+		</div>
+
+		<!-- Dashboard & UI -->
+		<div class="bg-dark-800 rounded-xl border border-dark-600 p-6">
+			<h2 class="text-base font-semibold text-white mb-5">Dashboard &amp; UI</h2>
+			<div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+				<div>
+					<label class="block text-sm font-medium text-gray-300 mb-1.5">Container View</label>
+					<div class="grid grid-cols-2 gap-2">
+						@viewOption("table", "fa-list", "Table", data.Prefs.ContainerView)
+						@viewOption("grid", "fa-th-large", "Grid", data.Prefs.ContainerView)
+					</div>
+				</div>
+				<div>
+					<label class="block text-sm font-medium text-gray-300 mb-1.5">Default Log Lines</label>
+					<select name="default_log_lines" class="w-full px-3.5 py-2 rounded-lg bg-dark-700 border border-dark-500 text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/50">
+						@logLineOption(100, data.Prefs.DefaultLogLines)
+						@logLineOption(250, data.Prefs.DefaultLogLines)
+						@logLineOption(500, data.Prefs.DefaultLogLines)
+						@logLineOption(1000, data.Prefs.DefaultLogLines)
+						@logLineOption(5000, data.Prefs.DefaultLogLines)
+					</select>
+				</div>
+				<div>
+					<label class="block text-sm font-medium text-gray-300 mb-1.5">Auto-Refresh Interval</label>
+					<select name="refresh_interval" class="w-full px-3.5 py-2 rounded-lg bg-dark-700 border border-dark-500 text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/50">
+						<option value="0" selected?={ data.Prefs.RefreshInterval == 0 }>Off</option>
+						<option value="5" selected?={ data.Prefs.RefreshInterval == 5 }>5 seconds</option>
+						<option value="10" selected?={ data.Prefs.RefreshInterval == 10 }>10 seconds</option>
+						<option value="30" selected?={ data.Prefs.RefreshInterval == 30 }>30 seconds</option>
+						<option value="60" selected?={ data.Prefs.RefreshInterval == 60 }>60 seconds</option>
+					</select>
+				</div>
+				<div class="flex items-center">
+					@toggleSwitch("show_stopped_containers", "Show Stopped Containers", "Include stopped/exited containers in lists", data.Prefs.ShowStoppedContainers)
+				</div>
+			</div>
+		</div>
+
+		<!-- Notifications -->
+		<div class="bg-dark-800 rounded-xl border border-dark-600 p-6">
+			<h2 class="text-base font-semibold text-white mb-5">Notifications</h2>
+			<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+				@toggleSwitch("notify_updates", "Update Alerts", "Notify when container updates are available", data.Prefs.NotifyUpdates)
+				@toggleSwitch("notify_security", "Security Alerts", "Notify on security score changes", data.Prefs.NotifySecurity)
+				@toggleSwitch("notify_backups", "Backup Alerts", "Notify on backup completion/failure", data.Prefs.NotifyBackups)
+				@toggleSwitch("notify_container", "Container Events", "Notify on container state changes", data.Prefs.NotifyContainer)
+			</div>
+		</div>
+
+		<!-- Editor -->
+		<div class="bg-dark-800 rounded-xl border border-dark-600 p-6">
+			<h2 class="text-base font-semibold text-white mb-5">Editor</h2>
+			<div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+				<div>
+					<label class="block text-sm font-medium text-gray-300 mb-1.5">Default Editor</label>
+					<div class="grid grid-cols-2 gap-2">
+						@viewOption("monaco", "fa-code", "Monaco", data.Prefs.EditorMode)
+						@viewOption("nvim", "fa-terminal", "Neovim", data.Prefs.EditorMode)
+					</div>
+					<input type="hidden" name="editor_mode" id="editor_mode_hidden" value={ data.Prefs.EditorMode }/>
+				</div>
+				<div>
+					<label class="block text-sm font-medium text-gray-300 mb-1.5">Font Size</label>
+					<div class="flex items-center gap-2">
+						<input type="range" name="editor_font_size" min="10" max="24" step="1"
+							value={ fmt.Sprintf("%d", data.Prefs.EditorFontSize) }
+							oninput="document.getElementById('fs-val').textContent=this.value+'px'"
+							class="flex-1 h-1.5 bg-dark-600 rounded-lg appearance-none cursor-pointer accent-primary-500"/>
+						<span id="fs-val" class="text-sm text-gray-400 w-10 text-right font-mono">{ fmt.Sprintf("%dpx", data.Prefs.EditorFontSize) }</span>
+					</div>
+				</div>
+				<div>
+					<label class="block text-sm font-medium text-gray-300 mb-1.5">Tab Size</label>
+					<select name="editor_tab_size" class="w-full px-3.5 py-2 rounded-lg bg-dark-700 border border-dark-500 text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/50">
+						<option value="2" selected?={ data.Prefs.EditorTabSize == 2 }>2 spaces</option>
+						<option value="4" selected?={ data.Prefs.EditorTabSize == 4 }>4 spaces</option>
+						<option value="8" selected?={ data.Prefs.EditorTabSize == 8 }>8 spaces</option>
+					</select>
+				</div>
+			</div>
+		</div>
+
+		<!-- Save -->
+		<div class="flex items-center justify-between">
+			<button type="submit" class="px-5 py-2.5 text-sm font-medium text-white bg-primary-500 hover:bg-primary-600 rounded-lg transition-colors">
+				<i class="fas fa-save mr-2"></i>Save Preferences
+			</button>
+			<button type="button" hx-post="/profile/preferences/reset" hx-confirm="Reset all preferences to defaults?"
+				class="px-4 py-2 text-sm font-medium text-gray-400 hover:text-gray-200 bg-dark-700 hover:bg-dark-600 rounded-lg transition-colors">
+				Reset to Defaults
+			</button>
+		</div>
+	</form>
+}
+
+// ============================================================================
+// Tab: Security
+// ============================================================================
+
+templ securityTab(data ProfilePageData) {
+	<div class="space-y-6">
+		<!-- Change Password -->
+		<form hx-put="/profile/password" hx-swap="none" class="bg-dark-800 rounded-xl border border-dark-600 p-6 space-y-5">
+			<input type="hidden" name="csrf_token" value={ data.CSRFToken }/>
+			<h2 class="text-base font-semibold text-white">Change Password</h2>
+
+			<div>
+				<label class="block text-sm font-medium text-gray-300 mb-1.5">Current Password</label>
+				<input type="password" name="current_password" required autocomplete="current-password"
+					class="w-full px-3.5 py-2 rounded-lg bg-dark-700 border border-dark-500 text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/50"/>
+			</div>
+
+			<div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+				<div>
+					<label class="block text-sm font-medium text-gray-300 mb-1.5">New Password</label>
+					<input type="password" name="new_password" required minlength="8" autocomplete="new-password"
+						class="w-full px-3.5 py-2 rounded-lg bg-dark-700 border border-dark-500 text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/50"/>
+					<p class="text-xs text-gray-500 mt-1">Minimum 8 characters.</p>
+				</div>
+				<div>
+					<label class="block text-sm font-medium text-gray-300 mb-1.5">Confirm New Password</label>
+					<input type="password" name="confirm_password" required minlength="8" autocomplete="new-password"
+						class="w-full px-3.5 py-2 rounded-lg bg-dark-700 border border-dark-500 text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/50"/>
+				</div>
+			</div>
+
+			<button type="submit" class="px-4 py-2 text-sm font-medium text-white bg-primary-500 hover:bg-primary-600 rounded-lg transition-colors">
+				Update Password
+			</button>
+		</form>
+
+		<!-- Active Sessions -->
+		<div class="bg-dark-800 rounded-xl border border-dark-600 overflow-hidden">
+			<div class="px-6 py-4 border-b border-dark-600 flex items-center justify-between">
+				<h2 class="text-base font-semibold text-white">Active Sessions</h2>
+				<button hx-delete="/profile/sessions" hx-confirm="Revoke all sessions except the current one?"
+					class="px-3 py-1.5 text-xs font-medium text-red-400 bg-red-500/10 hover:bg-red-500/20 rounded-lg transition-colors border border-red-500/20">
+					Revoke All Others
+				</button>
+			</div>
+			if len(data.Sessions) > 0 {
+				<div class="divide-y divide-dark-700">
+					for _, s := range data.Sessions {
+						<div class="px-6 py-3 flex items-center justify-between">
+							<div class="flex items-center gap-3">
+								<div class={ "w-8 h-8 rounded-lg flex items-center justify-center text-xs",
+									templ.KV("bg-primary-500/10 text-primary-400", s.IsCurrent),
+									templ.KV("bg-dark-700 text-gray-400", !s.IsCurrent) }>
+									<i class="fas fa-globe"></i>
+								</div>
+								<div>
+									<div class="text-sm text-gray-200 flex items-center gap-2">
+										{ s.IP }
+										if s.IsCurrent {
+											<span class="text-[10px] font-medium text-primary-400 bg-primary-500/10 px-1.5 py-0.5 rounded">CURRENT</span>
+										}
+									</div>
+									<div class="text-xs text-gray-500 truncate max-w-xs">{ s.UserAgent }</div>
+								</div>
+							</div>
+							<div class="flex items-center gap-4">
+								<div class="text-right">
+									<div class="text-xs text-gray-400">{ s.LastUsed }</div>
+									<div class="text-[10px] text-gray-600">Created { s.Created }</div>
+								</div>
+								if !s.IsCurrent {
+									<button hx-delete={ fmt.Sprintf("/profile/sessions/%s", s.ID) } hx-swap="outerHTML" hx-target="closest div"
+										class="p-1.5 text-gray-500 hover:text-red-400 hover:bg-red-500/10 rounded transition-colors" title="Revoke">
+										<i class="fas fa-times text-xs"></i>
+									</button>
+								}
+							</div>
+						</div>
+					}
+				</div>
+			} else {
+				<div class="px-6 py-8 text-center text-gray-500 text-sm">
+					No active sessions found.
+				</div>
+			}
+		</div>
+
+		<!-- Two-Factor Authentication (placeholder) -->
+		<div class="bg-dark-800 rounded-xl border border-dark-600 p-6">
+			<div class="flex items-center justify-between">
+				<div>
+					<h2 class="text-base font-semibold text-white">Two-Factor Authentication</h2>
+					<p class="text-sm text-gray-400 mt-1">Add an extra layer of security to your account.</p>
+				</div>
+				<span class="px-2.5 py-1 text-xs font-medium text-gray-500 bg-dark-700 rounded-lg border border-dark-600">Coming Soon</span>
+			</div>
+		</div>
+	</div>
+}
+
+// ============================================================================
+// Reusable Components
+// ============================================================================
+
+templ themeOption(value string, icon string, label string, current string) {
+	<label class={ "flex flex-col items-center gap-1.5 px-3 py-2.5 rounded-lg border cursor-pointer transition-colors",
+		templ.KV("border-primary-500 bg-primary-500/10 text-primary-400", current == value),
+		templ.KV("border-dark-500 bg-dark-700 text-gray-400 hover:border-dark-400", current != value) }>
+		<input type="radio" name="theme" value={ value } checked?={ current == value } class="sr-only"/>
+		<i class={ "fas " + icon }></i>
+		<span class="text-xs font-medium">{ label }</span>
+	</label>
+}
+
+templ viewOption(value string, icon string, label string, current string) {
+	<label class={ "flex items-center justify-center gap-2 px-3 py-2 rounded-lg border cursor-pointer transition-colors text-sm",
+		templ.KV("border-primary-500 bg-primary-500/10 text-primary-400", current == value),
+		templ.KV("border-dark-500 bg-dark-700 text-gray-400 hover:border-dark-400", current != value) }>
+		<input type="radio" name={ radioName(value, current) } value={ value } checked?={ current == value } class="sr-only"/>
+		<i class={ "fas " + icon, "text-xs" }></i>
+		<span class="font-medium">{ label }</span>
+	</label>
+}
+
+templ dateFormatOption(value string, label string, current string) {
+	<option value={ value } selected?={ current == value }>{ label }</option>
+}
+
+templ timeFormatOption(value string, label string, current string) {
+	<option value={ value } selected?={ current == value }>{ label }</option>
+}
+
+templ logLineOption(value int, current int) {
+	<option value={ fmt.Sprintf("%d", value) } selected?={ current == value }>{ fmt.Sprintf("%d lines", value) }</option>
+}
+
+templ toggleSwitch(name string, label string, description string, checked bool) {
+	<label class="flex items-center justify-between p-3 rounded-lg bg-dark-700/50 cursor-pointer group">
+		<div>
+			<p class="text-sm font-medium text-gray-200">{ label }</p>
+			<p class="text-xs text-gray-500">{ description }</p>
+		</div>
+		<div class="relative">
+			<input type="hidden" name={ name } value="false"/>
+			<input type="checkbox" name={ name } value="true" checked?={ checked } class="sr-only peer"/>
+			<div class="w-10 h-5 bg-dark-500 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary-500"></div>
+		</div>
+	</label>
+}
+
+// radioName determines the radio group name based on context.
+// For container_view vs editor_mode, the radio names need to differ.
+func radioName(value string, current string) string {
+	switch value {
+	case "table", "grid":
+		return "container_view"
+	case "monaco", "nvim":
+		return "editor_mode"
+	default:
+		return "option"
+	}
+}

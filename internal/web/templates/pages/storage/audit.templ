@@ -1,0 +1,96 @@
+package storage
+
+import (
+	"fmt"
+	"github.com/fr4nsys/usulnet/internal/web/templates/layouts"
+)
+
+templ AuditLog(data StorageAuditData) {
+	@layouts.Base(data.PageData) {
+		<div class="space-y-6">
+			<!-- Breadcrumb -->
+			<div class="flex items-center gap-2 text-sm text-gray-400">
+				<a href="/storage" class="hover:text-primary-400 transition-colors">Storage</a>
+				<i class="fas fa-chevron-right text-xs text-gray-600"></i>
+				<a href={ templ.SafeURL("/storage/" + data.ConnectionID + "/buckets") } class="hover:text-primary-400 transition-colors">{ data.ConnectionName }</a>
+				<i class="fas fa-chevron-right text-xs text-gray-600"></i>
+				<span class="text-white">Audit Log</span>
+			</div>
+
+			<div>
+				<h1 class="text-2xl font-display font-bold text-white">
+					<i class="fas fa-history text-primary-400 mr-2"></i>Audit Log
+				</h1>
+				<p class="text-gray-400 mt-1">Activity history for { data.ConnectionName }</p>
+			</div>
+
+			<div class="card overflow-hidden">
+				if len(data.Entries) == 0 {
+					<div class="p-12 text-center">
+						<p class="text-gray-400">No activity recorded yet.</p>
+					</div>
+				} else {
+					<table class="w-full">
+						<thead>
+							<tr class="border-b border-dark-600">
+								<th class="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Time</th>
+								<th class="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Action</th>
+								<th class="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Resource</th>
+								<th class="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">User</th>
+							</tr>
+						</thead>
+						<tbody class="divide-y divide-dark-700">
+							for _, e := range data.Entries {
+								<tr class="hover:bg-dark-700/50 transition-colors">
+									<td class="px-4 py-3 text-sm text-gray-500 whitespace-nowrap">{ e.CreatedAt }</td>
+									<td class="px-4 py-3">
+										<span class={ "text-xs font-semibold px-2 py-0.5 rounded",
+											templ.KV("bg-green-500/20 text-green-400", isCreateAction(e.Action)),
+											templ.KV("bg-red-500/20 text-red-400", isDeleteAction(e.Action)),
+											templ.KV("bg-blue-500/20 text-blue-400", !isCreateAction(e.Action) && !isDeleteAction(e.Action)) }>
+											{ e.Action }
+										</span>
+									</td>
+									<td class="px-4 py-3">
+										<span class="text-sm text-gray-300">
+											<span class="text-gray-500">{ e.ResourceType }:</span> { e.ResourceName }
+										</span>
+									</td>
+									<td class="px-4 py-3 text-sm text-gray-400">{ e.UserID }</td>
+								</tr>
+							}
+						</tbody>
+					</table>
+
+					if data.TotalPages > 1 {
+						<div class="flex items-center justify-center gap-2 p-4 border-t border-dark-600">
+							if data.Page > 1 {
+								<a href={ templ.SafeURL(fmt.Sprintf("/storage/%s/audit?page=%d", data.ConnectionID, data.Page-1)) }
+									class="btn-secondary text-xs">
+									<i class="fas fa-chevron-left mr-1"></i>Previous
+								</a>
+							}
+							<span class="text-sm text-gray-400">
+								Page { fmt.Sprintf("%d", data.Page) } of { fmt.Sprintf("%d", data.TotalPages) }
+							</span>
+							if data.Page < data.TotalPages {
+								<a href={ templ.SafeURL(fmt.Sprintf("/storage/%s/audit?page=%d", data.ConnectionID, data.Page+1)) }
+									class="btn-secondary text-xs">
+									Next<i class="fas fa-chevron-right ml-1"></i>
+								</a>
+							}
+						</div>
+					}
+				}
+			</div>
+		</div>
+	}
+}
+
+func isCreateAction(action string) bool {
+	return action == "create" || action == "create_bucket" || action == "create_folder" || action == "upload"
+}
+
+func isDeleteAction(action string) bool {
+	return action == "delete" || action == "delete_bucket" || action == "delete_batch"
+}

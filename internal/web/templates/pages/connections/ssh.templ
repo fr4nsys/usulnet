@@ -1,0 +1,1106 @@
+package connections
+
+import (
+	"fmt"
+	"github.com/fr4nsys/usulnet/internal/web/templates/layouts"
+)
+
+// SSHConnectionData represents an SSH connection for templates.
+type SSHConnectionData struct {
+	ID          string
+	Name        string
+	Host        string
+	Port        int
+	Username    string
+	AuthType    string // "password", "key", "agent"
+	KeyID       string
+	KeyName     string
+	JumpHostID  string
+	JumpHost    string
+	Status      string
+	LastUsed    string
+	CreatedAt   string
+	Tags        []string
+}
+
+// SSHKeyData represents an SSH key for templates.
+type SSHKeyData struct {
+	ID           string
+	Name         string
+	Type         string // "ed25519", "rsa", "ecdsa"
+	Fingerprint  string
+	PublicKey    string
+	Comment      string
+	CreatedAt    string
+	LastUsed     string
+	UsedByCount  int
+}
+
+// SSHSessionData represents an active or historical SSH session.
+type SSHSessionData struct {
+	ID          string
+	ConnName    string
+	Username    string
+	ClientIP    string
+	Status      string
+	StartedAt   string
+	EndedAt     string
+	Duration    string
+}
+
+// SSHConnectionsListData is the data for SSH connections list page.
+type SSHConnectionsListData struct {
+	PageData    layouts.PageData
+	Connections []SSHConnectionData
+	Keys        []SSHKeyData
+}
+
+// SSHConnectionNewData is the data for new SSH connection page.
+type SSHConnectionNewData struct {
+	PageData layouts.PageData
+	Keys     []SSHKeyData
+	JumpHosts []SSHConnectionData
+}
+
+// SSHConnectionDetailData is the data for SSH connection detail page.
+type SSHConnectionDetailData struct {
+	PageData   layouts.PageData
+	Connection SSHConnectionData
+	Sessions   []SSHSessionData
+}
+
+// SSHKeysListData is the data for SSH keys list page.
+type SSHKeysListData struct {
+	PageData layouts.PageData
+	Keys     []SSHKeyData
+}
+
+// SSHKeyDetailData is the data for SSH key detail page.
+type SSHKeyDetailData struct {
+	PageData layouts.PageData
+	Key      SSHKeyData
+	UsedBy   []SSHConnectionData
+}
+
+// SSHTerminalData is the data for SSH terminal page.
+type SSHTerminalData struct {
+	PageData   layouts.PageData
+	Connection SSHConnectionData
+}
+
+// Navigation component for connections section
+templ ConnectionsNav(active string) {
+	<div class="border-b border-dark-700 mb-6">
+		<nav class="-mb-px flex space-x-8" aria-label="Tabs">
+			<a
+				href="/connections/ssh"
+				class={ navLinkClass(active == "ssh") }
+			>
+				<svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+				</svg>
+				SSH Connections
+			</a>
+			<a
+				href="/connections/rdp"
+				class={ navLinkClass(active == "rdp") }
+			>
+				<svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+				</svg>
+				RDP Connections
+			</a>
+			<a
+				href="/connections/keys"
+				class={ navLinkClass(active == "keys") }
+			>
+				<svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"></path>
+				</svg>
+				SSH Keys
+			</a>
+			<a
+				href="/connections/shortcuts"
+				class={ navLinkClass(active == "shortcuts") }
+			>
+				<svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path>
+				</svg>
+				Web Shortcuts
+			</a>
+		</nav>
+	</div>
+}
+
+func navLinkClass(active bool) string {
+	if active {
+		return "flex items-center py-4 px-1 border-b-2 border-primary-500 font-medium text-sm text-primary-400"
+	}
+	return "flex items-center py-4 px-1 border-b-2 border-transparent font-medium text-sm text-gray-400 hover:text-gray-300 hover:border-gray-500"
+}
+
+// SSHConnectionsList renders the SSH connections list page.
+templ SSHConnectionsList(data SSHConnectionsListData) {
+	@layouts.Base(data.PageData) {
+		<div class="space-y-6">
+			@ConnectionsNav("ssh")
+
+			<!-- Header -->
+			<div class="flex items-center justify-between">
+				<div>
+					<h1 class="text-2xl font-display font-bold text-white">SSH Connections</h1>
+					<p class="text-gray-400 mt-1">Manage SSH connections to remote servers</p>
+				</div>
+				<a
+					href="/connections/ssh/new"
+					class="inline-flex items-center px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors"
+				>
+					<svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+					</svg>
+					New Connection
+				</a>
+			</div>
+
+			<!-- Connections Grid -->
+			if len(data.Connections) == 0 {
+				@EmptyState()
+			} else {
+				<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+					for _, conn := range data.Connections {
+						@SSHConnectionCard(conn)
+					}
+				</div>
+			}
+		</div>
+	}
+}
+
+// SSHConnectionCard renders a single SSH connection card.
+templ SSHConnectionCard(conn SSHConnectionData) {
+	<div class="bg-dark-800 rounded-lg border border-dark-700 p-4 hover:border-dark-600 transition-colors">
+		<div class="flex items-start justify-between">
+			<div class="flex items-center space-x-3">
+				<div class={ "w-3 h-3 rounded-full", statusDotClass(conn.Status) }></div>
+				<div>
+					<h3 class="text-white font-medium">{ conn.Name }</h3>
+					<p class="text-gray-400 text-sm">{ formatSSHAddress(conn.Username, conn.Host, conn.Port) }</p>
+				</div>
+			</div>
+			<div class="flex items-center space-x-2">
+				<a
+					href={ templ.SafeURL(fmt.Sprintf("/connections/ssh/%s/terminal", conn.ID)) }
+					class="p-2 text-gray-400 hover:text-primary-400 hover:bg-dark-700 rounded-lg transition-colors"
+					title="Open Terminal"
+				>
+					<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+					</svg>
+				</a>
+				<a
+					href={ templ.SafeURL(fmt.Sprintf("/connections/ssh/%s/files", conn.ID)) }
+					class="p-2 text-gray-400 hover:text-primary-400 hover:bg-dark-700 rounded-lg transition-colors"
+					title="File Browser"
+				>
+					<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path>
+					</svg>
+				</a>
+			</div>
+		</div>
+
+		<!-- Connection Info -->
+		<div class="mt-4 space-y-2 text-sm">
+			<div class="flex items-center text-gray-400">
+				<svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"></path>
+				</svg>
+				<span>{ authTypeLabel(conn.AuthType) }</span>
+			</div>
+			if conn.JumpHost != "" {
+				<div class="flex items-center text-gray-400">
+					<svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+					</svg>
+					<span>Via { conn.JumpHost }</span>
+				</div>
+			}
+			if conn.LastUsed != "" {
+				<div class="flex items-center text-gray-500">
+					<svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+					</svg>
+					<span>Last used { conn.LastUsed }</span>
+				</div>
+			}
+		</div>
+
+		<!-- Tags -->
+		if len(conn.Tags) > 0 {
+			<div class="mt-3 flex flex-wrap gap-1">
+				for _, tag := range conn.Tags {
+					<span class="px-2 py-0.5 bg-dark-700 text-gray-400 text-xs rounded">{ tag }</span>
+				}
+			</div>
+		}
+
+		<!-- Actions -->
+		<div class="mt-4 pt-4 border-t border-dark-700 flex items-center justify-between">
+			<a
+				href={ templ.SafeURL(fmt.Sprintf("/connections/ssh/%s", conn.ID)) }
+				class="text-gray-400 hover:text-white text-sm"
+			>
+				Settings
+			</a>
+			<button
+				class="text-gray-400 hover:text-red-400 text-sm"
+				onclick={ deleteConnection(conn.ID, conn.Name) }
+			>
+				Delete
+			</button>
+		</div>
+	</div>
+}
+
+func statusDotClass(status string) string {
+	switch status {
+	case "online", "active":
+		return "bg-green-500"
+	case "error", "failed":
+		return "bg-red-500"
+	default:
+		return "bg-gray-500"
+	}
+}
+
+func authTypeLabel(authType string) string {
+	switch authType {
+	case "password":
+		return "Password Auth"
+	case "key":
+		return "SSH Key"
+	case "agent":
+		return "SSH Agent"
+	default:
+		return authType
+	}
+}
+
+func formatSSHAddress(username, host string, port int) string {
+	if username != "" {
+		return fmt.Sprintf("%s@%s:%d", username, host, port)
+	}
+	return fmt.Sprintf("%s:%d", host, port)
+}
+
+func formatUserHost(username, host string) string {
+	if username != "" {
+		return username + "@" + host
+	}
+	return host
+}
+
+script deleteConnection(id, name string) {
+	if (confirm(`Delete SSH connection "${name}"? This cannot be undone.`)) {
+		const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content || '';
+		fetch(`/connections/ssh/${id}`, {
+			method: 'DELETE',
+			headers: { 'X-CSRF-Token': csrfToken }
+		})
+			.then(r => { if (r.ok) location.reload(); else alert('Failed to delete'); })
+			.catch(e => alert('Error: ' + e));
+	}
+}
+
+// EmptyState renders the empty state for no connections.
+templ EmptyState() {
+	<div class="text-center py-12">
+		<svg class="w-16 h-16 mx-auto text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+			<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+		</svg>
+		<h3 class="mt-4 text-lg font-medium text-white">No SSH Connections</h3>
+		<p class="mt-2 text-gray-400">Get started by adding your first SSH connection.</p>
+		<a
+			href="/connections/ssh/new"
+			class="mt-4 inline-flex items-center px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors"
+		>
+			<svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+			</svg>
+			Add Connection
+		</a>
+	</div>
+}
+
+// SSHTerminalMultiTabData supports multiple SSH terminal tabs.
+type SSHTerminalMultiTabData struct {
+	PageData    layouts.PageData
+	Connections []SSHConnectionData
+	ActiveID    string
+}
+
+// SSHTerminal renders the SSH terminal page (same style as container exec).
+templ SSHTerminal(data SSHTerminalData) {
+	@layouts.Base(data.PageData) {
+		<!-- Breadcrumb -->
+		<nav class="flex items-center gap-2 text-sm text-gray-400 mb-4">
+			<a href="/connections/ssh" class="hover:text-primary-400 transition-colors">SSH Connections</a>
+			<i class="fas fa-chevron-right text-xs"></i>
+			<a href={ templ.SafeURL("/connections/ssh/" + data.Connection.ID) } class="hover:text-primary-400 transition-colors">{ data.Connection.Name }</a>
+			<i class="fas fa-chevron-right text-xs"></i>
+			<span class="text-white">Terminal</span>
+		</nav>
+
+		<!-- Header -->
+		<div class="flex items-center justify-between mb-6">
+			<div class="flex items-center gap-4">
+				<div class="w-10 h-10 rounded-lg bg-dark-700 flex items-center justify-center">
+					<i class="fas fa-terminal text-lg text-primary-400"></i>
+				</div>
+				<div>
+					<h1 class="text-2xl font-bold font-display text-white">Terminal</h1>
+					<p class="text-gray-400 text-sm">{ formatUserHost(data.Connection.Username, data.Connection.Host) }</p>
+				</div>
+			</div>
+			<div class="flex items-center gap-2">
+				<a href={ templ.SafeURL("/connections/ssh/" + data.Connection.ID) } class="px-4 py-2 bg-dark-700 hover:bg-dark-600 text-gray-300 rounded-lg transition-colors">
+					<i class="fas fa-arrow-left mr-2"></i>Back
+				</a>
+				<a href={ templ.SafeURL("/connections/ssh/" + data.Connection.ID + "/files") } class="px-4 py-2 bg-dark-700 hover:bg-dark-600 text-gray-300 rounded-lg transition-colors">
+					<i class="fas fa-folder mr-2"></i>Files
+				</a>
+			</div>
+		</div>
+
+		<!-- Terminal Container -->
+		<div
+			x-data="sshTerminal()"
+			data-conn-id={ data.Connection.ID }
+			data-conn-name={ data.Connection.Name }
+			class="bg-dark-800 rounded-xl border border-dark-600 overflow-hidden"
+		>
+			<!-- Terminal Header -->
+			<div class="flex items-center justify-between px-4 py-3 border-b border-dark-600 bg-dark-850">
+				<div class="flex items-center gap-3">
+					<!-- Window controls (decorative) -->
+					<div class="flex items-center gap-1.5">
+						<span class="w-3 h-3 rounded-full bg-red-500"></span>
+						<span class="w-3 h-3 rounded-full bg-yellow-500"></span>
+						<span class="w-3 h-3 rounded-full bg-green-500"></span>
+					</div>
+					<span class="text-sm text-gray-400">{ data.Connection.Name } — { formatUserHost(data.Connection.Username, data.Connection.Host) }</span>
+				</div>
+				<div class="flex items-center gap-2">
+					<!-- Connection status -->
+					<span x-show="connected" class="flex items-center gap-1.5 text-xs text-green-400">
+						<span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+						Connected
+					</span>
+					<span x-show="!connected && !connecting" class="flex items-center gap-1.5 text-xs text-red-400">
+						<span class="w-2 h-2 bg-red-500 rounded-full"></span>
+						Disconnected
+					</span>
+					<span x-show="connecting" class="flex items-center gap-1.5 text-xs text-yellow-400">
+						<i class="fas fa-spinner fa-spin"></i>
+						Connecting...
+					</span>
+
+					<!-- Actions -->
+					<button
+						@click="reconnect()"
+						class="p-2 text-gray-400 hover:text-white hover:bg-dark-600 rounded-lg transition-colors"
+						title="Reconnect"
+					>
+						<i class="fas fa-redo"></i>
+					</button>
+					<button
+						@click="toggleFullscreen()"
+						class="p-2 text-gray-400 hover:text-white hover:bg-dark-600 rounded-lg transition-colors"
+						title="Fullscreen"
+					>
+						<i class="fas fa-expand"></i>
+					</button>
+				</div>
+			</div>
+
+			<!-- Terminal Display -->
+			<div
+				x-ref="terminalContainer"
+				id="ssh-terminal"
+				class="h-[500px]"
+			></div>
+
+			<!-- Credential Modal -->
+			<div
+				x-show="credentialModal.show"
+				x-transition:enter="transition ease-out duration-150"
+				x-transition:enter-start="opacity-0"
+				x-transition:enter-end="opacity-100"
+				x-transition:leave="transition ease-in duration-100"
+				x-transition:leave-start="opacity-100"
+				x-transition:leave-end="opacity-0"
+				class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm"
+				@keydown.escape.window="cancelCredential()"
+			>
+				<div class="bg-dark-800 border border-dark-600 rounded-xl shadow-2xl w-full max-w-md mx-4 p-6">
+					<div class="flex items-center gap-3 mb-4">
+						<div class="w-10 h-10 rounded-lg bg-primary-500/20 flex items-center justify-center">
+							<i class="fas fa-key text-primary-400"></i>
+						</div>
+						<div>
+							<h3 class="text-white font-semibold text-lg">Authentication Required</h3>
+							<p class="text-gray-400 text-sm" x-text="credentialModal.message"></p>
+						</div>
+					</div>
+					<form @submit.prevent="submitCredential()">
+						<div class="mb-4">
+							<label class="block text-sm font-medium text-gray-300 mb-1.5" x-text="credentialModal.label"></label>
+							<input
+								x-ref="credentialInput"
+								:type="credentialModal.field === 'password' ? 'password' : 'text'"
+								x-model="credentialModal.value"
+								:placeholder="credentialModal.field === 'password' ? '••••••••' : 'Enter username'"
+								class="w-full px-3 py-2.5 bg-dark-700 border border-dark-500 rounded-lg text-white placeholder-gray-500 focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
+								autocomplete="off"
+							/>
+						</div>
+						<div class="flex items-center justify-end gap-3">
+							<button
+								type="button"
+								@click="cancelCredential()"
+								class="px-4 py-2 text-gray-400 hover:text-white transition-colors text-sm"
+							>
+								Cancel
+							</button>
+							<button
+								type="submit"
+								class="px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors text-sm font-medium"
+							>
+								Connect
+							</button>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+
+		<!-- xterm.js CSS -->
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm@5.3.0/css/xterm.min.css"/>
+
+		<!-- xterm.js Scripts -->
+		<script src="https://cdn.jsdelivr.net/npm/xterm@5.3.0/lib/xterm.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/xterm-addon-fit@0.8.0/lib/xterm-addon-fit.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/xterm-addon-web-links@0.9.0/lib/xterm-addon-web-links.min.js"></script>
+
+		<script>
+			function sshTerminal() {
+				return {
+					term: null,
+					ws: null,
+					fitAddon: null,
+					connected: false,
+					connecting: false,
+					connId: '',
+					connName: '',
+					_initialized: false,
+					_resizeHandler: null,
+					credentialModal: {
+						show: false,
+						field: '',
+						label: '',
+						message: '',
+						value: ''
+					},
+
+					init() {
+						if (this._initialized) return;
+						this._initialized = true;
+
+						this.connId = this.$el.dataset.connId;
+						this.connName = this.$el.dataset.connName;
+
+						// Initialize xterm.js
+						this.term = new Terminal({
+							cursorBlink: true,
+							cursorStyle: 'block',
+							fontSize: 14,
+							fontFamily: "'IBM Plex Mono', 'Fira Code', 'Menlo', monospace",
+							theme: {
+								background: '#0d1117',
+								foreground: '#e6edf3',
+								cursor: '#ff6b35',
+								cursorAccent: '#0d1117',
+								selection: 'rgba(255, 107, 53, 0.3)',
+								black: '#0d1117',
+								red: '#f85149',
+								green: '#3fb950',
+								yellow: '#d29922',
+								blue: '#58a6ff',
+								magenta: '#bc8cff',
+								cyan: '#76e3ea',
+								white: '#e6edf3',
+								brightBlack: '#484f58',
+								brightRed: '#ff7b72',
+								brightGreen: '#56d364',
+								brightYellow: '#e3b341',
+								brightBlue: '#79c0ff',
+								brightMagenta: '#d2a8ff',
+								brightCyan: '#a5d6ff',
+								brightWhite: '#ffffff'
+							},
+							scrollback: 10000,
+							convertEol: true,
+						});
+
+						// Load addons
+						this.fitAddon = new FitAddon.FitAddon();
+						this.term.loadAddon(this.fitAddon);
+						this.term.loadAddon(new WebLinksAddon.WebLinksAddon());
+
+						// Open terminal in container
+						this.term.open(this.$refs.terminalContainer);
+
+						// Delay fit and connect to ensure DOM layout is fully computed
+						this.$nextTick(() => {
+							setTimeout(() => {
+								this.fitAddon.fit();
+								this.connect();
+							}, 50);
+						});
+
+						// Handle resize
+						this._resizeHandler = () => {
+							if (this.fitAddon) {
+								this.fitAddon.fit();
+								this.sendResize();
+							}
+						};
+						window.addEventListener('resize', this._resizeHandler);
+
+						// Handle terminal input
+						this.term.onData(data => {
+							if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+								this.ws.send(JSON.stringify({ type: 'input', data: data }));
+							}
+						});
+
+						// Handle terminal resize
+						this.term.onResize(({ cols, rows }) => {
+							this.sendResize();
+						});
+					},
+
+					destroy() {
+						if (this._resizeHandler) {
+							window.removeEventListener('resize', this._resizeHandler);
+						}
+						if (this.ws) {
+							this.ws.onclose = null;
+							this.ws.close();
+							this.ws = null;
+						}
+						if (this.term) {
+							this.term.dispose();
+							this.term = null;
+						}
+					},
+
+					connect() {
+						this.connecting = true;
+
+						const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+						const { cols, rows } = this.term;
+						const url = `${protocol}//${window.location.host}/ws/ssh/${this.connId}?cols=${cols}&rows=${rows}`;
+
+						this.ws = new WebSocket(url);
+
+						this.ws.onopen = () => {
+							this.connected = true;
+							this.connecting = false;
+							this.fitAddon.fit();
+							this.sendResize();
+							this.term.focus();
+						};
+
+						this.ws.onmessage = (event) => {
+							try {
+								const msg = JSON.parse(event.data);
+								if (msg.type === 'output') {
+									this.term.write(msg.data);
+								} else if (msg.type === 'error') {
+									this.term.write('\r\n\x1b[31mError: ' + (msg.data || msg.message || 'Unknown error') + '\x1b[0m\r\n');
+								} else if (msg.type === 'connected') {
+									this.term.write('\r\n\x1b[32m' + (msg.data || 'Connected') + '\x1b[0m\r\n');
+								} else if (msg.type === 'disconnected') {
+									this.term.write('\r\n\x1b[33m' + (msg.data || 'Disconnected') + '\x1b[0m\r\n');
+								} else if (msg.type === 'credential_request') {
+									this.requestCredential(msg.field, msg.data);
+								}
+							} catch(e) {
+								this.term.write(event.data);
+							}
+						};
+
+						this.ws.onclose = () => {
+							this.connected = false;
+							this.connecting = false;
+							this.term.write('\r\n\x1b[31mConnection closed\x1b[0m\r\n');
+						};
+
+						this.ws.onerror = () => {
+							this.connected = false;
+							this.connecting = false;
+							this.term.write('\r\n\x1b[31mConnection error\x1b[0m\r\n');
+						};
+					},
+
+					sendResize() {
+						if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+							const { cols, rows } = this.term;
+							this.ws.send(JSON.stringify({ type: 'resize', cols: cols, rows: rows }));
+						}
+					},
+
+					reconnect() {
+						if (this.ws) this.ws.close();
+						this.term.clear();
+						this.term.write('\x1b[33mReconnecting...\x1b[0m\r\n');
+						this.connect();
+					},
+
+					toggleFullscreen() {
+						const container = this.$refs.terminalContainer;
+						if (document.fullscreenElement) {
+							document.exitFullscreen();
+						} else {
+							container.requestFullscreen();
+						}
+						setTimeout(() => {
+							this.fitAddon.fit();
+							this.sendResize();
+						}, 100);
+					},
+
+					// Credential modal methods
+					requestCredential(field, message) {
+						const label = field === 'password' ? 'Password' : 'Username';
+						this.credentialModal = {
+							show: true,
+							field: field,
+							label: label,
+							message: message || (field === 'username' ? 'Enter username' : 'Enter password'),
+							value: ''
+						};
+						this.$nextTick(() => {
+							if (this.$refs.credentialInput) {
+								this.$refs.credentialInput.focus();
+							}
+						});
+					},
+
+					submitCredential() {
+						const { field, value } = this.credentialModal;
+						if (!value || !this.ws) return;
+
+						const resp = { type: 'credential_response' };
+						if (field === 'username') resp.username = value;
+						else resp.password = value;
+						this.ws.send(JSON.stringify(resp));
+
+						this.credentialModal.show = false;
+						this.credentialModal.value = '';
+
+						this.$nextTick(() => {
+							if (this.term) this.term.focus();
+						});
+					},
+
+					cancelCredential() {
+						if (this.ws) {
+							this.ws.close();
+						}
+						this.credentialModal.show = false;
+						this.credentialModal.value = '';
+					}
+				};
+			}
+		</script>
+
+		<style>
+			#ssh-terminal {
+				padding: 8px;
+				background: #0d1117;
+			}
+
+			#ssh-terminal:fullscreen {
+				padding: 16px;
+			}
+
+			.xterm-viewport::-webkit-scrollbar {
+				width: 8px;
+			}
+
+			.xterm-viewport::-webkit-scrollbar-track {
+				background: #0d1117;
+			}
+
+			.xterm-viewport::-webkit-scrollbar-thumb {
+				background: #30363d;
+				border-radius: 4px;
+			}
+
+			.xterm-viewport::-webkit-scrollbar-thumb:hover {
+				background: #484f58;
+			}
+		</style>
+	}
+}
+
+// SSHConnectionDetail renders the SSH connection detail/edit page.
+templ SSHConnectionDetail(data SSHConnectionDetailData) {
+	@layouts.Base(data.PageData) {
+		<div class="space-y-6">
+			@ConnectionsNav("ssh")
+
+			<!-- Header with breadcrumb -->
+			<div class="flex items-center justify-between">
+				<div class="flex items-center space-x-3">
+					<a
+						href="/connections/ssh"
+						class="text-gray-400 hover:text-white transition-colors"
+					>
+						<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+						</svg>
+					</a>
+					<div>
+						<h1 class="text-2xl font-display font-bold text-white">{ data.Connection.Name }</h1>
+						<p class="text-gray-400 mt-1">{ formatSSHAddress(data.Connection.Username, data.Connection.Host, data.Connection.Port) }</p>
+					</div>
+				</div>
+				<div class="flex items-center space-x-3">
+					<a
+						href={ templ.SafeURL(fmt.Sprintf("/connections/ssh/%s/terminal", data.Connection.ID)) }
+						class="inline-flex items-center px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors"
+					>
+						<svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+						</svg>
+						Open Terminal
+					</a>
+					<a
+						href={ templ.SafeURL(fmt.Sprintf("/connections/ssh/%s/files", data.Connection.ID)) }
+						class="inline-flex items-center px-4 py-2 bg-dark-700 text-white rounded-lg hover:bg-dark-600 transition-colors"
+					>
+						<svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path>
+						</svg>
+						File Browser
+					</a>
+				</div>
+			</div>
+
+			<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+				<!-- Connection Details Card -->
+				<div class="lg:col-span-2 space-y-6">
+					<!-- Edit Form -->
+					<div class="bg-dark-800 rounded-lg border border-dark-700 p-6">
+						<h2 class="text-lg font-semibold text-white mb-4">Connection Details</h2>
+
+						<form
+							method="POST"
+							action={ templ.SafeURL(fmt.Sprintf("/connections/ssh/%s", data.Connection.ID)) }
+							class="space-y-4"
+						>
+							<input type="hidden" name="csrf_token" value={ data.PageData.CSRFToken }/>
+							<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+								<div>
+									<label class="block text-sm font-medium text-gray-300 mb-1">Name</label>
+									<input
+										type="text"
+										name="name"
+										value={ data.Connection.Name }
+										required
+										class="w-full px-3 py-2 bg-dark-700 border border-dark-600 rounded-lg text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+									/>
+								</div>
+								<div>
+									<label class="block text-sm font-medium text-gray-300 mb-1">Host</label>
+									<input
+										type="text"
+										name="host"
+										value={ data.Connection.Host }
+										required
+										class="w-full px-3 py-2 bg-dark-700 border border-dark-600 rounded-lg text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+									/>
+								</div>
+								<div>
+									<label class="block text-sm font-medium text-gray-300 mb-1">Port</label>
+									<input
+										type="number"
+										name="port"
+										value={ fmt.Sprintf("%d", data.Connection.Port) }
+										required
+										min="1"
+										max="65535"
+										class="w-full px-3 py-2 bg-dark-700 border border-dark-600 rounded-lg text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+									/>
+								</div>
+								<div>
+									<label class="block text-sm font-medium text-gray-300 mb-1">Username</label>
+									<input
+										type="text"
+										name="username"
+										value={ data.Connection.Username }
+										placeholder="Leave empty to prompt on connect"
+										class="w-full px-3 py-2 bg-dark-700 border border-dark-600 rounded-lg text-white placeholder-gray-500 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+									/>
+								</div>
+							</div>
+
+							<div>
+								<label class="block text-sm font-medium text-gray-300 mb-1">Authentication</label>
+								<select
+									name="auth_type"
+									class="w-full px-3 py-2 bg-dark-700 border border-dark-600 rounded-lg text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+								>
+									<option value="password" selected?={ data.Connection.AuthType == "password" }>Password</option>
+									<option value="key" selected?={ data.Connection.AuthType == "key" }>SSH Key</option>
+									<option value="agent" selected?={ data.Connection.AuthType == "agent" }>SSH Agent</option>
+								</select>
+							</div>
+
+							<!-- Password field (shown for password auth) -->
+							<div x-show="document.querySelector('[name=auth_type]')?.value === 'password'" class="transition-all">
+								<label class="block text-sm font-medium text-gray-300 mb-1">Password</label>
+								<input
+									type="password"
+									name="password"
+									placeholder="Enter new password (leave blank to keep current)"
+									class="w-full px-3 py-2 bg-dark-700 border border-dark-600 rounded-lg text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+								/>
+							</div>
+
+							if data.Connection.KeyName != "" {
+								<div class="flex items-center p-3 bg-dark-700 rounded-lg">
+									<svg class="w-5 h-5 text-primary-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"></path>
+									</svg>
+									<span class="text-gray-300">Using key: <span class="text-white">{ data.Connection.KeyName }</span></span>
+								</div>
+							}
+
+							if data.Connection.JumpHost != "" {
+								<div class="flex items-center p-3 bg-dark-700 rounded-lg">
+									<svg class="w-5 h-5 text-yellow-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+									</svg>
+									<span class="text-gray-300">Jump Host: <span class="text-white">{ data.Connection.JumpHost }</span></span>
+								</div>
+							}
+
+							<div class="flex items-center justify-end space-x-3 pt-4 border-t border-dark-700">
+								<button
+									type="button"
+									onclick={ testConnection(data.Connection.ID) }
+									class="px-4 py-2 bg-dark-700 text-white rounded-lg hover:bg-dark-600 transition-colors"
+								>
+									<svg class="w-5 h-5 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+									</svg>
+									Test Connection
+								</button>
+								<button
+									type="submit"
+									class="px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors"
+								>
+									Save Changes
+								</button>
+							</div>
+						</form>
+					</div>
+
+					<!-- Session History -->
+					<div class="bg-dark-800 rounded-lg border border-dark-700 p-6">
+						<h2 class="text-lg font-semibold text-white mb-4">Recent Sessions</h2>
+
+						if len(data.Sessions) == 0 {
+							<p class="text-gray-500 text-center py-8">No sessions recorded yet</p>
+						} else {
+							<div class="overflow-x-auto">
+								<table class="w-full">
+									<thead>
+										<tr class="text-left text-gray-400 text-sm border-b border-dark-700">
+											<th class="pb-3 font-medium">User</th>
+											<th class="pb-3 font-medium">Client IP</th>
+											<th class="pb-3 font-medium">Started</th>
+											<th class="pb-3 font-medium">Duration</th>
+											<th class="pb-3 font-medium">Status</th>
+										</tr>
+									</thead>
+									<tbody>
+										for _, session := range data.Sessions {
+											<tr class="border-b border-dark-700 last:border-0">
+												<td class="py-3 text-white">{ session.Username }</td>
+												<td class="py-3 text-gray-400">{ session.ClientIP }</td>
+												<td class="py-3 text-gray-400">{ session.StartedAt }</td>
+												<td class="py-3 text-gray-400">{ session.Duration }</td>
+												<td class="py-3">
+													<span class={ "px-2 py-1 rounded text-xs", sessionStatusClass(session.Status) }>
+														{ session.Status }
+													</span>
+												</td>
+											</tr>
+										}
+									</tbody>
+								</table>
+							</div>
+						}
+					</div>
+				</div>
+
+				<!-- Side Panel -->
+				<div class="space-y-6">
+					<!-- Status Card -->
+					<div class="bg-dark-800 rounded-lg border border-dark-700 p-6">
+						<h3 class="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-4">Status</h3>
+						<div class="flex items-center space-x-3">
+							<div class={ "w-3 h-3 rounded-full", statusDotClass(data.Connection.Status) }></div>
+							<span class="text-white font-medium capitalize">{ data.Connection.Status }</span>
+						</div>
+						if data.Connection.LastUsed != "" {
+							<p class="text-gray-500 text-sm mt-2">Last used { data.Connection.LastUsed }</p>
+						}
+						<p class="text-gray-500 text-sm mt-1">Created { data.Connection.CreatedAt }</p>
+					</div>
+
+					<!-- Quick Actions -->
+					<div class="bg-dark-800 rounded-lg border border-dark-700 p-6">
+						<h3 class="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-4">Quick Actions</h3>
+						<div class="space-y-2">
+							<a
+								href={ templ.SafeURL(fmt.Sprintf("/connections/ssh/%s/terminal", data.Connection.ID)) }
+								class="flex items-center p-3 bg-dark-700 rounded-lg hover:bg-dark-600 transition-colors text-white"
+							>
+								<svg class="w-5 h-5 mr-3 text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+								</svg>
+								Open Terminal
+							</a>
+							<a
+								href={ templ.SafeURL(fmt.Sprintf("/connections/ssh/%s/files", data.Connection.ID)) }
+								class="flex items-center p-3 bg-dark-700 rounded-lg hover:bg-dark-600 transition-colors text-white"
+							>
+								<svg class="w-5 h-5 mr-3 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path>
+								</svg>
+								Browse Files
+							</a>
+							<button
+								onclick={ duplicateConnection(data.Connection.ID) }
+								class="flex items-center p-3 bg-dark-700 rounded-lg hover:bg-dark-600 transition-colors text-white w-full"
+							>
+								<svg class="w-5 h-5 mr-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+								</svg>
+								Duplicate
+							</button>
+						</div>
+					</div>
+
+					<!-- Tags -->
+					if len(data.Connection.Tags) > 0 {
+						<div class="bg-dark-800 rounded-lg border border-dark-700 p-6">
+							<h3 class="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-4">Tags</h3>
+							<div class="flex flex-wrap gap-2">
+								for _, tag := range data.Connection.Tags {
+									<span class="px-2 py-1 bg-dark-700 text-gray-300 text-sm rounded">{ tag }</span>
+								}
+							</div>
+						</div>
+					}
+
+					<!-- Danger Zone -->
+					<div class="bg-dark-800 rounded-lg border border-red-500/30 p-6">
+						<h3 class="text-sm font-semibold text-red-400 uppercase tracking-wider mb-4">Danger Zone</h3>
+						<button
+							onclick={ deleteConnection(data.Connection.ID, data.Connection.Name) }
+							class="w-full flex items-center justify-center p-3 bg-red-500/10 text-red-400 rounded-lg hover:bg-red-500/20 transition-colors"
+						>
+							<svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+							</svg>
+							Delete Connection
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	}
+}
+
+func sessionStatusClass(status string) string {
+	switch status {
+	case "active":
+		return "bg-green-500/20 text-green-400"
+	case "completed":
+		return "bg-gray-500/20 text-gray-400"
+	case "error", "failed":
+		return "bg-red-500/20 text-red-400"
+	default:
+		return "bg-gray-500/20 text-gray-400"
+	}
+}
+
+script testConnection(id string) {
+	const btn = event.currentTarget;
+	const originalText = btn.innerHTML;
+	btn.innerHTML = '<svg class="w-5 h-5 mr-2 inline animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>Testing...';
+	btn.disabled = true;
+
+	const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content || '';
+	fetch(`/connections/ssh/${id}/test`, {
+		method: 'POST',
+		headers: { 'X-CSRF-Token': csrfToken }
+	})
+		.then(r => r.json())
+		.then(data => {
+			if (data.success) {
+				btn.innerHTML = '<svg class="w-5 h-5 mr-2 inline text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>Connected!';
+				btn.classList.add('text-green-400');
+			} else {
+				btn.innerHTML = '<svg class="w-5 h-5 mr-2 inline text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>Failed';
+				btn.classList.add('text-red-400');
+				alert('Connection failed: ' + (data.error || 'Unknown error'));
+			}
+			setTimeout(() => {
+				btn.innerHTML = originalText;
+				btn.classList.remove('text-green-400', 'text-red-400');
+				btn.disabled = false;
+			}, 2000);
+		})
+		.catch(e => {
+			btn.innerHTML = originalText;
+			btn.disabled = false;
+			alert('Error: ' + e);
+		});
+}
+
+script duplicateConnection(id string) {
+	if (confirm('Create a copy of this connection?')) {
+		const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content || '';
+		fetch(`/connections/ssh/${id}/duplicate`, {
+			method: 'POST',
+			headers: { 'X-CSRF-Token': csrfToken }
+		})
+			.then(r => r.json())
+			.then(data => {
+				if (data.success && data.id) {
+					window.location.href = `/connections/ssh/${data.id}`;
+				} else {
+					alert('Failed to duplicate: ' + (data.error || 'Unknown error'));
+				}
+			})
+			.catch(e => alert('Error: ' + e));
+	}
+}

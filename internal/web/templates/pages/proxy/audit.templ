@@ -1,0 +1,194 @@
+package proxy
+
+import (
+	"fmt"
+	"github.com/fr4nsys/usulnet/internal/web/templates/layouts"
+)
+
+type AuditListData struct {
+	PageData  layouts.PageData
+	Connected bool
+	Logs      []AuditLogView
+	Page      int
+	TotalPages int
+	Filter    string
+}
+
+type AuditLogView struct {
+	ID           string
+	Operation    string
+	ResourceType string
+	ResourceID   int
+	ResourceName string
+	UserName     string
+	CreatedAt    string
+	Details      string // JSON formatted
+}
+
+func operationBadgeClass(op string) string {
+	switch op {
+	case "create":
+		return "badge badge-success"
+	case "update":
+		return "badge badge-info"
+	case "delete":
+		return "badge badge-danger"
+	case "enable":
+		return "badge badge-success"
+	case "disable":
+		return "badge badge-warning"
+	default:
+		return "badge"
+	}
+}
+
+func operationIcon(op string) string {
+	switch op {
+	case "create":
+		return "fas fa-plus"
+	case "update":
+		return "fas fa-edit"
+	case "delete":
+		return "fas fa-trash"
+	case "enable":
+		return "fas fa-check"
+	case "disable":
+		return "fas fa-ban"
+	default:
+		return "fas fa-circle"
+	}
+}
+
+func resourceTypeLabel(rt string) string {
+	switch rt {
+	case "proxy_host":
+		return "Proxy Host"
+	case "redirection":
+		return "Redirection"
+	case "stream":
+		return "Stream"
+	case "dead_host":
+		return "404 Host"
+	case "certificate":
+		return "Certificate"
+	case "access_list":
+		return "Access List"
+	default:
+		return rt
+	}
+}
+
+templ AuditList(data AuditListData) {
+	@layouts.Base(data.PageData) {
+		<div class="space-y-6">
+			<div class="flex items-center justify-between">
+				<div>
+					<h1 class="text-2xl font-display font-bold text-white">Reverse Proxy</h1>
+					<p class="text-gray-400 mt-1">Audit log — all proxy operations</p>
+				</div>
+				<div class="flex items-center gap-2">
+					if data.Connected {
+						<span class="badge badge-success"><i class="fas fa-link mr-1"></i>Connected</span>
+					}
+				</div>
+			</div>
+
+			@Nav("audit", data.Connected)
+
+			if data.Connected {
+				<!-- Filters -->
+				<div class="flex items-center gap-3">
+					<form method="GET" action="/proxy/audit" class="flex items-center gap-2">
+						<input type="hidden" name="csrf_token" value={ data.PageData.CSRFToken }/>
+						<select name="filter" class="input" onchange="this.form.submit()">
+							<option value="">All Operations</option>
+							<option value="create" selected?={ data.Filter == "create" }>Created</option>
+							<option value="update" selected?={ data.Filter == "update" }>Updated</option>
+							<option value="delete" selected?={ data.Filter == "delete" }>Deleted</option>
+							<option value="enable" selected?={ data.Filter == "enable" }>Enabled</option>
+							<option value="disable" selected?={ data.Filter == "disable" }>Disabled</option>
+						</select>
+					</form>
+				</div>
+
+				if len(data.Logs) > 0 {
+					<div class="card">
+						<div class="overflow-x-auto">
+							<table class="table">
+								<thead>
+									<tr>
+										<th>Time</th>
+										<th>Operation</th>
+										<th>Resource</th>
+										<th>Name</th>
+										<th>User</th>
+									</tr>
+								</thead>
+								<tbody>
+									for _, log := range data.Logs {
+										<tr>
+											<td class="text-sm text-gray-400 whitespace-nowrap">{ log.CreatedAt }</td>
+											<td>
+												<span class={ operationBadgeClass(log.Operation) }>
+													<i class={ operationIcon(log.Operation), "mr-1" }></i>
+													{ log.Operation }
+												</span>
+											</td>
+											<td class="text-sm text-gray-300">{ resourceTypeLabel(log.ResourceType) }</td>
+											<td class="text-sm text-white">
+												if log.ResourceName != "" {
+													{ log.ResourceName }
+												} else {
+													<span class="text-gray-500">#{ fmt.Sprintf("%d", log.ResourceID) }</span>
+												}
+											</td>
+											<td class="text-sm text-gray-400">
+												if log.UserName != "" {
+													{ log.UserName }
+												} else {
+													<span class="text-gray-500">system</span>
+												}
+											</td>
+										</tr>
+									}
+								</tbody>
+							</table>
+						</div>
+					</div>
+
+					<!-- Pagination -->
+					if data.TotalPages > 1 {
+						<div class="flex items-center justify-center gap-2">
+							if data.Page > 1 {
+								<a href={ templ.SafeURL(fmt.Sprintf("/proxy/audit?page=%d&filter=%s", data.Page-1, data.Filter)) } class="btn-secondary text-sm">
+									<i class="fas fa-chevron-left mr-1"></i>Previous
+								</a>
+							}
+							<span class="text-sm text-gray-400">
+								Page { fmt.Sprintf("%d", data.Page) } of { fmt.Sprintf("%d", data.TotalPages) }
+							</span>
+							if data.Page < data.TotalPages {
+								<a href={ templ.SafeURL(fmt.Sprintf("/proxy/audit?page=%d&filter=%s", data.Page+1, data.Filter)) } class="btn-secondary text-sm">
+									Next<i class="fas fa-chevron-right ml-1"></i>
+								</a>
+							}
+						</div>
+					}
+				} else {
+					<div class="card p-8 text-center">
+						<i class="fas fa-history text-4xl text-gray-600 mb-4"></i>
+						<h3 class="text-lg font-medium text-white mb-2">No audit entries</h3>
+						<p class="text-gray-400">Operations on proxy resources will appear here.</p>
+					</div>
+				}
+			} else {
+				<div class="card p-8 text-center">
+					<i class="fas fa-plug text-4xl text-gray-600 mb-4"></i>
+					<h3 class="text-lg font-medium text-white mb-2">NPM Not Connected</h3>
+					<p class="text-gray-400 mb-4">Connect to NPM first.</p>
+					<a href="/proxy/setup" class="btn-primary"><i class="fas fa-link mr-2"></i>Setup Connection</a>
+				</div>
+			}
+		</div>
+	}
+}

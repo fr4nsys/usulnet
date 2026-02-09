@@ -1,0 +1,10 @@
+DROP FUNCTION IF EXISTS release_migration_lock() CASCADE;
+DROP FUNCTION IF EXISTS acquire_migration_lock() CASCADE;
+DROP FUNCTION IF EXISTS cleanup_expired_sessions() CASCADE;
+DROP FUNCTION IF EXISTS cleanup_expired_password_reset_tokens() CASCADE;
+DROP FUNCTION IF EXISTS cleanup_old_notification_logs(INTEGER) CASCADE;
+DROP FUNCTION IF EXISTS cleanup_old_job_events(INTEGER) CASCADE;
+DROP FUNCTION IF EXISTS cleanup_old_audit_log(INTEGER) CASCADE;
+DROP FUNCTION IF EXISTS cleanup_old_host_metrics(INTEGER) CASCADE;
+DROP FUNCTION IF EXISTS cleanup_old_container_stats(INTEGER) CASCADE;
+DROP FUNCTION IF EXISTS cleanup_old_metrics(INTEGER) CASCADE;

@@ -1,0 +1,239 @@
+package components
+
+// StatCard displays a statistic card with icon
+templ StatCard(title, value, icon, color, subtitle string) {
+	<div class="bg-dark-800 rounded-xl border border-dark-600 p-5 hover:border-dark-500 transition-colors">
+		<div class="flex items-center justify-between">
+			<div>
+				<p class="text-sm font-medium text-gray-400">{ title }</p>
+				<p class="text-3xl font-bold text-white mt-1">{ value }</p>
+				if subtitle != "" {
+					<p class={ "text-sm mt-1", subtitleColor(color) }>{ subtitle }</p>
+				}
+			</div>
+			<div class={ "w-12 h-12 rounded-xl flex items-center justify-center", iconBg(color) }>
+				<i class={ "fas " + icon + " text-xl", iconColor(color) }></i>
+			</div>
+		</div>
+	</div>
+}
+
+// StatCardLarge displays a larger statistic card
+templ StatCardLarge(title, value, icon, color, change, changeLabel string, positive bool) {
+	<div class="bg-dark-800 rounded-xl border border-dark-600 p-6">
+		<div class="flex items-center gap-4">
+			<div class={ "w-14 h-14 rounded-xl flex items-center justify-center", iconBg(color) }>
+				<i class={ "fas " + icon + " text-2xl", iconColor(color) }></i>
+			</div>
+			<div class="flex-1">
+				<p class="text-sm font-medium text-gray-400">{ title }</p>
+				<p class="text-4xl font-bold text-white">{ value }</p>
+			</div>
+			if change != "" {
+				<div class="text-right">
+					<p class={ "text-lg font-semibold", templ.KV("text-green-400", positive), templ.KV("text-red-400", !positive) }>
+						if positive {
+							<i class="fas fa-arrow-up text-sm mr-1"></i>
+						} else {
+							<i class="fas fa-arrow-down text-sm mr-1"></i>
+						}
+						{ change }
+					</p>
+					<p class="text-sm text-gray-500">{ changeLabel }</p>
+				</div>
+			}
+		</div>
+	</div>
+}
+
+// Badge displays a colored badge
+templ Badge(text, color string) {
+	<span class={ "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium", badgeClass(color) }>
+		{ text }
+	</span>
+}
+
+// StatusDot displays a colored status indicator
+templ StatusDot(status string) {
+	<span class={ "inline-block w-2 h-2 rounded-full", statusDotColor(status) }></span>
+}
+
+// StatusBadge displays status with dot and text
+templ StatusBadge(status string) {
+	<span class={ "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium", statusBadgeClass(status) }>
+		<span class={ "w-1.5 h-1.5 rounded-full", statusDotColor(status) }></span>
+		{ status }
+	</span>
+}
+
+// Progress displays a progress bar
+templ Progress(value int, color string) {
+	<div class="w-full bg-dark-700 rounded-full h-2">
+		<div 
+			class={ "h-2 rounded-full transition-all duration-300", progressColor(color) }
+			style={ "width: " + itoa(value) + "%" }
+		></div>
+	</div>
+}
+
+// ProgressLabeled displays a progress bar with label
+templ ProgressLabeled(label string, value int, max int, color string) {
+	<div>
+		<div class="flex items-center justify-between text-sm mb-1">
+			<span class="text-gray-400">{ label }</span>
+			<span class="text-white font-medium">{ itoa(value) }/{ itoa(max) }</span>
+		</div>
+		@Progress(percentage(value, max), color)
+	</div>
+}
+
+// Helper functions
+func iconBg(color string) string {
+	switch color {
+	case "primary":
+		return "bg-primary-500/20"
+	case "green":
+		return "bg-green-500/20"
+	case "red":
+		return "bg-red-500/20"
+	case "yellow":
+		return "bg-yellow-500/20"
+	case "blue":
+		return "bg-blue-500/20"
+	case "purple":
+		return "bg-purple-500/20"
+	default:
+		return "bg-gray-500/20"
+	}
+}
+
+func iconColor(color string) string {
+	switch color {
+	case "primary":
+		return "text-primary-400"
+	case "green":
+		return "text-green-400"
+	case "red":
+		return "text-red-400"
+	case "yellow":
+		return "text-yellow-400"
+	case "blue":
+		return "text-blue-400"
+	case "purple":
+		return "text-purple-400"
+	default:
+		return "text-gray-400"
+	}
+}
+
+func subtitleColor(color string) string {
+	switch color {
+	case "primary":
+		return "text-primary-400"
+	case "green":
+		return "text-green-400"
+	case "red":
+		return "text-red-400"
+	case "yellow":
+		return "text-yellow-400"
+	case "blue":
+		return "text-blue-400"
+	default:
+		return "text-gray-400"
+	}
+}
+
+func badgeClass(color string) string {
+	switch color {
+	case "primary":
+		return "bg-primary-500/20 text-primary-400"
+	case "green", "success":
+		return "bg-green-500/20 text-green-400"
+	case "red", "danger", "error":
+		return "bg-red-500/20 text-red-400"
+	case "yellow", "warning":
+		return "bg-yellow-500/20 text-yellow-400"
+	case "blue", "info":
+		return "bg-blue-500/20 text-blue-400"
+	case "purple":
+		return "bg-purple-500/20 text-purple-400"
+	default:
+		return "bg-gray-500/20 text-gray-400"
+	}
+}
+
+func statusDotColor(status string) string {
+	switch status {
+	case "running", "healthy", "active", "success":
+		return "bg-green-500"
+	case "paused", "warning", "pending":
+		return "bg-yellow-500"
+	case "stopped", "exited", "dead", "error", "unhealthy":
+		return "bg-red-500"
+	case "restarting", "starting":
+		return "bg-blue-500"
+	default:
+		return "bg-gray-500"
+	}
+}
+
+func statusBadgeClass(status string) string {
+	switch status {
+	case "running", "healthy", "active", "success":
+		return "bg-green-500/10 text-green-400"
+	case "paused", "warning", "pending":
+		return "bg-yellow-500/10 text-yellow-400"
+	case "stopped", "exited", "dead", "error", "unhealthy":
+		return "bg-red-500/10 text-red-400"
+	case "restarting", "starting":
+		return "bg-blue-500/10 text-blue-400"
+	default:
+		return "bg-gray-500/10 text-gray-400"
+	}
+}
+
+func progressColor(color string) string {
+	switch color {
+	case "primary":
+		return "bg-primary-500"
+	case "green":
+		return "bg-green-500"
+	case "red":
+		return "bg-red-500"
+	case "yellow":
+		return "bg-yellow-500"
+	case "blue":
+		return "bg-blue-500"
+	default:
+		return "bg-gray-500"
+	}
+}
+
+func itoa(n int) string {
+	if n == 0 {
+		return "0"
+	}
+	
+	result := ""
+	negative := n < 0
+	if negative {
+		n = -n
+	}
+	
+	for n > 0 {
+		result = string(rune('0'+n%10)) + result
+		n /= 10
+	}
+	
+	if negative {
+		result = "-" + result
+	}
+	return result
+}
+
+func percentage(value, max int) int {
+	if max == 0 {
+		return 0
+	}
+	return (value * 100) / max
+}

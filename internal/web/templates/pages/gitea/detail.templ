@@ -1,0 +1,1506 @@
+package gitea
+
+import (
+	"fmt"
+	"strings"
+	"github.com/fr4nsys/usulnet/internal/web/templates/layouts"
+)
+
+// ============================================================================
+// Detail Data Types
+// ============================================================================
+
+type RepoDetailData struct {
+	PageData      layouts.PageData
+	Repo          RepoDetail
+	Branches      []BranchItem
+	Tags          []TagItem      // Tier 1: Tags
+	Commits       []CommitItem
+	Files         []FileItem
+	CurrentBranch string
+	CurrentPath   string
+	CSRFToken     string         // For forms
+	// Tier 2: Counts for tabs
+	OpenPRs       int
+	OpenIssues    int
+}
+
+type RepoDetail struct {
+	ID             string
+	ConnectionID   string         // Tier 1: for templates API
+	ConnectionName string
+	FullName       string
+	Description    string
+	DefaultBranch  string
+	IsPrivate      bool
+	IsFork         bool
+	IsArchived     bool
+	Stars          int
+	Forks          int
+	HTMLURL        string
+	Size           int64
+}
+
+type BranchItem struct {
+	Name      string
+	IsDefault bool
+	Protected bool           // Tier 1: branch protection status
+}
+
+type TagItem struct {
+	Name    string
+	SHA     string          // commit SHA
+	Message string          // annotated tag message
+}
+
+type CommitItem struct {
+	SHA       string
+	Message   string
+	Author    string
+	Date      string
+	ShortSHA  string
+}
+
+type FileItem struct {
+	Name    string
+	Path    string
+	Type    string // "file", "dir", "symlink"
+	Size    int64
+	SHA     string
+}
+
+// ============================================================================
+// Tier 2: Pull Request Types
+// ============================================================================
+
+type PRItem struct {
+	Number    int64
+	Title     string
+	State     string // "open", "closed"
+	User      string
+	CreatedAt string
+	Comments  int
+	Merged    bool
+	HeadRef   string
+	BaseRef   string
+}
+
+type PRDetailData struct {
+	PageData    layouts.PageData
+	Repo        RepoDetail
+	PR          PRDetail
+	CSRFToken   string
+}
+
+type PRDetail struct {
+	Number       int64
+	Title        string
+	Body         string
+	State        string
+	Merged       bool
+	Mergeable    bool
+	User         string
+	UserAvatar   string
+	HeadRef      string
+	BaseRef      string
+	CreatedAt    string
+	UpdatedAt    string
+	Comments     int
+	Reviews      []PRReviewItem
+	Diff         string
+}
+
+type PRReviewItem struct {
+	ID        int64
+	User      string
+	State     string // "APPROVED", "REQUEST_CHANGES", "COMMENT", "PENDING"
+	Body      string
+	CreatedAt string
+}
+
+// ============================================================================
+// Tier 2: Issue Types
+// ============================================================================
+
+type IssueItem struct {
+	Number    int64
+	Title     string
+	State     string // "open", "closed"
+	User      string
+	CreatedAt string
+	Comments  int
+	Labels    []LabelItem
+}
+
+type IssueDetailData struct {
+	PageData  layouts.PageData
+	Repo      RepoDetail
+	Issue     IssueDetail
+	CSRFToken string
+}
+
+type IssueDetail struct {
+	Number     int64
+	Title      string
+	Body       string
+	State      string
+	User       string
+	UserAvatar string
+	CreatedAt  string
+	UpdatedAt  string
+	Labels     []LabelItem
+	Milestone  string
+	Assignees  []string
+	Comments   []CommentItem
+}
+
+type LabelItem struct {
+	ID    int64
+	Name  string
+	Color string
+}
+
+type CommentItem struct {
+	ID        int64
+	User      string
+	Avatar    string
+	Body      string
+	CreatedAt string
+}
+
+// ============================================================================
+// Tier 2: Collaborator Types
+// ============================================================================
+
+type CollaboratorItem struct {
+	ID         int64
+	Login      string
+	FullName   string
+	AvatarURL  string
+	Permission string // "admin", "write", "read"
+}
+
+// ============================================================================
+// Detail Template
+// ============================================================================
+
+templ Detail(data RepoDetailData) {
+	@layouts.Base(data.PageData) {
+		<div class="space-y-6">
+			<!-- Breadcrumb -->
+			<div class="flex items-center gap-2 text-sm text-gray-400">
+				<a href="/integrations/gitea" class="hover:text-white transition-colors">
+					<i class="fas fa-code-branch mr-1"></i>Gitea
+				</a>
+				<i class="fas fa-chevron-right text-[10px] text-gray-600"></i>
+				<span class="text-white">{ data.Repo.FullName }</span>
+				if data.CurrentPath != "" {
+					for _, crumb := range pathCrumbs(data.CurrentPath) {
+						<i class="fas fa-chevron-right text-[10px] text-gray-600"></i>
+						if crumb.IsLast {
+							<span class="text-white">{ crumb.Name }</span>
+						} else {
+							<a href={ templ.SafeURL(fmt.Sprintf("/integrations/gitea/repos/%s?ref=%s&path=%s", data.Repo.ID, data.CurrentBranch, crumb.Path)) }
+								class="hover:text-white transition-colors">
+								{ crumb.Name }
+							</a>
+						}
+					}
+				}
+			</div>
+
+			<!-- Header -->
+			<div class="flex items-start justify-between">
+				<div>
+					<div class="flex items-center gap-3">
+						<i class={ "fas text-2xl", repoIcon(RepoItem{IsPrivate: data.Repo.IsPrivate, IsFork: data.Repo.IsFork, IsArchived: data.Repo.IsArchived}) }></i>
+						<div>
+							<h1 class="text-2xl font-display font-bold text-white">{ data.Repo.FullName }</h1>
+							if data.Repo.Description != "" {
+								<p class="text-gray-400 mt-1">{ data.Repo.Description }</p>
+							}
+						</div>
+					</div>
+					<div class="flex items-center gap-3 mt-2 text-sm text-gray-400">
+						if data.Repo.IsPrivate {
+							<span class="text-yellow-400"><i class="fas fa-lock mr-1"></i>Private</span>
+						} else {
+							<span class="text-green-400"><i class="fas fa-globe mr-1"></i>Public</span>
+						}
+						if data.Repo.IsFork {
+							<span class="text-purple-400"><i class="fas fa-code-branch mr-1"></i>Fork</span>
+						}
+						if data.Repo.IsArchived {
+							<span class="text-gray-500"><i class="fas fa-archive mr-1"></i>Archived</span>
+						}
+						if data.Repo.Stars > 0 {
+							<span><i class="fas fa-star text-yellow-500 mr-1"></i>{ fmt.Sprintf("%d", data.Repo.Stars) }</span>
+						}
+						if data.Repo.Forks > 0 {
+							<span><i class="fas fa-code-branch mr-1"></i>{ fmt.Sprintf("%d", data.Repo.Forks) }</span>
+						}
+						<span class="text-gray-500">via { data.Repo.ConnectionName }</span>
+					</div>
+				</div>
+				<div class="flex items-center gap-2">
+					if data.Repo.HTMLURL != "" {
+						<a href={ templ.SafeURL(data.Repo.HTMLURL) } target="_blank"
+							class="btn-ghost text-sm">
+							<i class="fas fa-external-link-alt mr-1"></i>Open in Gitea
+						</a>
+					}
+					<!-- Repo Actions Menu -->
+					<div x-data="{ open: false }" class="relative">
+						<button @click="open = !open" class="btn-ghost text-sm">
+							<i class="fas fa-cog mr-1"></i>Settings
+							<i class="fas fa-chevron-down ml-1 text-xs"></i>
+						</button>
+						<div x-show="open" @click.outside="open = false"
+							x-transition:enter="transition ease-out duration-100"
+							x-transition:enter-start="opacity-0 scale-95"
+							x-transition:enter-end="opacity-100 scale-100"
+							class="absolute right-0 mt-2 w-48 bg-gray-800 border border-gray-700 rounded-lg shadow-xl z-50">
+							<button onclick="openEditRepoModal()" class="w-full px-4 py-2 text-left text-sm text-gray-300 hover:bg-gray-700 hover:text-white transition-colors flex items-center">
+								<i class="fas fa-edit w-5"></i>Edit Repository
+							</button>
+							<hr class="border-gray-700"/>
+							<button onclick="openDeleteRepoModal()" class="w-full px-4 py-2 text-left text-sm text-red-400 hover:bg-red-500/10 hover:text-red-300 transition-colors flex items-center">
+								<i class="fas fa-trash w-5"></i>Delete Repository
+							</button>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- Tab Navigation (Tier 2) -->
+			<div class="border-b border-gray-700 -mb-px">
+				<nav class="flex gap-1" aria-label="Repository tabs">
+					<a href={ templ.SafeURL(fmt.Sprintf("/integrations/gitea/repos/%s?ref=%s", data.Repo.ID, data.CurrentBranch)) }
+						class="px-4 py-2 text-sm font-medium text-white border-b-2 border-blue-500 bg-gray-800/50 rounded-t-lg">
+						<i class="fas fa-code mr-2"></i>Code
+					</a>
+					<a href={ templ.SafeURL(fmt.Sprintf("/integrations/gitea/repos/%s/pulls?tab=pulls", data.Repo.ID)) }
+						class="px-4 py-2 text-sm font-medium text-gray-400 hover:text-white hover:bg-gray-800/30 rounded-t-lg transition-colors flex items-center gap-2">
+						<i class="fas fa-code-pull-request"></i>Pull Requests
+						if data.OpenPRs > 0 {
+							<span class="bg-gray-700 text-xs px-1.5 py-0.5 rounded-full">{ fmt.Sprintf("%d", data.OpenPRs) }</span>
+						}
+					</a>
+					<a href={ templ.SafeURL(fmt.Sprintf("/integrations/gitea/repos/%s/issues?tab=issues", data.Repo.ID)) }
+						class="px-4 py-2 text-sm font-medium text-gray-400 hover:text-white hover:bg-gray-800/30 rounded-t-lg transition-colors flex items-center gap-2">
+						<i class="fas fa-circle-exclamation"></i>Issues
+						if data.OpenIssues > 0 {
+							<span class="bg-gray-700 text-xs px-1.5 py-0.5 rounded-full">{ fmt.Sprintf("%d", data.OpenIssues) }</span>
+						}
+					</a>
+					<button onclick="openCollaboratorsModal()" 
+						class="px-4 py-2 text-sm font-medium text-gray-400 hover:text-white hover:bg-gray-800/30 rounded-t-lg transition-colors">
+						<i class="fas fa-users mr-2"></i>Collaborators
+					</button>
+				</nav>
+			</div>
+
+			<!-- Branch/Tag Selector + Actions -->
+			<div class="flex items-center justify-between flex-wrap gap-4">
+				<div class="flex items-center gap-4">
+					<!-- Branch selector -->
+					<div class="relative">
+						<select
+							onchange={ goToRef(data.Repo.ID) }
+							id="branch-select"
+							class="appearance-none bg-gray-800 border border-gray-600 rounded-lg pl-8 pr-10 py-2 text-sm text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 cursor-pointer"
+						>
+							<optgroup label="Branches">
+								for _, branch := range data.Branches {
+									if branch.Name == data.CurrentBranch {
+										<option value={ branch.Name } selected>{ branch.Name }</option>
+									} else {
+										<option value={ branch.Name }>{ branch.Name }</option>
+									}
+								}
+							</optgroup>
+							if len(data.Tags) > 0 {
+								<optgroup label="Tags">
+									for _, tag := range data.Tags {
+										<option value={ tag.Name }>{ tag.Name }</option>
+									}
+								</optgroup>
+							}
+						</select>
+						<i class="fas fa-code-branch absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400 text-xs pointer-events-none"></i>
+						<i class="fas fa-chevron-down absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs pointer-events-none"></i>
+					</div>
+					<div class="flex items-center gap-3 text-sm text-gray-400">
+						<span>
+							<i class="fas fa-code-branch mr-1"></i>{ fmt.Sprintf("%d", len(data.Branches)) }
+						</span>
+						<span>
+							<i class="fas fa-tag mr-1"></i>{ fmt.Sprintf("%d", len(data.Tags)) }
+						</span>
+					</div>
+				</div>
+				
+				<!-- Branch/Tag Actions -->
+				<div class="flex items-center gap-2">
+					<button onclick="openCreateBranchModal()" class="btn-ghost text-sm">
+						<i class="fas fa-code-branch mr-1"></i>New Branch
+					</button>
+					<button onclick="openCreateTagModal()" class="btn-ghost text-sm">
+						<i class="fas fa-tag mr-1"></i>New Tag
+					</button>
+					<button onclick="openCompareModal()" class="btn-ghost text-sm">
+						<i class="fas fa-code-compare mr-1"></i>Compare
+					</button>
+				</div>
+			</div>
+
+			<!-- Two column layout: Files + Commits -->
+			<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+				<!-- File Browser (2/3) -->
+				<div class="lg:col-span-2">
+					<div class="card">
+						<div class="p-3 border-b border-gray-700/50 flex items-center justify-between">
+							<h3 class="text-sm font-medium text-gray-300">
+								<i class="fas fa-folder-open mr-2 text-gray-500"></i>
+								if data.CurrentPath == "" {
+									Files
+								} else {
+									{ data.CurrentPath }
+								}
+							</h3>
+							if data.CurrentPath != "" {
+								<a href={ templ.SafeURL(fmt.Sprintf("/integrations/gitea/repos/%s?ref=%s&path=%s", data.Repo.ID, data.CurrentBranch, parentPath(data.CurrentPath))) }
+									class="text-sm text-gray-400 hover:text-white transition-colors">
+									<i class="fas fa-level-up-alt mr-1"></i>Up
+								</a>
+							}
+						</div>
+						<div id="file-tree"
+							hx-get={ fmt.Sprintf("/integrations/gitea/repos/%s/files?ref=%s&path=%s", data.Repo.ID, data.CurrentBranch, data.CurrentPath) }
+							hx-trigger="load"
+							hx-swap="innerHTML"
+						>
+							<!-- Static fallback while HTMX loads -->
+							if len(data.Files) > 0 {
+								@fileList(data.Files, data.Repo.ID, data.CurrentBranch)
+							} else {
+								<div class="p-8 text-center text-gray-500">
+									<i class="fas fa-spinner fa-spin mr-2"></i>Loading files...
+								</div>
+							}
+						</div>
+					</div>
+				</div>
+
+				<!-- Recent Commits (1/3) -->
+				<div>
+					<div class="card">
+						<div class="p-3 border-b border-gray-700/50">
+							<h3 class="text-sm font-medium text-gray-300">
+								<i class="fas fa-history mr-2 text-gray-500"></i>Recent Commits
+							</h3>
+						</div>
+						if len(data.Commits) == 0 {
+							<div class="p-6 text-center text-gray-500 text-sm">
+								No commits found
+							</div>
+						} else {
+							<div class="divide-y divide-gray-700/30 max-h-[600px] overflow-y-auto">
+								for _, commit := range data.Commits {
+									@commitRow(commit, data.Repo.HTMLURL)
+								}
+							</div>
+						}
+					</div>
+				</div>
+			</div>
+
+			<!-- File Viewer (hidden by default, shown by JS) -->
+			<div id="file-viewer" class="hidden">
+				<div class="card">
+					<div class="p-3 border-b border-gray-700/50 flex items-center justify-between">
+						<h3 id="file-viewer-path" class="text-sm font-medium text-gray-300">
+							<i class="fas fa-file-code mr-2 text-gray-500"></i>
+						</h3>
+						<div class="flex items-center gap-2">
+							<button onclick="closeFileViewer()" class="btn-sm btn-ghost" title="Close">
+								<i class="fas fa-times"></i>
+							</button>
+						</div>
+					</div>
+					<div id="file-viewer-content" class="p-0">
+						<!-- Content loaded via JS -->
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- JS for branch switching and file viewing -->
+		<script>
+		function goToRef(repoID) {
+			var sel = document.getElementById('branch-select');
+			var ref = sel.value;
+			window.location.href = '/integrations/gitea/repos/' + repoID + '?ref=' + encodeURIComponent(ref);
+		}
+
+		function viewFile(repoID, path, ref) {
+			var viewer = document.getElementById('file-viewer');
+			var pathEl = document.getElementById('file-viewer-path');
+			var contentEl = document.getElementById('file-viewer-content');
+
+			pathEl.innerHTML = '<i class="fas fa-file-code mr-2 text-gray-500"></i>' + path;
+			contentEl.innerHTML = '<div class="p-8 text-center text-gray-500"><i class="fas fa-spinner fa-spin mr-2"></i>Loading...</div>';
+			viewer.classList.remove('hidden');
+
+			fetch('/integrations/gitea/repos/' + repoID + '/file?path=' + encodeURIComponent(path) + '&ref=' + encodeURIComponent(ref))
+				.then(function(resp) {
+					if (!resp.ok) throw new Error('Failed to load');
+					return resp.text();
+				})
+				.then(function(text) {
+					var ext = path.split('.').pop().toLowerCase();
+					var isImage = ['png','jpg','jpeg','gif','svg','webp','ico'].indexOf(ext) !== -1;
+
+					if (isImage) {
+						contentEl.innerHTML = '<div class="p-4 text-center"><p class="text-gray-400 text-sm mb-2">Binary file (image)</p></div>';
+					} else {
+						var escaped = text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+						var lines = escaped.split('\n');
+						var numbered = lines.map(function(line, i) {
+							return '<tr><td class="select-none text-right pr-4 text-gray-600 text-xs w-12 align-top">' + (i+1) + '</td><td class="whitespace-pre">' + (line || ' ') + '</td></tr>';
+						}).join('');
+						contentEl.innerHTML = '<div class="overflow-x-auto"><table class="w-full text-sm font-mono text-gray-300"><tbody>' + numbered + '</tbody></table></div>';
+					}
+				})
+				.catch(function(err) {
+					contentEl.innerHTML = '<div class="p-8 text-center text-red-400"><i class="fas fa-exclamation-triangle mr-2"></i>' + err.message + '</div>';
+				});
+
+			viewer.scrollIntoView({ behavior: 'smooth' });
+		}
+
+		function closeFileViewer() {
+			document.getElementById('file-viewer').classList.add('hidden');
+		}
+		</script>
+		
+		@tier1Modals(data)
+		@tier2Modals(data)
+	}
+}
+
+// ============================================================================
+// File List
+// ============================================================================
+
+// FileListPartial is the exported wrapper for HTMX partial rendering.
+templ FileListPartial(files []FileItem, repoID string, currentBranch string) {
+	@fileList(files, repoID, currentBranch)
+}
+
+templ fileList(files []FileItem, repoID string, currentBranch string) {
+	<div class="divide-y divide-gray-700/30">
+		for _, f := range files {
+			if f.Type == "dir" {
+				<a href={ templ.SafeURL(fmt.Sprintf("/integrations/gitea/repos/%s?ref=%s&path=%s", repoID, currentBranch, f.Path)) }
+					class="flex items-center gap-3 px-4 py-2.5 hover:bg-gray-800/30 transition-colors group">
+					<i class="fas fa-folder text-blue-400"></i>
+					<span class="text-sm text-gray-300 group-hover:text-white">{ f.Name }</span>
+				</a>
+			} else {
+				<div class="flex items-center justify-between px-4 py-2.5 hover:bg-gray-800/30 transition-colors group cursor-pointer"
+					onclick={ openFile(repoID, f.Path, currentBranch) }>
+					<div class="flex items-center gap-3">
+						<i class={ "fas", fileIcon(f.Name) }></i>
+						<span class="text-sm text-gray-300 group-hover:text-white">{ f.Name }</span>
+					</div>
+					<span class="text-xs text-gray-500">{ formatFileSize(f.Size) }</span>
+				</div>
+			}
+		}
+	</div>
+}
+
+// ============================================================================
+// Commit Row
+// ============================================================================
+
+templ commitRow(commit CommitItem, repoURL string) {
+	<div class="px-4 py-3 hover:bg-gray-800/30 cursor-pointer transition-colors" onclick={ viewCommitClick(commit.SHA) }>
+		<div class="flex items-start gap-2">
+			<div class="flex-1 min-w-0">
+				<p class="text-sm text-gray-300 line-clamp-2">{ firstLine(commit.Message) }</p>
+				<div class="flex items-center gap-2 mt-1 text-xs text-gray-500">
+					<span>{ commit.Author }</span>
+					<span>·</span>
+					<span>{ commit.Date }</span>
+				</div>
+			</div>
+			<code class="text-xs px-1.5 py-0.5 bg-gray-800 rounded text-gray-400 font-mono whitespace-nowrap">
+				{ commit.ShortSHA }
+			</code>
+		</div>
+	</div>
+}
+
+script viewCommitClick(sha string) {
+	viewCommit(sha);
+}
+
+// ============================================================================
+// Helpers
+// ============================================================================
+
+type pathCrumb struct {
+	Name   string
+	Path   string
+	IsLast bool
+}
+
+func pathCrumbs(path string) []pathCrumb {
+	parts := strings.Split(path, "/")
+	var crumbs []pathCrumb
+	for i, part := range parts {
+		if part == "" {
+			continue
+		}
+		crumbs = append(crumbs, pathCrumb{
+			Name:   part,
+			Path:   strings.Join(parts[:i+1], "/"),
+			IsLast: i == len(parts)-1,
+		})
+	}
+	return crumbs
+}
+
+func parentPath(path string) string {
+	parts := strings.Split(path, "/")
+	if len(parts) <= 1 {
+		return ""
+	}
+	return strings.Join(parts[:len(parts)-1], "/")
+}
+
+func firstLine(msg string) string {
+	if idx := strings.Index(msg, "\n"); idx != -1 {
+		return msg[:idx]
+	}
+	return msg
+}
+
+func fileIcon(name string) string {
+	ext := ""
+	if idx := strings.LastIndex(name, "."); idx != -1 {
+		ext = strings.ToLower(name[idx+1:])
+	}
+	switch ext {
+	case "go":
+		return "fa-file-code text-cyan-400"
+	case "js", "ts", "jsx", "tsx":
+		return "fa-file-code text-yellow-400"
+	case "py":
+		return "fa-file-code text-green-400"
+	case "rs":
+		return "fa-file-code text-orange-400"
+	case "md", "txt", "rst":
+		return "fa-file-alt text-gray-400"
+	case "json", "yaml", "yml", "toml":
+		return "fa-file-code text-purple-400"
+	case "html", "css", "scss":
+		return "fa-file-code text-pink-400"
+	case "sh", "bash", "zsh":
+		return "fa-terminal text-green-400"
+	case "sql":
+		return "fa-database text-blue-400"
+	case "dockerfile":
+		return "fa-docker text-blue-400"
+	case "png", "jpg", "jpeg", "gif", "svg", "webp":
+		return "fa-file-image text-emerald-400"
+	case "zip", "tar", "gz", "bz2":
+		return "fa-file-archive text-amber-400"
+	default:
+		return "fa-file text-gray-500"
+	}
+}
+
+func formatFileSize(size int64) string {
+	if size < 1024 {
+		return fmt.Sprintf("%d B", size)
+	}
+	if size < 1024*1024 {
+		return fmt.Sprintf("%.1f KB", float64(size)/1024)
+	}
+	return fmt.Sprintf("%.1f MB", float64(size)/(1024*1024))
+}
+
+script goToRef(repoID string) {
+	var sel = document.getElementById('branch-select');
+	var ref = sel.value;
+	window.location.href = '/integrations/gitea/repos/' + repoID + '?ref=' + encodeURIComponent(ref);
+}
+
+script openFile(repoID string, path string, ref string) {
+	viewFile(repoID, path, ref);
+}
+
+// ============================================================================
+// Tier 1 Modal Functions
+// ============================================================================
+
+templ tier1Modals(data RepoDetailData) {
+	<!-- Create Branch Modal -->
+	<div id="create-branch-modal" class="fixed inset-0 bg-black/60 z-50 hidden items-center justify-center">
+		<div class="bg-gray-800 rounded-xl border border-gray-700 p-6 w-full max-w-md mx-4">
+			<h3 class="text-lg font-semibold text-white mb-4">
+				<i class="fas fa-code-branch mr-2 text-blue-400"></i>Create Branch
+			</h3>
+			<form id="create-branch-form" class="space-y-4">
+				<input type="hidden" name="csrf_token" value={ data.CSRFToken }/>
+				<div>
+					<label class="block text-sm text-gray-400 mb-1">Branch Name</label>
+					<input type="text" name="name" required placeholder="feature/my-branch"
+						class="w-full px-3 py-2 bg-gray-900 border border-gray-600 rounded-lg text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500"/>
+				</div>
+				<div>
+					<label class="block text-sm text-gray-400 mb-1">Source Branch</label>
+					<select name="source" class="w-full px-3 py-2 bg-gray-900 border border-gray-600 rounded-lg text-white">
+						for _, branch := range data.Branches {
+							if branch.Name == data.CurrentBranch {
+								<option value={ branch.Name } selected>{ branch.Name }</option>
+							} else {
+								<option value={ branch.Name }>{ branch.Name }</option>
+							}
+						}
+					</select>
+				</div>
+				<div class="flex justify-end gap-3 pt-2">
+					<button type="button" onclick="closeModal('create-branch-modal')" class="btn-ghost">Cancel</button>
+					<button type="submit" class="btn-primary">Create Branch</button>
+				</div>
+			</form>
+		</div>
+	</div>
+
+	<!-- Create Tag Modal -->
+	<div id="create-tag-modal" class="fixed inset-0 bg-black/60 z-50 hidden items-center justify-center">
+		<div class="bg-gray-800 rounded-xl border border-gray-700 p-6 w-full max-w-md mx-4">
+			<h3 class="text-lg font-semibold text-white mb-4">
+				<i class="fas fa-tag mr-2 text-green-400"></i>Create Tag
+			</h3>
+			<form id="create-tag-form" class="space-y-4">
+				<input type="hidden" name="csrf_token" value={ data.CSRFToken }/>
+				<div>
+					<label class="block text-sm text-gray-400 mb-1">Tag Name</label>
+					<input type="text" name="name" required placeholder="v1.0.0"
+						class="w-full px-3 py-2 bg-gray-900 border border-gray-600 rounded-lg text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500"/>
+				</div>
+				<div>
+					<label class="block text-sm text-gray-400 mb-1">Target (branch or commit)</label>
+					<input type="text" name="target" placeholder={ data.CurrentBranch }
+						class="w-full px-3 py-2 bg-gray-900 border border-gray-600 rounded-lg text-white"/>
+					<p class="text-xs text-gray-500 mt-1">Leave empty to use current branch</p>
+				</div>
+				<div>
+					<label class="block text-sm text-gray-400 mb-1">Message (optional, for annotated tag)</label>
+					<textarea name="message" rows="2" placeholder="Release notes..."
+						class="w-full px-3 py-2 bg-gray-900 border border-gray-600 rounded-lg text-white resize-none"></textarea>
+				</div>
+				<div class="flex justify-end gap-3 pt-2">
+					<button type="button" onclick="closeModal('create-tag-modal')" class="btn-ghost">Cancel</button>
+					<button type="submit" class="btn-primary">Create Tag</button>
+				</div>
+			</form>
+		</div>
+	</div>
+
+	<!-- Compare Modal -->
+	<div id="compare-modal" class="fixed inset-0 bg-black/60 z-50 hidden items-center justify-center">
+		<div class="bg-gray-800 rounded-xl border border-gray-700 p-6 w-full max-w-lg mx-4">
+			<h3 class="text-lg font-semibold text-white mb-4">
+				<i class="fas fa-code-compare mr-2 text-purple-400"></i>Compare Branches
+			</h3>
+			<form id="compare-form" class="space-y-4">
+				<div class="grid grid-cols-2 gap-4">
+					<div>
+						<label class="block text-sm text-gray-400 mb-1">Base</label>
+						<select name="base" id="compare-base" class="w-full px-3 py-2 bg-gray-900 border border-gray-600 rounded-lg text-white">
+							for _, branch := range data.Branches {
+								if branch.IsDefault {
+									<option value={ branch.Name } selected>{ branch.Name }</option>
+								} else {
+									<option value={ branch.Name }>{ branch.Name }</option>
+								}
+							}
+						</select>
+					</div>
+					<div>
+						<label class="block text-sm text-gray-400 mb-1">Compare</label>
+						<select name="head" id="compare-head" class="w-full px-3 py-2 bg-gray-900 border border-gray-600 rounded-lg text-white">
+							for _, branch := range data.Branches {
+								if branch.Name == data.CurrentBranch && !branch.IsDefault {
+									<option value={ branch.Name } selected>{ branch.Name }</option>
+								} else {
+									<option value={ branch.Name }>{ branch.Name }</option>
+								}
+							}
+						</select>
+					</div>
+				</div>
+				<div class="flex justify-end gap-3 pt-2">
+					<button type="button" onclick="closeModal('compare-modal')" class="btn-ghost">Cancel</button>
+					<button type="submit" class="btn-primary">Compare</button>
+				</div>
+			</form>
+			<!-- Compare results will be shown here -->
+			<div id="compare-results" class="mt-4 hidden">
+				<div class="border-t border-gray-700 pt-4">
+					<div id="compare-stats" class="text-sm text-gray-400 mb-3"></div>
+					<div id="compare-diff" class="bg-gray-900 rounded-lg p-3 overflow-x-auto max-h-96">
+						<pre class="text-xs text-gray-300 font-mono whitespace-pre"></pre>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Edit Repo Modal -->
+	<div id="edit-repo-modal" class="fixed inset-0 bg-black/60 z-50 hidden items-center justify-center">
+		<div class="bg-gray-800 rounded-xl border border-gray-700 p-6 w-full max-w-md mx-4">
+			<h3 class="text-lg font-semibold text-white mb-4">
+				<i class="fas fa-edit mr-2 text-blue-400"></i>Edit Repository
+			</h3>
+			<form action={ templ.SafeURL(fmt.Sprintf("/integrations/gitea/repos/%s/edit", data.Repo.ID)) } method="POST" class="space-y-4">
+				<input type="hidden" name="csrf_token" value={ data.CSRFToken }/>
+				<div>
+					<label class="block text-sm text-gray-400 mb-1">Description</label>
+					<textarea name="description" rows="3" placeholder="Repository description..."
+						class="w-full px-3 py-2 bg-gray-900 border border-gray-600 rounded-lg text-white resize-none">{ data.Repo.Description }</textarea>
+				</div>
+				<div>
+					<label class="block text-sm text-gray-400 mb-1">Default Branch</label>
+					<select name="default_branch" class="w-full px-3 py-2 bg-gray-900 border border-gray-600 rounded-lg text-white">
+						for _, branch := range data.Branches {
+							if branch.Name == data.Repo.DefaultBranch {
+								<option value={ branch.Name } selected>{ branch.Name }</option>
+							} else {
+								<option value={ branch.Name }>{ branch.Name }</option>
+							}
+						}
+					</select>
+				</div>
+				<div class="flex items-center gap-4">
+					<label class="flex items-center gap-2 cursor-pointer">
+						if data.Repo.IsPrivate {
+							<input type="checkbox" name="private" value="true" checked class="rounded bg-gray-900 border-gray-600 text-blue-500"/>
+						} else {
+							<input type="checkbox" name="private" value="true" class="rounded bg-gray-900 border-gray-600 text-blue-500"/>
+						}
+						<span class="text-sm text-gray-300">Private</span>
+					</label>
+					<label class="flex items-center gap-2 cursor-pointer">
+						if data.Repo.IsArchived {
+							<input type="checkbox" name="archived" value="true" checked class="rounded bg-gray-900 border-gray-600 text-yellow-500"/>
+						} else {
+							<input type="checkbox" name="archived" value="true" class="rounded bg-gray-900 border-gray-600 text-yellow-500"/>
+						}
+						<span class="text-sm text-gray-300">Archived</span>
+					</label>
+				</div>
+				<div class="flex justify-end gap-3 pt-2">
+					<button type="button" onclick="closeModal('edit-repo-modal')" class="btn-ghost">Cancel</button>
+					<button type="submit" class="btn-primary">Save Changes</button>
+				</div>
+			</form>
+		</div>
+	</div>
+
+	<!-- Delete Repo Modal -->
+	<div id="delete-repo-modal" class="fixed inset-0 bg-black/60 z-50 hidden items-center justify-center">
+		<div class="bg-gray-800 rounded-xl border border-gray-700 p-6 w-full max-w-md mx-4">
+			<h3 class="text-lg font-semibold text-red-400 mb-4">
+				<i class="fas fa-exclamation-triangle mr-2"></i>Delete Repository
+			</h3>
+			<p class="text-gray-300 mb-4">
+				Are you sure you want to delete <strong class="text-white">{ data.Repo.FullName }</strong>?
+				This action cannot be undone.
+			</p>
+			<form action={ templ.SafeURL(fmt.Sprintf("/integrations/gitea/repos/%s/delete", data.Repo.ID)) } method="POST" class="space-y-4">
+				<input type="hidden" name="csrf_token" value={ data.CSRFToken }/>
+				<div>
+					<label class="block text-sm text-gray-400 mb-1">Type repository name to confirm</label>
+					<input type="text" name="confirm_name" required placeholder={ data.Repo.FullName }
+						class="w-full px-3 py-2 bg-gray-900 border border-red-600/50 rounded-lg text-white focus:border-red-500 focus:ring-1 focus:ring-red-500"/>
+				</div>
+				<div class="flex justify-end gap-3 pt-2">
+					<button type="button" onclick="closeModal('delete-repo-modal')" class="btn-ghost">Cancel</button>
+					<button type="submit" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition-colors">
+						Delete Repository
+					</button>
+				</div>
+			</form>
+		</div>
+	</div>
+
+	<!-- Commit Detail Modal -->
+	<div id="commit-detail-modal" class="fixed inset-0 bg-black/60 z-50 hidden items-center justify-center">
+		<div class="bg-gray-800 rounded-xl border border-gray-700 p-6 w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto">
+			<div class="flex items-center justify-between mb-4">
+				<h3 class="text-lg font-semibold text-white">
+					<i class="fas fa-code-commit mr-2 text-orange-400"></i>
+					<span id="commit-sha-title"></span>
+				</h3>
+				<button onclick="closeModal('commit-detail-modal')" class="text-gray-400 hover:text-white">
+					<i class="fas fa-times"></i>
+				</button>
+			</div>
+			<div id="commit-detail-content">
+				<div class="animate-pulse">
+					<div class="h-4 bg-gray-700 rounded w-3/4 mb-2"></div>
+					<div class="h-4 bg-gray-700 rounded w-1/2"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	@tier1Scripts(data)
+	@tier2Scripts(data)
+}
+
+templ tier1Scripts(data RepoDetailData) {
+	<script>
+		const repoID = '{{ data.Repo.ID }}';
+		const csrfToken = '{{ data.CSRFToken }}';
+		
+		// Modal helpers
+		function openModal(id) {
+			document.getElementById(id).classList.remove('hidden');
+			document.getElementById(id).classList.add('flex');
+		}
+		function closeModal(id) {
+			document.getElementById(id).classList.add('hidden');
+			document.getElementById(id).classList.remove('flex');
+		}
+		
+		// Expose modal openers globally
+		window.openCreateBranchModal = () => openModal('create-branch-modal');
+		window.openCreateTagModal = () => openModal('create-tag-modal');
+		window.openCompareModal = () => openModal('compare-modal');
+		window.openEditRepoModal = () => openModal('edit-repo-modal');
+		window.openDeleteRepoModal = () => openModal('delete-repo-modal');
+		
+		// Create Branch
+		document.getElementById('create-branch-form')?.addEventListener('submit', async (e) => {
+			e.preventDefault();
+			const form = e.target;
+			const data = {
+				name: form.name.value,
+				source: form.source.value
+			};
+			try {
+				const resp = await fetch(`/integrations/gitea/repos/${repoID}/branches`, {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+						'X-CSRF-Token': csrfToken
+					},
+					body: JSON.stringify(data)
+				});
+				if (!resp.ok) throw new Error(await resp.text());
+				closeModal('create-branch-modal');
+				window.location.reload();
+			} catch (err) {
+				alert('Error creating branch: ' + err.message);
+			}
+		});
+		
+		// Create Tag
+		document.getElementById('create-tag-form')?.addEventListener('submit', async (e) => {
+			e.preventDefault();
+			const form = e.target;
+			const data = {
+				name: form.name.value,
+				target: form.target.value || '{{ data.CurrentBranch }}',
+				message: form.message.value
+			};
+			try {
+				const resp = await fetch(`/integrations/gitea/repos/${repoID}/tags`, {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+						'X-CSRF-Token': csrfToken
+					},
+					body: JSON.stringify(data)
+				});
+				if (!resp.ok) throw new Error(await resp.text());
+				closeModal('create-tag-modal');
+				window.location.reload();
+			} catch (err) {
+				alert('Error creating tag: ' + err.message);
+			}
+		});
+		
+		// Compare
+		document.getElementById('compare-form')?.addEventListener('submit', async (e) => {
+			e.preventDefault();
+			const base = document.getElementById('compare-base').value;
+			const head = document.getElementById('compare-head').value;
+			
+			try {
+				// Get comparison data
+				const resp = await fetch(`/integrations/gitea/repos/${repoID}/compare?base=${encodeURIComponent(base)}&head=${encodeURIComponent(head)}`);
+				if (!resp.ok) throw new Error(await resp.text());
+				const compare = await resp.json();
+				
+				// Get diff
+				const diffResp = await fetch(`/integrations/gitea/repos/${repoID}/diff?base=${encodeURIComponent(base)}&head=${encodeURIComponent(head)}`);
+				const diff = await diffResp.text();
+				
+				// Show results
+				document.getElementById('compare-results').classList.remove('hidden');
+				document.getElementById('compare-stats').innerHTML = 
+					`<span class="text-green-400">${compare.total_commits} commits</span> ahead of ${base}`;
+				document.getElementById('compare-diff').querySelector('pre').textContent = diff || 'No differences';
+			} catch (err) {
+				alert('Error comparing: ' + err.message);
+			}
+		});
+		
+		// View commit detail
+		window.viewCommit = async (sha) => {
+			document.getElementById('commit-sha-title').textContent = sha.substring(0, 7);
+			openModal('commit-detail-modal');
+			
+			try {
+				const resp = await fetch(`/integrations/gitea/repos/${repoID}/commits/${sha}`);
+				if (!resp.ok) throw new Error(await resp.text());
+				const commit = await resp.json();
+				
+				const content = document.getElementById('commit-detail-content');
+				content.innerHTML = `
+					<div class="space-y-4">
+						<div>
+							<p class="text-white font-medium">${escapeHtml(commit.commit.message)}<\/p>
+							<p class="text-sm text-gray-400 mt-2">
+								<i class="fas fa-user mr-1"><\/i>${commit.commit.author?.name || 'Unknown'}
+								<span class="mx-2">•<\/span>
+								<i class="fas fa-clock mr-1"><\/i>${commit.commit.author?.date || ''}
+							<\/p>
+						<\/div>
+						<div class="text-sm">
+							<span class="text-gray-500">SHA:<\/span>
+							<code class="text-gray-300 ml-2">${commit.sha}<\/code>
+						<\/div>
+						${commit.stats ? `
+							<div class="flex gap-4 text-sm">
+								<span class="text-green-400">+${commit.stats.additions}<\/span>
+								<span class="text-red-400">-${commit.stats.deletions}<\/span>
+								<span class="text-gray-400">${commit.stats.total} changes<\/span>
+							<\/div>
+						` : ''}
+						${commit.files?.length ? `
+							<div>
+								<h4 class="text-sm font-medium text-gray-300 mb-2">Files changed (${commit.files.length})<\/h4>
+								<div class="space-y-1 max-h-60 overflow-y-auto">
+									${commit.files.map(f => `
+										<div class="text-sm flex items-center gap-2">
+											<span class="${f.status === 'added' ? 'text-green-400' : f.status === 'removed' ? 'text-red-400' : 'text-yellow-400'}">
+												${f.status === 'added' ? '+' : f.status === 'removed' ? '-' : 'M'}
+											<\/span>
+											<span class="text-gray-300 font-mono">${escapeHtml(f.filename)}<\/span>
+										<\/div>
+									`).join('')}
+								<\/div>
+							<\/div>
+						` : ''}
+					<\/div>
+				`;
+			} catch (err) {
+				document.getElementById('commit-detail-content').innerHTML =
+					`<p class="text-red-400">Error loading commit: ${escapeHtml(err.message)}<\/p>`;
+			}
+		};
+		
+		function escapeHtml(text) {
+			const div = document.createElement('div');
+			div.textContent = text;
+			return div.innerHTML;
+		}
+		
+		// Close modals on Escape key
+		document.addEventListener('keydown', (e) => {
+			if (e.key === 'Escape') {
+				document.querySelectorAll('.fixed.z-50').forEach(modal => {
+					modal.classList.add('hidden');
+					modal.classList.remove('flex');
+				});
+			}
+		});
+		
+		// Close modals on backdrop click
+		document.querySelectorAll('.fixed.z-50').forEach(modal => {
+			modal.addEventListener('click', (e) => {
+				if (e.target === modal) {
+					modal.classList.add('hidden');
+					modal.classList.remove('flex');
+				}
+			});
+		});
+	</script>
+}
+
+// ============================================================================
+// Tier 2 Modals: Pull Requests, Issues, Collaborators
+// ============================================================================
+
+templ tier2Modals(data RepoDetailData) {
+	<!-- Create PR Modal -->
+	<div id="create-pr-modal" class="fixed inset-0 bg-black/60 z-50 hidden items-center justify-center">
+		<div class="bg-gray-800 rounded-xl border border-gray-700 p-6 w-full max-w-lg mx-4">
+			<h3 class="text-lg font-semibold text-white mb-4">
+				<i class="fas fa-code-pull-request mr-2 text-green-400"></i>Create Pull Request
+			</h3>
+			<form id="create-pr-form" class="space-y-4">
+				<input type="hidden" name="csrf_token" value={ data.CSRFToken }/>
+				<div>
+					<label class="block text-sm text-gray-400 mb-1">Title</label>
+					<input type="text" name="title" required placeholder="What does this PR do?"
+						class="w-full px-3 py-2 bg-gray-900 border border-gray-600 rounded-lg text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500"/>
+				</div>
+				<div class="grid grid-cols-2 gap-4">
+					<div>
+						<label class="block text-sm text-gray-400 mb-1">Head (source)</label>
+						<select name="head" class="w-full px-3 py-2 bg-gray-900 border border-gray-600 rounded-lg text-white">
+							for _, branch := range data.Branches {
+								if branch.Name == data.CurrentBranch && !branch.IsDefault {
+									<option value={ branch.Name } selected>{ branch.Name }</option>
+								} else {
+									<option value={ branch.Name }>{ branch.Name }</option>
+								}
+							}
+						</select>
+					</div>
+					<div>
+						<label class="block text-sm text-gray-400 mb-1">Base (target)</label>
+						<select name="base" class="w-full px-3 py-2 bg-gray-900 border border-gray-600 rounded-lg text-white">
+							for _, branch := range data.Branches {
+								if branch.IsDefault {
+									<option value={ branch.Name } selected>{ branch.Name }</option>
+								} else {
+									<option value={ branch.Name }>{ branch.Name }</option>
+								}
+							}
+						</select>
+					</div>
+				</div>
+				<div>
+					<label class="block text-sm text-gray-400 mb-1">Description (optional)</label>
+					<textarea name="body" rows="4" placeholder="Describe your changes..."
+						class="w-full px-3 py-2 bg-gray-900 border border-gray-600 rounded-lg text-white resize-none"></textarea>
+				</div>
+				<div class="flex justify-end gap-3 pt-2">
+					<button type="button" onclick="closeModal('create-pr-modal')" class="btn-ghost">Cancel</button>
+					<button type="submit" class="btn-primary">Create Pull Request</button>
+				</div>
+			</form>
+		</div>
+	</div>
+
+	<!-- Create Issue Modal -->
+	<div id="create-issue-modal" class="fixed inset-0 bg-black/60 z-50 hidden items-center justify-center">
+		<div class="bg-gray-800 rounded-xl border border-gray-700 p-6 w-full max-w-lg mx-4">
+			<h3 class="text-lg font-semibold text-white mb-4">
+				<i class="fas fa-circle-exclamation mr-2 text-yellow-400"></i>Create Issue
+			</h3>
+			<form id="create-issue-form" class="space-y-4">
+				<input type="hidden" name="csrf_token" value={ data.CSRFToken }/>
+				<div>
+					<label class="block text-sm text-gray-400 mb-1">Title</label>
+					<input type="text" name="title" required placeholder="Issue title"
+						class="w-full px-3 py-2 bg-gray-900 border border-gray-600 rounded-lg text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500"/>
+				</div>
+				<div>
+					<label class="block text-sm text-gray-400 mb-1">Description</label>
+					<textarea name="body" rows="6" placeholder="Describe the issue..."
+						class="w-full px-3 py-2 bg-gray-900 border border-gray-600 rounded-lg text-white resize-none"></textarea>
+				</div>
+				<div class="flex justify-end gap-3 pt-2">
+					<button type="button" onclick="closeModal('create-issue-modal')" class="btn-ghost">Cancel</button>
+					<button type="submit" class="btn-primary">Create Issue</button>
+				</div>
+			</form>
+		</div>
+	</div>
+
+	<!-- Collaborators Modal -->
+	<div id="collaborators-modal" class="fixed inset-0 bg-black/60 z-50 hidden items-center justify-center">
+		<div class="bg-gray-800 rounded-xl border border-gray-700 p-6 w-full max-w-lg mx-4 max-h-[80vh] flex flex-col">
+			<h3 class="text-lg font-semibold text-white mb-4 flex items-center justify-between">
+				<span><i class="fas fa-users mr-2 text-blue-400"></i>Collaborators</span>
+				<button onclick="closeModal('collaborators-modal')" class="text-gray-400 hover:text-white">
+					<i class="fas fa-times"></i>
+				</button>
+			</h3>
+			<div id="collaborators-content" class="flex-1 overflow-y-auto">
+				<div class="text-center py-8 text-gray-400">
+					<i class="fas fa-spinner fa-spin text-2xl mb-2"></i>
+					<p>Loading collaborators...</p>
+				</div>
+			</div>
+			<div class="border-t border-gray-700 pt-4 mt-4">
+				<form id="add-collaborator-form" class="flex gap-2">
+					<input type="text" name="username" placeholder="Username" required
+						class="flex-1 px-3 py-2 bg-gray-900 border border-gray-600 rounded-lg text-white text-sm"/>
+					<select name="permission" class="px-3 py-2 bg-gray-900 border border-gray-600 rounded-lg text-white text-sm">
+						<option value="read">Read</option>
+						<option value="write" selected>Write</option>
+						<option value="admin">Admin</option>
+					</select>
+					<button type="submit" class="btn-primary text-sm">Add</button>
+				</form>
+			</div>
+		</div>
+	</div>
+
+	<!-- PR Detail Modal -->
+	<div id="pr-detail-modal" class="fixed inset-0 bg-black/60 z-50 hidden items-center justify-center">
+		<div class="bg-gray-800 rounded-xl border border-gray-700 p-6 w-full max-w-3xl mx-4 max-h-[85vh] flex flex-col">
+			<div class="flex items-center justify-between mb-4">
+				<h3 class="text-lg font-semibold text-white">
+					<i class="fas fa-code-pull-request mr-2 text-green-400"></i>
+					<span id="pr-detail-title">Pull Request</span>
+				</h3>
+				<button onclick="closeModal('pr-detail-modal')" class="text-gray-400 hover:text-white">
+					<i class="fas fa-times"></i>
+				</button>
+			</div>
+			<div id="pr-detail-content" class="flex-1 overflow-y-auto">
+				<div class="text-center py-8 text-gray-400">
+					<i class="fas fa-spinner fa-spin text-2xl"></i>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Issue Detail Modal -->
+	<div id="issue-detail-modal" class="fixed inset-0 bg-black/60 z-50 hidden items-center justify-center">
+		<div class="bg-gray-800 rounded-xl border border-gray-700 p-6 w-full max-w-3xl mx-4 max-h-[85vh] flex flex-col">
+			<div class="flex items-center justify-between mb-4">
+				<h3 class="text-lg font-semibold text-white">
+					<i class="fas fa-circle-exclamation mr-2 text-yellow-400"></i>
+					<span id="issue-detail-title">Issue</span>
+				</h3>
+				<button onclick="closeModal('issue-detail-modal')" class="text-gray-400 hover:text-white">
+					<i class="fas fa-times"></i>
+				</button>
+			</div>
+			<div id="issue-detail-content" class="flex-1 overflow-y-auto">
+				<div class="text-center py-8 text-gray-400">
+					<i class="fas fa-spinner fa-spin text-2xl"></i>
+				</div>
+			</div>
+		</div>
+	</div>
+}
+
+// ============================================================================
+// Tier 2 Scripts
+// ============================================================================
+
+templ tier2Scripts(data RepoDetailData) {
+	<script>
+		const tier2RepoID = { templ.JSONString(data.Repo.ID) };
+		const tier2CSRF = { templ.JSONString(data.CSRFToken) };
+
+		// Modal helpers
+		function openCreatePRModal() {
+			document.getElementById('create-pr-modal').classList.remove('hidden');
+			document.getElementById('create-pr-modal').classList.add('flex');
+		}
+
+		function openCreateIssueModal() {
+			document.getElementById('create-issue-modal').classList.remove('hidden');
+			document.getElementById('create-issue-modal').classList.add('flex');
+		}
+
+		function openCollaboratorsModal() {
+			document.getElementById('collaborators-modal').classList.remove('hidden');
+			document.getElementById('collaborators-modal').classList.add('flex');
+			loadCollaborators();
+		}
+
+		// Load collaborators
+		async function loadCollaborators() {
+			const container = document.getElementById('collaborators-content');
+			try {
+				const resp = await fetch(`/integrations/gitea/repos/${tier2RepoID}/collaborators`);
+				if (!resp.ok) throw new Error('Failed to load collaborators');
+				const collabs = await resp.json();
+				
+				if (!collabs || collabs.length === 0) {
+					container.innerHTML = '<p class="text-gray-400 text-center py-4">No collaborators found</p>';
+					return;
+				}
+
+				container.innerHTML = collabs.map(c => `
+					<div class="flex items-center justify-between py-2 px-3 hover:bg-gray-700/30 rounded-lg">
+						<div class="flex items-center gap-3">
+							<img src="${c.avatar_url || '/static/img/default-avatar.png'}" 
+								class="w-8 h-8 rounded-full" alt="${escapeHtml(c.login)}"/>
+							<div>
+								<div class="text-white text-sm">${escapeHtml(c.login)}</div>
+								<div class="text-xs text-gray-500">${escapeHtml(c.full_name || '')}</div>
+							</div>
+						</div>
+						<div class="flex items-center gap-2">
+							<span class="text-xs px-2 py-1 rounded ${
+								c.permissions?.admin ? 'bg-red-500/20 text-red-400' :
+								c.permissions?.push ? 'bg-blue-500/20 text-blue-400' :
+								'bg-gray-700 text-gray-400'
+							}">
+								${c.permissions?.admin ? 'Admin' : c.permissions?.push ? 'Write' : 'Read'}
+							</span>
+							<button onclick="removeCollaborator('${escapeHtml(c.login)}')"
+								class="text-gray-400 hover:text-red-400 p-1">
+								<i class="fas fa-times"></i>
+							</button>
+						</div>
+					</div>
+				`).join('');
+			} catch (err) {
+				container.innerHTML = `<p class="text-red-400 text-center py-4">${escapeHtml(err.message)}</p>`;
+			}
+		}
+
+		// Add collaborator
+		document.getElementById('add-collaborator-form')?.addEventListener('submit', async (e) => {
+			e.preventDefault();
+			const form = e.target;
+			const username = form.username.value.trim();
+			const permission = form.permission.value;
+			
+			if (!username) return;
+
+			try {
+				const resp = await fetch(`/integrations/gitea/repos/${tier2RepoID}/collaborators/${encodeURIComponent(username)}`, {
+					method: 'PUT',
+					headers: {
+						'Content-Type': 'application/json',
+						'X-CSRF-Token': tier2CSRF
+					},
+					body: JSON.stringify({ permission })
+				});
+				if (!resp.ok) throw new Error('Failed to add collaborator');
+				form.reset();
+				loadCollaborators();
+			} catch (err) {
+				alert('Error: ' + err.message);
+			}
+		});
+
+		// Remove collaborator
+		async function removeCollaborator(username) {
+			if (!confirm(`Remove ${username} from collaborators?`)) return;
+			try {
+				const resp = await fetch(`/integrations/gitea/repos/${tier2RepoID}/collaborators/${encodeURIComponent(username)}`, {
+					method: 'DELETE',
+					headers: { 'X-CSRF-Token': tier2CSRF }
+				});
+				if (!resp.ok) throw new Error('Failed to remove collaborator');
+				loadCollaborators();
+			} catch (err) {
+				alert('Error: ' + err.message);
+			}
+		}
+
+		// Create PR
+		document.getElementById('create-pr-form')?.addEventListener('submit', async (e) => {
+			e.preventDefault();
+			const form = e.target;
+			const data = {
+				title: form.title.value,
+				body: form.body.value,
+				head: form.head.value,
+				base: form.base.value
+			};
+			try {
+				const resp = await fetch(`/integrations/gitea/repos/${tier2RepoID}/pulls`, {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+						'X-CSRF-Token': tier2CSRF
+					},
+					body: JSON.stringify(data)
+				});
+				if (!resp.ok) {
+					const errText = await resp.text();
+					throw new Error(errText || 'Failed to create PR');
+				}
+				closeModal('create-pr-modal');
+				window.location.href = `/integrations/gitea/repos/${tier2RepoID}/pulls?tab=pulls`;
+			} catch (err) {
+				alert('Error: ' + err.message);
+			}
+		});
+
+		// Create Issue
+		document.getElementById('create-issue-form')?.addEventListener('submit', async (e) => {
+			e.preventDefault();
+			const form = e.target;
+			const data = {
+				title: form.title.value,
+				body: form.body.value
+			};
+			try {
+				const resp = await fetch(`/integrations/gitea/repos/${tier2RepoID}/issues`, {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+						'X-CSRF-Token': tier2CSRF
+					},
+					body: JSON.stringify(data)
+				});
+				if (!resp.ok) {
+					const errText = await resp.text();
+					throw new Error(errText || 'Failed to create issue');
+				}
+				closeModal('create-issue-modal');
+				window.location.href = `/integrations/gitea/repos/${tier2RepoID}/issues?tab=issues`;
+			} catch (err) {
+				alert('Error: ' + err.message);
+			}
+		});
+
+		// View PR detail
+		async function viewPR(number) {
+			document.getElementById('pr-detail-modal').classList.remove('hidden');
+			document.getElementById('pr-detail-modal').classList.add('flex');
+			document.getElementById('pr-detail-content').innerHTML = '<div class="text-center py-8 text-gray-400"><i class="fas fa-spinner fa-spin text-2xl"></i></div>';
+
+			try {
+				const resp = await fetch(`/integrations/gitea/repos/${tier2RepoID}/pulls/${number}`);
+				if (!resp.ok) throw new Error('Failed to load PR');
+				const pr = await resp.json();
+
+				document.getElementById('pr-detail-title').textContent = `#${pr.number} ${pr.title}`;
+				document.getElementById('pr-detail-content').innerHTML = `
+					<div class="space-y-4">
+						<div class="flex items-center gap-2">
+							<span class="px-2 py-1 rounded text-sm ${pr.state === 'open' ? 'bg-green-500/20 text-green-400' : pr.merged ? 'bg-purple-500/20 text-purple-400' : 'bg-red-500/20 text-red-400'}">
+								${pr.merged ? 'Merged' : pr.state}
+							<\/span>
+							<span class="text-gray-400 text-sm">${escapeHtml(pr.user?.login || 'unknown')} wants to merge<\/span>
+							<code class="text-xs bg-gray-700 px-2 py-0.5 rounded">${escapeHtml(pr.head?.ref)}<\/code>
+							<span class="text-gray-400">→<\/span>
+							<code class="text-xs bg-gray-700 px-2 py-0.5 rounded">${escapeHtml(pr.base?.ref)}<\/code>
+						<\/div>
+						${pr.body ? `<div class="prose prose-invert prose-sm max-w-none bg-gray-900 p-4 rounded-lg">${escapeHtml(pr.body)}<\/div>` : ''}
+						${pr.mergeable && pr.state === 'open' && !pr.merged ? `
+							<div class="flex items-center gap-2 pt-4 border-t border-gray-700">
+								<button onclick="mergePR(${pr.number})" class="btn-primary">
+									<i class="fas fa-code-merge mr-2"><\/i>Merge Pull Request
+								<\/button>
+							<\/div>
+						` : ''}
+					<\/div>
+				`;
+			} catch (err) {
+				document.getElementById('pr-detail-content').innerHTML = `<p class="text-red-400">${escapeHtml(err.message)}<\/p>`;
+			}
+		}
+
+		// Merge PR
+		async function mergePR(number) {
+			if (!confirm('Merge this pull request?')) return;
+			try {
+				const resp = await fetch(`/integrations/gitea/repos/${tier2RepoID}/pulls/${number}/merge`, {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+						'X-CSRF-Token': tier2CSRF
+					},
+					body: JSON.stringify({ Do: 'merge' })
+				});
+				if (!resp.ok) throw new Error('Failed to merge PR');
+				closeModal('pr-detail-modal');
+				location.reload();
+			} catch (err) {
+				alert('Error: ' + err.message);
+			}
+		}
+
+		// View Issue detail
+		async function viewIssue(number) {
+			document.getElementById('issue-detail-modal').classList.remove('hidden');
+			document.getElementById('issue-detail-modal').classList.add('flex');
+			document.getElementById('issue-detail-content').innerHTML = '<div class="text-center py-8 text-gray-400"><i class="fas fa-spinner fa-spin text-2xl"></i></div>';
+
+			try {
+				const resp = await fetch(`/integrations/gitea/repos/${tier2RepoID}/issues/${number}`);
+				if (!resp.ok) throw new Error('Failed to load issue');
+				const issue = await resp.json();
+
+				const commentsResp = await fetch(`/integrations/gitea/repos/${tier2RepoID}/issues/${number}/comments`);
+				const comments = commentsResp.ok ? await commentsResp.json() : [];
+
+				document.getElementById('issue-detail-title').textContent = `#${issue.number} ${issue.title}`;
+				document.getElementById('issue-detail-content').innerHTML = `
+					<div class="space-y-4">
+						<div class="flex items-center gap-2">
+							<span class="px-2 py-1 rounded text-sm ${issue.state === 'open' ? 'bg-green-500/20 text-green-400' : 'bg-gray-500/20 text-gray-400'}">
+								${issue.state}
+							<\/span>
+							<span class="text-gray-400 text-sm">Opened by ${escapeHtml(issue.user?.login || 'unknown')}<\/span>
+						<\/div>
+						${issue.body ? `<div class="prose prose-invert prose-sm max-w-none bg-gray-900 p-4 rounded-lg">${escapeHtml(issue.body)}<\/div>` : ''}
+						${comments.length > 0 ? `
+							<div class="border-t border-gray-700 pt-4">
+								<h4 class="text-sm font-medium text-gray-300 mb-3">Comments (${comments.length})<\/h4>
+								<div class="space-y-3">
+									${comments.map(c => `
+										<div class="bg-gray-900 p-3 rounded-lg">
+											<div class="flex items-center gap-2 mb-2">
+												<span class="text-sm font-medium text-white">${escapeHtml(c.user?.login || 'unknown')}<\/span>
+												<span class="text-xs text-gray-500">${new Date(c.created_at).toLocaleString()}<\/span>
+											<\/div>
+											<div class="text-sm text-gray-300">${escapeHtml(c.body)}<\/div>
+										<\/div>
+									`).join('')}
+								<\/div>
+							<\/div>
+						` : ''}
+						<div class="border-t border-gray-700 pt-4">
+							<form id="add-comment-form-${issue.number}" class="flex gap-2">
+								<input type="text" name="body" placeholder="Add a comment..."
+									class="flex-1 px-3 py-2 bg-gray-900 border border-gray-600 rounded-lg text-white text-sm"\/>
+								<button type="submit" class="btn-primary text-sm">Comment<\/button>
+							<\/form>
+						<\/div>
+					<\/div>
+				`;
+
+				// Comment form handler
+				document.getElementById(`add-comment-form-${issue.number}`)?.addEventListener('submit', async (e) => {
+					e.preventDefault();
+					const body = e.target.body.value.trim();
+					if (!body) return;
+					try {
+						const resp = await fetch(`/integrations/gitea/repos/${tier2RepoID}/issues/${issue.number}/comments`, {
+							method: 'POST',
+							headers: {
+								'Content-Type': 'application/json',
+								'X-CSRF-Token': tier2CSRF
+							},
+							body: JSON.stringify({ body })
+						});
+						if (!resp.ok) throw new Error('Failed to add comment');
+						viewIssue(issue.number); // Reload
+					} catch (err) {
+						alert('Error: ' + err.message);
+					}
+				});
+			} catch (err) {
+				document.getElementById('issue-detail-content').innerHTML = `<p class="text-red-400">${escapeHtml(err.message)}</p>`;
+			}
+		}
+	</script>
+}

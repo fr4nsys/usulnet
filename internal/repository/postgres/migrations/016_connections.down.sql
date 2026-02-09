@@ -1,0 +1,9 @@
+DROP TABLE IF EXISTS ldap_browser_connections CASCADE;
+DROP TABLE IF EXISTS database_connections CASCADE;
+DROP TABLE IF EXISTS shortcut_categories CASCADE;
+DROP TABLE IF EXISTS web_shortcuts CASCADE;
+DROP TABLE IF EXISTS sftp_transfers CASCADE;
+DROP TABLE IF EXISTS ssh_tunnels CASCADE;
+DROP TABLE IF EXISTS ssh_sessions CASCADE;
+DROP TABLE IF EXISTS ssh_connections CASCADE;
+DROP TABLE IF EXISTS ssh_keys CASCADE;

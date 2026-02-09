@@ -1,0 +1,206 @@
+package storage
+
+import (
+	"github.com/fr4nsys/usulnet/internal/web/templates/layouts"
+)
+
+templ Browser(data StorageBrowserData) {
+	@layouts.Base(data.PageData) {
+		<div class="space-y-6">
+			<!-- Breadcrumb -->
+			<div class="flex items-center gap-2 text-sm text-gray-400 flex-wrap">
+				<a href="/storage" class="hover:text-primary-400 transition-colors">Storage</a>
+				<i class="fas fa-chevron-right text-xs text-gray-600"></i>
+				<a href={ templ.SafeURL("/storage/" + data.ConnectionID + "/buckets") } class="hover:text-primary-400 transition-colors">{ data.ConnectionName }</a>
+				<i class="fas fa-chevron-right text-xs text-gray-600"></i>
+				<a href={ templ.SafeURL("/storage/" + data.ConnectionID + "/buckets/" + data.Bucket + "/browse") }
+					class={ templ.KV("text-white", len(data.Breadcrumbs) == 0), templ.KV("hover:text-primary-400 transition-colors", len(data.Breadcrumbs) > 0) }>
+					{ data.Bucket }
+				</a>
+				for i, crumb := range data.Breadcrumbs {
+					<i class="fas fa-chevron-right text-xs text-gray-600"></i>
+					if i == len(data.Breadcrumbs)-1 {
+						<span class="text-white">{ crumb.Label }</span>
+					} else {
+						<a href={ templ.SafeURL("/storage/" + data.ConnectionID + "/buckets/" + data.Bucket + "/browse?prefix=" + crumb.Prefix) }
+							class="hover:text-primary-400 transition-colors">
+							{ crumb.Label }
+						</a>
+					}
+				}
+			</div>
+
+			<!-- Header -->
+			<div class="flex items-center justify-between">
+				<h1 class="text-2xl font-display font-bold text-white">
+					<i class="fas fa-archive text-primary-400 mr-2"></i>{ data.Bucket }
+				</h1>
+				<div class="flex items-center gap-2">
+					<button onclick="document.getElementById('create-folder-modal').classList.remove('hidden')" class="btn-secondary text-sm">
+						<i class="fas fa-folder-plus mr-2"></i>New Folder
+					</button>
+					<button onclick="document.getElementById('upload-modal').classList.remove('hidden')" class="btn-primary text-sm">
+						<i class="fas fa-upload mr-2"></i>Upload
+					</button>
+				</div>
+			</div>
+
+			<!-- Objects table -->
+			<div class="card overflow-hidden">
+				if len(data.Objects) == 0 && data.Prefix == "" {
+					<div class="p-12 text-center">
+						<div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-dark-700 flex items-center justify-center">
+							<i class="fas fa-inbox text-2xl text-gray-500"></i>
+						</div>
+						<h3 class="text-lg font-medium text-white mb-2">Empty bucket</h3>
+						<p class="text-gray-400">Upload files or create folders to get started.</p>
+					</div>
+				} else if len(data.Objects) == 0 && data.Prefix != "" {
+					<div class="p-12 text-center">
+						<div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-dark-700 flex items-center justify-center">
+							<i class="fas fa-folder-open text-2xl text-gray-500"></i>
+						</div>
+						<h3 class="text-lg font-medium text-white mb-2">Empty folder</h3>
+					</div>
+				} else {
+					<table class="w-full">
+						<thead>
+							<tr class="border-b border-dark-600">
+								<th class="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Name</th>
+								<th class="text-right px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Size</th>
+								<th class="text-right px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Modified</th>
+								<th class="text-right px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider w-32">Actions</th>
+							</tr>
+						</thead>
+						<tbody class="divide-y divide-dark-700">
+							for _, obj := range data.Objects {
+								@objectRow(data.ConnectionID, data.Bucket, data.Prefix, obj, data.PageData.CSRFToken)
+							}
+						</tbody>
+					</table>
+				}
+			</div>
+		</div>
+
+		@uploadModal(data.ConnectionID, data.Bucket, data.Prefix, data.PageData.CSRFToken)
+		@createFolderModal(data.ConnectionID, data.Bucket, data.Prefix, data.PageData.CSRFToken)
+	}
+}
+
+templ objectRow(connID, bucket, prefix string, obj StorageObjectData, csrfToken string) {
+	<tr class="hover:bg-dark-700/50 transition-colors">
+		<td class="px-4 py-3">
+			if obj.IsDir {
+				<a href={ templ.SafeURL("/storage/" + connID + "/buckets/" + bucket + "/browse?prefix=" + obj.Key) }
+					class="font-medium text-primary-400 hover:text-primary-300 transition-colors">
+					<i class="fas fa-folder text-yellow-400 mr-2"></i>{ obj.Name }
+				</a>
+			} else {
+				<span class="text-gray-200">
+					<i class={ "fas mr-2 text-gray-500 " + fileIcon(obj.ContentType) }></i>{ obj.Name }
+				</span>
+			}
+		</td>
+		<td class="px-4 py-3 text-sm text-gray-400 text-right">
+			if !obj.IsDir {
+				{ obj.SizeHuman }
+			}
+		</td>
+		<td class="px-4 py-3 text-sm text-gray-500 text-right">
+			if !obj.IsDir {
+				{ obj.LastModified }
+			}
+		</td>
+		<td class="px-4 py-3 text-right">
+			if !obj.IsDir {
+				<div class="flex items-center justify-end gap-1">
+					<a href={ templ.SafeURL("/storage/" + connID + "/buckets/" + bucket + "/download?key=" + obj.Key) }
+						class="btn-secondary text-xs" title="Download">
+						<i class="fas fa-download"></i>
+					</a>
+					<form method="POST" action={ templ.SafeURL("/storage/" + connID + "/buckets/" + bucket + "/delete-object?prefix=" + prefix) }
+						onsubmit="return confirm('Delete this object?')">
+						<input type="hidden" name="csrf_token" value={ csrfToken }/>
+						<input type="hidden" name="key" value={ obj.Key }/>
+						<button type="submit" class="btn-danger text-xs" title="Delete">
+							<i class="fas fa-trash"></i>
+						</button>
+					</form>
+				</div>
+			}
+		</td>
+	</tr>
+}
+
+templ uploadModal(connID, bucket, prefix, csrfToken string) {
+	<div id="upload-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+		<div class="card w-full max-w-md mx-4 p-6">
+			<div class="flex items-center justify-between mb-6">
+				<h2 class="text-lg font-display font-bold text-white">Upload File</h2>
+				<button onclick="document.getElementById('upload-modal').classList.add('hidden')" class="text-gray-400 hover:text-white">
+					<i class="fas fa-times"></i>
+				</button>
+			</div>
+			<form method="POST" action={ templ.SafeURL("/storage/" + connID + "/buckets/" + bucket + "/upload?prefix=" + prefix) }
+				enctype="multipart/form-data" class="space-y-4">
+				<input type="hidden" name="csrf_token" value={ csrfToken }/>
+				<div>
+					<label class="label">File</label>
+					<input type="file" name="file" required
+						class="w-full text-sm text-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-primary-500 file:text-black hover:file:bg-primary-400 file:cursor-pointer cursor-pointer"/>
+					<p class="text-xs text-gray-500 mt-1">Max 100 MB</p>
+				</div>
+				<div class="flex items-center gap-3 pt-2">
+					<button type="submit" class="btn-primary flex-1">Upload</button>
+					<button type="button" onclick="document.getElementById('upload-modal').classList.add('hidden')" class="btn-secondary">Cancel</button>
+				</div>
+			</form>
+		</div>
+	</div>
+}
+
+templ createFolderModal(connID, bucket, prefix, csrfToken string) {
+	<div id="create-folder-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+		<div class="card w-full max-w-md mx-4 p-6">
+			<div class="flex items-center justify-between mb-6">
+				<h2 class="text-lg font-display font-bold text-white">New Folder</h2>
+				<button onclick="document.getElementById('create-folder-modal').classList.add('hidden')" class="text-gray-400 hover:text-white">
+					<i class="fas fa-times"></i>
+				</button>
+			</div>
+			<form method="POST" action={ templ.SafeURL("/storage/" + connID + "/buckets/" + bucket + "/create-folder?prefix=" + prefix) }
+				class="space-y-4">
+				<input type="hidden" name="csrf_token" value={ csrfToken }/>
+				<div>
+					<label class="label">Folder Name</label>
+					<input type="text" name="folder_name" required placeholder="my-folder" class="input"/>
+				</div>
+				<div class="flex items-center gap-3 pt-2">
+					<button type="submit" class="btn-primary flex-1">Create</button>
+					<button type="button" onclick="document.getElementById('create-folder-modal').classList.add('hidden')" class="btn-secondary">Cancel</button>
+				</div>
+			</form>
+		</div>
+	</div>
+}
+
+func fileIcon(contentType string) string {
+	switch {
+	case contentType == "":
+		return "fa-file"
+	case len(contentType) >= 5 && contentType[:5] == "image":
+		return "fa-file-image"
+	case len(contentType) >= 5 && contentType[:5] == "video":
+		return "fa-file-video"
+	case len(contentType) >= 5 && contentType[:5] == "audio":
+		return "fa-file-audio"
+	case contentType == "application/pdf":
+		return "fa-file-pdf"
+	case contentType == "application/zip" || contentType == "application/gzip" || contentType == "application/x-tar":
+		return "fa-file-archive"
+	case len(contentType) >= 4 && contentType[:4] == "text":
+		return "fa-file-alt"
+	default:
+		return "fa-file"
+	}
+}

@@ -1,0 +1,11 @@
+package components
+
+// HostBadge displays the active host name when viewing a non-local host.
+// This helps users understand which node's data they are viewing.
+templ HostBadge(hostName string) {
+	if hostName != "" && hostName != "Local" {
+		<span class="px-2.5 py-1 rounded-full text-xs font-medium bg-primary-500/20 text-primary-400 border border-primary-500/30">
+			<i class="fas fa-server mr-1"></i>{ hostName }
+		</span>
+	}
+}

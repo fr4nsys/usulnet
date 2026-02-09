@@ -1,0 +1,218 @@
+package backups
+
+import (
+	"fmt"
+	"github.com/fr4nsys/usulnet/internal/web/templates/layouts"
+)
+
+type BackupsData struct {
+	PageData       layouts.PageData
+	Backups        []BackupItem
+	Stats          BackupStats
+	TotalSize      string
+	BackupCount    int
+	ScheduleCount  int
+	WarningMessage string
+	FilterType     string
+	FilterStatus   string
+}
+
+type BackupStats struct {
+	Total     int
+	Completed int
+	Failed    int
+	Running   int
+	TotalSize string
+}
+
+type BackupItem struct {
+	ID            string
+	ContainerName string
+	Type          string
+	Path          string
+	Size          string
+	Trigger       string
+	Status        string
+	Compression   string
+	Encrypted     bool
+	CreatedAt     string
+}
+
+templ List(data BackupsData) {
+	@layouts.Base(data.PageData) {
+		<div class="space-y-6">
+			<!-- Header -->
+			<div class="flex items-center justify-between">
+				<div>
+					<h1 class="text-2xl font-display font-bold text-white">Backups</h1>
+					<p class="text-gray-400 mt-1">Container, volume, and stack backup management</p>
+				</div>
+				if data.WarningMessage == "" {
+					<div class="flex items-center gap-2">
+						<a href="/backups/schedules" class="btn-secondary">
+							<i class="fas fa-calendar-alt mr-2"></i>Schedules
+							if data.ScheduleCount > 0 {
+								<span class="ml-1 bg-dark-600 text-gray-300 px-1.5 py-0.5 rounded-full text-xs">{ fmt.Sprintf("%d", data.ScheduleCount) }</span>
+							}
+						</a>
+						<a href="/backups/new" class="btn-primary">
+							<i class="fas fa-plus mr-2"></i>New Backup
+						</a>
+					</div>
+				}
+			</div>
+
+			if data.WarningMessage != "" {
+				<div class="bg-yellow-900/30 border border-yellow-700 rounded-lg p-4 flex items-start gap-3">
+					<i class="fas fa-exclamation-triangle text-yellow-400 mt-0.5"></i>
+					<div>
+						<p class="text-yellow-300 font-medium">Service Unavailable</p>
+						<p class="text-yellow-400/80 text-sm mt-1">{ data.WarningMessage }</p>
+					</div>
+				</div>
+			}
+
+			<!-- Stats -->
+			<div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+				<div class="card p-4">
+					<div class="text-3xl font-bold text-white">{ fmt.Sprintf("%d", data.Stats.Total) }</div>
+					<div class="text-sm text-gray-400">Total Backups</div>
+				</div>
+				<div class="card p-4">
+					<div class="text-3xl font-bold text-blue-400">{ fmt.Sprintf("%d", data.Stats.Running) }</div>
+					<div class="text-sm text-gray-400">Running</div>
+				</div>
+				<div class="card p-4">
+					<div class="text-3xl font-bold text-green-400">{ fmt.Sprintf("%d", data.Stats.Completed) }</div>
+					<div class="text-sm text-gray-400">Completed</div>
+				</div>
+				<div class="card p-4">
+					<div class="text-3xl font-bold text-red-400">{ fmt.Sprintf("%d", data.Stats.Failed) }</div>
+					<div class="text-sm text-gray-400">Failed</div>
+				</div>
+				<div class="card p-4">
+					<div class="text-3xl font-bold text-white">{ data.Stats.TotalSize }</div>
+					<div class="text-sm text-gray-400">Total Size</div>
+				</div>
+			</div>
+
+			<!-- Filters -->
+			if data.WarningMessage == "" {
+				<div class="flex items-center gap-3">
+					<span class="text-sm text-gray-400">Filter:</span>
+					<a href="/backups" class={ "text-sm px-3 py-1 rounded-full transition-colors", templ.KV("bg-primary-500/20 text-primary-400", data.FilterType == "" && data.FilterStatus == ""), templ.KV("text-gray-400 hover:text-white", data.FilterType != "" || data.FilterStatus != "") }>
+						All
+					</a>
+					<a href="/backups?type=container" class={ "text-sm px-3 py-1 rounded-full transition-colors", templ.KV("bg-primary-500/20 text-primary-400", data.FilterType == "container"), templ.KV("text-gray-400 hover:text-white", data.FilterType != "container") }>
+						Containers
+					</a>
+					<a href="/backups?type=volume" class={ "text-sm px-3 py-1 rounded-full transition-colors", templ.KV("bg-primary-500/20 text-primary-400", data.FilterType == "volume"), templ.KV("text-gray-400 hover:text-white", data.FilterType != "volume") }>
+						Volumes
+					</a>
+					<a href="/backups?type=stack" class={ "text-sm px-3 py-1 rounded-full transition-colors", templ.KV("bg-primary-500/20 text-primary-400", data.FilterType == "stack"), templ.KV("text-gray-400 hover:text-white", data.FilterType != "stack") }>
+						Stacks
+					</a>
+					<span class="text-dark-600">|</span>
+					<a href="/backups?status=running" class={ "text-sm px-3 py-1 rounded-full transition-colors", templ.KV("bg-blue-500/20 text-blue-400", data.FilterStatus == "running"), templ.KV("text-gray-400 hover:text-white", data.FilterStatus != "running") }>
+						Running
+					</a>
+					<a href="/backups?status=completed" class={ "text-sm px-3 py-1 rounded-full transition-colors", templ.KV("bg-green-500/20 text-green-400", data.FilterStatus == "completed"), templ.KV("text-gray-400 hover:text-white", data.FilterStatus != "completed") }>
+						Completed
+					</a>
+					<a href="/backups?status=failed" class={ "text-sm px-3 py-1 rounded-full transition-colors", templ.KV("bg-red-500/20 text-red-400", data.FilterStatus == "failed"), templ.KV("text-gray-400 hover:text-white", data.FilterStatus != "failed") }>
+						Failed
+					</a>
+				</div>
+			}
+
+			<!-- Backups List -->
+			<div class="card">
+				<div class="overflow-x-auto">
+					<table class="table">
+						<thead>
+							<tr>
+								<th>Target</th>
+								<th>Type</th>
+								<th>Size</th>
+								<th>Trigger</th>
+								<th>Status</th>
+								<th>Created</th>
+								<th>Actions</th>
+							</tr>
+						</thead>
+						<tbody>
+							if len(data.Backups) == 0 {
+								<tr>
+									<td colspan="7" class="text-center text-gray-500 py-8">
+										<i class="fas fa-archive text-3xl mb-3 block"></i>
+										<p>No backups found</p>
+										if data.FilterType != "" || data.FilterStatus != "" {
+											<p class="text-sm mt-1">Try adjusting your filters</p>
+										} else {
+											<p class="text-sm mt-1">
+												<a href="/backups/new" class="text-primary-400 hover:text-primary-300">Create your first backup</a>
+											</p>
+										}
+									</td>
+								</tr>
+							}
+							for _, backup := range data.Backups {
+								<tr>
+									<td>
+										<a href={ templ.SafeURL("/backups/" + backup.ID) } class="font-medium text-white hover:text-primary-400 transition-colors">
+											{ backup.ContainerName }
+										</a>
+									</td>
+									<td>
+										<span class={ "badge", templ.KV("badge-info", backup.Type == "container"), templ.KV("badge-success", backup.Type == "volume"), templ.KV("badge-warning", backup.Type == "stack") }>
+											{ backup.Type }
+										</span>
+									</td>
+									<td class="text-gray-400">{ backup.Size }</td>
+									<td>
+										<span class={ "badge", templ.KV("badge-info", backup.Trigger == "pre_update"), templ.KV("badge-warning", backup.Trigger == "manual"), templ.KV("badge-success", backup.Trigger == "scheduled") }>
+											{ backup.Trigger }
+										</span>
+									</td>
+									<td>
+										<span class={ "badge", templ.KV("badge-success", backup.Status == "completed"), templ.KV("badge-danger", backup.Status == "failed"), templ.KV("badge-warning", backup.Status == "pending" || backup.Status == "running") }>
+											{ backup.Status }
+										</span>
+										if backup.Encrypted {
+											<i class="fas fa-lock text-gray-500 ml-1 text-xs" title="Encrypted"></i>
+										}
+									</td>
+									<td class="text-gray-400 text-sm">{ backup.CreatedAt }</td>
+									<td>
+										<div class="flex items-center gap-2">
+											<a href={ templ.SafeURL("/backups/" + backup.ID) } class="text-gray-400 hover:text-white text-sm" title="Details">
+												<i class="fas fa-eye"></i>
+											</a>
+											if backup.Status == "completed" {
+												<form method="POST" action={ templ.SafeURL("/backups/" + backup.ID + "/restore") } class="inline">
+													<input type="hidden" name="csrf_token" value={ data.PageData.CSRFToken }/>
+													<button type="submit" class="text-primary-400 hover:text-primary-300 text-sm" title="Restore" onclick="return confirm('Restore this backup? Current data will be replaced.')">
+														<i class="fas fa-undo"></i>
+													</button>
+												</form>
+												<a href={ templ.SafeURL("/backups/" + backup.ID + "/download") } class="text-gray-400 hover:text-white text-sm" title="Download">
+													<i class="fas fa-download"></i>
+												</a>
+											}
+											<form method="POST" action={ templ.SafeURL("/backups/" + backup.ID + "/delete") } class="inline">
+												<input type="hidden" name="csrf_token" value={ data.PageData.CSRFToken }/>
+												<button type="submit" class="text-red-400 hover:text-red-300 text-sm" title="Delete" onclick="return confirm('Delete this backup?')">
+													<i class="fas fa-trash"></i>
+												</button>
+											</form>
+										</div>
+									</td>
+								</tr>
+							}
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	}
+}

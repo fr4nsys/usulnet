@@ -1,0 +1,184 @@
+# =============================================================================
+# usulnet — Docker Management Platform
+# =============================================================================
+#
+# Deploy usulnet with all required infrastructure in a single command.
+#
+# Quick start:
+#   1. cp .env.example .env
+#   2. Edit .env (change ALL passwords and secrets)
+#   3. docker compose up -d
+#   4. Open https://localhost:7443
+#   5. Login with: admin / usulnet
+#
+# With agent (multi-node):
+#   docker compose --profile agent up -d
+#
+# Requirements:
+#   - Docker Engine 24+ with Compose v2
+#   - 2 GB RAM minimum (4 GB recommended)
+#   - Ports 8080 (HTTP) and 7443 (HTTPS) available
+#
+# Image registries:
+#   - Docker Hub:  usulnet/usulnet          (default)
+#   - GHCR:        ghcr.io/usulnet/usulnet  (alternative)
+#
+# Documentation: https://docs.usulnet.com
+# Source:        https://github.com/fr4nsys/usulnet
+# License:       AGPL-3.0 (Community Edition)
+#
+# =============================================================================
+
+services:
+  # ---------------------------------------------------------------------------
+  # usulnet — Application Server
+  # ---------------------------------------------------------------------------
+  usulnet:
+    image: usulnet/usulnet:${USULNET_VERSION:-latest}
+    container_name: usulnet
+    restart: unless-stopped
+    ports:
+      - "${USULNET_HTTP_PORT:-8080}:8080"
+      - "${USULNET_HTTPS_PORT:-7443}:7443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - usulnet_data:/app/data
+      - trivy_cache:/var/lib/usulnet/trivy
+    pid: "host"
+    cap_add:
+      - SYS_PTRACE
+      - SYS_ADMIN
+    environment:
+      # Operation mode: standalone | master | agent
+      - USULNET_MODE=${USULNET_MODE:-standalone}
+      # Infrastructure
+      - USULNET_DATABASE_URL=postgres://${DB_USER:-usulnet}:${DB_PASSWORD}@postgres:5432/${DB_NAME:-usulnet}?sslmode=disable
+      - USULNET_REDIS_URL=redis://redis:6379
+      - USULNET_NATS_URL=nats://nats:4222
+      # Security — MUST be changed in production
+      - USULNET_JWT_SECRET=${JWT_SECRET}
+      - USULNET_ENCRYPTION_KEY=${ENCRYPTION_KEY}
+      # Host terminal (web terminal into the Docker host)
+      - HOST_TERMINAL_ENABLED=${HOST_TERMINAL_ENABLED:-true}
+      - HOST_TERMINAL_USER=${HOST_TERMINAL_USER:-nobody}
+      - HOST_TERMINAL_SHELL=/bin/bash
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      nats:
+        condition: service_started
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+    networks:
+      - usulnet-net
+
+  # ---------------------------------------------------------------------------
+  # usulnet Agent — Remote Node (optional, enable with --profile agent)
+  # ---------------------------------------------------------------------------
+  usulnet-agent:
+    image: usulnet/usulnet-agent:${USULNET_VERSION:-latest}
+    container_name: usulnet-agent
+    restart: unless-stopped
+    profiles:
+      - agent
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - agent_data:/app/data
+    environment:
+      - USULNET_GATEWAY_URL=nats://nats:4222
+      - USULNET_AGENT_TOKEN=${AGENT_TOKEN:-change-me}
+    depends_on:
+      nats:
+        condition: service_started
+    networks:
+      - usulnet-net
+
+  # ---------------------------------------------------------------------------
+  # PostgreSQL 16 — Primary Database
+  # ---------------------------------------------------------------------------
+  postgres:
+    image: postgres:16-alpine
+    container_name: usulnet-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${DB_USER:-usulnet}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME:-usulnet}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-usulnet}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - usulnet-net
+    # Port NOT exposed to host by default. Access via:
+    #   docker exec -it usulnet-postgres psql -U usulnet
+
+  # ---------------------------------------------------------------------------
+  # Redis 7 — Sessions & Cache
+  # ---------------------------------------------------------------------------
+  redis:
+    image: redis:8-alpine
+    container_name: usulnet-redis
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes", "--maxmemory", "256mb", "--maxmemory-policy", "allkeys-lru"]
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - usulnet-net
+
+  # ---------------------------------------------------------------------------
+  # NATS 2.10 — Messaging & Agent Communication (JetStream)
+  # ---------------------------------------------------------------------------
+  nats:
+    image: nats:2.12-alpine
+    container_name: usulnet-nats
+    restart: unless-stopped
+    command: ["--jetstream", "--store_dir=/data", "-m", "8222"]
+    volumes:
+      - nats_data:/data
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8222/healthz"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - usulnet-net
+
+# =============================================================================
+# Volumes
+# =============================================================================
+volumes:
+  usulnet_data:
+    name: usulnet_data
+  trivy_cache:
+    name: usulnet_trivy_cache
+  postgres_data:
+    name: usulnet_postgres_data
+  redis_data:
+    name: usulnet_redis_data
+  nats_data:
+    name: usulnet_nats_data
+  agent_data:
+    name: usulnet_agent_data
+
+# =============================================================================
+# Networks
+# =============================================================================
+networks:
+  usulnet-net:
+    name: usulnet-net
+    driver: bridge

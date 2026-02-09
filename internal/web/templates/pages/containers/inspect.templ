@@ -1,0 +1,197 @@
+package containers
+
+import (
+	"github.com/fr4nsys/usulnet/internal/web/templates/layouts"
+)
+
+type ContainerInspectData struct {
+	PageData    layouts.PageData
+	ContainerID string
+	Name        string
+	State       string
+	Image       string
+	InspectJSON string // Full JSON from Docker inspect
+}
+
+templ ContainerInspect(data ContainerInspectData) {
+	@layouts.Base(data.PageData) {
+		<!-- Breadcrumb -->
+		<nav class="flex items-center gap-2 text-sm text-gray-400 mb-4">
+			<a href="/containers" class="hover:text-primary-400 transition-colors">Containers</a>
+			<i class="fas fa-chevron-right text-xs"></i>
+			<a href={ templ.SafeURL("/containers/" + data.ContainerID) } class="hover:text-primary-400 transition-colors">{ data.Name }</a>
+			<i class="fas fa-chevron-right text-xs"></i>
+			<span class="text-white">Inspect</span>
+		</nav>
+
+		<!-- Header -->
+		<div class="flex items-center justify-between mb-6">
+			<div class="flex items-center gap-4">
+				<div class={ "w-10 h-10 rounded-lg flex items-center justify-center", stateIconBg(data.State) }>
+					<i class="fas fa-search text-lg text-gray-300"></i>
+				</div>
+				<div>
+					<h1 class="text-2xl font-bold font-display text-white">Inspect</h1>
+					<p class="text-gray-400 text-sm">{ data.Name } &middot; { data.Image }</p>
+				</div>
+			</div>
+			<div class="flex items-center gap-2">
+				<a href={ templ.SafeURL("/containers/" + data.ContainerID) } class="px-4 py-2 bg-dark-700 hover:bg-dark-600 text-gray-300 rounded-lg transition-colors">
+					<i class="fas fa-arrow-left mr-2"></i>Back
+				</a>
+			</div>
+		</div>
+
+		<!-- Inspect JSON Viewer -->
+		<div 
+			x-data="inspectViewer()"
+			class="bg-dark-800 rounded-xl border border-dark-600 overflow-hidden"
+		>
+			<!-- Controls -->
+			<div class="flex items-center justify-between p-4 border-b border-dark-600 bg-dark-850">
+				<div class="flex items-center gap-4">
+					<div class="relative">
+						<input 
+							type="search"
+							x-model="search"
+							placeholder="Search JSON..."
+							class="w-64 pl-8 pr-4 py-1.5 bg-dark-700 border border-dark-600 rounded-lg text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500/50"
+						/>
+						<i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-xs"></i>
+					</div>
+					
+					<label class="flex items-center gap-2 cursor-pointer">
+						<input type="checkbox" x-model="collapsed" class="checkbox"/>
+						<span class="text-sm text-gray-300">Collapse all</span>
+					</label>
+				</div>
+				
+				<div class="flex items-center gap-2">
+					<button 
+						@click="copyJSON()"
+						class="px-3 py-1.5 bg-dark-700 hover:bg-dark-600 text-gray-300 text-sm rounded-lg transition-colors"
+					>
+						<i class="fas fa-copy mr-1"></i>
+						<span x-text="copied ? 'Copied!' : 'Copy'"></span>
+					</button>
+					<button 
+						@click="downloadJSON()"
+						class="px-3 py-1.5 bg-dark-700 hover:bg-dark-600 text-gray-300 text-sm rounded-lg transition-colors"
+					>
+						<i class="fas fa-download mr-1"></i>Download
+					</button>
+				</div>
+			</div>
+			
+			<!-- JSON Content -->
+			<div class="p-4 overflow-auto max-h-[700px] font-mono text-sm">
+				<pre 
+					x-ref="jsonContent"
+					class="text-gray-300 whitespace-pre-wrap break-all"
+					x-html="highlightedJSON"
+				></pre>
+			</div>
+		</div>
+		
+		<script>
+			function inspectViewer() {
+				return {
+					rawJSON: '',
+					search: '',
+					collapsed: false,
+					copied: false,
+					_initialized: false,
+					
+					init() {
+						if (this._initialized) return;
+						this._initialized = true;
+						// Decode the JSON from the hidden element
+						const el = document.getElementById('inspect-data');
+						if (el) {
+							this.rawJSON = el.textContent;
+						}
+					},
+					
+					get highlightedJSON() {
+						try {
+							const obj = JSON.parse(this.rawJSON);
+							const formatted = JSON.stringify(obj, null, 2);
+							let html = this.syntaxHighlight(formatted);
+							
+							if (this.search) {
+								const regex = new RegExp(`(${this.escapeRegex(this.search)})`, 'gi');
+								html = html.replace(regex, '<mark class="bg-yellow-500/30 text-yellow-200">$1</mark>');
+							}
+							
+							return html;
+						} catch(e) {
+							return this.escapeHtml(this.rawJSON);
+						}
+					},
+					
+					syntaxHighlight(json) {
+						json = this.escapeHtml(json);
+						return json.replace(
+							/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g,
+							function (match) {
+								let cls = 'text-orange-300'; // number
+								if (/^"/.test(match)) {
+									if (/:$/.test(match)) {
+										cls = 'text-blue-400'; // key
+									} else {
+										cls = 'text-green-400'; // string
+									}
+								} else if (/true|false/.test(match)) {
+									cls = 'text-purple-400'; // boolean
+								} else if (/null/.test(match)) {
+									cls = 'text-gray-500'; // null
+								}
+								return '<span class="' + cls + '">' + match + '</span>';
+							}
+						);
+					},
+					
+					escapeHtml(text) {
+						const div = document.createElement('div');
+						div.textContent = text;
+						return div.innerHTML;
+					},
+					
+					escapeRegex(text) {
+						return text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+					},
+					
+					copyJSON() {
+						try {
+							const obj = JSON.parse(this.rawJSON);
+							navigator.clipboard.writeText(JSON.stringify(obj, null, 2));
+							this.copied = true;
+							setTimeout(() => this.copied = false, 2000);
+						} catch(e) {
+							navigator.clipboard.writeText(this.rawJSON);
+							this.copied = true;
+							setTimeout(() => this.copied = false, 2000);
+						}
+					},
+					
+					downloadJSON() {
+						try {
+							const obj = JSON.parse(this.rawJSON);
+							const content = JSON.stringify(obj, null, 2);
+							const blob = new Blob([content], { type: 'application/json' });
+							const url = URL.createObjectURL(blob);
+							const a = document.createElement('a');
+							a.href = url;
+							a.download = 'inspect.json';
+							a.click();
+							URL.revokeObjectURL(url);
+						} catch(e) {}
+					}
+				};
+			}
+		</script>
+		
+		<!-- Hidden element with raw JSON data -->
+		<div id="inspect-data" class="hidden">{ data.InspectJSON }</div>
+	}
+}

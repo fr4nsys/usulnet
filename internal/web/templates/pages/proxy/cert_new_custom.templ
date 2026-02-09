@@ -1,0 +1,120 @@
+package proxy
+
+import "github.com/fr4nsys/usulnet/internal/web/templates/layouts"
+
+type CertNewCustomData struct {
+	PageData layouts.PageData
+	Error    string
+}
+
+templ CertNewCustom(data CertNewCustomData) {
+	@layouts.Base(data.PageData) {
+		<div class="max-w-2xl mx-auto space-y-6">
+			<div class="flex items-center gap-4">
+				<a href="/proxy/certificates" class="p-2 text-gray-400 hover:text-white hover:bg-dark-700 rounded-lg">
+					<i class="fas fa-arrow-left"></i>
+				</a>
+				<div>
+					<h1 class="text-2xl font-display font-bold text-white">Upload Custom Certificate</h1>
+					<p class="text-gray-400 mt-1">Upload your own SSL certificate and private key</p>
+				</div>
+			</div>
+
+			if data.Error != "" {
+				<div class="bg-red-500/10 border border-red-500/20 rounded-lg p-4 text-red-400">
+					<i class="fas fa-exclamation-triangle mr-2"></i>{ data.Error }
+				</div>
+			}
+
+			<form action="/proxy/certificates/custom" method="POST" enctype="multipart/form-data" class="card p-6 space-y-6">
+				<input type="hidden" name="csrf_token" value={ data.PageData.CSRFToken }/>
+				<!-- Nice Name -->
+				<div>
+					<label class="block text-sm font-medium text-gray-300 mb-2">Certificate Name</label>
+					<input type="text" name="nice_name" required
+						placeholder="e.g., Wildcard example.com 2025"
+						class="input w-full"
+					/>
+					<p class="text-xs text-gray-500 mt-1">A friendly name to identify this certificate.</p>
+				</div>
+
+				<!-- Certificate File -->
+				<div>
+					<label class="block text-sm font-medium text-gray-300 mb-2">
+						Certificate (PEM) <span class="text-red-400">*</span>
+					</label>
+					<div class="relative">
+						<input type="file" name="certificate" required accept=".pem,.crt,.cer"
+							class="block w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-primary-500/10 file:text-primary-400 hover:file:bg-primary-500/20 cursor-pointer"
+						/>
+					</div>
+					<p class="text-xs text-gray-500 mt-1">PEM format. Accepts .pem, .crt, .cer files.</p>
+				</div>
+
+				<!-- Certificate Key -->
+				<div>
+					<label class="block text-sm font-medium text-gray-300 mb-2">
+						Private Key (PEM) <span class="text-red-400">*</span>
+					</label>
+					<div class="relative">
+						<input type="file" name="certificate_key" required accept=".pem,.key"
+							class="block w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-primary-500/10 file:text-primary-400 hover:file:bg-primary-500/20 cursor-pointer"
+						/>
+					</div>
+					<p class="text-xs text-gray-500 mt-1">PEM format. Must match the certificate.</p>
+				</div>
+
+				<!-- Intermediate Certificate -->
+				<div>
+					<label class="block text-sm font-medium text-gray-300 mb-2">
+						Intermediate Certificate (PEM)
+						<span class="text-gray-500 font-normal">— optional</span>
+					</label>
+					<div class="relative">
+						<input type="file" name="intermediate_certificate" accept=".pem,.crt,.cer"
+							class="block w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-dark-600 file:text-gray-300 hover:file:bg-dark-500 cursor-pointer"
+						/>
+					</div>
+					<p class="text-xs text-gray-500 mt-1">CA bundle / chain certificate. Required for some CAs.</p>
+				</div>
+
+				<!-- Or paste content -->
+				<details class="group">
+					<summary class="cursor-pointer text-sm text-primary-400 hover:text-primary-300">
+						<i class="fas fa-paste mr-1"></i> Or paste certificate content directly
+					</summary>
+					<div class="mt-4 space-y-4">
+						<div>
+							<label class="block text-sm font-medium text-gray-300 mb-2">Certificate PEM content</label>
+							<textarea name="certificate_text" rows="6"
+								placeholder="-----BEGIN CERTIFICATE-----&#10;...&#10;-----END CERTIFICATE-----"
+								class="input w-full font-mono text-xs"
+							></textarea>
+						</div>
+						<div>
+							<label class="block text-sm font-medium text-gray-300 mb-2">Private Key PEM content</label>
+							<textarea name="certificate_key_text" rows="6"
+								placeholder="-----BEGIN PRIVATE KEY-----&#10;...&#10;-----END PRIVATE KEY-----"
+								class="input w-full font-mono text-xs"
+							></textarea>
+						</div>
+						<div>
+							<label class="block text-sm font-medium text-gray-300 mb-2">Intermediate PEM content (optional)</label>
+							<textarea name="intermediate_certificate_text" rows="4"
+								placeholder="-----BEGIN CERTIFICATE-----&#10;...&#10;-----END CERTIFICATE-----"
+								class="input w-full font-mono text-xs"
+							></textarea>
+						</div>
+					</div>
+				</details>
+
+				<div class="flex items-center justify-end gap-3">
+					<a href="/proxy/certificates" class="btn-secondary">Cancel</a>
+					<button type="submit" class="btn-primary">
+						<i class="fas fa-upload mr-2"></i>Upload Certificate
+					</button>
+				</div>
+			</form>
+		</div>
+	}
+}

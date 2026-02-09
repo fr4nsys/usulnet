@@ -1,0 +1,25 @@
+package components
+
+// ServiceNotConfigured renders a centered card informing the user that
+// a particular service has not been configured yet. It shows the service
+// name, which config section to update, and an optional docs link.
+templ ServiceNotConfigured(serviceName, configHint string) {
+	<div class="flex flex-col items-center justify-center py-16 px-4">
+		<div class="bg-dark-800 rounded-xl border border-dark-600 p-8 max-w-lg text-center shadow-lg">
+			<div class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-dark-700">
+				<i class="fas fa-puzzle-piece text-2xl text-gray-400"></i>
+			</div>
+			<h3 class="text-xl font-semibold text-gray-200 mb-2">
+				{ serviceName } Not Configured
+			</h3>
+			<p class="text-gray-400 mb-4">
+				This feature requires additional configuration before it can be used.
+			</p>
+			if configHint != "" {
+				<p class="text-sm text-gray-500">
+					Add the <code class="bg-dark-700 px-2 py-0.5 rounded text-primary-400">{ configHint }</code> section to your <code class="bg-dark-700 px-2 py-0.5 rounded text-primary-400">config.yaml</code> to enable this service.
+				</p>
+			}
+		</div>
+	</div>
+}

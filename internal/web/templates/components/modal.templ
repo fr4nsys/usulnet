@@ -1,0 +1,181 @@
+package components
+
+// Modal displays a modal dialog
+templ Modal(id, title string, size string) {
+	<div 
+		id={ id }
+		x-data="{ open: false }"
+		x-show="open"
+		x-on:open-modal.window="if ($event.detail.id === $el.id) open = true"
+		x-on:close-modal.window="if ($event.detail.id === $el.id || !$event.detail.id) open = false"
+		x-on:keydown.escape.window="open = false"
+		class="relative z-50"
+		style="display: none;"
+	>
+		<!-- Backdrop -->
+		<div 
+			x-show="open"
+			x-transition:enter="transition ease-out duration-200"
+			x-transition:enter-start="opacity-0"
+			x-transition:enter-end="opacity-100"
+			x-transition:leave="transition ease-in duration-150"
+			x-transition:leave-start="opacity-100"
+			x-transition:leave-end="opacity-0"
+			class="fixed inset-0 bg-black/60 backdrop-blur-sm"
+			@click="open = false"
+		></div>
+		
+		<!-- Modal Panel -->
+		<div class="fixed inset-0 overflow-y-auto">
+			<div class="flex min-h-full items-center justify-center p-4">
+				<div 
+					x-show="open"
+					x-transition:enter="transition ease-out duration-200"
+					x-transition:enter-start="opacity-0 scale-95"
+					x-transition:enter-end="opacity-100 scale-100"
+					x-transition:leave="transition ease-in duration-150"
+					x-transition:leave-start="opacity-100 scale-100"
+					x-transition:leave-end="opacity-0 scale-95"
+					class={ "w-full bg-dark-800 rounded-xl border border-dark-600 shadow-2xl", modalSize(size) }
+					@click.stop
+				>
+					<!-- Header -->
+					<div class="flex items-center justify-between p-5 border-b border-dark-600">
+						<h3 class="text-lg font-semibold text-white">{ title }</h3>
+						<button 
+							@click="open = false"
+							class="p-2 text-gray-400 hover:text-white transition-colors rounded-lg hover:bg-dark-700"
+						>
+							<i class="fas fa-times"></i>
+						</button>
+					</div>
+					
+					<!-- Body -->
+					<div class="p-5 max-h-[60vh] overflow-y-auto">
+						{ children... }
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+}
+
+// ModalWithFooter displays a modal with footer actions
+templ ModalWithFooter(id, title string, size string) {
+	<div 
+		id={ id }
+		x-data="{ open: false }"
+		x-show="open"
+		x-on:open-modal.window="if ($event.detail.id === $el.id) open = true"
+		x-on:close-modal.window="if ($event.detail.id === $el.id || !$event.detail.id) open = false"
+		x-on:keydown.escape.window="open = false"
+		class="relative z-50"
+		style="display: none;"
+	>
+		<!-- Backdrop -->
+		<div 
+			x-show="open"
+			x-transition:enter="transition ease-out duration-200"
+			x-transition:enter-start="opacity-0"
+			x-transition:enter-end="opacity-100"
+			x-transition:leave="transition ease-in duration-150"
+			x-transition:leave-start="opacity-100"
+			x-transition:leave-end="opacity-0"
+			class="fixed inset-0 bg-black/60 backdrop-blur-sm"
+			@click="open = false"
+		></div>
+		
+		<!-- Modal Panel -->
+		<div class="fixed inset-0 overflow-y-auto">
+			<div class="flex min-h-full items-center justify-center p-4">
+				<div 
+					x-show="open"
+					x-transition:enter="transition ease-out duration-200"
+					x-transition:enter-start="opacity-0 scale-95"
+					x-transition:enter-end="opacity-100 scale-100"
+					x-transition:leave="transition ease-in duration-150"
+					x-transition:leave-start="opacity-100 scale-100"
+					x-transition:leave-end="opacity-0 scale-95"
+					class={ "w-full bg-dark-800 rounded-xl border border-dark-600 shadow-2xl", modalSize(size) }
+					@click.stop
+				>
+					<!-- Header -->
+					<div class="flex items-center justify-between p-5 border-b border-dark-600">
+						<h3 class="text-lg font-semibold text-white">{ title }</h3>
+						<button 
+							@click="open = false"
+							class="p-2 text-gray-400 hover:text-white transition-colors rounded-lg hover:bg-dark-700"
+						>
+							<i class="fas fa-times"></i>
+						</button>
+					</div>
+					
+					{ children... }
+				</div>
+			</div>
+		</div>
+	</div>
+}
+
+// ModalBody is the body section of a modal
+templ ModalBody() {
+	<div class="p-5 max-h-[60vh] overflow-y-auto">
+		{ children... }
+	</div>
+}
+
+// ModalFooter is the footer section of a modal
+templ ModalFooter() {
+	<div class="flex items-center justify-end gap-3 p-5 border-t border-dark-600 bg-dark-850 rounded-b-xl">
+		{ children... }
+	</div>
+}
+
+// ConfirmModal displays a confirmation dialog
+templ ConfirmModal(id, title, message, confirmText, confirmClass string) {
+	@ModalWithFooter(id, title, "sm") {
+		@ModalBody() {
+			<p class="text-gray-300">{ message }</p>
+		}
+		@ModalFooter() {
+			<button 
+				@click="open = false"
+				class="px-4 py-2 text-sm font-medium text-gray-300 bg-dark-700 hover:bg-dark-600 rounded-lg transition-colors"
+			>
+				Cancel
+			</button>
+			<button 
+				@click="$dispatch('modal-confirm', { id: $el.closest('[id]').id }); open = false"
+				class={ "px-4 py-2 text-sm font-medium rounded-lg transition-colors", confirmClass }
+			>
+				{ confirmText }
+			</button>
+		}
+	}
+}
+
+// DeleteConfirmModal displays a delete confirmation dialog
+templ DeleteConfirmModal(id, itemName string) {
+	@ConfirmModal(
+		id,
+		"Delete " + itemName,
+		"Are you sure you want to delete this " + itemName + "? This action cannot be undone.",
+		"Delete",
+		"bg-red-500 hover:bg-red-600 text-white",
+	)
+}
+
+func modalSize(size string) string {
+	switch size {
+	case "sm":
+		return "max-w-md"
+	case "lg":
+		return "max-w-2xl"
+	case "xl":
+		return "max-w-4xl"
+	case "full":
+		return "max-w-6xl"
+	default:
+		return "max-w-lg"
+	}
+}

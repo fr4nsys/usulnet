@@ -1,0 +1,352 @@
+package security
+
+import (
+	"fmt"
+	"github.com/fr4nsys/usulnet/internal/web/templates/layouts"
+)
+
+type ContainerSecurityData struct {
+	PageData  layouts.PageData
+	Container ContainerInfo
+	Issues    []SecurityIssue
+	CVEs      []CVEInfo
+	Summary   IssueSummary
+}
+
+type ContainerInfo struct {
+	ID          string
+	Name        string
+	Image       string
+	Score       int
+	Grade       string
+	LastScanned string
+	CVECount    int
+	IncludedCVE bool
+}
+
+type SecurityIssue struct {
+	ID          string
+	Severity    string
+	Category    string
+	Title       string
+	Description string
+	FixCommand  string
+	DocURL      string
+	Status      string
+}
+
+type CVEInfo struct {
+	ID          string
+	Severity    string
+	Package     string
+	Version     string
+	FixedIn     string
+	Description string
+	CVSSScore   float64
+}
+
+type IssueSummary struct {
+	Critical int
+	High     int
+	Medium   int
+	Low      int
+	Info     int
+}
+
+func severityColor(severity string) string {
+	switch severity {
+	case "critical":
+		return "text-red-500 bg-red-500/10 border-red-500/20"
+	case "high":
+		return "text-orange-400 bg-orange-500/10 border-orange-500/20"
+	case "medium":
+		return "text-yellow-400 bg-yellow-500/10 border-yellow-500/20"
+	case "low":
+		return "text-blue-400 bg-blue-500/10 border-blue-500/20"
+	default:
+		return "text-gray-400 bg-gray-500/10 border-gray-500/20"
+	}
+}
+
+func categoryIcon(category string) string {
+	switch category {
+	case "security":
+		return "fas fa-lock"
+	case "vulnerability":
+		return "fas fa-bug"
+	case "reliability":
+		return "fas fa-heartbeat"
+	case "performance":
+		return "fas fa-tachometer-alt"
+	case "best_practice":
+		return "fas fa-check-double"
+	case "network":
+		return "fas fa-network-wired"
+	default:
+		return "fas fa-info-circle"
+	}
+}
+
+templ Container(data ContainerSecurityData) {
+	@layouts.Base(data.PageData) {
+		<div class="space-y-6">
+			<!-- Breadcrumb -->
+			<nav class="flex items-center gap-2 text-sm text-gray-400">
+				<a href="/security" class="hover:text-primary-400 transition-colors">Security</a>
+				<i class="fas fa-chevron-right text-xs"></i>
+				<span class="text-white">{ data.Container.Name }</span>
+			</nav>
+
+			<!-- Header -->
+			<div class="flex items-center justify-between">
+				<div class="flex items-center gap-4">
+					<div class="w-12 h-12 rounded-lg bg-dark-700 flex items-center justify-center">
+						<i class="fas fa-shield-alt text-xl text-primary-400"></i>
+					</div>
+					<div>
+						<h1 class="text-2xl font-display font-bold text-white">{ data.Container.Name }</h1>
+						<p class="text-gray-400 mt-0.5 font-mono text-sm">{ data.Container.Image }</p>
+					</div>
+				</div>
+				<button
+					hx-post={ "/security/scan/" + data.Container.ID }
+					hx-swap="none"
+					class="btn-primary"
+					hx-disabled-elt="this"
+				>
+					<i class="fas fa-sync mr-2"></i>Rescan
+				</button>
+			</div>
+
+			<!-- Score + Severity Summary -->
+			<div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+				<!-- Score Card -->
+				<div class="card p-6">
+					<div class="flex items-center gap-6">
+						<div class={ "w-20 h-20 rounded-full flex items-center justify-center text-3xl font-bold border-2", gradeColorBorder(data.Container.Grade) }>
+							{ data.Container.Grade }
+						</div>
+						<div>
+							<div class="text-4xl font-bold text-white">{ fmt.Sprintf("%d", data.Container.Score) }<span class="text-lg text-gray-400">/100</span></div>
+							<div class="text-sm text-gray-400">Security Score</div>
+							if data.Container.LastScanned != "" {
+								<div class="text-xs text-gray-500 mt-1">
+									<i class="fas fa-clock mr-1"></i>{ data.Container.LastScanned }
+								</div>
+							}
+						</div>
+					</div>
+				</div>
+
+				<!-- Severity Summary -->
+				<div class="card p-6">
+					<h3 class="text-sm font-medium text-gray-400 mb-3">Issue Severity</h3>
+					<div class="grid grid-cols-2 gap-3">
+						<div class="flex items-center gap-2 p-2 rounded-lg bg-red-500/5">
+							<span class="w-3 h-3 rounded-full bg-red-500"></span>
+							<span class="text-sm text-gray-400">Critical</span>
+							<span class="text-sm font-bold text-red-400 ml-auto">{ fmt.Sprintf("%d", data.Summary.Critical) }</span>
+						</div>
+						<div class="flex items-center gap-2 p-2 rounded-lg bg-orange-500/5">
+							<span class="w-3 h-3 rounded-full bg-orange-500"></span>
+							<span class="text-sm text-gray-400">High</span>
+							<span class="text-sm font-bold text-orange-400 ml-auto">{ fmt.Sprintf("%d", data.Summary.High) }</span>
+						</div>
+						<div class="flex items-center gap-2 p-2 rounded-lg bg-yellow-500/5">
+							<span class="w-3 h-3 rounded-full bg-yellow-500"></span>
+							<span class="text-sm text-gray-400">Medium</span>
+							<span class="text-sm font-bold text-yellow-400 ml-auto">{ fmt.Sprintf("%d", data.Summary.Medium) }</span>
+						</div>
+						<div class="flex items-center gap-2 p-2 rounded-lg bg-blue-500/5">
+							<span class="w-3 h-3 rounded-full bg-blue-500"></span>
+							<span class="text-sm text-gray-400">Low</span>
+							<span class="text-sm font-bold text-blue-400 ml-auto">{ fmt.Sprintf("%d", data.Summary.Low) }</span>
+						</div>
+					</div>
+				</div>
+
+				<!-- Scan Info -->
+				<div class="card p-6">
+					<h3 class="text-sm font-medium text-gray-400 mb-3">Scan Details</h3>
+					<div class="space-y-3">
+						<div class="flex items-center justify-between">
+							<span class="text-sm text-gray-400">
+								<i class="fas fa-exclamation-circle mr-1.5 w-4 text-center"></i>Total Issues
+							</span>
+							<span class="text-sm font-bold text-white">{ fmt.Sprintf("%d", len(data.Issues)) }</span>
+						</div>
+						<div class="flex items-center justify-between">
+							<span class="text-sm text-gray-400">
+								<i class="fas fa-bug mr-1.5 w-4 text-center"></i>CVEs Found
+							</span>
+							<span class="text-sm font-bold text-white">{ fmt.Sprintf("%d", len(data.CVEs)) }</span>
+						</div>
+						<div class="flex items-center justify-between">
+							<span class="text-sm text-gray-400">
+								<i class="fas fa-search mr-1.5 w-4 text-center"></i>CVE Scanning
+							</span>
+							if data.Container.IncludedCVE {
+								<span class="text-xs px-2 py-0.5 rounded bg-green-500/10 text-green-400">
+									<i class="fas fa-check mr-1"></i>Enabled
+								</span>
+							} else {
+								<span class="text-xs px-2 py-0.5 rounded bg-gray-500/10 text-gray-400">Disabled</span>
+							}
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- Security Issues -->
+			<div class="card">
+				<div class="px-5 py-4 border-b border-dark-700 flex items-center justify-between">
+					<h2 class="font-medium text-white">Security Issues ({ fmt.Sprintf("%d", len(data.Issues)) })</h2>
+				</div>
+				if len(data.Issues) == 0 {
+					<div class="p-8 text-center text-gray-400">
+						<i class="fas fa-check-circle text-green-400 text-3xl mb-3"></i>
+						<p>No security issues found</p>
+					</div>
+				} else {
+					<div class="divide-y divide-dark-700">
+						for _, issue := range data.Issues {
+							<div class="p-4">
+								<div class="flex items-start justify-between mb-2">
+									<div class="flex items-center gap-3">
+										<span class={ "badge border", severityColor(issue.Severity) }>
+											{ issue.Severity }
+										</span>
+										<span class="text-xs text-gray-500">
+											<i class={ categoryIcon(issue.Category), "mr-1" }></i>
+											{ issue.Category }
+										</span>
+										<span class="font-medium text-white">{ issue.Title }</span>
+									</div>
+									<div class="flex items-center gap-2">
+										if issue.DocURL != "" {
+											<a href={ templ.SafeURL(issue.DocURL) } target="_blank" rel="noopener" class="text-sm text-gray-400 hover:text-primary-400" title="Documentation">
+												<i class="fas fa-external-link-alt"></i>
+											</a>
+										}
+										if issue.Status == "open" {
+											<button hx-post={ "/security/issues/" + issue.ID + "/ignore" } hx-swap="none" class="text-sm text-gray-400 hover:text-white" title="Ignore this issue">
+												<i class="fas fa-eye-slash"></i>
+											</button>
+											<button hx-post={ "/security/issues/" + issue.ID + "/resolve" } hx-swap="none" class="text-sm text-gray-400 hover:text-green-400" title="Mark resolved">
+												<i class="fas fa-check"></i>
+											</button>
+										}
+									</div>
+								</div>
+								<p class="text-sm text-gray-400 mb-3">{ issue.Description }</p>
+								if issue.FixCommand != "" {
+									<div class="bg-dark-900 rounded p-3 font-mono text-sm text-green-400 flex items-center justify-between">
+										<code>{ issue.FixCommand }</code>
+										<button type="button" data-clipboard={ issue.FixCommand } onclick="navigator.clipboard.writeText(this.dataset.clipboard)" class="text-gray-400 hover:text-white ml-2 flex-shrink-0">
+											<i class="fas fa-copy"></i>
+										</button>
+									</div>
+								}
+							</div>
+						}
+					</div>
+				}
+			</div>
+
+			<!-- CVEs (Trivy) -->
+			if len(data.CVEs) > 0 {
+				<div class="card">
+					<div class="px-5 py-4 border-b border-dark-700 flex items-center justify-between">
+						<div class="flex items-center gap-2">
+							<h2 class="font-medium text-white">Vulnerabilities (CVEs)</h2>
+							<span class="text-xs px-2 py-0.5 rounded bg-primary-500/10 text-primary-400">
+								<i class="fas fa-bug mr-1"></i>Trivy
+							</span>
+						</div>
+						<span class="text-xs text-gray-500">{ fmt.Sprintf("%d vulnerabilities", len(data.CVEs)) }</span>
+					</div>
+					<div class="overflow-x-auto">
+						<table class="table">
+							<thead>
+								<tr>
+									<th>CVE ID</th>
+									<th>Severity</th>
+									<th>CVSS</th>
+									<th>Package</th>
+									<th>Installed</th>
+									<th>Fixed In</th>
+								</tr>
+							</thead>
+							<tbody>
+								for _, cve := range data.CVEs {
+									<tr>
+										<td class="font-mono text-sm">
+											<a href={ templ.SafeURL("https://nvd.nist.gov/vuln/detail/" + cve.ID) } target="_blank" rel="noopener" class="text-primary-400 hover:text-primary-300">
+												{ cve.ID }
+											</a>
+										</td>
+										<td>
+											<span class={ "badge border", severityColor(cve.Severity) }>
+												{ cve.Severity }
+											</span>
+										</td>
+										<td class="text-sm">
+											if cve.CVSSScore > 0 {
+												<span class={ cvssColor(cve.CVSSScore) }>{ fmt.Sprintf("%.1f", cve.CVSSScore) }</span>
+											} else {
+												<span class="text-gray-500">-</span>
+											}
+										</td>
+										<td class="text-white">{ cve.Package }</td>
+										<td class="font-mono text-sm text-gray-400">{ cve.Version }</td>
+										<td class="font-mono text-sm">
+											if cve.FixedIn != "" {
+												<span class="text-green-400">{ cve.FixedIn }</span>
+											} else {
+												<span class="text-gray-500 italic">No fix available</span>
+											}
+										</td>
+									</tr>
+								}
+							</tbody>
+						</table>
+					</div>
+				</div>
+			} else if !data.Container.IncludedCVE {
+				<div class="card p-6 text-center">
+					<i class="fas fa-bug text-3xl text-gray-600 mb-3"></i>
+					<p class="text-gray-400 mb-2">CVE scanning was not included in this scan</p>
+					<p class="text-xs text-gray-500">Install Trivy to enable image vulnerability scanning</p>
+				</div>
+			}
+		</div>
+	}
+}
+
+func gradeColorBorder(grade string) string {
+	switch grade {
+	case "A":
+		return "text-green-400 bg-green-500/10 border-green-500/30"
+	case "B":
+		return "text-blue-400 bg-blue-500/10 border-blue-500/30"
+	case "C":
+		return "text-yellow-400 bg-yellow-500/10 border-yellow-500/30"
+	case "D":
+		return "text-orange-400 bg-orange-500/10 border-orange-500/30"
+	default:
+		return "text-red-400 bg-red-500/10 border-red-500/30"
+	}
+}
+
+func cvssColor(score float64) string {
+	switch {
+	case score >= 9.0:
+		return "text-red-500 font-bold"
+	case score >= 7.0:
+		return "text-orange-400 font-bold"
+	case score >= 4.0:
+		return "text-yellow-400"
+	default:
+		return "text-blue-400"
+	}
+}

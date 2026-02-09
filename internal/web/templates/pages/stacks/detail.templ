@@ -1,0 +1,576 @@
+package stacks
+
+import (
+	"fmt"
+	"github.com/fr4nsys/usulnet/internal/web/templates/layouts"
+)
+
+type StackDetailData struct {
+	PageData   layouts.PageData
+	Stack      StackInfo
+	Services   []ServiceInfo
+	ComposeYML string
+	Versions   []VersionInfo
+}
+
+type StackInfo struct {
+	ID        string
+	Name      string
+	Status    string
+	Path      string
+	CreatedAt string
+	UpdatedAt string
+}
+
+type ServiceInfo struct {
+	Name        string
+	Image       string
+	Status      string
+	ContainerID string
+	Ports       []string
+	Replicas    string
+}
+
+type VersionInfo struct {
+	Version    int
+	Comment    string
+	CreatedAt  string
+	CreatedBy  string
+	IsDeployed bool
+	IsCurrent  bool
+}
+
+templ Detail(data StackDetailData) {
+	@layouts.Base(data.PageData) {
+		<div class="space-y-6" x-data="stackDetail()" data-stack-name={ data.Stack.Name }>
+			<!-- Header -->
+			<div class="flex items-center justify-between">
+				<div class="flex items-center gap-4">
+					<a href="/stacks" class="p-2 text-gray-400 hover:text-white hover:bg-dark-700 rounded-lg">
+						<i class="fas fa-arrow-left"></i>
+					</a>
+					<div>
+						<h1 class="text-2xl font-display font-bold text-white">{ data.Stack.Name }</h1>
+						<p class="text-gray-400 mt-1">{ data.Stack.Path }</p>
+					</div>
+				</div>
+				<div class="flex items-center gap-2">
+					<button hx-post={ "/stacks/" + data.Stack.Name + "/stop" } hx-swap="none" class="btn-secondary">
+						<i class="fas fa-stop mr-2"></i>Stop
+					</button>
+					<button hx-post={ "/stacks/" + data.Stack.Name + "/restart" } hx-swap="none" class="btn-secondary">
+						<i class="fas fa-redo mr-2"></i>Restart
+					</button>
+					<a href={ templ.SafeURL("/stacks/" + data.Stack.Name + "/edit") } class="btn-primary">
+						<i class="fas fa-edit mr-2"></i>Edit
+					</a>
+				</div>
+			</div>
+
+			<!-- Tab Navigation -->
+			<div class="border-b border-dark-700">
+				<nav class="flex gap-4">
+					<button
+						@click="activeTab = 'services'"
+						:class="activeTab === 'services' ? 'border-primary-500 text-white' : 'border-transparent text-gray-400 hover:text-white'"
+						class="px-4 py-3 text-sm font-medium border-b-2 transition-colors -mb-px"
+					>
+						<i class="fas fa-cubes mr-2"></i>Services
+					</button>
+					<button
+						@click="activeTab = 'compose'"
+						:class="activeTab === 'compose' ? 'border-primary-500 text-white' : 'border-transparent text-gray-400 hover:text-white'"
+						class="px-4 py-3 text-sm font-medium border-b-2 transition-colors -mb-px"
+					>
+						<i class="fas fa-file-code mr-2"></i>Compose File
+					</button>
+					<button
+						@click="activeTab = 'versions'"
+						:class="activeTab === 'versions' ? 'border-primary-500 text-white' : 'border-transparent text-gray-400 hover:text-white'"
+						class="px-4 py-3 text-sm font-medium border-b-2 transition-colors -mb-px"
+					>
+						<i class="fas fa-history mr-2"></i>Version History
+						if len(data.Versions) > 0 {
+							<span class="ml-2 px-2 py-0.5 text-xs rounded-full bg-dark-600 text-gray-400">
+								{ fmt.Sprintf("%d", len(data.Versions)) }
+							</span>
+						}
+					</button>
+					<button
+						@click="activeTab = 'settings'"
+						:class="activeTab === 'settings' ? 'border-primary-500 text-white' : 'border-transparent text-gray-400 hover:text-white'"
+						class="px-4 py-3 text-sm font-medium border-b-2 transition-colors -mb-px"
+					>
+						<i class="fas fa-cog mr-2"></i>Settings
+					</button>
+				</nav>
+			</div>
+
+			<!-- Services Tab -->
+			<div x-show="activeTab === 'services'" class="card">
+				<div class="px-5 py-4 border-b border-dark-700">
+					<h2 class="font-medium text-white">Services ({ fmt.Sprintf("%d", len(data.Services)) })</h2>
+				</div>
+				<div class="overflow-x-auto">
+					<table class="table">
+						<thead>
+							<tr>
+								<th>Service</th>
+								<th>Image</th>
+								<th>Status</th>
+								<th>Ports</th>
+								<th>Actions</th>
+							</tr>
+						</thead>
+						<tbody>
+							for _, svc := range data.Services {
+								<tr>
+									<td class="font-medium text-white">{ svc.Name }</td>
+									<td class="text-gray-400 font-mono text-sm">{ svc.Image }</td>
+									<td>
+										<span class={ "badge", templ.KV("badge-success", svc.Status == "running"), templ.KV("badge-danger", svc.Status == "stopped") }>
+											{ svc.Status }
+										</span>
+									</td>
+									<td class="text-gray-400 text-sm">
+										for i, port := range svc.Ports {
+											if i > 0 {
+												<span>, </span>
+											}
+											<span>{ port }</span>
+										}
+									</td>
+									<td>
+										if svc.ContainerID != "" {
+											<a href={ templ.SafeURL("/containers/" + svc.ContainerID) } class="text-primary-400 hover:text-primary-300">
+												View Container
+											</a>
+										}
+									</td>
+								</tr>
+							}
+						</tbody>
+					</table>
+				</div>
+			</div>
+
+			<!-- Compose File Tab -->
+			<div x-show="activeTab === 'compose'" class="card" x-cloak>
+				<div class="px-5 py-4 border-b border-dark-700 flex items-center justify-between">
+					<h2 class="font-medium text-white">docker-compose.yml</h2>
+					<div class="flex items-center gap-2">
+						<button
+							@click="createVersion"
+							class="text-sm text-gray-400 hover:text-primary-400 transition-colors"
+							title="Save as new version"
+						>
+							<i class="fas fa-save mr-1"></i>Save Version
+						</button>
+						<button
+							onclick="navigator.clipboard.writeText(document.getElementById('compose-content').textContent)"
+							class="text-sm text-gray-400 hover:text-white"
+						>
+							<i class="fas fa-copy mr-1"></i>Copy
+						</button>
+					</div>
+				</div>
+				<pre id="compose-content" class="p-4 text-sm font-mono text-gray-300 overflow-x-auto">{ data.ComposeYML }</pre>
+			</div>
+
+			<!-- Version History Tab -->
+			<div x-show="activeTab === 'versions'" x-cloak>
+				if len(data.Versions) == 0 {
+					<div class="card p-8 text-center">
+						<i class="fas fa-history text-4xl text-gray-600 mb-4"></i>
+						<p class="text-gray-400">No version history yet</p>
+						<p class="text-sm text-gray-500 mt-1">Click "Save Version" to create a snapshot of the current compose file</p>
+					</div>
+				} else {
+					<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+						<!-- Version List -->
+						<div class="card">
+							<div class="px-5 py-4 border-b border-dark-700">
+								<h3 class="font-medium text-white">Versions</h3>
+							</div>
+							<div class="divide-y divide-dark-700 max-h-[500px] overflow-y-auto">
+								for _, v := range data.Versions {
+									<div
+										class="p-4 hover:bg-dark-700/50 cursor-pointer transition-colors"
+										:class={ fmt.Sprintf("selectedVersion === %d ? 'bg-dark-700/50 border-l-2 border-primary-500' : ''", v.Version) }
+										@click={ fmt.Sprintf("selectVersion(%d)", v.Version) }
+									>
+										<div class="flex items-center justify-between">
+											<div class="flex items-center gap-2">
+												<span class="font-mono text-sm text-white">v{ fmt.Sprintf("%d", v.Version) }</span>
+												if v.IsCurrent {
+													<span class="px-2 py-0.5 text-xs rounded bg-primary-500/10 text-primary-400">Current</span>
+												}
+												if v.IsDeployed {
+													<span class="px-2 py-0.5 text-xs rounded bg-green-500/10 text-green-400">Deployed</span>
+												}
+											</div>
+											<span class="text-xs text-gray-500">{ v.CreatedAt }</span>
+										</div>
+										if v.Comment != "" {
+											<p class="text-sm text-gray-400 mt-1">{ v.Comment }</p>
+										}
+										if v.CreatedBy != "" {
+											<p class="text-xs text-gray-500 mt-1">by { v.CreatedBy }</p>
+										}
+									</div>
+								}
+							</div>
+						</div>
+
+						<!-- Diff Viewer -->
+						<div class="card">
+							<div class="px-5 py-4 border-b border-dark-700 flex items-center justify-between">
+								<h3 class="font-medium text-white">
+									<span x-show="!diffMode">Version Preview</span>
+									<span x-show="diffMode" x-cloak>Diff: v<span x-text="compareFrom"></span> → v<span x-text="compareTo"></span></span>
+								</h3>
+								<div class="flex items-center gap-2">
+									<template x-if="selectedVersion && !diffMode">
+										<div class="flex items-center gap-2">
+											<button
+												@click="startDiff"
+												class="text-sm text-gray-400 hover:text-primary-400"
+												title="Compare with another version"
+											>
+												<i class="fas fa-exchange-alt mr-1"></i>Compare
+											</button>
+											<button
+												@click="restoreVersion"
+												class="text-sm text-gray-400 hover:text-yellow-400"
+												title="Restore this version"
+											>
+												<i class="fas fa-undo mr-1"></i>Restore
+											</button>
+										</div>
+									</template>
+									<template x-if="diffMode">
+										<button @click="diffMode = false" class="text-sm text-gray-400 hover:text-white">
+											<i class="fas fa-times mr-1"></i>Close Diff
+										</button>
+									</template>
+								</div>
+							</div>
+
+							<!-- Monaco Diff Editor Container -->
+							<div
+								x-show="selectedVersion || diffMode"
+								id="monaco-diff-container"
+								class="h-[400px] border-t border-dark-700"
+							></div>
+
+							<div x-show="!selectedVersion && !diffMode" class="p-8 text-center text-gray-500" x-cloak>
+								<i class="fas fa-mouse-pointer text-2xl mb-2"></i>
+								<p>Select a version to preview</p>
+							</div>
+						</div>
+					</div>
+				}
+			</div>
+
+			<!-- Settings Tab -->
+			<div x-show="activeTab === 'settings'" x-cloak>
+				<div class="card">
+					<div class="px-5 py-4 border-b border-dark-700">
+						<h2 class="font-medium text-white">Container Settings</h2>
+						<p class="text-sm text-gray-400 mt-1">View and configure individual containers in this stack</p>
+					</div>
+					if len(data.Services) == 0 {
+						<div class="p-8 text-center text-gray-400">
+							<i class="fas fa-cubes text-3xl mb-3"></i>
+							<p>No services found in this stack</p>
+						</div>
+					} else {
+						<div class="divide-y divide-dark-700">
+							for _, svc := range data.Services {
+								<div>
+									<div class="p-4 hover:bg-dark-700/30 transition-colors">
+										<div class="flex items-center justify-between">
+											<div class="flex items-center gap-3">
+												<div class="w-10 h-10 rounded-lg bg-primary-500/10 flex items-center justify-center">
+													<i class="fas fa-cube text-primary-400"></i>
+												</div>
+												<div>
+													<div class="flex items-center gap-2">
+														if svc.ContainerID != "" {
+															<a href={ templ.SafeURL("/containers/" + svc.ContainerID) } class="font-medium text-white hover:text-primary-400 transition-colors">
+																{ svc.Name }
+															</a>
+														} else {
+															<span class="font-medium text-white">{ svc.Name }</span>
+														}
+														<span class={ "badge", templ.KV("badge-success", svc.Status == "running"), templ.KV("badge-danger", svc.Status == "stopped") }>
+															{ svc.Status }
+														</span>
+													</div>
+													<p class="text-sm text-gray-400 font-mono">{ svc.Image }</p>
+												</div>
+											</div>
+											if svc.ContainerID != "" {
+												<button
+													hx-get={ "/containers/" + svc.ContainerID + "/settings-summary" }
+													hx-target={ "#settings-panel-" + svc.ContainerID }
+													hx-swap="innerHTML"
+													hx-trigger="click once"
+													onclick="const panel = document.getElementById('settings-panel-' + this.getAttribute('data-cid')); if(panel) panel.classList.toggle('hidden'); const icon = this.querySelector('i.fa-chevron-down, i.fa-chevron-up'); if(icon) { icon.classList.toggle('fa-chevron-down'); icon.classList.toggle('fa-chevron-up'); }"
+													data-cid={ svc.ContainerID }
+													class="px-4 py-2 bg-dark-700 hover:bg-dark-600 text-gray-300 hover:text-white rounded-lg transition-colors text-sm"
+												>
+													<i class="fas fa-chevron-down mr-2 transition-transform"></i>Settings
+												</button>
+											} else {
+												<span class="text-sm text-gray-500">Container not running</span>
+											}
+										</div>
+									</div>
+									if svc.ContainerID != "" {
+										<div data-panel="">
+											<div data-content="" class="hidden" id={ "settings-panel-" + svc.ContainerID }>
+												<div class="p-4 text-center text-gray-500 text-sm">
+													<i class="fas fa-spinner fa-spin mr-1"></i>Loading settings...
+												</div>
+											</div>
+										</div>
+									}
+								</div>
+							}
+						</div>
+					}
+				</div>
+			</div>
+
+			<!-- Compare Modal -->
+			<div
+				x-show="showCompareModal"
+				x-transition
+				class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4"
+				@click.self="showCompareModal = false"
+				x-cloak
+			>
+				<div class="bg-dark-800 border border-dark-700 rounded-xl w-full max-w-sm">
+					<div class="px-6 py-4 border-b border-dark-700">
+						<h3 class="text-lg font-medium text-white">Compare Versions</h3>
+					</div>
+					<div class="p-6 space-y-4">
+						<div>
+							<label class="block text-sm text-gray-400 mb-2">Compare from</label>
+							<select x-model="compareFrom" class="w-full bg-dark-700 border border-dark-600 rounded-lg text-white px-3 py-2">
+								for _, v := range data.Versions {
+									<option value={ fmt.Sprintf("%d", v.Version) }>v{ fmt.Sprintf("%d", v.Version) } - { v.Comment }</option>
+								}
+							</select>
+						</div>
+						<div>
+							<label class="block text-sm text-gray-400 mb-2">Compare to</label>
+							<select x-model="compareTo" class="w-full bg-dark-700 border border-dark-600 rounded-lg text-white px-3 py-2">
+								for _, v := range data.Versions {
+									<option value={ fmt.Sprintf("%d", v.Version) }>v{ fmt.Sprintf("%d", v.Version) } - { v.Comment }</option>
+								}
+								<option value="current">Current (unsaved)</option>
+							</select>
+						</div>
+						<div class="flex justify-end gap-3 pt-2">
+							<button @click="showCompareModal = false" class="px-4 py-2 text-gray-400 hover:text-white">Cancel</button>
+							<button @click="showDiff" class="bg-primary-500 hover:bg-primary-600 text-black font-medium px-4 py-2 rounded-lg">
+								<i class="fas fa-code-compare mr-2"></i>Compare
+							</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Monaco Editor CDN -->
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.52.2/min/vs/loader.min.js"></script>
+		<script>
+			function stackDetail() {
+				return {
+					activeTab: 'services',
+					selectedVersion: null,
+					diffMode: false,
+					showCompareModal: false,
+					compareFrom: null,
+					compareTo: 'current',
+					monacoEditor: null,
+					monacoDiffEditor: null,
+					monacoReady: false,
+					stackName: '',
+					currentCompose: '',
+
+					init() {
+						this.stackName = this.$el.dataset.stackName || '';
+						this.currentCompose = document.getElementById('compose-content')?.textContent || '';
+						this.loadMonaco();
+					},
+
+					loadMonaco() {
+						require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.52.2/min/vs' }});
+						require(['vs/editor/editor.main'], () => {
+							monaco.editor.defineTheme('usulnet-dark', {
+								base: 'vs-dark',
+								inherit: true,
+								rules: [],
+								colors: {
+									'editor.background': '#1a1a2e',
+									'editor.foreground': '#e5e5e5',
+									'editorLineNumber.foreground': '#4a5568',
+									'editor.selectionBackground': '#3730a3',
+									'editor.lineHighlightBackground': '#1e1e3f',
+								}
+							});
+							this.monacoReady = true;
+						});
+					},
+
+					async selectVersion(version) {
+						this.selectedVersion = version;
+						this.diffMode = false;
+
+						try {
+							const resp = await fetch(`/api/v1/stacks/${this.stackName}/versions/${version}`);
+							const data = await resp.json();
+							this.showVersionContent(data.compose_file || '');
+						} catch (err) {
+							console.error('Failed to load version:', err);
+						}
+					},
+
+					showVersionContent(content) {
+						const container = document.getElementById('monaco-diff-container');
+						if (!container || !this.monacoReady) return;
+
+						container.innerHTML = '';
+
+						if (this.monacoDiffEditor) {
+							this.monacoDiffEditor.dispose();
+							this.monacoDiffEditor = null;
+						}
+
+						this.monacoEditor = monaco.editor.create(container, {
+							value: content,
+							language: 'yaml',
+							theme: 'usulnet-dark',
+							readOnly: true,
+							minimap: { enabled: false },
+							scrollBeyondLastLine: false,
+							fontSize: 12,
+							lineNumbers: 'on',
+							automaticLayout: true,
+						});
+					},
+
+					startDiff() {
+						if (this.selectedVersion) {
+							this.compareFrom = this.selectedVersion.toString();
+							this.showCompareModal = true;
+						}
+					},
+
+					async showDiff() {
+						this.showCompareModal = false;
+						this.diffMode = true;
+
+						const container = document.getElementById('monaco-diff-container');
+						if (!container || !this.monacoReady) return;
+
+						container.innerHTML = '';
+
+						if (this.monacoEditor) {
+							this.monacoEditor.dispose();
+							this.monacoEditor = null;
+						}
+
+						try {
+							// Fetch both versions
+							const fromResp = await fetch(`/api/v1/stacks/${this.stackName}/versions/${this.compareFrom}`);
+							const fromData = await fromResp.json();
+							const fromContent = fromData.compose_file || '';
+
+							let toContent = this.currentCompose;
+							if (this.compareTo !== 'current') {
+								const toResp = await fetch(`/api/v1/stacks/${this.stackName}/versions/${this.compareTo}`);
+								const toData = await toResp.json();
+								toContent = toData.compose_file || '';
+							}
+
+							const originalModel = monaco.editor.createModel(fromContent, 'yaml');
+							const modifiedModel = monaco.editor.createModel(toContent, 'yaml');
+
+							this.monacoDiffEditor = monaco.editor.createDiffEditor(container, {
+								theme: 'usulnet-dark',
+								readOnly: true,
+								minimap: { enabled: false },
+								scrollBeyondLastLine: false,
+								fontSize: 12,
+								renderSideBySide: true,
+								automaticLayout: true,
+							});
+
+							this.monacoDiffEditor.setModel({
+								original: originalModel,
+								modified: modifiedModel,
+							});
+						} catch (err) {
+							console.error('Failed to load diff:', err);
+						}
+					},
+
+					async createVersion() {
+						const comment = prompt('Version comment (optional):');
+						if (comment === null) return;
+
+						try {
+							const resp = await fetch(`/api/v1/stacks/${this.stackName}/versions`, {
+								method: 'POST',
+								headers: {
+									'Content-Type': 'application/json',
+									'X-CSRF-Token': document.querySelector('input[name="csrf_token"]')?.value || ''
+								},
+								body: JSON.stringify({ comment })
+							});
+							if (resp.ok) {
+								location.reload();
+							} else {
+								alert('Failed to create version');
+							}
+						} catch (err) {
+							console.error('Failed to create version:', err);
+							alert('Failed to create version');
+						}
+					},
+
+					async restoreVersion() {
+						if (!this.selectedVersion) return;
+						if (!confirm(`Restore to version ${this.selectedVersion}? This will update the compose file.`)) return;
+
+						try {
+							const resp = await fetch(`/api/v1/stacks/${this.stackName}/versions/${this.selectedVersion}/restore`, {
+								method: 'POST',
+								headers: {
+									'X-CSRF-Token': document.querySelector('input[name="csrf_token"]')?.value || ''
+								}
+							});
+							if (resp.ok) {
+								location.reload();
+							} else {
+								alert('Failed to restore version');
+							}
+						} catch (err) {
+							console.error('Failed to restore version:', err);
+							alert('Failed to restore version');
+						}
+					},
+
+					destroy() {
+						if (this.monacoEditor) this.monacoEditor.dispose();
+						if (this.monacoDiffEditor) this.monacoDiffEditor.dispose();
+					}
+				};
+			}
+		</script>
+	}
+}

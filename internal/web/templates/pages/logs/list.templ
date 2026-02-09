@@ -1,0 +1,457 @@
+package logs
+
+import (
+	"github.com/fr4nsys/usulnet/internal/web/templates/layouts"
+	"fmt"
+)
+
+// ContainerBasicView is the minimal container info for the selector.
+type ContainerBasicView struct {
+	ID    string
+	Name  string
+	State string
+}
+
+// LogsPageData holds data for the centralized logs page.
+type LogsPageData struct {
+	PageData   layouts.PageData
+	Containers []ContainerBasicView
+	Selected   []string // Pre-selected container IDs (from query params)
+}
+
+// isSelected checks if a container ID is in the selected list.
+func isSelected(id string, selected []string) bool {
+	for _, s := range selected {
+		if s == id {
+			return true
+		}
+	}
+	return false
+}
+
+// stateColor returns the dot color class for a container state.
+func stateColor(state string) string {
+	switch state {
+	case "running":
+		return "bg-green-400"
+	case "paused":
+		return "bg-yellow-400"
+	case "exited", "dead":
+		return "bg-red-400"
+	default:
+		return "bg-gray-500"
+	}
+}
+
+templ LogsList(data LogsPageData) {
+	@layouts.Base(data.PageData) {
+		<div x-data={ logsAppInit(data) } x-init="init()" class="space-y-6">
+			<!-- Header -->
+			<div class="flex items-center justify-between">
+				<div>
+					<h1 class="text-2xl font-bold text-white">Centralized Logs</h1>
+					<p class="text-gray-400 mt-1">Stream and search logs from multiple containers</p>
+				</div>
+				<div class="flex items-center gap-3">
+					<button
+						@click="exportLogs()"
+						:disabled="logLines.length === 0"
+						class="flex items-center gap-2 bg-dark-700 text-gray-300 hover:text-white px-4 py-2 rounded-lg transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+					>
+						<i class="fas fa-download text-sm"></i>
+						Export
+					</button>
+					<button
+						@click="clearLogs()"
+						:disabled="logLines.length === 0"
+						class="flex items-center gap-2 bg-dark-700 text-gray-300 hover:text-white px-4 py-2 rounded-lg transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+					>
+						<i class="fas fa-trash-alt text-sm"></i>
+						Clear
+					</button>
+				</div>
+			</div>
+
+			<!-- Controls Row -->
+			<div class="bg-dark-800 border border-dark-700 rounded-xl p-4">
+				<div class="grid grid-cols-1 lg:grid-cols-4 gap-4">
+					<!-- Container Selector -->
+					<div class="lg:col-span-2">
+						<label class="block text-sm font-medium text-gray-400 mb-2">
+							<i class="fas fa-cubes mr-1"></i> Containers
+						</label>
+						<div class="relative" x-data="{ open: false }">
+							<button
+								@click="open = !open"
+								class="w-full flex items-center justify-between bg-dark-700 border border-dark-600 rounded-lg text-white px-3 py-2 text-sm"
+							>
+								<span x-text="selectedContainers.length === 0 ? 'Select containers...' : selectedContainers.length + ' container(s) selected'"></span>
+								<i class="fas fa-chevron-down text-gray-500 text-xs transition-transform" :class="open && 'rotate-180'"></i>
+							</button>
+							<div
+								x-show="open"
+								@click.outside="open = false"
+								x-transition
+								class="absolute z-20 mt-1 w-full bg-dark-700 border border-dark-600 rounded-lg shadow-xl max-h-64 overflow-y-auto"
+							>
+								<div class="p-2 border-b border-dark-600">
+									<div class="flex gap-2">
+										<button @click="selectAll()" class="text-xs text-primary-400 hover:text-primary-300">Select All</button>
+										<span class="text-gray-600">|</span>
+										<button @click="selectNone()" class="text-xs text-gray-400 hover:text-gray-300">Clear</button>
+										<span class="text-gray-600">|</span>
+										<button @click="selectRunning()" class="text-xs text-green-400 hover:text-green-300">Running Only</button>
+									</div>
+								</div>
+								for _, c := range data.Containers {
+									<label class="flex items-center gap-3 px-3 py-2 hover:bg-dark-600/50 cursor-pointer">
+										<input
+											type="checkbox"
+											:checked={ fmt.Sprintf("selectedContainers.includes('%s')", c.ID) }
+											@change={ fmt.Sprintf("toggleContainer('%s')", c.ID) }
+											class="rounded border-dark-500 bg-dark-600 text-primary-500 focus:ring-primary-500"
+										/>
+										<span class={ "w-2 h-2 rounded-full flex-shrink-0", stateColor(c.State) }></span>
+										<span class="text-sm text-white truncate">{ c.Name }</span>
+										<span class="text-xs text-gray-500 ml-auto">{ c.State }</span>
+									</label>
+								}
+								if len(data.Containers) == 0 {
+									<div class="px-3 py-4 text-center text-gray-500 text-sm">No containers found</div>
+								}
+							</div>
+						</div>
+					</div>
+
+					<!-- Search -->
+					<div>
+						<label class="block text-sm font-medium text-gray-400 mb-2">
+							<i class="fas fa-search mr-1"></i> Filter
+						</label>
+						<input
+							type="text"
+							x-model="searchFilter"
+							placeholder="Search logs..."
+							class="w-full bg-dark-700 border border-dark-600 rounded-lg text-white px-3 py-2 text-sm placeholder-gray-500 focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
+						/>
+					</div>
+
+					<!-- Options -->
+					<div>
+						<label class="block text-sm font-medium text-gray-400 mb-2">
+							<i class="fas fa-sliders-h mr-1"></i> Options
+						</label>
+						<div class="flex items-center gap-4">
+							<select x-model="tailLines" class="bg-dark-700 border border-dark-600 rounded-lg text-white px-3 py-2 text-sm">
+								<option value="100">100 lines</option>
+								<option value="500">500 lines</option>
+								<option value="1000">1000 lines</option>
+								<option value="5000">5000 lines</option>
+							</select>
+							<label class="flex items-center gap-2 text-sm text-gray-400 cursor-pointer select-none">
+								<input type="checkbox" x-model="autoScroll" class="rounded border-dark-500 bg-dark-600 text-primary-500 focus:ring-primary-500" />
+								Auto-scroll
+							</label>
+						</div>
+					</div>
+				</div>
+
+				<!-- Action Bar -->
+				<div class="flex items-center justify-between mt-4 pt-4 border-t border-dark-700">
+					<div class="flex items-center gap-4">
+						<button
+							@click="startStreaming()"
+							:disabled="selectedContainers.length === 0 || streaming"
+							class="flex items-center gap-2 bg-primary-500 hover:bg-primary-600 text-black font-medium px-4 py-2 rounded-lg transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+						>
+							<i class="fas fa-play text-sm"></i>
+							Start
+						</button>
+						<button
+							@click="stopStreaming()"
+							:disabled="!streaming"
+							class="flex items-center gap-2 bg-red-500/10 text-red-400 hover:bg-red-500/20 px-4 py-2 rounded-lg transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+						>
+							<i class="fas fa-stop text-sm"></i>
+							Stop
+						</button>
+						<button
+							@click="pauseStreaming()"
+							:disabled="!streaming"
+							class="flex items-center gap-2 bg-dark-700 text-gray-300 hover:text-white px-4 py-2 rounded-lg transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+						>
+							<i class="fas" :class="paused ? 'fa-play' : 'fa-pause'"></i>
+							<span x-text="paused ? 'Resume' : 'Pause'"></span>
+						</button>
+					</div>
+					<div class="flex items-center gap-4 text-sm text-gray-400">
+						<span>
+							<i class="fas fa-circle text-xs mr-1" :class="streaming ? 'text-green-400 animate-pulse' : 'text-gray-600'"></i>
+							<span x-text="streaming ? 'Streaming' : 'Stopped'"></span>
+						</span>
+						<span x-text="logLines.length + ' lines'"></span>
+						<span x-text="activeConnections + ' connections'"></span>
+					</div>
+				</div>
+			</div>
+
+			<!-- Log Output -->
+			<div class="bg-dark-800 border border-dark-700 rounded-xl overflow-hidden">
+				<!-- Log container -->
+				<div
+					x-ref="logOutput"
+					class="font-mono text-xs leading-relaxed overflow-y-auto p-4"
+					style="max-height: 65vh; min-height: 400px;"
+				>
+					<template x-if="logLines.length === 0">
+						<div class="flex flex-col items-center justify-center py-20 text-gray-500">
+							<i class="fas fa-terminal text-4xl mb-4"></i>
+							<p class="text-lg">No log output</p>
+							<p class="text-sm mt-1">Select containers and click Start to begin streaming</p>
+						</div>
+					</template>
+					<template x-for="(line, idx) in filteredLines" :key="idx">
+						<div class="flex gap-3 py-0.5 hover:bg-dark-700/30" x-show="matchesFilter(line)">
+							<span class="text-gray-600 select-none w-12 text-right flex-shrink-0" x-text="idx + 1"></span>
+							<span
+								class="px-1.5 py-0 rounded text-xs font-medium flex-shrink-0"
+								:class="containerColor(line.container)"
+								x-text="line.containerName"
+								:title="line.container"
+							></span>
+							<span class="text-gray-600 flex-shrink-0" x-text="line.timestamp || ''"></span>
+							<span
+								class="text-gray-200 whitespace-pre-wrap break-all"
+								x-text="line.text"
+							></span>
+						</div>
+					</template>
+				</div>
+			</div>
+		</div>
+
+		<script>
+			function logsApp() {
+				return {
+					// State
+					selectedContainers: [],
+					containerNames: {},
+					logLines: [],
+					searchFilter: '',
+					tailLines: '500',
+					autoScroll: true,
+					streaming: false,
+					paused: false,
+					activeConnections: 0,
+					sockets: {},
+					maxLines: 10000,
+
+					// Container color palette
+					colorPalette: [
+						'bg-blue-500/20 text-blue-400',
+						'bg-green-500/20 text-green-400',
+						'bg-yellow-500/20 text-yellow-400',
+						'bg-purple-500/20 text-purple-400',
+						'bg-pink-500/20 text-pink-400',
+						'bg-cyan-500/20 text-cyan-400',
+						'bg-orange-500/20 text-orange-400',
+						'bg-red-500/20 text-red-400',
+						'bg-indigo-500/20 text-indigo-400',
+						'bg-teal-500/20 text-teal-400',
+					],
+					containerColorMap: {},
+					colorIndex: 0,
+
+					init() {
+						// Build name map from DOM data
+						this.containerNames = JSON.parse(this.$el.dataset.containers || '{}');
+					},
+
+					toggleContainer(id) {
+						const idx = this.selectedContainers.indexOf(id);
+						if (idx === -1) {
+							this.selectedContainers.push(id);
+						} else {
+							this.selectedContainers.splice(idx, 1);
+						}
+					},
+
+					selectAll() {
+						const allIds = Object.keys(this.containerNames);
+						this.selectedContainers = [...allIds];
+					},
+
+					selectNone() {
+						this.selectedContainers = [];
+					},
+
+					selectRunning() {
+						const running = JSON.parse(this.$el.dataset.running || '[]');
+						this.selectedContainers = [...running];
+					},
+
+					containerColor(id) {
+						if (!this.containerColorMap[id]) {
+							this.containerColorMap[id] = this.colorPalette[this.colorIndex % this.colorPalette.length];
+							this.colorIndex++;
+						}
+						return this.containerColorMap[id];
+					},
+
+					startStreaming() {
+						this.stopStreaming();
+						this.streaming = true;
+						this.paused = false;
+						this.activeConnections = 0;
+
+						this.selectedContainers.forEach(id => {
+							const proto = location.protocol === 'https:' ? 'wss:' : 'ws:';
+							const url = `${proto}//${location.host}/ws/logs/${id}?tail=${this.tailLines}`;
+							const ws = new WebSocket(url);
+							const name = this.containerNames[id] || id.substring(0, 12);
+
+							ws.onopen = () => {
+								this.activeConnections++;
+							};
+
+							ws.onmessage = (event) => {
+								if (this.paused) return;
+								const text = event.data;
+								const ts = this.extractTimestamp(text);
+								this.logLines.push({
+									container: id,
+									containerName: name,
+									timestamp: ts.timestamp,
+									text: ts.message,
+									raw: text,
+								});
+
+								// Trim excess lines
+								if (this.logLines.length > this.maxLines) {
+									this.logLines.splice(0, this.logLines.length - this.maxLines);
+								}
+
+								if (this.autoScroll) {
+									this.$nextTick(() => {
+										const el = this.$refs.logOutput;
+										if (el) el.scrollTop = el.scrollHeight;
+									});
+								}
+							};
+
+							ws.onclose = () => {
+								this.activeConnections = Math.max(0, this.activeConnections - 1);
+								delete this.sockets[id];
+								if (Object.keys(this.sockets).length === 0) {
+									this.streaming = false;
+								}
+							};
+
+							ws.onerror = () => {
+								ws.close();
+							};
+
+							this.sockets[id] = ws;
+						});
+					},
+
+					stopStreaming() {
+						Object.values(this.sockets).forEach(ws => {
+							try { ws.close(); } catch(e) {}
+						});
+						this.sockets = {};
+						this.streaming = false;
+						this.paused = false;
+						this.activeConnections = 0;
+					},
+
+					pauseStreaming() {
+						this.paused = !this.paused;
+					},
+
+					clearLogs() {
+						this.logLines = [];
+					},
+
+					extractTimestamp(line) {
+						// Try ISO timestamp at start
+						const match = line.match(/^(\d{4}-\d{2}-\d{2}T[\d:.]+Z?)\s+(.*)/);
+						if (match) {
+							const d = new Date(match[1]);
+							return {
+								timestamp: d.toLocaleTimeString(),
+								message: match[2],
+							};
+						}
+						return { timestamp: '', message: line };
+					},
+
+					matchesFilter(line) {
+						if (!this.searchFilter) return true;
+						const q = this.searchFilter.toLowerCase();
+						return line.text.toLowerCase().includes(q) ||
+							   line.containerName.toLowerCase().includes(q);
+					},
+
+					get filteredLines() {
+						if (!this.searchFilter) return this.logLines;
+						const q = this.searchFilter.toLowerCase();
+						return this.logLines.filter(l =>
+							l.text.toLowerCase().includes(q) ||
+							l.containerName.toLowerCase().includes(q)
+						);
+					},
+
+					exportLogs() {
+						const lines = this.filteredLines.map(l =>
+							`${l.timestamp}\t${l.containerName}\t${l.text}`
+						).join('\n');
+						const blob = new Blob([lines], { type: 'text/plain' });
+						const url = URL.createObjectURL(blob);
+						const a = document.createElement('a');
+						a.href = url;
+						a.download = `usulnet-logs-${new Date().toISOString().slice(0,19)}.log`;
+						a.click();
+						URL.revokeObjectURL(url);
+					},
+				};
+			}
+		</script>
+	}
+}
+
+// logsAppInit generates the x-data attribute with container metadata injected.
+func logsAppInit(data LogsPageData) string {
+	// Build JSON maps for container names and running IDs
+	names := "{"
+	running := "["
+	for i, c := range data.Containers {
+		if i > 0 {
+			names += ","
+		}
+		names += fmt.Sprintf("'%s':'%s'", c.ID, c.Name)
+		if c.State == "running" {
+			if len(running) > 1 {
+				running += ","
+			}
+			running += fmt.Sprintf("'%s'", c.ID)
+		}
+	}
+	names += "}"
+	running += "]"
+
+	// Pre-select containers if specified
+	selected := "["
+	for i, s := range data.Selected {
+		if i > 0 {
+			selected += ","
+		}
+		selected += fmt.Sprintf("'%s'", s)
+	}
+	selected += "]"
+
+	return fmt.Sprintf(
+		`{ ...logsApp(), containerNames: %s, selectedContainers: %s, _running: %s, selectRunning() { this.selectedContainers = [...this._running]; } }`,
+		names, selected, running,
+	)
+}

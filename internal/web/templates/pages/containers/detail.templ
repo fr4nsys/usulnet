@@ -1,0 +1,548 @@
+package containers
+
+import (
+	"fmt"
+	
+	"github.com/fr4nsys/usulnet/internal/web/templates/layouts"
+)
+
+type ContainerDetailData struct {
+	PageData      layouts.PageData
+	Container     ContainerFull
+	Tab           string
+}
+
+type ContainerFull struct {
+	ID            string
+	Name          string
+	Image         string
+	ImageID       string
+	State         string
+	Status        string
+	Created       string
+	CreatedAgo    string
+	Started       string
+	Finished      string
+	RestartCount  int
+	Platform      string
+	Driver        string
+	
+	// Resources
+	CPUShares     int64
+	Memory        int64
+	MemorySwap    int64
+	CPUs          float64
+	
+	// Network
+	Ports         []PortMapping
+	Networks      []NetworkInfo
+	Hostname      string
+	DomainName    string
+	MacAddress    string
+	IPAddress     string
+	Gateway       string
+	
+	// Storage
+	Mounts        []MountInfo
+	
+	// Config
+	Cmd           []string
+	Entrypoint    []string
+	Env           []string
+	Labels        map[string]string
+	WorkingDir    string
+	User          string
+	
+	// Health
+	Healthcheck   *HealthcheckInfo
+	
+	// Security
+	Privileged    bool
+	ReadonlyRoot  bool
+	Capabilities  CapabilitiesInfo
+	SecurityScore int
+	SecurityGrade string
+	
+	// Updates
+	HasUpdates    bool
+	LatestVersion string
+}
+
+type NetworkInfo struct {
+	Name       string
+	ID         string
+	IPAddress  string
+	Gateway    string
+	MacAddress string
+	Aliases    []string
+}
+
+type MountInfo struct {
+	Type        string
+	Source      string
+	Destination string
+	Mode        string
+	RW          bool
+}
+
+type HealthcheckInfo struct {
+	Status   string
+	Test     []string
+	Interval string
+	Timeout  string
+	Retries  int
+}
+
+type CapabilitiesInfo struct {
+	Add  []string
+	Drop []string
+}
+
+templ ContainerDetail(data ContainerDetailData) {
+	@layouts.Base(data.PageData) {
+		<!-- Breadcrumb -->
+		<nav class="flex items-center gap-2 text-sm text-gray-400 mb-4">
+			<a href="/containers" class="hover:text-primary-400 transition-colors">Containers</a>
+			<i class="fas fa-chevron-right text-xs"></i>
+			<span class="text-white">{ data.Container.Name }</span>
+		</nav>
+
+		<!-- Header -->
+		<div class="flex items-start justify-between mb-6">
+			<div class="flex items-center gap-4">
+				<div class={ "w-12 h-12 rounded-xl flex items-center justify-center", stateIconBg(data.Container.State) }>
+					<i class={ "fas fa-cube text-xl", stateIconColor(data.Container.State) }></i>
+				</div>
+				<div>
+					<div class="flex items-center gap-3">
+						<h1 class="text-2xl font-bold font-display text-white">{ data.Container.Name }</h1>
+						<span class={ "px-2.5 py-1 rounded-full text-xs font-medium", stateBadge(data.Container.State) }>
+							{ data.Container.State }
+						</span>
+						if data.Container.HasUpdates {
+							<span class="px-2.5 py-1 rounded-full text-xs font-medium bg-primary-500/20 text-primary-400">
+								<i class="fas fa-arrow-up mr-1"></i>Update available
+							</span>
+						}
+					</div>
+					<p class="text-gray-400 mt-1 font-mono text-sm">{ data.Container.Image }</p>
+				</div>
+			</div>
+			<div class="flex items-center gap-2">
+				if data.Container.State == "running" {
+					<button 
+						hx-post={ "/containers/" + data.Container.ID + "/stop" }
+						hx-swap="none"
+						class="px-4 py-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-lg transition-colors"
+					>
+						<i class="fas fa-stop mr-2"></i>Stop
+					</button>
+					<button 
+						hx-post={ "/containers/" + data.Container.ID + "/restart" }
+						hx-swap="none"
+						class="px-4 py-2 bg-yellow-500/10 hover:bg-yellow-500/20 text-yellow-400 rounded-lg transition-colors"
+					>
+						<i class="fas fa-redo mr-2"></i>Restart
+					</button>
+				} else {
+					<button 
+						hx-post={ "/containers/" + data.Container.ID + "/start" }
+						hx-swap="none"
+						class="px-4 py-2 bg-green-500/10 hover:bg-green-500/20 text-green-400 rounded-lg transition-colors"
+					>
+						<i class="fas fa-play mr-2"></i>Start
+					</button>
+				}
+				<a href={ templ.SafeURL("/containers/" + data.Container.ID + "/logs") } class="px-4 py-2 bg-dark-700 hover:bg-dark-600 text-gray-300 rounded-lg transition-colors">
+					<i class="fas fa-file-alt mr-2"></i>Logs
+				</a>
+				<a href={ templ.SafeURL("/containers/" + data.Container.ID + "/exec") } class="btn-primary">
+					<i class="fas fa-terminal mr-2"></i>Terminal
+				</a>
+			</div>
+		</div>
+
+		<!-- Tabs -->
+		<div class="border-b border-dark-600 mb-6">
+			<nav class="flex gap-1 -mb-px">
+				@tab("Overview", "overview", data.Tab, "/containers/" + data.Container.ID)
+				@tab("Logs", "logs", data.Tab, "/containers/" + data.Container.ID + "/logs")
+				@tab("Stats", "stats", data.Tab, "/containers/" + data.Container.ID + "/stats")
+				@tab("Inspect", "inspect", data.Tab, "/containers/" + data.Container.ID + "/inspect")
+				@tab("Files", "files", data.Tab, "/containers/" + data.Container.ID + "/files")
+				@tab("Terminal", "exec", data.Tab, "/containers/" + data.Container.ID + "/exec")
+				@tab("Settings", "settings", data.Tab, "/containers/" + data.Container.ID + "/settings")
+			</nav>
+		</div>
+
+		<!-- Tab Content -->
+		<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+			<!-- Main Info -->
+			<div class="lg:col-span-2 space-y-6">
+				<!-- General Info -->
+				<div class="bg-dark-800 rounded-xl border border-dark-600 p-5">
+					<h2 class="text-lg font-semibold text-white mb-4">General Information</h2>
+					<dl class="grid grid-cols-2 gap-4">
+						@infoItem("Container ID", shortID(data.Container.ID))
+						@infoItem("Image", data.Container.Image)
+						@infoItem("Platform", data.Container.Platform)
+						@infoItem("Created", data.Container.CreatedAgo)
+						@infoItem("Status", data.Container.Status)
+						@infoItem("Restart Count", fmt.Sprintf("%d", data.Container.RestartCount))
+					</dl>
+				</div>
+
+				<!-- Network -->
+				<div class="bg-dark-800 rounded-xl border border-dark-600 p-5">
+					<div class="flex items-center justify-between mb-4">
+						<h2 class="text-lg font-semibold text-white">Network</h2>
+						<button
+							onclick="document.getElementById('connect-network-form').classList.toggle('hidden')"
+							class="text-xs px-3 py-1.5 bg-primary-600 hover:bg-primary-700 text-white rounded-lg transition-colors"
+						>
+							Connect Network
+						</button>
+					</div>
+					<!-- Connect to network form -->
+					<div id="connect-network-form" class="hidden mb-4 p-4 bg-dark-700/50 rounded-lg border border-dark-600">
+						<form method="POST" id="network-connect-form" class="space-y-3">
+							<input type="hidden" name="csrf_token" value={ data.PageData.CSRFToken }/>
+							<input type="hidden" name="container_id" value={ data.Container.ID }/>
+							<div>
+								<label class="block text-sm text-gray-400 mb-1">Network ID or Name</label>
+								<input
+									type="text"
+									name="network_id"
+									id="network-id-input"
+									placeholder="Enter network ID or name..."
+									class="w-full px-3 py-2 bg-dark-900 border border-dark-500 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+									required
+								/>
+							</div>
+							<div class="flex justify-end gap-2">
+								<button
+									type="button"
+									onclick="document.getElementById('connect-network-form').classList.add('hidden')"
+									class="px-3 py-1.5 text-sm text-gray-400 hover:text-white transition-colors"
+								>
+									Cancel
+								</button>
+								<button
+									type="submit"
+									class="px-3 py-1.5 text-sm bg-primary-600 hover:bg-primary-700 text-white rounded-lg transition-colors"
+								>
+									Connect
+								</button>
+							</div>
+						</form>
+						<script>
+							document.getElementById('network-connect-form').addEventListener('submit', function(e) {
+								e.preventDefault();
+								var networkID = document.getElementById('network-id-input').value.trim();
+								if (networkID) {
+									this.action = '/networks/' + encodeURIComponent(networkID) + '/connect';
+									this.submit();
+								}
+							});
+						</script>
+					</div>
+					if len(data.Container.Networks) > 0 {
+						<div class="space-y-4">
+							for _, net := range data.Container.Networks {
+								<div class="p-4 bg-dark-700/50 rounded-lg">
+									<div class="flex items-center justify-between mb-2">
+										<div class="flex items-center gap-2">
+											<span class="font-medium text-white">{ net.Name }</span>
+											<span class="text-xs text-gray-500 font-mono">{ shortID(net.ID) }</span>
+										</div>
+										<form method="POST" action={ templ.SafeURL("/networks/" + net.ID + "/disconnect") }>
+											<input type="hidden" name="csrf_token" value={ data.PageData.CSRFToken }/>
+											<input type="hidden" name="container_id" value={ data.Container.ID }/>
+											<button
+												type="submit"
+												class="text-xs px-2 py-1 text-red-400 hover:text-red-300 hover:bg-red-900/20 rounded transition-colors"
+												onclick="return confirm('Disconnect from network ' + '{ net.Name }' + '?')"
+											>
+												Disconnect
+											</button>
+										</form>
+									</div>
+									<dl class="grid grid-cols-2 gap-2 text-sm">
+										<dt class="text-gray-500">IP Address</dt>
+										<dd class="text-gray-300 font-mono">{ net.IPAddress }</dd>
+										<dt class="text-gray-500">Gateway</dt>
+										<dd class="text-gray-300 font-mono">{ net.Gateway }</dd>
+										<dt class="text-gray-500">MAC Address</dt>
+										<dd class="text-gray-300 font-mono">{ net.MacAddress }</dd>
+									</dl>
+								</div>
+							}
+						</div>
+					} else {
+						<p class="text-gray-500">No networks connected</p>
+					}
+				</div>
+
+				<!-- Ports -->
+				if len(data.Container.Ports) > 0 {
+					<div class="bg-dark-800 rounded-xl border border-dark-600 p-5">
+						<h2 class="text-lg font-semibold text-white mb-4">Ports</h2>
+						<div class="overflow-x-auto">
+							<table class="w-full text-sm">
+								<thead>
+									<tr class="border-b border-dark-600">
+										<th class="py-2 text-left text-gray-400 font-medium">Container</th>
+										<th class="py-2 text-left text-gray-400 font-medium">Host</th>
+										<th class="py-2 text-left text-gray-400 font-medium">Protocol</th>
+									</tr>
+								</thead>
+								<tbody>
+									for _, p := range data.Container.Ports {
+										<tr class="border-b border-dark-700">
+											<td class="py-2 font-mono text-gray-300">{ fmt.Sprintf("%d", p.Internal) }</td>
+											<td class="py-2 font-mono text-gray-300">
+												if p.External > 0 {
+													{ fmt.Sprintf("%s:%d", p.IP, p.External) }
+												} else {
+													<span class="text-gray-500">-</span>
+												}
+											</td>
+											<td class="py-2">
+												<span class="px-2 py-0.5 text-xs bg-dark-600 text-gray-300 rounded">{ p.Protocol }</span>
+											</td>
+										</tr>
+									}
+								</tbody>
+							</table>
+						</div>
+					</div>
+				}
+
+				<!-- Mounts -->
+				if len(data.Container.Mounts) > 0 {
+					<div class="bg-dark-800 rounded-xl border border-dark-600 p-5">
+						<h2 class="text-lg font-semibold text-white mb-4">Mounts</h2>
+						<div class="space-y-3">
+							for _, m := range data.Container.Mounts {
+								<div class="flex items-start gap-3 p-3 bg-dark-700/50 rounded-lg">
+									<div class={ "w-8 h-8 rounded flex items-center justify-center flex-shrink-0", mountIcon(m.Type) }>
+										<i class={ "fas text-sm", mountIconClass(m.Type) }></i>
+									</div>
+									<div class="flex-1 min-w-0">
+										<div class="flex items-center gap-2 mb-1">
+											<span class="px-2 py-0.5 text-xs bg-dark-600 text-gray-300 rounded">{ m.Type }</span>
+											if !m.RW {
+												<span class="px-2 py-0.5 text-xs bg-yellow-500/20 text-yellow-400 rounded">read-only</span>
+											}
+										</div>
+										<p class="text-sm text-gray-300 font-mono truncate">{ m.Source }</p>
+										<p class="text-xs text-gray-500 mt-1">→ { m.Destination }</p>
+									</div>
+								</div>
+							}
+						</div>
+					</div>
+				}
+			</div>
+
+			<!-- Sidebar -->
+			<div class="space-y-6">
+				<!-- Security Score -->
+				<div class="bg-dark-800 rounded-xl border border-dark-600 p-5">
+					<div class="flex items-center justify-between mb-4">
+						<h2 class="text-lg font-semibold text-white">Security</h2>
+						<a href={ templ.SafeURL("/security/container/" + data.Container.ID) } class="text-sm text-primary-400 hover:text-primary-300">
+							Details →
+						</a>
+					</div>
+					<div class="flex items-center gap-4">
+						<div class={ "w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold", gradeClass(data.Container.SecurityGrade) }>
+							{ data.Container.SecurityGrade }
+						</div>
+						<div>
+							<p class="text-3xl font-bold text-white">{ fmt.Sprintf("%d", data.Container.SecurityScore) }<span class="text-lg text-gray-500">/100</span></p>
+							<p class="text-sm text-gray-400">Security Score</p>
+						</div>
+					</div>
+				</div>
+
+				<!-- Quick Info -->
+				<div class="bg-dark-800 rounded-xl border border-dark-600 p-5">
+					<h2 class="text-lg font-semibold text-white mb-4">Configuration</h2>
+					<dl class="space-y-3 text-sm">
+						<div class="flex items-center justify-between">
+							<dt class="text-gray-500">User</dt>
+							<dd class="text-gray-300">{ ifEmpty(data.Container.User, "root") }</dd>
+						</div>
+						<div class="flex items-center justify-between">
+							<dt class="text-gray-500">Working Dir</dt>
+							<dd class="text-gray-300 font-mono truncate max-w-[150px]">{ ifEmpty(data.Container.WorkingDir, "/") }</dd>
+						</div>
+						<div class="flex items-center justify-between">
+							<dt class="text-gray-500">Privileged</dt>
+							<dd>
+								if data.Container.Privileged {
+									<span class="px-2 py-0.5 text-xs bg-red-500/20 text-red-400 rounded">Yes</span>
+								} else {
+									<span class="px-2 py-0.5 text-xs bg-green-500/20 text-green-400 rounded">No</span>
+								}
+							</dd>
+						</div>
+						<div class="flex items-center justify-between">
+							<dt class="text-gray-500">Read-only Root</dt>
+							<dd>
+								if data.Container.ReadonlyRoot {
+									<span class="px-2 py-0.5 text-xs bg-green-500/20 text-green-400 rounded">Yes</span>
+								} else {
+									<span class="px-2 py-0.5 text-xs bg-yellow-500/20 text-yellow-400 rounded">No</span>
+								}
+							</dd>
+						</div>
+					</dl>
+				</div>
+
+				<!-- Resources -->
+				<div class="bg-dark-800 rounded-xl border border-dark-600 p-5">
+					<h2 class="text-lg font-semibold text-white mb-4">Resources</h2>
+					<dl class="space-y-3 text-sm">
+						<div class="flex items-center justify-between">
+							<dt class="text-gray-500">Memory Limit</dt>
+							<dd class="text-gray-300">{ formatBytes(data.Container.Memory) }</dd>
+						</div>
+						<div class="flex items-center justify-between">
+							<dt class="text-gray-500">CPU Shares</dt>
+							<dd class="text-gray-300">{ fmt.Sprintf("%d", data.Container.CPUShares) }</dd>
+						</div>
+						<div class="flex items-center justify-between">
+							<dt class="text-gray-500">CPUs</dt>
+							<dd class="text-gray-300">{ fmt.Sprintf("%.2f", data.Container.CPUs) }</dd>
+						</div>
+					</dl>
+				</div>
+
+				<!-- Labels -->
+				if len(data.Container.Labels) > 0 {
+					<div class="bg-dark-800 rounded-xl border border-dark-600 p-5">
+						<h2 class="text-lg font-semibold text-white mb-4">Labels</h2>
+						<div class="space-y-2 max-h-48 overflow-y-auto">
+							for k, v := range data.Container.Labels {
+								<div class="text-sm">
+									<dt class="text-gray-500 truncate">{ k }</dt>
+									<dd class="text-gray-300 font-mono text-xs truncate">{ v }</dd>
+								</div>
+							}
+						</div>
+					</div>
+				}
+			</div>
+		</div>
+	}
+}
+
+templ tab(label, value, current, url string) {
+	<a 
+		href={ templ.SafeURL(url) }
+		class={ "px-4 py-2.5 text-sm font-medium border-b-2 transition-colors",
+			templ.KV("border-primary-500 text-primary-400", value == current || (current == "" && value == "overview")),
+			templ.KV("border-transparent text-gray-400 hover:text-white hover:border-gray-600", value != current && !(current == "" && value == "overview")) }
+	>
+		{ label }
+	</a>
+}
+
+templ infoItem(label, value string) {
+	<div>
+		<dt class="text-sm text-gray-500">{ label }</dt>
+		<dd class="text-gray-300 font-mono text-sm mt-1 truncate">{ value }</dd>
+	</div>
+}
+
+func stateIconBg(state string) string {
+	switch state {
+	case "running":
+		return "bg-green-500/20"
+	case "paused":
+		return "bg-yellow-500/20"
+	case "restarting":
+		return "bg-blue-500/20"
+	default:
+		return "bg-red-500/20"
+	}
+}
+
+func stateIconColor(state string) string {
+	switch state {
+	case "running":
+		return "text-green-400"
+	case "paused":
+		return "text-yellow-400"
+	case "restarting":
+		return "text-blue-400"
+	default:
+		return "text-red-400"
+	}
+}
+
+func gradeClass(grade string) string {
+	switch grade {
+	case "A":
+		return "bg-green-500/20 text-green-400"
+	case "B":
+		return "bg-blue-500/20 text-blue-400"
+	case "C":
+		return "bg-yellow-500/20 text-yellow-400"
+	case "D":
+		return "bg-orange-500/20 text-orange-400"
+	default:
+		return "bg-red-500/20 text-red-400"
+	}
+}
+
+func mountIcon(mountType string) string {
+	switch mountType {
+	case "volume":
+		return "bg-purple-500/20 text-purple-400"
+	case "bind":
+		return "bg-blue-500/20 text-blue-400"
+	case "tmpfs":
+		return "bg-yellow-500/20 text-yellow-400"
+	default:
+		return "bg-gray-500/20 text-gray-400"
+	}
+}
+
+func mountIconClass(mountType string) string {
+	switch mountType {
+	case "volume":
+		return "fa-database"
+	case "bind":
+		return "fa-folder"
+	case "tmpfs":
+		return "fa-memory"
+	default:
+		return "fa-hdd"
+	}
+}
+
+func ifEmpty(s, def string) string {
+	if s == "" {
+		return def
+	}
+	return s
+}
+
+func formatBytes(b int64) string {
+	if b == 0 {
+		return "Unlimited"
+	}
+	const unit = 1024
+	if b < unit {
+		return fmt.Sprintf("%d B", b)
+	}
+	div, exp := int64(unit), 0
+	for n := b / unit; n >= unit; n /= unit {
+		div *= unit
+		exp++
+	}
+	return fmt.Sprintf("%.1f %cB", float64(b)/float64(div), "KMGTPE"[exp])
+}

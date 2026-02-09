@@ -1,0 +1,10 @@
+DROP VIEW IF EXISTS recent_updates CASCADE;
+DROP VIEW IF EXISTS pending_updates CASCADE;
+DROP VIEW IF EXISTS update_stats_by_host CASCADE;
+DROP FUNCTION IF EXISTS cleanup_update_caches() CASCADE;
+DROP FUNCTION IF EXISTS calculate_update_duration() CASCADE;
+DROP TABLE IF EXISTS changelog_cache CASCADE;
+DROP TABLE IF EXISTS image_version_cache CASCADE;
+DROP TABLE IF EXISTS update_webhooks CASCADE;
+DROP TABLE IF EXISTS update_policies CASCADE;
+DROP TABLE IF EXISTS updates CASCADE;

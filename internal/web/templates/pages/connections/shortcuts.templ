@@ -1,0 +1,698 @@
+package connections
+
+import (
+	"fmt"
+	"github.com/fr4nsys/usulnet/internal/web/templates/layouts"
+)
+
+// ShortcutData represents a shortcut for display.
+type ShortcutData struct {
+	ID          string
+	Name        string
+	Description string
+	URL         string
+	Type        string
+	Icon        string
+	IconType    string
+	Color       string
+	Category    string
+	OpenInNew   bool
+	ShowInMenu  bool
+	IsPublic    bool
+	CreatedAt   string
+}
+
+// ShortcutsListData is the data for the shortcuts list page.
+type ShortcutsListData struct {
+	PageData   layouts.PageData
+	Shortcuts  []ShortcutData
+	Categories []string
+}
+
+// ShortcutNewData is the data for the new shortcut form.
+type ShortcutNewData struct {
+	PageData   layouts.PageData
+	Categories []string
+}
+
+// ShortcutEditData is the data for the edit shortcut form.
+type ShortcutEditData struct {
+	PageData   layouts.PageData
+	Shortcut   ShortcutData
+	Categories []string
+}
+
+// ShortcutsList renders the shortcuts list page.
+templ ShortcutsList(data ShortcutsListData) {
+	@layouts.Base(data.PageData) {
+		<div class="space-y-6">
+			<!-- Header -->
+			<div class="flex items-center justify-between">
+				<div>
+					<h1 class="text-2xl font-display font-bold text-white">Web Shortcuts</h1>
+					<p class="text-gray-400 mt-1">Quick access to your favorite links and services</p>
+				</div>
+				<a
+					href="/connections/shortcuts/new"
+					class="px-4 py-2 bg-primary-500 hover:bg-primary-600 text-white rounded-lg transition-colors flex items-center gap-2"
+				>
+					<i class="fas fa-plus"></i>
+					New Shortcut
+				</a>
+			</div>
+
+			<!-- Category Filter -->
+			if len(data.Categories) > 0 {
+				<div class="flex items-center gap-2 flex-wrap">
+					<span class="text-sm text-gray-400">Filter:</span>
+					<a
+						href="/connections/shortcuts"
+						class="px-3 py-1.5 rounded-lg text-sm bg-primary-500/20 text-primary-400"
+					>
+						All
+					</a>
+					for _, cat := range data.Categories {
+						<a
+							href={ templ.SafeURL("/connections/shortcuts?category=" + cat) }
+							class="px-3 py-1.5 rounded-lg text-sm bg-dark-700 text-gray-300 hover:bg-dark-600 transition-colors"
+						>
+							{ cat }
+						</a>
+					}
+				</div>
+			}
+
+			<!-- Shortcuts Grid -->
+			if len(data.Shortcuts) > 0 {
+				<div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+					for _, shortcut := range data.Shortcuts {
+						@shortcutCard(shortcut)
+					}
+				</div>
+			} else {
+				<div class="card p-12 text-center">
+					<i class="fas fa-external-link-alt text-4xl text-gray-600 mb-4"></i>
+					<h3 class="text-lg font-medium text-white mb-2">No shortcuts yet</h3>
+					<p class="text-gray-400 mb-4">Create shortcuts to quickly access your favorite websites and services</p>
+					<a
+						href="/connections/shortcuts/new"
+						class="inline-flex items-center gap-2 px-4 py-2 bg-primary-500 hover:bg-primary-600 text-white rounded-lg transition-colors"
+					>
+						<i class="fas fa-plus"></i>
+						Create Shortcut
+					</a>
+				</div>
+			}
+		</div>
+
+		<!-- Delete Confirmation Modal -->
+		<div
+			x-data="{ open: false, shortcutId: '', shortcutName: '' }"
+			x-show="open"
+			x-cloak
+			@open-delete-modal.window="open = true; shortcutId = $event.detail.id; shortcutName = $event.detail.name"
+			class="fixed inset-0 z-50 flex items-center justify-center"
+		>
+			<div class="fixed inset-0 bg-black/50" @click="open = false"></div>
+			<div class="relative bg-dark-800 rounded-xl border border-dark-600 p-6 max-w-md w-full mx-4">
+				<h3 class="text-lg font-semibold text-white mb-4">Delete Shortcut</h3>
+				<p class="text-gray-400 mb-6">
+					Are you sure you want to delete "<span class="text-white" x-text="shortcutName"></span>"?
+				</p>
+				<div class="flex justify-end gap-3">
+					<button
+						@click="open = false"
+						class="px-4 py-2 bg-dark-700 hover:bg-dark-600 text-gray-300 rounded-lg transition-colors"
+					>
+						Cancel
+					</button>
+					<button
+						@click="deleteShortcut(shortcutId); open = false"
+						class="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors"
+					>
+						Delete
+					</button>
+				</div>
+			</div>
+		</div>
+
+		<script>
+			function deleteShortcut(id) {
+				fetch('/connections/shortcuts/' + id, {
+					method: 'DELETE',
+				}).then(response => {
+					if (response.ok) {
+						window.location.reload();
+					}
+				});
+			}
+		</script>
+		<style>
+			.shortcut-icon-url.fallback-icon img { display: none; }
+			.shortcut-icon-url.fallback-icon i { display: block !important; }
+		</style>
+	}
+}
+
+templ shortcutCard(shortcut ShortcutData) {
+	<div class="card group relative overflow-hidden hover:border-primary-500/50 transition-colors">
+		<!-- Actions (visible on hover) -->
+		<div class="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity flex gap-1">
+			<a
+				href={ templ.SafeURL("/connections/shortcuts/" + shortcut.ID + "/edit") }
+				class="p-1.5 bg-dark-700 hover:bg-dark-600 text-gray-400 hover:text-white rounded transition-colors"
+				title="Edit"
+			>
+				<i class="fas fa-edit text-xs"></i>
+			</a>
+			<button
+				@click={ fmt.Sprintf("$dispatch('open-delete-modal', {id: '%s', name: '%s'})", shortcut.ID, shortcut.Name) }
+				class="p-1.5 bg-dark-700 hover:bg-red-500/20 text-gray-400 hover:text-red-400 rounded transition-colors"
+				title="Delete"
+			>
+				<i class="fas fa-trash text-xs"></i>
+			</button>
+		</div>
+
+		<a
+			href={ templ.SafeURL(shortcut.URL) }
+			target={ getTarget(shortcut.OpenInNew) }
+			rel="noopener noreferrer"
+			class="block p-4"
+		>
+			<!-- Icon -->
+			<div class="flex justify-center mb-3">
+				@shortcutIcon(shortcut)
+			</div>
+
+			<!-- Name -->
+			<h3 class="text-center font-medium text-white truncate">{ shortcut.Name }</h3>
+
+			<!-- Description -->
+			if shortcut.Description != "" {
+				<p class="text-center text-xs text-gray-500 mt-1 truncate">{ shortcut.Description }</p>
+			}
+
+			<!-- Category Badge -->
+			if shortcut.Category != "" {
+				<div class="flex justify-center mt-2">
+					<span class="px-2 py-0.5 rounded text-xs bg-dark-700 text-gray-400">{ shortcut.Category }</span>
+				</div>
+			}
+		</a>
+
+		<!-- Indicators -->
+		<div class="absolute bottom-2 left-2 flex gap-1">
+			if shortcut.ShowInMenu {
+				<span class="w-2 h-2 rounded-full bg-primary-500" title="Shown in menu"></span>
+			}
+			if shortcut.IsPublic {
+				<span class="w-2 h-2 rounded-full bg-green-500" title="Public"></span>
+			}
+		</div>
+	</div>
+}
+
+templ shortcutIcon(shortcut ShortcutData) {
+	if shortcut.IconType == "fa" || (shortcut.Icon != "" && isFA(shortcut.Icon)) {
+		<div
+			class="w-14 h-14 rounded-xl flex items-center justify-center text-2xl"
+			style={ getIconStyle(shortcut.Color) }
+		>
+			<i class={ "fas " + shortcut.Icon }></i>
+		</div>
+	} else if shortcut.IconType == "url" || (shortcut.Icon != "" && isURL(shortcut.Icon)) {
+		<div
+			class="w-14 h-14 rounded-xl flex items-center justify-center overflow-hidden shortcut-icon-url"
+			style={ getIconStyle(shortcut.Color) }
+		>
+			<img
+				src={ shortcut.Icon }
+				alt={ shortcut.Name }
+				class="w-8 h-8 object-contain"
+				onerror="this.style.display='none';this.parentElement.classList.add('fallback-icon')"
+			/>
+			<i class="fas fa-globe text-2xl hidden"></i>
+		</div>
+	} else if shortcut.IconType == "emoji" {
+		<div
+			class="w-14 h-14 rounded-xl flex items-center justify-center text-3xl"
+			style={ getIconStyle(shortcut.Color) }
+		>
+			{ shortcut.Icon }
+		</div>
+	} else {
+		<div
+			class="w-14 h-14 rounded-xl flex items-center justify-center text-2xl"
+			style={ getIconStyle(shortcut.Color) }
+		>
+			<i class="fas fa-globe"></i>
+		</div>
+	}
+}
+
+// ShortcutNew renders the new shortcut form.
+templ ShortcutNew(data ShortcutNewData) {
+	@layouts.Base(data.PageData) {
+		<div class="max-w-2xl mx-auto">
+			<!-- Breadcrumb -->
+			<nav class="flex items-center gap-2 text-sm text-gray-400 mb-4">
+				<a href="/connections/shortcuts" class="hover:text-primary-400 transition-colors">Shortcuts</a>
+				<i class="fas fa-chevron-right text-xs"></i>
+				<span class="text-white">New Shortcut</span>
+			</nav>
+
+			<div class="card">
+				<div class="px-6 py-4 border-b border-dark-700">
+					<h1 class="text-xl font-semibold text-white">Create New Shortcut</h1>
+				</div>
+
+				<form action="/connections/shortcuts" method="POST" class="p-6 space-y-6">
+					<input type="hidden" name="csrf_token" value={ data.PageData.CSRFToken }/>
+					<!-- Name -->
+					<div>
+						<label class="block text-sm font-medium text-gray-300 mb-2">Name *</label>
+						<input
+							type="text"
+							name="name"
+							required
+							placeholder="My Favorite Site"
+							class="w-full px-4 py-2.5 bg-dark-700 border border-dark-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-primary-500"
+						/>
+					</div>
+
+					<!-- URL -->
+					<div>
+						<label class="block text-sm font-medium text-gray-300 mb-2">URL *</label>
+						<input
+							type="url"
+							name="url"
+							required
+							placeholder="https://example.com"
+							class="w-full px-4 py-2.5 bg-dark-700 border border-dark-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-primary-500"
+						/>
+					</div>
+
+					<!-- Description -->
+					<div>
+						<label class="block text-sm font-medium text-gray-300 mb-2">Description</label>
+						<input
+							type="text"
+							name="description"
+							placeholder="Optional description"
+							class="w-full px-4 py-2.5 bg-dark-700 border border-dark-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-primary-500"
+						/>
+					</div>
+
+					<!-- Icon Type -->
+					<div x-data="{ iconType: 'fa' }">
+						<label class="block text-sm font-medium text-gray-300 mb-2">Icon</label>
+						<div class="flex gap-2 mb-3">
+							<button
+								type="button"
+								@click="iconType = 'fa'"
+								:class="iconType === 'fa' ? 'bg-primary-500/20 text-primary-400 border-primary-500' : 'bg-dark-700 text-gray-400 border-dark-600'"
+								class="px-3 py-1.5 rounded-lg text-sm border transition-colors"
+							>
+								FontAwesome
+							</button>
+							<button
+								type="button"
+								@click="iconType = 'url'"
+								:class="iconType === 'url' ? 'bg-primary-500/20 text-primary-400 border-primary-500' : 'bg-dark-700 text-gray-400 border-dark-600'"
+								class="px-3 py-1.5 rounded-lg text-sm border transition-colors"
+							>
+								URL/Favicon
+							</button>
+							<button
+								type="button"
+								@click="iconType = 'emoji'"
+								:class="iconType === 'emoji' ? 'bg-primary-500/20 text-primary-400 border-primary-500' : 'bg-dark-700 text-gray-400 border-dark-600'"
+								class="px-3 py-1.5 rounded-lg text-sm border transition-colors"
+							>
+								Emoji
+							</button>
+						</div>
+						<input type="hidden" name="icon_type" :value="iconType"/>
+						<input
+							type="text"
+							name="icon"
+							x-show="iconType === 'fa'"
+							placeholder="fa-globe, fa-server, fa-database..."
+							class="w-full px-4 py-2.5 bg-dark-700 border border-dark-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-primary-500"
+						/>
+						<input
+							type="url"
+							name="icon"
+							x-show="iconType === 'url'"
+							placeholder="https://example.com/favicon.ico"
+							class="w-full px-4 py-2.5 bg-dark-700 border border-dark-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-primary-500"
+						/>
+						<input
+							type="text"
+							name="icon"
+							x-show="iconType === 'emoji'"
+							placeholder="🚀"
+							class="w-full px-4 py-2.5 bg-dark-700 border border-dark-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-primary-500"
+						/>
+						<p class="text-xs text-gray-500 mt-1" x-show="iconType === 'url'">
+							Leave empty to auto-fetch favicon from the URL
+						</p>
+					</div>
+
+					<!-- Color -->
+					<div>
+						<label class="block text-sm font-medium text-gray-300 mb-2">Background Color</label>
+						<div class="flex items-center gap-3">
+							<input
+								type="color"
+								name="color"
+								value="#1e293b"
+								class="w-12 h-10 rounded cursor-pointer bg-transparent"
+							/>
+							<span class="text-gray-400 text-sm">Icon background color</span>
+						</div>
+					</div>
+
+					<!-- Category -->
+					<div>
+						<label class="block text-sm font-medium text-gray-300 mb-2">Category</label>
+						<input
+							type="text"
+							name="category"
+							list="categories"
+							placeholder="Development, Tools, etc."
+							class="w-full px-4 py-2.5 bg-dark-700 border border-dark-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-primary-500"
+						/>
+						<datalist id="categories">
+							for _, cat := range data.Categories {
+								<option value={ cat }/>
+							}
+						</datalist>
+					</div>
+
+					<!-- Options -->
+					<div class="space-y-3">
+						<label class="flex items-center gap-3">
+							<input
+								type="checkbox"
+								name="open_in_new"
+								value="true"
+								checked
+								class="w-4 h-4 rounded bg-dark-700 border-dark-600 text-primary-500 focus:ring-primary-500"
+							/>
+							<span class="text-gray-300">Open in new tab</span>
+						</label>
+						<label class="flex items-center gap-3">
+							<input
+								type="checkbox"
+								name="show_in_menu"
+								value="true"
+								class="w-4 h-4 rounded bg-dark-700 border-dark-600 text-primary-500 focus:ring-primary-500"
+							/>
+							<span class="text-gray-300">Show in sidebar menu</span>
+						</label>
+						<label class="flex items-center gap-3">
+							<input
+								type="checkbox"
+								name="is_public"
+								value="true"
+								class="w-4 h-4 rounded bg-dark-700 border-dark-600 text-primary-500 focus:ring-primary-500"
+							/>
+							<span class="text-gray-300">Make public (visible to all users)</span>
+						</label>
+					</div>
+
+					<!-- Hidden type field -->
+					<input type="hidden" name="type" value="web"/>
+
+					<!-- Actions -->
+					<div class="flex justify-end gap-3 pt-4 border-t border-dark-700">
+						<a
+							href="/connections/shortcuts"
+							class="px-4 py-2 bg-dark-700 hover:bg-dark-600 text-gray-300 rounded-lg transition-colors"
+						>
+							Cancel
+						</a>
+						<button
+							type="submit"
+							class="px-4 py-2 bg-primary-500 hover:bg-primary-600 text-white rounded-lg transition-colors"
+						>
+							Create Shortcut
+						</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	}
+}
+
+// ShortcutEdit renders the edit shortcut form.
+templ ShortcutEdit(data ShortcutEditData) {
+	@layouts.Base(data.PageData) {
+		<div class="max-w-2xl mx-auto">
+			<!-- Breadcrumb -->
+			<nav class="flex items-center gap-2 text-sm text-gray-400 mb-4">
+				<a href="/connections/shortcuts" class="hover:text-primary-400 transition-colors">Shortcuts</a>
+				<i class="fas fa-chevron-right text-xs"></i>
+				<span class="text-white">Edit Shortcut</span>
+			</nav>
+
+			<div class="card">
+				<div class="px-6 py-4 border-b border-dark-700">
+					<h1 class="text-xl font-semibold text-white">Edit Shortcut</h1>
+				</div>
+
+				<form action={ templ.SafeURL("/connections/shortcuts/" + data.Shortcut.ID) } method="POST" class="p-6 space-y-6">
+					<input type="hidden" name="csrf_token" value={ data.PageData.CSRFToken }/>
+					<!-- Name -->
+					<div>
+						<label class="block text-sm font-medium text-gray-300 mb-2">Name *</label>
+						<input
+							type="text"
+							name="name"
+							required
+							value={ data.Shortcut.Name }
+							class="w-full px-4 py-2.5 bg-dark-700 border border-dark-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-primary-500"
+						/>
+					</div>
+
+					<!-- URL -->
+					<div>
+						<label class="block text-sm font-medium text-gray-300 mb-2">URL *</label>
+						<input
+							type="url"
+							name="url"
+							required
+							value={ data.Shortcut.URL }
+							class="w-full px-4 py-2.5 bg-dark-700 border border-dark-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-primary-500"
+						/>
+					</div>
+
+					<!-- Description -->
+					<div>
+						<label class="block text-sm font-medium text-gray-300 mb-2">Description</label>
+						<input
+							type="text"
+							name="description"
+							value={ data.Shortcut.Description }
+							class="w-full px-4 py-2.5 bg-dark-700 border border-dark-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-primary-500"
+						/>
+					</div>
+
+					<!-- Icon Type -->
+					<div x-data={ fmt.Sprintf("{ iconType: '%s' }", getIconType(data.Shortcut.IconType, data.Shortcut.Icon)) }>
+						<label class="block text-sm font-medium text-gray-300 mb-2">Icon</label>
+						<div class="flex gap-2 mb-3">
+							<button
+								type="button"
+								@click="iconType = 'fa'"
+								:class="iconType === 'fa' ? 'bg-primary-500/20 text-primary-400 border-primary-500' : 'bg-dark-700 text-gray-400 border-dark-600'"
+								class="px-3 py-1.5 rounded-lg text-sm border transition-colors"
+							>
+								FontAwesome
+							</button>
+							<button
+								type="button"
+								@click="iconType = 'url'"
+								:class="iconType === 'url' ? 'bg-primary-500/20 text-primary-400 border-primary-500' : 'bg-dark-700 text-gray-400 border-dark-600'"
+								class="px-3 py-1.5 rounded-lg text-sm border transition-colors"
+							>
+								URL/Favicon
+							</button>
+							<button
+								type="button"
+								@click="iconType = 'emoji'"
+								:class="iconType === 'emoji' ? 'bg-primary-500/20 text-primary-400 border-primary-500' : 'bg-dark-700 text-gray-400 border-dark-600'"
+								class="px-3 py-1.5 rounded-lg text-sm border transition-colors"
+							>
+								Emoji
+							</button>
+						</div>
+						<input type="hidden" name="icon_type" :value="iconType"/>
+						<input
+							type="text"
+							name="icon"
+							x-show="iconType === 'fa'"
+							value={ getIconValue(data.Shortcut.IconType, data.Shortcut.Icon, "fa") }
+							placeholder="fa-globe, fa-server, fa-database..."
+							class="w-full px-4 py-2.5 bg-dark-700 border border-dark-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-primary-500"
+						/>
+						<input
+							type="url"
+							name="icon"
+							x-show="iconType === 'url'"
+							value={ getIconValue(data.Shortcut.IconType, data.Shortcut.Icon, "url") }
+							placeholder="https://example.com/favicon.ico"
+							class="w-full px-4 py-2.5 bg-dark-700 border border-dark-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-primary-500"
+						/>
+						<input
+							type="text"
+							name="icon"
+							x-show="iconType === 'emoji'"
+							value={ getIconValue(data.Shortcut.IconType, data.Shortcut.Icon, "emoji") }
+							placeholder="🚀"
+							class="w-full px-4 py-2.5 bg-dark-700 border border-dark-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-primary-500"
+						/>
+					</div>
+
+					<!-- Color -->
+					<div>
+						<label class="block text-sm font-medium text-gray-300 mb-2">Background Color</label>
+						<div class="flex items-center gap-3">
+							<input
+								type="color"
+								name="color"
+								value={ getColorValue(data.Shortcut.Color) }
+								class="w-12 h-10 rounded cursor-pointer bg-transparent"
+							/>
+							<span class="text-gray-400 text-sm">Icon background color</span>
+						</div>
+					</div>
+
+					<!-- Category -->
+					<div>
+						<label class="block text-sm font-medium text-gray-300 mb-2">Category</label>
+						<input
+							type="text"
+							name="category"
+							list="categories"
+							value={ data.Shortcut.Category }
+							placeholder="Development, Tools, etc."
+							class="w-full px-4 py-2.5 bg-dark-700 border border-dark-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-primary-500"
+						/>
+						<datalist id="categories">
+							for _, cat := range data.Categories {
+								<option value={ cat }/>
+							}
+						</datalist>
+					</div>
+
+					<!-- Options -->
+					<div class="space-y-3">
+						<label class="flex items-center gap-3">
+							<input
+								type="checkbox"
+								name="open_in_new"
+								value="true"
+								checked?={ data.Shortcut.OpenInNew }
+								class="w-4 h-4 rounded bg-dark-700 border-dark-600 text-primary-500 focus:ring-primary-500"
+							/>
+							<span class="text-gray-300">Open in new tab</span>
+						</label>
+						<label class="flex items-center gap-3">
+							<input
+								type="checkbox"
+								name="show_in_menu"
+								value="true"
+								checked?={ data.Shortcut.ShowInMenu }
+								class="w-4 h-4 rounded bg-dark-700 border-dark-600 text-primary-500 focus:ring-primary-500"
+							/>
+							<span class="text-gray-300">Show in sidebar menu</span>
+						</label>
+						<label class="flex items-center gap-3">
+							<input
+								type="checkbox"
+								name="is_public"
+								value="true"
+								checked?={ data.Shortcut.IsPublic }
+								class="w-4 h-4 rounded bg-dark-700 border-dark-600 text-primary-500 focus:ring-primary-500"
+							/>
+							<span class="text-gray-300">Make public (visible to all users)</span>
+						</label>
+					</div>
+
+					<!-- Hidden type field -->
+					<input type="hidden" name="type" value={ data.Shortcut.Type }/>
+
+					<!-- Actions -->
+					<div class="flex justify-end gap-3 pt-4 border-t border-dark-700">
+						<a
+							href="/connections/shortcuts"
+							class="px-4 py-2 bg-dark-700 hover:bg-dark-600 text-gray-300 rounded-lg transition-colors"
+						>
+							Cancel
+						</a>
+						<button
+							type="submit"
+							class="px-4 py-2 bg-primary-500 hover:bg-primary-600 text-white rounded-lg transition-colors"
+						>
+							Save Changes
+						</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	}
+}
+
+// Helper functions
+func getTarget(openInNew bool) string {
+	if openInNew {
+		return "_blank"
+	}
+	return "_self"
+}
+
+func getIconType(iconType, icon string) string {
+	if iconType != "" {
+		return iconType
+	}
+	if isFA(icon) {
+		return "fa"
+	}
+	if isURL(icon) {
+		return "url"
+	}
+	return "fa"
+}
+
+func getIconValue(iconType, icon, targetType string) string {
+	currentType := getIconType(iconType, icon)
+	if currentType == targetType {
+		return icon
+	}
+	return ""
+}
+
+func getColorValue(color string) string {
+	if color == "" {
+		return "#1e293b"
+	}
+	return color
+}
+
+func getIconStyle(color string) string {
+	if color == "" {
+		color = "#1e293b"
+	}
+	return "background-color: " + color + "; color: #94a3b8;"
+}
+
+func isFA(icon string) bool {
+	return len(icon) > 0 && (icon[0] == 'f' && len(icon) > 2 && icon[1] == 'a' && icon[2] == '-')
+}
+
+func isURL(icon string) bool {
+	return len(icon) > 4 && (icon[0:4] == "http" || icon[0:2] == "//")
+}

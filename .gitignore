@@ -1,0 +1,30 @@
+# Binaries
+bin/
+/usulnet
+/usulnet-agent
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Build artifacts
+tmp/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment
+.env
+.env.local
+.env.production
+
+# License private key - NEVER commit this
+internal/license/keys/private.pem

@@ -1,0 +1,122 @@
+package proxy
+
+import (
+	"fmt"
+	"strings"
+	"github.com/fr4nsys/usulnet/internal/web/templates/layouts"
+)
+
+type CertDetailData struct {
+	PageData layouts.PageData
+	Cert     CertView
+}
+
+templ CertDetail(data CertDetailData) {
+	@layouts.Base(data.PageData) {
+		<div class="max-w-3xl mx-auto space-y-6">
+			<div class="flex items-center justify-between">
+				<div class="flex items-center gap-4">
+					<a href="/proxy/certificates" class="p-2 text-gray-400 hover:text-white hover:bg-dark-700 rounded-lg">
+						<i class="fas fa-arrow-left"></i>
+					</a>
+					<div>
+						<h1 class="text-2xl font-display font-bold text-white">{ data.Cert.NiceName }</h1>
+						<p class="text-gray-400 mt-1">
+							<i class={ certProviderIcon(data.Cert.Provider), "mr-1" }></i>
+							{ certProviderLabel(data.Cert.Provider) } certificate
+						</p>
+					</div>
+				</div>
+				<div class="flex items-center gap-2">
+					if data.Cert.Provider == "letsencrypt" {
+						<button
+							hx-post={ fmt.Sprintf("/proxy/certificates/%d/renew", data.Cert.ID) }
+							hx-confirm="Renew this certificate?"
+							class="btn-secondary"
+						>
+							<i class="fas fa-sync-alt mr-2"></i>Renew
+						</button>
+					}
+					<a href={ templ.SafeURL(fmt.Sprintf("/proxy/certificates/%d/download", data.Cert.ID)) } class="btn-secondary">
+						<i class="fas fa-download mr-2"></i>Download
+					</a>
+				</div>
+			</div>
+
+			<!-- Status Cards -->
+			<div class="grid grid-cols-3 gap-4">
+				<div class="card p-4">
+					<div class="text-xs text-gray-500 uppercase tracking-wider mb-1">Status</div>
+					if data.Cert.IsExpired {
+						<div class="flex items-center gap-2 text-red-400">
+							<i class="fas fa-times-circle"></i>
+							<span class="font-medium">Expired</span>
+						</div>
+					} else if data.Cert.DaysLeft < 14 {
+						<div class="flex items-center gap-2 text-yellow-400">
+							<i class="fas fa-exclamation-triangle"></i>
+							<span class="font-medium">Expiring Soon</span>
+						</div>
+					} else {
+						<div class="flex items-center gap-2 text-green-400">
+							<i class="fas fa-check-circle"></i>
+							<span class="font-medium">Valid</span>
+						</div>
+					}
+				</div>
+				<div class="card p-4">
+					<div class="text-xs text-gray-500 uppercase tracking-wider mb-1">Expires</div>
+					<div class={ "font-medium", certExpiryClass(data.Cert.DaysLeft, data.Cert.IsExpired) }>
+						if data.Cert.IsExpired {
+							Expired
+						} else {
+							{ fmt.Sprintf("%d days", data.Cert.DaysLeft) }
+						}
+					</div>
+					<div class="text-xs text-gray-500">{ data.Cert.ExpiresOn }</div>
+				</div>
+				<div class="card p-4">
+					<div class="text-xs text-gray-500 uppercase tracking-wider mb-1">Provider</div>
+					<div class="flex items-center gap-2 text-white font-medium">
+						<i class={ certProviderIcon(data.Cert.Provider) }></i>
+						{ certProviderLabel(data.Cert.Provider) }
+					</div>
+				</div>
+			</div>
+
+			<!-- Domains -->
+			<div class="card p-6">
+				<h3 class="text-sm font-medium text-gray-400 uppercase tracking-wider mb-4">Domains</h3>
+				<div class="space-y-2">
+					for _, domain := range data.Cert.DomainNames {
+						<div class="flex items-center gap-2 py-2 px-3 bg-dark-700 rounded-lg">
+							<i class="fas fa-globe text-gray-500"></i>
+							<span class="font-mono text-sm text-white">{ domain }</span>
+							if strings.HasPrefix(domain, "*.") {
+								<span class="badge badge-warning text-xs">Wildcard</span>
+							}
+						</div>
+					}
+				</div>
+			</div>
+
+			<!-- Danger Zone -->
+			<div class="card border border-red-500/20 p-6">
+				<h3 class="text-sm font-medium text-red-400 uppercase tracking-wider mb-4">Danger Zone</h3>
+				<div class="flex items-center justify-between">
+					<div>
+						<div class="text-sm font-medium text-white">Delete Certificate</div>
+						<div class="text-xs text-gray-400">Proxy hosts using this certificate will lose SSL.</div>
+					</div>
+					<button
+						hx-delete={ fmt.Sprintf("/proxy/certificates/%d", data.Cert.ID) }
+						hx-confirm="Delete this certificate? This cannot be undone."
+						class="btn-danger"
+					>
+						<i class="fas fa-trash mr-2"></i>Delete
+					</button>
+				</div>
+			</div>
+		</div>
+	}
+}

@@ -1,0 +1,552 @@
+package teams
+
+import (
+	"fmt"
+	"strings"
+	"github.com/fr4nsys/usulnet/internal/web/templates/layouts"
+)
+
+// ============================================================================
+// Detail Data Types
+// ============================================================================
+
+type TeamDetailData struct {
+	PageData    layouts.PageData
+	Team        TeamItem
+	Members     []MemberItem
+	Permissions []PermissionItem
+	AllUsers    []UserOption // for add-member dropdown
+	Tab         string       // "members" or "permissions"
+	// Available resources for permission assignment
+	AvailableStacks     []ResourceOption
+	AvailableGiteaConns []ResourceOption
+	AvailableS3Conns    []ResourceOption
+	AvailableHosts      []ResourceOption
+	AvailableNetworks   []ResourceOption
+	AvailableVolumes    []ResourceOption
+}
+
+type MemberItem struct {
+	UserID   string
+	Username string
+	Email    string
+	Role     string // "owner" or "member"
+	AddedAt  string
+}
+
+type PermissionItem struct {
+	ID           string
+	ResourceType string // "stack", "container_group", "gitea_connection", "s3_connection", "host", "network", "volume"
+	ResourceID   string
+	ResourceName string // human-readable
+	AccessLevel  string // "view" or "manage"
+	GrantedAt    string
+}
+
+type UserOption struct {
+	ID       string
+	Username string
+	Email    string
+}
+
+type ResourceOption struct {
+	ID   string
+	Name string
+}
+
+// ============================================================================
+// Detail Template
+// ============================================================================
+
+templ Detail(data TeamDetailData) {
+	@layouts.Base(data.PageData) {
+		<div class="space-y-6">
+			<!-- Header -->
+			<div class="flex items-center justify-between">
+				<div class="flex items-center gap-4">
+					<a href="/teams" class="p-2 text-gray-400 hover:text-white hover:bg-dark-700 rounded-lg">
+						<i class="fas fa-arrow-left"></i>
+					</a>
+					<div>
+						<h1 class="text-2xl font-display font-bold text-white">{ data.Team.Name }</h1>
+						if data.Team.Description != "" {
+							<p class="text-gray-400 mt-1">{ data.Team.Description }</p>
+						}
+					</div>
+				</div>
+				<a href={ templ.SafeURL("/teams/" + data.Team.ID + "/edit") } class="btn-secondary">
+					<i class="fas fa-edit mr-2"></i>Edit
+				</a>
+			</div>
+
+			<!-- Stats Row -->
+			<div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+				<div class="card p-4">
+					<div class="text-2xl font-bold text-white">{ fmt.Sprintf("%d", data.Team.MemberCount) }</div>
+					<div class="text-sm text-gray-400">Members</div>
+				</div>
+				<div class="card p-4">
+					<div class="text-2xl font-bold text-blue-400">{ fmt.Sprintf("%d", data.Team.PermissionCount) }</div>
+					<div class="text-sm text-gray-400">Permissions</div>
+				</div>
+				<div class="card p-4">
+					<div class="text-sm text-gray-400">Created</div>
+					<div class="text-sm text-white mt-1">{ data.Team.CreatedAt }</div>
+				</div>
+				<div class="card p-4">
+					<div class="text-sm text-gray-400">Created By</div>
+					<div class="text-sm text-white mt-1">
+						if data.Team.CreatedBy != "" {
+							{ data.Team.CreatedBy }
+						} else {
+							<span class="text-gray-500">—</span>
+						}
+					</div>
+				</div>
+			</div>
+
+			<!-- Tabs -->
+			<div class="flex gap-2 border-b border-dark-600 pb-0">
+				<a
+					href={ templ.SafeURL("/teams/" + data.Team.ID + "?tab=members") }
+					class={ "px-4 py-2.5 text-sm font-medium border-b-2 transition-colors -mb-px",
+						templ.KV("border-primary-400 text-primary-400", data.Tab == "members" || data.Tab == ""),
+						templ.KV("border-transparent text-gray-400 hover:text-white", data.Tab != "members" && data.Tab != "") }
+				>
+					<i class="fas fa-users mr-2"></i>Members ({ fmt.Sprintf("%d", len(data.Members)) })
+				</a>
+				<a
+					href={ templ.SafeURL("/teams/" + data.Team.ID + "?tab=permissions") }
+					class={ "px-4 py-2.5 text-sm font-medium border-b-2 transition-colors -mb-px",
+						templ.KV("border-primary-400 text-primary-400", data.Tab == "permissions"),
+						templ.KV("border-transparent text-gray-400 hover:text-white", data.Tab != "permissions") }
+				>
+					<i class="fas fa-lock mr-2"></i>Permissions ({ fmt.Sprintf("%d", len(data.Permissions)) })
+				</a>
+			</div>
+
+			<!-- Tab Content -->
+			if data.Tab == "permissions" {
+				@permissionsTab(data)
+			} else {
+				@membersTab(data)
+			}
+		</div>
+	}
+}
+
+// ============================================================================
+// Members Tab
+// ============================================================================
+
+templ membersTab(data TeamDetailData) {
+	<div class="space-y-4">
+		<!-- Add Member Form -->
+		<div class="card p-4">
+			<form
+				action={ templ.SafeURL("/teams/" + data.Team.ID + "/members") }
+				method="POST"
+				class="flex items-end gap-4"
+			>
+				<input type="hidden" name="csrf_token" value={ data.PageData.CSRFToken }/>
+				<div class="flex-1">
+					<label class="block text-sm font-medium text-gray-300 mb-2">Add Member</label>
+					<select name="user_id" required class="input">
+						<option value="">Select a user…</option>
+						for _, u := range data.AllUsers {
+							if !isMember(u.ID, data.Members) {
+								<option value={ u.ID }>
+									{ u.Username }
+									if u.Email != "" {
+										({ u.Email })
+									}
+								</option>
+							}
+						}
+					</select>
+				</div>
+				<div>
+					<label class="block text-sm font-medium text-gray-300 mb-2">Role</label>
+					<select name="role" class="input">
+						<option value="member">Member</option>
+						<option value="owner">Owner</option>
+					</select>
+				</div>
+				<button type="submit" class="btn-primary whitespace-nowrap">
+					<i class="fas fa-user-plus mr-2"></i>Add
+				</button>
+			</form>
+		</div>
+
+		<!-- Members Table -->
+		<div class="card">
+			<div class="overflow-x-auto">
+				<table class="table">
+					<thead>
+						<tr>
+							<th>User</th>
+							<th>Role</th>
+							<th>Added</th>
+							<th>Actions</th>
+						</tr>
+					</thead>
+					<tbody>
+						if len(data.Members) == 0 {
+							<tr>
+								<td colspan="4" class="text-center text-gray-500 py-8">
+									No members yet. Add users above.
+								</td>
+							</tr>
+						}
+						for _, m := range data.Members {
+							<tr>
+								<td>
+									<div class="flex items-center gap-3">
+										<div class={ "w-8 h-8 rounded-full flex items-center justify-center font-medium text-sm",
+											templ.KV("bg-yellow-500/20 text-yellow-400", m.Role == "owner"),
+											templ.KV("bg-primary-500/20 text-primary-400", m.Role != "owner") }>
+											{ teamInitial(m.Username) }
+										</div>
+										<div>
+											<div class="font-medium text-white">{ m.Username }</div>
+											if m.Email != "" {
+												<div class="text-sm text-gray-400">{ m.Email }</div>
+											}
+										</div>
+									</div>
+								</td>
+								<td>
+									<span class={ "badge",
+										templ.KV("bg-yellow-500/20 text-yellow-400 border border-yellow-500/30", m.Role == "owner"),
+										templ.KV("badge-success", m.Role == "member") }>
+										if m.Role == "owner" {
+											<i class="fas fa-crown mr-1 text-xs"></i>
+										}
+										{ m.Role }
+									</span>
+								</td>
+								<td class="text-gray-400 text-sm">{ m.AddedAt }</td>
+								<td>
+									<button
+										hx-delete={ "/teams/" + data.Team.ID + "/members/" + m.UserID }
+										hx-target="body"
+										hx-confirm={ "Remove '" + m.Username + "' from this team?" }
+										class="text-red-400 hover:text-red-300 text-sm"
+									>
+										Remove
+									</button>
+								</td>
+							</tr>
+						}
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+}
+
+// ============================================================================
+// Permissions Tab
+// ============================================================================
+
+templ permissionsTab(data TeamDetailData) {
+	<div class="space-y-4">
+		<!-- Grant Permission Form -->
+		<div class="card p-4">
+			<form
+				action={ templ.SafeURL("/teams/" + data.Team.ID + "/permissions") }
+				method="POST"
+				class="space-y-4"
+				id="grant-permission-form"
+			>
+				<input type="hidden" name="csrf_token" value={ data.PageData.CSRFToken }/>
+				<div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+					<div>
+						<label class="block text-sm font-medium text-gray-300 mb-2">Resource Type</label>
+						<select
+							name="resource_type"
+							id="resource-type-select"
+							required
+							class="input"
+							onchange="updateResourceOptions()"
+						>
+							<option value="">Select type…</option>
+							<option value="stack">Stack</option>
+							<option value="host">Host/Node</option>
+							<option value="network">Network</option>
+							<option value="volume">Volume</option>
+							<option value="gitea_connection">Gitea Connection</option>
+							<option value="s3_connection">S3 Connection</option>
+							<option value="container_group">Container Group (label)</option>
+						</select>
+					</div>
+					<div class="md:col-span-2">
+						<label class="block text-sm font-medium text-gray-300 mb-2">Resource</label>
+						<select name="resource_id" id="resource-id-select" required class="input" disabled>
+							<option value="">First select a resource type</option>
+						</select>
+						<!-- Container group input (shown only for container_group type) -->
+						<input
+							type="text"
+							name="container_group_label"
+							id="container-group-input"
+							class="input hidden mt-2"
+							placeholder="Enter container group label (e.g. app=myapp)"
+						/>
+					</div>
+					<div>
+						<label class="block text-sm font-medium text-gray-300 mb-2">Access Level</label>
+						<select name="access_level" class="input">
+							<option value="view">View only</option>
+							<option value="manage">Full manage</option>
+						</select>
+					</div>
+				</div>
+				<div class="flex justify-end">
+					<button type="submit" class="btn-primary">
+						<i class="fas fa-plus mr-2"></i>Grant Permission
+					</button>
+				</div>
+			</form>
+		</div>
+
+		<script>
+			function updateResourceOptions() {
+				const typeSelect = document.getElementById('resource-type-select');
+				const resourceSelect = document.getElementById('resource-id-select');
+				const containerInput = document.getElementById('container-group-input');
+				const selectedType = typeSelect.value;
+
+				// Handle container_group special case
+				if (selectedType === 'container_group') {
+					resourceSelect.classList.add('hidden');
+					resourceSelect.disabled = true;
+					resourceSelect.name = '';
+					containerInput.classList.remove('hidden');
+					containerInput.required = true;
+					containerInput.name = 'resource_id';
+					return;
+				}
+
+				// Normal resource selection
+				containerInput.classList.add('hidden');
+				containerInput.required = false;
+				containerInput.name = 'container_group_label';
+				resourceSelect.classList.remove('hidden');
+				resourceSelect.name = 'resource_id';
+
+				if (!selectedType) {
+					resourceSelect.innerHTML = '<option value="">First select a resource type</option>';
+					resourceSelect.disabled = true;
+					return;
+				}
+
+				// Get resources from embedded JSON
+				try {
+					const resourcesData = document.getElementById('available-resources');
+					// Parse manually since we can't use JSON.parse on templ-generated content
+					const resources = getResourcesForType(selectedType);
+
+					if (resources.length === 0) {
+						resourceSelect.innerHTML = '<option value="">No resources available</option>';
+						resourceSelect.disabled = true;
+						return;
+					}
+
+					resourceSelect.innerHTML = '<option value="">Select a resource…</option>';
+					resources.forEach(r => {
+						const option = document.createElement('option');
+						option.value = r.id;
+						option.textContent = r.name;
+						resourceSelect.appendChild(option);
+					});
+					resourceSelect.disabled = false;
+				} catch (e) {
+					console.error('Error loading resources:', e);
+					resourceSelect.innerHTML = '<option value="">Error loading resources</option>';
+				}
+			}
+
+			function getResourcesForType(type) {
+				// This will be populated by HTMX partial or we use data attributes
+				const dataEl = document.getElementById('resources-' + type);
+				if (dataEl) {
+					return JSON.parse(dataEl.textContent);
+				}
+				return [];
+			}
+		</script>
+
+		<!-- Resource data elements (JSON for JavaScript) -->
+		<div class="hidden">
+			<script type="application/json" id="resources-stack">{ resourcesJSON(data.AvailableStacks) }</script>
+			<script type="application/json" id="resources-host">{ resourcesJSON(data.AvailableHosts) }</script>
+			<script type="application/json" id="resources-network">{ resourcesJSON(data.AvailableNetworks) }</script>
+			<script type="application/json" id="resources-volume">{ resourcesJSON(data.AvailableVolumes) }</script>
+			<script type="application/json" id="resources-gitea_connection">{ resourcesJSON(data.AvailableGiteaConns) }</script>
+			<script type="application/json" id="resources-s3_connection">{ resourcesJSON(data.AvailableS3Conns) }</script>
+		</div>
+
+		<!-- Permissions Table -->
+		<div class="card">
+			<div class="overflow-x-auto">
+				<table class="table">
+					<thead>
+						<tr>
+							<th>Resource</th>
+							<th>Type</th>
+							<th>Access</th>
+							<th>Granted</th>
+							<th>Actions</th>
+						</tr>
+					</thead>
+					<tbody>
+						if len(data.Permissions) == 0 {
+							<tr>
+								<td colspan="5" class="text-center text-gray-500 py-8">
+									No permissions granted yet. Use the form above to grant access to resources.
+								</td>
+							</tr>
+						}
+						for _, p := range data.Permissions {
+							<tr>
+								<td>
+									<div>
+										<div class="font-medium text-white font-mono text-sm">
+											if p.ResourceName != "" {
+												{ p.ResourceName }
+											} else {
+												{ shortResourceID(p.ResourceID) }
+											}
+										</div>
+										if p.ResourceName != "" {
+											<div class="text-xs text-gray-500 font-mono">{ shortResourceID(p.ResourceID) }</div>
+										}
+									</div>
+								</td>
+								<td>
+									<span class={ "badge text-xs",
+										templ.KV("bg-purple-500/20 text-purple-400", p.ResourceType == "stack"),
+										templ.KV("bg-blue-500/20 text-blue-400", p.ResourceType == "container_group"),
+										templ.KV("bg-green-500/20 text-green-400", p.ResourceType == "gitea_connection"),
+										templ.KV("bg-orange-500/20 text-orange-400", p.ResourceType == "s3_connection"),
+										templ.KV("bg-cyan-500/20 text-cyan-400", p.ResourceType == "host"),
+										templ.KV("bg-yellow-500/20 text-yellow-400", p.ResourceType == "network"),
+										templ.KV("bg-pink-500/20 text-pink-400", p.ResourceType == "volume") }>
+										<i class={ "fas mr-1", resourceTypeIcon(p.ResourceType) }></i>
+										{ resourceTypeLabel(p.ResourceType) }
+									</span>
+								</td>
+								<td>
+									<span class={ "badge",
+										templ.KV("bg-red-500/20 text-red-400 border border-red-500/30", p.AccessLevel == "manage"),
+										templ.KV("bg-gray-500/20 text-gray-400", p.AccessLevel == "view") }>
+										if p.AccessLevel == "manage" {
+											<i class="fas fa-edit mr-1 text-xs"></i>
+										} else {
+											<i class="fas fa-eye mr-1 text-xs"></i>
+										}
+										{ p.AccessLevel }
+									</span>
+								</td>
+								<td class="text-gray-400 text-sm">{ p.GrantedAt }</td>
+								<td>
+									<button
+										hx-delete={ "/teams/" + data.Team.ID + "/permissions/" + p.ID }
+										hx-target="body"
+										hx-confirm="Revoke this permission?"
+										class="text-red-400 hover:text-red-300 text-sm"
+									>
+										Revoke
+									</button>
+								</td>
+							</tr>
+						}
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+}
+
+// ============================================================================
+// Helper Functions
+// ============================================================================
+
+func isMember(userID string, members []MemberItem) bool {
+	for _, m := range members {
+		if m.UserID == userID {
+			return true
+		}
+	}
+	return false
+}
+
+func shortResourceID(id string) string {
+	if len(id) > 12 {
+		return id[:12] + "…"
+	}
+	return id
+}
+
+func resourceTypeIcon(rt string) string {
+	switch rt {
+	case "stack":
+		return "fa-cubes"
+	case "container_group":
+		return "fa-object-group"
+	case "gitea_connection":
+		return "fa-code-branch"
+	case "s3_connection":
+		return "fa-database"
+	case "host":
+		return "fa-server"
+	case "network":
+		return "fa-network-wired"
+	case "volume":
+		return "fa-hdd"
+	default:
+		return "fa-question"
+	}
+}
+
+func resourceTypeLabel(rt string) string {
+	switch rt {
+	case "stack":
+		return "Stack"
+	case "container_group":
+		return "Container Group"
+	case "gitea_connection":
+		return "Gitea"
+	case "s3_connection":
+		return "S3"
+	case "host":
+		return "Host"
+	case "network":
+		return "Network"
+	case "volume":
+		return "Volume"
+	default:
+		return rt
+	}
+}
+
+// resourcesJSON generates JSON array string for resources
+func resourcesJSON(resources []ResourceOption) string {
+	if len(resources) == 0 {
+		return "[]"
+	}
+	result := "["
+	for i, r := range resources {
+		if i > 0 {
+			result += ","
+		}
+		// Escape quotes in names
+		name := r.Name
+		name = strings.ReplaceAll(name, "\\", "\\\\")
+		name = strings.ReplaceAll(name, "\"", "\\\"")
+		result += fmt.Sprintf(`{"id":"%s","name":"%s"}`, r.ID, name)
+	}
+	result += "]"
+	return result
+}

@@ -1,0 +1,224 @@
+package backups
+
+import (
+	"github.com/fr4nsys/usulnet/internal/web/templates/layouts"
+)
+
+type DetailData struct {
+	PageData layouts.PageData
+	Backup   BackupDetail
+}
+
+type BackupDetail struct {
+	ID           string
+	Type         string
+	TargetID     string
+	TargetName   string
+	Status       string
+	Trigger      string
+	Size         string
+	Compression  string
+	Encrypted    bool
+	Verified     bool
+	Checksum     string
+	Path         string
+	ErrorMessage string
+	CreatedAt    string
+	CompletedAt  string
+	Duration     string
+	ExpiresAt    string
+}
+
+templ Detail(data DetailData) {
+	@layouts.Base(data.PageData) {
+		<div class="space-y-6">
+			<!-- Header -->
+			<div class="flex items-center justify-between">
+				<div>
+					<h1 class="text-2xl font-display font-bold text-white">Backup Details</h1>
+					<p class="text-gray-400 mt-1">{ data.Backup.TargetName } - { data.Backup.Type } backup</p>
+				</div>
+				<div class="flex items-center gap-2">
+					if data.Backup.Status == "completed" {
+						<a href={ templ.SafeURL("/backups/" + data.Backup.ID + "/download") } class="btn-secondary">
+							<i class="fas fa-download mr-2"></i>Download
+						</a>
+						<form method="POST" action={ templ.SafeURL("/backups/" + data.Backup.ID + "/restore") } class="inline">
+							<input type="hidden" name="csrf_token" value={ data.PageData.CSRFToken }/>
+							<button type="submit" class="btn-primary" onclick="return confirm('Restore this backup? Current data will be replaced.')">
+								<i class="fas fa-undo mr-2"></i>Restore
+							</button>
+						</form>
+					}
+					<a href="/backups" class="btn-secondary">
+						<i class="fas fa-arrow-left mr-2"></i>Back
+					</a>
+				</div>
+			</div>
+
+			<!-- Status Banner -->
+			if data.Backup.Status == "failed" {
+				<div class="bg-red-900/30 border border-red-700 rounded-lg p-4 flex items-start gap-3">
+					<i class="fas fa-times-circle text-red-400 mt-0.5"></i>
+					<div>
+						<p class="text-red-300 font-medium">Backup Failed</p>
+						if data.Backup.ErrorMessage != "" {
+							<p class="text-red-400/80 text-sm mt-1">{ data.Backup.ErrorMessage }</p>
+						}
+					</div>
+				</div>
+			}
+
+			if data.Backup.Status == "running" || data.Backup.Status == "pending" {
+				<div
+					class="bg-blue-900/30 border border-blue-700 rounded-lg p-4 flex items-start gap-3"
+					hx-get={ "/backups/" + data.Backup.ID }
+					hx-trigger="every 3s"
+					hx-select=".space-y-6"
+					hx-target="closest .space-y-6"
+					hx-swap="outerHTML"
+				>
+					<i class="fas fa-spinner fa-spin text-blue-400 mt-0.5"></i>
+					<div>
+						<p class="text-blue-300 font-medium">Backup In Progress</p>
+						<p class="text-blue-400/80 text-sm mt-1">This page will refresh automatically when the backup completes.</p>
+					</div>
+				</div>
+			}
+
+			<!-- Details Grid -->
+			<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+				<!-- General Info -->
+				<div class="card">
+					<div class="px-5 py-4 border-b border-dark-700">
+						<h2 class="font-medium text-white">General Information</h2>
+					</div>
+					<div class="p-5 space-y-4">
+						<div class="flex justify-between">
+							<span class="text-gray-400">ID</span>
+							<span class="text-white font-mono text-sm">{ data.Backup.ID }</span>
+						</div>
+						<div class="flex justify-between">
+							<span class="text-gray-400">Type</span>
+							<span class={ "badge", templ.KV("badge-info", data.Backup.Type == "container"), templ.KV("badge-success", data.Backup.Type == "volume"), templ.KV("badge-warning", data.Backup.Type == "stack") }>
+								{ data.Backup.Type }
+							</span>
+						</div>
+						<div class="flex justify-between">
+							<span class="text-gray-400">Target</span>
+							<span class="text-white">{ data.Backup.TargetName }</span>
+						</div>
+						<div class="flex justify-between">
+							<span class="text-gray-400">Status</span>
+							<span class={ "badge", templ.KV("badge-success", data.Backup.Status == "completed"), templ.KV("badge-danger", data.Backup.Status == "failed"), templ.KV("badge-warning", data.Backup.Status == "running" || data.Backup.Status == "pending") }>
+								{ data.Backup.Status }
+							</span>
+						</div>
+						<div class="flex justify-between">
+							<span class="text-gray-400">Trigger</span>
+							<span class="text-white">{ data.Backup.Trigger }</span>
+						</div>
+						<div class="flex justify-between">
+							<span class="text-gray-400">Size</span>
+							<span class="text-white">{ data.Backup.Size }</span>
+						</div>
+						if data.Backup.Duration != "" {
+							<div class="flex justify-between">
+								<span class="text-gray-400">Duration</span>
+								<span class="text-white">{ data.Backup.Duration }</span>
+							</div>
+						}
+					</div>
+				</div>
+
+				<!-- Storage Details -->
+				<div class="card">
+					<div class="px-5 py-4 border-b border-dark-700">
+						<h2 class="font-medium text-white">Storage & Security</h2>
+					</div>
+					<div class="p-5 space-y-4">
+						<div class="flex justify-between">
+							<span class="text-gray-400">Compression</span>
+							<span class="text-white">{ data.Backup.Compression }</span>
+						</div>
+						<div class="flex justify-between">
+							<span class="text-gray-400">Encrypted</span>
+							if data.Backup.Encrypted {
+								<span class="text-green-400"><i class="fas fa-lock mr-1"></i>Yes</span>
+							} else {
+								<span class="text-gray-500"><i class="fas fa-lock-open mr-1"></i>No</span>
+							}
+						</div>
+						<div class="flex justify-between">
+							<span class="text-gray-400">Verified</span>
+							if data.Backup.Verified {
+								<span class="text-green-400"><i class="fas fa-check-circle mr-1"></i>Yes</span>
+							} else {
+								<span class="text-gray-500">Not verified</span>
+							}
+						</div>
+						if data.Backup.Checksum != "" {
+							<div class="flex justify-between items-start">
+								<span class="text-gray-400">Checksum</span>
+								<span class="text-white font-mono text-xs break-all ml-4 text-right">{ data.Backup.Checksum }</span>
+							</div>
+						}
+						<div class="flex justify-between items-start">
+							<span class="text-gray-400">Path</span>
+							<span class="text-white font-mono text-xs break-all ml-4 text-right">{ data.Backup.Path }</span>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- Timeline -->
+			<div class="card">
+				<div class="px-5 py-4 border-b border-dark-700">
+					<h2 class="font-medium text-white">Timeline</h2>
+				</div>
+				<div class="p-5">
+					<div class="space-y-4">
+						<div class="flex items-center gap-4">
+							<div class="w-2 h-2 rounded-full bg-primary-400"></div>
+							<span class="text-gray-400 w-24 text-sm">Created</span>
+							<span class="text-white text-sm">{ data.Backup.CreatedAt }</span>
+						</div>
+						if data.Backup.CompletedAt != "" {
+							<div class="flex items-center gap-4">
+								<div class={ "w-2 h-2 rounded-full", templ.KV("bg-green-400", data.Backup.Status == "completed"), templ.KV("bg-red-400", data.Backup.Status == "failed") }></div>
+								<span class="text-gray-400 w-24 text-sm">Completed</span>
+								<span class="text-white text-sm">{ data.Backup.CompletedAt }</span>
+							</div>
+						}
+						if data.Backup.ExpiresAt != "" {
+							<div class="flex items-center gap-4">
+								<div class="w-2 h-2 rounded-full bg-yellow-400"></div>
+								<span class="text-gray-400 w-24 text-sm">Expires</span>
+								<span class="text-white text-sm">{ data.Backup.ExpiresAt }</span>
+							</div>
+						}
+					</div>
+				</div>
+			</div>
+
+			<!-- Danger Zone -->
+			<div class="card border border-red-900/50">
+				<div class="px-5 py-4 border-b border-dark-700">
+					<h2 class="font-medium text-red-400">Danger Zone</h2>
+				</div>
+				<div class="p-5 flex items-center justify-between">
+					<div>
+						<p class="text-white font-medium">Delete this backup</p>
+						<p class="text-gray-400 text-sm">This action cannot be undone. The backup file will be permanently removed.</p>
+					</div>
+					<form method="POST" action={ templ.SafeURL("/backups/" + data.Backup.ID + "/delete") } class="inline">
+						<input type="hidden" name="csrf_token" value={ data.PageData.CSRFToken }/>
+						<button type="submit" class="btn-danger" onclick="return confirm('Are you sure you want to delete this backup?')">
+							<i class="fas fa-trash mr-2"></i>Delete
+						</button>
+					</form>
+				</div>
+			</div>
+		</div>
+	}
+}

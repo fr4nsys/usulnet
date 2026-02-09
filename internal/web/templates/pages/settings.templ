@@ -1,0 +1,195 @@
+package pages
+
+import (
+	"fmt"
+	"github.com/fr4nsys/usulnet/internal/web/templates/layouts"
+)
+
+type SettingsData struct {
+	PageData layouts.PageData
+	Settings SettingsConfig
+}
+
+type SettingsConfig struct {
+	SiteName         string
+	BackupPath       string
+	BackupRetention  int
+	ScanInterval     int
+	UpdateCheckHours int
+	S3Enabled        bool
+	S3Bucket         string
+	S3Region         string
+	SMTPEnabled      bool
+	SMTPHost         string
+	SMTPPort         int
+}
+
+templ Settings(data SettingsData) {
+	@layouts.Base(data.PageData) {
+		<div class="max-w-4xl mx-auto space-y-6">
+			<div>
+				<h1 class="text-2xl font-display font-bold text-white">Settings</h1>
+				<p class="text-gray-400 mt-1">Configure system settings</p>
+			</div>
+
+			<form action="/settings" method="POST" class="space-y-6">
+				<input type="hidden" name="csrf_token" value={ data.PageData.CSRFToken }/>
+				<!-- Quick Links -->
+				<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+					<a href="/admin/notifications/channels" class="card p-4 hover:border-primary-500/50 transition-colors group">
+						<div class="flex items-center gap-3">
+							<div class="w-10 h-10 rounded-lg bg-primary-500/10 flex items-center justify-center">
+								<i class="fas fa-bell text-primary-400 group-hover:scale-110 transition-transform"></i>
+							</div>
+							<div>
+								<h3 class="font-medium text-white">Notification Channels</h3>
+								<p class="text-xs text-gray-500">Configure Slack, Discord, Email...</p>
+							</div>
+						</div>
+					</a>
+					<a href="/admin/oauth" class="card p-4 hover:border-primary-500/50 transition-colors group">
+						<div class="flex items-center gap-3">
+							<div class="w-10 h-10 rounded-lg bg-blue-500/10 flex items-center justify-center">
+								<i class="fas fa-key text-blue-400 group-hover:scale-110 transition-transform"></i>
+							</div>
+							<div>
+								<h3 class="font-medium text-white">OAuth Providers</h3>
+								<p class="text-xs text-gray-500">Configure SSO with Google, GitHub...</p>
+							</div>
+						</div>
+					</a>
+					<a href="/admin/ldap" class="card p-4 hover:border-primary-500/50 transition-colors group">
+						<div class="flex items-center gap-3">
+							<div class="w-10 h-10 rounded-lg bg-green-500/10 flex items-center justify-center">
+								<i class="fas fa-sitemap text-green-400 group-hover:scale-110 transition-transform"></i>
+							</div>
+							<div>
+								<h3 class="font-medium text-white">LDAP Providers</h3>
+								<p class="text-xs text-gray-500">Configure LDAP/Active Directory...</p>
+							</div>
+						</div>
+					</a>
+					<a href="/license" class="card p-4 hover:border-primary-500/50 transition-colors group">
+						<div class="flex items-center gap-3">
+							<div class="w-10 h-10 rounded-lg bg-purple-500/10 flex items-center justify-center">
+								<i class="fas fa-id-card text-purple-400 group-hover:scale-110 transition-transform"></i>
+							</div>
+							<div>
+								<h3 class="font-medium text-white">License</h3>
+								<p class="text-xs text-gray-500">Manage edition and license key</p>
+							</div>
+						</div>
+					</a>
+				</div>
+
+				<!-- Account Security -->
+				<div class="card p-6">
+					<h2 class="text-lg font-medium text-white mb-4">Account Security</h2>
+					<div class="flex items-center justify-between">
+						<div>
+							<p class="text-sm text-gray-300">Two-Factor Authentication (2FA)</p>
+							<p class="text-xs text-gray-500 mt-1">Add an extra layer of security with TOTP-based 2FA</p>
+						</div>
+						<a href="/settings/totp" class="btn-secondary text-sm">
+							<i class="fas fa-shield-alt mr-2"></i>Configure 2FA
+						</a>
+					</div>
+				</div>
+
+				<!-- General -->
+				<div class="card p-6">
+					<h2 class="text-lg font-medium text-white mb-4">General</h2>
+					<div class="space-y-4">
+						<div>
+							<label class="block text-sm font-medium text-gray-300 mb-2">Site Name</label>
+							<input type="text" name="site_name" value={ data.Settings.SiteName } class="input"/>
+						</div>
+					</div>
+				</div>
+
+				<!-- Backups -->
+				<div class="card p-6">
+					<h2 class="text-lg font-medium text-white mb-4">Backups</h2>
+					<div class="space-y-4">
+						<div>
+							<label class="block text-sm font-medium text-gray-300 mb-2">Backup Path</label>
+							<input type="text" name="backup_path" value={ data.Settings.BackupPath } class="input font-mono"/>
+						</div>
+						<div>
+							<label class="block text-sm font-medium text-gray-300 mb-2">Retention (days)</label>
+							<input type="number" name="backup_retention" value={ fmt.Sprintf("%d", data.Settings.BackupRetention) } min="1" max="365" class="input w-32"/>
+						</div>
+					</div>
+				</div>
+
+				<!-- Security -->
+				<div class="card p-6">
+					<h2 class="text-lg font-medium text-white mb-4">Security Scanner</h2>
+					<div class="space-y-4">
+						<div>
+							<label class="block text-sm font-medium text-gray-300 mb-2">Scan Interval (hours)</label>
+							<input type="number" name="scan_interval" value={ fmt.Sprintf("%d", data.Settings.ScanInterval) } min="1" max="168" class="input w-32"/>
+						</div>
+					</div>
+				</div>
+
+				<!-- Updates -->
+				<div class="card p-6">
+					<h2 class="text-lg font-medium text-white mb-4">Update Checker</h2>
+					<div class="space-y-4">
+						<div>
+							<label class="block text-sm font-medium text-gray-300 mb-2">Check Interval (hours)</label>
+							<input type="number" name="update_check_hours" value={ fmt.Sprintf("%d", data.Settings.UpdateCheckHours) } min="1" max="168" class="input w-32"/>
+						</div>
+					</div>
+				</div>
+
+				<!-- S3 -->
+				<div class="card p-6">
+					<h2 class="text-lg font-medium text-white mb-4">S3 Storage (Optional)</h2>
+					<div class="space-y-4">
+						<div class="flex items-center gap-2">
+							<input type="checkbox" id="s3_enabled" name="s3_enabled" checked?={ data.Settings.S3Enabled } class="rounded border-dark-600 bg-dark-700 text-primary-500"/>
+							<label for="s3_enabled" class="text-sm text-gray-300">Enable S3 backup storage</label>
+						</div>
+						<div>
+							<label class="block text-sm font-medium text-gray-300 mb-2">Bucket</label>
+							<input type="text" name="s3_bucket" value={ data.Settings.S3Bucket } class="input"/>
+						</div>
+						<div>
+							<label class="block text-sm font-medium text-gray-300 mb-2">Region</label>
+							<input type="text" name="s3_region" value={ data.Settings.S3Region } class="input"/>
+						</div>
+					</div>
+				</div>
+
+				<!-- SMTP -->
+				<div class="card p-6">
+					<h2 class="text-lg font-medium text-white mb-4">Email Notifications (Optional)</h2>
+					<div class="space-y-4">
+						<div class="flex items-center gap-2">
+							<input type="checkbox" id="smtp_enabled" name="smtp_enabled" checked?={ data.Settings.SMTPEnabled } class="rounded border-dark-600 bg-dark-700 text-primary-500"/>
+							<label for="smtp_enabled" class="text-sm text-gray-300">Enable email notifications</label>
+						</div>
+						<div class="grid grid-cols-2 gap-4">
+							<div>
+								<label class="block text-sm font-medium text-gray-300 mb-2">SMTP Host</label>
+								<input type="text" name="smtp_host" value={ data.Settings.SMTPHost } class="input"/>
+							</div>
+							<div>
+								<label class="block text-sm font-medium text-gray-300 mb-2">SMTP Port</label>
+								<input type="number" name="smtp_port" value={ fmt.Sprintf("%d", data.Settings.SMTPPort) } class="input"/>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="flex justify-end">
+					<button type="submit" class="btn-primary">
+						<i class="fas fa-save mr-2"></i>Save Settings
+					</button>
+				</div>
+			</form>
+		</div>
+	}
+}

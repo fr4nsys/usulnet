@@ -1,0 +1,523 @@
+package tools
+
+import (
+	"fmt"
+	"github.com/fr4nsys/usulnet/internal/web/templates/layouts"
+)
+
+// ============================================================================
+// Ansible Inventory Data Types
+// ============================================================================
+
+type AnsibleInventoryData struct {
+	PageData   layouts.PageData
+	Inventories []InventoryFile
+	Selected    *InventoryFile
+	Hosts       []AnsibleHost
+	Groups      []AnsibleGroup
+	Variables   map[string]string
+}
+
+type InventoryFile struct {
+	ID          string
+	Name        string
+	Path        string
+	Format      string // "ini", "yaml", "json"
+	HostCount   int
+	GroupCount  int
+	Size        string
+	UploadedAt  string
+	Description string
+}
+
+type AnsibleHost struct {
+	Name       string
+	IP         string
+	Port       int
+	User       string
+	Groups     []string
+	Variables  map[string]string
+	Status     string // "reachable", "unreachable", "unknown"
+}
+
+type AnsibleGroup struct {
+	Name      string
+	Hosts     []string
+	Children  []string
+	Variables map[string]string
+}
+
+// ============================================================================
+// Ansible Inventory Template
+// ============================================================================
+
+templ AnsibleInventory(data AnsibleInventoryData) {
+	@layouts.Base(data.PageData) {
+		<div class="space-y-6" x-data="ansibleBrowser()">
+			<!-- Header -->
+			<div class="flex items-center justify-between">
+				<div>
+					<h1 class="text-2xl font-display font-bold text-white">
+						<i class="fab fa-ansible text-primary-400 mr-2"></i>Ansible Inventory
+					</h1>
+					<p class="text-gray-400 mt-1">Browse, analyze, and manage Ansible inventory files</p>
+				</div>
+				<div class="flex items-center gap-3">
+					<button
+						onclick="document.getElementById('upload-modal').classList.remove('hidden')"
+						class="btn-secondary"
+					>
+						<i class="fas fa-upload mr-2"></i>Upload Inventory
+					</button>
+					<button
+						onclick="document.getElementById('paste-modal').classList.remove('hidden')"
+						class="btn-primary"
+					>
+						<i class="fas fa-paste mr-2"></i>Paste Content
+					</button>
+				</div>
+			</div>
+
+			<!-- Main Content -->
+			<div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+				<!-- Inventory Files Sidebar -->
+				<div class="lg:col-span-1">
+					<div class="card">
+						<div class="p-4 border-b border-dark-600">
+							<h2 class="font-semibold text-white">Inventory Files</h2>
+						</div>
+						<div class="divide-y divide-dark-600">
+							if len(data.Inventories) == 0 {
+								<div class="p-6 text-center text-gray-500">
+									<i class="fas fa-file-upload text-2xl mb-2"></i>
+									<p class="text-sm">No inventories loaded</p>
+									<p class="text-xs text-gray-600 mt-1">Upload or paste an inventory file</p>
+								</div>
+							}
+							for _, inv := range data.Inventories {
+								<a
+									href={ templ.SafeURL("/tools/ansible?id=" + inv.ID) }
+									class={ "block p-4 hover:bg-dark-700/50 transition-colors",
+										templ.KV("bg-primary-500/10 border-l-2 border-primary-500", data.Selected != nil && data.Selected.ID == inv.ID) }
+								>
+									<div class="flex items-center gap-3">
+										<div class={ "w-8 h-8 rounded-lg flex items-center justify-center", formatBgColor(inv.Format) }>
+											<i class={ formatIconAnsible(inv.Format) }></i>
+										</div>
+										<div class="flex-1 min-w-0">
+											<div class="font-medium text-white truncate">{ inv.Name }</div>
+											<div class="text-xs text-gray-500 flex items-center gap-2">
+												<span>{ fmt.Sprintf("%d hosts", inv.HostCount) }</span>
+												<span>·</span>
+												<span>{ fmt.Sprintf("%d groups", inv.GroupCount) }</span>
+											</div>
+										</div>
+									</div>
+								</a>
+							}
+						</div>
+					</div>
+				</div>
+
+				<!-- Inventory Content -->
+				<div class="lg:col-span-3 space-y-6">
+					if data.Selected != nil {
+						<!-- Inventory Info -->
+						<div class="card p-6">
+							<div class="flex items-start justify-between">
+								<div class="flex items-center gap-4">
+									<div class={ "w-12 h-12 rounded-xl flex items-center justify-center", formatBgColor(data.Selected.Format) }>
+										<i class={ formatIconAnsible(data.Selected.Format) + " text-xl" }></i>
+									</div>
+									<div>
+										<h2 class="text-xl font-semibold text-white">{ data.Selected.Name }</h2>
+										<p class="text-sm text-gray-400">{ data.Selected.Path }</p>
+									</div>
+								</div>
+								<div class="flex items-center gap-2">
+									<button
+										hx-delete={ "/tools/ansible/" + data.Selected.ID }
+										hx-target="body"
+										hx-confirm="Delete this inventory?"
+										class="btn-sm bg-red-500/10 text-red-400 hover:bg-red-500/20"
+									>
+										<i class="fas fa-trash mr-1"></i>Delete
+									</button>
+								</div>
+							</div>
+							<div class="mt-4 grid grid-cols-4 gap-4">
+								<div class="bg-dark-700 rounded-lg p-3 text-center">
+									<div class="text-2xl font-bold text-primary-400">{ fmt.Sprintf("%d", data.Selected.HostCount) }</div>
+									<div class="text-xs text-gray-500">Hosts</div>
+								</div>
+								<div class="bg-dark-700 rounded-lg p-3 text-center">
+									<div class="text-2xl font-bold text-blue-400">{ fmt.Sprintf("%d", data.Selected.GroupCount) }</div>
+									<div class="text-xs text-gray-500">Groups</div>
+								</div>
+								<div class="bg-dark-700 rounded-lg p-3 text-center">
+									<div class="text-2xl font-bold text-green-400 uppercase">{ data.Selected.Format }</div>
+									<div class="text-xs text-gray-500">Format</div>
+								</div>
+								<div class="bg-dark-700 rounded-lg p-3 text-center">
+									<div class="text-2xl font-bold text-gray-400">{ data.Selected.Size }</div>
+									<div class="text-xs text-gray-500">Size</div>
+								</div>
+							</div>
+						</div>
+
+						<!-- Tabs -->
+						<div class="flex gap-2 border-b border-dark-600">
+							<button
+								@click="activeTab = 'hosts'"
+								:class="activeTab === 'hosts' ? 'border-primary-400 text-primary-400' : 'border-transparent text-gray-400 hover:text-white'"
+								class="px-4 py-2.5 text-sm font-medium border-b-2 transition-colors -mb-px"
+							>
+								<i class="fas fa-server mr-2"></i>Hosts ({ fmt.Sprintf("%d", len(data.Hosts)) })
+							</button>
+							<button
+								@click="activeTab = 'groups'"
+								:class="activeTab === 'groups' ? 'border-primary-400 text-primary-400' : 'border-transparent text-gray-400 hover:text-white'"
+								class="px-4 py-2.5 text-sm font-medium border-b-2 transition-colors -mb-px"
+							>
+								<i class="fas fa-layer-group mr-2"></i>Groups ({ fmt.Sprintf("%d", len(data.Groups)) })
+							</button>
+							<button
+								@click="activeTab = 'variables'"
+								:class="activeTab === 'variables' ? 'border-primary-400 text-primary-400' : 'border-transparent text-gray-400 hover:text-white'"
+								class="px-4 py-2.5 text-sm font-medium border-b-2 transition-colors -mb-px"
+							>
+								<i class="fas fa-code mr-2"></i>Variables
+							</button>
+							<button
+								@click="activeTab = 'raw'"
+								:class="activeTab === 'raw' ? 'border-primary-400 text-primary-400' : 'border-transparent text-gray-400 hover:text-white'"
+								class="px-4 py-2.5 text-sm font-medium border-b-2 transition-colors -mb-px"
+							>
+								<i class="fas fa-file-code mr-2"></i>Raw
+							</button>
+						</div>
+
+						<!-- Hosts Tab -->
+						<div x-show="activeTab === 'hosts'" class="card">
+							<div class="overflow-x-auto">
+								<table class="table">
+									<thead>
+										<tr>
+											<th>Host</th>
+											<th>IP/Address</th>
+											<th>Port</th>
+											<th>User</th>
+											<th>Groups</th>
+											<th>Status</th>
+										</tr>
+									</thead>
+									<tbody>
+										if len(data.Hosts) == 0 {
+											<tr>
+												<td colspan="6" class="text-center text-gray-500 py-8">
+													No hosts defined
+												</td>
+											</tr>
+										}
+										for _, host := range data.Hosts {
+											<tr>
+												<td class="font-medium text-white">{ host.Name }</td>
+												<td class="font-mono text-sm">{ host.IP }</td>
+												<td class="text-gray-400">{ fmt.Sprintf("%d", host.Port) }</td>
+												<td class="text-gray-400">{ host.User }</td>
+												<td>
+													<div class="flex flex-wrap gap-1">
+														for _, g := range host.Groups {
+															<span class="badge bg-blue-500/10 text-blue-400 text-xs">{ g }</span>
+														}
+													</div>
+												</td>
+												<td>
+													<span class={ "badge text-xs", hostStatusBadge(host.Status) }>
+														<i class={ hostStatusIcon(host.Status) + " mr-1" }></i>
+														{ host.Status }
+													</span>
+												</td>
+											</tr>
+										}
+									</tbody>
+								</table>
+							</div>
+						</div>
+
+						<!-- Groups Tab -->
+						<div x-show="activeTab === 'groups'" class="card">
+							<div class="divide-y divide-dark-600">
+								if len(data.Groups) == 0 {
+									<div class="p-8 text-center text-gray-500">
+										No groups defined
+									</div>
+								}
+								for _, group := range data.Groups {
+									<div class="p-4">
+										<div class="flex items-center justify-between mb-3">
+											<h3 class="font-semibold text-white flex items-center gap-2">
+												<i class="fas fa-layer-group text-blue-400"></i>
+												{ group.Name }
+											</h3>
+											<span class="text-sm text-gray-400">{ fmt.Sprintf("%d hosts", len(group.Hosts)) }</span>
+										</div>
+										<div class="flex flex-wrap gap-2">
+											for _, host := range group.Hosts {
+												<span class="badge bg-dark-600 text-gray-300 text-xs">
+													<i class="fas fa-server mr-1"></i>{ host }
+												</span>
+											}
+										</div>
+										if len(group.Children) > 0 {
+											<div class="mt-2 flex flex-wrap gap-2">
+												<span class="text-xs text-gray-500">Children:</span>
+												for _, child := range group.Children {
+													<span class="badge bg-purple-500/10 text-purple-400 text-xs">{ child }</span>
+												}
+											</div>
+										}
+									</div>
+								}
+							</div>
+						</div>
+
+						<!-- Variables Tab -->
+						<div x-show="activeTab === 'variables'" class="card">
+							<div class="p-4">
+								<div class="space-y-4">
+									if len(data.Variables) == 0 {
+										<div class="text-center text-gray-500 py-8">
+											No global variables defined
+										</div>
+									}
+									for k, v := range data.Variables {
+										<div class="flex items-start gap-4 py-2 border-b border-dark-600 last:border-0">
+											<span class="font-mono text-primary-400 text-sm min-w-[200px]">{ k }</span>
+											<code class="flex-1 bg-dark-900 text-gray-300 px-3 py-1 rounded text-sm font-mono">{ v }</code>
+										</div>
+									}
+								</div>
+							</div>
+						</div>
+
+						<!-- Raw Tab -->
+						<div x-show="activeTab === 'raw'" class="card">
+							<pre class="p-4 text-sm text-gray-300 font-mono overflow-x-auto max-h-[500px]">
+								<!-- Raw content would be loaded here -->
+								<code class="text-gray-500">Raw inventory content would be displayed here</code>
+							</pre>
+						</div>
+					} else {
+						<!-- No Selection -->
+						<div class="card p-12 text-center">
+							<i class="fab fa-ansible text-6xl text-gray-600 mb-4"></i>
+							<h2 class="text-xl font-semibold text-white mb-2">Ansible Inventory Browser</h2>
+							<p class="text-gray-400 mb-6">Upload or select an inventory file to view hosts and groups</p>
+							<div class="flex justify-center gap-3">
+								<button
+									onclick="document.getElementById('upload-modal').classList.remove('hidden')"
+									class="btn-secondary"
+								>
+									<i class="fas fa-upload mr-2"></i>Upload File
+								</button>
+								<button
+									onclick="document.getElementById('paste-modal').classList.remove('hidden')"
+									class="btn-primary"
+								>
+									<i class="fas fa-paste mr-2"></i>Paste Content
+								</button>
+							</div>
+						</div>
+					}
+				</div>
+			</div>
+
+			<!-- Upload Modal -->
+			@ansibleUploadModal(data.PageData.CSRFToken)
+
+			<!-- Paste Modal -->
+			@ansiblePasteModal(data.PageData.CSRFToken)
+
+			<script>
+				function ansibleBrowser() {
+					return {
+						activeTab: 'hosts'
+					};
+				}
+			</script>
+		</div>
+	}
+}
+
+templ ansibleUploadModal(csrfToken string) {
+	<div id="upload-modal" class="hidden fixed inset-0 z-50 overflow-y-auto">
+		<div class="fixed inset-0 bg-black/50" onclick="document.getElementById('upload-modal').classList.add('hidden')"></div>
+		<div class="relative min-h-screen flex items-center justify-center p-4">
+			<div class="relative bg-dark-800 rounded-xl border border-dark-600 max-w-lg w-full p-6">
+				<div class="flex items-center justify-between mb-6">
+					<h2 class="text-xl font-display font-bold text-white">Upload Inventory File</h2>
+					<button
+						onclick="document.getElementById('upload-modal').classList.add('hidden')"
+						class="text-gray-400 hover:text-white"
+					>
+						<i class="fas fa-times"></i>
+					</button>
+				</div>
+
+				<form action="/tools/ansible/upload" method="POST" enctype="multipart/form-data" class="space-y-4">
+					<input type="hidden" name="csrf_token" value={ csrfToken }/>
+
+					<div>
+						<label class="block text-sm font-medium text-gray-300 mb-2">Inventory File</label>
+						<input
+							type="file"
+							name="file"
+							required
+							accept=".ini,.yaml,.yml,.json,.txt"
+							class="input file:mr-4 file:py-1 file:px-3 file:rounded-lg file:border-0 file:bg-primary-500 file:text-black file:font-medium file:cursor-pointer"
+						/>
+						<p class="text-xs text-gray-500 mt-1">Supports INI, YAML, and JSON formats</p>
+					</div>
+
+					<div>
+						<label class="block text-sm font-medium text-gray-300 mb-2">Name (optional)</label>
+						<input type="text" name="name" class="input" placeholder="e.g. Production Inventory"/>
+					</div>
+
+					<div class="flex justify-end gap-3 pt-4 border-t border-dark-600">
+						<button
+							type="button"
+							onclick="document.getElementById('upload-modal').classList.add('hidden')"
+							class="btn-secondary"
+						>
+							Cancel
+						</button>
+						<button type="submit" class="btn-primary">
+							<i class="fas fa-upload mr-2"></i>Upload
+						</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+}
+
+templ ansiblePasteModal(csrfToken string) {
+	<div id="paste-modal" class="hidden fixed inset-0 z-50 overflow-y-auto">
+		<div class="fixed inset-0 bg-black/50" onclick="document.getElementById('paste-modal').classList.add('hidden')"></div>
+		<div class="relative min-h-screen flex items-center justify-center p-4">
+			<div class="relative bg-dark-800 rounded-xl border border-dark-600 max-w-2xl w-full p-6">
+				<div class="flex items-center justify-between mb-6">
+					<h2 class="text-xl font-display font-bold text-white">Paste Inventory Content</h2>
+					<button
+						onclick="document.getElementById('paste-modal').classList.add('hidden')"
+						class="text-gray-400 hover:text-white"
+					>
+						<i class="fas fa-times"></i>
+					</button>
+				</div>
+
+				<form action="/tools/ansible/parse" method="POST" class="space-y-4">
+					<input type="hidden" name="csrf_token" value={ csrfToken }/>
+
+					<div>
+						<label class="block text-sm font-medium text-gray-300 mb-2">Name</label>
+						<input type="text" name="name" required class="input" placeholder="e.g. Dev Environment"/>
+					</div>
+
+					<div>
+						<label class="block text-sm font-medium text-gray-300 mb-2">Format</label>
+						<select name="format" class="input">
+							<option value="auto">Auto-detect</option>
+							<option value="ini">INI</option>
+							<option value="yaml">YAML</option>
+							<option value="json">JSON</option>
+						</select>
+					</div>
+
+					<div>
+						<label class="block text-sm font-medium text-gray-300 mb-2">Inventory Content</label>
+						<textarea
+							name="content"
+							required
+							rows="12"
+							class="input font-mono text-sm"
+							placeholder="[webservers]
+web1 ansible_host=192.168.1.10
+web2 ansible_host=192.168.1.11
+
+[databases]
+db1 ansible_host=192.168.1.20"
+						></textarea>
+					</div>
+
+					<div class="flex justify-end gap-3 pt-4 border-t border-dark-600">
+						<button
+							type="button"
+							onclick="document.getElementById('paste-modal').classList.add('hidden')"
+							class="btn-secondary"
+						>
+							Cancel
+						</button>
+						<button type="submit" class="btn-primary">
+							<i class="fas fa-check mr-2"></i>Parse & View
+						</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+}
+
+// ============================================================================
+// Helper Functions
+// ============================================================================
+
+func formatBgColor(format string) string {
+	switch format {
+	case "yaml", "yml":
+		return "bg-green-500/10"
+	case "json":
+		return "bg-yellow-500/10"
+	case "ini":
+		return "bg-blue-500/10"
+	default:
+		return "bg-gray-500/10"
+	}
+}
+
+func formatIconAnsible(format string) string {
+	switch format {
+	case "yaml", "yml":
+		return "fas fa-file-alt text-green-400"
+	case "json":
+		return "fas fa-file-code text-yellow-400"
+	case "ini":
+		return "fas fa-file text-blue-400"
+	default:
+		return "fas fa-file text-gray-400"
+	}
+}
+
+func hostStatusBadge(status string) string {
+	switch status {
+	case "reachable":
+		return "bg-green-500/10 text-green-400"
+	case "unreachable":
+		return "bg-red-500/10 text-red-400"
+	default:
+		return "bg-gray-500/10 text-gray-400"
+	}
+}
+
+func hostStatusIcon(status string) string {
+	switch status {
+	case "reachable":
+		return "fas fa-check-circle"
+	case "unreachable":
+		return "fas fa-times-circle"
+	default:
+		return "fas fa-question-circle"
+	}
+}

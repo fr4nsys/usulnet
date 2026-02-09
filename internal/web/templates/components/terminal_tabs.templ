@@ -1,0 +1,531 @@
+package components
+
+import (
+	"fmt"
+)
+
+// TerminalTabConfig represents configuration for a terminal tab.
+type TerminalTabConfig struct {
+	ID         string // Tab ID
+	Name       string // Display name
+	Type       string // "ssh", "container", "host"
+	TargetID   string // Connection ID or Container ID
+	Icon       string // FontAwesome icon class
+	Active     bool
+}
+
+// TerminalTabsData is the data for the terminal tabs component.
+type TerminalTabsData struct {
+	Tabs        []TerminalTabConfig
+	BackURL     string
+	BackLabel   string
+	AllowNewTab bool
+	NewTabURL   string // URL for the "add tab" modal or picker
+}
+
+// TerminalTabs renders a multi-tab terminal interface.
+templ TerminalTabs(data TerminalTabsData) {
+	<div
+		x-data="multiTabTerminal()"
+		class="h-full flex flex-col"
+	>
+		<!-- Tab Bar -->
+		<div class="flex items-center bg-dark-800 border-b border-dark-700 px-2">
+			<!-- Back Button -->
+			<a
+				href={ templ.SafeURL(data.BackURL) }
+				class="flex items-center gap-2 px-3 py-2 text-gray-400 hover:text-white transition-colors"
+			>
+				<i class="fas fa-arrow-left text-sm"></i>
+				<span class="text-sm">{ data.BackLabel }</span>
+			</a>
+
+			<div class="h-6 w-px bg-dark-600 mx-2"></div>
+
+			<!-- Tabs -->
+			<div class="flex items-center gap-1 overflow-x-auto flex-1 py-1">
+				for i, tab := range data.Tabs {
+					<button
+						@click={ fmt.Sprintf("switchTab('%s')", tab.ID) }
+						:class={ fmt.Sprintf("activeTab === '%s' ? 'bg-dark-700 text-white border-primary-500' : 'text-gray-400 hover:text-white hover:bg-dark-700 border-transparent'", tab.ID) }
+						class="flex items-center gap-2 px-3 py-1.5 rounded-t-lg border-b-2 text-sm whitespace-nowrap transition-colors group"
+						data-tab-id={ tab.ID }
+						data-tab-type={ tab.Type }
+						data-target-id={ tab.TargetID }
+						data-tab-name={ tab.Name }
+						data-active={ fmt.Sprintf("%t", tab.Active) }
+						if i == 0 || tab.Active {
+							x-init={ fmt.Sprintf("if($el.dataset.active === 'true') activeTab = '%s'", tab.ID) }
+						}
+					>
+						<i class={ "fas " + tab.Icon + " text-xs" }></i>
+						<span>{ tab.Name }</span>
+						<i
+							@click.stop={ fmt.Sprintf("closeTab('%s')", tab.ID) }
+							class="fas fa-times text-xs opacity-0 group-hover:opacity-100 hover:text-red-400 transition-opacity ml-1"
+						></i>
+					</button>
+				}
+			</div>
+
+			<!-- Add Tab Button -->
+			if data.AllowNewTab {
+				<button
+					@click="openNewTabModal()"
+					class="flex items-center justify-center w-8 h-8 text-gray-400 hover:text-white hover:bg-dark-700 rounded-lg transition-colors ml-1"
+					title="New Tab"
+				>
+					<i class="fas fa-plus text-sm"></i>
+				</button>
+			}
+
+			<!-- Global Actions -->
+			<div class="flex items-center gap-1 ml-2">
+				<button
+					@click="reconnectActive()"
+					class="p-2 text-gray-400 hover:text-white hover:bg-dark-700 rounded-lg transition-colors"
+					title="Reconnect"
+				>
+					<i class="fas fa-redo text-sm"></i>
+				</button>
+				<button
+					@click="toggleFullscreen()"
+					class="p-2 text-gray-400 hover:text-white hover:bg-dark-700 rounded-lg transition-colors"
+					title="Fullscreen"
+				>
+					<i class="fas fa-expand text-sm"></i>
+				</button>
+			</div>
+		</div>
+
+		<!-- Tab Status Bar -->
+		<div class="flex items-center justify-between px-4 py-1 bg-dark-850 border-b border-dark-700 text-xs">
+			<div class="flex items-center gap-4">
+				<span class="text-gray-500">
+					Tab: <span class="text-gray-300" x-text="getActiveTabName()"></span>
+				</span>
+				<span x-show="getActiveStatus() === 'connected'" class="flex items-center gap-1 text-green-400">
+					<span class="w-1.5 h-1.5 bg-green-500 rounded-full"></span>
+					Connected
+				</span>
+				<span x-show="getActiveStatus() === 'connecting'" class="flex items-center gap-1 text-yellow-400">
+					<i class="fas fa-spinner fa-spin"></i>
+					Connecting...
+				</span>
+				<span x-show="getActiveStatus() === 'disconnected'" class="flex items-center gap-1 text-red-400">
+					<span class="w-1.5 h-1.5 bg-red-500 rounded-full"></span>
+					Disconnected
+				</span>
+			</div>
+			<div class="text-gray-500">
+				<span x-text="tabs.size"></span> tab(s)
+			</div>
+		</div>
+
+		<!-- Terminal Containers -->
+		<div class="flex-1 relative bg-black">
+			for _, tab := range data.Tabs {
+				<div
+					x-show={ fmt.Sprintf("activeTab === '%s'", tab.ID) }
+					x-cloak
+					:id={ fmt.Sprintf("'terminal-container-%s'", tab.ID) }
+					class="absolute inset-0"
+					data-terminal-tab={ tab.ID }
+				></div>
+			}
+		</div>
+
+		<!-- New Tab Modal -->
+		if data.AllowNewTab && data.NewTabURL != "" {
+			<div
+				x-show="newTabModalOpen"
+				x-cloak
+				class="fixed inset-0 z-50 flex items-center justify-center"
+			>
+				<div class="fixed inset-0 bg-black/50" @click="newTabModalOpen = false"></div>
+				<div class="relative bg-dark-800 rounded-xl border border-dark-600 p-6 max-w-md w-full mx-4">
+					<h3 class="text-lg font-semibold text-white mb-4">Open New Terminal</h3>
+					<div
+						hx-get={ data.NewTabURL }
+						hx-trigger="load"
+						hx-target="#new-tab-content"
+					>
+						<div id="new-tab-content" class="space-y-4">
+							<div class="flex items-center justify-center py-8">
+								<i class="fas fa-spinner fa-spin text-2xl text-gray-500"></i>
+							</div>
+						</div>
+					</div>
+					<div class="flex justify-end gap-3 mt-6">
+						<button
+							@click="newTabModalOpen = false"
+							class="px-4 py-2 bg-dark-700 hover:bg-dark-600 text-gray-300 rounded-lg transition-colors"
+						>
+							Cancel
+						</button>
+					</div>
+				</div>
+			</div>
+		}
+	</div>
+}
+
+// TerminalTabsScript returns the JavaScript for the multi-tab terminal manager.
+templ TerminalTabsScript() {
+	<!-- xterm.js CSS -->
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm@5.3.0/css/xterm.min.css"/>
+
+	<!-- xterm.js Scripts -->
+	<script src="https://cdn.jsdelivr.net/npm/xterm@5.3.0/lib/xterm.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/xterm-addon-fit@0.8.0/lib/xterm-addon-fit.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/xterm-addon-web-links@0.9.0/lib/xterm-addon-web-links.min.js"></script>
+
+	<script>
+		function multiTabTerminal() {
+			return {
+				activeTab: '',
+				tabs: new Map(), // Map of tabId -> { term, ws, fitAddon, status }
+				newTabModalOpen: false,
+				_initialized: false,
+				_resizeHandler: null,
+
+				init() {
+					if (this._initialized) return;
+					this._initialized = true;
+
+					// Initialize tabs from DOM
+					const tabButtons = this.$el.querySelectorAll('[data-tab-id]');
+					tabButtons.forEach(btn => {
+						const tabId = btn.dataset.tabId;
+						const tabType = btn.dataset.tabType;
+						const targetId = btn.dataset.targetId;
+						const tabName = btn.dataset.tabName;
+						const isActive = btn.dataset.active === 'true';
+
+						if (!this.tabs.has(tabId)) {
+							this.tabs.set(tabId, {
+								id: tabId,
+								type: tabType,
+								targetId: targetId,
+								name: tabName,
+								term: null,
+								ws: null,
+								fitAddon: null,
+								status: 'disconnected'
+							});
+						}
+
+						if (isActive || !this.activeTab) {
+							this.activeTab = tabId;
+						}
+					});
+
+					// Initialize active tab terminal
+					if (this.activeTab) {
+						this.$nextTick(() => {
+							this.initializeTerminal(this.activeTab);
+						});
+					}
+
+					// Handle window resize
+					this._resizeHandler = () => {
+						this.tabs.forEach((tab, tabId) => {
+							if (tab.fitAddon) {
+								tab.fitAddon.fit();
+								this.sendResize(tabId);
+							}
+						});
+					};
+					window.addEventListener('resize', this._resizeHandler);
+				},
+
+				destroy() {
+					if (this._resizeHandler) {
+						window.removeEventListener('resize', this._resizeHandler);
+					}
+					this.tabs.forEach((tab) => {
+						if (tab.ws) {
+							tab.ws.onclose = null;
+							tab.ws.close();
+						}
+						if (tab.term) {
+							tab.term.dispose();
+						}
+					});
+					this.tabs.clear();
+				},
+
+				initializeTerminal(tabId) {
+					const tab = this.tabs.get(tabId);
+					if (!tab || tab.term) return;
+
+					const container = document.getElementById(`terminal-container-${tabId}`);
+					if (!container) return;
+
+					// Create terminal
+					tab.term = new Terminal({
+						cursorBlink: true,
+						cursorStyle: 'block',
+						fontSize: 14,
+						fontFamily: "'IBM Plex Mono', 'Fira Code', 'Menlo', monospace",
+						theme: {
+							background: '#0d1117',
+							foreground: '#e6edf3',
+							cursor: '#ff6b35',
+							cursorAccent: '#0d1117',
+							selection: 'rgba(255, 107, 53, 0.3)',
+							black: '#0d1117',
+							red: '#f85149',
+							green: '#3fb950',
+							yellow: '#d29922',
+							blue: '#58a6ff',
+							magenta: '#bc8cff',
+							cyan: '#76e3ea',
+							white: '#e6edf3',
+							brightBlack: '#484f58',
+							brightRed: '#ff7b72',
+							brightGreen: '#56d364',
+							brightYellow: '#e3b341',
+							brightBlue: '#79c0ff',
+							brightMagenta: '#d2a8ff',
+							brightCyan: '#a5d6ff',
+							brightWhite: '#ffffff'
+						},
+						scrollback: 10000,
+						convertEol: true,
+					});
+
+					// Load addons
+					tab.fitAddon = new FitAddon.FitAddon();
+					tab.term.loadAddon(tab.fitAddon);
+					tab.term.loadAddon(new WebLinksAddon.WebLinksAddon());
+
+					// Open terminal
+					tab.term.open(container);
+					tab.fitAddon.fit();
+
+					// Handle input
+					tab.term.onData(data => {
+						if (tab.ws && tab.ws.readyState === WebSocket.OPEN) {
+							tab.ws.send(JSON.stringify({ type: 'input', data: data }));
+						}
+					});
+
+					// Handle resize
+					tab.term.onResize(() => {
+						this.sendResize(tabId);
+					});
+
+					// Connect WebSocket
+					this.connect(tabId);
+				},
+
+				connect(tabId) {
+					const tab = this.tabs.get(tabId);
+					if (!tab || !tab.term) return;
+
+					tab.status = 'connecting';
+
+					const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+					const { cols, rows } = tab.term;
+
+					let url;
+					if (tab.type === 'ssh') {
+						url = `${protocol}//${window.location.host}/ws/ssh/${tab.targetId}?cols=${cols}&rows=${rows}`;
+					} else if (tab.type === 'container') {
+						url = `${protocol}//${window.location.host}/ws/exec/${tab.targetId}?cols=${cols}&rows=${rows}`;
+					} else if (tab.type === 'host') {
+						url = `${protocol}//${window.location.host}/ws/host-exec/${tab.targetId}?cols=${cols}&rows=${rows}`;
+					}
+
+					tab.ws = new WebSocket(url);
+
+					tab.ws.onopen = () => {
+						tab.status = 'connected';
+						tab.term.focus();
+					};
+
+					tab.ws.onmessage = (event) => {
+						try {
+							const msg = JSON.parse(event.data);
+							if (msg.type === 'output') {
+								tab.term.write(msg.data);
+							} else if (msg.type === 'error') {
+								tab.term.write('\r\n\x1b[31mError: ' + (msg.data || msg.message || 'Unknown error') + '\x1b[0m\r\n');
+							} else if (msg.type === 'connected') {
+								// Connection established
+							} else if (msg.type === 'disconnected') {
+								tab.term.write('\r\n\x1b[33m' + (msg.data || 'Disconnected') + '\x1b[0m\r\n');
+							}
+						} catch(e) {
+							tab.term.write(event.data);
+						}
+					};
+
+					tab.ws.onclose = () => {
+						tab.status = 'disconnected';
+						tab.term.write('\r\n\x1b[31mDisconnected\x1b[0m\r\n');
+					};
+
+					tab.ws.onerror = () => {
+						tab.status = 'disconnected';
+						tab.term.write('\r\n\x1b[31mConnection error\x1b[0m\r\n');
+					};
+				},
+
+				sendResize(tabId) {
+					const tab = this.tabs.get(tabId);
+					if (tab && tab.ws && tab.ws.readyState === WebSocket.OPEN && tab.term) {
+						const { cols, rows } = tab.term;
+						tab.ws.send(JSON.stringify({ type: 'resize', cols: cols, rows: rows }));
+					}
+				},
+
+				switchTab(tabId) {
+					if (!this.tabs.has(tabId)) return;
+
+					this.activeTab = tabId;
+					const tab = this.tabs.get(tabId);
+
+					// Initialize if not already
+					if (!tab.term) {
+						this.$nextTick(() => {
+							this.initializeTerminal(tabId);
+						});
+					} else {
+						this.$nextTick(() => {
+							tab.fitAddon.fit();
+							tab.term.focus();
+						});
+					}
+				},
+
+				closeTab(tabId) {
+					if (this.tabs.size <= 1) return; // Don't close last tab
+
+					const tab = this.tabs.get(tabId);
+					if (tab) {
+						if (tab.ws) {
+							tab.ws.onclose = null;
+							tab.ws.close();
+						}
+						if (tab.term) {
+							tab.term.dispose();
+						}
+					}
+
+					// Remove tab button from DOM
+					const btn = this.$el.querySelector(`[data-tab-id="${tabId}"]`);
+					if (btn) btn.remove();
+
+					// Remove terminal container
+					const container = document.getElementById(`terminal-container-${tabId}`);
+					if (container) container.remove();
+
+					// Switch to another tab if this was active
+					if (this.activeTab === tabId) {
+						const remaining = Array.from(this.tabs.keys()).filter(id => id !== tabId);
+						if (remaining.length > 0) {
+							this.switchTab(remaining[0]);
+						}
+					}
+
+					this.tabs.delete(tabId);
+				},
+
+				reconnectActive() {
+					const tab = this.tabs.get(this.activeTab);
+					if (tab) {
+						if (tab.ws) tab.ws.close();
+						if (tab.term) {
+							tab.term.clear();
+							tab.term.write('\x1b[33mReconnecting...\x1b[0m\r\n');
+						}
+						this.connect(this.activeTab);
+					}
+				},
+
+				toggleFullscreen() {
+					const container = document.getElementById(`terminal-container-${this.activeTab}`);
+					if (document.fullscreenElement) {
+						document.exitFullscreen();
+					} else if (container) {
+						container.requestFullscreen();
+					}
+					setTimeout(() => {
+						const tab = this.tabs.get(this.activeTab);
+						if (tab && tab.fitAddon) {
+							tab.fitAddon.fit();
+							this.sendResize(this.activeTab);
+						}
+					}, 100);
+				},
+
+				openNewTabModal() {
+					this.newTabModalOpen = true;
+				},
+
+				getActiveTabName() {
+					const tab = this.tabs.get(this.activeTab);
+					return tab ? tab.name : '';
+				},
+
+				getActiveStatus() {
+					const tab = this.tabs.get(this.activeTab);
+					return tab ? tab.status : 'disconnected';
+				},
+
+				// Called externally to add a new tab
+				addTab(id, type, targetId, name) {
+					if (this.tabs.has(id)) {
+						this.switchTab(id);
+						return;
+					}
+
+					this.tabs.set(id, {
+						id: id,
+						type: type,
+						targetId: targetId,
+						name: name,
+						term: null,
+						ws: null,
+						fitAddon: null,
+						status: 'disconnected'
+					});
+
+					// Create DOM elements (tab button and container)
+					// This would typically be done via HTMX or a reload
+					window.location.reload();
+				}
+			};
+		}
+	</script>
+
+	<style>
+		[data-terminal-tab] {
+			padding: 4px;
+			background: #0d1117;
+		}
+
+		[data-terminal-tab]:fullscreen {
+			padding: 16px;
+		}
+
+		.xterm-viewport::-webkit-scrollbar {
+			width: 8px;
+		}
+
+		.xterm-viewport::-webkit-scrollbar-track {
+			background: #0d1117;
+		}
+
+		.xterm-viewport::-webkit-scrollbar-thumb {
+			background: #30363d;
+			border-radius: 4px;
+		}
+
+		.xterm-viewport::-webkit-scrollbar-thumb:hover {
+			background: #484f58;
+		}
+	</style>
+}

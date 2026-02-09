@@ -1,0 +1,3 @@
+DROP TABLE IF EXISTS custom_log_uploads CASCADE;
+DROP TABLE IF EXISTS packet_captures CASCADE;
+DROP TABLE IF EXISTS user_snippets CASCADE;

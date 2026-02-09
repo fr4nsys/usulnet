@@ -1,0 +1,2 @@
+DROP TABLE IF EXISTS user_sessions CASCADE;
+DROP TABLE IF EXISTS user_preferences CASCADE;

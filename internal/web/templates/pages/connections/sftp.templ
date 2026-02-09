@@ -1,0 +1,385 @@
+package connections
+
+import (
+	"fmt"
+	"github.com/fr4nsys/usulnet/internal/web/templates/layouts"
+)
+
+// SFTPFileData represents a file or directory in SFTP.
+type SFTPFileData struct {
+	Name    string
+	Path    string
+	Size    int64
+	SizeStr string
+	Mode    string
+	IsDir   bool
+	IsLink  bool
+	ModTime string
+}
+
+// SFTPBreadcrumb represents a breadcrumb item in the path.
+type SFTPBreadcrumb struct {
+	Name string
+	Path string
+}
+
+// SFTPBrowserData is the data for SFTP browser page.
+type SFTPBrowserData struct {
+	PageData    layouts.PageData
+	Connection  SSHConnectionData
+	CurrentPath string
+	Breadcrumbs []SFTPBreadcrumb
+	Files       []SFTPFileData
+	ParentPath  string
+	CanGoUp     bool
+}
+
+// SFTPBrowser renders the SFTP file browser page.
+templ SFTPBrowser(data SFTPBrowserData) {
+	@layouts.Base(data.PageData) {
+		<div class="h-full flex flex-col">
+			<!-- Header -->
+			<div class="flex items-center justify-between px-4 py-3 bg-dark-800 border-b border-dark-700">
+				<div class="flex items-center space-x-3">
+					<a href="/connections/ssh" class="text-gray-400 hover:text-white">
+						<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+						</svg>
+					</a>
+					<h1 class="text-white font-medium">{ data.Connection.Name }</h1>
+					<span class="text-gray-500">|</span>
+					<span class="text-gray-400">File Browser</span>
+				</div>
+				<div class="flex items-center space-x-2">
+					<a
+						href={ templ.SafeURL(fmt.Sprintf("/connections/ssh/%s/terminal", data.Connection.ID)) }
+						class="px-3 py-1.5 text-gray-400 hover:text-white hover:bg-dark-700 rounded transition-colors text-sm"
+					>
+						Terminal
+					</a>
+					<button
+						onclick="showUploadModal()"
+						class="px-3 py-1.5 bg-primary-500 text-white rounded hover:bg-primary-600 transition-colors text-sm flex items-center"
+					>
+						<svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
+						</svg>
+						Upload
+					</button>
+				</div>
+			</div>
+
+			<!-- Toolbar -->
+			<div class="flex items-center justify-between px-4 py-2 bg-dark-850 border-b border-dark-700">
+				<!-- Breadcrumbs -->
+				<nav class="flex items-center space-x-1 text-sm">
+					<a
+						href={ templ.SafeURL(fmt.Sprintf("/connections/ssh/%s/files?path=/", data.Connection.ID)) }
+						class="text-gray-400 hover:text-white"
+					>
+						<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+						</svg>
+					</a>
+					for i, bc := range data.Breadcrumbs {
+						<span class="text-gray-600">/</span>
+						if i == len(data.Breadcrumbs) - 1 {
+							<span class="text-white font-medium">{ bc.Name }</span>
+						} else {
+							<a
+								href={ templ.SafeURL(fmt.Sprintf("/connections/ssh/%s/files?path=%s", data.Connection.ID, bc.Path)) }
+								class="text-gray-400 hover:text-white"
+							>
+								{ bc.Name }
+							</a>
+						}
+					}
+				</nav>
+
+				<!-- Actions -->
+				<div class="flex items-center space-x-2">
+					<button
+						onclick="showNewFolderModal()"
+						class="p-1.5 text-gray-400 hover:text-white hover:bg-dark-700 rounded transition-colors"
+						title="New Folder"
+					>
+						<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"></path>
+						</svg>
+					</button>
+					<button
+						onclick="refreshFiles()"
+						class="p-1.5 text-gray-400 hover:text-white hover:bg-dark-700 rounded transition-colors"
+						title="Refresh"
+					>
+						<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+						</svg>
+					</button>
+				</div>
+			</div>
+
+			<!-- File List -->
+			<div class="flex-1 overflow-auto">
+				<table class="w-full">
+					<thead class="bg-dark-900 sticky top-0">
+						<tr>
+							<th class="px-4 py-2 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Name</th>
+							<th class="px-4 py-2 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Size</th>
+							<th class="px-4 py-2 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Permissions</th>
+							<th class="px-4 py-2 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Modified</th>
+							<th class="px-4 py-2 text-right text-xs font-medium text-gray-400 uppercase tracking-wider">Actions</th>
+						</tr>
+					</thead>
+					<tbody class="divide-y divide-dark-700">
+						<!-- Go up -->
+						if data.CanGoUp {
+							<tr class="hover:bg-dark-750 cursor-pointer" onclick={ navigateTo(data.Connection.ID, data.ParentPath) }>
+								<td class="px-4 py-2" colspan="5">
+									<div class="flex items-center text-gray-400">
+										<svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+											<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path>
+										</svg>
+										<span>..</span>
+									</div>
+								</td>
+							</tr>
+						}
+
+						<!-- Files -->
+						for _, file := range data.Files {
+							<tr class="hover:bg-dark-750 group">
+								<td class="px-4 py-2">
+									<div class="flex items-center">
+										if file.IsDir {
+											<svg class="w-5 h-5 mr-2 text-yellow-400" fill="currentColor" viewBox="0 0 24 24">
+												<path d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"></path>
+											</svg>
+										} else {
+											@fileIcon(file.Name)
+										}
+										if file.IsDir {
+											<a
+												href={ templ.SafeURL(fmt.Sprintf("/connections/ssh/%s/files?path=%s", data.Connection.ID, file.Path)) }
+												class="text-white hover:text-primary-400"
+											>
+												{ file.Name }
+											</a>
+										} else {
+											<span class="text-white">{ file.Name }</span>
+										}
+										if file.IsLink {
+											<span class="ml-2 text-gray-500 text-xs">link</span>
+										}
+									</div>
+								</td>
+								<td class="px-4 py-2 text-gray-400 text-sm">
+									if file.IsDir {
+										<span>-</span>
+									} else {
+										{ file.SizeStr }
+									}
+								</td>
+								<td class="px-4 py-2">
+									<code class="text-gray-400 text-sm">{ file.Mode }</code>
+								</td>
+								<td class="px-4 py-2 text-gray-400 text-sm">{ file.ModTime }</td>
+								<td class="px-4 py-2 text-right">
+									<div class="flex items-center justify-end space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
+										if !file.IsDir {
+											<a
+												href={ templ.SafeURL(fmt.Sprintf("/connections/ssh/%s/files/download?path=%s", data.Connection.ID, file.Path)) }
+												class="p-1 text-gray-400 hover:text-white rounded transition-colors"
+												title="Download"
+											>
+												<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+													<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+												</svg>
+											</a>
+										}
+										<button
+											onclick={ showRenameModal(file.Name, file.Path) }
+											class="p-1 text-gray-400 hover:text-white rounded transition-colors"
+											title="Rename"
+										>
+											<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+												<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+											</svg>
+										</button>
+										<button
+											onclick={ deleteFile(data.Connection.ID, file.Path, file.Name) }
+											class="p-1 text-gray-400 hover:text-red-400 rounded transition-colors"
+											title="Delete"
+										>
+											<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+												<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+											</svg>
+										</button>
+									</div>
+								</td>
+							</tr>
+						}
+
+						if len(data.Files) == 0 {
+							<tr>
+								<td colspan="5" class="px-4 py-8 text-center text-gray-500">
+									This directory is empty
+								</td>
+							</tr>
+						}
+					</tbody>
+				</table>
+			</div>
+		</div>
+
+		<!-- Upload Modal -->
+		<div id="upload-modal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+			<div class="bg-dark-800 rounded-lg border border-dark-700 p-6 w-full max-w-md">
+				<h3 class="text-white font-medium mb-4">Upload Files</h3>
+				<form
+					action={ templ.SafeURL(fmt.Sprintf("/connections/ssh/%s/files/upload", data.Connection.ID)) }
+					method="POST"
+					enctype="multipart/form-data"
+				>
+					<input type="hidden" name="csrf_token" value={ data.PageData.CSRFToken }/>
+					<input type="hidden" name="path" value={ data.CurrentPath }/>
+					<div
+						id="drop-zone"
+						class="border-2 border-dashed border-dark-600 rounded-lg p-8 text-center hover:border-primary-500 transition-colors"
+					>
+						<svg class="w-12 h-12 mx-auto text-gray-600 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
+						</svg>
+						<p class="text-gray-400 mb-2">Drop files here or click to select</p>
+						<input type="file" name="files" multiple class="hidden" id="file-input"/>
+						<label for="file-input" class="text-primary-400 hover:text-primary-300 cursor-pointer">Browse files</label>
+					</div>
+					<div id="file-list" class="mt-4 space-y-2"></div>
+					<div class="mt-4 flex justify-end space-x-3">
+						<button type="button" onclick="hideUploadModal()" class="px-4 py-2 text-gray-400 hover:text-white">Cancel</button>
+						<button type="submit" class="px-4 py-2 bg-primary-500 text-white rounded hover:bg-primary-600">Upload</button>
+					</div>
+				</form>
+			</div>
+		</div>
+
+		<!-- New Folder Modal -->
+		<div id="new-folder-modal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+			<div class="bg-dark-800 rounded-lg border border-dark-700 p-6 w-full max-w-sm">
+				<h3 class="text-white font-medium mb-4">New Folder</h3>
+				<form
+					action={ templ.SafeURL(fmt.Sprintf("/connections/ssh/%s/files/mkdir", data.Connection.ID)) }
+					method="POST"
+				>
+					<input type="hidden" name="path" value={ data.CurrentPath }/>
+					<input
+						type="text"
+						name="name"
+						placeholder="Folder name"
+						required
+						class="w-full px-3 py-2 bg-dark-700 border border-dark-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500"
+					/>
+					<div class="mt-4 flex justify-end space-x-3">
+						<button type="button" onclick="hideNewFolderModal()" class="px-4 py-2 text-gray-400 hover:text-white">Cancel</button>
+						<button type="submit" class="px-4 py-2 bg-primary-500 text-white rounded hover:bg-primary-600">Create</button>
+					</div>
+				</form>
+			</div>
+		</div>
+
+		<script>
+			function showUploadModal() {
+				document.getElementById('upload-modal').classList.remove('hidden');
+			}
+			function hideUploadModal() {
+				document.getElementById('upload-modal').classList.add('hidden');
+			}
+			function showNewFolderModal() {
+				document.getElementById('new-folder-modal').classList.remove('hidden');
+			}
+			function hideNewFolderModal() {
+				document.getElementById('new-folder-modal').classList.add('hidden');
+			}
+			function refreshFiles() {
+				location.reload();
+			}
+
+			// Drag and drop handling
+			const dropZone = document.getElementById('drop-zone');
+			const fileInput = document.getElementById('file-input');
+			const fileList = document.getElementById('file-list');
+
+			dropZone.addEventListener('dragover', (e) => {
+				e.preventDefault();
+				dropZone.classList.add('border-primary-500');
+			});
+
+			dropZone.addEventListener('dragleave', () => {
+				dropZone.classList.remove('border-primary-500');
+			});
+
+			dropZone.addEventListener('drop', (e) => {
+				e.preventDefault();
+				dropZone.classList.remove('border-primary-500');
+				fileInput.files = e.dataTransfer.files;
+				updateFileList();
+			});
+
+			fileInput.addEventListener('change', updateFileList);
+
+			function updateFileList() {
+				fileList.innerHTML = '';
+				Array.from(fileInput.files).forEach(file => {
+					const div = document.createElement('div');
+					div.className = 'flex items-center justify-between text-sm';
+					div.innerHTML = `
+						<span class="text-gray-300">${file.name}</span>
+						<span class="text-gray-500">${formatSize(file.size)}</span>
+					`;
+					fileList.appendChild(div);
+				});
+			}
+
+			function formatSize(bytes) {
+				if (bytes < 1024) return bytes + ' B';
+				if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+				if (bytes < 1024 * 1024 * 1024) return (bytes / 1024 / 1024).toFixed(1) + ' MB';
+				return (bytes / 1024 / 1024 / 1024).toFixed(1) + ' GB';
+			}
+		</script>
+	}
+}
+
+templ fileIcon(name string) {
+	<svg class="w-5 h-5 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+		<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+	</svg>
+}
+
+script navigateTo(connID, path string) {
+	window.location.href = `/connections/ssh/${connID}/files?path=${encodeURIComponent(path)}`;
+}
+
+script showRenameModal(name, path string) {
+	const newName = prompt(`Rename "${name}" to:`, name);
+	if (newName && newName !== name) {
+		// TODO: Implement rename API call
+		alert('Rename functionality coming soon');
+	}
+}
+
+script deleteFile(connID, path, name string) {
+	if (confirm(`Delete "${name}"? This cannot be undone.`)) {
+		const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content || '';
+		fetch(`/connections/ssh/${connID}/files/delete`, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/x-www-form-urlencoded',
+				'X-CSRF-Token': csrfToken
+			},
+			body: `path=${encodeURIComponent(path)}`
+		})
+		.then(r => { if (r.ok) location.reload(); else alert('Failed to delete'); })
+		.catch(e => alert('Error: ' + e));
+	}
+}

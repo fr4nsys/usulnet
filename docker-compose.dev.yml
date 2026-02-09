@@ -1,0 +1,145 @@
+services:
+  # ==========================================================================
+  # Application
+  # ==========================================================================
+  usulnet:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: usulnet-app
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+      - "7443:7443"
+    volumes:
+      # Docker socket for container management
+      - /var/run/docker.sock:/var/run/docker.sock
+      # Config file
+      - ./config.yaml:/app/config/config.yaml:ro
+      # Data persistence
+      - usulnet_data:/app/data
+      # Trivy vulnerability database cache
+      - trivy_cache:/var/lib/usulnet/trivy
+    # Host terminal: share host PID namespace (required for nsenter)
+    pid: "host"
+    cap_add:
+      - SYS_PTRACE   # Required to attach to PID 1
+      - SYS_ADMIN     # Required to enter host namespaces
+    environment:
+      - USULNET_MODE=standalone
+      - USULNET_DATABASE_URL=postgres://usulnet:usulnet_dev@postgres:5432/usulnet?sslmode=disable
+      - USULNET_REDIS_URL=redis://redis:6379
+      - USULNET_NATS_URL=nats://nats:4222
+      # Host Terminal
+      - HOST_TERMINAL_ENABLED=true
+      - HOST_TERMINAL_USER=nobody_usulnet
+      - HOST_TERMINAL_SHELL=/bin/bash
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      nats:
+        condition: service_started
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/login"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    networks:
+      - usulnet-network
+
+  # ==========================================================================
+  # usulnet Agent (optional, enable with --profile agent)
+  # ==========================================================================
+  usulnet-agent:
+    build:
+      context: .
+      dockerfile: Dockerfile.agent
+    container_name: usulnet-agent
+    restart: unless-stopped
+    profiles:
+      - agent
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./config.agent.yaml:/app/config/agent.yaml:ro
+      - agent_data:/app/data
+    environment:
+      - USULNET_GATEWAY_URL=nats://nats:4222
+      - USULNET_AGENT_TOKEN=${AGENT_TOKEN:-change-me}
+    depends_on:
+      nats:
+        condition: service_started
+    networks:
+      - usulnet-network
+
+  # ==========================================================================
+  # Core Infrastructure
+  # ==========================================================================
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: usulnet-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: usulnet
+      POSTGRES_PASSWORD: usulnet_dev
+      POSTGRES_DB: usulnet
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U usulnet"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - usulnet-network
+
+  redis:
+    image: redis:8-alpine
+    container_name: usulnet-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - usulnet-network
+
+  nats:
+    image: nats:2.12-alpine
+    container_name: usulnet-nats
+    restart: unless-stopped
+    ports:
+      - "4222:4222"
+      - "8222:8222"
+    command: ["--jetstream", "--store_dir=/data", "-m", "8222"]
+    volumes:
+      - nats_data:/data
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8222/healthz"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - usulnet-network
+
+volumes:
+  postgres_data:
+  redis_data:
+  nats_data:
+  usulnet_data:
+  trivy_cache:
+  agent_data:
+
+networks:
+  usulnet-network:
+    driver: bridge

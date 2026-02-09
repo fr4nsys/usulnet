@@ -1,0 +1,463 @@
+package hosts
+
+import (
+	"fmt"
+	"github.com/fr4nsys/usulnet/internal/web/templates/layouts"
+)
+
+type HostDetailData struct {
+	PageData layouts.PageData
+	Host     HostDetail
+}
+
+type HostDetail struct {
+	ID   string
+	Name string
+
+	// Status
+	Status        string
+	StatusMessage string
+	EndpointType  string
+	EndpointURL   string
+	LastSeen      string
+	LastSeenHuman string
+	Uptime        string
+
+	// Agent-specific
+	AgentVersion   string
+	AgentConnected bool
+	TLSEnabled     bool
+
+	// Docker Engine
+	DockerVersion  string
+	DockerAPI      string
+	DockerRootDir  string
+	StorageDriver  string
+	LoggingDriver  string
+	CgroupDriver   string
+	CgroupVersion  string
+	SwarmActive    bool
+	DockerID       string
+	SecurityOpts   []string
+	Runtimes       []string
+	DefaultRuntime string
+	Plugins        map[string][]string
+
+	// System
+	Hostname      string
+	OS            string
+	OSType        string
+	Architecture  string
+	KernelVersion string
+	GoVersion     string
+	Platform      string
+
+	// Resources
+	CPUs        int
+	MemTotal    int64
+	MemTotalStr string
+	DiskUsed    string
+	DiskTotal   string
+	DiskPercent float64
+
+	// Container Stats
+	ContainersTotal   int
+	ContainersRunning int
+	ContainersPaused  int
+	ContainersStopped int
+	ImagesTotal       int
+
+	// Network
+	IPAddress   string
+	DNS         []string
+	Gateway     string
+	NetworkMode string
+
+	// Labels
+	Labels map[string]string
+
+	// Registries
+	Registries []string
+}
+
+templ Detail(data HostDetailData) {
+	@layouts.Base(data.PageData) {
+		<!-- Breadcrumb -->
+		<nav class="flex items-center gap-2 text-sm text-gray-400 mb-4">
+			<a href="/nodes" class="hover:text-primary-400 transition-colors">Nodes</a>
+			<i class="fas fa-chevron-right text-xs"></i>
+			<span class="text-white">{ data.Host.Name }</span>
+		</nav>
+
+		<!-- Header -->
+		<div class="flex items-start justify-between mb-6">
+			<div class="flex items-center gap-4">
+				<div class={ "w-14 h-14 rounded-xl flex items-center justify-center", templ.KV("bg-green-500/10", data.Host.Status == "online"), templ.KV("bg-red-500/10", data.Host.Status != "online") }>
+					<i class={ "fas fa-server text-2xl", templ.KV("text-green-400", data.Host.Status == "online"), templ.KV("text-red-400", data.Host.Status != "online") }></i>
+				</div>
+				<div>
+					<div class="flex items-center gap-3">
+						<h1 class="text-2xl font-bold font-display text-white">{ data.Host.Name }</h1>
+						<span class={ "px-2.5 py-1 rounded-full text-xs font-medium", templ.KV("bg-green-500/20 text-green-400", data.Host.Status == "online"), templ.KV("bg-red-500/20 text-red-400", data.Host.Status == "offline"), templ.KV("bg-yellow-500/20 text-yellow-400", data.Host.Status == "error") }>
+							{ data.Host.Status }
+						</span>
+						if data.Host.EndpointType == "local" {
+							<span class="px-2.5 py-1 rounded-full text-xs font-medium bg-primary-500/20 text-primary-400">
+								<i class="fas fa-home mr-1"></i>Local
+							</span>
+						} else if data.Host.EndpointType == "tcp" {
+							<span class="px-2.5 py-1 rounded-full text-xs font-medium bg-blue-500/20 text-blue-400">
+								<i class="fas fa-network-wired mr-1"></i>TCP
+							</span>
+							if data.Host.TLSEnabled {
+								<span class="px-2 py-0.5 rounded text-xs font-medium bg-green-500/15 text-green-400">
+									<i class="fas fa-lock mr-1"></i>TLS
+								</span>
+							}
+						} else if data.Host.EndpointType == "agent" {
+							<span class="px-2.5 py-1 rounded-full text-xs font-medium bg-green-500/20 text-green-400">
+								<i class="fas fa-satellite-dish mr-1"></i>Agent
+							</span>
+							if data.Host.TLSEnabled {
+								<span class="px-2 py-0.5 rounded text-xs font-medium bg-green-500/15 text-green-400">
+									<i class="fas fa-lock mr-1"></i>TLS
+								</span>
+							}
+						}
+					</div>
+					<p class="text-gray-400 mt-1 font-mono text-sm">{ data.Host.EndpointURL }</p>
+				</div>
+			</div>
+			<div class="flex items-center gap-2">
+				if data.Host.Status == "online" {
+					<a
+						href={ templ.SafeURL("/nodes/" + data.Host.ID + "/files") }
+						class="px-4 py-2 bg-dark-700 hover:bg-green-600 text-gray-300 hover:text-white rounded-lg transition-colors"
+					>
+						<i class="fas fa-folder-open mr-2"></i>Files
+					</a>
+					<a
+						href={ templ.SafeURL("/nodes/" + data.Host.ID + "/terminal") }
+						class="px-4 py-2 bg-dark-700 hover:bg-primary-600 text-gray-300 hover:text-white rounded-lg transition-colors"
+					>
+						<i class="fas fa-terminal mr-2"></i>Terminal
+					</a>
+				}
+				<a
+					href={ templ.SafeURL("/nodes/" + data.Host.ID + "/edit") }
+					class="px-4 py-2 bg-dark-700 hover:bg-dark-600 text-gray-300 hover:text-white rounded-lg transition-colors"
+				>
+					<i class="fas fa-edit mr-2"></i>Edit
+				</a>
+				<button
+					hx-post={ "/nodes/" + data.Host.ID + "/test" }
+					hx-swap="none"
+					class="px-4 py-2 bg-dark-700 hover:bg-dark-600 text-gray-300 rounded-lg transition-colors"
+				>
+					<i class="fas fa-heartbeat mr-2"></i>Test
+				</button>
+			</div>
+		</div>
+
+		<!-- Stats Cards -->
+		<div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+			<!-- Containers -->
+			<div class="card p-4">
+				<div class="flex items-center gap-3">
+					<div class="w-10 h-10 rounded-lg bg-primary-500/10 flex items-center justify-center">
+						<i class="fas fa-cube text-primary-400"></i>
+					</div>
+					<div>
+						<p class="text-2xl font-bold text-white">{ fmt.Sprintf("%d", data.Host.ContainersTotal) }</p>
+						<p class="text-xs text-gray-400">Containers</p>
+					</div>
+				</div>
+				<div class="mt-3 flex gap-3 text-xs">
+					<span class="text-green-400">
+						<i class="fas fa-play mr-1"></i>{ fmt.Sprintf("%d", data.Host.ContainersRunning) }
+					</span>
+					<span class="text-gray-500">
+						<i class="fas fa-stop mr-1"></i>{ fmt.Sprintf("%d", data.Host.ContainersStopped) }
+					</span>
+					if data.Host.ContainersPaused > 0 {
+						<span class="text-yellow-400">
+							<i class="fas fa-pause mr-1"></i>{ fmt.Sprintf("%d", data.Host.ContainersPaused) }
+						</span>
+					}
+				</div>
+			</div>
+
+			<!-- Images -->
+			<div class="card p-4">
+				<div class="flex items-center gap-3">
+					<div class="w-10 h-10 rounded-lg bg-blue-500/10 flex items-center justify-center">
+						<i class="fas fa-layer-group text-blue-400"></i>
+					</div>
+					<div>
+						<p class="text-2xl font-bold text-white">{ fmt.Sprintf("%d", data.Host.ImagesTotal) }</p>
+						<p class="text-xs text-gray-400">Images</p>
+					</div>
+				</div>
+			</div>
+
+			<!-- CPUs -->
+			<div class="card p-4">
+				<div class="flex items-center gap-3">
+					<div class="w-10 h-10 rounded-lg bg-yellow-500/10 flex items-center justify-center">
+						<i class="fas fa-microchip text-yellow-400"></i>
+					</div>
+					<div>
+						<p class="text-2xl font-bold text-white">{ fmt.Sprintf("%d", data.Host.CPUs) }</p>
+						<p class="text-xs text-gray-400">CPUs</p>
+					</div>
+				</div>
+			</div>
+
+			<!-- Memory -->
+			<div class="card p-4">
+				<div class="flex items-center gap-3">
+					<div class="w-10 h-10 rounded-lg bg-purple-500/10 flex items-center justify-center">
+						<i class="fas fa-memory text-purple-400"></i>
+					</div>
+					<div>
+						<p class="text-2xl font-bold text-white">{ data.Host.MemTotalStr }</p>
+						<p class="text-xs text-gray-400">Memory</p>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		// Agent Connection Info (for agent-type hosts)
+		if data.Host.EndpointType == "agent" {
+			<div class="bg-dark-800 rounded-xl border border-dark-600 p-5 mb-6">
+				<div class="flex items-center justify-between">
+					<div class="flex items-center gap-4">
+						<div class={ "w-12 h-12 rounded-xl flex items-center justify-center",
+							templ.KV("bg-green-500/10", data.Host.AgentConnected),
+							templ.KV("bg-red-500/10", !data.Host.AgentConnected) }>
+							<i class={ "fas fa-satellite-dish text-xl",
+								templ.KV("text-green-400", data.Host.AgentConnected),
+								templ.KV("text-red-400", !data.Host.AgentConnected) }></i>
+						</div>
+						<div>
+							<h3 class="text-white font-medium">Agent Connection</h3>
+							<div class="flex items-center gap-3 mt-1">
+								if data.Host.AgentConnected {
+									<span class="flex items-center gap-1.5 text-sm text-green-400">
+										<span class="w-2 h-2 rounded-full bg-green-500 status-pulse"></span>
+										Connected
+									</span>
+								} else {
+									<span class="flex items-center gap-1.5 text-sm text-red-400">
+										<span class="w-2 h-2 rounded-full bg-red-500"></span>
+										Disconnected
+									</span>
+								}
+								if data.Host.LastSeenHuman != "" {
+									<span class="text-xs text-gray-500">Last seen { data.Host.LastSeenHuman }</span>
+								}
+							</div>
+						</div>
+					</div>
+					<div class="flex items-center gap-4 text-sm">
+						if data.Host.AgentVersion != "" {
+							<div class="text-right">
+								<p class="text-xs text-gray-500">Agent Version</p>
+								<p class="text-gray-300 font-mono">{ data.Host.AgentVersion }</p>
+							</div>
+						}
+						if data.Host.TLSEnabled {
+							<div class="px-3 py-1.5 bg-green-500/10 rounded-lg">
+								<span class="text-xs text-green-400 font-medium">
+									<i class="fas fa-shield-alt mr-1"></i>mTLS Secured
+								</span>
+							</div>
+						}
+					</div>
+				</div>
+			</div>
+		}
+
+		<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+			<!-- Docker Engine Info -->
+			<div class="card">
+				<div class="px-5 py-4 border-b border-dark-700">
+					<h2 class="text-lg font-semibold text-white flex items-center gap-2">
+						<i class="fab fa-docker text-blue-400"></i>
+						Docker Engine
+					</h2>
+				</div>
+				<div class="p-5 space-y-3">
+					@infoRow("Version", data.Host.DockerVersion)
+					@infoRow("API Version", data.Host.DockerAPI)
+					@infoRow("Root Directory", data.Host.DockerRootDir)
+					@infoRow("Storage Driver", data.Host.StorageDriver)
+					@infoRow("Logging Driver", data.Host.LoggingDriver)
+					@infoRow("Cgroup Driver", data.Host.CgroupDriver)
+					if data.Host.CgroupVersion != "" {
+						@infoRow("Cgroup Version", data.Host.CgroupVersion)
+					}
+					@infoRow("Default Runtime", data.Host.DefaultRuntime)
+					<div class="flex justify-between py-2 border-b border-dark-700/50">
+						<span class="text-gray-400 text-sm">Swarm</span>
+						if data.Host.SwarmActive {
+							<span class="px-2 py-0.5 rounded text-xs font-medium bg-green-500/20 text-green-400">Active</span>
+						} else {
+							<span class="px-2 py-0.5 rounded text-xs font-medium bg-dark-600 text-gray-500">Inactive</span>
+						}
+					</div>
+					if len(data.Host.SecurityOpts) > 0 {
+						<div class="flex justify-between py-2 border-b border-dark-700/50">
+							<span class="text-gray-400 text-sm">Security</span>
+							<div class="flex flex-wrap gap-1 justify-end">
+								for _, opt := range data.Host.SecurityOpts {
+									<span class="px-2 py-0.5 rounded text-xs bg-dark-600 text-gray-300 font-mono">{ opt }</span>
+								}
+							</div>
+						</div>
+					}
+					<div class="flex justify-between py-2 border-b border-dark-700/50">
+						<span class="text-gray-400 text-sm">Docker ID</span>
+						<span class="text-gray-300 text-sm font-mono truncate max-w-[250px]" title={ data.Host.DockerID }>{ data.Host.DockerID }</span>
+					</div>
+				</div>
+			</div>
+
+			<!-- System Info -->
+			<div class="card">
+				<div class="px-5 py-4 border-b border-dark-700">
+					<h2 class="text-lg font-semibold text-white flex items-center gap-2">
+						<i class="fas fa-desktop text-green-400"></i>
+						System
+					</h2>
+				</div>
+				<div class="p-5 space-y-3">
+					@infoRow("Hostname", data.Host.Hostname)
+					@infoRow("Operating System", data.Host.OS)
+					@infoRow("OS Type", data.Host.OSType)
+					@infoRow("Architecture", data.Host.Architecture)
+					@infoRow("Kernel", data.Host.KernelVersion)
+					if data.Host.GoVersion != "" {
+						@infoRow("Go Version", data.Host.GoVersion)
+					}
+					@infoRow("CPUs", fmt.Sprintf("%d cores", data.Host.CPUs))
+					@infoRow("Total Memory", data.Host.MemTotalStr)
+					if data.Host.IPAddress != "" {
+						@infoRow("IP Address", data.Host.IPAddress)
+					}
+					if len(data.Host.DNS) > 0 {
+						<div class="flex justify-between py-2 border-b border-dark-700/50">
+							<span class="text-gray-400 text-sm">DNS Servers</span>
+							<div class="flex flex-col items-end gap-1">
+								for _, dns := range data.Host.DNS {
+									<span class="text-gray-300 text-sm font-mono">{ dns }</span>
+								}
+							</div>
+						</div>
+					}
+					if data.Host.Platform != "" {
+						@infoRow("Platform", data.Host.Platform)
+					}
+				</div>
+			</div>
+
+			<!-- Runtimes -->
+			if len(data.Host.Runtimes) > 0 {
+				<div class="card">
+					<div class="px-5 py-4 border-b border-dark-700">
+						<h2 class="text-lg font-semibold text-white flex items-center gap-2">
+							<i class="fas fa-cogs text-orange-400"></i>
+							Runtimes
+						</h2>
+					</div>
+					<div class="p-5">
+						<div class="flex flex-wrap gap-2">
+							for _, rt := range data.Host.Runtimes {
+								<span class={ "px-3 py-1.5 rounded-lg text-sm font-mono", templ.KV("bg-primary-500/20 text-primary-400 border border-primary-500/30", rt == data.Host.DefaultRuntime), templ.KV("bg-dark-700 text-gray-300", rt != data.Host.DefaultRuntime) }>
+									{ rt }
+									if rt == data.Host.DefaultRuntime {
+										<span class="ml-1 text-xs opacity-70">(default)</span>
+									}
+								</span>
+							}
+						</div>
+					</div>
+				</div>
+			}
+
+			<!-- Plugins -->
+			if len(data.Host.Plugins) > 0 {
+				<div class="card">
+					<div class="px-5 py-4 border-b border-dark-700">
+						<h2 class="text-lg font-semibold text-white flex items-center gap-2">
+							<i class="fas fa-puzzle-piece text-cyan-400"></i>
+							Plugins
+						</h2>
+					</div>
+					<div class="p-5 space-y-4">
+						for pluginType, names := range data.Host.Plugins {
+							<div>
+								<h3 class="text-sm font-medium text-gray-400 mb-2 capitalize">{ pluginType }</h3>
+								<div class="flex flex-wrap gap-2">
+									for _, name := range names {
+										<span class="px-2.5 py-1 rounded-md text-xs bg-dark-700 text-gray-300 font-mono">{ name }</span>
+									}
+								</div>
+							</div>
+						}
+					</div>
+				</div>
+			}
+
+			<!-- Registries -->
+			if len(data.Host.Registries) > 0 {
+				<div class="card">
+					<div class="px-5 py-4 border-b border-dark-700">
+						<h2 class="text-lg font-semibold text-white flex items-center gap-2">
+							<i class="fas fa-warehouse text-yellow-400"></i>
+							Registries
+						</h2>
+					</div>
+					<div class="p-5">
+						<div class="flex flex-wrap gap-2">
+							for _, reg := range data.Host.Registries {
+								<span class="px-3 py-1.5 rounded-lg text-sm bg-dark-700 text-gray-300 font-mono">{ reg }</span>
+							}
+						</div>
+					</div>
+				</div>
+			}
+
+			<!-- Labels -->
+			if len(data.Host.Labels) > 0 {
+				<div class="card">
+					<div class="px-5 py-4 border-b border-dark-700">
+						<h2 class="text-lg font-semibold text-white flex items-center gap-2">
+							<i class="fas fa-tags text-pink-400"></i>
+							Labels
+						</h2>
+					</div>
+					<div class="p-5 space-y-2">
+						for key, value := range data.Host.Labels {
+							<div class="flex justify-between py-2 border-b border-dark-700/50">
+								<span class="text-gray-400 text-sm font-mono">{ key }</span>
+								<span class="text-gray-300 text-sm font-mono">{ value }</span>
+							</div>
+						}
+					</div>
+				</div>
+			}
+		</div>
+	}
+}
+
+templ infoRow(label, value string) {
+	<div class="flex justify-between py-2 border-b border-dark-700/50">
+		<span class="text-gray-400 text-sm">{ label }</span>
+		if value != "" {
+			<span class="text-gray-300 text-sm font-mono">{ value }</span>
+		} else {
+			<span class="text-gray-600 text-sm italic">—</span>
+		}
+	</div>
+}

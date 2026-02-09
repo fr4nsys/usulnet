@@ -1,0 +1,103 @@
+package pages
+
+import (
+	"github.com/fr4nsys/usulnet/internal/web/templates/layouts"
+)
+
+type NotificationsData struct {
+	PageData      layouts.PageData
+	Notifications []NotificationItem
+	UnreadCount   int
+}
+
+type NotificationItem struct {
+	ID        string
+	Type      string
+	Title     string
+	Message   string
+	Link      string
+	Read      bool
+	CreatedAt string
+}
+
+func notificationIcon(nType string) string {
+	switch nType {
+	case "update":
+		return "fa-download text-blue-400"
+	case "security":
+		return "fa-shield-alt text-red-400"
+	case "backup":
+		return "fa-archive text-green-400"
+	case "error":
+		return "fa-exclamation-circle text-red-400"
+	case "warning":
+		return "fa-exclamation-triangle text-yellow-400"
+	default:
+		return "fa-info-circle text-gray-400"
+	}
+}
+
+templ Notifications(data NotificationsData) {
+	@layouts.Base(data.PageData) {
+		<div class="space-y-6">
+			<!-- Header -->
+			<div class="flex items-center justify-between">
+				<div>
+					<h1 class="text-2xl font-display font-bold text-white">Notifications</h1>
+					<p class="text-gray-400 mt-1">System alerts and updates</p>
+				</div>
+				if data.UnreadCount > 0 {
+					<button hx-post="/notifications/mark-all-read" hx-swap="none" class="btn-secondary">
+						<i class="fas fa-check-double mr-2"></i>Mark All Read
+					</button>
+				}
+			</div>
+
+			<!-- Notifications List -->
+			<div class="card">
+				if len(data.Notifications) == 0 {
+					<div class="p-8 text-center text-gray-400">
+						<i class="fas fa-bell-slash text-3xl mb-3"></i>
+						<p>No notifications</p>
+					</div>
+				} else {
+					<div class="divide-y divide-dark-700">
+						for _, n := range data.Notifications {
+							<div class={ "p-4 flex items-start gap-4", templ.KV("bg-dark-700/30", !n.Read) }>
+								<div class="w-10 h-10 rounded-lg bg-dark-700 flex items-center justify-center">
+									<i class={ "fas", notificationIcon(n.Type) }></i>
+								</div>
+								<div class="flex-1 min-w-0">
+									<div class="flex items-start justify-between">
+										<div>
+											<h4 class="font-medium text-white">{ n.Title }</h4>
+											<p class="text-sm text-gray-400 mt-1">{ n.Message }</p>
+										</div>
+										<div class="flex items-center gap-2 ml-4">
+											if !n.Read {
+												<button hx-post={ "/notifications/" + n.ID + "/read" } hx-swap="none" class="text-gray-400 hover:text-white" title="Mark as read">
+													<i class="fas fa-check"></i>
+												</button>
+											}
+											<button hx-delete={ "/notifications/" + n.ID } hx-swap="none" class="text-gray-400 hover:text-red-400" title="Delete">
+												<i class="fas fa-trash"></i>
+											</button>
+										</div>
+									</div>
+									<div class="flex items-center gap-4 mt-2">
+										<span class="text-xs text-gray-500">{ n.CreatedAt }</span>
+										if n.Link != "" {
+											<a href={ templ.SafeURL(n.Link) } class="text-xs text-primary-400 hover:text-primary-300">
+												View Details →
+											</a>
+										}
+									</div>
+								</div>
+							</div>
+						}
+					</div>
+				}
+			</div>
+		</div>
+	}
+}

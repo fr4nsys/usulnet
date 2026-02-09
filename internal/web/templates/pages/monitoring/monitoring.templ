@@ -1,0 +1,728 @@
+package monitoring
+
+import (
+	"fmt"
+	"github.com/fr4nsys/usulnet/internal/web/templates/layouts"
+)
+
+// ============================================================================
+// Data Types
+// ============================================================================
+
+type ContainerStat struct {
+	ID          string
+	Name        string
+	Image       string
+	State       string // running, paused, exited
+	CPUPercent  float64
+	MemUsage    uint64 // bytes
+	MemLimit    uint64 // bytes
+	MemPercent  float64
+	NetRx       uint64 // bytes total
+	NetTx       uint64 // bytes total
+	BlockRead   uint64 // bytes total
+	BlockWrite  uint64 // bytes total
+	PIDs        uint64
+	Uptime      string // human readable
+}
+
+type HostStats struct {
+	CPUPercent    float64
+	CPUCores      int
+	MemUsed       uint64
+	MemTotal      uint64
+	MemPercent    float64
+	DiskUsed      uint64
+	DiskTotal     uint64
+	DiskPercent   float64
+	Containers    int
+	Running       int
+	Stopped       int
+	Paused        int
+	Images        int
+	DockerVersion string
+	Hostname      string
+	OS            string
+	KernelVersion string
+}
+
+type MonitoringData struct {
+	PageData   layouts.PageData
+	Host       HostStats
+	Containers []ContainerStat
+}
+
+// ============================================================================
+// Helpers
+// ============================================================================
+
+func formatBytes(b uint64) string {
+	const unit = 1024
+	if b < unit {
+		return fmt.Sprintf("%d B", b)
+	}
+	div, exp := uint64(unit), 0
+	for n := b / unit; n >= unit; n /= unit {
+		div *= unit
+		exp++
+	}
+	return fmt.Sprintf("%.1f %s", float64(b)/float64(div), []string{"KiB", "MiB", "GiB", "TiB"}[exp])
+}
+
+func stateColor(state string) string {
+	switch state {
+	case "running":
+		return "text-emerald-400"
+	case "paused":
+		return "text-amber-400"
+	default:
+		return "text-red-400"
+	}
+}
+
+func stateDot(state string) string {
+	switch state {
+	case "running":
+		return "bg-emerald-400"
+	case "paused":
+		return "bg-amber-400"
+	default:
+		return "bg-red-400"
+	}
+}
+
+func cpuColor(pct float64) string {
+	if pct > 80 {
+		return "text-red-400"
+	}
+	if pct > 50 {
+		return "text-amber-400"
+	}
+	return "text-emerald-400"
+}
+
+func barColor(pct float64) string {
+	if pct > 80 {
+		return "bg-red-500"
+	}
+	if pct > 50 {
+		return "bg-amber-500"
+	}
+	return "bg-emerald-500"
+}
+
+func barWidth(pct float64) string {
+	if pct > 100 {
+		return "width: 100%"
+	}
+	return fmt.Sprintf("width: %.1f%%", pct)
+}
+
+// ============================================================================
+// Template
+// ============================================================================
+
+templ Monitoring(data MonitoringData) {
+	@layouts.Base(data.PageData) {
+		<div id="monitoring-root" class="space-y-6">
+			<!-- Header -->
+			<div class="flex items-center justify-between">
+				<div>
+					<h1 class="text-2xl font-display font-bold text-white">Monitoring</h1>
+					<p class="text-gray-400 mt-1">
+						{ data.Host.Hostname } &middot; { data.Host.OS } &middot; Docker { data.Host.DockerVersion }
+					</p>
+				</div>
+				<div class="flex items-center gap-3">
+					<!-- Live indicator -->
+					<div id="ws-status" class="flex items-center gap-2 px-3 py-1.5 bg-dark-800 border border-dark-600 rounded-lg text-xs">
+						<span id="ws-dot" class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+						<span id="ws-label" class="text-gray-400">Connecting...</span>
+					</div>
+					<button onclick="togglePause()" id="btn-pause" class="px-3 py-1.5 bg-dark-700 hover:bg-dark-600 text-gray-300 rounded-lg transition-colors text-sm font-medium">
+						<i class="fas fa-pause mr-1.5"></i>Pause
+					</button>
+				</div>
+			</div>
+
+			<!-- Host Summary Cards -->
+			<div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+				<!-- CPU -->
+				<div class="bg-dark-800 rounded-xl border border-dark-600 p-4">
+					<div class="flex items-center justify-between mb-2">
+						<span class="text-xs text-gray-500 font-medium uppercase tracking-wider">CPU</span>
+						<span class="text-xs text-gray-500">{ fmt.Sprintf("%d cores", data.Host.CPUCores) }</span>
+					</div>
+					<div id="card-cpu" class={ "text-2xl font-display font-bold", cpuColor(data.Host.CPUPercent) }>
+						{ fmt.Sprintf("%.1f%%", data.Host.CPUPercent) }
+					</div>
+					<div class="mt-2 h-1.5 bg-dark-700 rounded-full overflow-hidden">
+						<div id="bar-cpu" class={ "h-full rounded-full transition-all duration-500", barColor(data.Host.CPUPercent) } style={ barWidth(data.Host.CPUPercent) }></div>
+					</div>
+				</div>
+
+				<!-- Memory -->
+				<div class="bg-dark-800 rounded-xl border border-dark-600 p-4">
+					<div class="flex items-center justify-between mb-2">
+						<span class="text-xs text-gray-500 font-medium uppercase tracking-wider">Memory</span>
+						<span class="text-xs text-gray-500">{ formatBytes(data.Host.MemTotal) }</span>
+					</div>
+					<div id="card-mem" class={ "text-2xl font-display font-bold", cpuColor(data.Host.MemPercent) }>
+						{ fmt.Sprintf("%.1f%%", data.Host.MemPercent) }
+					</div>
+					<div class="mt-2 h-1.5 bg-dark-700 rounded-full overflow-hidden">
+						<div id="bar-mem" class={ "h-full rounded-full transition-all duration-500", barColor(data.Host.MemPercent) } style={ barWidth(data.Host.MemPercent) }></div>
+					</div>
+				</div>
+
+				<!-- Disk -->
+				<div class="bg-dark-800 rounded-xl border border-dark-600 p-4">
+					<div class="flex items-center justify-between mb-2">
+						<span class="text-xs text-gray-500 font-medium uppercase tracking-wider">Disk</span>
+						<span class="text-xs text-gray-500">{ formatBytes(data.Host.DiskTotal) }</span>
+					</div>
+					<div id="card-disk" class={ "text-2xl font-display font-bold", cpuColor(data.Host.DiskPercent) }>
+						{ fmt.Sprintf("%.1f%%", data.Host.DiskPercent) }
+					</div>
+					<div class="mt-2 h-1.5 bg-dark-700 rounded-full overflow-hidden">
+						<div id="bar-disk" class={ "h-full rounded-full transition-all duration-500", barColor(data.Host.DiskPercent) } style={ barWidth(data.Host.DiskPercent) }></div>
+					</div>
+				</div>
+
+				<!-- Containers -->
+				<div class="bg-dark-800 rounded-xl border border-dark-600 p-4">
+					<div class="flex items-center justify-between mb-2">
+						<span class="text-xs text-gray-500 font-medium uppercase tracking-wider">Containers</span>
+						<span class="text-xs text-gray-500">{ fmt.Sprintf("%d total", data.Host.Containers) }</span>
+					</div>
+					<div class="flex items-baseline gap-3">
+						<span id="card-running" class="text-2xl font-display font-bold text-emerald-400">{ fmt.Sprintf("%d", data.Host.Running) }</span>
+						<span class="text-xs text-gray-500">running</span>
+						if data.Host.Stopped > 0 {
+							<span id="card-stopped" class="text-sm font-medium text-red-400">{ fmt.Sprintf("%d", data.Host.Stopped) }</span>
+							<span class="text-xs text-gray-500">stopped</span>
+						}
+					</div>
+					<div class="mt-2 flex gap-1 h-1.5">
+						if data.Host.Containers > 0 {
+							<div class="bg-emerald-500 rounded-full" style={ fmt.Sprintf("width: %.0f%%", float64(data.Host.Running)/float64(data.Host.Containers)*100) }></div>
+							if data.Host.Paused > 0 {
+								<div class="bg-amber-500 rounded-full" style={ fmt.Sprintf("width: %.0f%%", float64(data.Host.Paused)/float64(data.Host.Containers)*100) }></div>
+							}
+							if data.Host.Stopped > 0 {
+								<div class="bg-red-500 rounded-full" style={ fmt.Sprintf("width: %.0f%%", float64(data.Host.Stopped)/float64(data.Host.Containers)*100) }></div>
+							}
+						}
+					</div>
+				</div>
+			</div>
+
+			<!-- Charts Row -->
+			<div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+				<!-- CPU History Chart -->
+				<div class="bg-dark-800 rounded-xl border border-dark-600 p-4">
+					<div class="flex items-center justify-between mb-3">
+						<h2 class="text-sm font-semibold text-white">CPU History</h2>
+						<span id="chart-cpu-current" class="text-xs text-gray-400"></span>
+					</div>
+					<div class="h-52">
+						<canvas id="chart-cpu"></canvas>
+					</div>
+				</div>
+
+				<!-- Memory History Chart -->
+				<div class="bg-dark-800 rounded-xl border border-dark-600 p-4">
+					<div class="flex items-center justify-between mb-3">
+						<h2 class="text-sm font-semibold text-white">Memory History</h2>
+						<span id="chart-mem-current" class="text-xs text-gray-400"></span>
+					</div>
+					<div class="h-52">
+						<canvas id="chart-mem"></canvas>
+					</div>
+				</div>
+			</div>
+
+			<!-- Network + Block I/O Charts -->
+			<div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+				<!-- Network I/O -->
+				<div class="bg-dark-800 rounded-xl border border-dark-600 p-4">
+					<div class="flex items-center justify-between mb-3">
+						<h2 class="text-sm font-semibold text-white">Network I/O</h2>
+						<span id="chart-net-current" class="text-xs text-gray-400"></span>
+					</div>
+					<div class="h-44">
+						<canvas id="chart-net"></canvas>
+					</div>
+				</div>
+
+				<!-- Block I/O -->
+				<div class="bg-dark-800 rounded-xl border border-dark-600 p-4">
+					<div class="flex items-center justify-between mb-3">
+						<h2 class="text-sm font-semibold text-white">Block I/O</h2>
+						<span id="chart-blk-current" class="text-xs text-gray-400"></span>
+					</div>
+					<div class="h-44">
+						<canvas id="chart-blk"></canvas>
+					</div>
+				</div>
+			</div>
+
+			<!-- Container Stats Table -->
+			<div class="bg-dark-800 rounded-xl border border-dark-600 overflow-hidden">
+				<div class="px-4 py-3 border-b border-dark-600 flex items-center justify-between">
+					<h2 class="text-sm font-semibold text-white">Container Resources</h2>
+					<div class="flex items-center gap-2">
+						<input type="text" id="filter-input" placeholder="Filter containers..."
+							class="px-3 py-1.5 bg-dark-700 border border-dark-600 rounded-lg text-sm text-gray-300 placeholder-gray-500 focus:outline-none focus:border-primary-500 w-48"
+							oninput="filterContainers(this.value)" />
+						<select id="sort-select" onchange="sortContainers(this.value)"
+							class="px-3 py-1.5 bg-dark-700 border border-dark-600 rounded-lg text-sm text-gray-300 focus:outline-none focus:border-primary-500">
+							<option value="cpu">Sort: CPU</option>
+							<option value="mem">Sort: Memory</option>
+							<option value="name">Sort: Name</option>
+							<option value="net">Sort: Network</option>
+						</select>
+					</div>
+				</div>
+				<div class="overflow-x-auto">
+					<table class="w-full text-sm">
+						<thead>
+							<tr class="text-xs text-gray-500 uppercase tracking-wider border-b border-dark-700">
+								<th class="px-4 py-2 text-left font-medium">Container</th>
+								<th class="px-4 py-2 text-right font-medium">CPU %</th>
+								<th class="px-4 py-2 text-right font-medium">Memory</th>
+								<th class="px-4 py-2 text-right font-medium">Mem %</th>
+								<th class="px-4 py-2 text-right font-medium">Net Rx</th>
+								<th class="px-4 py-2 text-right font-medium">Net Tx</th>
+								<th class="px-4 py-2 text-right font-medium">Block R</th>
+								<th class="px-4 py-2 text-right font-medium">Block W</th>
+								<th class="px-4 py-2 text-right font-medium">PIDs</th>
+								<th class="px-4 py-2 text-left font-medium">Uptime</th>
+								<th class="px-4 py-2 text-center font-medium"></th>
+							</tr>
+						</thead>
+						<tbody id="container-table">
+							for _, c := range data.Containers {
+								@containerRow(c)
+							}
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+
+		<!-- Chart.js -->
+		<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+
+		<!-- Monitoring JS -->
+		<script>
+		(function() {
+			'use strict';
+
+			// ── State ──────────────────────────────────────────
+			let ws = null;
+			let paused = false;
+			let charts = {};
+			const MAX_POINTS = 120; // 4 min at 2s interval
+			let containerData = {};
+			let prevNetRx = 0, prevNetTx = 0;
+			let prevBlkR = 0, prevBlkW = 0;
+
+			// ── Chart.js defaults ──────────────────────────────
+			Chart.defaults.color = '#9ca3af';
+			Chart.defaults.borderColor = '#1f2937';
+			Chart.defaults.font.family = "'IBM Plex Mono', 'JetBrains Mono', monospace";
+			Chart.defaults.font.size = 11;
+
+			const chartColors = {
+				primary: '#ff6b35',
+				primaryFill: 'rgba(255, 107, 53, 0.08)',
+				blue: '#3b82f6',
+				blueFill: 'rgba(59, 130, 246, 0.08)',
+				green: '#10b981',
+				greenFill: 'rgba(16, 185, 129, 0.08)',
+				purple: '#8b5cf6',
+				purpleFill: 'rgba(139, 92, 246, 0.08)',
+				red: '#ef4444',
+				redFill: 'rgba(239, 68, 68, 0.08)',
+				grid: '#1e293b',
+			};
+
+			function makeChart(id, datasets, yMax, yLabel) {
+				const ctx = document.getElementById(id);
+				if (!ctx) return null;
+				return new Chart(ctx.getContext('2d'), {
+					type: 'line',
+					data: { labels: [], datasets: datasets },
+					options: {
+						responsive: true,
+						maintainAspectRatio: false,
+						animation: false,
+						interaction: { mode: 'index', intersect: false },
+						plugins: {
+							legend: {
+								display: datasets.length > 1,
+								position: 'top',
+								labels: { boxWidth: 10, padding: 12, usePointStyle: true }
+							},
+							tooltip: {
+								backgroundColor: '#0d1117',
+								borderColor: '#30363d',
+								borderWidth: 1,
+								padding: 8,
+								titleFont: { size: 11 },
+								bodyFont: { size: 11 },
+							}
+						},
+						scales: {
+							x: {
+								display: true,
+								grid: { color: chartColors.grid, drawTicks: false },
+								ticks: { maxTicksLimit: 8, maxRotation: 0 }
+							},
+							y: {
+								display: true,
+								beginAtZero: true,
+								max: yMax || undefined,
+								grid: { color: chartColors.grid, drawTicks: false },
+								title: yLabel ? { display: true, text: yLabel, padding: 4 } : undefined,
+								ticks: {
+									callback: yLabel === 'bytes/s' ? formatBytesShort : undefined
+								}
+							}
+						},
+						elements: {
+							point: { radius: 0, hoverRadius: 3 },
+							line: { borderWidth: 1.5 }
+						}
+					}
+				});
+			}
+
+			function formatBytesShort(val) {
+				if (val === 0) return '0';
+				const u = ['B', 'K', 'M', 'G'];
+				let i = 0;
+				while (val >= 1024 && i < u.length - 1) { val /= 1024; i++; }
+				return val.toFixed(i > 0 ? 1 : 0) + u[i];
+			}
+
+			function pushPoint(chart, label, values) {
+				if (!chart) return;
+				chart.data.labels.push(label);
+				values.forEach((v, i) => {
+					if (chart.data.datasets[i]) chart.data.datasets[i].data.push(v);
+				});
+				while (chart.data.labels.length > MAX_POINTS) {
+					chart.data.labels.shift();
+					chart.data.datasets.forEach(ds => ds.data.shift());
+				}
+				chart.update('none');
+			}
+
+			// ── Init Charts ────────────────────────────────────
+			function initCharts() {
+				charts.cpu = makeChart('chart-cpu', [{
+					label: 'CPU %',
+					borderColor: chartColors.primary,
+					backgroundColor: chartColors.primaryFill,
+					fill: true,
+					tension: 0.3,
+					data: []
+				}], 100, '%');
+
+				charts.mem = makeChart('chart-mem', [{
+					label: 'Memory %',
+					borderColor: chartColors.blue,
+					backgroundColor: chartColors.blueFill,
+					fill: true,
+					tension: 0.3,
+					data: []
+				}], 100, '%');
+
+				charts.net = makeChart('chart-net', [{
+					label: 'Rx',
+					borderColor: chartColors.green,
+					backgroundColor: chartColors.greenFill,
+					fill: true,
+					tension: 0.3,
+					data: []
+				}, {
+					label: 'Tx',
+					borderColor: chartColors.purple,
+					backgroundColor: chartColors.purpleFill,
+					fill: true,
+					tension: 0.3,
+					data: []
+				}], undefined, 'bytes/s');
+
+				charts.blk = makeChart('chart-blk', [{
+					label: 'Read',
+					borderColor: chartColors.blue,
+					backgroundColor: chartColors.blueFill,
+					fill: true,
+					tension: 0.3,
+					data: []
+				}, {
+					label: 'Write',
+					borderColor: chartColors.red,
+					backgroundColor: chartColors.redFill,
+					fill: true,
+					tension: 0.3,
+					data: []
+				}], undefined, 'bytes/s');
+			}
+
+			// ── WebSocket ──────────────────────────────────────
+			function connect() {
+				const proto = location.protocol === 'https:' ? 'wss:' : 'ws:';
+				ws = new WebSocket(proto + '//' + location.host + '/ws/monitoring/stats');
+
+				ws.onopen = () => {
+					document.getElementById('ws-dot').className = 'w-2 h-2 rounded-full bg-emerald-400';
+					document.getElementById('ws-label').textContent = 'Live';
+				};
+
+				ws.onclose = () => {
+					document.getElementById('ws-dot').className = 'w-2 h-2 rounded-full bg-red-400';
+					document.getElementById('ws-label').textContent = 'Disconnected';
+					setTimeout(connect, 3000);
+				};
+
+				ws.onerror = () => ws.close();
+
+				ws.onmessage = (evt) => {
+					if (paused) return;
+					try {
+						const msg = JSON.parse(evt.data);
+						if (msg.type === 'stats') handleStats(msg.data);
+					} catch(e) { console.error('WS parse error:', e); }
+				};
+			}
+
+			function handleStats(d) {
+				const now = new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', second:'2-digit'});
+
+				// ── Update cards ──
+				updateCard('card-cpu', d.host.cpu_percent, '%');
+				updateBar('bar-cpu', d.host.cpu_percent);
+				updateCard('card-mem', d.host.mem_percent, '%');
+				updateBar('bar-mem', d.host.mem_percent);
+
+				// ── Update charts ──
+				pushPoint(charts.cpu, now, [d.host.cpu_percent]);
+				pushPoint(charts.mem, now, [d.host.mem_percent]);
+
+				document.getElementById('chart-cpu-current').textContent = d.host.cpu_percent.toFixed(1) + '%';
+				document.getElementById('chart-mem-current').textContent = d.host.mem_percent.toFixed(1) + '%';
+
+				// ── Network delta (aggregate all containers) ──
+				let totalNetRx = 0, totalNetTx = 0;
+				let totalBlkR = 0, totalBlkW = 0;
+
+				if (d.containers) {
+					d.containers.forEach(c => {
+						totalNetRx += c.net_rx || 0;
+						totalNetTx += c.net_tx || 0;
+						totalBlkR += c.block_read || 0;
+						totalBlkW += c.block_write || 0;
+						containerData[c.id] = c;
+					});
+				}
+
+				// Calculate rates (bytes/s, 2s interval)
+				if (prevNetRx > 0) {
+					const rxRate = Math.max(0, (totalNetRx - prevNetRx) / 2);
+					const txRate = Math.max(0, (totalNetTx - prevNetTx) / 2);
+					pushPoint(charts.net, now, [rxRate, txRate]);
+					document.getElementById('chart-net-current').textContent =
+						'Rx: ' + formatBytesShort(rxRate) + '/s | Tx: ' + formatBytesShort(txRate) + '/s';
+				}
+				prevNetRx = totalNetRx;
+				prevNetTx = totalNetTx;
+
+				if (prevBlkR > 0) {
+					const rRate = Math.max(0, (totalBlkR - prevBlkR) / 2);
+					const wRate = Math.max(0, (totalBlkW - prevBlkW) / 2);
+					pushPoint(charts.blk, now, [rRate, wRate]);
+					document.getElementById('chart-blk-current').textContent =
+						'R: ' + formatBytesShort(rRate) + '/s | W: ' + formatBytesShort(wRate) + '/s';
+				}
+				prevBlkR = totalBlkR;
+				prevBlkW = totalBlkW;
+
+				// ── Update table ──
+				updateContainerTable(d.containers || []);
+			}
+
+			function updateCard(id, val, suffix) {
+				const el = document.getElementById(id);
+				if (!el) return;
+				el.textContent = val.toFixed(1) + (suffix || '');
+				el.className = 'text-2xl font-display font-bold ' + getColorClass(val);
+			}
+
+			function updateBar(id, val) {
+				const el = document.getElementById(id);
+				if (!el) return;
+				el.style.width = Math.min(val, 100).toFixed(1) + '%';
+				el.className = 'h-full rounded-full transition-all duration-500 ' + getBarClass(val);
+			}
+
+			function getColorClass(pct) {
+				if (pct > 80) return 'text-red-400';
+				if (pct > 50) return 'text-amber-400';
+				return 'text-emerald-400';
+			}
+
+			function getBarClass(pct) {
+				if (pct > 80) return 'bg-red-500';
+				if (pct > 50) return 'bg-amber-500';
+				return 'bg-emerald-500';
+			}
+
+			// ── Container Table ─────────────────────────────────
+			let currentSort = 'cpu';
+			let currentFilter = '';
+
+			function updateContainerTable(containers) {
+				const tbody = document.getElementById('container-table');
+				if (!tbody) return;
+
+				// Apply filter
+				let list = containers;
+				if (currentFilter) {
+					const f = currentFilter.toLowerCase();
+					list = list.filter(c => c.name.toLowerCase().includes(f) || c.image.toLowerCase().includes(f));
+				}
+
+				// Apply sort
+				list.sort((a, b) => {
+					switch (currentSort) {
+						case 'cpu': return b.cpu_percent - a.cpu_percent;
+						case 'mem': return b.mem_percent - a.mem_percent;
+						case 'name': return a.name.localeCompare(b.name);
+						case 'net': return (b.net_rx + b.net_tx) - (a.net_rx + a.net_tx);
+						default: return 0;
+					}
+				});
+
+				// Build rows
+				const html = list.map(c => {
+					const stateClr = c.state === 'running' ? 'bg-emerald-400' : c.state === 'paused' ? 'bg-amber-400' : 'bg-red-400';
+					const cpuClr = c.cpu_percent > 80 ? 'text-red-400' : c.cpu_percent > 50 ? 'text-amber-400' : 'text-gray-300';
+					const memClr = c.mem_percent > 80 ? 'text-red-400' : c.mem_percent > 50 ? 'text-amber-400' : 'text-gray-300';
+
+					return '<tr class="border-b border-dark-700/50 hover:bg-dark-700/30 transition-colors">' +
+						'<td class="px-4 py-2.5">' +
+							'<div class="flex items-center gap-2">' +
+								'<span class="w-2 h-2 rounded-full ' + stateClr + '"></span>' +
+								'<a href="/monitoring/' + c.id + '" class="text-white hover:text-primary-400 font-medium transition-colors">' + escapeHtml(c.name) + '</a>' +
+							'</div>' +
+							'<div class="text-xs text-gray-500 ml-4">' + escapeHtml(c.image) + '</div>' +
+						'</td>' +
+						'<td class="px-4 py-2.5 text-right font-mono text-xs ' + cpuClr + '">' + c.cpu_percent.toFixed(2) + '%</td>' +
+						'<td class="px-4 py-2.5 text-right font-mono text-xs text-gray-300">' + formatBytesShort(c.mem_usage) + '</td>' +
+						'<td class="px-4 py-2.5 text-right">' +
+							'<div class="flex items-center justify-end gap-2">' +
+								'<div class="w-12 h-1.5 bg-dark-700 rounded-full overflow-hidden">' +
+									'<div class="h-full rounded-full ' + (c.mem_percent > 80 ? 'bg-red-500' : c.mem_percent > 50 ? 'bg-amber-500' : 'bg-emerald-500') + '" style="width:' + Math.min(c.mem_percent, 100).toFixed(0) + '%"></div>' +
+								'</div>' +
+								'<span class="font-mono text-xs ' + memClr + '">' + c.mem_percent.toFixed(1) + '%</span>' +
+							'</div>' +
+						'</td>' +
+						'<td class="px-4 py-2.5 text-right font-mono text-xs text-gray-400">' + formatBytesShort(c.net_rx) + '</td>' +
+						'<td class="px-4 py-2.5 text-right font-mono text-xs text-gray-400">' + formatBytesShort(c.net_tx) + '</td>' +
+						'<td class="px-4 py-2.5 text-right font-mono text-xs text-gray-400">' + formatBytesShort(c.block_read) + '</td>' +
+						'<td class="px-4 py-2.5 text-right font-mono text-xs text-gray-400">' + formatBytesShort(c.block_write) + '</td>' +
+						'<td class="px-4 py-2.5 text-right font-mono text-xs text-gray-400">' + (c.pids || 0) + '</td>' +
+						'<td class="px-4 py-2.5 text-xs text-gray-500">' + escapeHtml(c.uptime || '') + '</td>' +
+						'<td class="px-4 py-2.5 text-center">' +
+							'<a href="/monitoring/' + c.id + '" class="text-gray-500 hover:text-primary-400 transition-colors" title="Detail">' +
+								'<i class="fas fa-chart-line"></i>' +
+							'</a>' +
+						'</td>' +
+					'</tr>';
+				}).join('');
+
+				tbody.innerHTML = html;
+			}
+
+			function escapeHtml(s) {
+				const div = document.createElement('div');
+				div.appendChild(document.createTextNode(s || ''));
+				return div.innerHTML;
+			}
+
+			// ── Controls ───────────────────────────────────────
+			window.togglePause = function() {
+				paused = !paused;
+				const btn = document.getElementById('btn-pause');
+				if (paused) {
+					btn.innerHTML = '<i class="fas fa-play mr-1.5"></i>Resume';
+					btn.classList.add('bg-primary-600', 'hover:bg-primary-700');
+					btn.classList.remove('bg-dark-700', 'hover:bg-dark-600');
+				} else {
+					btn.innerHTML = '<i class="fas fa-pause mr-1.5"></i>Pause';
+					btn.classList.remove('bg-primary-600', 'hover:bg-primary-700');
+					btn.classList.add('bg-dark-700', 'hover:bg-dark-600');
+				}
+			};
+
+			window.filterContainers = function(val) { currentFilter = val; };
+			window.sortContainers = function(val) { currentSort = val; };
+
+			// ── Boot ───────────────────────────────────────────
+			document.addEventListener('DOMContentLoaded', () => {
+				initCharts();
+				connect();
+			});
+		})();
+		</script>
+	}
+}
+
+// ============================================================================
+// Partials
+// ============================================================================
+
+templ containerRow(c ContainerStat) {
+	<tr class="border-b border-dark-700/50 hover:bg-dark-700/30 transition-colors">
+		<td class="px-4 py-2.5">
+			<div class="flex items-center gap-2">
+				<span class={ "w-2 h-2 rounded-full", stateDot(c.State) }></span>
+				<a href={ templ.SafeURL(fmt.Sprintf("/monitoring/%s", c.ID)) } class="text-white hover:text-primary-400 font-medium transition-colors text-sm">
+					{ c.Name }
+				</a>
+			</div>
+			<div class="text-xs text-gray-500 ml-4">{ c.Image }</div>
+		</td>
+		<td class={ "px-4 py-2.5 text-right font-mono text-xs", cpuColor(c.CPUPercent) }>
+			{ fmt.Sprintf("%.2f%%", c.CPUPercent) }
+		</td>
+		<td class="px-4 py-2.5 text-right font-mono text-xs text-gray-300">
+			{ formatBytes(c.MemUsage) }
+		</td>
+		<td class="px-4 py-2.5 text-right">
+			<div class="flex items-center justify-end gap-2">
+				<div class="w-12 h-1.5 bg-dark-700 rounded-full overflow-hidden">
+					<div class={ "h-full rounded-full", barColor(c.MemPercent) } style={ barWidth(c.MemPercent) }></div>
+				</div>
+				<span class={ "font-mono text-xs", cpuColor(c.MemPercent) }>
+					{ fmt.Sprintf("%.1f%%", c.MemPercent) }
+				</span>
+			</div>
+		</td>
+		<td class="px-4 py-2.5 text-right font-mono text-xs text-gray-400">{ formatBytes(c.NetRx) }</td>
+		<td class="px-4 py-2.5 text-right font-mono text-xs text-gray-400">{ formatBytes(c.NetTx) }</td>
+		<td class="px-4 py-2.5 text-right font-mono text-xs text-gray-400">{ formatBytes(c.BlockRead) }</td>
+		<td class="px-4 py-2.5 text-right font-mono text-xs text-gray-400">{ formatBytes(c.BlockWrite) }</td>
+		<td class="px-4 py-2.5 text-right font-mono text-xs text-gray-400">{ fmt.Sprintf("%d", c.PIDs) }</td>
+		<td class="px-4 py-2.5 text-xs text-gray-500">{ c.Uptime }</td>
+		<td class="px-4 py-2.5 text-center">
+			<a href={ templ.SafeURL(fmt.Sprintf("/monitoring/%s", c.ID)) } class="text-gray-500 hover:text-primary-400 transition-colors" title="Detail">
+				<i class="fas fa-chart-line"></i>
+			</a>
+		</td>
+	</tr>
+}

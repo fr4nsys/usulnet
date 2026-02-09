@@ -1,0 +1,508 @@
+package tools
+
+import (
+	"github.com/fr4nsys/usulnet/internal/web/templates/layouts"
+)
+
+// ============================================================================
+// Cheat Sheet Data Types
+// ============================================================================
+
+type CheatSheetData struct {
+	PageData   layouts.PageData
+	Categories []CommandCategory
+	Custom     []CustomCommand
+}
+
+type CommandCategory struct {
+	ID          string
+	Name        string
+	Icon        string
+	Description string
+	Commands    []Command
+}
+
+type Command struct {
+	ID          string
+	Title       string
+	Command     string
+	Description string
+	Variables   []Variable
+	Tags        []string
+	Example     string
+}
+
+type Variable struct {
+	Name        string
+	Placeholder string
+	Description string
+}
+
+type CustomCommand struct {
+	ID          string
+	Title       string
+	Command     string
+	Category    string
+	Description string
+	CreatedAt   string
+}
+
+// ============================================================================
+// Cheat Sheet Template
+// ============================================================================
+
+templ CheatSheet(data CheatSheetData) {
+	@layouts.Base(data.PageData) {
+		<div class="space-y-6" x-data="cheatSheet()">
+			<!-- Header -->
+			<div class="flex items-center justify-between">
+				<div>
+					<h1 class="text-2xl font-display font-bold text-white">
+						<i class="fas fa-book text-primary-400 mr-2"></i>Command Cheat Sheet
+					</h1>
+					<p class="text-gray-400 mt-1">Quick reference for common Linux, Docker, Git, and DevOps commands</p>
+				</div>
+				<button
+					onclick="document.getElementById('add-command-modal').classList.remove('hidden')"
+					class="btn-secondary"
+				>
+					<i class="fas fa-plus mr-2"></i>Add Custom
+				</button>
+			</div>
+
+			<!-- Search & Filter -->
+			<div class="card p-4">
+				<div class="flex flex-wrap items-center gap-4">
+					<div class="flex-1 min-w-[200px]">
+						<div class="relative">
+							<i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-500"></i>
+							<input
+								type="text"
+								x-model="searchQuery"
+								placeholder="Search commands..."
+								class="input pl-10"
+							/>
+						</div>
+					</div>
+					<div class="flex flex-wrap gap-2">
+						<button
+							@click="activeCategory = ''"
+							:class="activeCategory === '' ? 'bg-primary-500 text-black' : 'bg-dark-600 text-gray-300 hover:text-white'"
+							class="px-3 py-1.5 rounded-lg text-sm font-medium transition-colors"
+						>
+							All
+						</button>
+						for _, cat := range data.Categories {
+							<button
+								@click={ "activeCategory = '" + cat.ID + "'" }
+								:class={ "activeCategory === '" + cat.ID + "' ? 'bg-primary-500 text-black' : 'bg-dark-600 text-gray-300 hover:text-white'" }
+								class="px-3 py-1.5 rounded-lg text-sm font-medium transition-colors flex items-center gap-1.5"
+							>
+								<i class={ cat.Icon }></i>
+								{ cat.Name }
+							</button>
+						}
+					</div>
+				</div>
+			</div>
+
+			<!-- Categories Grid -->
+			<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+				for _, cat := range data.Categories {
+					<div
+						x-show={ "activeCategory === '' || activeCategory === '" + cat.ID + "'" }
+						x-transition
+						class="card"
+					>
+						<div class="p-4 border-b border-dark-600 flex items-center gap-3">
+							<div class="w-10 h-10 rounded-lg bg-primary-500/10 flex items-center justify-center">
+								<i class={ cat.Icon + " text-primary-400" }></i>
+							</div>
+							<div>
+								<h2 class="text-lg font-semibold text-white">{ cat.Name }</h2>
+								<p class="text-sm text-gray-400">{ cat.Description }</p>
+							</div>
+						</div>
+						<div class="divide-y divide-dark-600">
+							for _, cmd := range cat.Commands {
+								<div
+									x-show={ "matchesSearch('" + escapeJS(cmd.Title) + "', '" + escapeJS(cmd.Command) + "', '" + escapeJS(cmd.Description) + "')" }
+									class="p-4 hover:bg-dark-700/50 transition-colors"
+								>
+									<div class="flex items-start justify-between gap-4">
+										<div class="flex-1 min-w-0">
+											<h3 class="font-medium text-white">{ cmd.Title }</h3>
+											<p class="text-sm text-gray-400 mt-0.5">{ cmd.Description }</p>
+											<div class="mt-2 relative group">
+												<code class="block bg-dark-900 text-green-400 px-3 py-2 rounded-lg text-sm font-mono overflow-x-auto">
+													{ cmd.Command }
+												</code>
+												<button
+													@click={ "copyCommand('" + escapeJS(cmd.Command) + "')" }
+													class="absolute right-2 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-dark-700 text-gray-400 hover:text-white px-2 py-1 rounded text-xs"
+												>
+													<i class="fas fa-copy mr-1"></i>Copy
+												</button>
+											</div>
+											if cmd.Example != "" {
+												<div class="mt-2 text-xs text-gray-500">
+													<span class="text-gray-600">Example:</span>
+													<code class="text-gray-400 ml-1">{ cmd.Example }</code>
+												</div>
+											}
+										</div>
+									</div>
+									if len(cmd.Variables) > 0 {
+										<div class="mt-3 flex flex-wrap gap-2">
+											for _, v := range cmd.Variables {
+												<span
+													class="inline-flex items-center gap-1 bg-yellow-500/10 text-yellow-400 px-2 py-0.5 rounded text-xs cursor-pointer hover:bg-yellow-500/20"
+													title={ v.Description }
+												>
+													<i class="fas fa-edit text-[10px]"></i>
+													{ v.Placeholder }
+												</span>
+											}
+										</div>
+									}
+								</div>
+							}
+						</div>
+					</div>
+				}
+
+				<!-- Custom Commands -->
+				if len(data.Custom) > 0 {
+					<div
+						x-show="activeCategory === '' || activeCategory === 'custom'"
+						x-transition
+						class="card"
+					>
+						<div class="p-4 border-b border-dark-600 flex items-center gap-3">
+							<div class="w-10 h-10 rounded-lg bg-purple-500/10 flex items-center justify-center">
+								<i class="fas fa-user-edit text-purple-400"></i>
+							</div>
+							<div>
+								<h2 class="text-lg font-semibold text-white">My Commands</h2>
+								<p class="text-sm text-gray-400">Your custom saved commands</p>
+							</div>
+						</div>
+						<div class="divide-y divide-dark-600">
+							for _, cmd := range data.Custom {
+								<div class="p-4 hover:bg-dark-700/50 transition-colors">
+									<div class="flex items-start justify-between gap-4">
+										<div class="flex-1 min-w-0">
+											<h3 class="font-medium text-white">{ cmd.Title }</h3>
+											<p class="text-sm text-gray-400 mt-0.5">{ cmd.Description }</p>
+											<div class="mt-2 relative group">
+												<code class="block bg-dark-900 text-green-400 px-3 py-2 rounded-lg text-sm font-mono overflow-x-auto">
+													{ cmd.Command }
+												</code>
+												<div class="absolute right-2 top-1/2 -translate-y-1/2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+													<button
+														@click={ "copyCommand('" + escapeJS(cmd.Command) + "')" }
+														class="bg-dark-700 text-gray-400 hover:text-white px-2 py-1 rounded text-xs"
+													>
+														<i class="fas fa-copy"></i>
+													</button>
+													<button
+														hx-delete={ "/tools/cheatsheet/custom/" + cmd.ID }
+														hx-target="body"
+														hx-confirm="Delete this command?"
+														class="bg-dark-700 text-red-400 hover:text-red-300 px-2 py-1 rounded text-xs"
+													>
+														<i class="fas fa-trash"></i>
+													</button>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							}
+						</div>
+					</div>
+				}
+			</div>
+
+			<!-- Add Command Modal -->
+			@addCommandModal(data.PageData.CSRFToken)
+
+			<!-- Toast for copy feedback -->
+			<div
+				x-show="showCopyToast"
+				x-transition
+				class="fixed bottom-4 right-4 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg"
+			>
+				<i class="fas fa-check mr-2"></i>Command copied to clipboard
+			</div>
+
+			<script>
+				function cheatSheet() {
+					return {
+						searchQuery: '',
+						activeCategory: '',
+						showCopyToast: false,
+						matchesSearch(title, command, description) {
+							if (!this.searchQuery) return true;
+							const q = this.searchQuery.toLowerCase();
+							return title.toLowerCase().includes(q) ||
+								command.toLowerCase().includes(q) ||
+								description.toLowerCase().includes(q);
+						},
+						copyCommand(cmd) {
+							// Replace variable placeholders with actual clipboard-friendly format
+							navigator.clipboard.writeText(cmd).then(() => {
+								this.showCopyToast = true;
+								setTimeout(() => this.showCopyToast = false, 2000);
+							});
+						}
+					};
+				}
+			</script>
+		</div>
+	}
+}
+
+templ addCommandModal(csrfToken string) {
+	<div id="add-command-modal" class="hidden fixed inset-0 z-50 overflow-y-auto">
+		<div class="fixed inset-0 bg-black/50" onclick="document.getElementById('add-command-modal').classList.add('hidden')"></div>
+		<div class="relative min-h-screen flex items-center justify-center p-4">
+			<div class="relative bg-dark-800 rounded-xl border border-dark-600 max-w-lg w-full p-6">
+				<div class="flex items-center justify-between mb-6">
+					<h2 class="text-xl font-display font-bold text-white">Add Custom Command</h2>
+					<button
+						onclick="document.getElementById('add-command-modal').classList.add('hidden')"
+						class="text-gray-400 hover:text-white"
+					>
+						<i class="fas fa-times"></i>
+					</button>
+				</div>
+
+				<form action="/tools/cheatsheet/custom" method="POST" class="space-y-4">
+					<input type="hidden" name="csrf_token" value={ csrfToken }/>
+
+					<div>
+						<label class="block text-sm font-medium text-gray-300 mb-2">Title</label>
+						<input type="text" name="title" required class="input" placeholder="e.g. Start production server"/>
+					</div>
+
+					<div>
+						<label class="block text-sm font-medium text-gray-300 mb-2">Command</label>
+						<textarea name="command" required rows="3" class="input font-mono" placeholder="e.g. docker-compose -f docker-compose.prod.yml up -d"></textarea>
+					</div>
+
+					<div>
+						<label class="block text-sm font-medium text-gray-300 mb-2">Description</label>
+						<input type="text" name="description" class="input" placeholder="Optional description"/>
+					</div>
+
+					<div>
+						<label class="block text-sm font-medium text-gray-300 mb-2">Category</label>
+						<select name="category" class="input">
+							<option value="docker">Docker</option>
+							<option value="linux">Linux</option>
+							<option value="git">Git</option>
+							<option value="network">Networking</option>
+							<option value="other">Other</option>
+						</select>
+					</div>
+
+					<div class="flex justify-end gap-3 pt-4 border-t border-dark-600">
+						<button
+							type="button"
+							onclick="document.getElementById('add-command-modal').classList.add('hidden')"
+							class="btn-secondary"
+						>
+							Cancel
+						</button>
+						<button type="submit" class="btn-primary">
+							<i class="fas fa-plus mr-2"></i>Add Command
+						</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+}
+
+// Helper to escape JS strings
+func escapeJS(s string) string {
+	// Simple escape for single quotes and backslashes
+	result := ""
+	for _, c := range s {
+		switch c {
+		case '\\':
+			result += "\\\\"
+		case '\'':
+			result += "\\'"
+		case '\n':
+			result += "\\n"
+		case '\r':
+			result += "\\r"
+		default:
+			result += string(c)
+		}
+	}
+	return result
+}
+
+// ============================================================================
+// Default Commands Data
+// ============================================================================
+
+func DefaultCategories() []CommandCategory {
+	return []CommandCategory{
+		{
+			ID:          "linux",
+			Name:        "Linux",
+			Icon:        "fab fa-linux",
+			Description: "File management, permissions, processes, and system commands",
+			Commands: []Command{
+				{Title: "List files with details", Command: "ls -la", Description: "Show all files including hidden, with permissions and sizes"},
+				{Title: "Find files by name", Command: "find /path -name '*.log'", Description: "Search for files matching a pattern", Variables: []Variable{{Name: "path", Placeholder: "/path", Description: "Directory to search"}, {Name: "pattern", Placeholder: "*.log", Description: "File name pattern"}}},
+				{Title: "Disk usage summary", Command: "du -sh *", Description: "Show disk usage of directories in human-readable format"},
+				{Title: "Free memory", Command: "free -h", Description: "Display memory usage in human-readable format"},
+				{Title: "Process list", Command: "ps aux | grep <process>", Description: "Find running processes", Variables: []Variable{{Name: "process", Placeholder: "<process>", Description: "Process name to search"}}},
+				{Title: "Kill process", Command: "kill -9 <pid>", Description: "Force kill a process by PID", Variables: []Variable{{Name: "pid", Placeholder: "<pid>", Description: "Process ID"}}},
+				{Title: "Change permissions", Command: "chmod 755 <file>", Description: "Set file permissions (rwxr-xr-x)", Variables: []Variable{{Name: "file", Placeholder: "<file>", Description: "File or directory"}}},
+				{Title: "Change ownership", Command: "chown user:group <file>", Description: "Change file owner and group", Variables: []Variable{{Name: "user", Placeholder: "user", Description: "Username"}, {Name: "group", Placeholder: "group", Description: "Group name"}}},
+				{Title: "System service status", Command: "systemctl status <service>", Description: "Check systemd service status", Variables: []Variable{{Name: "service", Placeholder: "<service>", Description: "Service name"}}},
+				{Title: "View logs", Command: "journalctl -u <service> -f", Description: "Follow systemd service logs", Variables: []Variable{{Name: "service", Placeholder: "<service>", Description: "Service name"}}},
+				{Title: "Network connections", Command: "ss -tulpn", Description: "Show listening ports and connections"},
+				{Title: "Create tar archive", Command: "tar -czvf archive.tar.gz /path", Description: "Create compressed archive", Variables: []Variable{{Name: "path", Placeholder: "/path", Description: "Directory to archive"}}},
+				{Title: "Extract tar archive", Command: "tar -xzvf archive.tar.gz", Description: "Extract compressed archive"},
+			},
+		},
+		{
+			ID:          "docker",
+			Name:        "Docker",
+			Icon:        "fab fa-docker",
+			Description: "Container management, images, volumes, and compose",
+			Commands: []Command{
+				{Title: "List containers", Command: "docker ps -a", Description: "Show all containers including stopped"},
+				{Title: "Container logs", Command: "docker logs -f --tail 100 <container>", Description: "Follow container logs", Variables: []Variable{{Name: "container", Placeholder: "<container>", Description: "Container name or ID"}}},
+				{Title: "Execute in container", Command: "docker exec -it <container> /bin/sh", Description: "Open shell in running container", Variables: []Variable{{Name: "container", Placeholder: "<container>", Description: "Container name or ID"}}},
+				{Title: "Stop all containers", Command: "docker stop $(docker ps -q)", Description: "Stop all running containers"},
+				{Title: "Remove stopped containers", Command: "docker container prune -f", Description: "Remove all stopped containers"},
+				{Title: "List images", Command: "docker images", Description: "Show all images"},
+				{Title: "Remove unused images", Command: "docker image prune -a -f", Description: "Remove all unused images"},
+				{Title: "Pull image", Command: "docker pull <image>:<tag>", Description: "Download image from registry", Variables: []Variable{{Name: "image", Placeholder: "<image>", Description: "Image name"}, {Name: "tag", Placeholder: "<tag>", Description: "Image tag"}}},
+				{Title: "Build image", Command: "docker build -t <name>:<tag> .", Description: "Build image from Dockerfile", Variables: []Variable{{Name: "name", Placeholder: "<name>", Description: "Image name"}, {Name: "tag", Placeholder: "<tag>", Description: "Image tag"}}},
+				{Title: "Compose up", Command: "docker compose up -d", Description: "Start services in detached mode"},
+				{Title: "Compose down", Command: "docker compose down -v", Description: "Stop services and remove volumes"},
+				{Title: "Compose logs", Command: "docker compose logs -f <service>", Description: "Follow service logs", Variables: []Variable{{Name: "service", Placeholder: "<service>", Description: "Service name"}}},
+				{Title: "Container stats", Command: "docker stats --no-stream", Description: "Show container resource usage"},
+				{Title: "Inspect container", Command: "docker inspect <container>", Description: "Show detailed container info", Variables: []Variable{{Name: "container", Placeholder: "<container>", Description: "Container name or ID"}}},
+				{Title: "Copy from container", Command: "docker cp <container>:/path/file ./local", Description: "Copy file from container", Variables: []Variable{{Name: "container", Placeholder: "<container>", Description: "Container name"}, {Name: "path", Placeholder: "/path/file", Description: "Container path"}}},
+			},
+		},
+		{
+			ID:          "git",
+			Name:        "Git",
+			Icon:        "fab fa-git-alt",
+			Description: "Version control, branching, merging, and collaboration",
+			Commands: []Command{
+				{Title: "Clone repository", Command: "git clone <url>", Description: "Clone a repository", Variables: []Variable{{Name: "url", Placeholder: "<url>", Description: "Repository URL"}}},
+				{Title: "Create branch", Command: "git checkout -b <branch>", Description: "Create and switch to new branch", Variables: []Variable{{Name: "branch", Placeholder: "<branch>", Description: "Branch name"}}},
+				{Title: "Stage all changes", Command: "git add -A", Description: "Stage all modified and new files"},
+				{Title: "Commit with message", Command: "git commit -m '<message>'", Description: "Commit staged changes", Variables: []Variable{{Name: "message", Placeholder: "<message>", Description: "Commit message"}}},
+				{Title: "Push to remote", Command: "git push -u origin <branch>", Description: "Push branch and set upstream", Variables: []Variable{{Name: "branch", Placeholder: "<branch>", Description: "Branch name"}}},
+				{Title: "Pull with rebase", Command: "git pull --rebase origin <branch>", Description: "Pull and rebase local commits", Variables: []Variable{{Name: "branch", Placeholder: "<branch>", Description: "Branch name"}}},
+				{Title: "Stash changes", Command: "git stash push -m '<message>'", Description: "Stash working changes", Variables: []Variable{{Name: "message", Placeholder: "<message>", Description: "Stash description"}}},
+				{Title: "Apply stash", Command: "git stash pop", Description: "Apply and remove latest stash"},
+				{Title: "Interactive rebase", Command: "git rebase -i HEAD~<n>", Description: "Rebase last n commits interactively", Variables: []Variable{{Name: "n", Placeholder: "<n>", Description: "Number of commits"}}},
+				{Title: "Cherry pick", Command: "git cherry-pick <commit>", Description: "Apply specific commit to current branch", Variables: []Variable{{Name: "commit", Placeholder: "<commit>", Description: "Commit hash"}}},
+				{Title: "Reset to commit", Command: "git reset --hard <commit>", Description: "Reset to specific commit (destructive)", Variables: []Variable{{Name: "commit", Placeholder: "<commit>", Description: "Commit hash"}}},
+				{Title: "View commit history", Command: "git log --oneline --graph -20", Description: "Show last 20 commits as graph"},
+				{Title: "Show diff", Command: "git diff --stat", Description: "Show changed files summary"},
+			},
+		},
+		{
+			ID:          "search",
+			Name:        "Find & Grep",
+			Icon:        "fas fa-search",
+			Description: "File and content search with regex patterns",
+			Commands: []Command{
+				{Title: "Find by name", Command: "find . -name '*.go' -type f", Description: "Find files by name pattern"},
+				{Title: "Find by content", Command: "grep -rn 'pattern' /path", Description: "Search file contents recursively", Variables: []Variable{{Name: "pattern", Placeholder: "pattern", Description: "Search pattern"}}},
+				{Title: "Find large files", Command: "find . -type f -size +100M", Description: "Find files larger than 100MB"},
+				{Title: "Find modified recently", Command: "find . -type f -mtime -7", Description: "Find files modified in last 7 days"},
+				{Title: "Grep with context", Command: "grep -C 3 'pattern' file", Description: "Show 3 lines before/after match", Variables: []Variable{{Name: "pattern", Placeholder: "pattern", Description: "Search pattern"}}},
+				{Title: "Grep exclude dirs", Command: "grep -r --exclude-dir={node_modules,.git} 'pattern' .", Description: "Search excluding directories"},
+				{Title: "Count matches", Command: "grep -c 'pattern' file", Description: "Count matching lines", Variables: []Variable{{Name: "pattern", Placeholder: "pattern", Description: "Search pattern"}}},
+				{Title: "ripgrep search", Command: "rg -i 'pattern' --type go", Description: "Fast search with file type filter"},
+			},
+		},
+		{
+			ID:          "network",
+			Name:        "Networking",
+			Icon:        "fas fa-network-wired",
+			Description: "Network diagnostics, transfers, and API testing",
+			Commands: []Command{
+				{Title: "SCP copy to remote", Command: "scp file user@host:/path", Description: "Copy file to remote server", Variables: []Variable{{Name: "file", Placeholder: "file", Description: "Local file"}, {Name: "user", Placeholder: "user", Description: "Remote user"}, {Name: "host", Placeholder: "host", Description: "Remote host"}}},
+				{Title: "SCP copy from remote", Command: "scp user@host:/path/file ./", Description: "Copy file from remote server"},
+				{Title: "Rsync with progress", Command: "rsync -avzP /source/ user@host:/dest/", Description: "Sync directories with progress"},
+				{Title: "SSH tunnel", Command: "ssh -L 8080:localhost:80 user@host", Description: "Create local port forward"},
+				{Title: "Test port", Command: "nc -zv host port", Description: "Check if port is open", Variables: []Variable{{Name: "host", Placeholder: "host", Description: "Target host"}, {Name: "port", Placeholder: "port", Description: "Port number"}}},
+				{Title: "DNS lookup", Command: "dig +short domain", Description: "Get DNS records", Variables: []Variable{{Name: "domain", Placeholder: "domain", Description: "Domain name"}}},
+				{Title: "Curl GET", Command: "curl -X GET 'url' -H 'Authorization: Bearer token'", Description: "Make GET request with auth", Variables: []Variable{{Name: "url", Placeholder: "url", Description: "API URL"}}},
+				{Title: "Curl POST JSON", Command: "curl -X POST 'url' -H 'Content-Type: application/json' -d '{\"key\":\"value\"}'", Description: "POST JSON data"},
+				{Title: "Curl with timing", Command: "curl -w '@-' -o /dev/null -s 'url' <<< $'time_total: %{time_total}s'", Description: "Measure request time"},
+				{Title: "wget download", Command: "wget -c url -O filename", Description: "Download with resume support"},
+			},
+		},
+		{
+			ID:          "tcpdump",
+			Name:        "tcpdump",
+			Icon:        "fas fa-satellite-dish",
+			Description: "Network packet capture and analysis",
+			Commands: []Command{
+				{Title: "Capture all traffic", Command: "tcpdump -i eth0 -w capture.pcap", Description: "Capture all packets on interface"},
+				{Title: "Capture by port", Command: "tcpdump -i any port 80", Description: "Capture HTTP traffic"},
+				{Title: "Capture by host", Command: "tcpdump -i any host 192.168.1.1", Description: "Capture traffic to/from host", Variables: []Variable{{Name: "host", Placeholder: "192.168.1.1", Description: "IP address"}}},
+				{Title: "Capture HTTP requests", Command: "tcpdump -i any -A 'tcp port 80 and (((ip[2:2] - ((ip[0]&0xf)<<2)) - ((tcp[12]&0xf0)>>2)) != 0)'", Description: "Show HTTP request content"},
+				{Title: "Capture DNS", Command: "tcpdump -i any port 53", Description: "Capture DNS queries"},
+				{Title: "Show packet hex", Command: "tcpdump -XX -i eth0", Description: "Show packets in hex and ASCII"},
+				{Title: "Filter by protocol", Command: "tcpdump -i any icmp", Description: "Capture only ICMP packets"},
+				{Title: "Capture with count", Command: "tcpdump -i any -c 100 -w sample.pcap", Description: "Capture first 100 packets"},
+			},
+		},
+		{
+			ID:          "text",
+			Name:        "Text Processing",
+			Icon:        "fas fa-file-alt",
+			Description: "awk, sed, and text manipulation one-liners",
+			Commands: []Command{
+				{Title: "Replace in file", Command: "sed -i 's/old/new/g' file", Description: "Replace all occurrences in file", Variables: []Variable{{Name: "old", Placeholder: "old", Description: "Text to find"}, {Name: "new", Placeholder: "new", Description: "Replacement text"}}},
+				{Title: "Delete lines matching", Command: "sed -i '/pattern/d' file", Description: "Delete lines matching pattern"},
+				{Title: "Print column", Command: "awk '{print $2}' file", Description: "Print second column"},
+				{Title: "Sum column", Command: "awk '{sum+=$1} END {print sum}' file", Description: "Sum values in first column"},
+				{Title: "Filter by column", Command: "awk '$3 > 100' file", Description: "Print rows where col 3 > 100"},
+				{Title: "Unique lines", Command: "sort file | uniq -c | sort -rn", Description: "Count and sort unique lines"},
+				{Title: "Extract field", Command: "cut -d':' -f1 /etc/passwd", Description: "Extract first field with delimiter"},
+				{Title: "JSON pretty print", Command: "cat file.json | jq '.'", Description: "Format JSON output"},
+				{Title: "JSON query", Command: "cat file.json | jq '.items[].name'", Description: "Extract values from JSON"},
+			},
+		},
+		{
+			ID:          "vim",
+			Name:        "Vim/Nano",
+			Icon:        "fas fa-keyboard",
+			Description: "Quick reference for terminal editors",
+			Commands: []Command{
+				{Title: "Vim: Save and quit", Command: ":wq", Description: "Write file and exit"},
+				{Title: "Vim: Quit without saving", Command: ":q!", Description: "Exit without saving changes"},
+				{Title: "Vim: Find and replace", Command: ":%s/old/new/gc", Description: "Replace with confirmation"},
+				{Title: "Vim: Go to line", Command: ":123", Description: "Jump to line 123"},
+				{Title: "Vim: Delete line", Command: "dd", Description: "Delete current line"},
+				{Title: "Vim: Undo", Command: "u", Description: "Undo last change"},
+				{Title: "Vim: Search", Command: "/pattern", Description: "Search forward for pattern"},
+				{Title: "Nano: Save", Command: "Ctrl+O", Description: "Write out (save) file"},
+				{Title: "Nano: Exit", Command: "Ctrl+X", Description: "Exit nano"},
+				{Title: "Nano: Search", Command: "Ctrl+W", Description: "Search in file"},
+				{Title: "Nano: Cut line", Command: "Ctrl+K", Description: "Cut current line"},
+				{Title: "Nano: Paste", Command: "Ctrl+U", Description: "Paste cut text"},
+			},
+		},
+	}
+}

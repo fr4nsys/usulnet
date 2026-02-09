@@ -1,0 +1,272 @@
+package layouts
+
+import (
+	"github.com/fr4nsys/usulnet/internal/web/templates/partials"
+	"github.com/fr4nsys/usulnet/internal/web/templates/types"
+)
+
+// Type aliases for convenience
+type PageData = types.PageData
+type UserData = types.UserData
+type StatsData = types.StatsData
+type FlashData = types.FlashData
+
+// Base is the main layout template
+templ Base(data PageData) {
+	<!DOCTYPE html>
+	<html lang="en" class={ data.Theme }>
+	<head>
+		<meta charset="UTF-8"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+		<meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex"/>
+		<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+		<meta name="theme-color" content="#0d1117"/>
+		if data.CSRFToken != "" {
+			<meta name="csrf-token" content={ data.CSRFToken }/>
+		}
+		<title>{ data.Title } | usulnet</title>
+		
+		<!-- Theme initialization (before CSS to avoid flash) -->
+		<script>
+			(function() {
+				var theme = localStorage.getItem('usulnet-theme') || 'dark';
+				document.documentElement.classList.add(theme);
+			})();
+		</script>
+		
+		<!-- Favicon -->
+		<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%23ff6b35' rx='20' width='100' height='100'/><text x='50' y='70' font-size='60' text-anchor='middle' fill='black' font-family='system-ui' font-weight='bold'>U</text></svg>"/>
+		
+		<!-- Preconnect for performance -->
+		<link rel="preconnect" href="https://fonts.googleapis.com"/>
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+		
+		<!-- Fonts -->
+		<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet"/>
+		
+		<!-- Icons -->
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer"/>
+		
+		<!-- HTMX -->
+		<script src="https://unpkg.com/htmx.org@2.0.4" integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+" crossorigin="anonymous"></script>
+		<script src="https://unpkg.com/htmx-ext-ws@2.0.2/ws.js"></script>
+		
+		<!-- Alpine.js -->
+		<script defer src="https://unpkg.com/alpinejs@3.14.8/dist/cdn.min.js"></script>
+		
+		<!-- HTMX CSRF Configuration -->
+		<script>
+			document.addEventListener('htmx:configRequest', function(event) {
+				var csrfMeta = document.querySelector('meta[name="csrf-token"]');
+				if (csrfMeta) {
+					event.detail.headers['X-CSRF-Token'] = csrfMeta.content;
+				}
+			});
+		</script>
+		
+		<!-- Tailwind CSS (compiled) -->
+		<link rel="stylesheet" href="/static/css/style.css"/>
+		
+		<!-- Core Styles -->
+		<style>
+			/* Alpine.js cloak */
+			[x-cloak] { display: none !important; }
+			/* Base typography */
+			body {
+				font-family: 'IBM Plex Sans', system-ui, sans-serif;
+				-webkit-font-smoothing: antialiased;
+				-moz-osx-font-smoothing: grayscale;
+			}
+			h1, h2, h3, .font-display { font-family: 'Space Grotesk', system-ui, sans-serif; }
+			code, pre, .font-mono { font-family: 'IBM Plex Mono', monospace; }
+			
+			/* HTMX loading states */
+			.htmx-indicator { opacity: 0; transition: opacity 150ms ease-in-out; }
+			.htmx-request .htmx-indicator, .htmx-request.htmx-indicator { opacity: 1; }
+			
+			/* Custom scrollbar - Dark */
+			.dark ::-webkit-scrollbar { width: 8px; height: 8px; }
+			.dark ::-webkit-scrollbar-track { background: #0d1117; }
+			.dark ::-webkit-scrollbar-thumb { background: #30363d; border-radius: 4px; }
+			.dark ::-webkit-scrollbar-thumb:hover { background: #484f58; }
+			
+			/* Navigation item hover effect */
+			.nav-item { transition: all 0.15s ease; position: relative; }
+			.nav-item:hover { transform: translateX(4px); }
+			.nav-item.active::before {
+				content: '';
+				position: absolute;
+				left: 0;
+				top: 50%;
+				transform: translateY(-50%);
+				width: 3px;
+				height: 60%;
+				background: #ff6b35;
+				border-radius: 0 2px 2px 0;
+			}
+			
+			/* Status indicator pulse */
+			.status-pulse { animation: statusPulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+			@keyframes statusPulse {
+				0%, 100% { opacity: 1; }
+				50% { opacity: 0.5; }
+			}
+			
+			/* Animations */
+			@keyframes slideIn {
+				from { transform: translateX(100%); opacity: 0; }
+				to { transform: translateX(0); opacity: 1; }
+			}
+			.animate-slide-in { animation: slideIn 0.3s ease-out; }
+		</style>
+	</head>
+	<body class="bg-dark-900 min-h-screen">
+		if data.User != nil {
+			<!-- Authenticated Layout -->
+			<div class="flex min-h-screen">
+				@partials.Sidebar(data.Active, data.User, data.Stats, data.Edition, data.EditionName)
+				
+				<!-- Main Content -->
+				<div class="flex-1 ml-64 flex flex-col">
+					@partials.Header(data.User, data.NotificationsCount, data.Hosts, data.ActiveHostID, data.ActiveHostName)
+					
+					<!-- Page Content -->
+					if data.FullScreen {
+						<!-- Full screen mode for editors - no padding, fills remaining space -->
+						<div class="flex-1 flex flex-col overflow-hidden">
+							if data.Flash != nil {
+								<div class="px-4 pt-2">
+									@partials.Flash(data.Flash.Type, data.Flash.Message)
+								</div>
+							}
+							{ children... }
+						</div>
+					} else {
+						<main class="p-6">
+							if data.Flash != nil {
+								@partials.Flash(data.Flash.Type, data.Flash.Message)
+							}
+							{ children... }
+						</main>
+					}
+				</div>
+			</div>
+		} else {
+			<!-- Auth Layout (Login, etc.) -->
+			{ children... }
+		}
+		
+		<!-- Toast Container -->
+		<div id="toast-container" class="fixed top-4 right-4 z-50 space-y-2"></div>
+		
+		<!-- Modal Container -->
+		<div id="modal-container"></div>
+		
+		<!-- Core JavaScript -->
+		<script>
+			window.usulnet = {
+				toggleTheme() {
+					const html = document.documentElement;
+					const isDark = html.classList.contains('dark');
+					html.classList.remove('dark', 'light');
+					html.classList.add(isDark ? 'light' : 'dark');
+					localStorage.setItem('usulnet-theme', isDark ? 'light' : 'dark');
+				},
+				
+				toast(message, type = 'info', duration = 4000) {
+					const container = document.getElementById('toast-container');
+					const toast = document.createElement('div');
+					const colors = {
+						success: 'bg-green-600 border-green-500',
+						error: 'bg-red-600 border-red-500',
+						warning: 'bg-yellow-600 border-yellow-500',
+						info: 'bg-primary-600 border-primary-500'
+					};
+					const icons = {
+						success: 'fa-check-circle',
+						error: 'fa-exclamation-circle',
+						warning: 'fa-exclamation-triangle',
+						info: 'fa-info-circle'
+					};
+					toast.className = `${colors[type]} text-white px-4 py-3 rounded-lg shadow-lg border-l-4 flex items-center gap-3 animate-slide-in`;
+					toast.innerHTML = `
+						<i class="fas ${icons[type]}"></i>
+						<span class="flex-1 text-sm">${message}</span>
+						<button onclick="this.parentElement.remove()" class="text-white/70 hover:text-white">
+							<i class="fas fa-times"></i>
+						</button>
+					`;
+					container.appendChild(toast);
+					if (duration > 0) {
+						setTimeout(() => toast.remove(), duration);
+					}
+				},
+				
+				formatBytes(bytes, decimals = 2) {
+					if (bytes === 0) return '0 B';
+					const k = 1024;
+					const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
+					const i = Math.floor(Math.log(bytes) / Math.log(k));
+					return parseFloat((bytes / Math.pow(k, i)).toFixed(decimals)) + ' ' + sizes[i];
+				}
+			};
+			
+			// HTMX event handlers
+			document.body.addEventListener('htmx:afterRequest', function(evt) {
+				const trigger = evt.detail.xhr.getResponseHeader('HX-Trigger');
+				if (trigger) {
+					try {
+						const data = JSON.parse(trigger);
+						if (data.showToast) {
+							usulnet.toast(data.showToast.message, data.showToast.type);
+						}
+					} catch (e) {}
+				}
+			});
+			
+			document.body.addEventListener('htmx:responseError', function(evt) {
+				const status = evt.detail.xhr.status;
+				let message = 'An error occurred';
+				switch (status) {
+					case 401: message = 'Session expired'; window.location.href = '/login'; break;
+					case 403: message = 'Permission denied'; break;
+					case 404: message = 'Not found'; break;
+					case 500: message = 'Server error'; break;
+				}
+				usulnet.toast(message, 'error');
+			});
+		</script>
+	</body>
+	</html>
+}
+
+// AuthLayout is a simpler layout for auth pages (login, etc.)
+templ AuthLayout(title string) {
+	<!DOCTYPE html>
+	<html lang="en" class="dark">
+	<head>
+		<meta charset="UTF-8"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+		<meta name="theme-color" content="#0d1117"/>
+		<title>{ title } | usulnet</title>
+		
+		<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%23ff6b35' rx='20' width='100' height='100'/><text x='50' y='70' font-size='60' text-anchor='middle' fill='black' font-family='system-ui' font-weight='bold'>U</text></svg>"/>
+		
+		<link rel="preconnect" href="https://fonts.googleapis.com"/>
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+		<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet"/>
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous"/>
+		<link rel="stylesheet" href="/static/css/style.css"/>
+		
+		<style>
+			[x-cloak] { display: none !important; }
+			body { font-family: 'IBM Plex Sans', system-ui, sans-serif; }
+			h1, h2, h3, .font-display { font-family: 'Space Grotesk', system-ui, sans-serif; }
+		</style>
+	</head>
+	<body class="bg-dark-900 min-h-screen">
+		<script defer src="https://unpkg.com/alpinejs@3.14.8/dist/cdn.min.js"></script>
+		{ children... }
+	</body>
+	</html>
+}

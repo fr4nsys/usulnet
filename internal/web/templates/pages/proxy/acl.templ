@@ -1,0 +1,315 @@
+package proxy
+
+import (
+	"fmt"
+	"github.com/fr4nsys/usulnet/internal/web/templates/layouts"
+)
+
+type ACLListData struct {
+	PageData    layouts.PageData
+	Connected   bool
+	AccessLists []ACLView
+}
+
+type ACLView struct {
+	ID         int
+	Name       string
+	SatisfyAny bool
+	PassAuth   bool
+	ItemCount  int // num user:pass entries
+	ClientCount int // num IP rules
+}
+
+templ ACLList(data ACLListData) {
+	@layouts.Base(data.PageData) {
+		<div class="space-y-6">
+			<div class="flex items-center justify-between">
+				<div>
+					<h1 class="text-2xl font-display font-bold text-white">Reverse Proxy</h1>
+					<p class="text-gray-400 mt-1">Access lists — HTTP basic auth and IP restrictions</p>
+				</div>
+				<div class="flex items-center gap-2">
+					if data.Connected {
+						<span class="badge badge-success"><i class="fas fa-link mr-1"></i>Connected</span>
+						<a href="/proxy/access-lists/new" class="btn-primary">
+							<i class="fas fa-plus mr-2"></i>New Access List
+						</a>
+					}
+				</div>
+			</div>
+
+			@Nav("accesslists", data.Connected)
+
+			if data.Connected {
+				if len(data.AccessLists) > 0 {
+					<div class="card">
+						<div class="overflow-x-auto">
+							<table class="table">
+								<thead>
+									<tr>
+										<th>Name</th>
+										<th>Auth Users</th>
+										<th>IP Rules</th>
+										<th>Policy</th>
+										<th>Actions</th>
+									</tr>
+								</thead>
+								<tbody>
+									for _, acl := range data.AccessLists {
+										<tr>
+											<td class="text-white font-medium">{ acl.Name }</td>
+											<td>
+												if acl.ItemCount > 0 {
+													<span class="text-gray-300">{ fmt.Sprintf("%d users", acl.ItemCount) }</span>
+												} else {
+													<span class="text-gray-500">-</span>
+												}
+											</td>
+											<td>
+												if acl.ClientCount > 0 {
+													<span class="text-gray-300">{ fmt.Sprintf("%d rules", acl.ClientCount) }</span>
+												} else {
+													<span class="text-gray-500">-</span>
+												}
+											</td>
+											<td>
+												if acl.SatisfyAny {
+													<span class="badge badge-info">Satisfy Any</span>
+												} else {
+													<span class="badge badge-warning">Satisfy All</span>
+												}
+											</td>
+											<td>
+												<div class="flex items-center gap-2">
+													<a href={ templ.SafeURL(fmt.Sprintf("/proxy/access-lists/%d/edit", acl.ID)) } class="text-primary-400 hover:text-primary-300 text-sm">Edit</a>
+													<button hx-delete={ fmt.Sprintf("/proxy/access-lists/%d", acl.ID) } hx-confirm="Delete this access list?" class="text-red-400 hover:text-red-300 text-sm">Delete</button>
+												</div>
+											</td>
+										</tr>
+									}
+								</tbody>
+							</table>
+						</div>
+					</div>
+				} else {
+					<div class="card p-8 text-center">
+						<i class="fas fa-shield-alt text-4xl text-gray-600 mb-4"></i>
+						<h3 class="text-lg font-medium text-white mb-2">No access lists</h3>
+						<p class="text-gray-400 mb-4">Protect proxy hosts with HTTP basic auth or IP restrictions</p>
+						<a href="/proxy/access-lists/new" class="btn-primary"><i class="fas fa-plus mr-2"></i>New Access List</a>
+					</div>
+				}
+			} else {
+				<div class="card p-8 text-center">
+					<i class="fas fa-plug text-4xl text-gray-600 mb-4"></i>
+					<h3 class="text-lg font-medium text-white mb-2">NPM Not Connected</h3>
+					<p class="text-gray-400 mb-4">Connect to NPM first.</p>
+					<a href="/proxy/setup" class="btn-primary"><i class="fas fa-link mr-2"></i>Setup Connection</a>
+				</div>
+			}
+		</div>
+	}
+}
+
+type ACLFormData struct {
+	PageData layouts.PageData
+	IsEdit   bool
+	ACL      *ACLView
+	Items    []ACLItemView
+	Clients  []ACLClientView
+	Error    string
+}
+
+type ACLItemView struct {
+	Username string
+	Password string
+}
+
+type ACLClientView struct {
+	Address string
+}
+
+func aclFormAction(isEdit bool, id int) string {
+	if isEdit {
+		return fmt.Sprintf("/proxy/access-lists/%d", id)
+	}
+	return "/proxy/access-lists"
+}
+
+func aclID(a *ACLView) int {
+	if a == nil {
+		return 0
+	}
+	return a.ID
+}
+
+templ ACLForm(data ACLFormData) {
+	@layouts.Base(data.PageData) {
+		<div class="max-w-2xl mx-auto space-y-6">
+			<div class="flex items-center gap-4">
+				<a href="/proxy/access-lists" class="p-2 text-gray-400 hover:text-white hover:bg-dark-700 rounded-lg">
+					<i class="fas fa-arrow-left"></i>
+				</a>
+				<div>
+					if data.IsEdit {
+						<h1 class="text-2xl font-display font-bold text-white">Edit Access List</h1>
+					} else {
+						<h1 class="text-2xl font-display font-bold text-white">New Access List</h1>
+					}
+					<p class="text-gray-400 mt-1">HTTP basic auth and IP-based access control</p>
+				</div>
+			</div>
+
+			if data.Error != "" {
+				<div class="bg-red-500/10 border border-red-500/20 rounded-lg p-4 text-red-400">
+					<i class="fas fa-exclamation-triangle mr-2"></i>{ data.Error }
+				</div>
+			}
+
+			<form action={ templ.SafeURL(aclFormAction(data.IsEdit, aclID(data.ACL))) } method="POST" class="space-y-6">
+				<input type="hidden" name="csrf_token" value={ data.PageData.CSRFToken }/>
+				<!-- Name & Policy -->
+				<div class="card p-6 space-y-4">
+					<div>
+						<label class="block text-sm font-medium text-gray-300 mb-2">Name</label>
+						<input type="text" name="name" required
+							if data.ACL != nil {
+								value={ data.ACL.Name }
+							}
+							placeholder="My Access List"
+							class="input w-full"
+						/>
+					</div>
+					<div class="flex items-center gap-6">
+						<div class="flex items-center gap-2">
+							<input type="checkbox" name="satisfy_any" id="satisfy-any"
+								checked?={ data.ACL != nil && data.ACL.SatisfyAny }
+								class="rounded border-gray-600 bg-dark-700 text-primary-500 focus:ring-primary-500"
+							/>
+							<label for="satisfy-any" class="text-sm text-gray-300">
+								Satisfy Any <span class="text-xs text-gray-500">(auth OR IP match)</span>
+							</label>
+						</div>
+						<div class="flex items-center gap-2">
+							<input type="checkbox" name="pass_auth" id="pass-auth"
+								checked?={ data.ACL != nil && data.ACL.PassAuth }
+								class="rounded border-gray-600 bg-dark-700 text-primary-500 focus:ring-primary-500"
+							/>
+							<label for="pass-auth" class="text-sm text-gray-300">
+								Pass Auth to Host
+							</label>
+						</div>
+					</div>
+				</div>
+
+				<!-- Authorization (user:pass) -->
+				<div class="card p-6">
+					<div class="flex items-center justify-between mb-4">
+						<h3 class="text-sm font-medium text-gray-400 uppercase tracking-wider">Authorization Users</h3>
+						<button type="button" onclick="addAuthRow()" class="text-sm text-primary-400 hover:text-primary-300">
+							<i class="fas fa-plus mr-1"></i>Add User
+						</button>
+					</div>
+					<div id="auth-rows" class="space-y-2">
+						if len(data.Items) > 0 {
+							for _, item := range data.Items {
+								<div class="flex items-center gap-2 auth-row">
+									<input type="text" name="auth_username[]" value={ item.Username } placeholder="username" class="input flex-1"/>
+									<input type="password" name="auth_password[]" value={ item.Password } placeholder="password" class="input flex-1"/>
+									<button type="button" onclick="this.parentElement.remove()" class="p-2 text-red-400 hover:text-red-300">
+										<i class="fas fa-times"></i>
+									</button>
+								</div>
+							}
+						} else {
+							<div class="flex items-center gap-2 auth-row">
+								<input type="text" name="auth_username[]" placeholder="username" class="input flex-1"/>
+								<input type="password" name="auth_password[]" placeholder="password" class="input flex-1"/>
+								<button type="button" onclick="this.parentElement.remove()" class="p-2 text-red-400 hover:text-red-300">
+									<i class="fas fa-times"></i>
+								</button>
+							</div>
+						}
+					</div>
+				</div>
+
+				<!-- Client IP Rules -->
+				<div class="card p-6">
+					<div class="flex items-center justify-between mb-4">
+						<h3 class="text-sm font-medium text-gray-400 uppercase tracking-wider">IP Address Rules</h3>
+						<button type="button" onclick="addClientRow()" class="text-sm text-primary-400 hover:text-primary-300">
+							<i class="fas fa-plus mr-1"></i>Add Rule
+						</button>
+					</div>
+					<div id="client-rows" class="space-y-2">
+						if len(data.Clients) > 0 {
+							for _, c := range data.Clients {
+								<div class="flex items-center gap-2 client-row">
+									<input type="text" name="client_address[]" value={ c.Address } placeholder="192.168.1.0/24 or allow/deny IP" class="input flex-1"/>
+									<button type="button" onclick="this.parentElement.remove()" class="p-2 text-red-400 hover:text-red-300">
+										<i class="fas fa-times"></i>
+									</button>
+								</div>
+							}
+						} else {
+							<div class="flex items-center gap-2 client-row">
+								<input type="text" name="client_address[]" placeholder="192.168.1.0/24" class="input flex-1"/>
+								<button type="button" onclick="this.parentElement.remove()" class="p-2 text-red-400 hover:text-red-300">
+									<i class="fas fa-times"></i>
+								</button>
+							</div>
+						}
+					</div>
+					<p class="text-xs text-gray-500 mt-2">CIDR notation or individual IPs.</p>
+				</div>
+
+				<div class="flex items-center justify-end gap-3">
+					<a href="/proxy/access-lists" class="btn-secondary">Cancel</a>
+					<button type="submit" class="btn-primary">
+						if data.IsEdit {
+							<i class="fas fa-save mr-2"></i>Save Changes
+						} else {
+							<i class="fas fa-plus mr-2"></i>Create Access List
+						}
+					</button>
+				</div>
+			</form>
+
+			if data.IsEdit && data.ACL != nil {
+				<div class="card border border-red-500/20 p-6">
+					<h3 class="text-sm font-medium text-red-400 uppercase tracking-wider mb-4">Danger Zone</h3>
+					<div class="flex items-center justify-between">
+						<div>
+							<div class="text-sm font-medium text-white">Delete Access List</div>
+							<div class="text-xs text-gray-400">Proxy hosts using this list will become unprotected.</div>
+						</div>
+						<button hx-delete={ fmt.Sprintf("/proxy/access-lists/%d", data.ACL.ID) } hx-confirm="Delete this access list?" class="btn-danger">
+							<i class="fas fa-trash mr-2"></i>Delete
+						</button>
+					</div>
+				</div>
+			}
+		</div>
+
+		<script>
+			function addAuthRow() {
+				const container = document.getElementById('auth-rows');
+				const row = document.createElement('div');
+				row.className = 'flex items-center gap-2 auth-row';
+				row.innerHTML = '<input type="text" name="auth_username[]" placeholder="username" class="input flex-1"/>' +
+					'<input type="password" name="auth_password[]" placeholder="password" class="input flex-1"/>' +
+					'<button type="button" onclick="this.parentElement.remove()" class="p-2 text-red-400 hover:text-red-300"><i class="fas fa-times"></i></button>';
+				container.appendChild(row);
+			}
+
+			function addClientRow() {
+				const container = document.getElementById('client-rows');
+				const row = document.createElement('div');
+				row.className = 'flex items-center gap-2 client-row';
+				row.innerHTML = '<input type="text" name="client_address[]" placeholder="192.168.1.0/24" class="input flex-1"/>' +
+					'<button type="button" onclick="this.parentElement.remove()" class="p-2 text-red-400 hover:text-red-300"><i class="fas fa-times"></i></button>';
+				container.appendChild(row);
+			}
+		</script>
+	}
+}

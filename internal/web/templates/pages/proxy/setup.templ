@@ -1,0 +1,121 @@
+package proxy
+
+import "github.com/fr4nsys/usulnet/internal/web/templates/layouts"
+
+type SetupData struct {
+	PageData    layouts.PageData
+	Connected   bool
+	BaseURL     string
+	AdminEmail  string
+	ConnID      string
+	Health      string
+	Error       string
+	Success     string
+}
+
+templ Setup(data SetupData) {
+	@layouts.Base(data.PageData) {
+		<div class="space-y-6">
+			@Nav("setup", data.Connected)
+			<div class="max-w-2xl">
+				<h2 class="text-xl font-display font-bold text-white mb-2">NPM Connection</h2>
+				<p class="text-gray-400 mb-6">Configure the connection to your Nginx Proxy Manager instance.</p>
+
+				if data.Error != "" {
+					<div class="bg-red-500/10 border border-red-500/20 rounded-lg p-4 mb-4">
+						<p class="text-red-400 text-sm">{ data.Error }</p>
+					</div>
+				}
+				if data.Success != "" {
+					<div class="bg-green-500/10 border border-green-500/20 rounded-lg p-4 mb-4">
+						<p class="text-green-400 text-sm">{ data.Success }</p>
+					</div>
+				}
+
+				if data.Connected {
+					<!-- Connected state -->
+					<div class="bg-dark-800 border border-dark-700 rounded-lg p-6 mb-6">
+						<div class="flex items-center gap-3 mb-4">
+							<div class="w-3 h-3 rounded-full bg-green-500"></div>
+							<span class="text-white font-medium">Connected</span>
+							if data.Health != "" {
+								<span class="text-gray-400 text-sm">({ data.Health })</span>
+							}
+						</div>
+						<div class="space-y-2 text-sm">
+							<div class="flex justify-between">
+								<span class="text-gray-400">URL</span>
+								<span class="text-white">{ data.BaseURL }</span>
+							</div>
+							<div class="flex justify-between">
+								<span class="text-gray-400">Admin Email</span>
+								<span class="text-white">{ data.AdminEmail }</span>
+							</div>
+						</div>
+						<div class="flex gap-2 mt-4">
+							<form method="POST" action="/proxy/setup/test">
+								<input type="hidden" name="csrf_token" value={ data.PageData.CSRFToken }/>
+								<button type="submit" class="btn btn-sm btn-secondary">
+									<i class="fas fa-heartbeat mr-1"></i> Test Connection
+								</button>
+							</form>
+							<form method="POST" action="/proxy/setup/delete" onsubmit="return confirm('Delete NPM connection?')">
+								<input type="hidden" name="csrf_token" value={ data.PageData.CSRFToken }/>
+								<button type="submit" class="btn btn-sm btn-danger">
+									<i class="fas fa-trash mr-1"></i> Disconnect
+								</button>
+							</form>
+						</div>
+					</div>
+				}
+
+				<!-- Setup Form -->
+				<form method="POST" action="/proxy/setup" class="space-y-4">
+					<input type="hidden" name="csrf_token" value={ data.PageData.CSRFToken }/>
+					<div>
+						<label class="block text-sm font-medium text-gray-300 mb-1">NPM Base URL</label>
+						<input
+							type="url"
+							name="base_url"
+							value={ data.BaseURL }
+							placeholder="http://npm:81"
+							required
+							class="w-full bg-dark-800 border border-dark-600 text-white rounded-lg px-3 py-2 focus:ring-2 focus:ring-accent-500 focus:border-transparent"
+						/>
+						<p class="text-gray-500 text-xs mt-1">The NPM admin API URL (usually port 81)</p>
+					</div>
+					<div>
+						<label class="block text-sm font-medium text-gray-300 mb-1">Admin Email</label>
+						<input
+							type="email"
+							name="admin_email"
+							value={ data.AdminEmail }
+							placeholder="admin@example.com"
+							required
+							class="w-full bg-dark-800 border border-dark-600 text-white rounded-lg px-3 py-2 focus:ring-2 focus:ring-accent-500 focus:border-transparent"
+						/>
+					</div>
+					<div>
+						<label class="block text-sm font-medium text-gray-300 mb-1">Admin Password</label>
+						<input
+							type="password"
+							name="admin_password"
+							placeholder={ templ.EscapeString(func() string { if data.Connected { return "••••••••" }; return "Enter password" }()) }
+							class="w-full bg-dark-800 border border-dark-600 text-white rounded-lg px-3 py-2 focus:ring-2 focus:ring-accent-500 focus:border-transparent"
+						/>
+						if data.Connected {
+							<p class="text-gray-500 text-xs mt-1">Leave empty to keep current password</p>
+						}
+					</div>
+					<button type="submit" class="btn btn-primary">
+						if data.Connected {
+							<i class="fas fa-save mr-1"></i> Update Connection
+						} else {
+							<i class="fas fa-plug mr-1"></i> Connect to NPM
+						}
+					</button>
+				</form>
+			</div>
+		</div>
+	}
+}

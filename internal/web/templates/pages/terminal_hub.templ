@@ -1,0 +1,61 @@
+package pages
+
+import (
+	"github.com/fr4nsys/usulnet/internal/web/templates/layouts"
+	"github.com/fr4nsys/usulnet/internal/web/templates/components"
+)
+
+type TerminalHubData struct {
+	PageData    layouts.PageData
+	InitialTabs []components.TerminalTabConfig
+}
+
+type TerminalPickerContainer struct {
+	ID     string
+	Name   string
+	Image  string
+	Status string
+}
+
+templ TerminalHub(data TerminalHubData) {
+	@layouts.Base(data.PageData) {
+		<div class="h-[calc(100vh-180px)] bg-dark-800 rounded-xl border border-dark-600 overflow-hidden">
+			@components.TerminalTabs(components.TerminalTabsData{
+				Tabs:        data.InitialTabs,
+				BackURL:     "/containers",
+				BackLabel:   "Containers",
+				AllowNewTab: true,
+				NewTabURL:   "/terminal/picker",
+			})
+		</div>
+		@components.TerminalTabsScript()
+	}
+}
+
+// TerminalPicker renders a list of containers that can be opened in a new terminal tab.
+templ TerminalPicker(containers []TerminalPickerContainer) {
+	<div class="space-y-2 max-h-64 overflow-y-auto">
+		if len(containers) == 0 {
+			<p class="text-gray-400 text-center py-4">No running containers available</p>
+		}
+		for _, c := range containers {
+			<button
+				@click={ "window.location.href = '/terminal?add=" + c.ID + "'" }
+				class="w-full flex items-center gap-3 p-3 bg-dark-700 hover:bg-dark-600 rounded-lg transition-colors text-left"
+			>
+				<div class="flex items-center justify-center w-8 h-8 rounded-lg bg-dark-600">
+					if c.Status == "running" {
+						<i class="fas fa-play text-green-400 text-xs"></i>
+					} else {
+						<i class="fas fa-stop text-gray-400 text-xs"></i>
+					}
+				</div>
+				<div class="flex-1 min-w-0">
+					<p class="text-white text-sm font-medium truncate">{ c.Name }</p>
+					<p class="text-gray-500 text-xs truncate">{ c.Image }</p>
+				</div>
+				<i class="fas fa-chevron-right text-gray-500"></i>
+			</button>
+		}
+	</div>
+}

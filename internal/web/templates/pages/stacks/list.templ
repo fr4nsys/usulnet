@@ -1,0 +1,272 @@
+package stacks
+
+import (
+	"fmt"
+	"github.com/fr4nsys/usulnet/internal/web/templates/components"
+	"github.com/fr4nsys/usulnet/internal/web/templates/layouts"
+)
+
+type StacksData struct {
+	PageData layouts.PageData
+	Stacks   []StackItem
+}
+
+type StackItem struct {
+	Name           string
+	Status         string
+	Services       int
+	Running        int
+	Path           string
+	CreatedAt      string
+	UpdatedAt      string
+	ContainerNames []string
+	IsExternal     bool // true if discovered from Docker, not managed by usulnet
+}
+
+func stackStatusLabel(status string) string {
+	switch status {
+	case "active":
+		return "Running"
+	case "inactive":
+		return "Stopped"
+	case "partial":
+		return "Partial"
+	case "error":
+		return "Error"
+	case "deploying":
+		return "Deploying"
+	default:
+		return "Unknown"
+	}
+}
+
+templ List(data StacksData) {
+	@layouts.Base(data.PageData) {
+		<div class="space-y-6">
+			<!-- Header -->
+			<div class="flex items-center justify-between">
+				<div>
+					<div class="flex items-center gap-3">
+						<h1 class="text-2xl font-display font-bold text-white">Stacks</h1>
+						@components.HostBadge(data.PageData.ActiveHostName)
+					</div>
+					<p class="text-gray-400 mt-1">
+						{ fmt.Sprintf("%d stacks", len(data.Stacks)) }
+						if countRunning(data.Stacks) > 0 {
+							<span class="text-green-400">
+								{ fmt.Sprintf(" · %d running", countRunning(data.Stacks)) }
+							</span>
+						}
+					</p>
+				</div>
+				<div class="flex items-center gap-2">
+					<a href="/stacks/catalog" class="btn-secondary">
+						<i class="fas fa-store mr-2"></i>Apps
+					</a>
+					<a href="/stacks/new" class="btn-primary">
+						<i class="fas fa-plus mr-2"></i>New Stack
+					</a>
+				</div>
+			</div>
+
+			if len(data.Stacks) == 0 {
+				<div class="card p-12 text-center">
+					<i class="fas fa-layer-group text-4xl text-gray-600 mb-4"></i>
+					<h3 class="text-lg font-medium text-white mb-2">No stacks found</h3>
+					<p class="text-gray-400 mb-4">Deploy your first Docker Compose stack</p>
+					<div class="flex items-center justify-center gap-3">
+						<a href="/stacks/catalog" class="btn-secondary">
+							<i class="fas fa-store mr-2"></i>Browse Apps
+						</a>
+						<a href="/stacks/new" class="btn-primary">
+							<i class="fas fa-plus mr-2"></i>Create Stack
+						</a>
+					</div>
+				</div>
+			} else {
+				<!-- Stacks Table -->
+				<div class="card overflow-hidden">
+					<div class="overflow-x-auto">
+						<table class="table">
+							<thead>
+								<tr>
+									<th class="w-8"></th>
+									<th>Name</th>
+									<th>Status</th>
+									<th>Services</th>
+									<th>Containers</th>
+									<th>Created</th>
+									<th class="text-right">Actions</th>
+								</tr>
+							</thead>
+							<tbody>
+								for _, stack := range data.Stacks {
+									<tr class="hover:bg-dark-700/50 transition-colors">
+										<!-- Status indicator -->
+										<td class="pr-0">
+											<div class={ "w-2.5 h-2.5 rounded-full", statusDotClass(stack.Status) }></div>
+										</td>
+										<!-- Name -->
+										<td>
+											<div class="flex items-center gap-2">
+												<a href={ templ.SafeURL("/stacks/" + stack.Name) } class="font-medium text-white hover:text-primary-400 transition-colors">
+													{ stack.Name }
+												</a>
+												if stack.IsExternal {
+													<span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-blue-500/20 text-blue-400 border border-blue-500/30" title="Discovered from Docker, not managed by usulnet">
+														<i class="fas fa-external-link-alt mr-1 text-[8px]"></i>External
+													</span>
+												}
+											</div>
+											if stack.Path != "" {
+												<p class="text-xs text-gray-500 mt-0.5 font-mono truncate max-w-xs">{ stack.Path }</p>
+											}
+										</td>
+										<!-- Status badge -->
+										<td>
+											<span class={ "inline-flex items-center px-2 py-0.5 rounded text-xs font-medium", statusBadgeClass(stack.Status) }>
+												{ stackStatusLabel(stack.Status) }
+											</span>
+										</td>
+										<!-- Services -->
+										<td>
+											<div class="flex items-center gap-2">
+												<span class={ "text-sm font-medium", templ.KV("text-green-400", stack.Running == stack.Services && stack.Services > 0), templ.KV("text-yellow-400", stack.Running > 0 && stack.Running < stack.Services), templ.KV("text-gray-400", stack.Running == 0) }>
+													{ fmt.Sprintf("%d/%d", stack.Running, stack.Services) }
+												</span>
+												if stack.Services > 0 {
+													<div class="w-16 h-1.5 bg-dark-600 rounded-full overflow-hidden">
+														<div
+															class={ "h-full rounded-full", templ.KV("bg-green-500", stack.Running == stack.Services), templ.KV("bg-yellow-500", stack.Running > 0 && stack.Running < stack.Services), templ.KV("bg-red-500", stack.Running == 0) }
+															style={ fmt.Sprintf("width: %d%%", servicePercent(stack.Running, stack.Services)) }
+														></div>
+													</div>
+												}
+											</div>
+										</td>
+										<!-- Containers -->
+										<td>
+											<div class="flex flex-wrap gap-1 max-w-xs">
+												for i, name := range stack.ContainerNames {
+													if i < 3 {
+														<span class="inline-flex items-center px-1.5 py-0.5 rounded bg-dark-600 text-xs text-gray-300 font-mono">
+															{ name }
+														</span>
+													}
+												}
+												if len(stack.ContainerNames) > 3 {
+													<span class="text-xs text-gray-500">
+														{ fmt.Sprintf("+%d more", len(stack.ContainerNames)-3) }
+													</span>
+												}
+												if len(stack.ContainerNames) == 0 {
+													<span class="text-xs text-gray-500">—</span>
+												}
+											</div>
+										</td>
+										<!-- Created -->
+										<td class="text-gray-400 text-sm">{ stack.CreatedAt }</td>
+										<!-- Actions -->
+										<td>
+											<div class="flex items-center justify-end gap-1">
+												if stack.Status == "active" || stack.Status == "partial" {
+													<button
+														hx-post={ "/stacks/" + stack.Name + "/stop" }
+														hx-swap="none"
+														hx-confirm={ "Stop stack '" + stack.Name + "'?" }
+														class="p-1.5 text-gray-400 hover:text-yellow-400 hover:bg-dark-600 rounded transition-colors"
+														title="Stop">
+														<i class="fas fa-stop text-xs"></i>
+													</button>
+													<button
+														hx-post={ "/stacks/" + stack.Name + "/restart" }
+														hx-swap="none"
+														class="p-1.5 text-gray-400 hover:text-blue-400 hover:bg-dark-600 rounded transition-colors"
+														title="Restart">
+														<i class="fas fa-redo text-xs"></i>
+													</button>
+												} else {
+													<button
+														hx-post={ "/stacks/" + stack.Name + "/start" }
+														hx-swap="none"
+														class="p-1.5 text-gray-400 hover:text-green-400 hover:bg-dark-600 rounded transition-colors"
+														title="Start">
+														<i class="fas fa-play text-xs"></i>
+													</button>
+												}
+												<a href={ templ.SafeURL("/stacks/" + stack.Name) }
+													class="p-1.5 text-gray-400 hover:text-white hover:bg-dark-600 rounded transition-colors"
+													title="Details">
+													<i class="fas fa-eye text-xs"></i>
+												</a>
+												<button
+													hx-post={ "/stacks/" + stack.Name + "/remove" }
+													hx-swap="none"
+													hx-confirm={ "Remove stack '" + stack.Name + "'? This will stop all services and remove containers." }
+													class="p-1.5 text-gray-400 hover:text-red-400 hover:bg-dark-600 rounded transition-colors"
+													title="Remove">
+													<i class="fas fa-trash text-xs"></i>
+												</button>
+											</div>
+										</td>
+									</tr>
+								}
+							</tbody>
+						</table>
+					</div>
+				</div>
+			}
+		</div>
+	}
+}
+
+func countRunning(stacks []StackItem) int {
+	count := 0
+	for _, s := range stacks {
+		if s.Status == "active" {
+			count++
+		}
+	}
+	return count
+}
+
+func servicePercent(running, total int) int {
+	if total == 0 {
+		return 0
+	}
+	return (running * 100) / total
+}
+
+func statusDotClass(status string) string {
+	switch status {
+	case "active":
+		return "bg-green-500"
+	case "inactive":
+		return "bg-gray-500"
+	case "partial":
+		return "bg-yellow-500"
+	case "error":
+		return "bg-red-500"
+	case "deploying":
+		return "bg-blue-500 animate-pulse"
+	default:
+		return "bg-gray-500"
+	}
+}
+
+func statusBadgeClass(status string) string {
+	switch status {
+	case "active":
+		return "bg-green-500/10 text-green-400 border border-green-500/20"
+	case "inactive":
+		return "bg-gray-500/10 text-gray-400 border border-gray-500/20"
+	case "partial":
+		return "bg-yellow-500/10 text-yellow-400 border border-yellow-500/20"
+	case "error":
+		return "bg-red-500/10 text-red-400 border border-red-500/20"
+	case "deploying":
+		return "bg-blue-500/10 text-blue-400 border border-blue-500/20"
+	default:
+		return "bg-gray-500/10 text-gray-400 border border-gray-500/20"
+	}
+}

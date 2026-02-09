@@ -1,0 +1,175 @@
+package pages
+
+import (
+	"fmt"
+	"github.com/fr4nsys/usulnet/internal/web/templates/layouts"
+)
+
+type PortsData struct {
+	PageData        layouts.PageData
+	Ports           []PortMapping
+	Conflicts       []PortConflict
+	Recommendations []PortRecommendation
+}
+
+type PortMapping struct {
+	ContainerID   string
+	ContainerName string
+	InternalPort  int
+	ExternalPort  int
+	Protocol      string
+	HostBind      string
+	ExposureLevel string
+	IsRisky       bool
+}
+
+type PortConflict struct {
+	Port        int
+	Protocol    string
+	Containers  []string
+}
+
+type PortRecommendation struct {
+	ContainerName string
+	Port          int
+	Issue         string
+	Suggestion    string
+}
+
+func exposureColor(level string) string {
+	switch level {
+	case "internet":
+		return "text-red-400 bg-red-500/10"
+	case "localhost":
+		return "text-yellow-400 bg-yellow-500/10"
+	case "internal":
+		return "text-green-400 bg-green-500/10"
+	default:
+		return "text-gray-400 bg-gray-500/10"
+	}
+}
+
+templ Ports(data PortsData) {
+	@layouts.Base(data.PageData) {
+		<div class="space-y-6">
+			<!-- Header -->
+			<div class="flex items-center justify-between">
+				<div>
+					<h1 class="text-2xl font-display font-bold text-white">Port Management</h1>
+					<p class="text-gray-400 mt-1">Monitor exposed ports and detect conflicts</p>
+				</div>
+			</div>
+
+			<!-- Conflicts -->
+			if len(data.Conflicts) > 0 {
+				<div class="bg-red-500/10 border border-red-500/20 rounded-lg p-4">
+					<div class="flex items-center gap-2 text-red-400 font-medium mb-3">
+						<i class="fas fa-exclamation-triangle"></i>
+						<span>Port Conflicts Detected</span>
+					</div>
+					<div class="space-y-2">
+						for _, conflict := range data.Conflicts {
+							<div class="text-sm">
+								<span class="text-white font-mono">{ fmt.Sprintf("%d/%s", conflict.Port, conflict.Protocol) }</span>
+								<span class="text-gray-400 mx-2">used by:</span>
+								for i, c := range conflict.Containers {
+									if i > 0 {
+										<span class="text-gray-500">, </span>
+									}
+									<span class="text-red-300">{ c }</span>
+								}
+							</div>
+						}
+					</div>
+				</div>
+			}
+
+			<!-- Recommendations -->
+			if len(data.Recommendations) > 0 {
+				<div class="card">
+					<div class="px-5 py-4 border-b border-dark-700">
+						<h2 class="font-medium text-white">Security Recommendations</h2>
+					</div>
+					<div class="divide-y divide-dark-700">
+						for _, rec := range data.Recommendations {
+							<div class="p-4 flex items-start justify-between">
+								<div>
+									<div class="flex items-center gap-2 mb-1">
+										<span class="text-white font-medium">{ rec.ContainerName }</span>
+										<span class="font-mono text-sm text-gray-400">:{ fmt.Sprintf("%d", rec.Port) }</span>
+									</div>
+									<p class="text-sm text-yellow-400">{ rec.Issue }</p>
+									<p class="text-sm text-gray-400 mt-1">{ rec.Suggestion }</p>
+								</div>
+								<button class="btn-secondary text-sm">Fix</button>
+							</div>
+						}
+					</div>
+				</div>
+			}
+
+			<!-- Port Mappings -->
+			<div class="card">
+				<div class="px-5 py-4 border-b border-dark-700 flex items-center justify-between">
+					<h2 class="font-medium text-white">Port Mappings ({ fmt.Sprintf("%d", len(data.Ports)) })</h2>
+					<div class="flex items-center gap-4 text-sm">
+						<span class="flex items-center gap-2">
+							<span class="w-2 h-2 rounded-full bg-red-500"></span>
+							<span class="text-gray-400">Internet</span>
+						</span>
+						<span class="flex items-center gap-2">
+							<span class="w-2 h-2 rounded-full bg-yellow-500"></span>
+							<span class="text-gray-400">Localhost</span>
+						</span>
+						<span class="flex items-center gap-2">
+							<span class="w-2 h-2 rounded-full bg-green-500"></span>
+							<span class="text-gray-400">Internal</span>
+						</span>
+					</div>
+				</div>
+				<div class="overflow-x-auto">
+					<table class="table">
+						<thead>
+							<tr>
+								<th>Container</th>
+								<th>Internal</th>
+								<th>External</th>
+								<th>Protocol</th>
+								<th>Bind</th>
+								<th>Exposure</th>
+								<th>Actions</th>
+							</tr>
+						</thead>
+						<tbody>
+							for _, port := range data.Ports {
+								<tr class={ templ.KV("bg-red-500/5", port.IsRisky) }>
+									<td>
+										<a href={ templ.SafeURL("/containers/" + port.ContainerID) } class="text-white hover:text-primary-400">
+											{ port.ContainerName }
+										</a>
+									</td>
+									<td class="font-mono text-gray-400">{ fmt.Sprintf("%d", port.InternalPort) }</td>
+									<td class="font-mono text-white">{ fmt.Sprintf("%d", port.ExternalPort) }</td>
+									<td class="text-gray-400 uppercase text-xs">{ port.Protocol }</td>
+									<td class="font-mono text-sm text-gray-400">{ port.HostBind }</td>
+									<td>
+										<span class={ "px-2 py-1 rounded text-xs font-medium", exposureColor(port.ExposureLevel) }>
+											{ port.ExposureLevel }
+										</span>
+									</td>
+									<td>
+										if port.ExposureLevel == "internet" {
+											<button class="text-sm text-yellow-400 hover:text-yellow-300" title="Change to localhost">
+												Restrict
+											</button>
+										}
+									</td>
+								</tr>
+							}
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	}
+}

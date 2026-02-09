@@ -1,0 +1,528 @@
+package connections
+
+import (
+	"github.com/fr4nsys/usulnet/internal/web/templates/layouts"
+)
+
+// SSHKeysList renders the SSH keys list page.
+templ SSHKeysList(data SSHKeysListData) {
+	@layouts.Base(data.PageData) {
+		<div class="space-y-6">
+			@ConnectionsNav("keys")
+
+			<!-- Header -->
+			<div class="flex items-center justify-between">
+				<div>
+					<h1 class="text-2xl font-display font-bold text-white">SSH Keys</h1>
+					<p class="text-gray-400 mt-1">Manage SSH keys for authenticating to remote servers</p>
+				</div>
+				<a
+					href="/connections/keys/new"
+					class="inline-flex items-center px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors"
+				>
+					<svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+					</svg>
+					Generate Key
+				</a>
+			</div>
+
+			<!-- Keys List -->
+			if len(data.Keys) == 0 {
+				@KeysEmptyState()
+			} else {
+				<div class="bg-dark-800 rounded-lg border border-dark-700">
+					<table class="w-full">
+						<thead class="bg-dark-900">
+							<tr>
+								<th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Name</th>
+								<th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Type</th>
+								<th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Fingerprint</th>
+								<th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Used By</th>
+								<th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Created</th>
+								<th class="px-4 py-3 text-right text-xs font-medium text-gray-400 uppercase tracking-wider">Actions</th>
+							</tr>
+						</thead>
+						<tbody class="divide-y divide-dark-700">
+							for _, key := range data.Keys {
+								<tr class="hover:bg-dark-750">
+									<td class="px-4 py-3">
+										<div class="flex items-center">
+											<svg class="w-5 h-5 mr-2 text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+												<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"></path>
+											</svg>
+											<span class="text-white font-medium">{ key.Name }</span>
+										</div>
+									</td>
+									<td class="px-4 py-3">
+										<span class={ "px-2 py-0.5 rounded text-xs font-medium", keyTypeClass(key.Type) }>{ key.Type }</span>
+									</td>
+									<td class="px-4 py-3">
+										<code class="text-gray-400 text-sm font-mono">{ truncateFingerprint(key.Fingerprint) }</code>
+									</td>
+									<td class="px-4 py-3 text-gray-400">
+										if key.UsedByCount > 0 {
+											{ pluralize(key.UsedByCount, "connection") }
+										} else {
+											<span class="text-gray-600">Not used</span>
+										}
+									</td>
+									<td class="px-4 py-3 text-gray-400 text-sm">{ key.CreatedAt }</td>
+									<td class="px-4 py-3 text-right">
+										<div class="flex items-center justify-end space-x-2">
+											<a
+												href={ templ.SafeURL("/connections/keys/" + key.ID) }
+												class="text-gray-400 hover:text-white"
+												title="View"
+											>
+												<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+													<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+													<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+												</svg>
+											</a>
+											<a
+												href={ templ.SafeURL("/connections/keys/" + key.ID + "/download") }
+												class="text-gray-400 hover:text-white"
+												title="Download Public Key"
+											>
+												<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+													<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+												</svg>
+											</a>
+											<button
+												class="text-gray-400 hover:text-red-400"
+												title="Delete"
+												onclick={ deleteKey(key.ID, key.Name) }
+											>
+												<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+													<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+												</svg>
+											</button>
+										</div>
+									</td>
+								</tr>
+							}
+						</tbody>
+					</table>
+				</div>
+			}
+		</div>
+	}
+}
+
+func keyTypeClass(keyType string) string {
+	switch keyType {
+	case "ed25519":
+		return "bg-green-500/10 text-green-400"
+	case "rsa":
+		return "bg-blue-500/10 text-blue-400"
+	case "ecdsa":
+		return "bg-purple-500/10 text-purple-400"
+	default:
+		return "bg-gray-500/10 text-gray-400"
+	}
+}
+
+func truncateFingerprint(fp string) string {
+	if len(fp) > 24 {
+		return fp[:12] + "..." + fp[len(fp)-8:]
+	}
+	return fp
+}
+
+func pluralize(count int, word string) string {
+	if count == 1 {
+		return "1 " + word
+	}
+	return string(rune(count+'0')) + " " + word + "s"
+}
+
+func formatUserAtHost(username, host string) string {
+	return username + "@" + host
+}
+
+script deleteKey(id, name string) {
+	if (confirm(`Delete SSH key "${name}"? This cannot be undone and may break connections using this key.`)) {
+		fetch(`/connections/keys/${id}`, { method: 'DELETE' })
+			.then(r => { if (r.ok) location.reload(); else alert('Failed to delete'); })
+			.catch(e => alert('Error: ' + e));
+	}
+}
+
+// KeysEmptyState renders the empty state for no keys.
+templ KeysEmptyState() {
+	<div class="text-center py-12">
+		<svg class="w-16 h-16 mx-auto text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+			<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"></path>
+		</svg>
+		<h3 class="mt-4 text-lg font-medium text-white">No SSH Keys</h3>
+		<p class="mt-2 text-gray-400">Generate an SSH key pair to authenticate with remote servers securely.</p>
+		<a
+			href="/connections/keys/new"
+			class="mt-4 inline-flex items-center px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors"
+		>
+			<svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+			</svg>
+			Generate Key
+		</a>
+	</div>
+}
+
+// SSHKeyNew renders the new SSH key form.
+templ SSHKeyNew(data layouts.PageData) {
+	@layouts.Base(data) {
+		<div class="max-w-xl mx-auto space-y-6">
+			@ConnectionsNav("keys")
+
+			<!-- Header -->
+			<div class="flex items-center space-x-4">
+				<a href="/connections/keys" class="text-gray-400 hover:text-white">
+					<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+					</svg>
+				</a>
+				<div>
+					<h1 class="text-2xl font-display font-bold text-white">Generate SSH Key</h1>
+					<p class="text-gray-400 mt-1">Create a new SSH key pair for authentication</p>
+				</div>
+			</div>
+
+			<!-- Form -->
+			<form
+				action="/connections/keys"
+				method="POST"
+				class="bg-dark-800 rounded-lg border border-dark-700 p-6 space-y-6"
+			>
+				<input type="hidden" name="csrf_token" value={ data.CSRFToken }/>
+				<div>
+					<label class="block text-sm font-medium text-gray-300 mb-1">Key Name</label>
+					<input
+						type="text"
+						name="name"
+						required
+						placeholder="my-server-key"
+						class="w-full px-3 py-2 bg-dark-700 border border-dark-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+					/>
+					<p class="mt-1 text-sm text-gray-500">A descriptive name to identify this key</p>
+				</div>
+
+				<div>
+					<label class="block text-sm font-medium text-gray-300 mb-2">Key Type</label>
+					<div class="space-y-2">
+						<label class="flex items-center p-3 bg-dark-700 border border-dark-600 rounded-lg cursor-pointer hover:border-dark-500 has-[:checked]:border-primary-500">
+							<input type="radio" name="type" value="ed25519" class="mr-3 text-primary-500 focus:ring-primary-500" checked/>
+							<div>
+								<span class="text-white font-medium">Ed25519</span>
+								<span class="ml-2 px-2 py-0.5 bg-green-500/10 text-green-400 rounded text-xs">Recommended</span>
+								<p class="text-gray-400 text-sm">Modern, fast, and secure. Best choice for most cases.</p>
+							</div>
+						</label>
+						<label class="flex items-center p-3 bg-dark-700 border border-dark-600 rounded-lg cursor-pointer hover:border-dark-500 has-[:checked]:border-primary-500">
+							<input type="radio" name="type" value="rsa" class="mr-3 text-primary-500 focus:ring-primary-500"/>
+							<div>
+								<span class="text-white font-medium">RSA (4096 bit)</span>
+								<p class="text-gray-400 text-sm">Maximum compatibility with older systems.</p>
+							</div>
+						</label>
+						<label class="flex items-center p-3 bg-dark-700 border border-dark-600 rounded-lg cursor-pointer hover:border-dark-500 has-[:checked]:border-primary-500">
+							<input type="radio" name="type" value="ecdsa" class="mr-3 text-primary-500 focus:ring-primary-500"/>
+							<div>
+								<span class="text-white font-medium">ECDSA (P-256)</span>
+								<p class="text-gray-400 text-sm">Good balance of security and compatibility.</p>
+							</div>
+						</label>
+					</div>
+				</div>
+
+				<div>
+					<label class="block text-sm font-medium text-gray-300 mb-1">Comment (optional)</label>
+					<input
+						type="text"
+						name="comment"
+						placeholder="user@hostname"
+						class="w-full px-3 py-2 bg-dark-700 border border-dark-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+					/>
+					<p class="mt-1 text-sm text-gray-500">Added to the end of the public key for identification</p>
+				</div>
+
+				<div>
+					<label class="block text-sm font-medium text-gray-300 mb-1">Passphrase (optional)</label>
+					<input
+						type="password"
+						name="passphrase"
+						placeholder="Optional passphrase for key encryption"
+						class="w-full px-3 py-2 bg-dark-700 border border-dark-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+					/>
+					<p class="mt-1 text-sm text-gray-500">Encrypts the private key. Recommended for additional security.</p>
+				</div>
+
+				<!-- Actions -->
+				<div class="flex items-center justify-end space-x-3 pt-4 border-t border-dark-700">
+					<a
+						href="/connections/keys"
+						class="px-4 py-2 text-gray-400 hover:text-white"
+					>
+						Cancel
+					</a>
+					<button
+						type="submit"
+						class="px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors"
+					>
+						Generate Key
+					</button>
+				</div>
+			</form>
+
+			<!-- Import Existing Key -->
+			<div class="bg-dark-800 rounded-lg border border-dark-700 p-6">
+				<h3 class="text-white font-medium mb-4">Import Existing Key</h3>
+				<p class="text-gray-400 text-sm mb-4">Have an existing SSH key? You can import it instead of generating a new one.</p>
+				<form action="/connections/keys" method="POST" class="space-y-4">
+					<input type="hidden" name="csrf_token" value={ data.CSRFToken }/>
+					<input type="hidden" name="import" value="true"/>
+					<div>
+						<label class="block text-sm font-medium text-gray-300 mb-1">Key Name</label>
+						<input
+							type="text"
+							name="name"
+							required
+							placeholder="imported-key"
+							class="w-full px-3 py-2 bg-dark-700 border border-dark-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+						/>
+					</div>
+					<div>
+						<label class="block text-sm font-medium text-gray-300 mb-1">Private Key</label>
+						<textarea
+							name="private_key"
+							required
+							rows="5"
+							placeholder="-----BEGIN OPENSSH PRIVATE KEY-----&#10;...&#10;-----END OPENSSH PRIVATE KEY-----"
+							class="w-full px-3 py-2 bg-dark-700 border border-dark-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent font-mono text-sm"
+						></textarea>
+					</div>
+					<div>
+						<label class="block text-sm font-medium text-gray-300 mb-1">Passphrase (if encrypted)</label>
+						<input
+							type="password"
+							name="passphrase"
+							placeholder="Key passphrase"
+							class="w-full px-3 py-2 bg-dark-700 border border-dark-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+						/>
+					</div>
+					<button
+						type="submit"
+						class="px-4 py-2 border border-dark-600 text-gray-300 rounded-lg hover:bg-dark-700 transition-colors"
+					>
+						Import Key
+					</button>
+				</form>
+			</div>
+		</div>
+	}
+}
+
+// SSHKeyDetail renders the SSH key detail page.
+templ SSHKeyDetail(data SSHKeyDetailData) {
+	@layouts.Base(data.PageData) {
+		<div class="space-y-6">
+			@ConnectionsNav("keys")
+
+			<!-- Header with breadcrumb -->
+			<div class="flex items-center justify-between">
+				<div class="flex items-center space-x-3">
+					<a
+						href="/connections/keys"
+						class="text-gray-400 hover:text-white transition-colors"
+					>
+						<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+						</svg>
+					</a>
+					<div>
+						<h1 class="text-2xl font-display font-bold text-white">{ data.Key.Name }</h1>
+						<div class="flex items-center mt-1 space-x-2">
+							<span class={ "px-2 py-0.5 rounded text-xs font-medium", keyTypeClass(data.Key.Type) }>{ data.Key.Type }</span>
+							<span class="text-gray-400">Created { data.Key.CreatedAt }</span>
+						</div>
+					</div>
+				</div>
+				<div class="flex items-center space-x-3">
+					<a
+						href={ templ.SafeURL("/connections/keys/" + data.Key.ID + "/download") }
+						class="inline-flex items-center px-4 py-2 bg-dark-700 text-white rounded-lg hover:bg-dark-600 transition-colors"
+					>
+						<svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+						</svg>
+						Download Public Key
+					</a>
+				</div>
+			</div>
+
+			<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+				<!-- Key Details Card -->
+				<div class="lg:col-span-2 space-y-6">
+					<!-- Public Key -->
+					<div class="bg-dark-800 rounded-lg border border-dark-700 p-6">
+						<div class="flex items-center justify-between mb-4">
+							<h2 class="text-lg font-semibold text-white">Public Key</h2>
+							<button
+								onclick={ copyToClipboard(data.Key.PublicKey) }
+								class="text-gray-400 hover:text-white transition-colors text-sm flex items-center"
+							>
+								<svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"></path>
+								</svg>
+								Copy
+							</button>
+						</div>
+						<div class="bg-dark-900 rounded-lg p-4">
+							<pre class="text-gray-300 text-sm font-mono whitespace-pre-wrap break-all">{ data.Key.PublicKey }</pre>
+						</div>
+						<p class="mt-3 text-gray-500 text-sm">Add this key to your server's <code class="text-gray-400">~/.ssh/authorized_keys</code> file.</p>
+					</div>
+
+					<!-- Key Information -->
+					<div class="bg-dark-800 rounded-lg border border-dark-700 p-6">
+						<h2 class="text-lg font-semibold text-white mb-4">Key Information</h2>
+						<dl class="grid grid-cols-1 md:grid-cols-2 gap-4">
+							<div>
+								<dt class="text-gray-400 text-sm">Fingerprint (SHA256)</dt>
+								<dd class="text-white font-mono text-sm mt-1">{ data.Key.Fingerprint }</dd>
+							</div>
+							<div>
+								<dt class="text-gray-400 text-sm">Key Type</dt>
+								<dd class="text-white mt-1">
+									<span class={ "px-2 py-0.5 rounded text-xs font-medium", keyTypeClass(data.Key.Type) }>{ data.Key.Type }</span>
+								</dd>
+							</div>
+							if data.Key.Comment != "" {
+								<div>
+									<dt class="text-gray-400 text-sm">Comment</dt>
+									<dd class="text-white mt-1">{ data.Key.Comment }</dd>
+								</div>
+							}
+							<div>
+								<dt class="text-gray-400 text-sm">Created</dt>
+								<dd class="text-white mt-1">{ data.Key.CreatedAt }</dd>
+							</div>
+							if data.Key.LastUsed != "" {
+								<div>
+									<dt class="text-gray-400 text-sm">Last Used</dt>
+									<dd class="text-white mt-1">{ data.Key.LastUsed }</dd>
+								</div>
+							}
+						</dl>
+					</div>
+
+					<!-- Connections Using This Key -->
+					<div class="bg-dark-800 rounded-lg border border-dark-700 p-6">
+						<h2 class="text-lg font-semibold text-white mb-4">Used By Connections</h2>
+						if len(data.UsedBy) == 0 {
+							<p class="text-gray-500 text-center py-8">This key is not used by any connections</p>
+						} else {
+							<div class="space-y-2">
+								for _, conn := range data.UsedBy {
+									<a
+										href={ templ.SafeURL("/connections/ssh/" + conn.ID) }
+										class="flex items-center justify-between p-3 bg-dark-700 rounded-lg hover:bg-dark-600 transition-colors"
+									>
+										<div class="flex items-center space-x-3">
+											<div class={ "w-2 h-2 rounded-full", statusDotClass(conn.Status) }></div>
+											<div>
+												<span class="text-white font-medium">{ conn.Name }</span>
+												<span class="text-gray-400 text-sm ml-2">{ formatUserAtHost(conn.Username, conn.Host) }</span>
+											</div>
+										</div>
+										<svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+											<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+										</svg>
+									</a>
+								}
+							</div>
+						}
+					</div>
+				</div>
+
+				<!-- Side Panel -->
+				<div class="space-y-6">
+					<!-- Quick Actions -->
+					<div class="bg-dark-800 rounded-lg border border-dark-700 p-6">
+						<h3 class="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-4">Quick Actions</h3>
+						<div class="space-y-2">
+							<a
+								href={ templ.SafeURL("/connections/keys/" + data.Key.ID + "/download") }
+								class="flex items-center p-3 bg-dark-700 rounded-lg hover:bg-dark-600 transition-colors text-white"
+							>
+								<svg class="w-5 h-5 mr-3 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+								</svg>
+								Download Public Key
+							</a>
+							<button
+								onclick={ copyToClipboard(data.Key.PublicKey) }
+								class="flex items-center p-3 bg-dark-700 rounded-lg hover:bg-dark-600 transition-colors text-white w-full"
+							>
+								<svg class="w-5 h-5 mr-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"></path>
+								</svg>
+								Copy Public Key
+							</button>
+						</div>
+					</div>
+
+					<!-- Usage Stats -->
+					<div class="bg-dark-800 rounded-lg border border-dark-700 p-6">
+						<h3 class="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-4">Usage</h3>
+						<div class="flex items-center justify-between">
+							<span class="text-gray-400">Connections</span>
+							<span class="text-white font-medium">{ pluralize(data.Key.UsedByCount, "connection") }</span>
+						</div>
+						if data.Key.LastUsed != "" {
+							<div class="flex items-center justify-between mt-2">
+								<span class="text-gray-400">Last Used</span>
+								<span class="text-white">{ data.Key.LastUsed }</span>
+							</div>
+						}
+					</div>
+
+					<!-- Danger Zone -->
+					<div class="bg-dark-800 rounded-lg border border-red-500/30 p-6">
+						<h3 class="text-sm font-semibold text-red-400 uppercase tracking-wider mb-4">Danger Zone</h3>
+						if data.Key.UsedByCount > 0 {
+							<p class="text-gray-400 text-sm mb-4">
+								This key is used by { pluralize(data.Key.UsedByCount, "connection") }.
+								Deleting it will break those connections.
+							</p>
+						}
+						<button
+							onclick={ deleteKey(data.Key.ID, data.Key.Name) }
+							class="w-full flex items-center justify-center p-3 bg-red-500/10 text-red-400 rounded-lg hover:bg-red-500/20 transition-colors"
+						>
+							<svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+							</svg>
+							Delete Key
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	}
+}
+
+// Note: statusDotClass is defined in ssh.templ
+
+script copyToClipboard(text string) {
+	navigator.clipboard.writeText(text).then(() => {
+		const btn = event.currentTarget;
+		const originalText = btn.innerHTML;
+		btn.innerHTML = '<svg class="w-4 h-4 mr-1 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>Copied!';
+		setTimeout(() => {
+			btn.innerHTML = originalText;
+		}, 2000);
+	}).catch(e => {
+		alert('Failed to copy: ' + e);
+	});
+}

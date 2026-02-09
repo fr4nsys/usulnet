@@ -1,0 +1,42 @@
+package editor
+
+import "fmt"
+
+// ============================================================================
+// File Action Buttons — use in Gitea detail.templ file list
+// ============================================================================
+
+// FileEditButtons renders Monaco/nvim edit buttons for a file row.
+// Add to the file list in detail.templ:
+//
+//   @editor.FileEditButtons(repoID, file.Path, currentBranch)
+//
+templ FileEditButtons(repoID, filePath, ref string) {
+	<div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+		<a href={ templ.SafeURL(fmt.Sprintf("/editor/monaco?repo=%s&file=%s&ref=%s", repoID, filePath, ref)) }
+			class="px-2 py-0.5 text-xs rounded bg-blue-500/10 text-blue-400 hover:bg-blue-500/20 transition-colors"
+			title="Edit in Monaco (quick edit)">
+			<i class="fas fa-edit mr-1"></i>Edit
+		</a>
+		<a href={ templ.SafeURL(fmt.Sprintf("/editor/nvim?repo=%s&file=%s&ref=%s", repoID, filePath, ref)) }
+			class="px-2 py-0.5 text-xs rounded bg-green-500/10 text-green-400 hover:bg-green-500/20 transition-colors"
+			title="Edit in Neovim (full editor)">
+			<i class="fas fa-terminal mr-1"></i>nvim
+		</a>
+	</div>
+}
+
+// FileEditLink returns the Monaco editor URL for a file.
+// Use for making file names clickable in the Gitea detail file browser:
+//
+//   <a href={ templ.SafeURL(editor.MonacoURL(repoID, file.Path, ref)) }>
+//     { file.Name }
+//   </a>
+//
+func MonacoURL(repoID, filePath, ref string) string {
+	return fmt.Sprintf("/editor/monaco?repo=%s&file=%s&ref=%s", repoID, filePath, ref)
+}
+
+func NvimURL(repoID, filePath, ref string) string {
+	return fmt.Sprintf("/editor/nvim?repo=%s&file=%s&ref=%s", repoID, filePath, ref)
+}

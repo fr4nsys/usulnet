@@ -1,0 +1,174 @@
+package runbooks
+
+import (
+	"fmt"
+	"github.com/fr4nsys/usulnet/internal/web/templates/layouts"
+)
+
+type RunbooksData struct {
+	PageData   layouts.PageData
+	Runbooks   []RunbookItem
+	Categories []string
+	Tab        string // "runbooks", "executions"
+	Executions []ExecutionItem
+}
+
+type RunbookItem struct {
+	ID          string
+	Name        string
+	Description string
+	Category    string
+	StepCount   int
+	IsEnabled   bool
+	Version     int
+	CreatedAt   string
+	UpdatedAt   string
+}
+
+type ExecutionItem struct {
+	ID           string
+	RunbookName  string
+	Status       string
+	Trigger      string
+	StartedAt    string
+	FinishedAt   string
+	Duration     string
+}
+
+templ List(data RunbooksData) {
+	@layouts.Base(data.PageData) {
+		<div class="p-6 space-y-6">
+			<div class="flex items-center justify-between">
+				<div>
+					<h1 class="text-2xl font-bold text-gray-900 dark:text-white">Runbooks</h1>
+					<p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Operational runbooks for automated incident response and maintenance.</p>
+				</div>
+				<button
+					@click="$dispatch('open-modal', {id: 'create-runbook'})"
+					class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-primary-600 border border-transparent rounded-lg hover:bg-primary-700"
+				>
+					<svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+					Create Runbook
+				</button>
+			</div>
+
+			<!-- Tabs -->
+			<div class="border-b border-gray-200 dark:border-gray-700">
+				<nav class="-mb-px flex space-x-8">
+					<a href="/runbooks?tab=runbooks" class={ "whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm", templ.KV("border-primary-500 text-primary-600 dark:text-primary-400", data.Tab == "runbooks" || data.Tab == ""), templ.KV("border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400", data.Tab != "runbooks" && data.Tab != "") }>
+						Runbooks
+						<span class="ml-2 bg-gray-100 text-gray-900 dark:bg-gray-700 dark:text-gray-300 py-0.5 px-2.5 rounded-full text-xs font-medium">{ fmt.Sprintf("%d", len(data.Runbooks)) }</span>
+					</a>
+					<a href="/runbooks?tab=executions" class={ "whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm", templ.KV("border-primary-500 text-primary-600 dark:text-primary-400", data.Tab == "executions"), templ.KV("border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400", data.Tab != "executions") }>
+						Execution History
+					</a>
+				</nav>
+			</div>
+
+			if data.Tab == "runbooks" || data.Tab == "" {
+				@runbooksGrid(data)
+			} else if data.Tab == "executions" {
+				@executionsTable(data)
+			}
+		</div>
+	}
+}
+
+templ runbooksGrid(data RunbooksData) {
+	if len(data.Runbooks) == 0 {
+		<div class="text-center py-12">
+			<svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+			<h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-white">No runbooks</h3>
+			<p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Create a runbook to automate operational tasks.</p>
+		</div>
+	} else {
+		<div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+			for _, rb := range data.Runbooks {
+				<div class="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg hover:shadow-md transition-shadow">
+					<div class="p-5">
+						<div class="flex items-center justify-between">
+							<div class="flex items-center">
+								<svg class="h-6 w-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+								<h3 class="ml-3 text-lg font-medium text-gray-900 dark:text-white">{ rb.Name }</h3>
+							</div>
+							if rb.IsEnabled {
+								<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">Active</span>
+							} else {
+								<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300">Disabled</span>
+							}
+						</div>
+						if rb.Description != "" {
+							<p class="mt-2 text-sm text-gray-500 dark:text-gray-400 line-clamp-2">{ rb.Description }</p>
+						}
+						<div class="mt-4 flex items-center justify-between text-sm text-gray-500 dark:text-gray-400">
+							<div class="flex items-center space-x-4">
+								if rb.Category != "" {
+									<span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200">{ rb.Category }</span>
+								}
+								<span>{ fmt.Sprintf("%d steps", rb.StepCount) }</span>
+								<span>v{ fmt.Sprintf("%d", rb.Version) }</span>
+							</div>
+						</div>
+					</div>
+					<div class="bg-gray-50 dark:bg-gray-700/50 px-5 py-3 flex justify-between">
+						<form method="POST" action={ templ.SafeURL("/runbooks/" + rb.ID + "/execute") }>
+							<button type="submit" class="text-sm text-primary-600 hover:text-primary-500 dark:text-primary-400 font-medium">Run</button>
+						</form>
+						<form method="POST" action={ templ.SafeURL("/runbooks/" + rb.ID + "/delete") } onsubmit="return confirm('Delete this runbook?')">
+							<button type="submit" class="text-sm text-red-600 hover:text-red-500 dark:text-red-400">Delete</button>
+						</form>
+					</div>
+				</div>
+			}
+		</div>
+	}
+}
+
+templ executionsTable(data RunbooksData) {
+	if len(data.Executions) == 0 {
+		<div class="text-center py-12">
+			<svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+			<h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-white">No executions</h3>
+			<p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Run a runbook to see execution history here.</p>
+		</div>
+	} else {
+		<div class="bg-white dark:bg-gray-800 shadow rounded-lg overflow-hidden">
+			<table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+				<thead class="bg-gray-50 dark:bg-gray-900">
+					<tr>
+						<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Runbook</th>
+						<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Status</th>
+						<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Trigger</th>
+						<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Started</th>
+						<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Finished</th>
+					</tr>
+				</thead>
+				<tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+					for _, exec := range data.Executions {
+						<tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50">
+							<td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">{ exec.RunbookName }</td>
+							<td class="px-6 py-4 whitespace-nowrap">
+								@executionStatusBadge(exec.Status)
+							</td>
+							<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{ exec.Trigger }</td>
+							<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{ exec.StartedAt }</td>
+							<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{ exec.FinishedAt }</td>
+						</tr>
+					}
+				</tbody>
+			</table>
+		</div>
+	}
+}
+
+templ executionStatusBadge(status string) {
+	if status == "completed" {
+		<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">Completed</span>
+	} else if status == "running" {
+		<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">Running</span>
+	} else if status == "failed" {
+		<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200">Failed</span>
+	} else {
+		<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300">{ status }</span>
+	}
+}

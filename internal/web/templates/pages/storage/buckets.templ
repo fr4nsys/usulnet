@@ -1,0 +1,153 @@
+package storage
+
+import (
+	"github.com/fr4nsys/usulnet/internal/web/templates/layouts"
+)
+
+templ BucketsList(data StorageBucketsData) {
+	@layouts.Base(data.PageData) {
+		<div class="space-y-6">
+			<!-- Breadcrumb -->
+			<div class="flex items-center gap-2 text-sm text-gray-400">
+				<a href="/storage" class="hover:text-primary-400 transition-colors">Storage</a>
+				<i class="fas fa-chevron-right text-xs text-gray-600"></i>
+				<span class="text-white">{ data.Connection.Name }</span>
+			</div>
+
+			<!-- Header -->
+			<div class="flex items-center justify-between">
+				<div>
+					<h1 class="text-2xl font-display font-bold text-white">
+						<i class="fas fa-folder-open text-primary-400 mr-2"></i>{ data.Connection.Name }
+					</h1>
+					<p class="text-gray-400 mt-1 text-sm font-mono">{ data.Connection.Endpoint } — { data.Connection.Region }</p>
+				</div>
+				<div class="flex items-center gap-2">
+					<a href={ templ.SafeURL("/storage/" + data.Connection.ID + "/audit") } class="btn-secondary text-sm">
+						<i class="fas fa-history mr-2"></i>Audit Log
+					</a>
+					<button onclick="document.getElementById('create-bucket-modal').classList.remove('hidden')" class="btn-primary text-sm">
+						<i class="fas fa-plus mr-2"></i>Create Bucket
+					</button>
+				</div>
+			</div>
+
+			if len(data.Buckets) == 0 {
+				<div class="card p-12 text-center">
+					<div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-primary-500/10 flex items-center justify-center">
+						<i class="fas fa-bucket text-2xl text-primary-400"></i>
+					</div>
+					<h3 class="text-lg font-medium text-white mb-2">No buckets yet</h3>
+					<p class="text-gray-400 mb-6">Create a bucket to start storing objects.</p>
+					<button onclick="document.getElementById('create-bucket-modal').classList.remove('hidden')" class="btn-primary">
+						<i class="fas fa-plus mr-2"></i>Create Bucket
+					</button>
+				</div>
+			} else {
+				<!-- Buckets table -->
+				<div class="card overflow-hidden">
+					<table class="w-full">
+						<thead>
+							<tr class="border-b border-dark-600">
+								<th class="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Name</th>
+								<th class="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Region</th>
+								<th class="text-right px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Objects</th>
+								<th class="text-right px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Size</th>
+								<th class="text-center px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Flags</th>
+								<th class="text-right px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Actions</th>
+							</tr>
+						</thead>
+						<tbody class="divide-y divide-dark-700">
+							for _, b := range data.Buckets {
+								@bucketRow(data.Connection.ID, b, data.PageData.CSRFToken)
+							}
+						</tbody>
+					</table>
+				</div>
+			}
+		</div>
+
+		@createBucketModal(data.Connection.ID, data.Connection.Region, data.PageData.CSRFToken)
+	}
+}
+
+templ bucketRow(connID string, b StorageBucketData, csrfToken string) {
+	<tr class="hover:bg-dark-700/50 transition-colors">
+		<td class="px-4 py-3">
+			<a href={ templ.SafeURL("/storage/" + connID + "/buckets/" + b.Name + "/browse") }
+				class="font-medium text-primary-400 hover:text-primary-300 transition-colors">
+				<i class="fas fa-archive mr-2 text-gray-500"></i>{ b.Name }
+			</a>
+		</td>
+		<td class="px-4 py-3 text-sm text-gray-400">{ b.Region }</td>
+		<td class="px-4 py-3 text-sm text-gray-300 text-right">{ formatCount(b.ObjectCount) }</td>
+		<td class="px-4 py-3 text-sm text-gray-300 text-right">{ b.SizeHuman }</td>
+		<td class="px-4 py-3 text-center">
+			<div class="flex items-center justify-center gap-2">
+				if b.Versioning {
+					<span class="text-[10px] font-semibold bg-blue-500/20 text-blue-400 px-1.5 py-0.5 rounded" title="Versioning enabled">VER</span>
+				}
+				if b.IsPublic {
+					<span class="text-[10px] font-semibold bg-yellow-500/20 text-yellow-400 px-1.5 py-0.5 rounded" title="Public access">PUB</span>
+				}
+			</div>
+		</td>
+		<td class="px-4 py-3 text-right">
+			<div class="flex items-center justify-end gap-2">
+				<a href={ templ.SafeURL("/storage/" + connID + "/buckets/" + b.Name + "/browse") }
+					class="btn-secondary text-xs">
+					<i class="fas fa-folder-open"></i>
+				</a>
+				<form method="POST" action={ templ.SafeURL("/storage/" + connID + "/buckets/" + b.Name + "/delete") }
+					onsubmit="return confirm('Delete this bucket? The bucket must be empty.')">
+					<input type="hidden" name="csrf_token" value={ csrfToken }/>
+					<button type="submit" class="btn-danger text-xs"><i class="fas fa-trash"></i></button>
+				</form>
+			</div>
+		</td>
+	</tr>
+}
+
+templ createBucketModal(connID, defaultRegion, csrfToken string) {
+	<div id="create-bucket-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+		<div class="card w-full max-w-md mx-4 p-6">
+			<div class="flex items-center justify-between mb-6">
+				<h2 class="text-lg font-display font-bold text-white">Create Bucket</h2>
+				<button onclick="document.getElementById('create-bucket-modal').classList.add('hidden')" class="text-gray-400 hover:text-white">
+					<i class="fas fa-times"></i>
+				</button>
+			</div>
+
+			<form method="POST" action={ templ.SafeURL("/storage/" + connID + "/buckets") } class="space-y-4">
+				<input type="hidden" name="csrf_token" value={ csrfToken }/>
+
+				<div>
+					<label class="label">Bucket Name</label>
+					<input type="text" name="name" required pattern="[a-z0-9][a-z0-9.-]{1,61}[a-z0-9]" placeholder="my-bucket" class="input"/>
+					<p class="text-xs text-gray-500 mt-1">Lowercase, 3-63 chars, no underscores</p>
+				</div>
+
+				<div>
+					<label class="label">Region</label>
+					<input type="text" name="region" value={ defaultRegion } class="input"/>
+				</div>
+
+				<div class="flex items-center gap-6">
+					<label class="flex items-center gap-2 text-sm text-gray-300 cursor-pointer">
+						<input type="checkbox" name="versioning" class="form-checkbox rounded bg-dark-700 border-dark-500 text-primary-500"/>
+						Enable Versioning
+					</label>
+					<label class="flex items-center gap-2 text-sm text-gray-300 cursor-pointer">
+						<input type="checkbox" name="is_public" class="form-checkbox rounded bg-dark-700 border-dark-500 text-primary-500"/>
+						Public Access
+					</label>
+				</div>
+
+				<div class="flex items-center gap-3 pt-2">
+					<button type="submit" class="btn-primary flex-1">Create</button>
+					<button type="button" onclick="document.getElementById('create-bucket-modal').classList.add('hidden')" class="btn-secondary">Cancel</button>
+				</div>
+			</form>
+		</div>
+	</div>
+}

@@ -1,0 +1,170 @@
+package config
+
+import (
+	"fmt"
+	"github.com/fr4nsys/usulnet/internal/web/templates/layouts"
+)
+
+type ConfigData struct {
+	PageData       layouts.PageData
+	Variables      []Variable
+	Templates      []Template
+	WarningMessage string
+}
+
+type Variable struct {
+	ID        string
+	Name      string
+	Value     string
+	IsSecret  bool
+	Scope     string
+	ScopeID   string
+	UsedBy    int
+	UpdatedAt string
+}
+
+type Template struct {
+	ID          string
+	Name        string
+	Description string
+	VarCount    int
+}
+
+templ List(data ConfigData) {
+	@layouts.Base(data.PageData) {
+		<div class="space-y-6">
+			<!-- Header -->
+			<div class="flex items-center justify-between">
+				<div>
+					<h1 class="text-2xl font-display font-bold text-white">Configuration</h1>
+					<p class="text-gray-400 mt-1">Centralized environment variables and secrets</p>
+				</div>
+				if data.WarningMessage == "" {
+					<div class="flex items-center gap-2">
+						<a href="/config/audit" class="btn-secondary">
+							<i class="fas fa-history mr-2"></i>Audit Log
+						</a>
+						<button onclick="document.getElementById('new-var-modal').showModal()" class="btn-primary">
+							<i class="fas fa-plus mr-2"></i>New Variable
+						</button>
+					</div>
+				}
+			</div>
+
+			if data.WarningMessage != "" {
+				<div class="bg-yellow-900/30 border border-yellow-700 rounded-lg p-4 flex items-start gap-3">
+					<i class="fas fa-exclamation-triangle text-yellow-400 mt-0.5"></i>
+					<div>
+						<p class="text-yellow-300 font-medium">Service Unavailable</p>
+						<p class="text-yellow-400/80 text-sm mt-1">{ data.WarningMessage }</p>
+					</div>
+				</div>
+			}
+
+			<!-- Templates -->
+			<div class="card">
+				<div class="px-5 py-4 border-b border-dark-700 flex items-center justify-between">
+					<h2 class="font-medium text-white">Templates</h2>
+					<a href="/config/templates" class="text-sm text-primary-400 hover:text-primary-300">
+						Manage Templates
+					</a>
+				</div>
+				<div class="p-4 grid grid-cols-1 md:grid-cols-3 gap-4">
+					for _, tpl := range data.Templates {
+						<div class="bg-dark-700 rounded-lg p-4">
+							<div class="flex items-center justify-between mb-2">
+								<span class="font-medium text-white">{ tpl.Name }</span>
+								<span class="text-sm text-gray-400">{ fmt.Sprintf("%d vars", tpl.VarCount) }</span>
+							</div>
+							<p class="text-sm text-gray-400">{ tpl.Description }</p>
+						</div>
+					}
+				</div>
+			</div>
+
+			<!-- Variables -->
+			<div class="card">
+				<div class="px-5 py-4 border-b border-dark-700">
+					<h2 class="font-medium text-white">Variables ({ fmt.Sprintf("%d", len(data.Variables)) })</h2>
+				</div>
+				<div class="overflow-x-auto">
+					<table class="table">
+						<thead>
+							<tr>
+								<th>Name</th>
+								<th>Value</th>
+								<th>Scope</th>
+								<th>Used By</th>
+								<th>Updated</th>
+								<th>Actions</th>
+							</tr>
+						</thead>
+						<tbody>
+							for _, v := range data.Variables {
+								<tr>
+									<td class="font-mono text-sm text-white">{ v.Name }</td>
+									<td class="font-mono text-sm">
+										if v.IsSecret {
+											<span class="text-gray-500">••••••••</span>
+											<button class="ml-2 text-gray-400 hover:text-white text-xs" title="Show">
+												<i class="fas fa-eye"></i>
+											</button>
+										} else {
+											<span class="text-gray-400">{ v.Value }</span>
+										}
+									</td>
+									<td>
+										<span class={ "badge", templ.KV("badge-info", v.Scope == "global"), templ.KV("badge-success", v.Scope == "template"), templ.KV("badge-warning", v.Scope == "container") }>
+											{ v.Scope }
+										</span>
+									</td>
+									<td class="text-gray-400">{ fmt.Sprintf("%d containers", v.UsedBy) }</td>
+									<td class="text-gray-400 text-sm">{ v.UpdatedAt }</td>
+									<td>
+										<div class="flex items-center gap-2">
+											<button class="text-primary-400 hover:text-primary-300 text-sm">Edit</button>
+											<button 
+												hx-delete={ "/config/variables/" + v.ID }
+												hx-confirm="Delete this variable?"
+												class="text-red-400 hover:text-red-300 text-sm">
+												Delete
+											</button>
+										</div>
+									</td>
+								</tr>
+							}
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+
+		<!-- New Variable Modal -->
+		<dialog id="new-var-modal" class="bg-dark-800 rounded-xl p-0 backdrop:bg-black/50">
+			<form action="/config/variables" method="POST" class="w-96">
+				<input type="hidden" name="csrf_token" value={ data.PageData.CSRFToken }/>
+				<div class="px-6 py-4 border-b border-dark-700">
+					<h3 class="text-lg font-medium text-white">New Variable</h3>
+				</div>
+				<div class="p-6 space-y-4">
+					<div>
+						<label class="block text-sm font-medium text-gray-300 mb-2">Name</label>
+						<input type="text" name="name" required class="input" placeholder="MY_VARIABLE"/>
+					</div>
+					<div>
+						<label class="block text-sm font-medium text-gray-300 mb-2">Value</label>
+						<input type="text" name="value" required class="input"/>
+					</div>
+					<div class="flex items-center gap-2">
+						<input type="checkbox" id="is_secret" name="is_secret" class="rounded border-dark-600 bg-dark-700 text-primary-500"/>
+						<label for="is_secret" class="text-sm text-gray-300">This is a secret</label>
+					</div>
+				</div>
+				<div class="px-6 py-4 border-t border-dark-700 flex justify-end gap-3">
+					<button type="button" onclick="this.closest('dialog').close()" class="btn-secondary">Cancel</button>
+					<button type="submit" class="btn-primary">Create</button>
+				</div>
+			</form>
+		</dialog>
+	}
+}

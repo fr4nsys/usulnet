@@ -1,0 +1,391 @@
+package swarm
+
+import (
+	"fmt"
+	"github.com/fr4nsys/usulnet/internal/web/templates/layouts"
+)
+
+type ClusterData struct {
+	PageData       layouts.PageData
+	Active         bool
+	ClusterID      string
+	ManagerNodes   int
+	WorkerNodes    int
+	TotalNodes     int
+	ServiceCount   int
+	JoinTokenWorker  string
+	JoinTokenManager string
+	ManagerAddr    string
+	Nodes          []NodeItem
+	Services       []ServiceItem
+	HostID         string
+}
+
+type NodeItem struct {
+	ID            string
+	Hostname      string
+	Role          string
+	Status        string
+	Availability  string
+	EngineVersion string
+	Address       string
+	IsLeader      bool
+	NCPU          int64
+	MemoryMB      int64
+}
+
+type ServiceItem struct {
+	ID              string
+	Name            string
+	Image           string
+	Mode            string
+	ReplicasDesired uint64
+	ReplicasRunning uint64
+	Ports           string
+}
+
+templ Cluster(data ClusterData) {
+	@layouts.Base(data.PageData) {
+		<div class="space-y-6">
+			<!-- Header -->
+			<div class="flex items-center justify-between">
+				<div>
+					<h1 class="text-2xl font-display font-bold text-white">
+						<i class="fas fa-network-wired mr-2 text-primary-400"></i>Swarm Cluster
+					</h1>
+					<p class="text-gray-400 mt-1">Docker Swarm high availability management</p>
+				</div>
+				if !data.Active {
+					<button
+						hx-post="/swarm/init"
+						hx-target="#swarm-content"
+						hx-swap="outerHTML"
+						hx-confirm="Initialize Docker Swarm on this node? This will make it the cluster manager."
+						class="btn btn-primary"
+					>
+						<i class="fas fa-play mr-2"></i>Initialize Swarm
+					</button>
+				}
+			</div>
+
+			<div id="swarm-content">
+				if data.Active {
+					@clusterActive(data)
+				} else {
+					@clusterInactive()
+				}
+			</div>
+		</div>
+	}
+}
+
+templ clusterInactive() {
+	<div class="card p-8 text-center">
+		<div class="text-gray-400 mb-4">
+			<i class="fas fa-network-wired text-6xl opacity-30"></i>
+		</div>
+		<h2 class="text-xl font-semibold text-white mb-2">Swarm Not Initialized</h2>
+		<p class="text-gray-400 mb-6 max-w-lg mx-auto">
+			Docker Swarm allows you to create a cluster of Docker nodes for high availability.
+			Initialize Swarm to start managing replicated services across multiple hosts.
+		</p>
+		<div class="card bg-dark-700 p-4 max-w-md mx-auto text-left">
+			<h3 class="text-sm font-semibold text-gray-300 mb-2">What happens when you initialize:</h3>
+			<ul class="text-sm text-gray-400 space-y-1">
+				<li><i class="fas fa-check text-green-400 mr-2"></i>This node becomes the Swarm manager</li>
+				<li><i class="fas fa-check text-green-400 mr-2"></i>Join tokens are generated for workers</li>
+				<li><i class="fas fa-check text-green-400 mr-2"></i>You can then add agent nodes as workers</li>
+				<li><i class="fas fa-check text-green-400 mr-2"></i>Enable HA for any container with replicas</li>
+			</ul>
+		</div>
+	</div>
+}
+
+templ clusterActive(data ClusterData) {
+	<div class="space-y-6">
+		<!-- Cluster Overview Cards -->
+		<div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+			<div class="card p-4">
+				<div class="text-sm text-gray-400">Status</div>
+				<div class="text-2xl font-bold text-green-400 mt-1">Active</div>
+				<div class="text-xs text-gray-500 mt-1 truncate">{ data.ClusterID }</div>
+			</div>
+			<div class="card p-4">
+				<div class="text-sm text-gray-400">Nodes</div>
+				<div class="text-2xl font-bold text-white mt-1">{ fmt.Sprint(data.TotalNodes) }</div>
+				<div class="text-xs text-gray-500 mt-1">
+					{ fmt.Sprint(data.ManagerNodes) } managers, { fmt.Sprint(data.WorkerNodes) } workers
+				</div>
+			</div>
+			<div class="card p-4">
+				<div class="text-sm text-gray-400">Services</div>
+				<div class="text-2xl font-bold text-white mt-1">{ fmt.Sprint(data.ServiceCount) }</div>
+				<div class="text-xs text-gray-500 mt-1">HA services running</div>
+			</div>
+			<div class="card p-4">
+				<div class="text-sm text-gray-400">Manager Address</div>
+				<div class="text-lg font-mono text-white mt-1 truncate">{ data.ManagerAddr }</div>
+			</div>
+		</div>
+
+		<!-- Join Tokens -->
+		if data.JoinTokenWorker != "" {
+			<div class="card p-4">
+				<h3 class="text-sm font-semibold text-gray-300 mb-3">
+					<i class="fas fa-key mr-2 text-yellow-400"></i>Join Tokens
+				</h3>
+				<div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+					<div>
+						<label class="text-xs text-gray-500 block mb-1">Worker Token</label>
+						<div class="relative">
+							<input type="password" value={ data.JoinTokenWorker } readonly
+								class="w-full bg-dark-800 text-gray-300 text-xs font-mono p-2 rounded border border-dark-600 pr-20"
+								id="worker-token" />
+							<button onclick="toggleToken('worker-token')" class="absolute right-1 top-1 btn btn-sm btn-ghost text-xs">
+								<i class="fas fa-eye"></i>
+							</button>
+						</div>
+					</div>
+					<div>
+						<label class="text-xs text-gray-500 block mb-1">Manager Token</label>
+						<div class="relative">
+							<input type="password" value={ data.JoinTokenManager } readonly
+								class="w-full bg-dark-800 text-gray-300 text-xs font-mono p-2 rounded border border-dark-600 pr-20"
+								id="manager-token" />
+							<button onclick="toggleToken('manager-token')" class="absolute right-1 top-1 btn btn-sm btn-ghost text-xs">
+								<i class="fas fa-eye"></i>
+							</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		}
+
+		<!-- Nodes Table -->
+		<div class="card">
+			<div class="p-4 border-b border-dark-600 flex items-center justify-between">
+				<h3 class="font-semibold text-white">
+					<i class="fas fa-server mr-2 text-blue-400"></i>Cluster Nodes
+				</h3>
+			</div>
+			<div class="overflow-x-auto">
+				<table class="w-full">
+					<thead>
+						<tr class="border-b border-dark-600 text-left text-xs text-gray-500 uppercase">
+							<th class="p-3">Hostname</th>
+							<th class="p-3">Role</th>
+							<th class="p-3">Status</th>
+							<th class="p-3">Availability</th>
+							<th class="p-3">Address</th>
+							<th class="p-3">Engine</th>
+							<th class="p-3">Resources</th>
+							<th class="p-3">Actions</th>
+						</tr>
+					</thead>
+					<tbody>
+						for _, node := range data.Nodes {
+							<tr class="border-b border-dark-700 hover:bg-dark-700/50">
+								<td class="p-3">
+									<div class="flex items-center gap-2">
+										<span class="text-white font-medium">{ node.Hostname }</span>
+										if node.IsLeader {
+											<span class="text-xs bg-yellow-500/20 text-yellow-400 px-1.5 py-0.5 rounded">Leader</span>
+										}
+									</div>
+								</td>
+								<td class="p-3">
+									if node.Role == "manager" {
+										<span class="text-xs bg-purple-500/20 text-purple-400 px-2 py-0.5 rounded">Manager</span>
+									} else {
+										<span class="text-xs bg-blue-500/20 text-blue-400 px-2 py-0.5 rounded">Worker</span>
+									}
+								</td>
+								<td class="p-3">
+									if node.Status == "ready" {
+										<span class="text-green-400"><i class="fas fa-circle text-xs mr-1"></i>Ready</span>
+									} else {
+										<span class="text-red-400"><i class="fas fa-circle text-xs mr-1"></i>{ node.Status }</span>
+									}
+								</td>
+								<td class="p-3 text-gray-400">{ node.Availability }</td>
+								<td class="p-3 text-gray-400 font-mono text-sm">{ node.Address }</td>
+								<td class="p-3 text-gray-400 text-sm">{ node.EngineVersion }</td>
+								<td class="p-3 text-gray-400 text-sm">
+									{ fmt.Sprint(node.NCPU) } CPU, { fmt.Sprint(node.MemoryMB) } MB
+								</td>
+								<td class="p-3">
+									if !node.IsLeader {
+										<button
+											hx-delete={ fmt.Sprintf("/swarm/nodes/%s", node.ID) }
+											hx-confirm={ fmt.Sprintf("Remove node '%s' from Swarm cluster?", node.Hostname) }
+											hx-target="closest tr"
+											hx-swap="outerHTML"
+											class="btn btn-sm btn-ghost text-red-400 hover:text-red-300"
+										>
+											<i class="fas fa-times"></i>
+										</button>
+									}
+								</td>
+							</tr>
+						}
+					</tbody>
+				</table>
+			</div>
+		</div>
+
+		<!-- Services Table -->
+		<div class="card">
+			<div class="p-4 border-b border-dark-600 flex items-center justify-between">
+				<h3 class="font-semibold text-white">
+					<i class="fas fa-cubes mr-2 text-green-400"></i>Services
+				</h3>
+				<a href="/swarm/services/new" class="btn btn-sm btn-primary">
+					<i class="fas fa-plus mr-1"></i>Create Service
+				</a>
+			</div>
+			if len(data.Services) == 0 {
+				<div class="p-8 text-center text-gray-500">
+					<i class="fas fa-cubes text-4xl mb-3 opacity-30"></i>
+					<p>No Swarm services yet.</p>
+					<p class="text-sm mt-1">Create a service or convert a container to enable HA.</p>
+				</div>
+			} else {
+				<div class="overflow-x-auto">
+					<table class="w-full">
+						<thead>
+							<tr class="border-b border-dark-600 text-left text-xs text-gray-500 uppercase">
+								<th class="p-3">Name</th>
+								<th class="p-3">Image</th>
+								<th class="p-3">Mode</th>
+								<th class="p-3">Replicas</th>
+								<th class="p-3">Ports</th>
+								<th class="p-3">Actions</th>
+							</tr>
+						</thead>
+						<tbody>
+							for _, svc := range data.Services {
+								<tr class="border-b border-dark-700 hover:bg-dark-700/50">
+									<td class="p-3">
+										<a href={ templ.SafeURL(fmt.Sprintf("/swarm/services/%s", svc.ID)) }
+											class="text-primary-400 hover:text-primary-300">
+											{ svc.Name }
+										</a>
+									</td>
+									<td class="p-3 text-gray-400 text-sm font-mono">{ svc.Image }</td>
+									<td class="p-3">
+										<span class="text-xs bg-dark-600 text-gray-300 px-2 py-0.5 rounded">{ svc.Mode }</span>
+									</td>
+									<td class="p-3">
+										if svc.ReplicasRunning == svc.ReplicasDesired {
+											<span class="text-green-400">{ fmt.Sprintf("%d/%d", svc.ReplicasRunning, svc.ReplicasDesired) }</span>
+										} else {
+											<span class="text-yellow-400">{ fmt.Sprintf("%d/%d", svc.ReplicasRunning, svc.ReplicasDesired) }</span>
+										}
+									</td>
+									<td class="p-3 text-gray-400 text-sm font-mono">{ svc.Ports }</td>
+									<td class="p-3 flex gap-1">
+										<button
+											hx-delete={ fmt.Sprintf("/swarm/services/%s", svc.ID) }
+											hx-confirm={ fmt.Sprintf("Remove service '%s'? This will stop all replicas.", svc.Name) }
+											hx-target="closest tr"
+											hx-swap="outerHTML"
+											class="btn btn-sm btn-ghost text-red-400 hover:text-red-300"
+										>
+											<i class="fas fa-trash"></i>
+										</button>
+									</td>
+								</tr>
+							}
+						</tbody>
+					</table>
+				</div>
+			}
+		</div>
+
+		<!-- Leave Swarm -->
+		<div class="card p-4 border-red-500/30">
+			<h3 class="text-sm font-semibold text-red-400 mb-2">
+				<i class="fas fa-exclamation-triangle mr-1"></i>Danger Zone
+			</h3>
+			<div class="flex items-center justify-between">
+				<p class="text-sm text-gray-400">Leave the Swarm cluster. This will stop all services on this node.</p>
+				<button
+					hx-post="/swarm/leave"
+					hx-confirm="Are you sure? This will remove this node from the Swarm cluster and stop all Swarm services."
+					class="btn btn-sm bg-red-500/20 text-red-400 hover:bg-red-500/30 border border-red-500/30"
+				>
+					<i class="fas fa-sign-out-alt mr-1"></i>Leave Swarm
+				</button>
+			</div>
+		</div>
+	</div>
+
+	<script>
+	function toggleToken(id) {
+		const input = document.getElementById(id);
+		input.type = input.type === 'password' ? 'text' : 'password';
+	}
+	</script>
+}
+
+templ ServiceCreateForm(data ServiceCreateData) {
+	@layouts.Base(data.PageData) {
+		<div class="space-y-6">
+			<div>
+				<h1 class="text-2xl font-display font-bold text-white">Create Swarm Service</h1>
+				<p class="text-gray-400 mt-1">Deploy a new high-availability service across the cluster</p>
+			</div>
+
+			<form method="POST" action="/swarm/services/create" class="card p-6 space-y-4">
+				<input type="hidden" name="csrf_token" value={ data.PageData.CSRFToken }/>
+
+				<div>
+					<label class="label">Service Name</label>
+					<input type="text" name="name" required placeholder="my-service"
+						class="input w-full" />
+				</div>
+
+				<div>
+					<label class="label">Image</label>
+					<input type="text" name="image" required placeholder="nginx:latest"
+						class="input w-full" />
+				</div>
+
+				<div class="grid grid-cols-2 gap-4">
+					<div>
+						<label class="label">Replicas</label>
+						<input type="number" name="replicas" value="2" min="1" max="100"
+							class="input w-full" />
+					</div>
+					<div>
+						<label class="label">Published Port</label>
+						<input type="number" name="published_port" placeholder="80"
+							class="input w-full" />
+					</div>
+				</div>
+
+				<div>
+					<label class="label">Target Port (container)</label>
+					<input type="number" name="target_port" placeholder="80"
+						class="input w-full" />
+				</div>
+
+				<div>
+					<label class="label">Environment Variables (one per line, KEY=VALUE)</label>
+					<textarea name="env" rows="3" placeholder="KEY=VALUE" class="input w-full"></textarea>
+				</div>
+
+				<div class="flex gap-3 pt-2">
+					<button type="submit" class="btn btn-primary">
+						<i class="fas fa-plus mr-2"></i>Create Service
+					</button>
+					<a href="/swarm" class="btn btn-ghost">Cancel</a>
+				</div>
+			</form>
+		</div>
+	}
+}
+
+type ServiceCreateData struct {
+	PageData layouts.PageData
+}

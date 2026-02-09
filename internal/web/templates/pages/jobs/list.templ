@@ -1,0 +1,310 @@
+package jobs
+
+import (
+	"github.com/fr4nsys/usulnet/internal/web/templates/layouts"
+	"fmt"
+)
+
+// JobView represents a job for display.
+type JobView struct {
+	ID          string
+	Type        string
+	TypeLabel   string // "Container Update", "Security Scan", etc.
+	TypeIcon    string // fa icon class
+	Status      string
+	StatusColor string // green/yellow/red/gray/blue
+	Progress    int
+	Error       string
+	CreatedBy   string
+	ScheduledAt string
+	StartedAt   string
+	CompletedAt string
+	Duration    string
+	PayloadInfo string // Human-readable summary of payload
+}
+
+// JobFilters holds current filter values.
+type JobFilters struct {
+	Status string
+	Type   string
+}
+
+// JobListData holds data for the jobs list page.
+type JobListData struct {
+	PageData layouts.PageData
+	Jobs     []JobView
+	Filters  JobFilters
+	Stats    JobStats
+}
+
+// JobStats holds summary counts.
+type JobStats struct {
+	Total     int
+	Pending   int
+	Running   int
+	Completed int
+	Failed    int
+}
+
+// statusBadge returns classes for job status badges.
+func statusBadge(status string) string {
+	switch status {
+	case "running":
+		return "bg-blue-500/10 text-blue-400"
+	case "completed":
+		return "bg-green-500/10 text-green-400"
+	case "failed":
+		return "bg-red-500/10 text-red-400"
+	case "cancelled":
+		return "bg-gray-500/10 text-gray-400"
+	case "pending":
+		return "bg-yellow-500/10 text-yellow-400"
+	default:
+		return "bg-gray-500/10 text-gray-400"
+	}
+}
+
+// statusIcon returns the icon for a job status.
+func statusIcon(status string) string {
+	switch status {
+	case "running":
+		return "fas fa-spinner fa-spin"
+	case "completed":
+		return "fas fa-check"
+	case "failed":
+		return "fas fa-times"
+	case "cancelled":
+		return "fas fa-ban"
+	case "pending":
+		return "fas fa-clock"
+	default:
+		return "fas fa-question"
+	}
+}
+
+templ JobList(data JobListData) {
+	@layouts.Base(data.PageData) {
+		<div class="space-y-6">
+			<!-- Header -->
+			<div class="flex items-center justify-between">
+				<div>
+					<h1 class="text-2xl font-bold text-white">
+						<i class="fas fa-tasks mr-2 text-primary-400"></i>
+						Scheduler Jobs
+					</h1>
+					<p class="text-gray-400 mt-1">Background tasks and scheduled operations</p>
+				</div>
+			</div>
+
+			<!-- Stats Cards -->
+			<div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+				@statCard("Total", fmt.Sprintf("%d", data.Stats.Total), "fas fa-list", "text-gray-400", "bg-gray-500/10")
+				@statCard("Pending", fmt.Sprintf("%d", data.Stats.Pending), "fas fa-clock", "text-yellow-400", "bg-yellow-500/10")
+				@statCard("Running", fmt.Sprintf("%d", data.Stats.Running), "fas fa-spinner", "text-blue-400", "bg-blue-500/10")
+				@statCard("Completed", fmt.Sprintf("%d", data.Stats.Completed), "fas fa-check", "text-green-400", "bg-green-500/10")
+				@statCard("Failed", fmt.Sprintf("%d", data.Stats.Failed), "fas fa-times", "text-red-400", "bg-red-500/10")
+			</div>
+
+			<!-- Filters -->
+			<div class="bg-dark-800 border border-dark-700 rounded-xl p-4">
+				<form method="get" action="/jobs" class="flex flex-wrap items-center gap-4">
+					<div>
+						<label class="block text-xs text-gray-500 mb-1">Status</label>
+						<select name="status" class="bg-dark-700 border border-dark-600 rounded-lg text-white px-3 py-2 text-sm">
+							<option value="">All</option>
+							<option value="pending" selected?={ data.Filters.Status == "pending" }>Pending</option>
+							<option value="running" selected?={ data.Filters.Status == "running" }>Running</option>
+							<option value="completed" selected?={ data.Filters.Status == "completed" }>Completed</option>
+							<option value="failed" selected?={ data.Filters.Status == "failed" }>Failed</option>
+							<option value="cancelled" selected?={ data.Filters.Status == "cancelled" }>Cancelled</option>
+						</select>
+					</div>
+					<div>
+						<label class="block text-xs text-gray-500 mb-1">Type</label>
+						<select name="type" class="bg-dark-700 border border-dark-600 rounded-lg text-white px-3 py-2 text-sm">
+							<option value="">All Types</option>
+							<option value="container_update" selected?={ data.Filters.Type == "container_update" }>Container Update</option>
+							<option value="security_scan" selected?={ data.Filters.Type == "security_scan" }>Security Scan</option>
+							<option value="backup" selected?={ data.Filters.Type == "backup" }>Backup</option>
+							<option value="image_pull" selected?={ data.Filters.Type == "image_pull" }>Image Pull</option>
+							<option value="stack_deploy" selected?={ data.Filters.Type == "stack_deploy" }>Stack Deploy</option>
+						</select>
+					</div>
+					<div class="flex items-end">
+						<button type="submit" class="bg-primary-500 hover:bg-primary-600 text-black font-medium px-4 py-2 rounded-lg transition-colors">
+							<i class="fas fa-filter mr-1"></i> Filter
+						</button>
+					</div>
+					if data.Filters.Status != "" || data.Filters.Type != "" {
+						<div class="flex items-end">
+							<a href="/jobs" class="text-gray-400 hover:text-white text-sm px-3 py-2">
+								<i class="fas fa-times mr-1"></i> Clear
+							</a>
+						</div>
+					}
+				</form>
+			</div>
+
+			<!-- Jobs Table -->
+			<div class="bg-dark-800 border border-dark-700 rounded-xl overflow-hidden">
+				if len(data.Jobs) == 0 {
+					<div class="flex flex-col items-center justify-center py-16 text-gray-500">
+						<i class="fas fa-inbox text-4xl mb-4"></i>
+						<p class="text-lg">No jobs found</p>
+						if data.Filters.Status != "" || data.Filters.Type != "" {
+							<p class="text-sm mt-1">Try adjusting your filters</p>
+						} else {
+							<p class="text-sm mt-1">Jobs will appear here when operations are triggered</p>
+						}
+					</div>
+				} else {
+					<div class="overflow-x-auto">
+						<table class="w-full">
+							<thead>
+								<tr class="text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-dark-700">
+									<th class="px-4 py-3">Type</th>
+									<th class="px-4 py-3">Status</th>
+									<th class="px-4 py-3">Progress</th>
+									<th class="px-4 py-3">Created By</th>
+									<th class="px-4 py-3">Scheduled</th>
+									<th class="px-4 py-3">Duration</th>
+									<th class="px-4 py-3 text-right">Actions</th>
+								</tr>
+							</thead>
+							<tbody class="divide-y divide-dark-700">
+								for _, job := range data.Jobs {
+									<tr class="hover:bg-dark-700/50 transition-colors">
+										<!-- Type -->
+										<td class="px-4 py-3">
+											<a href={ templ.SafeURL(fmt.Sprintf("/jobs/%s", job.ID)) } class="flex items-center gap-3 group">
+												<div class={ "w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0", statusBadge(job.Status) }>
+													<i class={ job.TypeIcon + " text-sm" }></i>
+												</div>
+												<div>
+													<span class="text-white group-hover:text-primary-400 transition-colors text-sm font-medium">{ job.TypeLabel }</span>
+													if job.PayloadInfo != "" {
+														<p class="text-xs text-gray-500 truncate max-w-xs">{ job.PayloadInfo }</p>
+													}
+												</div>
+											</a>
+										</td>
+
+										<!-- Status -->
+										<td class="px-4 py-3">
+											<span class={ "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium", statusBadge(job.Status) }>
+												<i class={ statusIcon(job.Status) }></i>
+												{ job.Status }
+											</span>
+											if job.Error != "" {
+												<p class="text-xs text-red-400 mt-1 truncate max-w-xs" title={ job.Error }>{ job.Error }</p>
+											}
+										</td>
+
+										<!-- Progress -->
+										<td class="px-4 py-3 w-40">
+											if job.Status == "running" {
+												<div class="flex items-center gap-2">
+													<div class="flex-1 bg-dark-600 rounded-full h-2 overflow-hidden">
+														<div
+															class="bg-primary-500 h-full rounded-full transition-all duration-500"
+															style={ fmt.Sprintf("width: %d%%", job.Progress) }
+														></div>
+													</div>
+													<span class="text-xs text-gray-400 w-8 text-right">{ fmt.Sprintf("%d%%", job.Progress) }</span>
+												</div>
+											} else if job.Status == "completed" {
+												<div class="flex items-center gap-2">
+													<div class="flex-1 bg-dark-600 rounded-full h-2 overflow-hidden">
+														<div class="bg-green-500 h-full rounded-full w-full"></div>
+													</div>
+													<span class="text-xs text-green-400 w-8 text-right">100%</span>
+												</div>
+											} else {
+												<span class="text-xs text-gray-600">—</span>
+											}
+										</td>
+
+										<!-- Created By -->
+										<td class="px-4 py-3">
+											<span class="text-sm text-gray-400">{ job.CreatedBy }</span>
+										</td>
+
+										<!-- Scheduled -->
+										<td class="px-4 py-3">
+											<span class="text-sm text-gray-400" title={ job.ScheduledAt }>{ job.ScheduledAt }</span>
+											if job.StartedAt != "" {
+												<p class="text-xs text-gray-600">Started: { job.StartedAt }</p>
+											}
+										</td>
+
+										<!-- Duration -->
+										<td class="px-4 py-3">
+											if job.Duration != "" {
+												<span class="text-sm text-gray-400">{ job.Duration }</span>
+											} else {
+												<span class="text-xs text-gray-600">—</span>
+											}
+										</td>
+
+										<!-- Actions -->
+										<td class="px-4 py-3 text-right">
+											<div class="flex items-center justify-end gap-2">
+												<a
+													href={ templ.SafeURL(fmt.Sprintf("/jobs/%s", job.ID)) }
+													class="text-gray-400 hover:text-primary-400 transition-colors p-1"
+													title="View details"
+												>
+													<i class="fas fa-eye text-sm"></i>
+												</a>
+												if job.Status == "pending" || job.Status == "running" {
+													<form method="post" action={ templ.SafeURL(fmt.Sprintf("/jobs/%s/cancel", job.ID)) }>
+														<input type="hidden" name="csrf_token" value={ data.PageData.CSRFToken }/>
+														<button
+															type="submit"
+															class="text-gray-400 hover:text-yellow-400 transition-colors p-1"
+															title="Cancel job"
+															onclick="return confirm('Cancel this job?')"
+														>
+															<i class="fas fa-ban text-sm"></i>
+														</button>
+													</form>
+												}
+												if job.Status == "completed" || job.Status == "failed" || job.Status == "cancelled" {
+													<form method="post" action={ templ.SafeURL(fmt.Sprintf("/jobs/%s/delete", job.ID)) }>
+														<input type="hidden" name="csrf_token" value={ data.PageData.CSRFToken }/>
+														<button
+															type="submit"
+															class="text-gray-400 hover:text-red-400 transition-colors p-1"
+															title="Delete job"
+															onclick="return confirm('Delete this job?')"
+														>
+															<i class="fas fa-trash-alt text-sm"></i>
+														</button>
+													</form>
+												}
+											</div>
+										</td>
+									</tr>
+								}
+							</tbody>
+						</table>
+					</div>
+				}
+			</div>
+		</div>
+	}
+}
+
+templ statCard(label string, value string, icon string, textColor string, bgColor string) {
+	<div class="bg-dark-800 border border-dark-700 rounded-xl p-4">
+		<div class="flex items-center gap-3">
+			<div class={ "w-10 h-10 rounded-lg flex items-center justify-center", bgColor }>
+				<i class={ icon, textColor }></i>
+			</div>
+			<div>
+				<p class={ "text-xl font-bold", textColor }>{ value }</p>
+				<p class="text-xs text-gray-500">{ label }</p>
+			</div>
+		</div>
+	</div>
+}

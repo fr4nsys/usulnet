@@ -1,0 +1,77 @@
+package networks
+
+import "github.com/fr4nsys/usulnet/internal/web/templates/layouts"
+
+type NetworkNewData struct {
+	PageData layouts.PageData
+	Error    string
+}
+
+templ New(data NetworkNewData) {
+	@layouts.Base(data.PageData) {
+		<div class="max-w-2xl mx-auto space-y-6">
+			<div class="flex items-center gap-4">
+				<a href="/networks" class="p-2 text-gray-400 hover:text-white hover:bg-dark-700 rounded-lg">
+					<i class="fas fa-arrow-left"></i>
+				</a>
+				<div>
+					<h1 class="text-2xl font-display font-bold text-white">Create Network</h1>
+					<p class="text-gray-400 mt-1">Create a new Docker network</p>
+				</div>
+			</div>
+
+			if data.Error != "" {
+				<div class="bg-red-500/10 border border-red-500/20 rounded-lg p-4 text-red-400">
+					<i class="fas fa-exclamation-circle mr-2"></i>{ data.Error }
+				</div>
+			}
+
+			<form action="/networks/create" method="POST" class="card p-6 space-y-4">
+				<input type="hidden" name="csrf_token" value={ data.PageData.CSRFToken }/>
+				<div>
+					<label class="block text-sm font-medium text-gray-300 mb-2">Network Name</label>
+					<input type="text" name="name" required class="input" placeholder="my-network"/>
+				</div>
+
+				<div>
+					<label class="block text-sm font-medium text-gray-300 mb-2">Driver</label>
+					<select name="driver" class="input">
+						<option value="bridge">bridge</option>
+						<option value="host">host</option>
+						<option value="overlay">overlay</option>
+						<option value="macvlan">macvlan</option>
+						<option value="none">none</option>
+					</select>
+				</div>
+
+				<div>
+					<label class="block text-sm font-medium text-gray-300 mb-2">Subnet (optional)</label>
+					<input type="text" name="subnet" class="input font-mono" placeholder="172.20.0.0/16"/>
+				</div>
+
+				<div>
+					<label class="block text-sm font-medium text-gray-300 mb-2">Gateway (optional)</label>
+					<input type="text" name="gateway" class="input font-mono" placeholder="172.20.0.1"/>
+				</div>
+
+				<div class="flex items-center gap-4">
+					<label class="flex items-center gap-2">
+						<input type="checkbox" name="internal" class="rounded border-dark-600 bg-dark-700 text-primary-500"/>
+						<span class="text-sm text-gray-300">Internal (isolated)</span>
+					</label>
+					<label class="flex items-center gap-2">
+						<input type="checkbox" name="attachable" class="rounded border-dark-600 bg-dark-700 text-primary-500"/>
+						<span class="text-sm text-gray-300">Attachable</span>
+					</label>
+				</div>
+
+				<div class="flex justify-end gap-3 pt-4">
+					<a href="/networks" class="btn-secondary">Cancel</a>
+					<button type="submit" class="btn-primary">
+						<i class="fas fa-plus mr-2"></i>Create Network
+					</button>
+				</div>
+			</form>
+		</div>
+	}
+}

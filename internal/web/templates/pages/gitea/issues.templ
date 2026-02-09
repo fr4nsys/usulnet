@@ -1,0 +1,403 @@
+package gitea
+
+import (
+	"fmt"
+	"github.com/fr4nsys/usulnet/internal/web/templates/layouts"
+)
+
+// ============================================================================
+// Issues Page Data
+// ============================================================================
+
+type IssueListData struct {
+	PageData    layouts.PageData
+	Repo        RepoDetail
+	Issues      []IssueItem
+	State       string // "open", "closed", "all"
+	CSRFToken   string
+	Labels      []LabelItem
+	Milestones  []MilestoneItem
+	OpenCount   int
+	ClosedCount int
+}
+
+type MilestoneItem struct {
+	ID    int64
+	Title string
+	State string
+}
+
+// ============================================================================
+// Issues List Template
+// ============================================================================
+
+templ IssuesList(data IssueListData) {
+	@layouts.Base(data.PageData) {
+		<div class="space-y-6">
+			<!-- Breadcrumb -->
+			<div class="flex items-center gap-2 text-sm text-gray-400">
+				<a href="/integrations/gitea" class="hover:text-white transition-colors">
+					<i class="fas fa-code-branch mr-1"></i>Gitea
+				</a>
+				<i class="fas fa-chevron-right text-xs"></i>
+				<a href={ templ.SafeURL(fmt.Sprintf("/integrations/gitea/repos/%s", data.Repo.ID)) } class="hover:text-white transition-colors">
+					{ data.Repo.FullName }
+				</a>
+				<i class="fas fa-chevron-right text-xs"></i>
+				<span class="text-white">Issues</span>
+			</div>
+
+			<!-- Header -->
+			<div class="flex items-center justify-between">
+				<div class="flex items-center gap-3">
+					<i class="fas fa-circle-exclamation text-2xl text-yellow-400"></i>
+					<div>
+						<h1 class="text-2xl font-display font-bold text-white">Issues</h1>
+						<p class="text-gray-400 text-sm">{ data.Repo.FullName }</p>
+					</div>
+				</div>
+				<button onclick="openCreateIssueModal()" class="btn-primary">
+					<i class="fas fa-plus mr-2"></i>New Issue
+				</button>
+			</div>
+
+			<!-- Tab Navigation -->
+			@repoTabNav(data.Repo, "issues", data.OpenCount, 0)
+
+			<!-- Filters -->
+			<div class="flex items-center gap-4">
+				<div class="flex rounded-lg overflow-hidden border border-gray-700">
+					<a href={ templ.SafeURL(fmt.Sprintf("/integrations/gitea/repos/%s/issues?state=open", data.Repo.ID)) }
+						class={ "px-4 py-2 text-sm", issueStateTabClass(data.State, "open") }>
+						<i class="fas fa-circle-dot mr-1"></i>Open
+						if data.OpenCount > 0 {
+							<span class="ml-1 bg-gray-600 px-1.5 py-0.5 rounded-full text-xs">{ fmt.Sprintf("%d", data.OpenCount) }</span>
+						}
+					</a>
+					<a href={ templ.SafeURL(fmt.Sprintf("/integrations/gitea/repos/%s/issues?state=closed", data.Repo.ID)) }
+						class={ "px-4 py-2 text-sm border-l border-gray-700", issueStateTabClass(data.State, "closed") }>
+						<i class="fas fa-check mr-1"></i>Closed
+						if data.ClosedCount > 0 {
+							<span class="ml-1 bg-gray-600 px-1.5 py-0.5 rounded-full text-xs">{ fmt.Sprintf("%d", data.ClosedCount) }</span>
+						}
+					</a>
+				</div>
+			</div>
+
+			<!-- Issues List -->
+			<div class="card">
+				if len(data.Issues) == 0 {
+					<div class="text-center py-12 text-gray-400">
+						<i class="fas fa-circle-check text-4xl mb-4"></i>
+						<p class="text-lg">No issues found</p>
+						<p class="text-sm mt-2">Create an issue to track bugs or feature requests</p>
+					</div>
+				} else {
+					<div class="divide-y divide-gray-700/30">
+						for _, issue := range data.Issues {
+							@issueRow(issue, data.Repo.ID)
+						}
+					</div>
+				}
+			</div>
+		</div>
+
+		@createIssueModal(data)
+		@issueDetailModalPartial()
+		@issueScripts(data)
+	}
+}
+
+func issueStateTabClass(current, state string) string {
+	if current == state || (current == "" && state == "open") {
+		return "bg-gray-700 text-white"
+	}
+	return "bg-gray-800 text-gray-400 hover:text-white hover:bg-gray-700/50"
+}
+
+templ issueRow(issue IssueItem, repoID string) {
+	<div class="flex items-center gap-4 p-4 hover:bg-gray-800/30 cursor-pointer transition-colors"
+		onclick={ viewIssueClick(issue.Number) }>
+		<div class={ "flex-shrink-0", issueStateIcon(issue.State) }></div>
+		<div class="flex-1 min-w-0">
+			<div class="flex items-center gap-2 flex-wrap">
+				<span class="font-medium text-white">{ issue.Title }</span>
+				<span class="text-gray-500 text-sm">#{ fmt.Sprintf("%d", issue.Number) }</span>
+				for _, label := range issue.Labels {
+					<span class="text-xs px-2 py-0.5 rounded" style={ labelStyle(label.Color) }>
+						{ label.Name }
+					</span>
+				}
+			</div>
+			<div class="flex items-center gap-3 mt-1 text-sm text-gray-400">
+				<span>{ issue.User }</span>
+				<span>·</span>
+				<span>{ issue.CreatedAt }</span>
+			</div>
+		</div>
+		<div class="flex items-center gap-4 text-sm text-gray-400">
+			if issue.Comments > 0 {
+				<span><i class="fas fa-comment mr-1"></i>{ fmt.Sprintf("%d", issue.Comments) }</span>
+			}
+		</div>
+	</div>
+}
+
+func issueStateIcon(state string) string {
+	if state == "open" {
+		return "text-green-400 fas fa-circle-dot"
+	}
+	return "text-purple-400 fas fa-circle-check"
+}
+
+func labelStyle(color string) string {
+	if color == "" {
+		return "background-color: #6b7280; color: white;"
+	}
+	return fmt.Sprintf("background-color: #%s; color: white;", color)
+}
+
+script viewIssueClick(number int64) {
+	viewIssue(number);
+}
+
+templ createIssueModal(data IssueListData) {
+	<div id="create-issue-modal" class="fixed inset-0 bg-black/60 z-50 hidden items-center justify-center">
+		<div class="bg-gray-800 rounded-xl border border-gray-700 p-6 w-full max-w-lg mx-4">
+			<h3 class="text-lg font-semibold text-white mb-4">
+				<i class="fas fa-circle-exclamation mr-2 text-yellow-400"></i>New Issue
+			</h3>
+			<form id="create-issue-form" class="space-y-4">
+				<input type="hidden" name="csrf_token" value={ data.CSRFToken }/>
+				<div>
+					<label class="block text-sm text-gray-400 mb-1">Title</label>
+					<input type="text" name="title" required placeholder="Issue title"
+						class="w-full px-3 py-2 bg-gray-900 border border-gray-600 rounded-lg text-white focus:border-blue-500"/>
+				</div>
+				<div>
+					<label class="block text-sm text-gray-400 mb-1">Description</label>
+					<textarea name="body" rows="6" placeholder="Describe the issue in detail..."
+						class="w-full px-3 py-2 bg-gray-900 border border-gray-600 rounded-lg text-white resize-none"></textarea>
+				</div>
+				if len(data.Labels) > 0 {
+					<div>
+						<label class="block text-sm text-gray-400 mb-1">Labels</label>
+						<div class="flex flex-wrap gap-2">
+							for _, label := range data.Labels {
+								<label class="inline-flex items-center gap-1 cursor-pointer">
+									<input type="checkbox" name="labels" value={ fmt.Sprintf("%d", label.ID) } class="rounded"/>
+									<span class="text-xs px-2 py-0.5 rounded" style={ labelStyle(label.Color) }>{ label.Name }</span>
+								</label>
+							}
+						</div>
+					</div>
+				}
+				<div class="flex justify-end gap-3 pt-2">
+					<button type="button" onclick="closeModal('create-issue-modal')" class="btn-ghost">Cancel</button>
+					<button type="submit" class="btn-primary">Create Issue</button>
+				</div>
+			</form>
+		</div>
+	</div>
+}
+
+templ issueDetailModalPartial() {
+	<div id="issue-detail-modal" class="fixed inset-0 bg-black/60 z-50 hidden items-center justify-center">
+		<div class="bg-gray-800 rounded-xl border border-gray-700 p-6 w-full max-w-3xl mx-4 max-h-[85vh] flex flex-col">
+			<div class="flex items-center justify-between mb-4">
+				<h3 class="text-lg font-semibold text-white">
+					<i class="fas fa-circle-exclamation mr-2 text-yellow-400"></i>
+					<span id="issue-detail-title">Issue</span>
+				</h3>
+				<button onclick="closeModal('issue-detail-modal')" class="text-gray-400 hover:text-white">
+					<i class="fas fa-times"></i>
+				</button>
+			</div>
+			<div id="issue-detail-content" class="flex-1 overflow-y-auto">
+				<div class="text-center py-8 text-gray-400">
+					<i class="fas fa-spinner fa-spin text-2xl"></i>
+				</div>
+			</div>
+		</div>
+	</div>
+}
+
+templ issueScripts(data IssueListData) {
+	<script>
+		const issueRepoID = { templ.JSONString(data.Repo.ID) };
+		const issueCSRF = { templ.JSONString(data.CSRFToken) };
+
+		function openModal(id) {
+			document.getElementById(id).classList.remove('hidden');
+			document.getElementById(id).classList.add('flex');
+		}
+		function closeModal(id) {
+			document.getElementById(id).classList.add('hidden');
+			document.getElementById(id).classList.remove('flex');
+		}
+		function openCreateIssueModal() { openModal('create-issue-modal'); }
+
+		function escapeHtml(text) {
+			const div = document.createElement('div');
+			div.textContent = text || '';
+			return div.innerHTML;
+		}
+
+		// Create Issue
+		document.getElementById('create-issue-form')?.addEventListener('submit', async (e) => {
+			e.preventDefault();
+			const form = e.target;
+			const labels = Array.from(form.querySelectorAll('input[name="labels"]:checked')).map(c => parseInt(c.value));
+			const data = {
+				title: form.title.value,
+				body: form.body.value,
+				labels: labels
+			};
+			try {
+				const resp = await fetch(`/integrations/gitea/repos/${issueRepoID}/issues`, {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+						'X-CSRF-Token': issueCSRF
+					},
+					body: JSON.stringify(data)
+				});
+				if (!resp.ok) {
+					const errText = await resp.text();
+					throw new Error(errText || 'Failed to create issue');
+				}
+				location.reload();
+			} catch (err) {
+				alert('Error: ' + err.message);
+			}
+		});
+
+		// View Issue detail
+		async function viewIssue(number) {
+			openModal('issue-detail-modal');
+			document.getElementById('issue-detail-content').innerHTML = '<div class="text-center py-8"><i class="fas fa-spinner fa-spin text-2xl text-gray-400"></i></div>';
+
+			try {
+				const resp = await fetch(`/integrations/gitea/repos/${issueRepoID}/issues/${number}`);
+				if (!resp.ok) throw new Error('Failed to load issue');
+				const issue = await resp.json();
+
+				// Load comments
+				const commentsResp = await fetch(`/integrations/gitea/repos/${issueRepoID}/issues/${number}/comments`);
+				const comments = commentsResp.ok ? await commentsResp.json() : [];
+
+				document.getElementById('issue-detail-title').textContent = `#${issue.number} ${issue.title}`;
+				document.getElementById('issue-detail-content').innerHTML = `
+					<div class="space-y-4">
+						<div class="flex items-center gap-2 flex-wrap">
+							<span class="px-2 py-1 rounded text-sm ${issue.state === 'open' ? 'bg-green-500/20 text-green-400' : 'bg-purple-500/20 text-purple-400'}">
+								${issue.state}
+							<\/span>
+							<span class="text-gray-400 text-sm">Opened by ${escapeHtml(issue.user?.login)}<\/span>
+							${(issue.labels || []).map(l => `<span class="text-xs px-2 py-0.5 rounded" style="background-color: #${l.color || '6b7280'}; color: white;">${escapeHtml(l.name)}<\/span>`).join('')}
+						<\/div>
+						${issue.body ? `<div class="bg-gray-900 p-4 rounded-lg text-gray-300 text-sm whitespace-pre-wrap">${escapeHtml(issue.body)}<\/div>` : ''}
+
+						${comments.length > 0 ? `
+							<div class="border-t border-gray-700 pt-4">
+								<h4 class="text-sm font-medium text-gray-300 mb-3">Comments (${comments.length})<\/h4>
+								<div class="space-y-3">
+									${comments.map(c => `
+										<div class="bg-gray-900 p-3 rounded-lg">
+											<div class="flex items-center gap-2 mb-2">
+												<span class="text-sm font-medium text-white">${escapeHtml(c.user?.login)}<\/span>
+												<span class="text-xs text-gray-500">${new Date(c.created_at).toLocaleString()}<\/span>
+											<\/div>
+											<div class="text-sm text-gray-300 whitespace-pre-wrap">${escapeHtml(c.body)}<\/div>
+										<\/div>
+									`).join('')}
+								<\/div>
+							<\/div>
+						` : ''}
+
+						<div class="border-t border-gray-700 pt-4">
+							<form id="add-comment-form" class="flex gap-2">
+								<input type="text" name="body" placeholder="Add a comment..."
+									class="flex-1 px-3 py-2 bg-gray-900 border border-gray-600 rounded-lg text-white text-sm"\/>
+								<button type="submit" class="btn-primary text-sm">Comment<\/button>
+							<\/form>
+						<\/div>
+
+						<div class="flex items-center gap-4 pt-2">
+							<a href="${escapeHtml(issue.html_url)}" target="_blank" class="btn-ghost text-sm">
+								<i class="fas fa-external-link-alt mr-2"><\/i>View in Gitea
+							<\/a>
+							${issue.state === 'open' ? `
+								<button onclick="closeIssue(${issue.number})" class="btn-ghost text-sm text-purple-400">
+									<i class="fas fa-circle-check mr-2"><\/i>Close Issue
+								<\/button>
+							` : `
+								<button onclick="reopenIssue(${issue.number})" class="btn-ghost text-sm text-green-400">
+									<i class="fas fa-circle-dot mr-2"><\/i>Reopen Issue
+								<\/button>
+							`}
+						<\/div>
+					<\/div>
+				`;
+
+				// Comment form handler
+				document.getElementById('add-comment-form')?.addEventListener('submit', async (ev) => {
+					ev.preventDefault();
+					const body = ev.target.body.value.trim();
+					if (!body) return;
+					try {
+						const r = await fetch(`/integrations/gitea/repos/${issueRepoID}/issues/${issue.number}/comments`, {
+							method: 'POST',
+							headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': issueCSRF },
+							body: JSON.stringify({ body })
+						});
+						if (!r.ok) throw new Error('Failed to add comment');
+						viewIssue(issue.number);
+					} catch (err) {
+						alert('Error: ' + err.message);
+					}
+				});
+			} catch (err) {
+				document.getElementById('issue-detail-content').innerHTML = `<p class="text-red-400">${escapeHtml(err.message)}</p>`;
+			}
+		}
+
+		async function closeIssue(number) {
+			try {
+				const resp = await fetch(`/integrations/gitea/repos/${issueRepoID}/issues/${number}`, {
+					method: 'PATCH',
+					headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': issueCSRF },
+					body: JSON.stringify({ state: 'closed' })
+				});
+				if (!resp.ok) throw new Error('Failed to close issue');
+				location.reload();
+			} catch (err) {
+				alert('Error: ' + err.message);
+			}
+		}
+
+		async function reopenIssue(number) {
+			try {
+				const resp = await fetch(`/integrations/gitea/repos/${issueRepoID}/issues/${number}`, {
+					method: 'PATCH',
+					headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': issueCSRF },
+					body: JSON.stringify({ state: 'open' })
+				});
+				if (!resp.ok) throw new Error('Failed to reopen issue');
+				location.reload();
+			} catch (err) {
+				alert('Error: ' + err.message);
+			}
+		}
+
+		// Escape key closes modals
+		document.addEventListener('keydown', (e) => {
+			if (e.key === 'Escape') {
+				document.querySelectorAll('.fixed.z-50').forEach(m => {
+					m.classList.add('hidden');
+					m.classList.remove('flex');
+				});
+			}
+		});
+	</script>
+}

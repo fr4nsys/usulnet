@@ -1,0 +1,277 @@
+package editor
+
+import (
+	"fmt"
+	"github.com/fr4nsys/usulnet/internal/web/templates/layouts"
+)
+
+// ============================================================================
+// Data Types
+// ============================================================================
+
+type NvimData struct {
+	PageData layouts.PageData
+	RepoID   string
+	RepoName string
+	FilePath string
+	Ref      string
+	Language string
+}
+
+// ============================================================================
+// Neovim Editor Template
+// ============================================================================
+
+templ Nvim(data NvimData) {
+	@layouts.Base(data.PageData) {
+		<div class="flex flex-col h-full">
+			<!-- Editor Toolbar -->
+			<div class="flex items-center justify-between px-4 py-2 bg-dark-800 border-b border-dark-600">
+				<div class="flex items-center gap-3 min-w-0">
+					<!-- Back button -->
+					if data.RepoID != "" {
+						<a href={ templ.SafeURL(fmt.Sprintf("/integrations/gitea/repos/%s?ref=%s", data.RepoID, data.Ref)) }
+							class="text-gray-400 hover:text-white transition-colors" title="Back to repo">
+							<i class="fas fa-arrow-left"></i>
+						</a>
+					} else {
+						<a href="/editor"
+							class="text-gray-400 hover:text-white transition-colors" title="Back to editor">
+							<i class="fas fa-arrow-left"></i>
+						</a>
+					}
+					<!-- File info -->
+					<div class="flex items-center gap-2 min-w-0">
+						<i class="fas fa-terminal text-green-400"></i>
+						if data.FilePath != "" {
+							<span class="text-sm text-white font-medium truncate">{ data.FilePath }</span>
+						} else {
+							<span class="text-sm text-white font-medium">Terminal</span>
+						}
+						if data.Ref != "" {
+							<span class="text-xs px-1.5 py-0.5 rounded bg-gray-700 text-gray-400 whitespace-nowrap">
+								<i class="fas fa-code-branch mr-1"></i>{ data.Ref }
+							</span>
+						}
+						<span class="text-xs px-1.5 py-0.5 rounded bg-green-500/10 text-green-400">
+							nvim
+						</span>
+					</div>
+				</div>
+				<div class="flex items-center gap-2">
+					<!-- Connection status -->
+					<span id="nvim-status" class="text-xs text-gray-500">
+						<i class="fas fa-circle text-yellow-400 text-[6px] mr-1"></i>Connecting...
+					</span>
+					<!-- Open in Monaco -->
+					if data.RepoID != "" {
+						<a href={ templ.SafeURL(fmt.Sprintf("/editor/monaco?repo=%s&file=%s&ref=%s", data.RepoID, data.FilePath, data.Ref)) }
+							class="btn-ghost text-sm" title="Open in Monaco">
+							<i class="fas fa-edit mr-1"></i>Monaco
+						</a>
+					} else {
+						<a href="/editor/monaco"
+							class="btn-ghost text-sm" title="Open Monaco">
+							<i class="fas fa-edit mr-1"></i>Monaco
+						</a>
+					}
+					<!-- Fullscreen -->
+					<button onclick="toggleFullscreen()" class="btn-ghost text-sm" title="Fullscreen (F11)">
+						<i class="fas fa-expand"></i>
+					</button>
+					<!-- Reconnect -->
+					<button onclick="reconnectNvim()" class="btn-ghost text-sm" title="Reconnect">
+						<i class="fas fa-redo"></i>
+					</button>
+				</div>
+			</div>
+
+			<!-- Terminal Container -->
+			<div id="nvim-terminal" 
+				class="flex-1 bg-[#0d1117] overflow-hidden"
+				data-repo-id={ data.RepoID }
+				data-file-path={ data.FilePath }
+				data-ref={ data.Ref }></div>
+		</div>
+
+		<!-- xterm.js CDN -->
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm@5.3.0/css/xterm.css"/>
+		<script src="https://cdn.jsdelivr.net/npm/xterm@5.3.0/lib/xterm.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/xterm-addon-fit@0.8.0/lib/xterm-addon-fit.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/xterm-addon-web-links@0.9.0/lib/xterm-addon-web-links.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/xterm-addon-unicode11@0.6.0/lib/xterm-addon-unicode11.js"></script>
+
+		<script>
+		// ====================================================================
+		// usulnet Neovim Terminal
+		// ====================================================================
+		var term, ws, fitAddon;
+		var container = document.getElementById('nvim-terminal');
+		var repoID = container.dataset.repoId || '';
+		var filePath = container.dataset.filePath || '';
+		var ref = container.dataset.ref || '';
+		
+		console.log('[Nvim] Init mode:', repoID ? 'git' : 'standalone', 'file:', filePath);
+
+		document.addEventListener('DOMContentLoaded', function() {
+			initNvimTerminal();
+		});
+
+		function initNvimTerminal() {
+			term = new Terminal({
+				cursorBlink: true,
+				cursorStyle: 'block',
+				fontSize: 15,
+				fontFamily: "'IBM Plex Mono', 'JetBrains Mono', 'Fira Code', monospace",
+				fontWeight: 'normal',
+				fontWeightBold: 'bold',
+				lineHeight: 1.2,
+				letterSpacing: 0,
+				scrollback: 1000,
+				convertEol: true,
+				allowProposedApi: true,
+				theme: {
+					background: '#0d1117',
+					foreground: '#e6edf3',
+					cursor: '#ff6b35',
+					cursorAccent: '#0d1117',
+					selectionBackground: 'rgba(255, 107, 53, 0.3)',
+					selectionForeground: '#ffffff',
+					black: '#0d1117',
+					red: '#f85149',
+					green: '#3fb950',
+					yellow: '#d29922',
+					blue: '#58a6ff',
+					magenta: '#bc8cff',
+					cyan: '#76e3ea',
+					white: '#e6edf3',
+					brightBlack: '#484f58',
+					brightRed: '#ff7b72',
+					brightGreen: '#56d364',
+					brightYellow: '#e3b341',
+					brightBlue: '#79c0ff',
+					brightMagenta: '#d2a8ff',
+					brightCyan: '#a5d6ff',
+					brightWhite: '#ffffff',
+				},
+			});
+
+			fitAddon = new FitAddon.FitAddon();
+			term.loadAddon(fitAddon);
+			term.loadAddon(new WebLinksAddon.WebLinksAddon());
+
+			// Unicode 11 for proper glyph rendering (nvim icons)
+			var unicode11 = new Unicode11Addon.Unicode11Addon();
+			term.loadAddon(unicode11);
+			term.unicode.activeVersion = '11';
+
+			term.open(container);
+			fitAddon.fit();
+
+			connectNvim();
+
+			// Handle resize
+			window.addEventListener('resize', function() {
+				fitAddon.fit();
+				sendResize();
+			});
+
+			// Handle terminal input → WebSocket
+			term.onData(function(data) {
+				if (ws && ws.readyState === WebSocket.OPEN) {
+					ws.send(JSON.stringify({ type: 'input', data: data }));
+				}
+			});
+
+			// F11 fullscreen
+			document.addEventListener('keydown', function(e) {
+				if (e.key === 'F11') {
+					e.preventDefault();
+					toggleFullscreen();
+				}
+			});
+		}
+
+		function connectNvim() {
+			var statusEl = document.getElementById('nvim-status');
+			statusEl.innerHTML = '<i class="fas fa-circle text-yellow-400 text-[6px] mr-1"></i>Connecting...';
+
+			var cols = term ? term.cols : 120;
+			var rows = term ? term.rows : 40;
+			var protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+			var url = protocol + '//' + window.location.host + '/ws/editor/nvim'
+				+ '?repo=' + encodeURIComponent(repoID)
+				+ '&file=' + encodeURIComponent(filePath)
+				+ '&ref=' + encodeURIComponent(ref)
+				+ '&cols=' + cols
+				+ '&rows=' + rows;
+
+			ws = new WebSocket(url);
+
+			ws.onopen = function() {
+				statusEl.innerHTML = '<i class="fas fa-circle text-green-400 text-[6px] mr-1"></i>Connected';
+				term.focus();
+			};
+
+			ws.onmessage = function(event) {
+				var msg = JSON.parse(event.data);
+				if (msg.type === 'output') {
+					term.write(msg.data);
+				} else if (msg.type === 'committed') {
+					// nvim :w triggered a commit
+					statusEl.innerHTML = '<i class="fas fa-check text-green-400 mr-1"></i>Committed';
+					setTimeout(function() {
+						statusEl.innerHTML = '<i class="fas fa-circle text-green-400 text-[6px] mr-1"></i>Connected';
+					}, 2000);
+				} else if (msg.type === 'error') {
+					statusEl.innerHTML = '<i class="fas fa-exclamation-triangle text-red-400 mr-1"></i>' + msg.data;
+				}
+			};
+
+			ws.onclose = function() {
+				statusEl.innerHTML = '<i class="fas fa-circle text-red-400 text-[6px] mr-1"></i>Disconnected';
+				term.write('\r\n\x1b[90m[nvim session ended]\x1b[0m\r\n');
+			};
+
+			ws.onerror = function() {
+				statusEl.innerHTML = '<i class="fas fa-circle text-red-400 text-[6px] mr-1"></i>Error';
+			};
+		}
+
+		function sendResize() {
+			if (ws && ws.readyState === WebSocket.OPEN && term) {
+				ws.send(JSON.stringify({ type: 'resize', cols: term.cols, rows: term.rows }));
+			}
+		}
+
+		function reconnectNvim() {
+			if (ws) ws.close();
+			term.clear();
+			term.write('\x1b[33mReconnecting...\x1b[0m\r\n');
+			setTimeout(connectNvim, 300);
+		}
+
+		function toggleFullscreen() {
+			if (document.fullscreenElement) {
+				document.exitFullscreen();
+			} else {
+				container.requestFullscreen();
+			}
+			setTimeout(function() {
+				fitAddon.fit();
+				sendResize();
+			}, 150);
+		}
+		</script>
+
+		<style>
+			/* Override xterm padding for full-bleed nvim */
+			#nvim-terminal .xterm {
+				padding: 4px;
+			}
+			#nvim-terminal .xterm-viewport {
+				overflow: hidden !important;
+			}
+		</style>
+	}
+}

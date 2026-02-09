@@ -1,0 +1,9 @@
+DROP TABLE IF EXISTS runbook_executions;
+DROP TABLE IF EXISTS runbooks;
+DROP TABLE IF EXISTS auto_deploy_rules;
+DROP TABLE IF EXISTS outgoing_webhooks;
+DROP TABLE IF EXISTS webhook_deliveries;
+DROP TABLE IF EXISTS alert_silences;
+DROP TABLE IF EXISTS alert_events;
+DROP TABLE IF EXISTS alert_rules;
+DROP INDEX IF EXISTS idx_registries_name;

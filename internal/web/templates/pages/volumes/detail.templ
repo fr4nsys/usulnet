@@ -1,0 +1,660 @@
+package volumes
+
+import (
+	"fmt"
+	"github.com/fr4nsys/usulnet/internal/web/templates/layouts"
+)
+
+type VolumeDetailData struct {
+	PageData layouts.PageData
+	Volume   VolumeFull
+	Tab      string
+}
+
+type VolumeFull struct {
+	Name       string
+	Driver     string
+	Mountpoint string
+	Scope      string
+	Created    string
+	CreatedAgo string
+	Labels     map[string]string
+	Options    map[string]string
+	Status     map[string]interface{}
+	InUse      bool
+	Containers []VolumeContainer
+	Size       int64
+	SizeHuman  string
+}
+
+type VolumeContainer struct {
+	ID        string
+	Name      string
+	State     string
+	MountPath string
+	Mode      string
+}
+
+templ VolumeDetail(data VolumeDetailData) {
+	@layouts.Base(data.PageData) {
+		<div class="mb-6">
+			<div class="flex items-center gap-4">
+				<a href="/volumes" class="text-gray-400 hover:text-white">
+					<i class="fas fa-arrow-left"></i>
+				</a>
+				<div class="w-12 h-12 rounded-lg bg-cyan-500/20 flex items-center justify-center">
+					<i class="fas fa-hdd text-cyan-400 text-xl"></i>
+				</div>
+				<div>
+					<h1 class="text-2xl font-bold font-display text-white font-mono">{ data.Volume.Name }</h1>
+					<p class="text-gray-400 text-sm">
+						{ data.Volume.Driver } driver · { data.Volume.Scope } scope
+					</p>
+				</div>
+				<div class="ml-auto flex items-center gap-2">
+					if !data.Volume.InUse {
+						<button 
+							hx-delete={ fmt.Sprintf("/volumes/%s", data.Volume.Name) }
+							hx-confirm="Are you sure you want to delete this volume? All data will be lost."
+							class="px-4 py-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-lg"
+						>
+							<i class="fas fa-trash mr-2"></i>Delete
+						</button>
+					}
+				</div>
+			</div>
+		</div>
+
+		<!-- Status Badge -->
+		<div class="mb-6">
+			if data.Volume.InUse {
+				<span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium bg-green-500/10 text-green-400">
+					<span class="w-2 h-2 rounded-full bg-green-500"></span>
+					In Use ({ fmt.Sprint(len(data.Volume.Containers)) } containers)
+				</span>
+			} else {
+				<span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium bg-gray-500/10 text-gray-400">
+					<span class="w-2 h-2 rounded-full bg-gray-500"></span>
+					Not in Use
+				</span>
+			}
+		</div>
+
+		<!-- Tabs -->
+		<div class="border-b border-dark-600 mb-6">
+			<nav class="flex gap-4">
+				<a 
+					href={ templ.SafeURL(fmt.Sprintf("/volumes/%s?tab=overview", data.Volume.Name)) }
+					class={ "flex items-center gap-2 px-4 py-3", templ.KV("text-primary-400 border-b-2 border-primary-500", data.Tab == "" || data.Tab == "overview"), templ.KV("text-gray-400 hover:text-white", data.Tab != "" && data.Tab != "overview") }
+				>
+					<i class="fas fa-info-circle"></i>
+					<span>Overview</span>
+				</a>
+				<a 
+					href={ templ.SafeURL(fmt.Sprintf("/volumes/%s?tab=containers", data.Volume.Name)) }
+					class={ "flex items-center gap-2 px-4 py-3", templ.KV("text-primary-400 border-b-2 border-primary-500", data.Tab == "containers"), templ.KV("text-gray-400 hover:text-white", data.Tab != "containers") }
+				>
+					<i class="fas fa-cube"></i>
+					<span>Containers</span>
+				</a>
+				<a
+					href={ templ.SafeURL(fmt.Sprintf("/volumes/%s?tab=labels", data.Volume.Name)) }
+					class={ "flex items-center gap-2 px-4 py-3", templ.KV("text-primary-400 border-b-2 border-primary-500", data.Tab == "labels"), templ.KV("text-gray-400 hover:text-white", data.Tab != "labels") }
+				>
+					<i class="fas fa-tags"></i>
+					<span>Labels</span>
+				</a>
+				<a
+					href={ templ.SafeURL(fmt.Sprintf("/volumes/%s?tab=browse", data.Volume.Name)) }
+					class={ "flex items-center gap-2 px-4 py-3", templ.KV("text-primary-400 border-b-2 border-primary-500", data.Tab == "browse"), templ.KV("text-gray-400 hover:text-white", data.Tab != "browse") }
+				>
+					<i class="fas fa-folder-open"></i>
+					<span>Browse Files</span>
+				</a>
+			</nav>
+		</div>
+
+		<!-- Tab Content -->
+		<div class="bg-dark-800 rounded-xl border border-dark-600 p-6">
+			switch data.Tab {
+				case "containers":
+					@volumeContainersTab(data.Volume)
+				case "labels":
+					@volumeLabelsTab(data.Volume)
+				case "browse":
+					@volumeBrowseTab(data.Volume)
+				default:
+					@volumeOverviewTab(data.Volume)
+			}
+		</div>
+	}
+}
+
+templ volumeOverviewTab(vol VolumeFull) {
+	<div class="grid grid-cols-2 gap-6">
+		<div>
+			<h3 class="text-sm font-medium text-gray-400 mb-1">Name</h3>
+			<p class="text-white font-mono text-sm break-all">{ vol.Name }</p>
+		</div>
+		<div>
+			<h3 class="text-sm font-medium text-gray-400 mb-1">Driver</h3>
+			<span class="px-2 py-1 text-xs rounded bg-purple-500/20 text-purple-400">
+				{ vol.Driver }
+			</span>
+		</div>
+		<div>
+			<h3 class="text-sm font-medium text-gray-400 mb-1">Scope</h3>
+			<p class="text-white">{ vol.Scope }</p>
+		</div>
+		<div>
+			<h3 class="text-sm font-medium text-gray-400 mb-1">Created</h3>
+			<p class="text-white">{ vol.CreatedAgo }</p>
+		</div>
+		if vol.SizeHuman != "" {
+			<div>
+				<h3 class="text-sm font-medium text-gray-400 mb-1">Size</h3>
+				<p class="text-white">{ vol.SizeHuman }</p>
+			</div>
+		}
+		<div class="col-span-2">
+			<h3 class="text-sm font-medium text-gray-400 mb-1">Mountpoint</h3>
+			<p class="text-white font-mono text-sm break-all">{ vol.Mountpoint }</p>
+		</div>
+		if len(vol.Options) > 0 {
+			<div class="col-span-2">
+				<h3 class="text-sm font-medium text-gray-400 mb-2">Options</h3>
+				<div class="space-y-2">
+					for k, v := range vol.Options {
+						<div class="p-3 bg-dark-700 rounded-lg font-mono text-sm">
+							<span class="text-cyan-400">{ k }</span>
+							<span class="text-gray-500">=</span>
+							<span class="text-white">{ v }</span>
+						</div>
+					}
+				</div>
+			</div>
+		}
+	</div>
+}
+
+templ volumeContainersTab(vol VolumeFull) {
+	<div class="space-y-3">
+		if len(vol.Containers) == 0 {
+			<div class="text-center py-8">
+				<div class="w-16 h-16 rounded-full bg-dark-700 flex items-center justify-center mx-auto mb-4">
+					<i class="fas fa-cube text-gray-500 text-2xl"></i>
+				</div>
+				<p class="text-gray-400">No containers are using this volume</p>
+			</div>
+		} else {
+			for _, c := range vol.Containers {
+				<div class="p-4 bg-dark-700 rounded-lg">
+					<div class="flex items-center justify-between mb-2">
+						<a href={ templ.SafeURL(fmt.Sprintf("/containers/%s", c.ID)) } class="font-medium text-white hover:text-primary-400">
+							{ c.Name }
+						</a>
+						if c.State == "running" {
+							<span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs bg-green-500/10 text-green-400">
+								<span class="w-1.5 h-1.5 rounded-full bg-green-500"></span>
+								Running
+							</span>
+						} else {
+							<span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs bg-gray-500/10 text-gray-400">
+								<span class="w-1.5 h-1.5 rounded-full bg-gray-500"></span>
+								{ c.State }
+							</span>
+						}
+					</div>
+					<div class="text-sm text-gray-400 font-mono">
+						<span class="text-gray-500">Mounted at:</span> { c.MountPath }
+						<span class="text-gray-500 ml-2">Mode:</span> 
+						if c.Mode == "rw" {
+							<span class="text-green-400">RW</span>
+						} else {
+							<span class="text-red-400">RO</span>
+						}
+					</div>
+				</div>
+			}
+		}
+	</div>
+}
+
+templ volumeLabelsTab(vol VolumeFull) {
+	<div class="space-y-2">
+		if len(vol.Labels) == 0 {
+			<p class="text-gray-500">No labels</p>
+		} else {
+			for k, v := range vol.Labels {
+				<div class="p-3 bg-dark-700 rounded-lg font-mono text-sm">
+					<span class="text-primary-400">{ k }</span>
+					<span class="text-gray-500">=</span>
+					<span class="text-white break-all">{ v }</span>
+				</div>
+			}
+		}
+	</div>
+}
+
+templ volumeBrowseTab(vol VolumeFull) {
+	<div x-data={ fmt.Sprintf("volumeBrowser('%s')", vol.Name) }>
+		<!-- Toolbar -->
+		<div class="flex items-center gap-4 mb-4 pb-4 border-b border-dark-600">
+			<!-- Breadcrumb Navigation -->
+			<nav class="flex items-center gap-1 text-sm flex-1 overflow-x-auto">
+				<button @click="navigateTo('/')" class="text-primary-400 hover:text-primary-300">
+					<i class="fas fa-home"></i>
+				</button>
+				<template x-for="(part, index) in pathParts" :key="index">
+					<span class="flex items-center">
+						<span class="text-gray-500 mx-1">/</span>
+						<button
+							@click="navigateTo(pathParts.slice(0, index + 1).join('/'))"
+							:class="index === pathParts.length - 1 ? 'text-white font-medium' : 'text-primary-400 hover:text-primary-300'"
+							x-text="part"
+						></button>
+					</span>
+				</template>
+			</nav>
+
+			<!-- Actions -->
+			<div class="flex items-center gap-2">
+				<button
+					@click="showNewFolderModal = true"
+					class="px-3 py-1.5 bg-dark-600 hover:bg-dark-500 text-gray-300 text-sm rounded-lg"
+				>
+					<i class="fas fa-folder-plus mr-1"></i> New Folder
+				</button>
+				<button
+					@click="refresh()"
+					class="px-3 py-1.5 bg-dark-600 hover:bg-dark-500 text-gray-300 text-sm rounded-lg"
+				>
+					<i class="fas fa-sync-alt mr-1"></i> Refresh
+				</button>
+			</div>
+		</div>
+
+		<!-- Loading State -->
+		<div x-show="loading" class="flex items-center justify-center py-12">
+			<i class="fas fa-spinner fa-spin text-2xl text-primary-400"></i>
+		</div>
+
+		<!-- Error State -->
+		<div x-show="error" class="text-center py-12">
+			<div class="w-16 h-16 rounded-full bg-red-500/10 flex items-center justify-center mx-auto mb-4">
+				<i class="fas fa-exclamation-triangle text-red-400 text-2xl"></i>
+			</div>
+			<p class="text-red-400" x-text="error"></p>
+			<button @click="refresh()" class="mt-4 px-4 py-2 bg-dark-600 hover:bg-dark-500 text-gray-300 rounded-lg">
+				Retry
+			</button>
+		</div>
+
+		<!-- File List -->
+		<div x-show="!loading && !error" class="space-y-1">
+			<!-- Parent Directory -->
+			<template x-if="currentPath !== '/'">
+				<button
+					@click="navigateUp()"
+					class="w-full flex items-center gap-3 p-3 rounded-lg hover:bg-dark-700 text-left group"
+				>
+					<div class="w-8 h-8 rounded-lg bg-yellow-500/10 flex items-center justify-center">
+						<i class="fas fa-level-up-alt text-yellow-400"></i>
+					</div>
+					<div class="flex-1">
+						<span class="text-gray-300">..</span>
+					</div>
+				</button>
+			</template>
+
+			<!-- Directories first, then files -->
+			<template x-for="file in sortedFiles" :key="file.path">
+				<div
+					class="w-full flex items-center gap-3 p-3 rounded-lg hover:bg-dark-700 group"
+				>
+					<!-- Icon -->
+					<div
+						:class="file.is_dir ? 'bg-yellow-500/10' : 'bg-blue-500/10'"
+						class="w-8 h-8 rounded-lg flex items-center justify-center"
+					>
+						<i
+							:class="file.is_dir ? 'fas fa-folder text-yellow-400' : getFileIcon(file.name)"
+						></i>
+					</div>
+
+					<!-- Name -->
+					<div class="flex-1 min-w-0">
+						<template x-if="file.is_dir">
+							<button
+								@click="navigateTo(file.path)"
+								class="text-white hover:text-primary-400 truncate block"
+								x-text="file.name"
+							></button>
+						</template>
+						<template x-if="!file.is_dir">
+							<button
+								@click="viewFile(file)"
+								class="text-gray-300 hover:text-white truncate block"
+								x-text="file.name"
+							></button>
+						</template>
+						<template x-if="file.is_symlink">
+							<span class="text-xs text-gray-500 ml-2">
+								<i class="fas fa-arrow-right"></i> <span x-text="file.link_target"></span>
+							</span>
+						</template>
+					</div>
+
+					<!-- Size -->
+					<div class="text-sm text-gray-500 w-20 text-right" x-text="file.is_dir ? '-' : file.size_human"></div>
+
+					<!-- Modified -->
+					<div class="text-sm text-gray-500 w-32 text-right hidden md:block" x-text="file.mod_time_ago"></div>
+
+					<!-- Permissions -->
+					<div class="text-xs text-gray-600 font-mono w-24 hidden lg:block" x-text="file.mode"></div>
+
+					<!-- Actions -->
+					<div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+						<template x-if="!file.is_dir">
+							<a
+								:href="`/api/v1/volumes/${hostID}/${volumeName}/download/${file.path}`"
+								class="p-2 text-gray-400 hover:text-primary-400 hover:bg-primary-500/10 rounded-lg"
+								title="Download"
+							>
+								<i class="fas fa-download text-sm"></i>
+							</a>
+						</template>
+						<button
+							@click="deleteFile(file)"
+							class="p-2 text-gray-400 hover:text-red-400 hover:bg-red-500/10 rounded-lg"
+							title="Delete"
+						>
+							<i class="fas fa-trash text-sm"></i>
+						</button>
+					</div>
+				</div>
+			</template>
+
+			<!-- Empty State -->
+			<div x-show="files.length === 0" class="text-center py-12">
+				<div class="w-16 h-16 rounded-full bg-dark-700 flex items-center justify-center mx-auto mb-4">
+					<i class="fas fa-folder-open text-gray-500 text-2xl"></i>
+				</div>
+				<p class="text-gray-400">This directory is empty</p>
+			</div>
+		</div>
+
+		<!-- File Viewer Modal -->
+		<div
+			x-show="viewingFile"
+			x-transition
+			class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
+			@click.self="viewingFile = null"
+			style="display: none;"
+		>
+			<div class="bg-dark-800 rounded-xl border border-dark-600 w-full max-w-4xl max-h-[80vh] mx-4 flex flex-col shadow-2xl">
+				<div class="flex items-center justify-between px-6 py-4 border-b border-dark-600">
+					<h3 class="text-lg font-medium text-white truncate" x-text="viewingFile?.name"></h3>
+					<button @click="viewingFile = null" class="text-gray-400 hover:text-white">
+						<i class="fas fa-times"></i>
+					</button>
+				</div>
+				<div class="flex-1 overflow-auto p-6">
+					<template x-if="fileContent?.binary">
+						<div class="text-center py-8 text-gray-400">
+							<i class="fas fa-file-alt text-4xl mb-4"></i>
+							<p>Binary file cannot be displayed</p>
+						</div>
+					</template>
+					<template x-if="!fileContent?.binary">
+						<pre class="bg-dark-900 rounded-lg p-4 text-sm text-gray-300 font-mono overflow-auto whitespace-pre-wrap" x-text="fileContent?.content"></pre>
+					</template>
+					<template x-if="fileContent?.truncated">
+						<p class="mt-2 text-sm text-yellow-400">
+							<i class="fas fa-info-circle mr-1"></i>
+							File truncated to 1MB. Download for full content.
+						</p>
+					</template>
+				</div>
+				<div class="flex justify-end gap-3 px-6 py-4 border-t border-dark-600">
+					<a
+						:href="`/api/v1/volumes/${hostID}/${volumeName}/download/${viewingFile?.path}`"
+						class="px-4 py-2 bg-primary-600 hover:bg-primary-500 text-white rounded-lg"
+					>
+						<i class="fas fa-download mr-2"></i>Download
+					</a>
+					<button
+						@click="viewingFile = null"
+						class="px-4 py-2 bg-dark-600 hover:bg-dark-500 text-gray-300 rounded-lg"
+					>
+						Close
+					</button>
+				</div>
+			</div>
+		</div>
+
+		<!-- New Folder Modal -->
+		<div
+			x-show="showNewFolderModal"
+			x-transition
+			class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
+			@click.self="showNewFolderModal = false"
+			style="display: none;"
+		>
+			<div class="bg-dark-800 rounded-xl border border-dark-600 w-full max-w-md mx-4 p-6 shadow-2xl">
+				<h3 class="text-lg font-medium text-white mb-4">Create New Folder</h3>
+				<input
+					type="text"
+					x-model="newFolderName"
+					placeholder="Folder name..."
+					class="w-full px-4 py-2 bg-dark-700 border border-dark-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500/50 mb-4"
+					@keyup.enter="createFolder()"
+				/>
+				<div class="flex justify-end gap-3">
+					<button
+						@click="showNewFolderModal = false; newFolderName = ''"
+						class="px-4 py-2 bg-dark-600 hover:bg-dark-500 text-gray-300 rounded-lg"
+					>
+						Cancel
+					</button>
+					<button
+						@click="createFolder()"
+						:disabled="!newFolderName"
+						class="px-4 py-2 bg-primary-600 hover:bg-primary-500 text-white rounded-lg disabled:opacity-50"
+					>
+						Create
+					</button>
+				</div>
+			</div>
+		</div>
+
+		<!-- Delete Confirmation Modal -->
+		<div
+			x-show="deleteConfirm"
+			x-transition
+			class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
+			@click.self="deleteConfirm = null"
+			style="display: none;"
+		>
+			<div class="bg-dark-800 rounded-xl border border-dark-600 w-full max-w-md mx-4 p-6 shadow-2xl">
+				<h3 class="text-lg font-medium text-white mb-4">
+					<i class="fas fa-exclamation-triangle text-red-400 mr-2"></i>
+					Delete <span x-text="deleteConfirm?.is_dir ? 'Directory' : 'File'"></span>
+				</h3>
+				<p class="text-gray-400 mb-4">
+					Are you sure you want to delete <span class="text-white font-mono" x-text="deleteConfirm?.name"></span>?
+					<template x-if="deleteConfirm?.is_dir">
+						<span class="text-red-400 block mt-2">This will delete all contents.</span>
+					</template>
+				</p>
+				<div class="flex justify-end gap-3">
+					<button
+						@click="deleteConfirm = null"
+						class="px-4 py-2 bg-dark-600 hover:bg-dark-500 text-gray-300 rounded-lg"
+					>
+						Cancel
+					</button>
+					<button
+						@click="confirmDelete()"
+						class="px-4 py-2 bg-red-600 hover:bg-red-500 text-white rounded-lg"
+					>
+						<i class="fas fa-trash mr-2"></i>Delete
+					</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script>
+		function volumeBrowser(volumeName) {
+			return {
+				volumeName: volumeName,
+				hostID: '', // Will be set from API context
+				currentPath: '/',
+				files: [],
+				loading: true,
+				error: null,
+				viewingFile: null,
+				fileContent: null,
+				showNewFolderModal: false,
+				newFolderName: '',
+				deleteConfirm: null,
+
+				get pathParts() {
+					return this.currentPath.split('/').filter(p => p);
+				},
+
+				get sortedFiles() {
+					return [...this.files].sort((a, b) => {
+						if (a.is_dir !== b.is_dir) return a.is_dir ? -1 : 1;
+						return a.name.localeCompare(b.name);
+					});
+				},
+
+				async init() {
+					// Get hostID from page context or API
+					const hostIDEl = document.querySelector('[data-host-id]');
+					if (hostIDEl) {
+						this.hostID = hostIDEl.dataset.hostId;
+					}
+					await this.loadFiles();
+				},
+
+				async loadFiles() {
+					this.loading = true;
+					this.error = null;
+					try {
+						const response = await fetch(`/volumes/${this.volumeName}/browse${this.currentPath}`);
+						if (!response.ok) throw new Error(await response.text());
+						const data = await response.json();
+						this.files = data.files || [];
+					} catch (e) {
+						this.error = e.message;
+					} finally {
+						this.loading = false;
+					}
+				},
+
+				async refresh() {
+					await this.loadFiles();
+				},
+
+				navigateTo(path) {
+					if (!path.startsWith('/')) path = '/' + path;
+					this.currentPath = path;
+					this.loadFiles();
+				},
+
+				navigateUp() {
+					const parts = this.currentPath.split('/').filter(p => p);
+					parts.pop();
+					this.currentPath = '/' + parts.join('/');
+					this.loadFiles();
+				},
+
+				async viewFile(file) {
+					this.viewingFile = file;
+					this.fileContent = null;
+					try {
+						const response = await fetch(`/api/v1/volumes/${this.hostID}/${this.volumeName}/file/${file.path}`);
+						if (!response.ok) throw new Error(await response.text());
+						this.fileContent = await response.json();
+					} catch (e) {
+						this.fileContent = { content: 'Error loading file: ' + e.message, binary: false };
+					}
+				},
+
+				deleteFile(file) {
+					this.deleteConfirm = file;
+				},
+
+				async confirmDelete() {
+					if (!this.deleteConfirm) return;
+					const file = this.deleteConfirm;
+					try {
+						const response = await fetch(`/api/v1/volumes/${this.hostID}/${this.volumeName}/file/${file.path}?recursive=${file.is_dir}`, {
+							method: 'DELETE'
+						});
+						if (!response.ok) throw new Error(await response.text());
+						this.deleteConfirm = null;
+						await this.loadFiles();
+					} catch (e) {
+						alert('Failed to delete: ' + e.message);
+					}
+				},
+
+				async createFolder() {
+					if (!this.newFolderName) return;
+					try {
+						let path = this.currentPath;
+						if (!path.endsWith('/')) path += '/';
+						path += this.newFolderName;
+
+						const response = await fetch(`/api/v1/volumes/${this.hostID}/${this.volumeName}/mkdir${path}`, {
+							method: 'POST'
+						});
+						if (!response.ok) throw new Error(await response.text());
+						this.showNewFolderModal = false;
+						this.newFolderName = '';
+						await this.loadFiles();
+					} catch (e) {
+						alert('Failed to create folder: ' + e.message);
+					}
+				},
+
+				getFileIcon(filename) {
+					const ext = filename.split('.').pop()?.toLowerCase();
+					const icons = {
+						'js': 'fab fa-js text-yellow-400',
+						'ts': 'fab fa-js text-blue-400',
+						'json': 'fas fa-code text-yellow-400',
+						'yml': 'fas fa-file-code text-red-400',
+						'yaml': 'fas fa-file-code text-red-400',
+						'md': 'fab fa-markdown text-white',
+						'txt': 'fas fa-file-alt text-gray-400',
+						'log': 'fas fa-file-alt text-gray-400',
+						'sh': 'fas fa-terminal text-green-400',
+						'bash': 'fas fa-terminal text-green-400',
+						'py': 'fab fa-python text-blue-400',
+						'go': 'fas fa-code text-cyan-400',
+						'html': 'fab fa-html5 text-orange-400',
+						'css': 'fab fa-css3 text-blue-400',
+						'sql': 'fas fa-database text-blue-400',
+						'db': 'fas fa-database text-purple-400',
+						'png': 'fas fa-image text-pink-400',
+						'jpg': 'fas fa-image text-pink-400',
+						'jpeg': 'fas fa-image text-pink-400',
+						'gif': 'fas fa-image text-pink-400',
+						'svg': 'fas fa-image text-pink-400',
+						'zip': 'fas fa-file-archive text-yellow-400',
+						'tar': 'fas fa-file-archive text-yellow-400',
+						'gz': 'fas fa-file-archive text-yellow-400',
+						'pdf': 'fas fa-file-pdf text-red-400',
+					};
+					return icons[ext] || 'fas fa-file text-blue-400';
+				}
+			};
+		}
+	</script>
+}

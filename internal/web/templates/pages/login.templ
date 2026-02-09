@@ -1,0 +1,180 @@
+package pages
+
+import "github.com/fr4nsys/usulnet/internal/web/templates/layouts"
+
+type LoginData struct {
+	Error       string
+	Username    string
+	CSRFToken   string
+	ReturnURL   string
+	LDAPEnabled bool
+	OAuthEnabled bool
+	OAuthProvider string
+	Version     string
+}
+
+templ Login(data LoginData) {
+	@layouts.AuthLayout("Login") {
+		<div class="min-h-screen flex items-center justify-center bg-dark-900 px-4">
+			<div class="w-full max-w-md">
+				<!-- Logo and Title -->
+				<div class="text-center mb-8">
+					<div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-primary-500 to-primary-600 mb-4 shadow-lg shadow-primary-500/25">
+						<span class="text-black font-bold text-2xl font-display">U</span>
+					</div>
+					<h1 class="text-2xl font-bold font-display text-white">usulnet</h1>
+					<p class="text-sm text-gray-400 mt-1">Docker Management Platform</p>
+				</div>
+
+				<!-- Login Card -->
+				<div class="bg-dark-800 rounded-xl border border-dark-600 shadow-xl p-8">
+					<!-- Error Message -->
+					if data.Error != "" {
+						<div class="mb-6 p-4 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-sm flex items-start gap-3">
+							<i class="fas fa-exclamation-circle mt-0.5"></i>
+							<span>{ data.Error }</span>
+						</div>
+					}
+
+					<!-- Login Form -->
+					<form method="POST" action="/login" class="space-y-5">
+						<input type="hidden" name="csrf_token" value={ data.CSRFToken }/>
+						if data.ReturnURL != "" {
+							<input type="hidden" name="return_url" value={ data.ReturnURL }/>
+						}
+
+						<!-- Username -->
+						<div>
+							<label for="username" class="block text-sm font-medium text-gray-300 mb-2">
+								Username
+							</label>
+							<div class="relative">
+								<div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+									<i class="fas fa-user text-gray-500"></i>
+								</div>
+								<input 
+									type="text" 
+									id="username" 
+									name="username" 
+									required
+									autocomplete="username"
+									autofocus
+									class="w-full pl-10 pr-4 py-3 rounded-lg bg-dark-700 border border-dark-600 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500 transition-colors"
+									placeholder="Enter your username"
+									value={ data.Username }
+								/>
+							</div>
+						</div>
+
+						<!-- Password -->
+						<div>
+							<label for="password" class="block text-sm font-medium text-gray-300 mb-2">
+								Password
+							</label>
+							<div class="relative" x-data="{ show: false }">
+								<div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+									<i class="fas fa-lock text-gray-500"></i>
+								</div>
+								<input 
+									type="password"
+									x-bind:type="show ? 'text' : 'password'"
+									id="password" 
+									name="password" 
+									required
+									autocomplete="current-password"
+									class="w-full pl-10 pr-12 py-3 rounded-lg bg-dark-700 border border-dark-600 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500 transition-colors"
+									placeholder="Enter your password"
+								/>
+								<button 
+									type="button" 
+									@click="show = !show"
+									class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-primary-400 transition-colors"
+								>
+									<i class="fas" :class="show ? 'fa-eye-slash' : 'fa-eye'"></i>
+								</button>
+							</div>
+						</div>
+
+						<!-- Remember Me -->
+						<div class="flex items-center justify-between">
+							<label class="flex items-center gap-2 cursor-pointer">
+								<input 
+									type="checkbox" 
+									name="remember" 
+									class="w-4 h-4 rounded border-gray-600 text-primary-500 focus:ring-primary-500 focus:ring-offset-0 bg-dark-700"
+								/>
+								<span class="text-sm text-gray-400">Remember me</span>
+							</label>
+						</div>
+
+						<!-- Submit Button -->
+						<button 
+							type="submit"
+							class="w-full py-3 px-4 bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-black font-medium rounded-lg shadow-lg shadow-primary-500/25 hover:shadow-primary-500/40 transition-all duration-200 flex items-center justify-center gap-2"
+						>
+							<i class="fas fa-sign-in-alt"></i>
+							Sign In
+						</button>
+					</form>
+
+					<!-- Alternative Auth Methods -->
+					if data.LDAPEnabled || data.OAuthEnabled {
+						<div class="relative my-6">
+							<div class="absolute inset-0 flex items-center">
+								<div class="w-full border-t border-dark-600"></div>
+							</div>
+							<div class="relative flex justify-center text-sm">
+								<span class="px-4 bg-dark-800 text-gray-500">or continue with</span>
+							</div>
+						</div>
+
+						<div class="space-y-3">
+							if data.LDAPEnabled {
+								<a 
+									href="/login/ldap"
+									class="w-full py-3 px-4 bg-dark-700 hover:bg-dark-600 text-gray-300 font-medium rounded-lg border border-dark-600 transition-colors flex items-center justify-center gap-2"
+								>
+									<i class="fas fa-sitemap"></i>
+									Sign in with LDAP
+								</a>
+							}
+
+							if data.OAuthEnabled {
+								<a 
+									href="/login/oauth"
+									class="w-full py-3 px-4 bg-dark-700 hover:bg-dark-600 text-gray-300 font-medium rounded-lg border border-dark-600 transition-colors flex items-center justify-center gap-2"
+								>
+									<i class="fab fa-openid"></i>
+									Sign in with { oauthProviderName(data.OAuthProvider) }
+								</a>
+							}
+						</div>
+					}
+				</div>
+
+				<!-- Footer -->
+				<div class="mt-8 text-center space-y-1">
+					<p class="text-sm text-gray-500">
+						usulnet { data.Version } · Community Edition
+					</p>
+					<p class="text-xs text-gray-600">
+						<a href="https://github.com/fr4nsys/usulnet" target="_blank" rel="noopener" class="hover:text-primary-400 transition-colors">
+							<i class="fab fa-github mr-1"></i>GitHub
+						</a>
+						<span class="mx-1">·</span>
+						<a href="https://www.gnu.org/licenses/agpl-3.0.html" target="_blank" rel="noopener" class="hover:text-primary-400 transition-colors">
+							AGPLv3
+						</a>
+					</p>
+				</div>
+			</div>
+		</div>
+	}
+}
+
+func oauthProviderName(provider string) string {
+	if provider == "" {
+		return "OAuth"
+	}
+	return provider
+}

@@ -1,0 +1,718 @@
+package alerts
+
+import (
+	"fmt"
+	"github.com/fr4nsys/usulnet/internal/web/templates/layouts"
+)
+
+// ============================================================================
+// Data Types
+// ============================================================================
+
+type AlertsData struct {
+	PageData layouts.PageData
+	Rules    []AlertRuleItem
+	Events   []AlertEventItem
+	Stats    AlertStats
+	Tab      string // "rules", "events", "silences"
+	Silences []AlertSilenceItem
+	Hosts    []HostOption
+}
+
+type AlertRuleItem struct {
+	ID             string
+	Name           string
+	Description    string
+	Metric         string
+	MetricLabel    string
+	Operator       string
+	Threshold      float64
+	Severity       string
+	State          string
+	IsEnabled      bool
+	HostID         string
+	HostName       string
+	ContainerID    string
+	Duration       int
+	Cooldown       int
+	LastEvaluated  string
+	LastFiredAt    string
+	FiringValue    float64
+	NotifyChannels []string
+}
+
+type AlertEventItem struct {
+	ID             string
+	AlertID        string
+	AlertName      string
+	HostID         string
+	HostName       string
+	ContainerID    string
+	State          string
+	Value          float64
+	Threshold      float64
+	Message        string
+	Severity       string
+	FiredAt        string
+	ResolvedAt     string
+	AcknowledgedAt string
+	AcknowledgedBy string
+}
+
+type AlertSilenceItem struct {
+	ID        string
+	AlertID   string
+	AlertName string
+	HostID    string
+	HostName  string
+	Reason    string
+	StartsAt  string
+	EndsAt    string
+	CreatedBy string
+	CreatedAt string
+	IsActive  bool
+}
+
+type AlertStats struct {
+	TotalRules    int
+	EnabledRules  int
+	FiringRules   int
+	ActiveEvents  int
+	ActiveSilences int
+	Critical      int
+	Warning       int
+}
+
+type HostOption struct {
+	ID   string
+	Name string
+}
+
+// ============================================================================
+// Main Template
+// ============================================================================
+
+templ List(data AlertsData) {
+	@layouts.Base(data.PageData) {
+		<div class="space-y-6">
+			<!-- Header -->
+			<div class="flex items-center justify-between">
+				<div>
+					<h1 class="text-2xl font-display font-bold text-white">Alerts</h1>
+					<p class="text-gray-400 mt-1">
+						{ fmt.Sprintf("%d rules, %d active events", data.Stats.TotalRules, data.Stats.ActiveEvents) }
+					</p>
+				</div>
+				<button
+					onclick="document.getElementById('create-rule-modal').classList.remove('hidden')"
+					class="btn-primary"
+				>
+					<i class="fas fa-plus mr-2"></i>New Rule
+				</button>
+			</div>
+
+			<!-- Stats -->
+			<div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+				<div class="card p-4">
+					<div class="text-2xl font-bold text-white">{ fmt.Sprintf("%d", data.Stats.TotalRules) }</div>
+					<div class="text-sm text-gray-400">Total Rules</div>
+				</div>
+				<div class="card p-4">
+					<div class="text-2xl font-bold text-green-400">{ fmt.Sprintf("%d", data.Stats.EnabledRules) }</div>
+					<div class="text-sm text-gray-400">Enabled</div>
+				</div>
+				<div class="card p-4">
+					<div class={ "text-2xl font-bold", templ.KV("text-red-400", data.Stats.FiringRules > 0), templ.KV("text-gray-400", data.Stats.FiringRules == 0) }>
+						{ fmt.Sprintf("%d", data.Stats.FiringRules) }
+					</div>
+					<div class="text-sm text-gray-400">Firing</div>
+				</div>
+				<div class="card p-4">
+					<div class="text-2xl font-bold text-orange-400">{ fmt.Sprintf("%d", data.Stats.ActiveEvents) }</div>
+					<div class="text-sm text-gray-400">Active Events</div>
+				</div>
+				<div class="card p-4">
+					<div class="text-2xl font-bold text-purple-400">{ fmt.Sprintf("%d", data.Stats.ActiveSilences) }</div>
+					<div class="text-sm text-gray-400">Silenced</div>
+				</div>
+			</div>
+
+			<!-- Tabs -->
+			<div class="flex gap-2 border-b border-dark-600 pb-0">
+				<a
+					href="/alerts?tab=rules"
+					class={ "px-4 py-2.5 text-sm font-medium border-b-2 transition-colors -mb-px",
+						templ.KV("border-primary-400 text-primary-400", data.Tab == "rules" || data.Tab == ""),
+						templ.KV("border-transparent text-gray-400 hover:text-white", data.Tab != "rules" && data.Tab != "") }
+				>
+					<i class="fas fa-ruler-combined mr-2"></i>Rules ({ fmt.Sprintf("%d", len(data.Rules)) })
+				</a>
+				<a
+					href="/alerts?tab=events"
+					class={ "px-4 py-2.5 text-sm font-medium border-b-2 transition-colors -mb-px",
+						templ.KV("border-primary-400 text-primary-400", data.Tab == "events"),
+						templ.KV("border-transparent text-gray-400 hover:text-white", data.Tab != "events") }
+				>
+					<i class="fas fa-bell mr-2"></i>Events ({ fmt.Sprintf("%d", len(data.Events)) })
+				</a>
+				<a
+					href="/alerts?tab=silences"
+					class={ "px-4 py-2.5 text-sm font-medium border-b-2 transition-colors -mb-px",
+						templ.KV("border-primary-400 text-primary-400", data.Tab == "silences"),
+						templ.KV("border-transparent text-gray-400 hover:text-white", data.Tab != "silences") }
+				>
+					<i class="fas fa-volume-mute mr-2"></i>Silences ({ fmt.Sprintf("%d", len(data.Silences)) })
+				</a>
+			</div>
+
+			<!-- Tab Content -->
+			if data.Tab == "events" {
+				@eventsTab(data)
+			} else if data.Tab == "silences" {
+				@silencesTab(data)
+			} else {
+				@rulesTab(data)
+			}
+
+			<!-- Create Rule Modal -->
+			@createRuleModal(data.Hosts)
+		</div>
+	}
+}
+
+// ============================================================================
+// Rules Tab
+// ============================================================================
+
+templ rulesTab(data AlertsData) {
+	<div class="card">
+		<div class="overflow-x-auto">
+			<table class="table">
+				<thead>
+					<tr>
+						<th>Rule</th>
+						<th>Metric</th>
+						<th>Condition</th>
+						<th>Severity</th>
+						<th>State</th>
+						<th>Last Evaluated</th>
+						<th>Actions</th>
+					</tr>
+				</thead>
+				<tbody>
+					if len(data.Rules) == 0 {
+						<tr>
+							<td colspan="7" class="text-center text-gray-500 py-8">
+								No alert rules configured. Create one to get started.
+							</td>
+						</tr>
+					}
+					for _, rule := range data.Rules {
+						<tr class={ templ.KV("opacity-50", !rule.IsEnabled) }>
+							<td>
+								<div>
+									<div class="font-medium text-white">{ rule.Name }</div>
+									if rule.Description != "" {
+										<div class="text-sm text-gray-400">{ rule.Description }</div>
+									}
+									if rule.HostName != "" {
+										<div class="text-xs text-gray-500 mt-1">
+											<i class="fas fa-server mr-1"></i>{ rule.HostName }
+										</div>
+									}
+								</div>
+							</td>
+							<td>
+								<span class="text-sm font-mono text-primary-400">{ rule.MetricLabel }</span>
+							</td>
+							<td>
+								<span class="text-sm font-mono">
+									{ rule.Operator } { fmt.Sprintf("%.0f", rule.Threshold) }%
+								</span>
+								<div class="text-xs text-gray-500">
+									{ fmt.Sprintf("for %ds", rule.Duration) }
+								</div>
+							</td>
+							<td>
+								<span class={ "badge text-xs",
+									templ.KV("bg-red-500/20 text-red-400", rule.Severity == "critical"),
+									templ.KV("bg-orange-500/20 text-orange-400", rule.Severity == "warning"),
+									templ.KV("bg-blue-500/20 text-blue-400", rule.Severity == "info") }>
+									{ rule.Severity }
+								</span>
+							</td>
+							<td>
+								@ruleStateBadge(rule.State, rule.IsEnabled)
+							</td>
+							<td class="text-gray-400 text-sm">
+								if rule.LastEvaluated != "" {
+									{ rule.LastEvaluated }
+								} else {
+									<span class="text-gray-500">Never</span>
+								}
+							</td>
+							<td>
+								<div class="flex items-center gap-2">
+									<a href={ templ.SafeURL("/alerts/" + rule.ID) } class="text-primary-400 hover:text-primary-300 text-sm">
+										Edit
+									</a>
+									if rule.IsEnabled {
+										<button
+											hx-post={ "/alerts/" + rule.ID + "/disable" }
+											hx-target="body"
+											class="text-yellow-400 hover:text-yellow-300 text-sm"
+										>
+											Disable
+										</button>
+									} else {
+										<button
+											hx-post={ "/alerts/" + rule.ID + "/enable" }
+											hx-target="body"
+											class="text-green-400 hover:text-green-300 text-sm"
+										>
+											Enable
+										</button>
+									}
+									<button
+										hx-delete={ "/alerts/" + rule.ID }
+										hx-target="body"
+										hx-confirm="Delete this alert rule?"
+										class="text-red-400 hover:text-red-300 text-sm"
+									>
+										Delete
+									</button>
+								</div>
+							</td>
+						</tr>
+					}
+				</tbody>
+			</table>
+		</div>
+	</div>
+}
+
+templ ruleStateBadge(state string, isEnabled bool) {
+	if !isEnabled {
+		<span class="badge bg-gray-500/20 text-gray-400">
+			<i class="fas fa-power-off mr-1 text-xs"></i>Disabled
+		</span>
+	} else if state == "firing" {
+		<span class="badge bg-red-500/20 text-red-400 border border-red-500/30">
+			<i class="fas fa-fire mr-1 text-xs animate-pulse"></i>Firing
+		</span>
+	} else if state == "pending" {
+		<span class="badge bg-yellow-500/20 text-yellow-400">
+			<i class="fas fa-clock mr-1 text-xs"></i>Pending
+		</span>
+	} else if state == "resolved" {
+		<span class="badge bg-blue-500/20 text-blue-400">
+			<i class="fas fa-check mr-1 text-xs"></i>Resolved
+		</span>
+	} else {
+		<span class="badge bg-green-500/20 text-green-400">
+			<i class="fas fa-check-circle mr-1 text-xs"></i>OK
+		</span>
+	}
+}
+
+// ============================================================================
+// Events Tab
+// ============================================================================
+
+templ eventsTab(data AlertsData) {
+	<div class="card">
+		<div class="overflow-x-auto">
+			<table class="table">
+				<thead>
+					<tr>
+						<th>Alert</th>
+						<th>Host</th>
+						<th>Value</th>
+						<th>Severity</th>
+						<th>State</th>
+						<th>Fired At</th>
+						<th>Actions</th>
+					</tr>
+				</thead>
+				<tbody>
+					if len(data.Events) == 0 {
+						<tr>
+							<td colspan="7" class="text-center text-gray-500 py-8">
+								No alert events. This is good!
+							</td>
+						</tr>
+					}
+					for _, event := range data.Events {
+						<tr>
+							<td>
+								<div>
+									<div class="font-medium text-white">{ event.AlertName }</div>
+									<div class="text-sm text-gray-400">{ event.Message }</div>
+								</div>
+							</td>
+							<td class="text-gray-400">
+								if event.HostName != "" {
+									{ event.HostName }
+								} else {
+									<span class="text-gray-500">Global</span>
+								}
+							</td>
+							<td>
+								<span class="text-sm font-mono text-red-400">
+									{ fmt.Sprintf("%.1f", event.Value) }
+								</span>
+								<span class="text-xs text-gray-500">
+									/ { fmt.Sprintf("%.0f", event.Threshold) }
+								</span>
+							</td>
+							<td>
+								<span class={ "badge text-xs",
+									templ.KV("bg-red-500/20 text-red-400", event.Severity == "critical"),
+									templ.KV("bg-orange-500/20 text-orange-400", event.Severity == "warning"),
+									templ.KV("bg-blue-500/20 text-blue-400", event.Severity == "info") }>
+									{ event.Severity }
+								</span>
+							</td>
+							<td>
+								if event.ResolvedAt != "" {
+									<span class="badge bg-green-500/20 text-green-400">
+										<i class="fas fa-check mr-1 text-xs"></i>Resolved
+									</span>
+								} else if event.AcknowledgedAt != "" {
+									<span class="badge bg-blue-500/20 text-blue-400">
+										<i class="fas fa-user-check mr-1 text-xs"></i>Ack
+									</span>
+								} else {
+									<span class="badge bg-red-500/20 text-red-400 border border-red-500/30">
+										<i class="fas fa-fire mr-1 text-xs"></i>Active
+									</span>
+								}
+							</td>
+							<td class="text-gray-400 text-sm">{ event.FiredAt }</td>
+							<td>
+								<div class="flex items-center gap-2">
+									if event.ResolvedAt == "" && event.AcknowledgedAt == "" {
+										<button
+											hx-post={ "/alerts/events/" + event.ID + "/ack" }
+											hx-target="body"
+											class="text-blue-400 hover:text-blue-300 text-sm"
+										>
+											Acknowledge
+										</button>
+									}
+								</div>
+							</td>
+						</tr>
+					}
+				</tbody>
+			</table>
+		</div>
+	</div>
+}
+
+// ============================================================================
+// Silences Tab
+// ============================================================================
+
+templ silencesTab(data AlertsData) {
+	<div class="space-y-4">
+		<!-- Create Silence Form -->
+		<div class="card p-4">
+			<form action="/alerts/silences" method="POST" class="space-y-4">
+				<input type="hidden" name="csrf_token" value={ data.PageData.CSRFToken }/>
+				<div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+					<div>
+						<label class="block text-sm font-medium text-gray-300 mb-2">Host (optional)</label>
+						<select name="host_id" class="input">
+							<option value="">All hosts</option>
+							for _, h := range data.Hosts {
+								<option value={ h.ID }>{ h.Name }</option>
+							}
+						</select>
+					</div>
+					<div>
+						<label class="block text-sm font-medium text-gray-300 mb-2">Duration</label>
+						<select name="duration" class="input">
+							<option value="1h">1 hour</option>
+							<option value="4h">4 hours</option>
+							<option value="8h">8 hours</option>
+							<option value="24h">24 hours</option>
+							<option value="7d">7 days</option>
+						</select>
+					</div>
+					<div class="md:col-span-2">
+						<label class="block text-sm font-medium text-gray-300 mb-2">Reason</label>
+						<input type="text" name="reason" required class="input" placeholder="e.g. Maintenance window"/>
+					</div>
+				</div>
+				<div class="flex justify-end">
+					<button type="submit" class="btn-primary">
+						<i class="fas fa-volume-mute mr-2"></i>Create Silence
+					</button>
+				</div>
+			</form>
+		</div>
+
+		<!-- Silences Table -->
+		<div class="card">
+			<div class="overflow-x-auto">
+				<table class="table">
+					<thead>
+						<tr>
+							<th>Target</th>
+							<th>Reason</th>
+							<th>Duration</th>
+							<th>Status</th>
+							<th>Actions</th>
+						</tr>
+					</thead>
+					<tbody>
+						if len(data.Silences) == 0 {
+							<tr>
+								<td colspan="5" class="text-center text-gray-500 py-8">
+									No active silences.
+								</td>
+							</tr>
+						}
+						for _, silence := range data.Silences {
+							<tr class={ templ.KV("opacity-50", !silence.IsActive) }>
+								<td>
+									if silence.AlertName != "" {
+										<div class="font-medium text-white">{ silence.AlertName }</div>
+									} else if silence.HostName != "" {
+										<div class="font-medium text-white">{ silence.HostName }</div>
+									} else {
+										<div class="font-medium text-yellow-400">All alerts</div>
+									}
+								</td>
+								<td class="text-gray-400">{ silence.Reason }</td>
+								<td class="text-sm">
+									<div class="text-gray-400">{ silence.StartsAt }</div>
+									<div class="text-gray-500">to { silence.EndsAt }</div>
+								</td>
+								<td>
+									if silence.IsActive {
+										<span class="badge bg-purple-500/20 text-purple-400">
+											<i class="fas fa-volume-mute mr-1 text-xs"></i>Active
+										</span>
+									} else {
+										<span class="badge bg-gray-500/20 text-gray-400">Expired</span>
+									}
+								</td>
+								<td>
+									if silence.IsActive {
+										<button
+											hx-delete={ "/alerts/silences/" + silence.ID }
+											hx-target="body"
+											hx-confirm="Remove this silence?"
+											class="text-red-400 hover:text-red-300 text-sm"
+										>
+											Remove
+										</button>
+									}
+								</td>
+							</tr>
+						}
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+}
+
+// ============================================================================
+// Create Rule Modal
+// ============================================================================
+
+templ createRuleModal(hosts []HostOption) {
+	<div id="create-rule-modal" class="hidden fixed inset-0 z-50 overflow-y-auto">
+		<div class="fixed inset-0 bg-black/50" onclick="document.getElementById('create-rule-modal').classList.add('hidden')"></div>
+		<div class="relative min-h-screen flex items-center justify-center p-4">
+			<div class="relative bg-dark-800 rounded-xl border border-dark-600 max-w-2xl w-full p-6">
+				<div class="flex items-center justify-between mb-6">
+					<h2 class="text-xl font-display font-bold text-white">New Alert Rule</h2>
+					<button
+						onclick="document.getElementById('create-rule-modal').classList.add('hidden')"
+						class="text-gray-400 hover:text-white"
+					>
+						<i class="fas fa-times"></i>
+					</button>
+				</div>
+
+				<form action="/alerts" method="POST" class="space-y-4">
+					<input type="hidden" name="csrf_token"/>
+
+					<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+						<div class="md:col-span-2">
+							<label class="block text-sm font-medium text-gray-300 mb-2">Rule Name</label>
+							<input type="text" name="name" required class="input" placeholder="e.g. High CPU Usage"/>
+						</div>
+
+						<div class="md:col-span-2">
+							<label class="block text-sm font-medium text-gray-300 mb-2">Description</label>
+							<input type="text" name="description" class="input" placeholder="Optional description"/>
+						</div>
+
+						<div>
+							<label class="block text-sm font-medium text-gray-300 mb-2">Host</label>
+							<select name="host_id" class="input">
+								<option value="">All hosts</option>
+								for _, h := range hosts {
+									<option value={ h.ID }>{ h.Name }</option>
+								}
+							</select>
+						</div>
+
+						<div>
+							<label class="block text-sm font-medium text-gray-300 mb-2">Metric</label>
+							<select name="metric" required class="input">
+								<option value="cpu_percent">CPU Usage (%)</option>
+								<option value="memory_percent">Memory Usage (%)</option>
+								<option value="disk_percent">Disk Usage (%)</option>
+								<option value="network_rx_rate">Network RX Rate</option>
+								<option value="network_tx_rate">Network TX Rate</option>
+								<option value="container_count">Container Count</option>
+								<option value="container_cpu">Container CPU (%)</option>
+								<option value="container_memory">Container Memory (%)</option>
+							</select>
+						</div>
+
+						<div>
+							<label class="block text-sm font-medium text-gray-300 mb-2">Condition</label>
+							<div class="flex gap-2">
+								<select name="operator" class="input w-24">
+									<option value=">">&gt;</option>
+									<option value=">=">&gt;=</option>
+									<option value="<">&lt;</option>
+									<option value="<=">&lt;=</option>
+									<option value="==">==</option>
+									<option value="!=">!=</option>
+								</select>
+								<input type="number" name="threshold" required step="0.1" class="input flex-1" placeholder="80"/>
+							</div>
+						</div>
+
+						<div>
+							<label class="block text-sm font-medium text-gray-300 mb-2">Severity</label>
+							<select name="severity" class="input">
+								<option value="info">Info</option>
+								<option value="warning" selected>Warning</option>
+								<option value="critical">Critical</option>
+							</select>
+						</div>
+
+						<div>
+							<label class="block text-sm font-medium text-gray-300 mb-2">Duration (seconds)</label>
+							<input type="number" name="duration" value="60" min="0" class="input" placeholder="60"/>
+							<p class="text-xs text-gray-500 mt-1">Condition must be true for this duration</p>
+						</div>
+
+						<div>
+							<label class="block text-sm font-medium text-gray-300 mb-2">Cooldown (seconds)</label>
+							<input type="number" name="cooldown" value="300" min="0" class="input" placeholder="300"/>
+							<p class="text-xs text-gray-500 mt-1">Minimum time between alerts</p>
+						</div>
+					</div>
+
+					<div class="flex justify-end gap-3 pt-4 border-t border-dark-600">
+						<button
+							type="button"
+							onclick="document.getElementById('create-rule-modal').classList.add('hidden')"
+							class="btn-secondary"
+						>
+							Cancel
+						</button>
+						<button type="submit" class="btn-primary">
+							<i class="fas fa-plus mr-2"></i>Create Rule
+						</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+}
+
+// ============================================================================
+// Edit Rule Page
+// ============================================================================
+
+type AlertEditData struct {
+	PageData layouts.PageData
+	Rule     AlertRuleItem
+	Hosts    []HostOption
+	Error    string
+}
+
+templ Edit(data AlertEditData) {
+	@layouts.Base(data.PageData) {
+		<div class="max-w-2xl mx-auto space-y-6">
+			<div class="flex items-center gap-4">
+				<a href="/alerts" class="p-2 text-gray-400 hover:text-white hover:bg-dark-700 rounded-lg">
+					<i class="fas fa-arrow-left"></i>
+				</a>
+				<div>
+					<h1 class="text-2xl font-display font-bold text-white">Edit Alert Rule</h1>
+					<p class="text-gray-400 text-sm">{ data.Rule.Name }</p>
+				</div>
+			</div>
+
+			if data.Error != "" {
+				<div class="bg-red-500/10 border border-red-500/20 rounded-lg p-4 text-red-400">
+					{ data.Error }
+				</div>
+			}
+
+			<form action={ templ.SafeURL("/alerts/" + data.Rule.ID) } method="POST" class="card p-6 space-y-4">
+				<input type="hidden" name="csrf_token" value={ data.PageData.CSRFToken }/>
+
+				<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+					<div class="md:col-span-2">
+						<label class="block text-sm font-medium text-gray-300 mb-2">Rule Name</label>
+						<input type="text" name="name" value={ data.Rule.Name } required class="input"/>
+					</div>
+
+					<div class="md:col-span-2">
+						<label class="block text-sm font-medium text-gray-300 mb-2">Description</label>
+						<input type="text" name="description" value={ data.Rule.Description } class="input"/>
+					</div>
+
+					<div>
+						<label class="block text-sm font-medium text-gray-300 mb-2">Threshold</label>
+						<input type="number" name="threshold" value={ fmt.Sprintf("%.1f", data.Rule.Threshold) } step="0.1" required class="input"/>
+					</div>
+
+					<div>
+						<label class="block text-sm font-medium text-gray-300 mb-2">Severity</label>
+						<select name="severity" class="input">
+							<option value="info" selected?={ data.Rule.Severity == "info" }>Info</option>
+							<option value="warning" selected?={ data.Rule.Severity == "warning" }>Warning</option>
+							<option value="critical" selected?={ data.Rule.Severity == "critical" }>Critical</option>
+						</select>
+					</div>
+
+					<div>
+						<label class="block text-sm font-medium text-gray-300 mb-2">Duration (seconds)</label>
+						<input type="number" name="duration" value={ fmt.Sprintf("%d", data.Rule.Duration) } min="0" class="input"/>
+					</div>
+
+					<div>
+						<label class="block text-sm font-medium text-gray-300 mb-2">Cooldown (seconds)</label>
+						<input type="number" name="cooldown" value={ fmt.Sprintf("%d", data.Rule.Cooldown) } min="0" class="input"/>
+					</div>
+
+					<div class="md:col-span-2">
+						<label class="flex items-center gap-3 cursor-pointer">
+							<input type="checkbox" name="is_enabled" checked?={ data.Rule.IsEnabled } class="w-4 h-4 rounded"/>
+							<span class="text-sm text-gray-300">Enable this rule</span>
+						</label>
+					</div>
+				</div>
+
+				<div class="flex justify-end gap-3 pt-4 border-t border-dark-600">
+					<a href="/alerts" class="btn-secondary">Cancel</a>
+					<button type="submit" class="btn-primary">Save Changes</button>
+				</div>
+			</form>
+		</div>
+	}
+}

@@ -1,0 +1,520 @@
+package connections
+
+import (
+	"fmt"
+	"github.com/fr4nsys/usulnet/internal/web/templates/layouts"
+)
+
+// RDPConnectionData represents an RDP connection for templates.
+type RDPConnectionData struct {
+	ID          string
+	Name        string
+	Host        string
+	Port        int
+	Username    string
+	Domain      string
+	Status      string
+	Resolution  string // e.g. "1920x1080"
+	ColorDepth  string // "16", "24", "32"
+	Security    string // "any", "nla", "tls", "rdp"
+	LastUsed    string
+	CreatedAt   string
+	Tags        []string
+}
+
+// RDPConnectionsListData is the data for RDP connections list page.
+type RDPConnectionsListData struct {
+	PageData    layouts.PageData
+	Connections []RDPConnectionData
+}
+
+// RDPConnectionNewData is the data for new RDP connection form page.
+type RDPConnectionNewData struct {
+	PageData layouts.PageData
+}
+
+// RDPConnectionDetailData is the data for RDP connection detail page.
+type RDPConnectionDetailData struct {
+	PageData   layouts.PageData
+	Connection RDPConnectionData
+}
+
+// RDPConnectionsList renders the RDP connections list page.
+templ RDPConnectionsList(data RDPConnectionsListData) {
+	@layouts.Base(data.PageData) {
+		<div class="space-y-6">
+			@ConnectionsNav("rdp")
+
+			<!-- Header -->
+			<div class="flex items-center justify-between">
+				<div>
+					<h1 class="text-2xl font-display font-bold text-white">RDP Connections</h1>
+					<p class="text-gray-400 mt-1">Manage Remote Desktop connections to Windows servers</p>
+				</div>
+				<a
+					href="/connections/rdp/new"
+					class="inline-flex items-center px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors"
+				>
+					<i class="fas fa-plus mr-2"></i>
+					New Connection
+				</a>
+			</div>
+
+			<!-- Connections Grid -->
+			if len(data.Connections) == 0 {
+				<div class="bg-dark-800 rounded-lg border border-dark-700 p-12 text-center">
+					<div class="w-16 h-16 bg-dark-700 rounded-full flex items-center justify-center mx-auto mb-4">
+						<i class="fas fa-desktop text-2xl text-gray-500"></i>
+					</div>
+					<h3 class="text-lg font-medium text-white mb-2">No RDP Connections</h3>
+					<p class="text-gray-400 mb-6 max-w-sm mx-auto">
+						Create your first Remote Desktop connection to access Windows servers directly from your browser.
+					</p>
+					<a href="/connections/rdp/new" class="inline-flex items-center px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors">
+						<i class="fas fa-plus mr-2"></i>New Connection
+					</a>
+				</div>
+			} else {
+				<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+					for _, conn := range data.Connections {
+						@RDPConnectionCard(conn)
+					}
+				</div>
+			}
+		</div>
+	}
+}
+
+// RDPConnectionCard renders a single RDP connection card.
+templ RDPConnectionCard(conn RDPConnectionData) {
+	<div class="bg-dark-800 rounded-lg border border-dark-700 p-4 hover:border-dark-600 transition-colors">
+		<div class="flex items-start justify-between">
+			<div class="flex items-center space-x-3">
+				<div class={ "w-3 h-3 rounded-full", rdpStatusDotClass(conn.Status) }></div>
+				<div>
+					<h3 class="text-white font-medium">{ conn.Name }</h3>
+					<p class="text-gray-400 text-sm">{ formatRDPAddress(conn.Host, conn.Port) }</p>
+				</div>
+			</div>
+			<div class="flex items-center space-x-2">
+				<a
+					href={ templ.SafeURL(fmt.Sprintf("/connections/rdp/%s", conn.ID)) }
+					class="p-2 text-gray-400 hover:text-primary-400 hover:bg-dark-700 rounded-lg transition-colors"
+					title="Connect"
+				>
+					<i class="fas fa-desktop text-lg"></i>
+				</a>
+			</div>
+		</div>
+
+		<!-- Connection Info -->
+		<div class="mt-4 space-y-2 text-sm">
+			if conn.Username != "" {
+				<div class="flex items-center text-gray-400">
+					<i class="fas fa-user w-4 mr-2 text-center"></i>
+					<span>
+						if conn.Domain != "" {
+							{ conn.Domain }\{ conn.Username }
+						} else {
+							{ conn.Username }
+						}
+					</span>
+				</div>
+			}
+			if conn.Resolution != "" {
+				<div class="flex items-center text-gray-400">
+					<i class="fas fa-expand-arrows-alt w-4 mr-2 text-center"></i>
+					<span>{ conn.Resolution }</span>
+				</div>
+			}
+			if conn.Security != "" && conn.Security != "any" {
+				<div class="flex items-center text-gray-400">
+					<i class="fas fa-lock w-4 mr-2 text-center"></i>
+					<span>{ rdpSecurityLabel(conn.Security) }</span>
+				</div>
+			}
+			if conn.LastUsed != "" {
+				<div class="flex items-center text-gray-500">
+					<i class="fas fa-clock w-4 mr-2 text-center"></i>
+					<span>Last used { conn.LastUsed }</span>
+				</div>
+			}
+		</div>
+
+		<!-- Tags -->
+		if len(conn.Tags) > 0 {
+			<div class="mt-3 flex flex-wrap gap-1">
+				for _, tag := range conn.Tags {
+					<span class="px-2 py-0.5 bg-dark-700 text-gray-400 text-xs rounded">{ tag }</span>
+				}
+			</div>
+		}
+
+		<!-- Actions -->
+		<div class="mt-4 pt-4 border-t border-dark-700 flex items-center justify-between">
+			<a
+				href={ templ.SafeURL(fmt.Sprintf("/connections/rdp/%s", conn.ID)) }
+				class="text-gray-400 hover:text-white text-sm"
+			>
+				Settings
+			</a>
+			<button
+				class="text-gray-400 hover:text-red-400 text-sm"
+				hx-delete={ fmt.Sprintf("/connections/rdp/%s", conn.ID) }
+				hx-confirm={ fmt.Sprintf("Delete connection '%s'?", conn.Name) }
+				hx-target="closest div.bg-dark-800"
+				hx-swap="outerHTML"
+			>
+				Delete
+			</button>
+		</div>
+	</div>
+}
+
+// RDPConnectionNew renders the new RDP connection form.
+templ RDPConnectionNew(data RDPConnectionNewData) {
+	@layouts.Base(data.PageData) {
+		<div class="max-w-2xl mx-auto space-y-6">
+			<!-- Header -->
+			<div class="flex items-center gap-4">
+				<a href="/connections/rdp" class="p-2 text-gray-400 hover:text-white hover:bg-dark-700 rounded-lg">
+					<i class="fas fa-arrow-left"></i>
+				</a>
+				<div>
+					<h1 class="text-2xl font-display font-bold text-white">New RDP Connection</h1>
+					<p class="text-gray-400 mt-1">Configure a Remote Desktop connection</p>
+				</div>
+			</div>
+
+			<form method="POST" action="/connections/rdp" class="space-y-6">
+				<input type="hidden" name="csrf_token" value={ data.PageData.CSRFToken }/>
+
+				<!-- Basic Settings -->
+				<div class="card p-6 space-y-4">
+					<h2 class="text-lg font-medium text-white">Connection Details</h2>
+
+					<div>
+						<label for="name" class="block text-sm font-medium text-gray-300 mb-1">Connection Name</label>
+						<input type="text" id="name" name="name" required class="input w-full" placeholder="My Windows Server"/>
+					</div>
+
+					<div class="grid grid-cols-2 gap-4">
+						<div>
+							<label for="host" class="block text-sm font-medium text-gray-300 mb-1">Host</label>
+							<input type="text" id="host" name="host" required class="input w-full" placeholder="192.168.1.100"/>
+						</div>
+						<div>
+							<label for="port" class="block text-sm font-medium text-gray-300 mb-1">Port</label>
+							<input type="number" id="port" name="port" value="3389" class="input w-full" placeholder="3389"/>
+						</div>
+					</div>
+
+					<div class="grid grid-cols-2 gap-4">
+						<div>
+							<label for="username" class="block text-sm font-medium text-gray-300 mb-1">Username</label>
+							<input type="text" id="username" name="username" class="input w-full" placeholder="Administrator"/>
+						</div>
+						<div>
+							<label for="domain" class="block text-sm font-medium text-gray-300 mb-1">Domain (optional)</label>
+							<input type="text" id="domain" name="domain" class="input w-full" placeholder="WORKGROUP"/>
+						</div>
+					</div>
+
+					<div>
+						<label for="password" class="block text-sm font-medium text-gray-300 mb-1">Password</label>
+						<input type="password" id="password" name="password" class="input w-full" placeholder="Enter password"/>
+						<p class="text-xs text-gray-500 mt-1">Stored encrypted. Leave blank to be prompted on each connection.</p>
+					</div>
+				</div>
+
+				<!-- Display Settings -->
+				<div class="card p-6 space-y-4">
+					<h2 class="text-lg font-medium text-white">Display Settings</h2>
+
+					<div class="grid grid-cols-2 gap-4">
+						<div>
+							<label for="resolution" class="block text-sm font-medium text-gray-300 mb-1">Resolution</label>
+							<select id="resolution" name="resolution" class="input w-full">
+								<option value="1920x1080" selected>1920 x 1080 (Full HD)</option>
+								<option value="1600x900">1600 x 900</option>
+								<option value="1366x768">1366 x 768</option>
+								<option value="1280x720">1280 x 720 (HD)</option>
+								<option value="1024x768">1024 x 768</option>
+								<option value="auto">Auto (fit browser)</option>
+							</select>
+						</div>
+						<div>
+							<label for="color_depth" class="block text-sm font-medium text-gray-300 mb-1">Color Depth</label>
+							<select id="color_depth" name="color_depth" class="input w-full">
+								<option value="32" selected>32-bit (True Color)</option>
+								<option value="24">24-bit</option>
+								<option value="16">16-bit (High Color)</option>
+							</select>
+						</div>
+					</div>
+				</div>
+
+				<!-- Security Settings -->
+				<div class="card p-6 space-y-4">
+					<h2 class="text-lg font-medium text-white">Security</h2>
+
+					<div>
+						<label for="security" class="block text-sm font-medium text-gray-300 mb-1">Security Mode</label>
+						<select id="security" name="security" class="input w-full">
+							<option value="any" selected>Any (auto-negotiate)</option>
+							<option value="nla">NLA (Network Level Authentication)</option>
+							<option value="tls">TLS</option>
+							<option value="rdp">RDP (legacy)</option>
+						</select>
+						<p class="text-xs text-gray-500 mt-1">NLA is recommended for best security. Use "Any" if unsure.</p>
+					</div>
+
+					<div class="flex items-center gap-3">
+						<input type="checkbox" id="ignore_cert" name="ignore_cert" class="rounded border-dark-600 bg-dark-700 text-primary-500 focus:ring-primary-500"/>
+						<label for="ignore_cert" class="text-sm text-gray-300">Ignore certificate errors (self-signed certs)</label>
+					</div>
+				</div>
+
+				<!-- Tags -->
+				<div class="card p-6 space-y-4">
+					<h2 class="text-lg font-medium text-white">Organization</h2>
+
+					<div>
+						<label for="tags" class="block text-sm font-medium text-gray-300 mb-1">Tags (comma separated)</label>
+						<input type="text" id="tags" name="tags" class="input w-full" placeholder="production, windows, dc"/>
+					</div>
+				</div>
+
+				<!-- Submit -->
+				<div class="flex justify-end gap-3">
+					<a href="/connections/rdp" class="btn-secondary">Cancel</a>
+					<button type="submit" class="btn-primary">
+						<i class="fas fa-plus mr-2"></i>Create Connection
+					</button>
+				</div>
+			</form>
+		</div>
+	}
+}
+
+// RDPConnectionDetail renders the RDP connection detail/settings page.
+templ RDPConnectionDetail(data RDPConnectionDetailData) {
+	@layouts.Base(data.PageData) {
+		<div class="max-w-2xl mx-auto space-y-6">
+			<!-- Header -->
+			<div class="flex items-center gap-4">
+				<a href="/connections/rdp" class="p-2 text-gray-400 hover:text-white hover:bg-dark-700 rounded-lg">
+					<i class="fas fa-arrow-left"></i>
+				</a>
+				<div class="flex-1">
+					<div class="flex items-center gap-3">
+						<h1 class="text-2xl font-display font-bold text-white">{ data.Connection.Name }</h1>
+						<span class={ "inline-flex items-center px-2 py-0.5 rounded text-xs font-medium", rdpStatusBadgeClass(data.Connection.Status) }>
+							{ data.Connection.Status }
+						</span>
+					</div>
+					<p class="text-gray-400 mt-1">{ formatRDPAddress(data.Connection.Host, data.Connection.Port) }</p>
+				</div>
+			</div>
+
+			<!-- Quick Actions -->
+			<div class="grid grid-cols-2 gap-4">
+				<button
+					class="card p-4 flex items-center gap-3 hover:bg-dark-700/50 transition-colors text-left"
+					hx-post={ fmt.Sprintf("/connections/rdp/%s/test", data.Connection.ID) }
+					hx-target="#test-result"
+					hx-swap="innerHTML"
+				>
+					<div class="w-10 h-10 bg-blue-500/10 rounded-lg flex items-center justify-center">
+						<i class="fas fa-plug text-blue-400"></i>
+					</div>
+					<div>
+						<p class="text-white font-medium">Test Connection</p>
+						<p class="text-xs text-gray-400">Verify RDP is reachable</p>
+					</div>
+				</button>
+				<a
+					href={ templ.SafeURL(fmt.Sprintf("/connections/rdp/%s", data.Connection.ID)) }
+					class="card p-4 flex items-center gap-3 hover:bg-dark-700/50 transition-colors"
+				>
+					<div class="w-10 h-10 bg-primary-500/10 rounded-lg flex items-center justify-center">
+						<i class="fas fa-desktop text-primary-400"></i>
+					</div>
+					<div>
+						<p class="text-white font-medium">Connect</p>
+						<p class="text-xs text-gray-400">Open Remote Desktop</p>
+					</div>
+				</a>
+			</div>
+
+			<!-- Test result -->
+			<div id="test-result"></div>
+
+			<!-- Edit Form -->
+			<form method="POST" action={ templ.SafeURL(fmt.Sprintf("/connections/rdp/%s", data.Connection.ID)) } class="space-y-6">
+				<input type="hidden" name="csrf_token" value={ data.PageData.CSRFToken }/>
+
+				<div class="card p-6 space-y-4">
+					<h2 class="text-lg font-medium text-white">Connection Details</h2>
+
+					<div>
+						<label for="name" class="block text-sm font-medium text-gray-300 mb-1">Connection Name</label>
+						<input type="text" id="name" name="name" required class="input w-full" value={ data.Connection.Name }/>
+					</div>
+
+					<div class="grid grid-cols-2 gap-4">
+						<div>
+							<label for="host" class="block text-sm font-medium text-gray-300 mb-1">Host</label>
+							<input type="text" id="host" name="host" required class="input w-full" value={ data.Connection.Host }/>
+						</div>
+						<div>
+							<label for="port" class="block text-sm font-medium text-gray-300 mb-1">Port</label>
+							<input type="number" id="port" name="port" class="input w-full" value={ fmt.Sprintf("%d", data.Connection.Port) }/>
+						</div>
+					</div>
+
+					<div class="grid grid-cols-2 gap-4">
+						<div>
+							<label for="username" class="block text-sm font-medium text-gray-300 mb-1">Username</label>
+							<input type="text" id="username" name="username" class="input w-full" value={ data.Connection.Username }/>
+						</div>
+						<div>
+							<label for="domain" class="block text-sm font-medium text-gray-300 mb-1">Domain (optional)</label>
+							<input type="text" id="domain" name="domain" class="input w-full" value={ data.Connection.Domain }/>
+						</div>
+					</div>
+
+					<div>
+						<label for="password" class="block text-sm font-medium text-gray-300 mb-1">Password</label>
+						<input type="password" id="password" name="password" class="input w-full" placeholder="Leave blank to keep current"/>
+					</div>
+				</div>
+
+				<!-- Display Settings -->
+				<div class="card p-6 space-y-4">
+					<h2 class="text-lg font-medium text-white">Display Settings</h2>
+
+					<div class="grid grid-cols-2 gap-4">
+						<div>
+							<label for="resolution" class="block text-sm font-medium text-gray-300 mb-1">Resolution</label>
+							<select id="resolution" name="resolution" class="input w-full">
+								<option value="1920x1080" selected?={ data.Connection.Resolution == "1920x1080" }>1920 x 1080 (Full HD)</option>
+								<option value="1600x900" selected?={ data.Connection.Resolution == "1600x900" }>1600 x 900</option>
+								<option value="1366x768" selected?={ data.Connection.Resolution == "1366x768" }>1366 x 768</option>
+								<option value="1280x720" selected?={ data.Connection.Resolution == "1280x720" }>1280 x 720 (HD)</option>
+								<option value="1024x768" selected?={ data.Connection.Resolution == "1024x768" }>1024 x 768</option>
+								<option value="auto" selected?={ data.Connection.Resolution == "auto" }>Auto (fit browser)</option>
+							</select>
+						</div>
+						<div>
+							<label for="color_depth" class="block text-sm font-medium text-gray-300 mb-1">Color Depth</label>
+							<select id="color_depth" name="color_depth" class="input w-full">
+								<option value="32" selected?={ data.Connection.ColorDepth == "32" }>32-bit (True Color)</option>
+								<option value="24" selected?={ data.Connection.ColorDepth == "24" }>24-bit</option>
+								<option value="16" selected?={ data.Connection.ColorDepth == "16" }>16-bit (High Color)</option>
+							</select>
+						</div>
+					</div>
+				</div>
+
+				<!-- Security -->
+				<div class="card p-6 space-y-4">
+					<h2 class="text-lg font-medium text-white">Security</h2>
+
+					<div>
+						<label for="security" class="block text-sm font-medium text-gray-300 mb-1">Security Mode</label>
+						<select id="security" name="security" class="input w-full">
+							<option value="any" selected?={ data.Connection.Security == "any" }>Any (auto-negotiate)</option>
+							<option value="nla" selected?={ data.Connection.Security == "nla" }>NLA (Network Level Authentication)</option>
+							<option value="tls" selected?={ data.Connection.Security == "tls" }>TLS</option>
+							<option value="rdp" selected?={ data.Connection.Security == "rdp" }>RDP (legacy)</option>
+						</select>
+					</div>
+				</div>
+
+				<!-- Submit -->
+				<div class="flex justify-between">
+					<button
+						type="button"
+						class="text-red-400 hover:text-red-300 text-sm"
+						hx-delete={ fmt.Sprintf("/connections/rdp/%s", data.Connection.ID) }
+						hx-confirm={ fmt.Sprintf("Delete connection '%s'? This cannot be undone.", data.Connection.Name) }
+					>
+						<i class="fas fa-trash mr-1"></i>Delete Connection
+					</button>
+					<div class="flex gap-3">
+						<a href="/connections/rdp" class="btn-secondary">Cancel</a>
+						<button type="submit" class="btn-primary">
+							<i class="fas fa-save mr-2"></i>Save Changes
+						</button>
+					</div>
+				</div>
+			</form>
+
+			<!-- Connection Info -->
+			<div class="card p-6">
+				<h2 class="text-lg font-medium text-white mb-4">Connection Info</h2>
+				<dl class="grid grid-cols-2 gap-4 text-sm">
+					<div>
+						<dt class="text-gray-500">Created</dt>
+						<dd class="text-gray-300">{ data.Connection.CreatedAt }</dd>
+					</div>
+					if data.Connection.LastUsed != "" {
+						<div>
+							<dt class="text-gray-500">Last Used</dt>
+							<dd class="text-gray-300">{ data.Connection.LastUsed }</dd>
+						</div>
+					}
+					<div>
+						<dt class="text-gray-500">Connection ID</dt>
+						<dd class="text-gray-300 font-mono text-xs">{ data.Connection.ID }</dd>
+					</div>
+				</dl>
+			</div>
+		</div>
+	}
+}
+
+// Helper functions
+
+func rdpStatusDotClass(status string) string {
+	switch status {
+	case "online", "active":
+		return "bg-green-500"
+	case "error", "failed":
+		return "bg-red-500"
+	default:
+		return "bg-gray-500"
+	}
+}
+
+func rdpStatusBadgeClass(status string) string {
+	switch status {
+	case "online", "active":
+		return "bg-green-500/10 text-green-400"
+	case "error", "failed":
+		return "bg-red-500/10 text-red-400"
+	default:
+		return "bg-gray-500/10 text-gray-400"
+	}
+}
+
+func formatRDPAddress(host string, port int) string {
+	if port == 3389 || port == 0 {
+		return host
+	}
+	return fmt.Sprintf("%s:%d", host, port)
+}
+
+func rdpSecurityLabel(security string) string {
+	switch security {
+	case "nla":
+		return "NLA (Network Level Auth)"
+	case "tls":
+		return "TLS"
+	case "rdp":
+		return "RDP (Legacy)"
+	default:
+		return "Auto-negotiate"
+	}
+}

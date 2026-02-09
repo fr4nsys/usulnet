@@ -1,0 +1,600 @@
+package admin
+
+import (
+	"fmt"
+	"github.com/fr4nsys/usulnet/internal/web/templates/layouts"
+)
+
+type LDAPProvidersData struct {
+	PageData  layouts.PageData
+	Providers []LDAPProviderItem
+	Stats     LDAPStats
+}
+
+type LDAPProviderItem struct {
+	ID            string
+	Name          string
+	Host          string
+	Port          int
+	UseTLS        bool
+	StartTLS      bool
+	BaseDN        string
+	DefaultRole   string
+	IsEnabled     bool
+	CreatedAt     string
+	UpdatedAt     string
+}
+
+type LDAPStats struct {
+	Total    int64
+	Enabled  int64
+	Disabled int64
+}
+
+templ LDAPProvidersList(data LDAPProvidersData) {
+	@layouts.Base(data.PageData) {
+		<div class="space-y-6">
+			<!-- Header -->
+			<div class="flex items-center justify-between">
+				<div>
+					<h1 class="text-2xl font-display font-bold text-white">LDAP Providers</h1>
+					<p class="text-gray-400 mt-1">
+						Manage LDAP/Active Directory authentication sources
+					</p>
+				</div>
+				<button
+					onclick="showNewProviderModal()"
+					class="btn-primary"
+				>
+					<i class="fas fa-plus mr-2"></i>Add Provider
+				</button>
+			</div>
+
+			<!-- Stats Cards -->
+			<div class="grid grid-cols-3 gap-4">
+				<div class="card p-4">
+					<div class="text-2xl font-bold text-white">{ fmt.Sprintf("%d", data.Stats.Total) }</div>
+					<div class="text-sm text-gray-400">Total Providers</div>
+				</div>
+				<div class="card p-4">
+					<div class="text-2xl font-bold text-green-400">{ fmt.Sprintf("%d", data.Stats.Enabled) }</div>
+					<div class="text-sm text-gray-400">Enabled</div>
+				</div>
+				<div class="card p-4">
+					<div class="text-2xl font-bold text-gray-500">{ fmt.Sprintf("%d", data.Stats.Disabled) }</div>
+					<div class="text-sm text-gray-400">Disabled</div>
+				</div>
+			</div>
+
+			<!-- Providers Table -->
+			<div class="card">
+				<div class="overflow-x-auto">
+					<table class="table">
+						<thead>
+							<tr>
+								<th>Provider</th>
+								<th>Host</th>
+								<th>Base DN</th>
+								<th>Security</th>
+								<th>Default Role</th>
+								<th>Status</th>
+								<th>Actions</th>
+							</tr>
+						</thead>
+						<tbody>
+							if len(data.Providers) == 0 {
+								<tr>
+									<td colspan="7" class="text-center text-gray-500 py-8">
+										<i class="fas fa-sitemap text-4xl mb-3 block"></i>
+										No LDAP providers configured yet
+									</td>
+								</tr>
+							}
+							for _, provider := range data.Providers {
+								<tr>
+									<td>
+										<div class="flex items-center gap-3">
+											<div class="w-8 h-8 rounded-lg bg-blue-500/20 flex items-center justify-center">
+												<i class="fas fa-sitemap text-blue-400"></i>
+											</div>
+											<div>
+												<div class="font-medium text-white">{ provider.Name }</div>
+												<div class="text-xs text-gray-500">{ provider.ID[:8] }...</div>
+											</div>
+										</div>
+									</td>
+									<td>
+										<code class="text-xs bg-dark-700 px-2 py-1 rounded">
+											{ provider.Host }:{ fmt.Sprintf("%d", provider.Port) }
+										</code>
+									</td>
+									<td>
+										<span class="text-sm text-gray-400 font-mono">{ truncateBaseDN(provider.BaseDN) }</span>
+									</td>
+									<td>
+										if provider.UseTLS {
+											<span class="badge badge-success">TLS</span>
+										} else if provider.StartTLS {
+											<span class="badge badge-info">StartTLS</span>
+										} else {
+											<span class="badge badge-warning">Plain</span>
+										}
+									</td>
+									<td>
+										<span class={ "badge", ldapRoleBadgeClass(provider.DefaultRole) }>
+											{ provider.DefaultRole }
+										</span>
+									</td>
+									<td>
+										if provider.IsEnabled {
+											<span class="badge badge-success">Enabled</span>
+										} else {
+											<span class="badge badge-danger">Disabled</span>
+										}
+									</td>
+									<td>
+										<div class="flex items-center gap-2">
+											<a
+												href={ templ.SafeURL("/admin/ldap/" + provider.ID) }
+												class="text-primary-400 hover:text-primary-300 text-sm"
+											>
+												Edit
+											</a>
+											<button
+												hx-post={ "/admin/ldap/" + provider.ID + "/test" }
+												hx-swap="none"
+												class="text-blue-400 hover:text-blue-300 text-sm"
+											>
+												Test
+											</button>
+											if provider.IsEnabled {
+												<button
+													hx-post={ "/admin/ldap/" + provider.ID + "/disable" }
+													hx-target="body"
+													class="text-yellow-400 hover:text-yellow-300 text-sm"
+												>
+													Disable
+												</button>
+											} else {
+												<button
+													hx-post={ "/admin/ldap/" + provider.ID + "/enable" }
+													hx-target="body"
+													class="text-green-400 hover:text-green-300 text-sm"
+												>
+													Enable
+												</button>
+											}
+											<button
+												hx-delete={ "/admin/ldap/" + provider.ID }
+												hx-target="body"
+												hx-confirm={ "Delete LDAP provider '" + provider.Name + "'? This cannot be undone." }
+												class="text-red-400 hover:text-red-300 text-sm"
+											>
+												Delete
+											</button>
+										</div>
+									</td>
+								</tr>
+							}
+						</tbody>
+					</table>
+				</div>
+			</div>
+
+			<!-- Provider Info -->
+			<div class="card p-6">
+				<h3 class="text-lg font-semibold text-white mb-4">About LDAP Authentication</h3>
+				<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+					<div class="flex items-start gap-3 p-3 bg-dark-700 rounded-lg">
+						<div class="w-10 h-10 rounded-lg bg-blue-500/20 flex items-center justify-center shrink-0">
+							<i class="fas fa-sitemap text-blue-400"></i>
+						</div>
+						<div>
+							<div class="font-medium text-white">LDAP/OpenLDAP</div>
+							<div class="text-xs text-gray-500">Standard LDAP protocol for directory services</div>
+						</div>
+					</div>
+					<div class="flex items-start gap-3 p-3 bg-dark-700 rounded-lg">
+						<div class="w-10 h-10 rounded-lg bg-blue-600/20 flex items-center justify-center shrink-0">
+							<i class="fab fa-microsoft text-blue-500"></i>
+						</div>
+						<div>
+							<div class="font-medium text-white">Active Directory</div>
+							<div class="text-xs text-gray-500">Microsoft Active Directory support</div>
+						</div>
+					</div>
+					<div class="flex items-start gap-3 p-3 bg-dark-700 rounded-lg">
+						<div class="w-10 h-10 rounded-lg bg-green-500/20 flex items-center justify-center shrink-0">
+							<i class="fas fa-users text-green-400"></i>
+						</div>
+						<div>
+							<div class="font-medium text-white">Group Mapping</div>
+							<div class="text-xs text-gray-500">Map LDAP groups to usulnet roles</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- New Provider Modal -->
+		<div id="newProviderModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50">
+			<div class="bg-dark-800 rounded-xl shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+				<div class="p-6 border-b border-dark-700">
+					<h2 class="text-xl font-display font-bold text-white">Add LDAP Provider</h2>
+				</div>
+				<form action="/admin/ldap" method="POST" class="p-6 space-y-4">
+					<input type="hidden" name="csrf_token" value={ data.PageData.CSRFToken }/>
+
+					<div class="grid grid-cols-2 gap-4">
+						<div>
+							<label class="block text-sm font-medium text-gray-300 mb-2">Provider Name</label>
+							<input type="text" name="name" required class="input" placeholder="e.g. Corporate AD"/>
+						</div>
+						<div>
+							<label class="block text-sm font-medium text-gray-300 mb-2">Default Role</label>
+							<select name="default_role" class="input">
+								<option value="viewer">Viewer</option>
+								<option value="operator">Operator</option>
+								<option value="admin">Admin</option>
+							</select>
+						</div>
+					</div>
+
+					<!-- Connection Settings -->
+					<div class="border-t border-dark-700 pt-4 mt-4">
+						<h3 class="text-sm font-medium text-gray-300 mb-3">Connection Settings</h3>
+						<div class="grid grid-cols-3 gap-4">
+							<div class="col-span-2">
+								<label class="block text-sm font-medium text-gray-300 mb-2">Host</label>
+								<input type="text" name="host" required class="input" placeholder="ldap.example.com"/>
+							</div>
+							<div>
+								<label class="block text-sm font-medium text-gray-300 mb-2">Port</label>
+								<input type="number" name="port" value="389" required class="input"/>
+							</div>
+						</div>
+						<div class="flex items-center gap-6 mt-4">
+							<label class="flex items-center gap-2 cursor-pointer">
+								<input type="checkbox" name="use_tls" class="w-4 h-4 rounded border-gray-600 bg-dark-700 text-primary-500 focus:ring-primary-500"/>
+								<span class="text-sm text-gray-300">Use TLS (LDAPS)</span>
+							</label>
+							<label class="flex items-center gap-2 cursor-pointer">
+								<input type="checkbox" name="start_tls" class="w-4 h-4 rounded border-gray-600 bg-dark-700 text-primary-500 focus:ring-primary-500"/>
+								<span class="text-sm text-gray-300">StartTLS</span>
+							</label>
+							<label class="flex items-center gap-2 cursor-pointer">
+								<input type="checkbox" name="skip_tls_verify" class="w-4 h-4 rounded border-gray-600 bg-dark-700 text-primary-500 focus:ring-primary-500"/>
+								<span class="text-sm text-gray-300">Skip TLS Verify</span>
+							</label>
+						</div>
+					</div>
+
+					<!-- Bind Credentials -->
+					<div class="border-t border-dark-700 pt-4 mt-4">
+						<h3 class="text-sm font-medium text-gray-300 mb-3">Bind Credentials</h3>
+						<div class="space-y-4">
+							<div>
+								<label class="block text-sm font-medium text-gray-300 mb-2">Bind DN</label>
+								<input type="text" name="bind_dn" required class="input" placeholder="cn=admin,dc=example,dc=com"/>
+							</div>
+							<div>
+								<label class="block text-sm font-medium text-gray-300 mb-2">Bind Password</label>
+								<input type="password" name="bind_password" required class="input" placeholder="LDAP bind password"/>
+							</div>
+						</div>
+					</div>
+
+					<!-- Search Settings -->
+					<div class="border-t border-dark-700 pt-4 mt-4">
+						<h3 class="text-sm font-medium text-gray-300 mb-3">Search Settings</h3>
+						<div class="space-y-4">
+							<div>
+								<label class="block text-sm font-medium text-gray-300 mb-2">Base DN</label>
+								<input type="text" name="base_dn" required class="input" placeholder="dc=example,dc=com"/>
+							</div>
+							<div>
+								<label class="block text-sm font-medium text-gray-300 mb-2">User Filter</label>
+								<input type="text" name="user_filter" class="input" value="(&(objectClass=person)(uid=%s))" placeholder="(&(objectClass=person)(uid=%s))"/>
+								<p class="text-xs text-gray-500 mt-1">%s will be replaced with the username</p>
+							</div>
+							<div class="grid grid-cols-2 gap-4">
+								<div>
+									<label class="block text-sm font-medium text-gray-300 mb-2">Username Attribute</label>
+									<input type="text" name="username_attr" class="input" value="uid" placeholder="uid"/>
+								</div>
+								<div>
+									<label class="block text-sm font-medium text-gray-300 mb-2">Email Attribute</label>
+									<input type="text" name="email_attr" class="input" value="mail" placeholder="mail"/>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<!-- Group Mapping -->
+					<details class="bg-dark-700 rounded-lg">
+						<summary class="p-4 cursor-pointer text-gray-300 hover:text-white">
+							<i class="fas fa-users-cog mr-2"></i>Group Role Mapping (optional)
+						</summary>
+						<div class="p-4 pt-0 space-y-4">
+							<div>
+								<label class="block text-sm font-medium text-gray-300 mb-2">Group Filter</label>
+								<input type="text" name="group_filter" class="input" placeholder="(objectClass=groupOfNames)"/>
+							</div>
+							<div>
+								<label class="block text-sm font-medium text-gray-300 mb-2">Group Attribute</label>
+								<input type="text" name="group_attr" class="input" value="memberOf" placeholder="memberOf"/>
+							</div>
+							<div>
+								<label class="block text-sm font-medium text-gray-300 mb-2">Admin Group</label>
+								<input type="text" name="admin_group" class="input" placeholder="CN=Admins,OU=Groups,DC=example,DC=com"/>
+							</div>
+							<div>
+								<label class="block text-sm font-medium text-gray-300 mb-2">Operator Group</label>
+								<input type="text" name="operator_group" class="input" placeholder="CN=Operators,OU=Groups,DC=example,DC=com"/>
+							</div>
+						</div>
+					</details>
+
+					<div class="flex items-center gap-4 pt-4 border-t border-dark-700">
+						<label class="flex items-center gap-2 cursor-pointer">
+							<input type="checkbox" name="is_enabled" class="w-4 h-4 rounded border-gray-600 bg-dark-700 text-primary-500 focus:ring-primary-500"/>
+							<span class="text-sm text-gray-300">Enable provider</span>
+						</label>
+					</div>
+
+					<div class="flex justify-end gap-3 pt-4">
+						<button type="button" onclick="hideNewProviderModal()" class="btn-secondary">Cancel</button>
+						<button type="submit" class="btn-primary">Create Provider</button>
+					</div>
+				</form>
+			</div>
+		</div>
+
+		<script>
+			function showNewProviderModal() {
+				document.getElementById('newProviderModal').classList.remove('hidden');
+				document.getElementById('newProviderModal').classList.add('flex');
+			}
+
+			function hideNewProviderModal() {
+				document.getElementById('newProviderModal').classList.add('hidden');
+				document.getElementById('newProviderModal').classList.remove('flex');
+			}
+
+			// Close modal on escape key
+			document.addEventListener('keydown', function(e) {
+				if (e.key === 'Escape') {
+					hideNewProviderModal();
+				}
+			});
+
+			// Close modal on background click
+			document.getElementById('newProviderModal').addEventListener('click', function(e) {
+				if (e.target === this) {
+					hideNewProviderModal();
+				}
+			});
+		</script>
+	}
+}
+
+func truncateBaseDN(baseDN string) string {
+	if len(baseDN) > 30 {
+		return baseDN[:30] + "..."
+	}
+	return baseDN
+}
+
+func ldapRoleBadgeClass(role string) string {
+	switch role {
+	case "admin":
+		return "badge-danger"
+	case "operator":
+		return "badge-info"
+	default:
+		return "badge-success"
+	}
+}
+
+// Edit page for LDAP provider
+type LDAPProviderEditData struct {
+	PageData layouts.PageData
+	Provider LDAPProviderDetail
+	Error    string
+}
+
+type LDAPProviderDetail struct {
+	ID            string
+	Name          string
+	Host          string
+	Port          int
+	UseTLS        bool
+	StartTLS      bool
+	SkipTLSVerify bool
+	BindDN        string
+	BaseDN        string
+	UserFilter    string
+	UsernameAttr  string
+	EmailAttr     string
+	GroupFilter   string
+	GroupAttr     string
+	AdminGroup    string
+	OperatorGroup string
+	DefaultRole   string
+	IsEnabled     bool
+	CreatedAt     string
+	UpdatedAt     string
+}
+
+templ LDAPProviderEdit(data LDAPProviderEditData) {
+	@layouts.Base(data.PageData) {
+		<div class="max-w-2xl mx-auto space-y-6">
+			<div class="flex items-center gap-4">
+				<a href="/admin/ldap" class="p-2 text-gray-400 hover:text-white hover:bg-dark-700 rounded-lg">
+					<i class="fas fa-arrow-left"></i>
+				</a>
+				<div>
+					<h1 class="text-2xl font-display font-bold text-white">Edit LDAP Provider</h1>
+					<p class="text-gray-400 text-sm">{ data.Provider.Name }</p>
+				</div>
+			</div>
+
+			if data.Error != "" {
+				<div class="bg-red-500/10 border border-red-500/20 rounded-lg p-4 text-red-400">
+					{ data.Error }
+				</div>
+			}
+
+			<form action={ templ.SafeURL("/admin/ldap/" + data.Provider.ID) } method="POST" class="card p-6 space-y-4">
+				<input type="hidden" name="csrf_token" value={ data.PageData.CSRFToken }/>
+
+				<div class="grid grid-cols-2 gap-4">
+					<div>
+						<label class="block text-sm font-medium text-gray-300 mb-2">Provider Name</label>
+						<input type="text" name="name" value={ data.Provider.Name } required class="input"/>
+					</div>
+					<div>
+						<label class="block text-sm font-medium text-gray-300 mb-2">Default Role</label>
+						<select name="default_role" class="input">
+							<option value="viewer" selected?={ data.Provider.DefaultRole == "viewer" }>Viewer</option>
+							<option value="operator" selected?={ data.Provider.DefaultRole == "operator" }>Operator</option>
+							<option value="admin" selected?={ data.Provider.DefaultRole == "admin" }>Admin</option>
+						</select>
+					</div>
+				</div>
+
+				<!-- Connection Settings -->
+				<div class="border-t border-dark-700 pt-4 mt-4">
+					<h3 class="text-sm font-medium text-gray-300 mb-3">Connection Settings</h3>
+					<div class="grid grid-cols-3 gap-4">
+						<div class="col-span-2">
+							<label class="block text-sm font-medium text-gray-300 mb-2">Host</label>
+							<input type="text" name="host" value={ data.Provider.Host } required class="input"/>
+						</div>
+						<div>
+							<label class="block text-sm font-medium text-gray-300 mb-2">Port</label>
+							<input type="number" name="port" value={ fmt.Sprintf("%d", data.Provider.Port) } required class="input"/>
+						</div>
+					</div>
+					<div class="flex items-center gap-6 mt-4">
+						<label class="flex items-center gap-2 cursor-pointer">
+							<input type="checkbox" name="use_tls" checked?={ data.Provider.UseTLS } class="w-4 h-4 rounded border-gray-600 bg-dark-700 text-primary-500 focus:ring-primary-500"/>
+							<span class="text-sm text-gray-300">Use TLS (LDAPS)</span>
+						</label>
+						<label class="flex items-center gap-2 cursor-pointer">
+							<input type="checkbox" name="start_tls" checked?={ data.Provider.StartTLS } class="w-4 h-4 rounded border-gray-600 bg-dark-700 text-primary-500 focus:ring-primary-500"/>
+							<span class="text-sm text-gray-300">StartTLS</span>
+						</label>
+						<label class="flex items-center gap-2 cursor-pointer">
+							<input type="checkbox" name="skip_tls_verify" checked?={ data.Provider.SkipTLSVerify } class="w-4 h-4 rounded border-gray-600 bg-dark-700 text-primary-500 focus:ring-primary-500"/>
+							<span class="text-sm text-gray-300">Skip TLS Verify</span>
+						</label>
+					</div>
+				</div>
+
+				<!-- Bind Credentials -->
+				<div class="border-t border-dark-700 pt-4 mt-4">
+					<h3 class="text-sm font-medium text-gray-300 mb-3">Bind Credentials</h3>
+					<div class="space-y-4">
+						<div>
+							<label class="block text-sm font-medium text-gray-300 mb-2">Bind DN</label>
+							<input type="text" name="bind_dn" value={ data.Provider.BindDN } required class="input"/>
+						</div>
+						<div>
+							<label class="block text-sm font-medium text-gray-300 mb-2">Bind Password</label>
+							<input type="password" name="bind_password" class="input" placeholder="Leave blank to keep current"/>
+						</div>
+					</div>
+				</div>
+
+				<!-- Search Settings -->
+				<div class="border-t border-dark-700 pt-4 mt-4">
+					<h3 class="text-sm font-medium text-gray-300 mb-3">Search Settings</h3>
+					<div class="space-y-4">
+						<div>
+							<label class="block text-sm font-medium text-gray-300 mb-2">Base DN</label>
+							<input type="text" name="base_dn" value={ data.Provider.BaseDN } required class="input"/>
+						</div>
+						<div>
+							<label class="block text-sm font-medium text-gray-300 mb-2">User Filter</label>
+							<input type="text" name="user_filter" value={ data.Provider.UserFilter } class="input"/>
+							<p class="text-xs text-gray-500 mt-1">%s will be replaced with the username</p>
+						</div>
+						<div class="grid grid-cols-2 gap-4">
+							<div>
+								<label class="block text-sm font-medium text-gray-300 mb-2">Username Attribute</label>
+								<input type="text" name="username_attr" value={ data.Provider.UsernameAttr } class="input"/>
+							</div>
+							<div>
+								<label class="block text-sm font-medium text-gray-300 mb-2">Email Attribute</label>
+								<input type="text" name="email_attr" value={ data.Provider.EmailAttr } class="input"/>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- Group Mapping -->
+				<details class="bg-dark-700 rounded-lg" open?={ data.Provider.AdminGroup != "" || data.Provider.OperatorGroup != "" }>
+					<summary class="p-4 cursor-pointer text-gray-300 hover:text-white">
+						<i class="fas fa-users-cog mr-2"></i>Group Role Mapping
+					</summary>
+					<div class="p-4 pt-0 space-y-4">
+						<div>
+							<label class="block text-sm font-medium text-gray-300 mb-2">Group Filter</label>
+							<input type="text" name="group_filter" value={ data.Provider.GroupFilter } class="input"/>
+						</div>
+						<div>
+							<label class="block text-sm font-medium text-gray-300 mb-2">Group Attribute</label>
+							<input type="text" name="group_attr" value={ data.Provider.GroupAttr } class="input"/>
+						</div>
+						<div>
+							<label class="block text-sm font-medium text-gray-300 mb-2">Admin Group</label>
+							<input type="text" name="admin_group" value={ data.Provider.AdminGroup } class="input"/>
+						</div>
+						<div>
+							<label class="block text-sm font-medium text-gray-300 mb-2">Operator Group</label>
+							<input type="text" name="operator_group" value={ data.Provider.OperatorGroup } class="input"/>
+						</div>
+					</div>
+				</details>
+
+				<div class="flex items-center gap-4 pt-4 border-t border-dark-700">
+					<label class="flex items-center gap-2 cursor-pointer">
+						<input type="checkbox" name="is_enabled" checked?={ data.Provider.IsEnabled } class="w-4 h-4 rounded border-gray-600 bg-dark-700 text-primary-500 focus:ring-primary-500"/>
+						<span class="text-sm text-gray-300">Enabled</span>
+					</label>
+				</div>
+
+				<div class="flex justify-end gap-3 pt-4">
+					<a href="/admin/ldap" class="btn-secondary">Cancel</a>
+					<button type="submit" class="btn-primary">Save Changes</button>
+				</div>
+			</form>
+
+			<!-- Test Connection -->
+			<div class="card p-4">
+				<div class="flex items-center justify-between">
+					<div>
+						<h3 class="font-medium text-white">Test Connection</h3>
+						<p class="text-sm text-gray-400">Verify LDAP connection and bind credentials</p>
+					</div>
+					<button
+						hx-post={ "/admin/ldap/" + data.Provider.ID + "/test" }
+						hx-swap="none"
+						class="btn-secondary"
+					>
+						<i class="fas fa-plug mr-2"></i>Test
+					</button>
+				</div>
+			</div>
+
+			<!-- Metadata -->
+			<div class="card p-4 text-sm text-gray-500">
+				<div class="flex justify-between">
+					<span>Created: { data.Provider.CreatedAt }</span>
+					<span>Updated: { data.Provider.UpdatedAt }</span>
+				</div>
+			</div>
+		</div>
+	}
+}

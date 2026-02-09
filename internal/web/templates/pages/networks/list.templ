@@ -1,0 +1,278 @@
+package networks
+
+import (
+	"fmt"
+	
+	"github.com/fr4nsys/usulnet/internal/web/templates/layouts"
+	"github.com/fr4nsys/usulnet/internal/web/templates/components"
+)
+
+type NetworksListData struct {
+	PageData   layouts.PageData
+	Networks   []Network
+	Filters    NetworkFilters
+	Pagination PaginationData
+}
+
+type Network struct {
+	ID             string
+	ShortID        string
+	Name           string
+	Driver         string
+	Scope          string
+	Internal       bool
+	Attachable     bool
+	Subnet         string
+	Gateway        string
+	Created        string
+	CreatedAgo     string
+	ContainerCount int
+	Containers     []string
+}
+
+type NetworkFilters struct {
+	Search string
+	Driver string
+	Scope  string
+}
+
+type PaginationData struct {
+	CurrentPage int
+	TotalPages  int
+	TotalItems  int
+	PerPage     int
+}
+
+templ NetworksList(data NetworksListData) {
+	@layouts.Base(data.PageData) {
+		<!-- Page Header -->
+		<div class="flex items-center justify-between mb-6">
+			<div>
+				<div class="flex items-center gap-3">
+					<h1 class="text-2xl font-bold font-display text-white">Networks</h1>
+					@components.HostBadge(data.PageData.ActiveHostName)
+				</div>
+				<p class="text-gray-400 mt-1">Manage Docker networks</p>
+			</div>
+			<div class="flex items-center gap-3">
+				<a href="/topology" class="px-4 py-2 bg-dark-700 hover:bg-dark-600 text-gray-300 rounded-lg transition-colors">
+					<i class="fas fa-project-diagram mr-2"></i>
+					Topology
+				</a>
+				<a href="/networks/new" class="btn-primary">
+					<i class="fas fa-plus mr-2"></i>
+					New Network
+				</a>
+				<button 
+					hx-post="/networks/prune"
+					hx-confirm="Remove all unused networks?"
+					hx-swap="none"
+					class="px-4 py-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-lg transition-colors"
+				>
+					<i class="fas fa-broom mr-2"></i>
+					Prune
+				</button>
+			</div>
+		</div>
+
+		<!-- Filters -->
+		<div class="bg-dark-800 rounded-xl border border-dark-600 p-4 mb-6">
+			<div class="flex flex-col md:flex-row gap-4">
+				<!-- Search -->
+				<div class="flex-1">
+					<div class="relative">
+						<input 
+							type="search"
+							name="search"
+							placeholder="Search networks..."
+							value={ data.Filters.Search }
+							class="w-full pl-10 pr-4 py-2 bg-dark-700 border border-dark-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500/50"
+							hx-get="/networks"
+							hx-trigger="keyup changed delay:300ms"
+							hx-target="#network-table"
+							hx-select="#network-table"
+							hx-push-url="true"
+						/>
+						<i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-500"></i>
+					</div>
+				</div>
+				
+				<!-- Driver Filter -->
+				<div class="w-full md:w-40">
+					<select 
+						name="driver"
+						class="w-full px-4 py-2 bg-dark-700 border border-dark-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-primary-500/50 appearance-none"
+						hx-get="/networks"
+						hx-trigger="change"
+						hx-target="#network-table"
+						hx-select="#network-table"
+						hx-push-url="true"
+					>
+						<option value="" selected?={ data.Filters.Driver == "" }>All Drivers</option>
+						<option value="bridge" selected?={ data.Filters.Driver == "bridge" }>Bridge</option>
+						<option value="host" selected?={ data.Filters.Driver == "host" }>Host</option>
+						<option value="overlay" selected?={ data.Filters.Driver == "overlay" }>Overlay</option>
+						<option value="macvlan" selected?={ data.Filters.Driver == "macvlan" }>Macvlan</option>
+						<option value="none" selected?={ data.Filters.Driver == "none" }>None</option>
+					</select>
+				</div>
+				
+				<!-- Scope Filter -->
+				<div class="w-full md:w-40">
+					<select 
+						name="scope"
+						class="w-full px-4 py-2 bg-dark-700 border border-dark-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-primary-500/50 appearance-none"
+						hx-get="/networks"
+						hx-trigger="change"
+						hx-target="#network-table"
+						hx-select="#network-table"
+						hx-push-url="true"
+					>
+						<option value="" selected?={ data.Filters.Scope == "" }>All Scopes</option>
+						<option value="local" selected?={ data.Filters.Scope == "local" }>Local</option>
+						<option value="swarm" selected?={ data.Filters.Scope == "swarm" }>Swarm</option>
+						<option value="global" selected?={ data.Filters.Scope == "global" }>Global</option>
+					</select>
+				</div>
+			</div>
+		</div>
+
+		<!-- Networks Table -->
+		<div id="network-table" class="bg-dark-800 rounded-xl border border-dark-600 overflow-hidden">
+			@components.Table() {
+				@components.TableHead() {
+					@components.TableHeader("Network", "")
+					@components.TableHeader("Driver", "w-24")
+					@components.TableHeader("Subnet", "w-40")
+					@components.TableHeader("Scope", "w-24")
+					@components.TableHeader("Containers", "w-28")
+					@components.TableHeader("Actions", "w-32")
+				}
+				@components.TableBody() {
+					if len(data.Networks) == 0 {
+						@components.TableEmpty("No networks found", "fa-network-wired")
+					} else {
+						for _, net := range data.Networks {
+							@networkRow(net)
+						}
+					}
+				}
+			}
+			
+			if data.Pagination.TotalPages > 1 {
+				@components.Pagination(
+					data.Pagination.CurrentPage,
+					data.Pagination.TotalPages,
+					data.Pagination.TotalItems,
+					"/networks",
+				)
+			}
+		</div>
+	}
+}
+
+templ networkRow(net Network) {
+	<tr class="hover:bg-dark-700/50 transition-colors group">
+		<td class="px-4 py-3">
+			<div class="flex items-center gap-3">
+				<div class={ "w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0", networkIcon(net.Driver) }>
+					<i class={ networkIconClass(net.Driver) }></i>
+				</div>
+				<div>
+					<a href={ templ.SafeURL("/networks/" + net.ID) } class="font-medium text-white hover:text-primary-400 transition-colors">
+						{ net.Name }
+					</a>
+					<p class="text-xs text-gray-500 font-mono">{ net.ShortID }</p>
+				</div>
+			</div>
+		</td>
+		<td class="px-4 py-3">
+			<span class={ "px-2 py-1 text-xs rounded", driverBadge(net.Driver) }>
+				{ net.Driver }
+			</span>
+		</td>
+		<td class="px-4 py-3 text-sm font-mono">
+			if net.Subnet != "" {
+				<span class="text-gray-300">{ net.Subnet }</span>
+			} else {
+				<span class="text-gray-500">-</span>
+			}
+		</td>
+		<td class="px-4 py-3">
+			<span class="text-sm text-gray-400 capitalize">{ net.Scope }</span>
+		</td>
+		<td class="px-4 py-3">
+			if net.ContainerCount > 0 {
+				<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-green-500/10 text-green-400">
+					<span class="w-1.5 h-1.5 rounded-full bg-green-500"></span>
+					{ fmt.Sprintf("%d", net.ContainerCount) }
+				</span>
+			} else {
+				<span class="text-gray-500 text-sm">0</span>
+			}
+		</td>
+		<td class="px-4 py-3">
+			<div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+				<a 
+					href={ templ.SafeURL("/networks/" + net.ID) }
+					class="p-2 text-gray-400 hover:text-primary-400 hover:bg-primary-500/10 rounded-lg transition-colors"
+					title="Details"
+				>
+					<i class="fas fa-info-circle text-sm"></i>
+				</a>
+				if !isSystemNetwork(net.Name) && net.ContainerCount == 0 {
+					<button 
+						hx-post={ "/networks/" + net.ID + "/remove" }
+						hx-confirm="Remove this network?"
+						hx-swap="none"
+						class="p-2 text-gray-400 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
+						title="Remove"
+					>
+						<i class="fas fa-trash text-sm"></i>
+					</button>
+				}
+			</div>
+		</td>
+	</tr>
+}
+
+func networkIcon(driver string) string {
+	switch driver {
+	case "bridge":
+		return "bg-blue-500/20 text-blue-400"
+	case "host":
+		return "bg-yellow-500/20 text-yellow-400"
+	case "overlay":
+		return "bg-purple-500/20 text-purple-400"
+	case "macvlan":
+		return "bg-green-500/20 text-green-400"
+	default:
+		return "bg-gray-500/20 text-gray-400"
+	}
+}
+
+func networkIconClass(driver string) string {
+	switch driver {
+	case "host":
+		return "fas fa-server"
+	case "overlay":
+		return "fas fa-layer-group"
+	default:
+		return "fas fa-network-wired"
+	}
+}
+
+func driverBadge(driver string) string {
+	switch driver {
+	case "bridge":
+		return "bg-blue-500/20 text-blue-400"
+	case "host":
+		return "bg-yellow-500/20 text-yellow-400"
+	case "overlay":
+		return "bg-purple-500/20 text-purple-400"
+	case "macvlan":
+		return "bg-green-500/20 text-green-400"
+	default:
+		return "bg-dark-600 text-gray-400"
+	}
+}

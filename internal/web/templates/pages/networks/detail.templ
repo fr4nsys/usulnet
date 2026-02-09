@@ -1,0 +1,380 @@
+package networks
+
+import (
+	"fmt"
+	"github.com/fr4nsys/usulnet/internal/web/templates/layouts"
+)
+
+type NetworkDetailData struct {
+	PageData layouts.PageData
+	Network  NetworkFull
+	Tab      string
+}
+
+type NetworkFull struct {
+	ID             string
+	ShortID        string
+	Name           string
+	Driver         string
+	Scope          string
+	Internal       bool
+	Attachable     bool
+	Ingress        bool
+	EnableIPv6     bool
+	Created        string
+	CreatedAgo     string
+	IPAM           IPAMConfig
+	Options        map[string]string
+	Labels         map[string]string
+	Containers     []NetworkContainer
+	ContainerCount int
+}
+
+type IPAMConfig struct {
+	Driver  string
+	Config  []IPAMPool
+	Options map[string]string
+}
+
+type IPAMPool struct {
+	Subnet     string
+	Gateway    string
+	IPRange    string
+	AuxAddress map[string]string
+}
+
+type NetworkContainer struct {
+	ID          string
+	Name        string
+	State       string
+	IPv4Address string
+	IPv6Address string
+	MacAddress  string
+	Aliases     []string
+}
+
+templ NetworkDetail(data NetworkDetailData) {
+	@layouts.Base(data.PageData) {
+		<div class="mb-6">
+			<div class="flex items-center gap-4">
+				<a href="/networks" class="text-gray-400 hover:text-white">
+					<i class="fas fa-arrow-left"></i>
+				</a>
+				<div class="w-12 h-12 rounded-lg bg-blue-500/20 flex items-center justify-center">
+					<i class="fas fa-network-wired text-blue-400 text-xl"></i>
+				</div>
+				<div>
+					<h1 class="text-2xl font-bold font-display text-white">{ data.Network.Name }</h1>
+					<p class="text-gray-400 text-sm font-mono">{ data.Network.ShortID }</p>
+				</div>
+				<div class="ml-auto flex items-center gap-2">
+					if data.Network.ContainerCount == 0 && !isSystemNetwork(data.Network.Name) {
+						<button 
+							hx-delete={ fmt.Sprintf("/networks/%s", data.Network.ID) }
+							hx-confirm="Are you sure you want to delete this network?"
+							class="px-4 py-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-lg"
+						>
+							<i class="fas fa-trash mr-2"></i>Delete
+						</button>
+					}
+				</div>
+			</div>
+		</div>
+
+		<!-- Network Properties Badges -->
+		<div class="mb-6 flex flex-wrap gap-2">
+			<span class="px-3 py-1 bg-blue-500/20 text-blue-400 rounded-full text-sm">
+				{ data.Network.Driver }
+			</span>
+			<span class="px-3 py-1 bg-purple-500/20 text-purple-400 rounded-full text-sm">
+				{ data.Network.Scope }
+			</span>
+			if data.Network.Internal {
+				<span class="px-3 py-1 bg-yellow-500/20 text-yellow-400 rounded-full text-sm">
+					Internal
+				</span>
+			}
+			if data.Network.Attachable {
+				<span class="px-3 py-1 bg-green-500/20 text-green-400 rounded-full text-sm">
+					Attachable
+				</span>
+			}
+			if data.Network.EnableIPv6 {
+				<span class="px-3 py-1 bg-cyan-500/20 text-cyan-400 rounded-full text-sm">
+					IPv6
+				</span>
+			}
+		</div>
+
+		<!-- Tabs -->
+		<div class="border-b border-dark-600 mb-6">
+			<nav class="flex gap-4">
+				<a 
+					href={ templ.SafeURL(fmt.Sprintf("/networks/%s?tab=overview", data.Network.ID)) }
+					class={ "flex items-center gap-2 px-4 py-3", templ.KV("text-primary-400 border-b-2 border-primary-500", data.Tab == "" || data.Tab == "overview"), templ.KV("text-gray-400 hover:text-white", data.Tab != "" && data.Tab != "overview") }
+				>
+					<i class="fas fa-info-circle"></i>
+					<span>Overview</span>
+				</a>
+				<a 
+					href={ templ.SafeURL(fmt.Sprintf("/networks/%s?tab=containers", data.Network.ID)) }
+					class={ "flex items-center gap-2 px-4 py-3", templ.KV("text-primary-400 border-b-2 border-primary-500", data.Tab == "containers"), templ.KV("text-gray-400 hover:text-white", data.Tab != "containers") }
+				>
+					<i class="fas fa-cube"></i>
+					<span>Containers ({ fmt.Sprint(data.Network.ContainerCount) })</span>
+				</a>
+				<a 
+					href={ templ.SafeURL(fmt.Sprintf("/networks/%s?tab=ipam", data.Network.ID)) }
+					class={ "flex items-center gap-2 px-4 py-3", templ.KV("text-primary-400 border-b-2 border-primary-500", data.Tab == "ipam"), templ.KV("text-gray-400 hover:text-white", data.Tab != "ipam") }
+				>
+					<i class="fas fa-sitemap"></i>
+					<span>IPAM</span>
+				</a>
+				<a 
+					href={ templ.SafeURL(fmt.Sprintf("/networks/%s?tab=labels", data.Network.ID)) }
+					class={ "flex items-center gap-2 px-4 py-3", templ.KV("text-primary-400 border-b-2 border-primary-500", data.Tab == "labels"), templ.KV("text-gray-400 hover:text-white", data.Tab != "labels") }
+				>
+					<i class="fas fa-tags"></i>
+					<span>Labels</span>
+				</a>
+			</nav>
+		</div>
+
+		<!-- Tab Content -->
+		<div class="bg-dark-800 rounded-xl border border-dark-600 p-6">
+			switch data.Tab {
+				case "containers":
+					@networkContainersTab(data.Network)
+				case "ipam":
+					@networkIPAMTab(data.Network)
+				case "labels":
+					@networkLabelsTab(data.Network)
+				default:
+					@networkOverviewTab(data.Network)
+			}
+		</div>
+	}
+}
+
+templ networkOverviewTab(net NetworkFull) {
+	<div class="grid grid-cols-2 gap-6">
+		<div>
+			<h3 class="text-sm font-medium text-gray-400 mb-1">ID</h3>
+			<p class="text-white font-mono text-sm">{ net.ID }</p>
+		</div>
+		<div>
+			<h3 class="text-sm font-medium text-gray-400 mb-1">Name</h3>
+			<p class="text-white">{ net.Name }</p>
+		</div>
+		<div>
+			<h3 class="text-sm font-medium text-gray-400 mb-1">Driver</h3>
+			<span class="px-2 py-1 text-xs rounded bg-blue-500/20 text-blue-400">
+				{ net.Driver }
+			</span>
+		</div>
+		<div>
+			<h3 class="text-sm font-medium text-gray-400 mb-1">Scope</h3>
+			<p class="text-white">{ net.Scope }</p>
+		</div>
+		<div>
+			<h3 class="text-sm font-medium text-gray-400 mb-1">Created</h3>
+			<p class="text-white">{ net.CreatedAgo }</p>
+		</div>
+		<div>
+			<h3 class="text-sm font-medium text-gray-400 mb-1">Containers</h3>
+			<p class="text-white">{ fmt.Sprint(net.ContainerCount) }</p>
+		</div>
+		<div>
+			<h3 class="text-sm font-medium text-gray-400 mb-1">Internal</h3>
+			if net.Internal {
+				<span class="text-yellow-400">Yes</span>
+			} else {
+				<span class="text-gray-400">No</span>
+			}
+		</div>
+		<div>
+			<h3 class="text-sm font-medium text-gray-400 mb-1">Attachable</h3>
+			if net.Attachable {
+				<span class="text-green-400">Yes</span>
+			} else {
+				<span class="text-gray-400">No</span>
+			}
+		</div>
+		if len(net.Options) > 0 {
+			<div class="col-span-2">
+				<h3 class="text-sm font-medium text-gray-400 mb-2">Options</h3>
+				<div class="space-y-2">
+					for k, v := range net.Options {
+						<div class="p-3 bg-dark-700 rounded-lg font-mono text-sm">
+							<span class="text-blue-400">{ k }</span>
+							<span class="text-gray-500">=</span>
+							<span class="text-white">{ v }</span>
+						</div>
+					}
+				</div>
+			</div>
+		}
+	</div>
+}
+
+templ networkContainersTab(net NetworkFull) {
+	<div class="space-y-3">
+		if len(net.Containers) == 0 {
+			<div class="text-center py-8">
+				<div class="w-16 h-16 rounded-full bg-dark-700 flex items-center justify-center mx-auto mb-4">
+					<i class="fas fa-cube text-gray-500 text-2xl"></i>
+				</div>
+				<p class="text-gray-400">No containers are connected to this network</p>
+			</div>
+		} else {
+			for _, c := range net.Containers {
+				<div class="p-4 bg-dark-700 rounded-lg">
+					<div class="flex items-center justify-between mb-3">
+						<a href={ templ.SafeURL(fmt.Sprintf("/containers/%s", c.ID)) } class="font-medium text-white hover:text-primary-400">
+							{ c.Name }
+						</a>
+						if c.State == "running" {
+							<span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs bg-green-500/10 text-green-400">
+								<span class="w-1.5 h-1.5 rounded-full bg-green-500"></span>
+								Running
+							</span>
+						} else {
+							<span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs bg-gray-500/10 text-gray-400">
+								<span class="w-1.5 h-1.5 rounded-full bg-gray-500"></span>
+								{ c.State }
+							</span>
+						}
+					</div>
+					<div class="grid grid-cols-2 gap-4 text-sm">
+						if c.IPv4Address != "" {
+							<div>
+								<span class="text-gray-500">IPv4: </span>
+								<span class="text-white font-mono">{ c.IPv4Address }</span>
+							</div>
+						}
+						if c.IPv6Address != "" {
+							<div>
+								<span class="text-gray-500">IPv6: </span>
+								<span class="text-white font-mono">{ c.IPv6Address }</span>
+							</div>
+						}
+						if c.MacAddress != "" {
+							<div>
+								<span class="text-gray-500">MAC: </span>
+								<span class="text-white font-mono">{ c.MacAddress }</span>
+							</div>
+						}
+					</div>
+					if len(c.Aliases) > 0 {
+						<div class="mt-2 flex flex-wrap gap-1">
+							for _, alias := range c.Aliases {
+								<span class="px-2 py-0.5 bg-dark-600 text-gray-300 rounded text-xs">
+									{ alias }
+								</span>
+							}
+						</div>
+					}
+				</div>
+			}
+		}
+	</div>
+}
+
+templ networkIPAMTab(net NetworkFull) {
+	<div class="space-y-6">
+		<div>
+			<h3 class="text-sm font-medium text-gray-400 mb-2">IPAM Driver</h3>
+			<span class="px-2 py-1 text-xs rounded bg-purple-500/20 text-purple-400">
+				if net.IPAM.Driver != "" {
+					{ net.IPAM.Driver }
+				} else {
+					default
+				}
+			</span>
+		</div>
+		
+		if len(net.IPAM.Config) > 0 {
+			<div>
+				<h3 class="text-sm font-medium text-gray-400 mb-3">Subnets</h3>
+				<div class="space-y-3">
+					for i, pool := range net.IPAM.Config {
+						<div class="p-4 bg-dark-700 rounded-lg">
+							<div class="text-xs text-gray-500 mb-2">Pool { fmt.Sprint(i + 1) }</div>
+							<div class="grid grid-cols-2 gap-4">
+								if pool.Subnet != "" {
+									<div>
+										<span class="text-gray-400 text-sm">Subnet: </span>
+										<span class="text-white font-mono">{ pool.Subnet }</span>
+									</div>
+								}
+								if pool.Gateway != "" {
+									<div>
+										<span class="text-gray-400 text-sm">Gateway: </span>
+										<span class="text-white font-mono">{ pool.Gateway }</span>
+									</div>
+								}
+								if pool.IPRange != "" {
+									<div>
+										<span class="text-gray-400 text-sm">IP Range: </span>
+										<span class="text-white font-mono">{ pool.IPRange }</span>
+									</div>
+								}
+							</div>
+							if len(pool.AuxAddress) > 0 {
+								<div class="mt-3">
+									<span class="text-gray-400 text-sm">Auxiliary Addresses:</span>
+									<div class="mt-1 space-y-1">
+										for k, v := range pool.AuxAddress {
+											<div class="font-mono text-sm">
+												<span class="text-cyan-400">{ k }</span>
+												<span class="text-gray-500">: </span>
+												<span class="text-white">{ v }</span>
+											</div>
+										}
+									</div>
+								</div>
+							}
+						</div>
+					}
+				</div>
+			</div>
+		} else {
+			<p class="text-gray-500">No IPAM configuration</p>
+		}
+		
+		if len(net.IPAM.Options) > 0 {
+			<div>
+				<h3 class="text-sm font-medium text-gray-400 mb-2">IPAM Options</h3>
+				<div class="space-y-2">
+					for k, v := range net.IPAM.Options {
+						<div class="p-3 bg-dark-700 rounded-lg font-mono text-sm">
+							<span class="text-purple-400">{ k }</span>
+							<span class="text-gray-500">=</span>
+							<span class="text-white">{ v }</span>
+						</div>
+					}
+				</div>
+			</div>
+		}
+	</div>
+}
+
+templ networkLabelsTab(net NetworkFull) {
+	<div class="space-y-2">
+		if len(net.Labels) == 0 {
+			<p class="text-gray-500">No labels</p>
+		} else {
+			for k, v := range net.Labels {
+				<div class="p-3 bg-dark-700 rounded-lg font-mono text-sm">
+					<span class="text-primary-400">{ k }</span>
+					<span class="text-gray-500">=</span>
+					<span class="text-white break-all">{ v }</span>
+				</div>
+			}
+		}
+	</div>
+}
+
+func isSystemNetwork(name string) bool {
+	return name == "bridge" || name == "host" || name == "none"
+}

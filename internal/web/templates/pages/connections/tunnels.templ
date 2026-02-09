@@ -1,0 +1,372 @@
+package connections
+
+import (
+	"fmt"
+	"github.com/fr4nsys/usulnet/internal/web/templates/layouts"
+)
+
+type SSHTunnelData struct {
+	ID         string
+	LocalHost  string
+	LocalPort  int
+	RemoteHost string
+	RemotePort int
+	Status     string // active, stopped, error
+	Type       string // local, remote, dynamic
+}
+
+type SSHTunnelsPageData struct {
+	PageData   layouts.PageData
+	Connection SSHConnectionData
+	Tunnels    []SSHTunnelData
+}
+
+templ SSHTunnels(data SSHTunnelsPageData) {
+	@layouts.Base(data.PageData) {
+		<div class="space-y-6" x-data="tunnelManager()">
+			<!-- Header -->
+			<div class="flex items-center justify-between">
+				<div class="flex items-center gap-4">
+					<a href="/connections/ssh" class="p-2 text-gray-400 hover:text-white hover:bg-dark-700 rounded-lg">
+						<i class="fas fa-arrow-left"></i>
+					</a>
+					<div>
+						<h1 class="text-2xl font-display font-bold text-white">SSH Tunnels</h1>
+						<p class="text-gray-400 mt-1">Port forwarding for { data.Connection.Name }</p>
+					</div>
+				</div>
+				<div class="flex items-center gap-2">
+					<a href={ templ.SafeURL(fmt.Sprintf("/connections/ssh/%s/terminal", data.Connection.ID)) } class="btn-ghost">
+						<i class="fas fa-terminal mr-2"></i>Terminal
+					</a>
+					<a href={ templ.SafeURL(fmt.Sprintf("/connections/ssh/%s/files", data.Connection.ID)) } class="btn-ghost">
+						<i class="fas fa-folder mr-2"></i>Files
+					</a>
+					<button @click="showNewTunnelModal = true" class="btn-primary">
+						<i class="fas fa-plus mr-2"></i>New Tunnel
+					</button>
+				</div>
+			</div>
+
+			<!-- Connection Info Card -->
+			<div class="card p-4">
+				<div class="flex items-center justify-between">
+					<div class="flex items-center gap-4">
+						<div class="w-12 h-12 rounded-lg bg-dark-700 flex items-center justify-center">
+							<i class="fas fa-server text-xl text-primary-400"></i>
+						</div>
+						<div>
+							<h3 class="text-white font-medium">{ data.Connection.Name }</h3>
+							<p class="text-gray-400 text-sm">{ tunnelFormatSSHAddress(data.Connection.Username, data.Connection.Host, data.Connection.Port) }</p>
+						</div>
+					</div>
+					<div class="flex items-center gap-2">
+						<span class="flex items-center gap-2 text-sm text-green-400">
+							<span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+							Connected
+						</span>
+					</div>
+				</div>
+			</div>
+
+			<!-- Tunnel Types Info -->
+			<div class="grid grid-cols-3 gap-4">
+				<div class="card p-4">
+					<div class="flex items-center gap-3 mb-2">
+						<div class="w-8 h-8 rounded bg-blue-500/20 flex items-center justify-center">
+							<i class="fas fa-arrow-right text-blue-400 text-sm"></i>
+						</div>
+						<h4 class="text-white font-medium">Local Forward</h4>
+					</div>
+					<p class="text-gray-400 text-xs">Forward local port to remote destination through SSH</p>
+				</div>
+				<div class="card p-4">
+					<div class="flex items-center gap-3 mb-2">
+						<div class="w-8 h-8 rounded bg-purple-500/20 flex items-center justify-center">
+							<i class="fas fa-arrow-left text-purple-400 text-sm"></i>
+						</div>
+						<h4 class="text-white font-medium">Remote Forward</h4>
+					</div>
+					<p class="text-gray-400 text-xs">Forward remote port to local destination</p>
+				</div>
+				<div class="card p-4">
+					<div class="flex items-center gap-3 mb-2">
+						<div class="w-8 h-8 rounded bg-emerald-500/20 flex items-center justify-center">
+							<i class="fas fa-globe text-emerald-400 text-sm"></i>
+						</div>
+						<h4 class="text-white font-medium">Dynamic (SOCKS)</h4>
+					</div>
+					<p class="text-gray-400 text-xs">SOCKS5 proxy through SSH tunnel</p>
+				</div>
+			</div>
+
+			<!-- Active Tunnels -->
+			<div class="card">
+				<div class="px-6 py-4 border-b border-dark-600">
+					<h3 class="text-lg font-medium text-white">Active Tunnels</h3>
+				</div>
+				<div class="divide-y divide-dark-600">
+					if len(data.Tunnels) == 0 {
+						<div class="px-6 py-12 text-center">
+							<i class="fas fa-network-wired text-4xl text-gray-600 mb-4"></i>
+							<p class="text-gray-400">No tunnels configured</p>
+							<p class="text-gray-500 text-sm mt-1">Create a tunnel to forward ports through this SSH connection</p>
+						</div>
+					}
+					for _, tunnel := range data.Tunnels {
+						<div class="px-6 py-4 flex items-center justify-between hover:bg-dark-750">
+							<div class="flex items-center gap-4">
+								<div class="w-10 h-10 rounded-lg bg-dark-700 flex items-center justify-center">
+									if tunnel.Type == "local" {
+										<i class="fas fa-arrow-right text-blue-400"></i>
+									} else if tunnel.Type == "remote" {
+										<i class="fas fa-arrow-left text-purple-400"></i>
+									} else {
+										<i class="fas fa-globe text-emerald-400"></i>
+									}
+								</div>
+								<div>
+									<div class="flex items-center gap-2">
+										<span class="text-white font-medium">{ formatHostPort(tunnel.LocalHost, tunnel.LocalPort) }</span>
+										<i class="fas fa-long-arrow-alt-right text-gray-500"></i>
+										<span class="text-white font-medium">{ formatHostPort(tunnel.RemoteHost, tunnel.RemotePort) }</span>
+									</div>
+									<p class="text-gray-400 text-xs mt-0.5">
+										if tunnel.Type == "local" {
+											Local port { intToStr(tunnel.LocalPort) } forwards to { formatHostPort(tunnel.RemoteHost, tunnel.RemotePort) }
+										} else if tunnel.Type == "remote" {
+											Remote port { intToStr(tunnel.RemotePort) } forwards to { formatHostPort(tunnel.LocalHost, tunnel.LocalPort) }
+										} else {
+											SOCKS5 proxy on port { intToStr(tunnel.LocalPort) }
+										}
+									</p>
+								</div>
+							</div>
+							<div class="flex items-center gap-3">
+								if tunnel.Status == "active" {
+									<span class="flex items-center gap-1.5 text-xs text-green-400">
+										<span class="w-1.5 h-1.5 rounded-full bg-green-500"></span>
+										Active
+									</span>
+								} else if tunnel.Status == "error" {
+									<span class="flex items-center gap-1.5 text-xs text-red-400">
+										<span class="w-1.5 h-1.5 rounded-full bg-red-500"></span>
+										Error
+									</span>
+								} else {
+									<span class="flex items-center gap-1.5 text-xs text-gray-400">
+										<span class="w-1.5 h-1.5 rounded-full bg-gray-500"></span>
+										Stopped
+									</span>
+								}
+								<button
+									@click={ fmt.Sprintf("toggleTunnel('%s')", tunnel.ID) }
+									class="p-2 text-gray-400 hover:text-white hover:bg-dark-600 rounded-lg"
+									title={ ternary(tunnel.Status == "active", "Stop", "Start") }
+								>
+									if tunnel.Status == "active" {
+										<i class="fas fa-stop"></i>
+									} else {
+										<i class="fas fa-play"></i>
+									}
+								</button>
+								<button
+									@click={ fmt.Sprintf("deleteTunnel('%s')", tunnel.ID) }
+									class="p-2 text-gray-400 hover:text-red-400 hover:bg-dark-600 rounded-lg"
+									title="Delete"
+								>
+									<i class="fas fa-trash"></i>
+								</button>
+							</div>
+						</div>
+					}
+				</div>
+			</div>
+
+			<!-- New Tunnel Modal -->
+			<div x-show="showNewTunnelModal" x-cloak class="fixed inset-0 z-50 overflow-y-auto">
+				<div class="flex min-h-screen items-center justify-center p-4">
+					<div class="fixed inset-0 bg-black/60" @click="showNewTunnelModal = false"></div>
+					<div class="relative card w-full max-w-lg p-6">
+						<h3 class="text-lg font-semibold text-white mb-4">
+							<i class="fas fa-plus-circle text-primary-400 mr-2"></i>New SSH Tunnel
+						</h3>
+
+						<form @submit.prevent="createTunnel">
+							<!-- Tunnel Type -->
+							<div class="mb-4">
+								<label class="block text-sm font-medium text-gray-300 mb-2">Tunnel Type</label>
+								<div class="grid grid-cols-3 gap-2">
+									<button type="button"
+										@click="tunnelType = 'local'"
+										:class="tunnelType === 'local' ? 'bg-blue-500/20 border-blue-500 text-blue-400' : 'bg-dark-700 border-dark-600 text-gray-400'"
+										class="p-3 rounded-lg border text-center hover:border-blue-500 transition-colors">
+										<i class="fas fa-arrow-right mb-1"></i>
+										<p class="text-xs">Local</p>
+									</button>
+									<button type="button"
+										@click="tunnelType = 'remote'"
+										:class="tunnelType === 'remote' ? 'bg-purple-500/20 border-purple-500 text-purple-400' : 'bg-dark-700 border-dark-600 text-gray-400'"
+										class="p-3 rounded-lg border text-center hover:border-purple-500 transition-colors">
+										<i class="fas fa-arrow-left mb-1"></i>
+										<p class="text-xs">Remote</p>
+									</button>
+									<button type="button"
+										@click="tunnelType = 'dynamic'"
+										:class="tunnelType === 'dynamic' ? 'bg-emerald-500/20 border-emerald-500 text-emerald-400' : 'bg-dark-700 border-dark-600 text-gray-400'"
+										class="p-3 rounded-lg border text-center hover:border-emerald-500 transition-colors">
+										<i class="fas fa-globe mb-1"></i>
+										<p class="text-xs">Dynamic</p>
+									</button>
+								</div>
+							</div>
+
+							<!-- Local Settings -->
+							<div class="grid grid-cols-2 gap-4 mb-4">
+								<div>
+									<label class="block text-sm font-medium text-gray-300 mb-1">Local Host</label>
+									<input type="text" x-model="localHost" placeholder="127.0.0.1"
+										class="input w-full" :disabled="tunnelType === 'dynamic'"/>
+								</div>
+								<div>
+									<label class="block text-sm font-medium text-gray-300 mb-1">Local Port</label>
+									<input type="number" x-model="localPort" placeholder="8080"
+										class="input w-full" required min="1" max="65535"/>
+								</div>
+							</div>
+
+							<!-- Remote Settings (not for dynamic) -->
+							<div x-show="tunnelType !== 'dynamic'" class="grid grid-cols-2 gap-4 mb-4">
+								<div>
+									<label class="block text-sm font-medium text-gray-300 mb-1">Remote Host</label>
+									<input type="text" x-model="remoteHost" placeholder="localhost"
+										class="input w-full"/>
+								</div>
+								<div>
+									<label class="block text-sm font-medium text-gray-300 mb-1">Remote Port</label>
+									<input type="number" x-model="remotePort" placeholder="80"
+										class="input w-full" min="1" max="65535"/>
+								</div>
+							</div>
+
+							<!-- Example -->
+							<div class="bg-dark-700 rounded-lg p-3 mb-4">
+								<p class="text-xs text-gray-400 mb-1">Command equivalent:</p>
+								<code class="text-xs text-primary-400" x-text="getCommandExample()"></code>
+							</div>
+
+							<!-- Actions -->
+							<div class="flex justify-end gap-3">
+								<button type="button" @click="showNewTunnelModal = false" class="btn-ghost">Cancel</button>
+								<button type="submit" class="btn-primary">
+									<i class="fas fa-plus mr-2"></i>Create Tunnel
+								</button>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<script>
+		function tunnelManager() {
+			return {
+				showNewTunnelModal: false,
+				tunnelType: 'local',
+				localHost: '127.0.0.1',
+				localPort: '',
+				remoteHost: 'localhost',
+				remotePort: '',
+
+				getCommandExample() {
+					const lp = this.localPort || 'LOCAL_PORT';
+					const lh = this.localHost || '127.0.0.1';
+					const rp = this.remotePort || 'REMOTE_PORT';
+					const rh = this.remoteHost || 'REMOTE_HOST';
+
+					if (this.tunnelType === 'local') {
+						return `ssh -L ${lh}:${lp}:${rh}:${rp} user@host`;
+					} else if (this.tunnelType === 'remote') {
+						return `ssh -R ${rh}:${rp}:${lh}:${lp} user@host`;
+					} else {
+						return `ssh -D ${lp} user@host`;
+					}
+				},
+
+				async createTunnel() {
+					const form = new FormData();
+					form.append('type', this.tunnelType);
+					form.append('local_host', this.localHost);
+					form.append('local_port', this.localPort);
+					form.append('remote_host', this.remoteHost);
+					form.append('remote_port', this.remotePort);
+
+					const connID = window.location.pathname.split('/')[3];
+					try {
+						const resp = await fetch(`/connections/ssh/${connID}/tunnels`, {
+							method: 'POST',
+							body: form,
+						});
+						if (resp.ok) {
+							location.reload();
+						} else {
+							const data = await resp.json();
+							alert(data.error || 'Failed to create tunnel');
+						}
+					} catch (e) {
+						alert('Error: ' + e.message);
+					}
+				},
+
+				async toggleTunnel(id) {
+					const connID = window.location.pathname.split('/')[3];
+					try {
+						const resp = await fetch(`/connections/ssh/${connID}/tunnels/${id}/toggle`, {
+							method: 'POST',
+						});
+						if (resp.ok) {
+							location.reload();
+						}
+					} catch (e) {
+						alert('Error: ' + e.message);
+					}
+				},
+
+				async deleteTunnel(id) {
+					if (!confirm('Delete this tunnel?')) return;
+					const connID = window.location.pathname.split('/')[3];
+					try {
+						const resp = await fetch(`/connections/ssh/${connID}/tunnels/${id}`, {
+							method: 'DELETE',
+						});
+						if (resp.ok) {
+							location.reload();
+						}
+					} catch (e) {
+						alert('Error: ' + e.message);
+					}
+				}
+			};
+		}
+		</script>
+	}
+}
+
+func ternary(cond bool, a, b string) string {
+	if cond {
+		return a
+	}
+	return b
+}
+
+func tunnelFormatSSHAddress(username, host string, port int) string {
+	return fmt.Sprintf("%s@%s:%d", username, host, port)
+}
+
+func formatHostPort(host string, port int) string {
+	return fmt.Sprintf("%s:%d", host, port)
+}
+
+func intToStr(n int) string {
+	return fmt.Sprintf("%d", n)
+}

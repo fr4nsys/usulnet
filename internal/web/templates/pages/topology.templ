@@ -1,0 +1,153 @@
+package pages
+
+import (
+	"fmt"
+	"github.com/fr4nsys/usulnet/internal/web/templates/layouts"
+)
+
+type TopologyData struct {
+	PageData   layouts.PageData
+	Networks   []NetworkTopology
+	Containers []ContainerNode
+}
+
+type NetworkTopology struct {
+	ID         string
+	Name       string
+	Driver     string
+	Subnet     string
+	Gateway    string
+	Scope      string
+	Internal   bool
+	Containers []string
+}
+
+type ContainerNode struct {
+	ID       string
+	Name     string
+	Status   string
+	Networks []string
+}
+
+templ Topology(data TopologyData) {
+	@layouts.Base(data.PageData) {
+		<div class="space-y-6">
+			<!-- Header -->
+			<div class="flex items-center justify-between">
+				<div>
+					<h1 class="text-2xl font-display font-bold text-white">Network Topology</h1>
+					<p class="text-gray-400 mt-1">Visualize container network connections</p>
+				</div>
+			</div>
+
+			<!-- Topology View -->
+			<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+				<!-- Networks Column -->
+				<div class="lg:col-span-2 space-y-4">
+					for _, network := range data.Networks {
+						<div class="card p-4">
+							<div class="flex items-center justify-between mb-4">
+								<div class="flex items-center gap-3">
+									<div class="w-10 h-10 rounded-lg bg-primary-500/20 flex items-center justify-center">
+										<i class="fas fa-network-wired text-primary-400"></i>
+									</div>
+									<div>
+										<h3 class="font-medium text-white">{ network.Name }</h3>
+										<div class="text-sm text-gray-400 space-x-2">
+											<span>{ network.Driver }</span>
+											if network.Subnet != "" {
+												<span>•</span>
+												<span>{ network.Subnet }</span>
+											}
+											if network.Gateway != "" {
+												<span>•</span>
+												<span>GW { network.Gateway }</span>
+											}
+											if network.Scope != "" {
+												<span>•</span>
+												<span>{ network.Scope }</span>
+											}
+											if network.Internal {
+												<span>•</span>
+												<span class="text-yellow-400">internal</span>
+											}
+										</div>
+									</div>
+								</div>
+								<a href={ templ.SafeURL("/networks/" + network.ID) } class="text-gray-400 hover:text-white">
+									<i class="fas fa-external-link-alt"></i>
+								</a>
+							</div>
+
+							if len(network.Containers) > 0 {
+								<div class="flex flex-wrap gap-2">
+									for _, containerName := range network.Containers {
+										<span class="px-3 py-1.5 bg-dark-700 rounded-lg text-sm text-gray-300 flex items-center gap-2">
+											<span class="w-2 h-2 rounded-full bg-green-500"></span>
+											{ containerName }
+										</span>
+									}
+								</div>
+							} else {
+								<p class="text-sm text-gray-500">No containers connected</p>
+							}
+						</div>
+					}
+				</div>
+
+				<!-- Legend / Stats -->
+				<div class="space-y-4">
+					<div class="card p-4">
+						<h3 class="font-medium text-white mb-3">Summary</h3>
+						<div class="space-y-2 text-sm">
+							<div class="flex justify-between">
+								<span class="text-gray-400">Networks</span>
+								<span class="text-white">{ fmt.Sprintf("%d", len(data.Networks)) }</span>
+							</div>
+							<div class="flex justify-between">
+								<span class="text-gray-400">Containers</span>
+								<span class="text-white">{ fmt.Sprintf("%d", len(data.Containers)) }</span>
+							</div>
+						</div>
+					</div>
+
+					<div class="card p-4">
+						<h3 class="font-medium text-white mb-3">Network Drivers</h3>
+						<div class="space-y-2 text-sm">
+							<div class="flex items-center gap-2">
+								<span class="w-3 h-3 rounded bg-blue-500"></span>
+								<span class="text-gray-400">bridge</span>
+							</div>
+							<div class="flex items-center gap-2">
+								<span class="w-3 h-3 rounded bg-green-500"></span>
+								<span class="text-gray-400">overlay</span>
+							</div>
+							<div class="flex items-center gap-2">
+								<span class="w-3 h-3 rounded bg-yellow-500"></span>
+								<span class="text-gray-400">host</span>
+							</div>
+							<div class="flex items-center gap-2">
+								<span class="w-3 h-3 rounded bg-purple-500"></span>
+								<span class="text-gray-400">macvlan</span>
+							</div>
+						</div>
+					</div>
+
+					<div class="card p-4">
+						<h3 class="font-medium text-white mb-3">Isolated Containers</h3>
+						<div class="space-y-2">
+							for _, c := range data.Containers {
+								if len(c.Networks) == 0 {
+									<div class="flex items-center gap-2 text-sm">
+										<span class="w-2 h-2 rounded-full bg-yellow-500"></span>
+										<span class="text-yellow-400">{ c.Name }</span>
+									</div>
+								}
+							}
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	}
+}

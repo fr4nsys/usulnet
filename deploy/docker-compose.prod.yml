@@ -1,0 +1,134 @@
+# =============================================================================
+# usulnet - Production Docker Compose
+# =============================================================================
+#
+# NOTE: The canonical docker-compose.yml lives at the repository root.
+#       This file is kept for the install.sh one-liner deployment.
+#
+# Quick start:
+#   1. cp .env.example .env
+#   2. Edit .env (change passwords and secrets)
+#   3. docker compose -f docker-compose.prod.yml up -d
+#   4. Open https://localhost:7443
+#
+# Requirements:
+#   - Docker Engine 24+ with Docker Compose v2
+#   - 2GB RAM minimum (4GB recommended)
+#   - Ports 8080 (HTTP) and 7443 (HTTPS) available
+#
+# =============================================================================
+
+services:
+  # --------------------------------------------------------------------------
+  # usulnet Application
+  # --------------------------------------------------------------------------
+  usulnet:
+    image: usulnet/usulnet:${USULNET_VERSION:-latest}
+    container_name: usulnet
+    restart: unless-stopped
+    ports:
+      - "${USULNET_HTTP_PORT:-8080}:8080"
+      - "${USULNET_HTTPS_PORT:-7443}:7443"
+    volumes:
+      # Docker socket for container management
+      - /var/run/docker.sock:/var/run/docker.sock
+      # Persistent data (backups, PKI certs, license, etc.)
+      - usulnet_data:/app/data
+    # Host terminal support (nsenter into host namespaces)
+    pid: "host"
+    cap_add:
+      - SYS_PTRACE
+      - SYS_ADMIN
+    environment:
+      - USULNET_MODE=standalone
+      - USULNET_DATABASE_URL=postgres://${DB_USER:-usulnet}:${DB_PASSWORD}@postgres:5432/${DB_NAME:-usulnet}?sslmode=disable
+      - USULNET_REDIS_URL=redis://redis:6379
+      - USULNET_NATS_URL=nats://nats:4222
+      - USULNET_JWT_SECRET=${JWT_SECRET}
+      - USULNET_ENCRYPTION_KEY=${ENCRYPTION_KEY}
+      - HOST_TERMINAL_ENABLED=${HOST_TERMINAL_ENABLED:-true}
+      - HOST_TERMINAL_USER=${HOST_TERMINAL_USER:-nobody}
+      - HOST_TERMINAL_SHELL=/bin/bash
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      nats:
+        condition: service_started
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+    networks:
+      - usulnet-internal
+
+  # --------------------------------------------------------------------------
+  # PostgreSQL Database
+  # --------------------------------------------------------------------------
+  postgres:
+    image: postgres:16-alpine
+    container_name: usulnet-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${DB_USER:-usulnet}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME:-usulnet}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-usulnet}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - usulnet-internal
+    # NOTE: PostgreSQL port NOT exposed to host in production.
+    # Access via: docker exec -it usulnet-postgres psql -U usulnet
+
+  # --------------------------------------------------------------------------
+  # Redis (sessions and cache)
+  # --------------------------------------------------------------------------
+  redis:
+    image: redis:8-alpine
+    container_name: usulnet-redis
+    restart: unless-stopped
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - usulnet-internal
+
+  # --------------------------------------------------------------------------
+  # NATS (messaging, required for agent communication)
+  # --------------------------------------------------------------------------
+  nats:
+    image: nats:2.12-alpine
+    container_name: usulnet-nats
+    restart: unless-stopped
+    command: ["--jetstream", "--store_dir=/data", "-m", "8222"]
+    volumes:
+      - nats_data:/data
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8222/healthz"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - usulnet-internal
+
+volumes:
+  postgres_data:
+  redis_data:
+  nats_data:
+  usulnet_data:
+
+networks:
+  usulnet-internal:
+    driver: bridge

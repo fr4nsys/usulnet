@@ -1,0 +1,8 @@
+DROP TABLE IF EXISTS npm_audit_log CASCADE;
+DROP TABLE IF EXISTS container_proxy_mappings CASCADE;
+DROP TABLE IF EXISTS npm_connections CASCADE;
+DROP TABLE IF EXISTS proxy_audit_log CASCADE;
+DROP TABLE IF EXISTS proxy_headers CASCADE;
+DROP TABLE IF EXISTS proxy_hosts CASCADE;
+DROP TABLE IF EXISTS proxy_certificates CASCADE;
+DROP TABLE IF EXISTS proxy_dns_providers CASCADE;

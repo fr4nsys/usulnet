@@ -1,0 +1,100 @@
+package pages
+
+import "github.com/fr4nsys/usulnet/internal/web/templates/layouts"
+
+type ProfileData struct {
+	PageData layouts.PageData
+	User     ProfileUser
+	Success  string
+	Error    string
+}
+
+type ProfileUser struct {
+	Username  string
+	Email     string
+	Role      string
+	CreatedAt string
+}
+
+templ Profile(data ProfileData) {
+	@layouts.Base(data.PageData) {
+		<div class="max-w-2xl mx-auto space-y-6">
+			<div>
+				<h1 class="text-2xl font-display font-bold text-white">Profile</h1>
+				<p class="text-gray-400 mt-1">Manage your account settings</p>
+			</div>
+
+			if data.Success != "" {
+				<div class="bg-green-500/10 border border-green-500/20 rounded-lg p-4 text-green-400">
+					<i class="fas fa-check-circle mr-2"></i>{ data.Success }
+				</div>
+			}
+
+			if data.Error != "" {
+				<div class="bg-red-500/10 border border-red-500/20 rounded-lg p-4 text-red-400">
+					<i class="fas fa-exclamation-circle mr-2"></i>{ data.Error }
+				</div>
+			}
+
+			<!-- Profile Info -->
+			<div class="card p-6">
+				<h2 class="text-lg font-medium text-white mb-4">Account Information</h2>
+				<form action="/profile" method="POST" class="space-y-4">
+					<input type="hidden" name="csrf_token" value={ data.PageData.CSRFToken }/>
+					<div>
+						<label class="block text-sm font-medium text-gray-300 mb-2">Username</label>
+						<input type="text" name="username" value={ data.User.Username } class="input" readonly/>
+					</div>
+					<div>
+						<label class="block text-sm font-medium text-gray-300 mb-2">Email</label>
+						<input type="email" name="email" value={ data.User.Email } class="input"/>
+					</div>
+					<div>
+						<label class="block text-sm font-medium text-gray-300 mb-2">Role</label>
+						<input type="text" value={ data.User.Role } class="input bg-dark-900" readonly disabled/>
+					</div>
+					<div class="flex justify-end pt-2">
+						<button type="submit" class="btn-primary">Update Profile</button>
+					</div>
+				</form>
+			</div>
+
+			<!-- Change Password -->
+			<div class="card p-6">
+				<h2 class="text-lg font-medium text-white mb-4">Change Password</h2>
+				<form action="/profile/password" method="POST" class="space-y-4">
+					<input type="hidden" name="csrf_token" value={ data.PageData.CSRFToken }/>
+					<div>
+						<label class="block text-sm font-medium text-gray-300 mb-2">Current Password</label>
+						<input type="password" name="current_password" required class="input"/>
+					</div>
+					<div>
+						<label class="block text-sm font-medium text-gray-300 mb-2">New Password</label>
+						<input type="password" name="new_password" required minlength="8" class="input"/>
+					</div>
+					<div>
+						<label class="block text-sm font-medium text-gray-300 mb-2">Confirm New Password</label>
+						<input type="password" name="confirm_password" required minlength="8" class="input"/>
+					</div>
+					<div class="flex justify-end pt-2">
+						<button type="submit" class="btn-primary">Change Password</button>
+					</div>
+				</form>
+			</div>
+
+			<!-- Danger Zone -->
+			<div class="card p-6 border-red-500/30">
+				<h2 class="text-lg font-medium text-red-400 mb-4">Danger Zone</h2>
+				<p class="text-gray-400 mb-4">
+					Once you delete your account, there is no going back. Please be certain.
+				</p>
+				<button 
+					hx-delete="/profile"
+					hx-confirm="Are you sure you want to delete your account? This action cannot be undone."
+					class="btn-danger">
+					Delete Account
+				</button>
+			</div>
+		</div>
+	}
+}

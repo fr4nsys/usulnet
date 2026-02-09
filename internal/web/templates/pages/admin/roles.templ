@@ -1,0 +1,687 @@
+package admin
+
+import (
+	"fmt"
+	"github.com/fr4nsys/usulnet/internal/web/templates/layouts"
+)
+
+// ============================================================================
+// Roles List
+// ============================================================================
+
+type RolesData struct {
+	PageData layouts.PageData
+	Roles    []RoleItem
+	Stats    RoleStats
+}
+
+type RoleItem struct {
+	ID          string
+	Name        string
+	DisplayName string
+	Description string
+	Permissions []string
+	IsSystem    bool
+	IsActive    bool
+	Priority    int
+	UserCount   int
+	CreatedAt   string
+	UpdatedAt   string
+}
+
+type RoleStats struct {
+	Total    int
+	System   int
+	Custom   int
+	Active   int
+	Inactive int
+}
+
+templ RolesList(data RolesData) {
+	@layouts.Base(data.PageData) {
+		<div class="space-y-6">
+			<!-- Header -->
+			<div class="flex items-center justify-between">
+				<div>
+					<h1 class="text-2xl font-display font-bold text-white">Roles & Permissions</h1>
+					<p class="text-gray-400 mt-1">
+						Manage user roles and granular permissions
+					</p>
+				</div>
+				<button
+					onclick="showNewRoleModal()"
+					class="btn-primary"
+				>
+					<i class="fas fa-plus mr-2"></i>Create Role
+				</button>
+			</div>
+
+			<!-- Stats Cards -->
+			<div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+				<div class="card p-4">
+					<div class="text-2xl font-bold text-white">{ fmt.Sprintf("%d", data.Stats.Total) }</div>
+					<div class="text-sm text-gray-400">Total Roles</div>
+				</div>
+				<div class="card p-4">
+					<div class="text-2xl font-bold text-blue-400">{ fmt.Sprintf("%d", data.Stats.System) }</div>
+					<div class="text-sm text-gray-400">System Roles</div>
+				</div>
+				<div class="card p-4">
+					<div class="text-2xl font-bold text-purple-400">{ fmt.Sprintf("%d", data.Stats.Custom) }</div>
+					<div class="text-sm text-gray-400">Custom Roles</div>
+				</div>
+				<div class="card p-4">
+					<div class="text-2xl font-bold text-green-400">{ fmt.Sprintf("%d", data.Stats.Active) }</div>
+					<div class="text-sm text-gray-400">Active</div>
+				</div>
+				<div class="card p-4">
+					<div class="text-2xl font-bold text-gray-500">{ fmt.Sprintf("%d", data.Stats.Inactive) }</div>
+					<div class="text-sm text-gray-400">Inactive</div>
+				</div>
+			</div>
+
+			<!-- System Roles Section -->
+			<div class="card">
+				<div class="p-4 border-b border-dark-700">
+					<h2 class="text-lg font-medium text-white">
+						<i class="fas fa-shield-alt mr-2 text-blue-400"></i>System Roles
+					</h2>
+					<p class="text-sm text-gray-500 mt-1">Built-in roles that cannot be deleted</p>
+				</div>
+				<div class="overflow-x-auto">
+					<table class="table">
+						<thead>
+							<tr>
+								<th>Role</th>
+								<th>Description</th>
+								<th>Permissions</th>
+								<th>Users</th>
+								<th>Actions</th>
+							</tr>
+						</thead>
+						<tbody>
+							for _, role := range data.Roles {
+								if role.IsSystem {
+									@roleRow(role, data.PageData.CSRFToken)
+								}
+							}
+						</tbody>
+					</table>
+				</div>
+			</div>
+
+			<!-- Custom Roles Section -->
+			<div class="card">
+				<div class="p-4 border-b border-dark-700">
+					<h2 class="text-lg font-medium text-white">
+						<i class="fas fa-user-cog mr-2 text-purple-400"></i>Custom Roles
+					</h2>
+					<p class="text-sm text-gray-500 mt-1">User-defined roles with custom permissions</p>
+				</div>
+				<div class="overflow-x-auto">
+					<table class="table">
+						<thead>
+							<tr>
+								<th>Role</th>
+								<th>Description</th>
+								<th>Permissions</th>
+								<th>Users</th>
+								<th>Status</th>
+								<th>Actions</th>
+							</tr>
+						</thead>
+						<tbody>
+							for _, role := range data.Roles {
+								if !role.IsSystem {
+									@customRoleRow(role, data.PageData.CSRFToken)
+								}
+							}
+							if countCustomRoles(data.Roles) == 0 {
+								<tr>
+									<td colspan="6" class="text-center text-gray-500 py-8">
+										<i class="fas fa-user-cog text-4xl mb-3 block"></i>
+										No custom roles yet. Create one to define granular permissions.
+									</td>
+								</tr>
+							}
+						</tbody>
+					</table>
+				</div>
+			</div>
+
+			<!-- Permission Categories Reference -->
+			<details class="card">
+				<summary class="p-4 cursor-pointer text-white hover:bg-dark-700 rounded-t-xl font-medium">
+					<i class="fas fa-book mr-2 text-primary-400"></i>Available Permissions Reference
+				</summary>
+				<div class="p-4 pt-0 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+					@permissionCategory("Containers", "fa-cube", "blue", []string{"container:view", "container:create", "container:start", "container:stop", "container:restart", "container:remove", "container:exec", "container:logs"})
+					@permissionCategory("Images", "fa-layer-group", "purple", []string{"image:view", "image:pull", "image:remove", "image:build"})
+					@permissionCategory("Volumes", "fa-hdd", "green", []string{"volume:view", "volume:create", "volume:remove"})
+					@permissionCategory("Networks", "fa-network-wired", "yellow", []string{"network:view", "network:create", "network:remove"})
+					@permissionCategory("Stacks", "fa-cubes", "pink", []string{"stack:view", "stack:deploy", "stack:update", "stack:remove"})
+					@permissionCategory("Hosts", "fa-server", "orange", []string{"host:view", "host:create", "host:update", "host:remove"})
+					@permissionCategory("Users", "fa-users", "red", []string{"user:view", "user:create", "user:update", "user:remove"})
+					@permissionCategory("Roles", "fa-user-shield", "indigo", []string{"role:view", "role:create", "role:update", "role:remove"})
+					@permissionCategory("Settings", "fa-sliders-h", "gray", []string{"settings:view", "settings:update"})
+					@permissionCategory("Backups", "fa-archive", "teal", []string{"backup:view", "backup:create", "backup:restore"})
+					@permissionCategory("Security", "fa-shield-alt", "rose", []string{"security:view", "security:scan"})
+					@permissionCategory("Config", "fa-cogs", "cyan", []string{"config:view", "config:create", "config:update", "config:remove"})
+					@permissionCategory("Audit", "fa-history", "amber", []string{"audit:view"})
+				</div>
+			</details>
+		</div>
+
+		<!-- New Role Modal -->
+		@newRoleModal(data.PageData.CSRFToken)
+
+		<script>
+			function showNewRoleModal() {
+				document.getElementById('newRoleModal').classList.remove('hidden');
+				document.getElementById('newRoleModal').classList.add('flex');
+			}
+
+			function hideNewRoleModal() {
+				document.getElementById('newRoleModal').classList.add('hidden');
+				document.getElementById('newRoleModal').classList.remove('flex');
+			}
+
+			document.addEventListener('keydown', function(e) {
+				if (e.key === 'Escape') hideNewRoleModal();
+			});
+
+			document.getElementById('newRoleModal')?.addEventListener('click', function(e) {
+				if (e.target === this) hideNewRoleModal();
+			});
+
+			// Select all permissions in a category
+			function selectCategory(category) {
+				const checkboxes = document.querySelectorAll(`input[data-category="${category}"]`);
+				const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+				checkboxes.forEach(cb => cb.checked = !allChecked);
+			}
+
+			// Select all permissions
+			function selectAll() {
+				const checkboxes = document.querySelectorAll('input[name="permissions"]');
+				const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+				checkboxes.forEach(cb => cb.checked = !allChecked);
+			}
+		</script>
+	}
+}
+
+templ roleRow(role RoleItem, csrfToken string) {
+	<tr>
+		<td>
+			<div class="flex items-center gap-3">
+				<div class={ "w-10 h-10 rounded-lg flex items-center justify-center",
+					templ.KV("bg-red-500/20", role.Name == "admin"),
+					templ.KV("bg-blue-500/20", role.Name == "operator"),
+					templ.KV("bg-green-500/20", role.Name == "viewer") }>
+					<i class={ "fas",
+						templ.KV("fa-crown text-red-400", role.Name == "admin"),
+						templ.KV("fa-tools text-blue-400", role.Name == "operator"),
+						templ.KV("fa-eye text-green-400", role.Name == "viewer") }></i>
+				</div>
+				<div>
+					<div class="font-medium text-white">{ role.DisplayName }</div>
+					<div class="text-xs text-gray-500">{ role.Name }</div>
+				</div>
+			</div>
+		</td>
+		<td class="text-sm text-gray-400 max-w-xs">{ role.Description }</td>
+		<td>
+			<span class="text-sm text-gray-300">{ fmt.Sprintf("%d", len(role.Permissions)) } permissions</span>
+		</td>
+		<td>
+			<span class="badge badge-info">{ fmt.Sprintf("%d", role.UserCount) } users</span>
+		</td>
+		<td>
+			<a
+				href={ templ.SafeURL("/admin/roles/" + role.ID) }
+				class="text-primary-400 hover:text-primary-300 text-sm"
+			>
+				View
+			</a>
+		</td>
+	</tr>
+}
+
+templ customRoleRow(role RoleItem, csrfToken string) {
+	<tr>
+		<td>
+			<div class="flex items-center gap-3">
+				<div class="w-10 h-10 rounded-lg bg-purple-500/20 flex items-center justify-center">
+					<i class="fas fa-user-tag text-purple-400"></i>
+				</div>
+				<div>
+					<div class="font-medium text-white">{ role.DisplayName }</div>
+					<div class="text-xs text-gray-500">{ role.Name }</div>
+				</div>
+			</div>
+		</td>
+		<td class="text-sm text-gray-400 max-w-xs">
+			if role.Description != "" {
+				{ role.Description }
+			} else {
+				<span class="text-gray-600">No description</span>
+			}
+		</td>
+		<td>
+			<span class="text-sm text-gray-300">{ fmt.Sprintf("%d", len(role.Permissions)) } permissions</span>
+		</td>
+		<td>
+			<span class="badge badge-info">{ fmt.Sprintf("%d", role.UserCount) } users</span>
+		</td>
+		<td>
+			if role.IsActive {
+				<span class="badge badge-success">Active</span>
+			} else {
+				<span class="badge badge-danger">Inactive</span>
+			}
+		</td>
+		<td>
+			<div class="flex items-center gap-2">
+				<a
+					href={ templ.SafeURL("/admin/roles/" + role.ID) }
+					class="text-primary-400 hover:text-primary-300 text-sm"
+				>
+					Edit
+				</a>
+				if role.IsActive {
+					<button
+						hx-post={ "/admin/roles/" + role.ID + "/disable" }
+						hx-target="body"
+						class="text-yellow-400 hover:text-yellow-300 text-sm"
+					>
+						Disable
+					</button>
+				} else {
+					<button
+						hx-post={ "/admin/roles/" + role.ID + "/enable" }
+						hx-target="body"
+						class="text-green-400 hover:text-green-300 text-sm"
+					>
+						Enable
+					</button>
+				}
+				if role.UserCount == 0 {
+					<button
+						hx-delete={ "/admin/roles/" + role.ID }
+						hx-target="body"
+						hx-confirm={ "Delete role '" + role.DisplayName + "'? This cannot be undone." }
+						class="text-red-400 hover:text-red-300 text-sm"
+					>
+						Delete
+					</button>
+				}
+			</div>
+		</td>
+	</tr>
+}
+
+templ permissionCategory(name, icon, color string, perms []string) {
+	<div class="bg-dark-700 rounded-lg p-3">
+		<div class="flex items-center gap-2 mb-2">
+			<i class={ "fas " + icon + " text-" + color + "-400" }></i>
+			<span class="font-medium text-white text-sm">{ name }</span>
+		</div>
+		<div class="flex flex-wrap gap-1">
+			for _, perm := range perms {
+				<code class="text-xs bg-dark-600 px-1.5 py-0.5 rounded text-gray-400">{ perm }</code>
+			}
+		</div>
+	</div>
+}
+
+templ newRoleModal(csrfToken string) {
+	<div id="newRoleModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50">
+		<div class="bg-dark-800 rounded-xl shadow-xl max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+			<div class="p-6 border-b border-dark-700 sticky top-0 bg-dark-800 z-10">
+				<h2 class="text-xl font-display font-bold text-white">Create Custom Role</h2>
+				<p class="text-sm text-gray-500 mt-1">Define a new role with specific permissions</p>
+			</div>
+			<form action="/admin/roles" method="POST" class="p-6 space-y-6">
+				<input type="hidden" name="csrf_token" value={ csrfToken }/>
+
+				<!-- Basic Info -->
+				<div class="grid grid-cols-2 gap-4">
+					<div>
+						<label class="block text-sm font-medium text-gray-300 mb-2">Role Name</label>
+						<input type="text" name="name" required pattern="[a-z0-9_-]+" class="input" placeholder="e.g. devops-lead"/>
+						<p class="text-xs text-gray-500 mt-1">Lowercase letters, numbers, hyphens, underscores only</p>
+					</div>
+					<div>
+						<label class="block text-sm font-medium text-gray-300 mb-2">Display Name</label>
+						<input type="text" name="display_name" required class="input" placeholder="e.g. DevOps Lead"/>
+					</div>
+				</div>
+
+				<div>
+					<label class="block text-sm font-medium text-gray-300 mb-2">Description</label>
+					<textarea name="description" rows="2" class="input" placeholder="Describe what this role can do..."></textarea>
+				</div>
+
+				<div class="grid grid-cols-2 gap-4">
+					<div>
+						<label class="block text-sm font-medium text-gray-300 mb-2">Priority</label>
+						<input type="number" name="priority" value="25" min="1" max="99" class="input w-24"/>
+						<p class="text-xs text-gray-500 mt-1">Higher priority takes precedence (1-99)</p>
+					</div>
+					<div class="flex items-end">
+						<label class="flex items-center gap-2 cursor-pointer">
+							<input type="checkbox" name="is_active" checked class="w-4 h-4 rounded border-gray-600 bg-dark-700 text-primary-500"/>
+							<span class="text-sm text-gray-300">Enable role immediately</span>
+						</label>
+					</div>
+				</div>
+
+				<!-- Permissions -->
+				<div class="border-t border-dark-700 pt-6">
+					<div class="flex items-center justify-between mb-4">
+						<h3 class="text-lg font-medium text-white">Permissions</h3>
+						<button type="button" onclick="selectAll()" class="text-sm text-primary-400 hover:text-primary-300">
+							Toggle All
+						</button>
+					</div>
+
+					<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+						@permissionCheckboxGroup("Containers", "container", []permItem{
+							{Value: "container:view", Label: "View containers"},
+							{Value: "container:create", Label: "Create containers"},
+							{Value: "container:start", Label: "Start containers"},
+							{Value: "container:stop", Label: "Stop containers"},
+							{Value: "container:restart", Label: "Restart containers"},
+							{Value: "container:remove", Label: "Remove containers"},
+							{Value: "container:exec", Label: "Execute commands"},
+							{Value: "container:logs", Label: "View logs"},
+						})
+						@permissionCheckboxGroup("Images", "image", []permItem{
+							{Value: "image:view", Label: "View images"},
+							{Value: "image:pull", Label: "Pull images"},
+							{Value: "image:remove", Label: "Remove images"},
+							{Value: "image:build", Label: "Build images"},
+						})
+						@permissionCheckboxGroup("Volumes", "volume", []permItem{
+							{Value: "volume:view", Label: "View volumes"},
+							{Value: "volume:create", Label: "Create volumes"},
+							{Value: "volume:remove", Label: "Remove volumes"},
+						})
+						@permissionCheckboxGroup("Networks", "network", []permItem{
+							{Value: "network:view", Label: "View networks"},
+							{Value: "network:create", Label: "Create networks"},
+							{Value: "network:remove", Label: "Remove networks"},
+						})
+						@permissionCheckboxGroup("Stacks", "stack", []permItem{
+							{Value: "stack:view", Label: "View stacks"},
+							{Value: "stack:deploy", Label: "Deploy stacks"},
+							{Value: "stack:update", Label: "Update stacks"},
+							{Value: "stack:remove", Label: "Remove stacks"},
+						})
+						@permissionCheckboxGroup("Hosts", "host", []permItem{
+							{Value: "host:view", Label: "View hosts"},
+							{Value: "host:create", Label: "Add hosts"},
+							{Value: "host:update", Label: "Update hosts"},
+							{Value: "host:remove", Label: "Remove hosts"},
+						})
+						@permissionCheckboxGroup("Users", "user", []permItem{
+							{Value: "user:view", Label: "View users"},
+							{Value: "user:create", Label: "Create users"},
+							{Value: "user:update", Label: "Update users"},
+							{Value: "user:remove", Label: "Remove users"},
+						})
+						@permissionCheckboxGroup("Roles", "role", []permItem{
+							{Value: "role:view", Label: "View roles"},
+							{Value: "role:create", Label: "Create roles"},
+							{Value: "role:update", Label: "Update roles"},
+							{Value: "role:remove", Label: "Remove roles"},
+						})
+						@permissionCheckboxGroup("Settings", "settings", []permItem{
+							{Value: "settings:view", Label: "View settings"},
+							{Value: "settings:update", Label: "Update settings"},
+						})
+						@permissionCheckboxGroup("Backups", "backup", []permItem{
+							{Value: "backup:view", Label: "View backups"},
+							{Value: "backup:create", Label: "Create backups"},
+							{Value: "backup:restore", Label: "Restore backups"},
+						})
+						@permissionCheckboxGroup("Security", "security", []permItem{
+							{Value: "security:view", Label: "View security"},
+							{Value: "security:scan", Label: "Run scans"},
+						})
+						@permissionCheckboxGroup("Config", "config", []permItem{
+							{Value: "config:view", Label: "View config"},
+							{Value: "config:create", Label: "Create config"},
+							{Value: "config:update", Label: "Update config"},
+							{Value: "config:remove", Label: "Remove config"},
+						})
+						@permissionCheckboxGroup("Audit", "audit", []permItem{
+							{Value: "audit:view", Label: "View audit logs"},
+						})
+					</div>
+				</div>
+
+				<div class="flex justify-end gap-3 pt-4 border-t border-dark-700">
+					<button type="button" onclick="hideNewRoleModal()" class="btn-secondary">Cancel</button>
+					<button type="submit" class="btn-primary">Create Role</button>
+				</div>
+			</form>
+		</div>
+	</div>
+}
+
+type permItem struct {
+	Value string
+	Label string
+}
+
+templ permissionCheckboxGroup(title, category string, items []permItem) {
+	<div class="bg-dark-700 rounded-lg p-4">
+		<div class="flex items-center justify-between mb-3">
+			<span class="font-medium text-white text-sm">{ title }</span>
+			<button type="button" onclick={ templ.ComponentScript{Call: "selectCategory('" + category + "')"} } class="text-xs text-primary-400 hover:text-primary-300">
+				Toggle
+			</button>
+		</div>
+		<div class="space-y-2">
+			for _, item := range items {
+				<label class="flex items-center gap-2 cursor-pointer">
+					<input
+						type="checkbox"
+						name="permissions"
+						value={ item.Value }
+						data-category={ category }
+						class="w-4 h-4 rounded border-gray-600 bg-dark-600 text-primary-500 focus:ring-primary-500"
+					/>
+					<span class="text-sm text-gray-300">{ item.Label }</span>
+				</label>
+			}
+		</div>
+	</div>
+}
+
+func countCustomRoles(roles []RoleItem) int {
+	count := 0
+	for _, r := range roles {
+		if !r.IsSystem {
+			count++
+		}
+	}
+	return count
+}
+
+// ============================================================================
+// Role Edit Page
+// ============================================================================
+
+type RoleEditData struct {
+	PageData    layouts.PageData
+	Role        RoleItem
+	AllPerms    []PermissionCategoryData
+	Error       string
+}
+
+type PermissionCategoryData struct {
+	Name        string
+	Category    string
+	Permissions []PermissionData
+}
+
+type PermissionData struct {
+	Name        string
+	DisplayName string
+	Description string
+	Checked     bool
+}
+
+templ RoleEdit(data RoleEditData) {
+	@layouts.Base(data.PageData) {
+		<div class="max-w-4xl mx-auto space-y-6">
+			<div class="flex items-center gap-4">
+				<a href="/admin/roles" class="p-2 text-gray-400 hover:text-white hover:bg-dark-700 rounded-lg">
+					<i class="fas fa-arrow-left"></i>
+				</a>
+				<div>
+					<h1 class="text-2xl font-display font-bold text-white">
+						if data.Role.IsSystem {
+							View Role
+						} else {
+							Edit Role
+						}
+					</h1>
+					<p class="text-gray-400 text-sm">{ data.Role.DisplayName }</p>
+				</div>
+				if data.Role.IsSystem {
+					<span class="badge bg-blue-500/20 text-blue-400 border border-blue-500/30">
+						<i class="fas fa-shield-alt mr-1"></i>System Role
+					</span>
+				}
+			</div>
+
+			if data.Error != "" {
+				<div class="bg-red-500/10 border border-red-500/20 rounded-lg p-4 text-red-400">
+					{ data.Error }
+				</div>
+			}
+
+			<form action={ templ.SafeURL("/admin/roles/" + data.Role.ID) } method="POST" class="space-y-6">
+				<input type="hidden" name="csrf_token" value={ data.PageData.CSRFToken }/>
+
+				<!-- Basic Info -->
+				<div class="card p-6 space-y-4">
+					<h2 class="text-lg font-medium text-white mb-4">Basic Information</h2>
+
+					<div class="grid grid-cols-2 gap-4">
+						<div>
+							<label class="block text-sm font-medium text-gray-300 mb-2">Role Name</label>
+							<input type="text" name="name" value={ data.Role.Name } disabled class="input bg-dark-600 cursor-not-allowed"/>
+							<p class="text-xs text-gray-500 mt-1">Role names cannot be changed</p>
+						</div>
+						<div>
+							<label class="block text-sm font-medium text-gray-300 mb-2">Display Name</label>
+							<input type="text" name="display_name" value={ data.Role.DisplayName } required class="input" disabled?={ data.Role.IsSystem }/>
+						</div>
+					</div>
+
+					<div>
+						<label class="block text-sm font-medium text-gray-300 mb-2">Description</label>
+						<textarea name="description" rows="2" class="input" disabled?={ data.Role.IsSystem }>{ data.Role.Description }</textarea>
+					</div>
+
+					if !data.Role.IsSystem {
+						<div class="grid grid-cols-2 gap-4">
+							<div>
+								<label class="block text-sm font-medium text-gray-300 mb-2">Priority</label>
+								<input type="number" name="priority" value={ fmt.Sprintf("%d", data.Role.Priority) } min="1" max="99" class="input w-24"/>
+							</div>
+							<div class="flex items-end">
+								<label class="flex items-center gap-2 cursor-pointer">
+									<input type="checkbox" name="is_active" checked?={ data.Role.IsActive } class="w-4 h-4 rounded border-gray-600 bg-dark-700 text-primary-500"/>
+									<span class="text-sm text-gray-300">Role is active</span>
+								</label>
+							</div>
+						</div>
+					}
+				</div>
+
+				<!-- Permissions -->
+				<div class="card p-6">
+					<div class="flex items-center justify-between mb-4">
+						<h2 class="text-lg font-medium text-white">Permissions</h2>
+						<div class="flex items-center gap-4">
+							<span class="text-sm text-gray-400">
+								{ fmt.Sprintf("%d", len(data.Role.Permissions)) } permissions selected
+							</span>
+							if !data.Role.IsSystem {
+								<button type="button" onclick="selectAll()" class="text-sm text-primary-400 hover:text-primary-300">
+									Toggle All
+								</button>
+							}
+						</div>
+					</div>
+
+					<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+						for _, cat := range data.AllPerms {
+							<div class="bg-dark-700 rounded-lg p-4">
+								<div class="flex items-center justify-between mb-3">
+									<span class="font-medium text-white text-sm">{ cat.Name }</span>
+									if !data.Role.IsSystem {
+										<button type="button" onclick={ templ.ComponentScript{Call: "selectCategory('" + cat.Category + "')"} } class="text-xs text-primary-400 hover:text-primary-300">
+											Toggle
+										</button>
+									}
+								</div>
+								<div class="space-y-2">
+									for _, perm := range cat.Permissions {
+										<label class={ "flex items-center gap-2", templ.KV("cursor-pointer", !data.Role.IsSystem), templ.KV("cursor-default", data.Role.IsSystem) }>
+											<input
+												type="checkbox"
+												name="permissions"
+												value={ perm.Name }
+												checked?={ perm.Checked }
+												disabled?={ data.Role.IsSystem }
+												data-category={ cat.Category }
+												class="w-4 h-4 rounded border-gray-600 bg-dark-600 text-primary-500 focus:ring-primary-500"
+											/>
+											<span class="text-sm text-gray-300">{ perm.DisplayName }</span>
+										</label>
+									}
+								</div>
+							</div>
+						}
+					</div>
+				</div>
+
+				<!-- Metadata -->
+				<div class="card p-4 text-sm text-gray-500">
+					<div class="flex justify-between">
+						<span>Created: { data.Role.CreatedAt }</span>
+						<span>Updated: { data.Role.UpdatedAt }</span>
+					</div>
+				</div>
+
+				if !data.Role.IsSystem {
+					<div class="flex justify-end gap-3">
+						<a href="/admin/roles" class="btn-secondary">Cancel</a>
+						<button type="submit" class="btn-primary">Save Changes</button>
+					</div>
+				}
+			</form>
+		</div>
+
+		<script>
+			function selectCategory(category) {
+				const checkboxes = document.querySelectorAll(`input[data-category="${category}"]:not(:disabled)`);
+				const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+				checkboxes.forEach(cb => cb.checked = !allChecked);
+			}
+
+			function selectAll() {
+				const checkboxes = document.querySelectorAll('input[name="permissions"]:not(:disabled)');
+				const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+				checkboxes.forEach(cb => cb.checked = !allChecked);
+			}
+		</script>
+	}
+}

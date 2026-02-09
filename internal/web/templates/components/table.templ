@@ -1,0 +1,204 @@
+package components
+
+// Table displays a data table
+templ Table() {
+	<div class="overflow-x-auto">
+		<table class="w-full">
+			{ children... }
+		</table>
+	</div>
+}
+
+// TableHead displays table header
+templ TableHead() {
+	<thead class="bg-dark-850 border-b border-dark-600">
+		<tr>
+			{ children... }
+		</tr>
+	</thead>
+}
+
+// TableHeader displays a table header cell
+templ TableHeader(text string, width string) {
+	<th class={ "px-4 py-3 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider", width }>
+		{ text }
+	</th>
+}
+
+// TableHeaderSortable displays a sortable table header
+templ TableHeaderSortable(text, sortKey, currentSort, currentDir string) {
+	<th class="px-4 py-3 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
+		<a 
+			href={ templ.SafeURL("?sort=" + sortKey + "&dir=" + toggleDir(currentSort, sortKey, currentDir)) }
+			class="flex items-center gap-1 hover:text-white transition-colors"
+		>
+			{ text }
+			if currentSort == sortKey {
+				if currentDir == "asc" {
+					<i class="fas fa-sort-up text-primary-400"></i>
+				} else {
+					<i class="fas fa-sort-down text-primary-400"></i>
+				}
+			} else {
+				<i class="fas fa-sort text-gray-600"></i>
+			}
+		</a>
+	</th>
+}
+
+// TableBody displays table body
+templ TableBody() {
+	<tbody class="divide-y divide-dark-700">
+		{ children... }
+	</tbody>
+}
+
+// TableRow displays a table row
+templ TableRow() {
+	<tr class="hover:bg-dark-700/50 transition-colors">
+		{ children... }
+	</tr>
+}
+
+// TableCell displays a table cell
+templ TableCell() {
+	<td class="px-4 py-3 text-gray-300">
+		{ children... }
+	</td>
+}
+
+// TableEmpty displays empty state
+templ TableEmpty(message, icon string) {
+	<tr>
+		<td colspan="100" class="px-4 py-12 text-center">
+			<div class="flex flex-col items-center">
+				<i class={ "fas " + icon + " text-4xl text-gray-600 mb-4" }></i>
+				<p class="text-gray-400">{ message }</p>
+			</div>
+		</td>
+	</tr>
+}
+
+// TableLoading displays loading state
+templ TableLoading(columns int) {
+	for i := 0; i < 5; i++ {
+		<tr class="animate-pulse">
+			for j := 0; j < columns; j++ {
+				<td class="px-4 py-3">
+					<div class="h-4 bg-dark-700 rounded w-3/4"></div>
+				</td>
+			}
+		</tr>
+	}
+}
+
+// Pagination displays table pagination
+templ Pagination(currentPage, totalPages, totalItems int, baseURL string) {
+	<div class="flex items-center justify-between px-4 py-3 border-t border-dark-600">
+		<div class="text-sm text-gray-400">
+			Showing page { itoa(currentPage) } of { itoa(totalPages) } ({ itoa(totalItems) } items)
+		</div>
+		<div class="flex items-center gap-2">
+			if currentPage > 1 {
+				<a 
+					href={ templ.SafeURL(baseURL + "?page=" + itoa(currentPage-1)) }
+					class="px-3 py-1.5 text-sm bg-dark-700 hover:bg-dark-600 text-gray-300 rounded-lg transition-colors"
+				>
+					<i class="fas fa-chevron-left mr-1"></i>
+					Previous
+				</a>
+			} else {
+				<span class="px-3 py-1.5 text-sm bg-dark-800 text-gray-500 rounded-lg cursor-not-allowed">
+					<i class="fas fa-chevron-left mr-1"></i>
+					Previous
+				</span>
+			}
+			
+			<!-- Page numbers -->
+			<div class="flex items-center gap-1">
+				for _, page := range getPageNumbers(currentPage, totalPages) {
+					if page == -1 {
+						<span class="px-2 text-gray-500">...</span>
+					} else if page == currentPage {
+						<span class="px-3 py-1.5 text-sm bg-primary-500 text-black font-medium rounded-lg">
+							{ itoa(page) }
+						</span>
+					} else {
+						<a 
+							href={ templ.SafeURL(baseURL + "?page=" + itoa(page)) }
+							class="px-3 py-1.5 text-sm bg-dark-700 hover:bg-dark-600 text-gray-300 rounded-lg transition-colors"
+						>
+							{ itoa(page) }
+						</a>
+					}
+				}
+			</div>
+			
+			if currentPage < totalPages {
+				<a 
+					href={ templ.SafeURL(baseURL + "?page=" + itoa(currentPage+1)) }
+					class="px-3 py-1.5 text-sm bg-dark-700 hover:bg-dark-600 text-gray-300 rounded-lg transition-colors"
+				>
+					Next
+					<i class="fas fa-chevron-right ml-1"></i>
+				</a>
+			} else {
+				<span class="px-3 py-1.5 text-sm bg-dark-800 text-gray-500 rounded-lg cursor-not-allowed">
+					Next
+					<i class="fas fa-chevron-right ml-1"></i>
+				</span>
+			}
+		</div>
+	</div>
+}
+
+func toggleDir(currentSort, sortKey, currentDir string) string {
+	if currentSort == sortKey && currentDir == "asc" {
+		return "desc"
+	}
+	return "asc"
+}
+
+func getPageNumbers(current, total int) []int {
+	if total <= 7 {
+		pages := make([]int, total)
+		for i := range pages {
+			pages[i] = i + 1
+		}
+		return pages
+	}
+	
+	var pages []int
+	
+	// Always show first page
+	pages = append(pages, 1)
+	
+	if current > 3 {
+		pages = append(pages, -1) // ellipsis
+	}
+	
+	// Show pages around current
+	start := current - 1
+	if start < 2 {
+		start = 2
+	}
+	end := current + 1
+	if end > total-1 {
+		end = total - 1
+	}
+	
+	for i := start; i <= end; i++ {
+		pages = append(pages, i)
+	}
+	
+	if current < total-2 {
+		pages = append(pages, -1) // ellipsis
+	}
+	
+	// Always show last page
+	if total > 1 {
+		pages = append(pages, total)
+	}
+	
+	return pages
+}

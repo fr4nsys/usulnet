@@ -1,0 +1,430 @@
+package stacks
+
+import "github.com/fr4nsys/usulnet/internal/web/templates/layouts"
+
+type StackNewData struct {
+	PageData layouts.PageData
+	Error    string
+}
+
+templ New(data StackNewData) {
+	@layouts.Base(data.PageData) {
+		<div class="max-w-5xl mx-auto space-y-6" x-data="composeEditor()">
+			<!-- Header -->
+			<div class="flex items-center gap-4">
+				<a href="/stacks" class="p-2 text-gray-400 hover:text-white hover:bg-dark-700 rounded-lg">
+					<i class="fas fa-arrow-left"></i>
+				</a>
+				<div>
+					<h1 class="text-2xl font-display font-bold text-white">New Stack</h1>
+					<p class="text-gray-400 mt-1">Deploy a Docker Compose stack</p>
+				</div>
+			</div>
+
+			<!-- Quick Link to Catalog -->
+			<div class="bg-dark-800/50 border border-dark-600 rounded-lg p-4 flex items-center justify-between">
+				<div class="flex items-center gap-3 text-gray-400">
+					<i class="fas fa-lightbulb text-yellow-400"></i>
+					<span class="text-sm">Looking for something quicker? Use the pre-configured templates in Apps.</span>
+				</div>
+				<a href="/stacks/catalog" class="btn-secondary text-sm">
+					<i class="fas fa-store mr-1.5"></i>Apps
+				</a>
+			</div>
+
+			if data.Error != "" {
+				<div class="bg-red-500/10 border border-red-500/20 rounded-lg p-4 text-red-400">
+					<i class="fas fa-exclamation-circle mr-2"></i>{ data.Error }
+				</div>
+			}
+
+			<!-- Deploy error (shown by JS) -->
+			<div x-show="deployError" x-cloak class="bg-red-500/10 border border-red-500/20 rounded-lg p-4 text-red-400">
+				<i class="fas fa-exclamation-circle mr-2"></i><span x-text="deployError"></span>
+			</div>
+
+			<!-- Form -->
+			<form @submit.prevent="deployStack" class="space-y-6">
+				<input type="hidden" name="csrf_token" value={ data.PageData.CSRFToken } x-ref="csrfToken"/>
+
+				<div class="card p-6 space-y-4">
+					<div>
+						<label for="name" class="block text-sm font-medium text-gray-300 mb-2">Stack Name</label>
+						<input type="text" id="name" name="name" required x-model="stackName"
+							class="input"
+							placeholder="my-stack"/>
+					</div>
+
+					<div class="flex items-center gap-3">
+						<input type="checkbox" id="pull" name="pull" checked class="rounded border-dark-600 bg-dark-700 text-primary-500 focus:ring-primary-500"/>
+						<label for="pull" class="text-sm text-gray-300">Pull latest images before deploying</label>
+					</div>
+				</div>
+
+				<div class="card overflow-hidden">
+					<!-- Editor Toolbar -->
+					<div class="flex items-center justify-between px-4 py-2 bg-dark-850 border-b border-dark-600">
+						<div class="flex items-center gap-3">
+							<span class="text-sm font-medium text-white">
+								<i class="fas fa-file-code text-blue-400 mr-2"></i>docker-compose.yml
+							</span>
+							<span class="text-xs px-2 py-0.5 rounded bg-dark-700 text-gray-400">YAML</span>
+						</div>
+						<div class="flex items-center gap-2">
+							<!-- Snippets dropdown -->
+							<div class="relative" x-data="{ open: false }">
+								<button type="button" @click="open = !open" class="btn-ghost text-sm">
+									<i class="fas fa-code mr-1"></i>Snippets
+									<i class="fas fa-chevron-down text-xs ml-1"></i>
+								</button>
+								<div x-show="open" @click.away="open = false" x-cloak
+									class="absolute right-0 mt-2 w-56 bg-dark-800 border border-dark-600 rounded-lg shadow-xl z-50">
+									<div class="py-1">
+										<button type="button" @click="insertSnippet('service'); open = false"
+											class="w-full px-4 py-2 text-left text-sm text-gray-300 hover:bg-dark-700">
+											<i class="fas fa-cube mr-2 text-blue-400"></i>Service
+										</button>
+										<button type="button" @click="insertSnippet('volume'); open = false"
+											class="w-full px-4 py-2 text-left text-sm text-gray-300 hover:bg-dark-700">
+											<i class="fas fa-hdd mr-2 text-green-400"></i>Volume
+										</button>
+										<button type="button" @click="insertSnippet('network'); open = false"
+											class="w-full px-4 py-2 text-left text-sm text-gray-300 hover:bg-dark-700">
+											<i class="fas fa-network-wired mr-2 text-purple-400"></i>Network
+										</button>
+										<button type="button" @click="insertSnippet('healthcheck'); open = false"
+											class="w-full px-4 py-2 text-left text-sm text-gray-300 hover:bg-dark-700">
+											<i class="fas fa-heartbeat mr-2 text-red-400"></i>Healthcheck
+										</button>
+										<button type="button" @click="insertSnippet('environment'); open = false"
+											class="w-full px-4 py-2 text-left text-sm text-gray-300 hover:bg-dark-700">
+											<i class="fas fa-key mr-2 text-yellow-400"></i>Environment
+										</button>
+										<div class="border-t border-dark-600 my-1"></div>
+										<button type="button" @click="insertSnippet('nginx'); open = false"
+											class="w-full px-4 py-2 text-left text-sm text-gray-300 hover:bg-dark-700">
+											<i class="fas fa-server mr-2 text-emerald-400"></i>Nginx Template
+										</button>
+										<button type="button" @click="insertSnippet('postgres'); open = false"
+											class="w-full px-4 py-2 text-left text-sm text-gray-300 hover:bg-dark-700">
+											<i class="fas fa-database mr-2 text-blue-400"></i>PostgreSQL Template
+										</button>
+									</div>
+								</div>
+							</div>
+							<!-- Validation status -->
+							<span x-show="validationStatus === 'valid'" class="text-xs text-green-400">
+								<i class="fas fa-check-circle mr-1"></i>Valid
+							</span>
+							<span x-show="validationStatus === 'invalid'" class="text-xs text-red-400">
+								<i class="fas fa-exclamation-circle mr-1"></i>Invalid YAML
+							</span>
+						</div>
+					</div>
+
+					<!-- Editor with line numbers -->
+					<div class="compose-editor-wrap">
+						<div class="compose-line-numbers" x-ref="lineNumbers" aria-hidden="true"></div>
+						<textarea
+							x-ref="editor"
+							x-model="content"
+							@input="onInput()"
+							@keydown.tab.prevent="handleTab($event)"
+							@keydown.enter.prevent="handleEnter($event)"
+							@scroll="syncScroll()"
+							class="compose-textarea"
+							spellcheck="false"
+							autocapitalize="off"
+							autocomplete="off"
+							autocorrect="off"
+							placeholder="Paste your docker-compose.yml content here..."
+						></textarea>
+					</div>
+				</div>
+
+				<div class="flex justify-end gap-3">
+					<a href="/stacks" class="btn-secondary">Cancel</a>
+					<button type="submit" class="btn-primary" :disabled="deploying">
+						<template x-if="deploying">
+							<span><i class="fas fa-spinner fa-spin mr-2"></i>Deploying...</span>
+						</template>
+						<template x-if="!deploying">
+							<span><i class="fas fa-rocket mr-2"></i>Deploy Stack</span>
+						</template>
+					</button>
+				</div>
+			</form>
+		</div>
+
+		<style>
+		.compose-editor-wrap {
+			display: flex;
+			height: 500px;
+			background: #0d1117;
+			overflow: hidden;
+		}
+		.compose-line-numbers {
+			width: 48px;
+			min-width: 48px;
+			padding: 12px 8px 12px 0;
+			text-align: right;
+			font-family: 'IBM Plex Mono', 'JetBrains Mono', 'Fira Code', monospace;
+			font-size: 14px;
+			line-height: 1.6;
+			color: #484f58;
+			background: #0d1117;
+			border-right: 1px solid #21262d;
+			overflow: hidden;
+			user-select: none;
+			white-space: pre;
+		}
+		.compose-textarea {
+			flex: 1;
+			padding: 12px 16px;
+			background: #0d1117;
+			color: #e6edf3;
+			font-family: 'IBM Plex Mono', 'JetBrains Mono', 'Fira Code', monospace;
+			font-size: 14px;
+			line-height: 1.6;
+			border: 0;
+			outline: none;
+			resize: none;
+			tab-size: 2;
+			white-space: pre;
+			overflow-wrap: normal;
+			overflow-x: auto;
+			overflow-y: auto;
+		}
+		.compose-textarea:focus {
+			box-shadow: none;
+			ring: 0;
+		}
+		.compose-textarea::placeholder {
+			color: #484f58;
+		}
+		.compose-textarea::selection {
+			background: rgba(255, 107, 53, 0.3);
+		}
+		</style>
+
+		<script>
+		function composeEditor() {
+			const defaultContent = `services:
+  # Define your services here
+  app:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+    restart: unless-stopped
+
+# volumes:
+#   data:
+
+# networks:
+#   default:
+`;
+
+			return {
+				content: defaultContent,
+				validationStatus: 'unknown',
+				stackName: '',
+				deploying: false,
+				deployError: '',
+
+				init() {
+					this.$nextTick(() => {
+						this.updateLineNumbers();
+						this.validateYaml();
+					});
+				},
+
+				updateLineNumbers() {
+					const lines = this.content.split('\n').length;
+					const nums = [];
+					for (let i = 1; i <= lines; i++) {
+						nums.push(i);
+					}
+					this.$refs.lineNumbers.textContent = nums.join('\n');
+				},
+
+				syncScroll() {
+					this.$refs.lineNumbers.style.transform = `translateY(-${this.$refs.editor.scrollTop}px)`;
+				},
+
+				onInput() {
+					this.updateLineNumbers();
+					this.validateYaml();
+				},
+
+				handleTab(e) {
+					const ta = this.$refs.editor;
+					const start = ta.selectionStart;
+					const end = ta.selectionEnd;
+
+					if (start === end) {
+						// No selection: insert 2 spaces
+						this.content = this.content.substring(0, start) + '  ' + this.content.substring(end);
+						this.$nextTick(() => {
+							ta.selectionStart = ta.selectionEnd = start + 2;
+						});
+					} else {
+						// Selection: indent/unindent lines
+						const before = this.content.substring(0, start);
+						const selected = this.content.substring(start, end);
+						const after = this.content.substring(end);
+
+						const lineStart = before.lastIndexOf('\n') + 1;
+						const block = this.content.substring(lineStart, end);
+
+						if (e.shiftKey) {
+							// Unindent
+							const unindented = block.replace(/^  /gm, '');
+							const diff = block.length - unindented.length;
+							this.content = this.content.substring(0, lineStart) + unindented + after;
+							this.$nextTick(() => {
+								ta.selectionStart = lineStart;
+								ta.selectionEnd = lineStart + unindented.length;
+							});
+						} else {
+							// Indent
+							const indented = block.replace(/^/gm, '  ');
+							const diff = indented.length - block.length;
+							this.content = this.content.substring(0, lineStart) + indented + after;
+							this.$nextTick(() => {
+								ta.selectionStart = lineStart;
+								ta.selectionEnd = lineStart + indented.length;
+							});
+						}
+					}
+					this.updateLineNumbers();
+					this.validateYaml();
+				},
+
+				handleEnter(e) {
+					const ta = this.$refs.editor;
+					const start = ta.selectionStart;
+					const textBefore = this.content.substring(0, start);
+					const currentLine = textBefore.substring(textBefore.lastIndexOf('\n') + 1);
+
+					// Match indentation of current line
+					const indent = currentLine.match(/^(\s*)/)[1];
+
+					// Add extra indent if line ends with ':'
+					const trimmed = currentLine.trimEnd();
+					const extra = trimmed.endsWith(':') ? '  ' : '';
+
+					const insertion = '\n' + indent + extra;
+					this.content = this.content.substring(0, start) + insertion + this.content.substring(ta.selectionEnd);
+					this.$nextTick(() => {
+						ta.selectionStart = ta.selectionEnd = start + insertion.length;
+					});
+					this.updateLineNumbers();
+				},
+
+				validateYaml() {
+					try {
+						const lines = this.content.split('\n');
+						let valid = this.content.includes('services:');
+
+						for (const line of lines) {
+							if (line.trim() && !line.startsWith('#')) {
+								const spaces = line.search(/\S/);
+								if (spaces > 0 && spaces % 2 !== 0) {
+									valid = false;
+									break;
+								}
+							}
+						}
+
+						this.validationStatus = valid ? 'valid' : 'invalid';
+					} catch (e) {
+						this.validationStatus = 'invalid';
+					}
+				},
+
+				deployStack() {
+					this.deployError = '';
+
+					const name = this.stackName.trim();
+					if (!name) {
+						this.deployError = 'Stack name is required.';
+						return;
+					}
+
+					const compose = this.content.trim();
+					if (!compose) {
+						this.deployError = 'Please enter Docker Compose content.';
+						return;
+					}
+
+					this.deploying = true;
+
+					const formData = new FormData();
+					formData.append('csrf_token', this.$refs.csrfToken.value);
+					formData.append('name', name);
+					formData.append('compose', compose);
+					if (document.getElementById('pull').checked) {
+						formData.append('pull', 'on');
+					}
+
+					fetch('/stacks/deploy', {
+						method: 'POST',
+						body: formData,
+					})
+					.then(resp => {
+						if (resp.redirected) {
+							window.location.href = resp.url;
+							return;
+						}
+						if (resp.ok) {
+							const redirect = resp.headers.get('HX-Redirect');
+							if (redirect) {
+								window.location.href = redirect;
+								return;
+							}
+							window.location.href = '/stacks/' + encodeURIComponent(name);
+							return;
+						}
+						return resp.text().then(text => {
+							throw new Error(text || 'Deploy failed with status ' + resp.status);
+						});
+					})
+					.catch(err => {
+						this.deployError = err.message;
+						this.deploying = false;
+					});
+				},
+
+				insertSnippet(type) {
+					const snippets = {
+						service: `  myservice:\n    image: nginx:alpine\n    ports:\n      - "8080:80"\n    volumes:\n      - ./data:/data\n    restart: unless-stopped\n`,
+						volume: `  myvolume:\n    driver: local\n`,
+						network: `  mynetwork:\n    driver: bridge\n`,
+						healthcheck: `    healthcheck:\n      test: ["CMD", "curl", "-f", "http://localhost/"]\n      interval: 30s\n      timeout: 10s\n      retries: 3\n      start_period: 40s\n`,
+						environment: `    environment:\n      - NODE_ENV=production\n      - DATABASE_URL=postgres://user:pass@db:5432/mydb\n`,
+						nginx: `services:\n  nginx:\n    image: nginx:alpine\n    ports:\n      - "80:80"\n      - "443:443"\n    volumes:\n      - ./nginx.conf:/etc/nginx/nginx.conf:ro\n      - ./html:/usr/share/nginx/html:ro\n    restart: unless-stopped\n    healthcheck:\n      test: ["CMD", "nginx", "-t"]\n      interval: 30s\n      timeout: 10s\n      retries: 3\n`,
+						postgres: `services:\n  db:\n    image: postgres:16-alpine\n    environment:\n      POSTGRES_USER: myuser\n      POSTGRES_PASSWORD: mypassword\n      POSTGRES_DB: mydb\n    volumes:\n      - postgres_data:/var/lib/postgresql/data\n    ports:\n      - "5432:5432"\n    restart: unless-stopped\n    healthcheck:\n      test: ["CMD-SHELL", "pg_isready -U myuser -d mydb"]\n      interval: 10s\n      timeout: 5s\n      retries: 5\n\nvolumes:\n  postgres_data:\n`,
+					};
+
+					const snippet = snippets[type];
+					if (!snippet) return;
+
+					if (type === 'nginx' || type === 'postgres') {
+						this.content = snippet;
+					} else {
+						const ta = this.$refs.editor;
+						const pos = ta.selectionStart;
+						this.content = this.content.substring(0, pos) + snippet + this.content.substring(pos);
+						this.$nextTick(() => {
+							ta.selectionStart = ta.selectionEnd = pos + snippet.length;
+							ta.focus();
+						});
+					}
+					this.updateLineNumbers();
+					this.validateYaml();
+				}
+			};
+		}
+		</script>
+	}
+}

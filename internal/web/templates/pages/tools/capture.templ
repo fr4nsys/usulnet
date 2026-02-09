@@ -1,0 +1,528 @@
+package tools
+
+import (
+	"fmt"
+	"github.com/fr4nsys/usulnet/internal/web/templates/layouts"
+)
+
+// ============================================================================
+// Packet Capture Data Types
+// ============================================================================
+
+type PacketCaptureData struct {
+	PageData    layouts.PageData
+	Interfaces  []NetworkInterface
+	Captures    []CaptureSession
+	Active      *CaptureSession
+}
+
+type NetworkInterface struct {
+	Name        string
+	DisplayName string
+	IP          string
+	MAC         string
+	Status      string
+}
+
+type CaptureSession struct {
+	ID           string
+	Name         string
+	Interface    string
+	Filter       string
+	Status       string // "running", "stopped", "completed"
+	PacketCount  int64
+	Size         string
+	Duration     string
+	StartedAt    string
+	StoppedAt    string
+	PcapFile     string
+}
+
+type PacketSummary struct {
+	Number      int64
+	Time        string
+	Source      string
+	Destination string
+	Protocol    string
+	Length      int
+	Info        string
+}
+
+// ============================================================================
+// Packet Capture Template
+// ============================================================================
+
+templ PacketCapture(data PacketCaptureData) {
+	@layouts.Base(data.PageData) {
+		<div class="space-y-6" x-data="captureApp()">
+			<!-- Header -->
+			<div class="flex items-center justify-between">
+				<div>
+					<h1 class="text-2xl font-display font-bold text-white">
+						<i class="fas fa-satellite-dish text-primary-400 mr-2"></i>Network Packet Capture
+					</h1>
+					<p class="text-gray-400 mt-1">Capture and analyze network traffic using tcpdump</p>
+				</div>
+				<button
+					onclick="document.getElementById('new-capture-modal').classList.remove('hidden')"
+					class="btn-primary"
+				>
+					<i class="fas fa-play mr-2"></i>New Capture
+				</button>
+			</div>
+
+			<!-- Stats Cards -->
+			<div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+				<div class="card p-4">
+					<div class="flex items-center gap-3">
+						<div class="w-10 h-10 rounded-lg bg-green-500/10 flex items-center justify-center">
+							<i class="fas fa-network-wired text-green-400"></i>
+						</div>
+						<div>
+							<div class="text-2xl font-bold text-white">{ fmt.Sprintf("%d", len(data.Interfaces)) }</div>
+							<div class="text-xs text-gray-500">Interfaces</div>
+						</div>
+					</div>
+				</div>
+				<div class="card p-4">
+					<div class="flex items-center gap-3">
+						<div class="w-10 h-10 rounded-lg bg-blue-500/10 flex items-center justify-center">
+							<i class="fas fa-play-circle text-blue-400"></i>
+						</div>
+						<div>
+							<div class="text-2xl font-bold text-white">{ fmt.Sprintf("%d", countActive(data.Captures)) }</div>
+							<div class="text-xs text-gray-500">Active Captures</div>
+						</div>
+					</div>
+				</div>
+				<div class="card p-4">
+					<div class="flex items-center gap-3">
+						<div class="w-10 h-10 rounded-lg bg-purple-500/10 flex items-center justify-center">
+							<i class="fas fa-database text-purple-400"></i>
+						</div>
+						<div>
+							<div class="text-2xl font-bold text-white">{ fmt.Sprintf("%d", len(data.Captures)) }</div>
+							<div class="text-xs text-gray-500">Total Captures</div>
+						</div>
+					</div>
+				</div>
+				<div class="card p-4">
+					<div class="flex items-center gap-3">
+						<div class="w-10 h-10 rounded-lg bg-yellow-500/10 flex items-center justify-center">
+							<i class="fas fa-hdd text-yellow-400"></i>
+						</div>
+						<div>
+							<div class="text-2xl font-bold text-white">{ totalSize(data.Captures) }</div>
+							<div class="text-xs text-gray-500">Total Size</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- Main Content -->
+			<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+				<!-- Interfaces & Captures List -->
+				<div class="lg:col-span-1 space-y-6">
+					<!-- Network Interfaces -->
+					<div class="card">
+						<div class="p-4 border-b border-dark-600">
+							<h2 class="font-semibold text-white">
+								<i class="fas fa-ethernet text-primary-400 mr-2"></i>Network Interfaces
+							</h2>
+						</div>
+						<div class="divide-y divide-dark-600">
+							if len(data.Interfaces) == 0 {
+								<div class="p-6 text-center text-gray-500">
+									<i class="fas fa-network-wired text-2xl mb-2"></i>
+									<p class="text-sm">No interfaces detected</p>
+								</div>
+							}
+							for _, iface := range data.Interfaces {
+								<div class="p-4 flex items-center gap-3">
+									<div class={ "w-3 h-3 rounded-full", ifaceStatusColor(iface.Status) }></div>
+									<div class="flex-1 min-w-0">
+										<div class="font-medium text-white">{ iface.Name }</div>
+										<div class="text-xs text-gray-500 font-mono">{ iface.IP }</div>
+									</div>
+									<button
+										@click={ "$store.capture.start('" + iface.Name + "')" }
+										class="text-primary-400 hover:text-primary-300 text-sm"
+									>
+										<i class="fas fa-play"></i>
+									</button>
+								</div>
+							}
+						</div>
+					</div>
+
+					<!-- Capture Sessions -->
+					<div class="card">
+						<div class="p-4 border-b border-dark-600">
+							<h2 class="font-semibold text-white">
+								<i class="fas fa-history text-primary-400 mr-2"></i>Capture Sessions
+							</h2>
+						</div>
+						<div class="divide-y divide-dark-600 max-h-[400px] overflow-y-auto">
+							if len(data.Captures) == 0 {
+								<div class="p-6 text-center text-gray-500">
+									<i class="fas fa-inbox text-2xl mb-2"></i>
+									<p class="text-sm">No captures yet</p>
+								</div>
+							}
+							for _, cap := range data.Captures {
+								<a
+									href={ templ.SafeURL("/tools/capture/" + cap.ID) }
+									class={ "block p-4 hover:bg-dark-700/50 transition-colors",
+										templ.KV("bg-primary-500/10", data.Active != nil && data.Active.ID == cap.ID) }
+								>
+									<div class="flex items-center justify-between mb-2">
+										<span class="font-medium text-white">{ cap.Name }</span>
+										<span class={ "badge text-xs", captureStatusBadge(cap.Status) }>
+											{ cap.Status }
+										</span>
+									</div>
+									<div class="text-xs text-gray-500 flex items-center gap-2">
+										<span>{ cap.Interface }</span>
+										<span>·</span>
+										<span>{ fmt.Sprintf("%d packets", cap.PacketCount) }</span>
+										<span>·</span>
+										<span>{ cap.Size }</span>
+									</div>
+								</a>
+							}
+						</div>
+					</div>
+				</div>
+
+				<!-- Capture Details / Live View -->
+				<div class="lg:col-span-2">
+					if data.Active != nil {
+						<div class="card">
+							<div class="p-4 border-b border-dark-600 flex items-center justify-between">
+								<div class="flex items-center gap-3">
+									<div class={ "w-10 h-10 rounded-lg flex items-center justify-center", captureStatusBg(data.Active.Status) }>
+										<i class={ captureStatusIcon(data.Active.Status) }></i>
+									</div>
+									<div>
+										<h2 class="font-semibold text-white">{ data.Active.Name }</h2>
+										<div class="text-sm text-gray-400">{ data.Active.Filter }</div>
+									</div>
+								</div>
+								<div class="flex items-center gap-2">
+									if data.Active.Status == "running" {
+										<button
+											hx-post={ "/tools/capture/" + data.Active.ID + "/stop" }
+											hx-target="body"
+											class="btn-sm bg-red-500/10 text-red-400 hover:bg-red-500/20"
+										>
+											<i class="fas fa-stop mr-1"></i>Stop
+										</button>
+									} else {
+										<a
+											href={ templ.SafeURL("/tools/capture/" + data.Active.ID + "/download") }
+											class="btn-sm bg-blue-500/10 text-blue-400 hover:bg-blue-500/20"
+										>
+											<i class="fas fa-download mr-1"></i>Download PCAP
+										</a>
+										<button
+											hx-delete={ "/tools/capture/" + data.Active.ID }
+											hx-target="body"
+											hx-confirm="Delete this capture?"
+											class="btn-sm bg-red-500/10 text-red-400 hover:bg-red-500/20"
+										>
+											<i class="fas fa-trash mr-1"></i>Delete
+										</button>
+									}
+								</div>
+							</div>
+
+							<!-- Capture Info -->
+							<div class="p-4 grid grid-cols-4 gap-4 border-b border-dark-600">
+								<div>
+									<div class="text-xs text-gray-500">Interface</div>
+									<div class="text-white font-mono">{ data.Active.Interface }</div>
+								</div>
+								<div>
+									<div class="text-xs text-gray-500">Packets</div>
+									<div class="text-white font-mono" id="live-packet-count">{ fmt.Sprintf("%d", data.Active.PacketCount) }</div>
+								</div>
+								<div>
+									<div class="text-xs text-gray-500">Size</div>
+									<div class="text-white font-mono" id="live-file-size">{ data.Active.Size }</div>
+								</div>
+								<div>
+									<div class="text-xs text-gray-500">Duration</div>
+									<div class="text-white font-mono">{ data.Active.Duration }</div>
+								</div>
+							</div>
+
+							<!-- Live Capture Status -->
+							<div
+								class="max-h-[500px] overflow-y-auto font-mono text-sm"
+								id="capture-live"
+								data-capture-id={ data.Active.ID }
+							>
+								if data.Active.Status == "running" {
+									<div class="p-4 flex items-center gap-2 text-green-400">
+										<i class="fas fa-circle animate-pulse text-xs"></i>
+										<span>Live capture monitoring active</span>
+									</div>
+								} else {
+									<div class="p-4 text-center text-gray-500">
+										<i class="fas fa-check-circle text-2xl mb-2"></i>
+										<p>Capture { data.Active.Status }</p>
+									</div>
+								}
+								<div id="capture-log" class="divide-y divide-dark-600"></div>
+							</div>
+						</div>
+					} else {
+						<!-- No Active Capture -->
+						<div class="card p-12 text-center">
+							<i class="fas fa-satellite-dish text-6xl text-gray-600 mb-4"></i>
+							<h2 class="text-xl font-semibold text-white mb-2">Network Packet Capture</h2>
+							<p class="text-gray-400 mb-6">Capture and analyze network traffic in real-time</p>
+							<button
+								onclick="document.getElementById('new-capture-modal').classList.remove('hidden')"
+								class="btn-primary"
+							>
+								<i class="fas fa-play mr-2"></i>Start New Capture
+							</button>
+						</div>
+					}
+				</div>
+			</div>
+
+			<!-- Common Filters Reference -->
+			<div class="card">
+				<div class="p-4 border-b border-dark-600">
+					<h2 class="font-semibold text-white">
+						<i class="fas fa-filter text-primary-400 mr-2"></i>Common Capture Filters
+					</h2>
+				</div>
+				<div class="p-4">
+					<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+						@filterCard("HTTP Traffic", "tcp port 80 or tcp port 443", "Capture web traffic")
+						@filterCard("DNS Queries", "port 53", "Capture DNS resolution")
+						@filterCard("SSH Sessions", "tcp port 22", "Capture SSH connections")
+						@filterCard("Specific Host", "host 192.168.1.1", "Capture traffic to/from host")
+						@filterCard("ICMP (Ping)", "icmp", "Capture ping packets")
+						@filterCard("Exclude Port", "not port 22", "Exclude SSH from capture")
+					</div>
+				</div>
+			</div>
+
+			<!-- New Capture Modal -->
+			@newCaptureModal(data.PageData.CSRFToken, data.Interfaces)
+
+			<script>
+				document.addEventListener('alpine:init', () => {
+					Alpine.store('capture', {
+						start(iface) {
+							document.getElementById('capture-interface').value = iface;
+							document.getElementById('new-capture-modal').classList.remove('hidden');
+						}
+					});
+				});
+
+				function captureApp() {
+					return {
+						ws: null,
+						init() {
+							const el = document.getElementById('capture-live');
+							if (el && el.dataset.captureId) {
+								this.connectWS(el.dataset.captureId);
+							}
+						},
+						connectWS(captureId) {
+							const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+							this.ws = new WebSocket(protocol + '//' + window.location.host + '/ws/capture/' + captureId);
+							this.ws.onmessage = (e) => {
+								try {
+									const msg = JSON.parse(e.data);
+									if (msg.type === 'stats') {
+										const packetEl = document.getElementById('live-packet-count');
+										const sizeEl = document.getElementById('live-file-size');
+										if (packetEl) packetEl.textContent = msg.packet_count;
+										if (sizeEl) sizeEl.textContent = this.formatSize(msg.file_size);
+									} else if (msg.type === 'finished') {
+										const logDiv = document.getElementById('capture-log');
+										if (logDiv) {
+											logDiv.innerHTML = '<div class="p-4 text-center text-yellow-400"><i class="fas fa-check-circle mr-2"></i>' + (msg.message || 'Capture finished') + '</div>';
+										}
+										setTimeout(function() { location.reload(); }, 2000);
+									}
+								} catch(err) {}
+							};
+							this.ws.onclose = () => {
+								const logDiv = document.getElementById('capture-log');
+								if (logDiv && !logDiv.innerHTML.includes('finished')) {
+									logDiv.innerHTML += '<div class="p-2 text-gray-500 text-xs">Stream disconnected</div>';
+								}
+							};
+						},
+						formatSize(bytes) {
+							if (bytes === 0) return '0 B';
+							const k = 1024;
+							const sizes = ['B', 'KB', 'MB', 'GB'];
+							const i = Math.floor(Math.log(bytes) / Math.log(k));
+							return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+						},
+						destroy() {
+							if (this.ws) this.ws.close();
+						}
+					};
+				}
+			</script>
+		</div>
+	}
+}
+
+templ filterCard(title, filter, description string) {
+	<div class="bg-dark-700 rounded-lg p-4">
+		<h3 class="font-medium text-white mb-1">{ title }</h3>
+		<code class="block bg-dark-900 text-green-400 px-2 py-1 rounded text-sm font-mono mb-2">{ filter }</code>
+		<p class="text-xs text-gray-500">{ description }</p>
+	</div>
+}
+
+templ newCaptureModal(csrfToken string, interfaces []NetworkInterface) {
+	<div id="new-capture-modal" class="hidden fixed inset-0 z-50 overflow-y-auto">
+		<div class="fixed inset-0 bg-black/50" onclick="document.getElementById('new-capture-modal').classList.add('hidden')"></div>
+		<div class="relative min-h-screen flex items-center justify-center p-4">
+			<div class="relative bg-dark-800 rounded-xl border border-dark-600 max-w-lg w-full p-6">
+				<div class="flex items-center justify-between mb-6">
+					<h2 class="text-xl font-display font-bold text-white">New Packet Capture</h2>
+					<button
+						onclick="document.getElementById('new-capture-modal').classList.add('hidden')"
+						class="text-gray-400 hover:text-white"
+					>
+						<i class="fas fa-times"></i>
+					</button>
+				</div>
+
+				<form action="/tools/capture/start" method="POST" class="space-y-4">
+					<input type="hidden" name="csrf_token" value={ csrfToken }/>
+
+					<div>
+						<label class="block text-sm font-medium text-gray-300 mb-2">Capture Name</label>
+						<input type="text" name="name" required class="input" placeholder="e.g. Debug HTTP Traffic"/>
+					</div>
+
+					<div>
+						<label class="block text-sm font-medium text-gray-300 mb-2">Network Interface</label>
+						<select id="capture-interface" name="interface" required class="input">
+							<option value="">Select interface...</option>
+							<option value="any">Any (all interfaces)</option>
+							for _, iface := range interfaces {
+								<option value={ iface.Name }>{ iface.Name } ({ iface.IP })</option>
+							}
+						</select>
+					</div>
+
+					<div>
+						<label class="block text-sm font-medium text-gray-300 mb-2">Capture Filter (BPF)</label>
+						<input type="text" name="filter" class="input font-mono" placeholder="e.g. tcp port 80"/>
+						<p class="text-xs text-gray-500 mt-1">Leave empty to capture all traffic</p>
+					</div>
+
+					<div class="grid grid-cols-2 gap-4">
+						<div>
+							<label class="block text-sm font-medium text-gray-300 mb-2">Max Packets</label>
+							<input type="number" name="max_packets" class="input" placeholder="0 (unlimited)" min="0"/>
+						</div>
+						<div>
+							<label class="block text-sm font-medium text-gray-300 mb-2">Max Duration (seconds)</label>
+							<input type="number" name="max_duration" class="input" placeholder="0 (unlimited)" min="0"/>
+						</div>
+					</div>
+
+					<div class="flex justify-end gap-3 pt-4 border-t border-dark-600">
+						<button
+							type="button"
+							onclick="document.getElementById('new-capture-modal').classList.add('hidden')"
+							class="btn-secondary"
+						>
+							Cancel
+						</button>
+						<button type="submit" class="btn-primary">
+							<i class="fas fa-play mr-2"></i>Start Capture
+						</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+}
+
+// ============================================================================
+// Helper Functions
+// ============================================================================
+
+func countActive(captures []CaptureSession) int {
+	count := 0
+	for _, c := range captures {
+		if c.Status == "running" {
+			count++
+		}
+	}
+	return count
+}
+
+func totalSize(captures []CaptureSession) string {
+	// In production, calculate actual total
+	if len(captures) == 0 {
+		return "0 B"
+	}
+	return "0 B"
+}
+
+func ifaceStatusColor(status string) string {
+	switch status {
+	case "up":
+		return "bg-green-400"
+	case "down":
+		return "bg-red-400"
+	default:
+		return "bg-gray-400"
+	}
+}
+
+func captureStatusBadge(status string) string {
+	switch status {
+	case "running":
+		return "bg-green-500/10 text-green-400"
+	case "stopped":
+		return "bg-yellow-500/10 text-yellow-400"
+	case "completed":
+		return "bg-blue-500/10 text-blue-400"
+	default:
+		return "bg-gray-500/10 text-gray-400"
+	}
+}
+
+func captureStatusBg(status string) string {
+	switch status {
+	case "running":
+		return "bg-green-500/10"
+	case "stopped":
+		return "bg-yellow-500/10"
+	case "completed":
+		return "bg-blue-500/10"
+	default:
+		return "bg-gray-500/10"
+	}
+}
+
+func captureStatusIcon(status string) string {
+	switch status {
+	case "running":
+		return "fas fa-circle text-green-400 animate-pulse"
+	case "stopped":
+		return "fas fa-stop text-yellow-400"
+	case "completed":
+		return "fas fa-check text-blue-400"
+	default:
+		return "fas fa-question text-gray-400"
+	}
+}

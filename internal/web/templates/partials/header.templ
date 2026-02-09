@@ -1,0 +1,231 @@
+package partials
+
+import (
+	"fmt"
+
+	"github.com/fr4nsys/usulnet/internal/web/templates/types"
+)
+
+templ Header(user *types.UserData, notificationsCount int, hosts []types.HostSelectorItem, activeHostID string, activeHostName string) {
+	<header class="sticky top-0 z-30 bg-dark-900/95 backdrop-blur-sm border-b border-dark-600">
+		<div class="flex items-center justify-between h-16 px-6">
+			<!-- Host Selector + Search -->
+			<div class="flex items-center gap-4 flex-1">
+				<!-- Host Selector -->
+				if len(hosts) > 1 {
+					<div x-data="{ open: false }" class="relative flex-shrink-0">
+						<button
+							@click="open = !open"
+							class="flex items-center gap-2 px-3 py-1.5 bg-dark-800 border border-dark-600 rounded-lg hover:border-primary-500/50 transition-colors min-w-[180px]"
+						>
+							@hostStatusDot(activeHostStatus(hosts, activeHostID))
+							<span class="text-sm font-medium text-white truncate">{ activeHostName }</span>
+							<i class="fas fa-chevron-down text-xs text-gray-500 ml-auto"></i>
+						</button>
+						<!-- Host Dropdown -->
+						<div
+							x-show="open"
+							x-transition:enter="transition ease-out duration-100"
+							x-transition:enter-start="transform opacity-0 scale-95"
+							x-transition:enter-end="transform opacity-100 scale-100"
+							x-transition:leave="transition ease-in duration-75"
+							x-transition:leave-start="transform opacity-100 scale-100"
+							x-transition:leave-end="transform opacity-0 scale-95"
+							@click.outside="open = false"
+							class="absolute left-0 mt-2 w-64 bg-dark-800 rounded-xl border border-dark-600 shadow-xl py-1 z-50"
+							style="display: none;"
+						>
+							<div class="px-3 py-2 border-b border-dark-600">
+								<p class="text-xs font-medium text-gray-500 uppercase tracking-wider">Switch Node</p>
+							</div>
+							for _, h := range hosts {
+								<a
+									href={ templ.SafeURL("/switch-host/" + h.ID) }
+									class={ "flex items-center gap-3 px-3 py-2 text-sm hover:bg-dark-700 transition-colors",
+										templ.KV("bg-dark-700/50 text-white", h.ID == activeHostID),
+										templ.KV("text-gray-300", h.ID != activeHostID) }
+								>
+									@hostStatusDot(h.Status)
+									<span class="truncate flex-1">{ h.Name }</span>
+									@hostTypeBadge(h.EndpointType)
+									if h.ID == activeHostID {
+										<i class="fas fa-check text-primary-400 text-xs"></i>
+									}
+								</a>
+							}
+							<div class="border-t border-dark-600 mt-1 pt-1">
+								<a href="/nodes" class="flex items-center gap-3 px-3 py-2 text-sm text-gray-400 hover:bg-dark-700 hover:text-white transition-colors">
+									<i class="fas fa-cog w-4 text-center"></i>
+									<span>Manage Nodes</span>
+								</a>
+							</div>
+						</div>
+					</div>
+				} else if len(hosts) == 1 {
+					<!-- Single host - show as static badge -->
+					<div class="flex items-center gap-2 px-3 py-1.5 bg-dark-800 border border-dark-600 rounded-lg">
+						@hostStatusDot(hosts[0].Status)
+						<span class="text-sm font-medium text-white">{ hosts[0].Name }</span>
+					</div>
+				}
+
+				<!-- Search -->
+				<div class="flex-1 max-w-xl">
+					<div class="relative">
+						<input
+							type="search"
+							name="q"
+							placeholder="Search containers, images, networks..."
+							class="w-full pl-10 pr-4 py-2 bg-dark-800 border border-dark-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500 transition-colors"
+							hx-get="/partials/search"
+							hx-trigger="keyup changed delay:300ms"
+							hx-target="#search-results"
+						/>
+						<i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-500"></i>
+						<kbd class="hidden md:inline-flex absolute right-3 top-1/2 -translate-y-1/2 px-2 py-0.5 text-xs bg-dark-700 text-gray-400 rounded border border-dark-600">⌘K</kbd>
+					</div>
+					<div id="search-results"></div>
+				</div>
+			</div>
+
+			<!-- Right Section -->
+			<div class="flex items-center gap-4 ml-4">
+				<!-- Theme Toggle -->
+				<button
+					onclick="usulnet.toggleTheme()"
+					class="p-2 text-gray-400 hover:text-white transition-colors"
+					title="Toggle theme"
+				>
+					<i class="fas fa-moon"></i>
+				</button>
+
+				<!-- Notifications -->
+				<div x-data="{ open: false }" class="relative">
+					<button
+						@click="open = !open"
+						class="relative p-2 text-gray-400 hover:text-white transition-colors"
+					>
+						<i class="fas fa-bell"></i>
+						if notificationsCount > 0 {
+							<span class="absolute top-0 right-0 w-4 h-4 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
+								{ formatCount(notificationsCount) }
+							</span>
+						}
+					</button>
+
+					<!-- Notifications Dropdown -->
+					<div
+						x-show="open"
+						x-transition:enter="transition ease-out duration-100"
+						x-transition:enter-start="transform opacity-0 scale-95"
+						x-transition:enter-end="transform opacity-100 scale-100"
+						x-transition:leave="transition ease-in duration-75"
+						x-transition:leave-start="transform opacity-100 scale-100"
+						x-transition:leave-end="transform opacity-0 scale-95"
+						@click.outside="open = false"
+						class="absolute right-0 mt-2 w-80 bg-dark-800 rounded-xl border border-dark-600 shadow-xl"
+						style="display: none;"
+					>
+						<div class="p-4 border-b border-dark-600">
+							<div class="flex items-center justify-between">
+								<h3 class="font-semibold text-white">Notifications</h3>
+								<a href="/notifications" class="text-xs text-primary-400 hover:text-primary-300">View all</a>
+							</div>
+						</div>
+						<div class="max-h-80 overflow-y-auto">
+							<div
+								hx-get="/partials/notifications"
+								hx-trigger="revealed"
+								hx-swap="innerHTML"
+								class="p-4 text-center text-gray-500"
+							>
+								<i class="fas fa-spinner fa-spin"></i>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- Quick Actions -->
+				<div x-data="{ open: false }" class="relative">
+					<button
+						@click="open = !open"
+						class="flex items-center gap-2 px-3 py-2 bg-primary-500 hover:bg-primary-600 text-black font-medium rounded-lg transition-colors"
+					>
+						<i class="fas fa-plus"></i>
+						<span class="hidden md:inline">New</span>
+					</button>
+
+					<!-- Quick Actions Dropdown -->
+					<div
+						x-show="open"
+						x-transition
+						@click.outside="open = false"
+						class="absolute right-0 mt-2 w-48 bg-dark-800 rounded-xl border border-dark-600 shadow-xl py-2"
+						style="display: none;"
+					>
+						<a href="/stacks/new" class="flex items-center gap-3 px-4 py-2 text-gray-300 hover:bg-dark-700 hover:text-white transition-colors">
+							<i class="fas fa-cubes w-5 text-center text-primary-400"></i>
+							Deploy Stack
+						</a>
+						<a href="/containers/new" class="flex items-center gap-3 px-4 py-2 text-gray-300 hover:bg-dark-700 hover:text-white transition-colors">
+							<i class="fas fa-cube w-5 text-center text-blue-400"></i>
+							New Container
+						</a>
+						<a href="/images/pull" class="flex items-center gap-3 px-4 py-2 text-gray-300 hover:bg-dark-700 hover:text-white transition-colors">
+							<i class="fas fa-download w-5 text-center text-green-400"></i>
+							Pull Image
+						</a>
+						<a href="/networks/new" class="flex items-center gap-3 px-4 py-2 text-gray-300 hover:bg-dark-700 hover:text-white transition-colors">
+							<i class="fas fa-network-wired w-5 text-center text-yellow-400"></i>
+							Create Network
+						</a>
+						<a href="/volumes/new" class="flex items-center gap-3 px-4 py-2 text-gray-300 hover:bg-dark-700 hover:text-white transition-colors">
+							<i class="fas fa-hdd w-5 text-center text-purple-400"></i>
+							Create Volume
+						</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</header>
+}
+
+templ hostStatusDot(status string) {
+	switch status {
+		case "online":
+			<span class="w-2 h-2 rounded-full bg-green-500 flex-shrink-0"></span>
+		case "offline":
+			<span class="w-2 h-2 rounded-full bg-red-500 flex-shrink-0"></span>
+		case "error":
+			<span class="w-2 h-2 rounded-full bg-yellow-500 flex-shrink-0"></span>
+		default:
+			<span class="w-2 h-2 rounded-full bg-gray-500 flex-shrink-0"></span>
+	}
+}
+
+templ hostTypeBadge(endpointType string) {
+	switch endpointType {
+		case "local":
+			<span class="px-1.5 py-0.5 rounded text-[10px] font-medium bg-primary-500/15 text-primary-400">Local</span>
+		case "tcp":
+			<span class="px-1.5 py-0.5 rounded text-[10px] font-medium bg-blue-500/15 text-blue-400">TCP</span>
+		case "agent":
+			<span class="px-1.5 py-0.5 rounded text-[10px] font-medium bg-green-500/15 text-green-400">Agent</span>
+	}
+}
+
+func activeHostStatus(hosts []types.HostSelectorItem, activeID string) string {
+	for _, h := range hosts {
+		if h.ID == activeID {
+			return h.Status
+		}
+	}
+	return "unknown"
+}
+
+func formatCount(n int) string {
+	if n > 9 {
+		return "9+"
+	}
+	return fmt.Sprintf("%d", n)
+}

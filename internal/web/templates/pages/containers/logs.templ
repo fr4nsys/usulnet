@@ -1,0 +1,500 @@
+package containers
+
+import (
+	"github.com/fr4nsys/usulnet/internal/web/templates/layouts"
+)
+
+type ContainerLogsData struct {
+	PageData    layouts.PageData
+	ContainerID string
+	Name        string
+	State       string
+	Tail        int
+	Since       string
+	Follow      bool
+}
+
+templ ContainerLogs(data ContainerLogsData) {
+	@layouts.Base(data.PageData) {
+		<!-- Breadcrumb -->
+		<nav class="flex items-center gap-2 text-sm text-gray-400 mb-4">
+			<a href="/containers" class="hover:text-primary-400 transition-colors">Containers</a>
+			<i class="fas fa-chevron-right text-xs"></i>
+			<a href={ templ.SafeURL("/containers/" + data.ContainerID) } class="hover:text-primary-400 transition-colors">{ data.Name }</a>
+			<i class="fas fa-chevron-right text-xs"></i>
+			<span class="text-white">Logs</span>
+		</nav>
+
+		<!-- Header -->
+		<div class="flex items-center justify-between mb-6">
+			<div class="flex items-center gap-4">
+				<div class={ "w-10 h-10 rounded-lg flex items-center justify-center", stateIconBg(data.State) }>
+					<i class="fas fa-file-alt text-lg text-gray-300"></i>
+				</div>
+				<div>
+					<h1 class="text-2xl font-bold font-display text-white">Logs</h1>
+					<p class="text-gray-400 text-sm">{ data.Name }</p>
+				</div>
+			</div>
+			<div class="flex items-center gap-2">
+				<a href={ templ.SafeURL("/containers/" + data.ContainerID) } class="px-4 py-2 bg-dark-700 hover:bg-dark-600 text-gray-300 rounded-lg transition-colors">
+					<i class="fas fa-arrow-left mr-2"></i>Back
+				</a>
+				<a href={ templ.SafeURL("/containers/" + data.ContainerID + "/exec") } class="btn-primary">
+					<i class="fas fa-terminal mr-2"></i>Terminal
+				</a>
+			</div>
+		</div>
+
+		<!-- Log Viewer -->
+		<div
+			x-data="logViewer()"
+			data-container-id={ data.ContainerID }
+			class="bg-dark-800 rounded-xl border border-dark-600 overflow-hidden"
+		>
+			<!-- Controls Row 1 -->
+			<div class="flex flex-wrap items-center gap-4 p-4 border-b border-dark-600 bg-dark-850">
+				<div class="flex items-center gap-4 flex-wrap">
+					<!-- Follow Toggle -->
+					<label class="flex items-center gap-2 cursor-pointer">
+						<input
+							type="checkbox"
+							x-model="follow"
+							@change="toggleFollow()"
+							class="checkbox"
+						/>
+						<span class="text-sm text-gray-300">Auto-scroll</span>
+					</label>
+
+					<!-- Lines filter -->
+					<select
+						x-model="tail"
+						@change="reload()"
+						class="px-3 py-1.5 bg-dark-700 border border-dark-600 rounded-lg text-sm text-gray-300 focus:outline-none focus:ring-2 focus:ring-primary-500/50"
+					>
+						<option value="100">Last 100 lines</option>
+						<option value="500">Last 500 lines</option>
+						<option value="1000">Last 1000 lines</option>
+						<option value="5000">Last 5000 lines</option>
+					</select>
+
+					<!-- Timestamps toggle -->
+					<label class="flex items-center gap-2 cursor-pointer">
+						<input
+							type="checkbox"
+							x-model="showTimestamps"
+							class="checkbox"
+						/>
+						<span class="text-sm text-gray-300">Timestamps</span>
+					</label>
+				</div>
+
+				<div class="flex-1"></div>
+
+				<div class="flex items-center gap-2">
+					<!-- Download -->
+					<button
+						@click="download()"
+						class="p-2 text-gray-400 hover:text-white hover:bg-dark-600 rounded-lg transition-colors"
+						title="Download logs"
+					>
+						<i class="fas fa-download"></i>
+					</button>
+
+					<!-- Clear -->
+					<button
+						@click="clear()"
+						class="p-2 text-gray-400 hover:text-white hover:bg-dark-600 rounded-lg transition-colors"
+						title="Clear display"
+					>
+						<i class="fas fa-trash"></i>
+					</button>
+				</div>
+			</div>
+
+			<!-- Controls Row 2: Severity Filters & Search -->
+			<div class="flex flex-wrap items-center gap-4 px-4 py-3 border-b border-dark-700 bg-dark-800">
+				<!-- Severity Filters -->
+				<div class="flex items-center gap-1">
+					<span class="text-xs text-gray-500 mr-2">LEVEL:</span>
+					<button
+						@click="toggleSeverity('error')"
+						:class="severityFilters.error ? 'bg-red-500/20 text-red-400 border-red-500/50' : 'bg-dark-700 text-gray-500 border-dark-600'"
+						class="px-2 py-1 text-xs rounded border transition-colors flex items-center gap-1"
+					>
+						<i class="fas fa-times-circle"></i>
+						<span>Error</span>
+						<span class="ml-1 px-1.5 py-0.5 rounded text-[10px] bg-dark-900/50" x-text="stats.error"></span>
+					</button>
+					<button
+						@click="toggleSeverity('warn')"
+						:class="severityFilters.warn ? 'bg-yellow-500/20 text-yellow-400 border-yellow-500/50' : 'bg-dark-700 text-gray-500 border-dark-600'"
+						class="px-2 py-1 text-xs rounded border transition-colors flex items-center gap-1"
+					>
+						<i class="fas fa-exclamation-triangle"></i>
+						<span>Warn</span>
+						<span class="ml-1 px-1.5 py-0.5 rounded text-[10px] bg-dark-900/50" x-text="stats.warn"></span>
+					</button>
+					<button
+						@click="toggleSeverity('info')"
+						:class="severityFilters.info ? 'bg-blue-500/20 text-blue-400 border-blue-500/50' : 'bg-dark-700 text-gray-500 border-dark-600'"
+						class="px-2 py-1 text-xs rounded border transition-colors flex items-center gap-1"
+					>
+						<i class="fas fa-info-circle"></i>
+						<span>Info</span>
+						<span class="ml-1 px-1.5 py-0.5 rounded text-[10px] bg-dark-900/50" x-text="stats.info"></span>
+					</button>
+					<button
+						@click="toggleSeverity('debug')"
+						:class="severityFilters.debug ? 'bg-gray-500/20 text-gray-400 border-gray-500/50' : 'bg-dark-700 text-gray-500 border-dark-600'"
+						class="px-2 py-1 text-xs rounded border transition-colors flex items-center gap-1"
+					>
+						<i class="fas fa-bug"></i>
+						<span>Debug</span>
+						<span class="ml-1 px-1.5 py-0.5 rounded text-[10px] bg-dark-900/50" x-text="stats.debug"></span>
+					</button>
+					<button
+						@click="toggleSeverity('other')"
+						:class="severityFilters.other ? 'bg-gray-500/20 text-gray-300 border-gray-500/50' : 'bg-dark-700 text-gray-500 border-dark-600'"
+						class="px-2 py-1 text-xs rounded border transition-colors flex items-center gap-1"
+					>
+						<i class="fas fa-file-alt"></i>
+						<span>Other</span>
+						<span class="ml-1 px-1.5 py-0.5 rounded text-[10px] bg-dark-900/50" x-text="stats.other"></span>
+					</button>
+				</div>
+
+				<div class="flex-1"></div>
+
+				<!-- Search with Regex Toggle -->
+				<div class="flex items-center gap-2">
+					<div class="relative">
+						<input
+							type="search"
+							x-model="search"
+							:placeholder="useRegex ? 'Regex pattern...' : 'Search logs...'"
+							class="w-64 pl-8 pr-4 py-1.5 bg-dark-700 border border-dark-600 rounded-lg text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500/50"
+							:class="regexError ? 'border-red-500' : ''"
+						/>
+						<i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-xs"></i>
+					</div>
+					<button
+						@click="useRegex = !useRegex; regexError = null"
+						:class="useRegex ? 'bg-primary-500/20 text-primary-400' : 'bg-dark-700 text-gray-400'"
+						class="px-3 py-1.5 text-sm rounded-lg border border-dark-600 hover:border-primary-500/50 transition-colors"
+						title="Toggle regex search"
+					>
+						<i class="fas fa-asterisk mr-1"></i>.*
+					</button>
+					<span x-show="regexError" class="text-xs text-red-400" x-text="regexError"></span>
+				</div>
+			</div>
+			
+			<!-- Log Output -->
+			<div 
+				x-ref="logContainer"
+				class="h-[600px] overflow-y-auto font-mono text-sm bg-dark-900 p-4"
+			>
+				<div x-show="loading" class="flex items-center justify-center h-full">
+					<div class="text-center">
+						<i class="fas fa-spinner fa-spin text-3xl text-primary-400 mb-4"></i>
+						<p class="text-gray-400">Loading logs...</p>
+					</div>
+				</div>
+				
+				<div x-show="!loading && lines.length === 0" class="flex items-center justify-center h-full">
+					<div class="text-center">
+						<i class="fas fa-file-alt text-4xl text-gray-600 mb-4"></i>
+						<p class="text-gray-400">No logs available</p>
+					</div>
+				</div>
+				
+				<template x-for="(line, index) in filteredLines" :key="index">
+					<div 
+						class="py-0.5 hover:bg-dark-700/30 whitespace-pre-wrap break-all"
+						:class="getLineClass(line)"
+					>
+						<span x-show="showTimestamps" class="text-gray-500 mr-3" x-text="line.timestamp"></span>
+						<span x-html="highlightSearch(line.content)"></span>
+					</div>
+				</template>
+			</div>
+			
+			<!-- Status Bar -->
+			<div class="flex items-center justify-between px-4 py-2 border-t border-dark-600 bg-dark-850 text-xs text-gray-500">
+				<span>
+					<span x-text="filteredLines.length"></span> lines
+					<span x-show="search"> (filtered from <span x-text="lines.length"></span>)</span>
+				</span>
+				<span x-show="connected" class="flex items-center gap-1.5">
+					<span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+					Live
+				</span>
+			</div>
+		</div>
+		
+		<script>
+			function logViewer() {
+				return {
+					lines: [],
+					loading: true,
+					connected: false,
+					follow: true,
+					tail: 500,
+					showTimestamps: false,
+					search: '',
+					useRegex: false,
+					regexError: null,
+					ws: null,
+					containerId: '',
+					_initialized: false,
+					_destroyed: false,
+					severityFilters: {
+						error: true,
+						warn: true,
+						info: true,
+						debug: true,
+						other: true
+					},
+					stats: {
+						error: 0,
+						warn: 0,
+						info: 0,
+						debug: 0,
+						other: 0
+					},
+
+					init() {
+						if (this._initialized) return;
+						this._initialized = true;
+						this.containerId = this.$el.dataset.containerId;
+						this.connect();
+					},
+
+					destroy() {
+						this._destroyed = true;
+						if (this.ws) {
+							this.ws.onclose = null;
+							this.ws.close();
+							this.ws = null;
+						}
+					},
+
+					getSeverity(line) {
+						if (line.stream === 'stderr') return 'error';
+						const content = line.content.toLowerCase();
+						// Check for common log level patterns
+						if (/\berror\b|\bfatal\b|\bcritical\b|\bfailure\b|\bfailed\b|exception/i.test(content)) return 'error';
+						if (/\bwarn(ing)?\b|\balert\b/i.test(content)) return 'warn';
+						if (/\binfo\b|\bnotice\b/i.test(content)) return 'info';
+						if (/\bdebug\b|\btrace\b|\bverbose\b/i.test(content)) return 'debug';
+						// Check for JSON log formats
+						if (/"level"\s*:\s*"error"/i.test(content) || /"severity"\s*:\s*"error"/i.test(content)) return 'error';
+						if (/"level"\s*:\s*"warn"/i.test(content) || /"severity"\s*:\s*"warn"/i.test(content)) return 'warn';
+						if (/"level"\s*:\s*"info"/i.test(content) || /"severity"\s*:\s*"info"/i.test(content)) return 'info';
+						if (/"level"\s*:\s*"debug"/i.test(content) || /"severity"\s*:\s*"debug"/i.test(content)) return 'debug';
+						return 'other';
+					},
+
+					toggleSeverity(level) {
+						this.severityFilters[level] = !this.severityFilters[level];
+					},
+
+					updateStats() {
+						this.stats = { error: 0, warn: 0, info: 0, debug: 0, other: 0 };
+						for (const line of this.lines) {
+							const severity = this.getSeverity(line);
+							this.stats[severity]++;
+						}
+					},
+
+					get filteredLines() {
+						let result = this.lines;
+
+						// Apply severity filter
+						result = result.filter(line => {
+							const severity = this.getSeverity(line);
+							return this.severityFilters[severity];
+						});
+
+						// Apply search filter
+						if (this.search) {
+							if (this.useRegex) {
+								try {
+									const regex = new RegExp(this.search, 'i');
+									this.regexError = null;
+									result = result.filter(l => regex.test(l.content));
+								} catch (e) {
+									this.regexError = 'Invalid regex';
+									return result;
+								}
+							} else {
+								const term = this.search.toLowerCase();
+								result = result.filter(l => l.content.toLowerCase().includes(term));
+							}
+						}
+
+						return result;
+					},
+
+					connect() {
+						const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+						const url = `${protocol}//${window.location.host}/ws/logs/${this.containerId}?tail=${this.tail}&follow=${this.follow}`;
+
+						this.ws = new WebSocket(url);
+
+						this.ws.onopen = () => {
+							this.connected = true;
+							this.loading = false;
+						};
+
+						this.ws.onmessage = (event) => {
+							try {
+								const msg = JSON.parse(event.data);
+								if (msg.type === 'log') {
+									const line = this.parseLine(msg.data || '');
+									if (msg.stream === 'stderr') {
+										line.stream = 'stderr';
+									}
+									if (msg.timestamp) {
+										line.timestamp = new Date(msg.timestamp).toLocaleTimeString();
+									}
+									this.lines.push(line);
+									this.updateStats();
+								} else if (msg.type === 'error') {
+									this.lines.push({
+										timestamp: new Date().toLocaleTimeString(),
+										content: '[ERROR] ' + (msg.data || msg.message || ''),
+										stream: 'stderr'
+									});
+									this.updateStats();
+								} else if (msg.type === 'connected') {
+									return;
+								} else if (msg.type === 'disconnected') {
+									this.connected = false;
+									return;
+								}
+							} catch(e) {
+								const line = this.parseLine(event.data);
+								this.lines.push(line);
+								this.updateStats();
+							}
+
+							if (this.lines.length > 10000) {
+								this.lines = this.lines.slice(-5000);
+								this.updateStats();
+							}
+
+							if (this.follow) {
+								this.$nextTick(() => this.scrollToBottom());
+							}
+						};
+
+						this.ws.onclose = () => {
+							this.connected = false;
+							if (!this._destroyed) {
+								setTimeout(() => this.connect(), 3000);
+							}
+						};
+
+						this.ws.onerror = () => {
+							this.connected = false;
+						};
+					},
+
+					parseLine(data) {
+						const match = data.match(/^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d+Z)\s*(.*)/);
+						if (match) {
+							return {
+								timestamp: new Date(match[1]).toLocaleTimeString(),
+								content: match[2],
+								stream: 'stdout'
+							};
+						}
+						return {
+							timestamp: new Date().toLocaleTimeString(),
+							content: data,
+							stream: 'stdout'
+						};
+					},
+
+					getLineClass(line) {
+						const severity = this.getSeverity(line);
+						switch (severity) {
+							case 'error': return 'text-red-400';
+							case 'warn': return 'text-yellow-400';
+							case 'info': return 'text-blue-400';
+							case 'debug': return 'text-gray-500';
+							default: return 'text-gray-300';
+						}
+					},
+
+					highlightSearch(text) {
+						if (!this.search) return this.escapeHtml(text);
+						const escaped = this.escapeHtml(text);
+						try {
+							let regex;
+							if (this.useRegex) {
+								regex = new RegExp(`(${this.search})`, 'gi');
+							} else {
+								regex = new RegExp(`(${this.escapeRegex(this.search)})`, 'gi');
+							}
+							return escaped.replace(regex, '<mark class="bg-yellow-500/30 text-yellow-200 px-0.5 rounded">$1</mark>');
+						} catch (e) {
+							return escaped;
+						}
+					},
+
+					escapeHtml(text) {
+						const div = document.createElement('div');
+						div.textContent = text;
+						return div.innerHTML;
+					},
+
+					escapeRegex(text) {
+						return text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+					},
+
+					scrollToBottom() {
+						const container = this.$refs.logContainer;
+						if (container) {
+							container.scrollTop = container.scrollHeight;
+						}
+					},
+
+					toggleFollow() {
+						if (this.follow) this.scrollToBottom();
+					},
+
+					reload() {
+						this.lines = [];
+						this.stats = { error: 0, warn: 0, info: 0, debug: 0, other: 0 };
+						this.loading = true;
+						if (this.ws) this.ws.close();
+						this.connect();
+					},
+
+					clear() {
+						this.lines = [];
+						this.stats = { error: 0, warn: 0, info: 0, debug: 0, other: 0 };
+					},
+
+					download() {
+						const content = this.filteredLines.map(l => {
+							if (this.showTimestamps) return `${l.timestamp} ${l.content}`;
+							return l.content;
+						}).join('\n');
+
+						const blob = new Blob([content], { type: 'text/plain' });
+						const url = URL.createObjectURL(blob);
+						const a = document.createElement('a');
+						a.href = url;
+						a.download = `${this.containerId.slice(0, 12)}-logs.txt`;
+						a.click();
+						URL.revokeObjectURL(url);
+					}
+				};
+			}
+		</script>
+	}
+}
