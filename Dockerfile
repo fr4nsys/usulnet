@@ -4,7 +4,11 @@
 # =============================================================================
 
 # Stage 1: Build Go binary with Templ compilation
-FROM golang:1.25.7-alpine AS builder
+# --platform=$BUILDPLATFORM: run Go compiler natively (fast), cross-compile via GOARCH
+FROM --platform=$BUILDPLATFORM golang:1.25.7-alpine AS builder
+
+ARG TARGETARCH
+ARG TARGETOS=linux
 
 RUN apk add --no-cache git ca-certificates tzdata
 
@@ -31,7 +35,7 @@ ARG VERSION=dev
 ARG COMMIT=unknown
 ARG BUILD_TIME=unknown
 
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build \
+RUN CGO_ENABLED=0 GOOS=${TARGETOS} GOARCH=${TARGETARCH} go build \
     -ldflags="-w -s \
         -X github.com/fr4nsys/usulnet/internal/app.Version=${VERSION} \
         -X github.com/fr4nsys/usulnet/internal/app.Commit=${COMMIT} \
@@ -42,16 +46,23 @@ RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build \
 # =============================================================================
 # Stage 2: Compile Tailwind CSS (standalone binary, no Node.js/npm)
 # =============================================================================
-FROM alpine:3.21 AS frontend
+# --platform=$BUILDPLATFORM: Tailwind runs at build time only, use host arch.
+# CSS output is architecture-independent so we only need Tailwind to run, not
+# match the target. Using BUILDARCH avoids QEMU and is much faster.
+FROM --platform=$BUILDPLATFORM alpine:3.21 AS frontend
+
+ARG BUILDARCH
 
 RUN apk add --no-cache curl
 
 WORKDIR /frontend
 
 # Download Tailwind CSS standalone CLI (no Node.js dependency)
+# Map Docker BUILDARCH (amd64/arm64) → Tailwind release name (x64/arm64)
 ARG TAILWIND_VERSION=3.4.17
-RUN curl -fsSL -o /usr/local/bin/tailwindcss \
-    "https://github.com/tailwindlabs/tailwindcss/releases/download/v${TAILWIND_VERSION}/tailwindcss-linux-x64" && \
+RUN if [ "${BUILDARCH}" = "arm64" ]; then TAILWIND_ARCH="arm64"; else TAILWIND_ARCH="x64"; fi && \
+    curl -fsSL -o /usr/local/bin/tailwindcss \
+    "https://github.com/tailwindlabs/tailwindcss/releases/download/v${TAILWIND_VERSION}/tailwindcss-linux-${TAILWIND_ARCH}" && \
     chmod +x /usr/local/bin/tailwindcss
 
 # Copy Tailwind source, config, and templates for class scanning
@@ -68,6 +79,8 @@ RUN mkdir -p css && \
 # =============================================================================
 FROM alpine:3.21
 
+ARG TARGETARCH
+
 # All runtime packages in a single layer (includes nvim editor deps)
 RUN apk add --no-cache \
     ca-certificates tzdata curl su-exec util-linux \
@@ -79,8 +92,10 @@ RUN apk add --no-cache \
 
 # Overwrite Alpine's docker-cli (27.x, API 1.47) with Docker 29.2.0 (API 1.53)
 # to match host daemon. Compose plugin stays from Alpine package.
-RUN rm -f /usr/bin/docker && \
-    curl -fsSL "https://download.docker.com/linux/static/stable/x86_64/docker-29.2.0.tgz" | \
+# Map Docker TARGETARCH (amd64/arm64) → Docker release dir (x86_64/aarch64)
+RUN if [ "${TARGETARCH}" = "arm64" ]; then DOCKER_ARCH="aarch64"; else DOCKER_ARCH="x86_64"; fi && \
+    rm -f /usr/bin/docker && \
+    curl -fsSL "https://download.docker.com/linux/static/stable/${DOCKER_ARCH}/docker-29.2.0.tgz" | \
     tar xz --strip-components=1 -C /usr/bin docker/docker && \
     chmod +x /usr/bin/docker
 
