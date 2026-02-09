@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="web/static/img/logo-full.png" alt="usulnet" width="320" />
+  <a href="https://usulnet.com/"><img src="docs/screenshots/logo.png" alt="usulnet" width="320" /></a>
 </p>
 
 <p align="center">
@@ -11,7 +11,7 @@
   <a href="#installation"><img src="https://img.shields.io/badge/Go-1.25+-00ADD8?style=flat-square&logo=go&logoColor=white" alt="Go 1.25+"/></a>
   <a href="#license"><img src="https://img.shields.io/badge/License-AGPL--3.0-blue?style=flat-square" alt="AGPL-3.0"/></a>
   <a href="#deployment"><img src="https://img.shields.io/badge/Docker-Ready-2496ED?style=flat-square&logo=docker&logoColor=white" alt="Docker Ready"/></a>
-  <a href="https://github.com/fr4nsys/usulnet/releases"><img src="https://img.shields.io/github/v/release/fr4nsys/usulnet?style=flat-square&color=success" alt="Release"/></a>
+  <a href="https://github.com/fr4nsys/usulnet/releases"><img src="https://img.shields.io/github/v/release/fr4nsys/usulnet?style=flat-square&color=success&include_prereleases" alt="Release"/></a> <!-- Stable only:https://img.shields.io/github/v/release/fr4nsys/usulnet?style=flat-square&color=success -->
 </p>
 
 <p align="center">
