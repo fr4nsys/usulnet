@@ -4,7 +4,11 @@
 # =============================================================================
 
 # Stage 1: Build Go binary
-FROM golang:1.25.7-alpine AS builder
+# --platform=$BUILDPLATFORM: run Go compiler natively (fast), cross-compile via GOARCH
+FROM --platform=$BUILDPLATFORM golang:1.25.7-alpine AS builder
+
+ARG TARGETARCH
+ARG TARGETOS=linux
 
 RUN apk add --no-cache git ca-certificates tzdata
 
@@ -31,7 +35,7 @@ ARG VERSION=dev
 ARG COMMIT=unknown
 ARG BUILD_TIME=unknown
 
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build \
+RUN CGO_ENABLED=0 GOOS=${TARGETOS} GOARCH=${TARGETARCH} go build \
     -ldflags="-w -s \
         -X main.Version=${VERSION} \
         -X main.Commit=${COMMIT} \
