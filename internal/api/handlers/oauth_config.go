@@ -54,23 +54,23 @@ func (h *OAuthConfigHandler) Routes() chi.Router {
 
 // CreateOAuthConfigRequest represents the request body for creating an OAuth config
 type CreateOAuthConfigRequest struct {
-	Name          string   `json:"name" validate:"required,min=1,max=255"`
-	Provider      string   `json:"provider" validate:"required,oneof=generic oidc github google microsoft"`
-	ClientID      string   `json:"client_id" validate:"required"`
-	ClientSecret  string   `json:"client_secret" validate:"required"`
-	AuthURL       string   `json:"auth_url,omitempty" validate:"omitempty,url"`
-	TokenURL      string   `json:"token_url,omitempty" validate:"omitempty,url"`
-	UserInfoURL   string   `json:"user_info_url,omitempty" validate:"omitempty,url"`
+	Name          string   `json:"name"`
+	Provider      string   `json:"provider"`
+	ClientID      string   `json:"client_id"`
+	ClientSecret  string   `json:"client_secret"`
+	AuthURL       string   `json:"auth_url,omitempty"`
+	TokenURL      string   `json:"token_url,omitempty"`
+	UserInfoURL   string   `json:"user_info_url,omitempty"`
 	Scopes        []string `json:"scopes,omitempty"`
-	RedirectURL   string   `json:"redirect_url,omitempty" validate:"omitempty,url"`
-	DefaultRole   string   `json:"default_role,omitempty" validate:"omitempty,oneof=viewer operator admin"`
+	RedirectURL   string   `json:"redirect_url,omitempty"`
+	DefaultRole   string   `json:"default_role,omitempty"`
 	AutoProvision bool     `json:"auto_provision"`
-	AdminGroup    string   `json:"admin_group,omitempty" validate:"omitempty,max=255"`
-	OperatorGroup string   `json:"operator_group,omitempty" validate:"omitempty,max=255"`
-	UserIDClaim   string   `json:"user_id_claim,omitempty" validate:"omitempty,max=255"`
-	UsernameClaim string   `json:"username_claim,omitempty" validate:"omitempty,max=255"`
-	EmailClaim    string   `json:"email_claim,omitempty" validate:"omitempty,max=255"`
-	GroupsClaim   string   `json:"groups_claim,omitempty" validate:"omitempty,max=255"`
+	AdminGroup    string   `json:"admin_group,omitempty"`
+	OperatorGroup string   `json:"operator_group,omitempty"`
+	UserIDClaim   string   `json:"user_id_claim,omitempty"`
+	UsernameClaim string   `json:"username_claim,omitempty"`
+	EmailClaim    string   `json:"email_claim,omitempty"`
+	GroupsClaim   string   `json:"groups_claim,omitempty"`
 	IsEnabled     bool     `json:"is_enabled"`
 }
 
@@ -261,23 +261,23 @@ func (h *OAuthConfigHandler) GetByID(w http.ResponseWriter, r *http.Request) {
 
 // UpdateOAuthConfigRequest represents the request body for updating an OAuth config
 type UpdateOAuthConfigRequest struct {
-	Name          *string  `json:"name,omitempty" validate:"omitempty,min=1,max=255"`
-	Provider      *string  `json:"provider,omitempty" validate:"omitempty,oneof=generic oidc github google microsoft"`
+	Name          *string  `json:"name,omitempty"`
+	Provider      *string  `json:"provider,omitempty"`
 	ClientID      *string  `json:"client_id,omitempty"`
 	ClientSecret  *string  `json:"client_secret,omitempty"`
-	AuthURL       *string  `json:"auth_url,omitempty" validate:"omitempty,url"`
-	TokenURL      *string  `json:"token_url,omitempty" validate:"omitempty,url"`
-	UserInfoURL   *string  `json:"user_info_url,omitempty" validate:"omitempty,url"`
+	AuthURL       *string  `json:"auth_url,omitempty"`
+	TokenURL      *string  `json:"token_url,omitempty"`
+	UserInfoURL   *string  `json:"user_info_url,omitempty"`
 	Scopes        []string `json:"scopes,omitempty"`
-	RedirectURL   *string  `json:"redirect_url,omitempty" validate:"omitempty,url"`
-	DefaultRole   *string  `json:"default_role,omitempty" validate:"omitempty,oneof=viewer operator admin"`
+	RedirectURL   *string  `json:"redirect_url,omitempty"`
+	DefaultRole   *string  `json:"default_role,omitempty"`
 	AutoProvision *bool    `json:"auto_provision,omitempty"`
-	AdminGroup    *string  `json:"admin_group,omitempty" validate:"omitempty,max=255"`
-	OperatorGroup *string  `json:"operator_group,omitempty" validate:"omitempty,max=255"`
-	UserIDClaim   *string  `json:"user_id_claim,omitempty" validate:"omitempty,max=255"`
-	UsernameClaim *string  `json:"username_claim,omitempty" validate:"omitempty,max=255"`
-	EmailClaim    *string  `json:"email_claim,omitempty" validate:"omitempty,max=255"`
-	GroupsClaim   *string  `json:"groups_claim,omitempty" validate:"omitempty,max=255"`
+	AdminGroup    *string  `json:"admin_group,omitempty"`
+	OperatorGroup *string  `json:"operator_group,omitempty"`
+	UserIDClaim   *string  `json:"user_id_claim,omitempty"`
+	UsernameClaim *string  `json:"username_claim,omitempty"`
+	EmailClaim    *string  `json:"email_claim,omitempty"`
+	GroupsClaim   *string  `json:"groups_claim,omitempty"`
 	IsEnabled     *bool    `json:"is_enabled,omitempty"`
 }
 

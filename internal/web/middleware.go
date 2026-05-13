@@ -9,16 +9,12 @@ import (
 	cryptorand "crypto/rand"
 	"crypto/subtle"
 	"encoding/hex"
-	"fmt"
 	"log"
 	"log/slog"
 	"net/http"
-	"net/url"
 	"strings"
 	"sync"
 	"time"
-
-	"github.com/go-chi/httprate"
 
 	"github.com/fr4nsys/usulnet/internal/models"
 )
@@ -232,11 +228,12 @@ func (m *Middleware) CSRFMiddleware(next http.Handler) http.Handler {
 			return
 		}
 
-		// Skip CSRF check for API endpoints (they use different auth)
-		if strings.HasPrefix(r.URL.Path, "/api/") {
-			next.ServeHTTP(w, r)
-			return
-		}
+		// NOTE: The previous blanket skip for /api/ paths was removed because
+		// the web layer registers session-authenticated routes under /api/
+		// (snippets, terminal, compliance, OPA, git-sync, ephemeral, manifests,
+		// host filesystem ops). Those routes use session cookies and MUST have
+		// CSRF protection. The frontend already sends X-CSRF-Token on all
+		// HTMX and fetch requests via the htmx:configRequest listener.
 
 		// Get expected token from context
 		expectedToken, ok := r.Context().Value(ContextKeyCSRFToken).(string)
@@ -330,21 +327,8 @@ func (m *Middleware) FlashMiddleware(next http.Handler) http.Handler {
 		}
 
 		if session != nil {
-			// Check for flash message.
-			// Note: session data is JSON-serialized via Redis, so *FlashMessage
-			// comes back as map[string]interface{} after deserialization.
-			var flash *FlashMessage
-			switch v := session.Values["flash"].(type) {
-			case *FlashMessage:
-				flash = v
-			case map[string]interface{}:
-				t, _ := v["type"].(string)
-				msg, _ := v["message"].(string)
-				if t != "" || msg != "" {
-					flash = &FlashMessage{Type: t, Message: msg}
-				}
-			}
-			if flash != nil {
+			// Check for flash message
+			if flash, ok := session.Values["flash"].(*FlashMessage); ok && flash != nil {
 				ctx = context.WithValue(ctx, ContextKeyFlash, flash)
 				// Clear flash from session
 				delete(session.Values, "flash")
@@ -365,18 +349,15 @@ func (m *Middleware) redirectToLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Store original URL for redirect after login.
-	// Validate return URL to prevent open redirect attacks:
-	// - Must start with "/" (relative path)
-	// - Must NOT start with "//" (protocol-relative URL → external redirect)
+	// Store original URL for redirect after login
 	returnURL := r.URL.Path
 	if r.URL.RawQuery != "" {
 		returnURL += "?" + r.URL.RawQuery
 	}
 
 	redirectURL := m.loginPath
-	if returnURL != "/" && returnURL != m.loginPath && isSafeReturnURL(returnURL) {
-		redirectURL += "?return=" + url.QueryEscape(returnURL)
+	if returnURL != "/" && returnURL != m.loginPath {
+		redirectURL += "?return=" + returnURL
 	}
 
 	http.Redirect(w, r, redirectURL, http.StatusSeeOther)
@@ -451,7 +432,7 @@ func GetActiveHostIDFromContext(ctx context.Context) string {
 func SetFlash(w http.ResponseWriter, r *http.Request, sessionStore SessionStore, sessionName string, msgType, message string) error {
 	session, err := sessionStore.Get(r, sessionName)
 	if err != nil {
-		return fmt.Errorf("SetFlash: get session %q: %w", sessionName, err)
+		return err
 	}
 	if session.Values == nil {
 		session.Values = make(map[string]interface{})
@@ -509,17 +490,6 @@ func WebSocketRateLimit() func(http.Handler) http.Handler {
 	}
 }
 
-// WebAuthRateLimit limits authentication endpoints to 5 requests per minute per IP.
-// Unlike the API rate limiter, this returns an HTML redirect to the login page with
-// an error message rather than a JSON error response.
-func WebAuthRateLimit() func(http.Handler) http.Handler {
-	return httprate.Limit(5, time.Minute,
-		httprate.WithLimitHandler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			http.Redirect(w, r, "/login?error=Too+many+attempts.+Please+wait+a+minute+and+try+again.", http.StatusSeeOther)
-		})),
-	)
-}
-
 // MaxRequestBody limits the size of request bodies to prevent memory exhaustion.
 // Uses http.MaxBytesReader which returns a proper 413 error when exceeded.
 func MaxRequestBody(maxBytes int64) func(http.Handler) http.Handler {
@@ -544,27 +514,21 @@ func NoCache(next http.Handler) http.Handler {
 }
 
 // SecureHeaders adds security headers to response.
-// unsafe-eval is required globally because Alpine.js v3 uses new Function() to
-// evaluate x-data expressions and dynamic bindings on every page. Removing it
-// breaks all Alpine.js components (containers list, networks list, terminal, etc).
 func SecureHeaders(next http.Handler) http.Handler {
-	// Base CSP shared by all routes (unsafe-inline needed for Alpine.js x-bind and inline styles)
-	const cspBase = "default-src 'self'; " +
-		"style-src 'self' 'unsafe-inline'; " +
-		"img-src 'self' data:; font-src 'self'; connect-src 'self' wss: ws:; " +
-		"worker-src 'self' blob:; " +
-		"frame-ancestors 'none'; base-uri 'self'; form-action 'self'"
-
-	// Alpine.js v3 requires unsafe-eval for expression evaluation on all pages.
-	const csp = cspBase + "; script-src 'self' 'unsafe-inline' 'unsafe-eval'"
-
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("X-Content-Type-Options", "nosniff")
 		w.Header().Set("X-Frame-Options", "DENY")
 		w.Header().Set("X-XSS-Protection", "1; mode=block")
 		w.Header().Set("Referrer-Policy", "strict-origin-when-cross-origin")
-		w.Header().Set("Content-Security-Policy", csp)
-
+		// CSP: all assets self-hosted; unsafe-inline for inline scripts/styles used in templates;
+		// unsafe-eval required by Alpine.js v3 and Monaco editor
+		w.Header().Set("Content-Security-Policy",
+			"default-src 'self'; "+
+				"script-src 'self' 'unsafe-inline' 'unsafe-eval'; "+
+				"style-src 'self' 'unsafe-inline'; "+
+				"img-src 'self' data:; font-src 'self'; connect-src 'self' wss: ws:; "+
+				"worker-src 'self' blob:; "+
+				"frame-ancestors 'none'; base-uri 'self'; form-action 'self'")
 		if r.TLS != nil || r.Header.Get("X-Forwarded-Proto") == "https" {
 			w.Header().Set("Strict-Transport-Security", "max-age=63072000; includeSubDomains")
 		}

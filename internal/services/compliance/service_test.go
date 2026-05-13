@@ -133,7 +133,7 @@ func (m *mockRepo) ListEvidence(_ context.Context, assessmentID uuid.UUID) ([]*m
 
 func TestNewService(t *testing.T) {
 	repo := newMockRepo()
-	svc := NewService(nil, nil, nil) // exercises nil-logger and nil-docker path
+	svc := NewService(nil, nil) // exercises nil-logger path
 	if svc == nil {
 		t.Fatal("NewService returned nil when called with nil repo and nil logger")
 	}

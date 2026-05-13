@@ -2,7 +2,7 @@
 // Copyright (c) 2024-2026 usulnet contributors
 // https://github.com/fr4nsys/usulnet
 
-// Package notification provides the notification service for USULNET.
+// Package notification provides the notification service for usulnet.
 // Department L: Notifications
 package notification
 
@@ -351,12 +351,12 @@ The host agent is not responding. Please check connectivity.`,
 	// Test Message
 	e.templates[channels.TypeTestMessage] = &NotificationTemplate{
 		Title: must(template.New("title").Funcs(e.funcMap).Parse(
-			`USULNET Test Notification`,
+			`usulnet Test Notification`,
 		)),
 		Body: must(template.New("body").Funcs(e.funcMap).Parse(
 			`🧪 **Test Notification**
 
-This is a test message from USULNET to verify your notification configuration is working correctly.
+This is a test message from usulnet to verify your notification configuration is working correctly.
 
 If you received this message, your notification channel is properly configured!`,
 		)),

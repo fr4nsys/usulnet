@@ -55,47 +55,6 @@ type AuditLogRepository interface {
 	List(ctx context.Context, hostID uuid.UUID, limit, offset int) ([]*models.ProxyAuditLog, int, error)
 }
 
-// RedirectionRepository defines persistence operations for proxy redirections.
-type RedirectionRepository interface {
-	Create(ctx context.Context, rd *models.ProxyRedirection) error
-	GetByID(ctx context.Context, id uuid.UUID) (*models.ProxyRedirection, error)
-	List(ctx context.Context, hostID uuid.UUID) ([]*models.ProxyRedirection, error)
-	Update(ctx context.Context, rd *models.ProxyRedirection) error
-	Delete(ctx context.Context, id uuid.UUID) error
-}
-
-// StreamRepository defines persistence operations for proxy streams.
-type StreamRepository interface {
-	Create(ctx context.Context, s *models.ProxyStream) error
-	GetByID(ctx context.Context, id uuid.UUID) (*models.ProxyStream, error)
-	List(ctx context.Context, hostID uuid.UUID) ([]*models.ProxyStream, error)
-	Update(ctx context.Context, s *models.ProxyStream) error
-	Delete(ctx context.Context, id uuid.UUID) error
-}
-
-// DeadHostRepository defines persistence operations for proxy dead hosts.
-type DeadHostRepository interface {
-	Create(ctx context.Context, d *models.ProxyDeadHost) error
-	GetByID(ctx context.Context, id uuid.UUID) (*models.ProxyDeadHost, error)
-	List(ctx context.Context, hostID uuid.UUID) ([]*models.ProxyDeadHost, error)
-	Delete(ctx context.Context, id uuid.UUID) error
-}
-
-// AccessListRepository defines persistence operations for proxy access lists.
-type AccessListRepository interface {
-	Create(ctx context.Context, al *models.ProxyAccessList) error
-	GetByID(ctx context.Context, id uuid.UUID) (*models.ProxyAccessList, error)
-	List(ctx context.Context, hostID uuid.UUID) ([]*models.ProxyAccessList, error)
-	Update(ctx context.Context, al *models.ProxyAccessList) error
-	Delete(ctx context.Context, id uuid.UUID) error
-}
-
-// LocationRepository defines persistence operations for proxy custom locations.
-type LocationRepository interface {
-	ListByHost(ctx context.Context, proxyHostID uuid.UUID) ([]models.ProxyLocation, error)
-	ReplaceForHost(ctx context.Context, proxyHostID uuid.UUID, locations []models.ProxyLocation) error
-}
-
 // Encryptor handles encryption/decryption of sensitive data (DNS API tokens, cert keys).
 type Encryptor interface {
 	EncryptString(plaintext string) (string, error)

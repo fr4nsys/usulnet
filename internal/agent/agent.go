@@ -15,7 +15,6 @@ import (
 	"fmt"
 	"os"
 	"runtime"
-	"strings"
 	"sync"
 	"time"
 
@@ -63,7 +62,7 @@ func DefaultConfig() Config {
 	hostname, _ := os.Hostname()
 	return Config{
 		AgentID:    uuid.New().String(),
-		GatewayURL: "natss://localhost:4222",
+		GatewayURL: "nats://localhost:4222",
 		DockerHost: "unix://" + docker.LocalSocketPath(),
 		Hostname:   hostname,
 		Labels:     make(map[string]string),
@@ -104,7 +103,7 @@ func New(cfg Config, log *logger.Logger) (*Agent, error) {
 		return nil, fmt.Errorf("token is required")
 	}
 	if cfg.GatewayURL == "" {
-		cfg.GatewayURL = "natss://localhost:4222"
+		cfg.GatewayURL = "nats://localhost:4222"
 	}
 	if cfg.AgentID == "" {
 		cfg.AgentID = uuid.New().String()
@@ -123,10 +122,7 @@ func New(cfg Config, log *logger.Logger) (*Agent, error) {
 }
 
 // Run starts the agent and blocks until context is cancelled.
-// The optional ready channel is closed once the agent has successfully connected
-// to Docker, NATS, registered with the gateway, and started background loops.
-// Pass nil if you don't need a readiness signal.
-func (a *Agent) Run(ctx context.Context, ready chan<- struct{}) error {
+func (a *Agent) Run(ctx context.Context) error {
 	a.ctx, a.cancel = context.WithCancel(ctx)
 	a.startedAt = time.Now().UTC()
 
@@ -151,8 +147,8 @@ func (a *Agent) Run(ctx context.Context, ready chan<- struct{}) error {
 	}
 	defer a.nats.Close()
 
-	// Register with gateway (retry until successful or context cancelled)
-	if err := a.registerWithRetry(); err != nil {
+	// Register with gateway
+	if err := a.register(); err != nil {
 		return fmt.Errorf("failed to register with gateway: %w", err)
 	}
 
@@ -170,11 +166,6 @@ func (a *Agent) Run(ctx context.Context, ready chan<- struct{}) error {
 		"heartbeat_interval", a.heartbeatInterval,
 		"inventory_interval", a.inventoryInterval,
 	)
-
-	// Signal readiness
-	if ready != nil {
-		close(ready)
-	}
 
 	// Wait for shutdown
 	<-a.ctx.Done()
@@ -242,30 +233,17 @@ func (a *Agent) connectNATS() error {
 		}),
 	}
 
-	// TLS: explicit config takes precedence, then natss:// auto-detection
-	connectURL := a.config.GatewayURL
+	// Add TLS if configured
 	if a.config.TLSEnabled {
 		tlsCfg, tlsErr := a.buildTLSConfig()
 		if tlsErr != nil {
 			return fmt.Errorf("failed to build TLS config: %w", tlsErr)
 		}
 		opts = append(opts, nats.Secure(tlsCfg))
-		// Convert natss:// to tls:// for the NATS client
-		if strings.HasPrefix(connectURL, "natss://") {
-			connectURL = "tls://" + strings.TrimPrefix(connectURL, "natss://")
-		}
-		a.log.Info("NATS TLS enabled (explicit config)")
-	} else if strings.HasPrefix(connectURL, "natss://") {
-		// Auto-detect natss:// scheme: enable TLS with InsecureSkipVerify for self-signed CA
-		connectURL = "tls://" + strings.TrimPrefix(connectURL, "natss://")
-		opts = append(opts, nats.Secure(&tls.Config{
-			MinVersion:         tls.VersionTLS12,
-			InsecureSkipVerify: true, //nolint:gosec // Self-signed CA by default
-		}))
-		a.log.Info("NATS TLS enabled (natss:// scheme, self-signed CA)")
+		a.log.Info("NATS TLS enabled")
 	}
 
-	conn, err := nats.Connect(connectURL, opts...)
+	conn, err := nats.Connect(a.config.GatewayURL, opts...)
 	if err != nil {
 		return err
 	}
@@ -305,38 +283,6 @@ func (a *Agent) buildTLSConfig() (*tls.Config, error) {
 	}
 
 	return tlsCfg, nil
-}
-
-// registerWithRetry retries registration until successful or context is cancelled.
-// This handles the case where the master is not yet ready or is restarting.
-func (a *Agent) registerWithRetry() error {
-	const maxBackoff = 30 * time.Second
-	backoff := 5 * time.Second
-
-	for attempt := 1; ; attempt++ {
-		err := a.register()
-		if err == nil {
-			return nil
-		}
-
-		a.log.Warn("Registration failed, retrying...",
-			"attempt", attempt,
-			"error", err,
-			"retry_in", backoff,
-		)
-
-		select {
-		case <-a.ctx.Done():
-			return fmt.Errorf("registration cancelled: %w", a.ctx.Err())
-		case <-time.After(backoff):
-		}
-
-		// Exponential backoff capped at maxBackoff
-		backoff = backoff * 2
-		if backoff > maxBackoff {
-			backoff = maxBackoff
-		}
-	}
 }
 
 // register sends registration request to gateway.

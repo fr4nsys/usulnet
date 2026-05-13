@@ -78,20 +78,6 @@ func (r *ResourcePermissionRepository) RevokeByID(ctx context.Context, id uuid.U
 	return nil
 }
 
-// RevokeByIDForTeam removes a resource permission by its ID, but only if it
-// belongs to the specified team. This prevents IDOR where a permission ID from
-// a different team could be used.
-func (r *ResourcePermissionRepository) RevokeByIDForTeam(ctx context.Context, id, teamID uuid.UUID) error {
-	tag, err := r.db.Exec(ctx, `DELETE FROM resource_permissions WHERE id = $1 AND team_id = $2`, id, teamID)
-	if err != nil {
-		return apperrors.Wrap(err, apperrors.CodeDatabaseError, "failed to revoke permission")
-	}
-	if tag.RowsAffected() == 0 {
-		return apperrors.New(apperrors.CodeNotFound, "permission not found for this team")
-	}
-	return nil
-}
-
 // ListByTeam returns all permissions for a team.
 func (r *ResourcePermissionRepository) ListByTeam(ctx context.Context, teamID uuid.UUID) ([]*models.ResourcePermission, error) {
 	query := `

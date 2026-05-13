@@ -7,10 +7,8 @@ package docker
 import (
 	"context"
 	"fmt"
-	"io"
 
 	"github.com/docker/docker/api/types"
-	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/api/types/filters"
 	"github.com/docker/docker/api/types/mount"
 	"github.com/docker/docker/api/types/swarm"
@@ -527,88 +525,5 @@ func (c *Client) SwarmTaskList(ctx context.Context, serviceID string) ([]SwarmTa
 	}
 
 	return result, nil
-}
-
-// ============================================================================
-// Swarm Node Management Operations
-// ============================================================================
-
-// SwarmNodeUpdate updates a node's role or availability.
-// Use role "manager"/"worker" to promote/demote, availability "active"/"drain"/"pause".
-func (c *Client) SwarmNodeUpdate(ctx context.Context, nodeID string, role, availability string) error {
-	c.mu.RLock()
-	defer c.mu.RUnlock()
-
-	if c.closed {
-		return errors.New(errors.CodeDockerConnection, "client is closed")
-	}
-
-	node, _, err := c.cli.NodeInspectWithRaw(ctx, nodeID)
-	if err != nil {
-		return errors.Wrap(err, errors.CodeNotFound, fmt.Sprintf("node %s not found", nodeID))
-	}
-
-	if role != "" {
-		node.Spec.Role = swarm.NodeRole(role)
-	}
-	if availability != "" {
-		node.Spec.Availability = swarm.NodeAvailability(availability)
-	}
-
-	return c.cli.NodeUpdate(ctx, nodeID, node.Version, node.Spec)
-}
-
-// ============================================================================
-// Swarm Service Logs & Rollback
-// ============================================================================
-
-// SwarmServiceLogs returns the logs of a Swarm service as a ReadCloser.
-func (c *Client) SwarmServiceLogs(ctx context.Context, serviceID string, tail string, follow bool) (io.ReadCloser, error) {
-	c.mu.RLock()
-	defer c.mu.RUnlock()
-
-	if c.closed {
-		return nil, errors.New(errors.CodeDockerConnection, "client is closed")
-	}
-
-	if tail == "" {
-		tail = "200"
-	}
-
-	return c.cli.ServiceLogs(ctx, serviceID, container.LogsOptions{
-		ShowStdout: true,
-		ShowStderr: true,
-		Follow:     follow,
-		Tail:       tail,
-		Timestamps: true,
-	})
-}
-
-// SwarmServiceRollback rolls a service back to its previous spec.
-func (c *Client) SwarmServiceRollback(ctx context.Context, serviceID string) error {
-	c.mu.RLock()
-	defer c.mu.RUnlock()
-
-	if c.closed {
-		return errors.New(errors.CodeDockerConnection, "client is closed")
-	}
-
-	s, _, err := c.cli.ServiceInspectWithRaw(ctx, serviceID, types.ServiceInspectOptions{})
-	if err != nil {
-		return errors.Wrap(err, errors.CodeNotFound, "service not found")
-	}
-
-	if s.PreviousSpec == nil {
-		return errors.New(errors.CodeValidation, "no previous spec available for rollback")
-	}
-
-	_, err = c.cli.ServiceUpdate(ctx, serviceID, s.Version, *s.PreviousSpec, types.ServiceUpdateOptions{
-		Rollback: "previous",
-	})
-	if err != nil {
-		return errors.Wrap(err, errors.CodeInternal, "failed to rollback service")
-	}
-
-	return nil
 }
 

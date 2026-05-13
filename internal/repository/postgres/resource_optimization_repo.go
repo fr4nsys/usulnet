@@ -81,7 +81,7 @@ func (r *ResourceOptRepository) CreateSample(ctx context.Context, s *models.Reso
 			$1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14
 		) RETURNING id`
 
-	err := r.db.Pool().QueryRow(ctx, query,
+	err := r.db.QueryRow(ctx, query,
 		s.ContainerID, s.ContainerName, s.HostID, s.SampledAt,
 		s.CPUUsagePercent, s.CPUPeakPercent,
 		s.MemoryUsageBytes, s.MemoryLimitBytes, s.MemoryPeakBytes,
@@ -121,7 +121,7 @@ func (r *ResourceOptRepository) GetContainerUsageSummary(ctx context.Context, co
 		GROUP BY container_id`
 
 	var s models.ContainerUsageSummary
-	err := r.db.Pool().QueryRow(ctx, query, containerID, since).Scan(
+	err := r.db.QueryRow(ctx, query, containerID, since).Scan(
 		&s.ContainerID, &s.ContainerName,
 		&s.CPUAvg, &s.CPUPeak,
 		&s.MemoryAvg, &s.MemoryPeak, &s.MemoryLimit,
@@ -155,7 +155,7 @@ func (r *ResourceOptRepository) ListContainerSummaries(ctx context.Context, sinc
 		ORDER BY cpu_avg DESC
 		LIMIT $2`
 
-	rows, err := r.db.Pool().Query(ctx, query, since, limit)
+	rows, err := r.db.Query(ctx, query, since, limit)
 	if err != nil {
 		return nil, fmt.Errorf("listing container usage summaries: %w", err)
 	}
@@ -197,7 +197,7 @@ func (r *ResourceOptRepository) UpsertHourly(ctx context.Context, h *models.Reso
 			network_tx_total  = EXCLUDED.network_tx_total,
 			sample_count      = EXCLUDED.sample_count`
 
-	_, err := r.db.Pool().Exec(ctx, query,
+	_, err := r.db.Exec(ctx, query,
 		h.ContainerID, h.ContainerName, h.Hour,
 		h.CPUAvg, h.CPUPeak, h.MemoryAvgBytes, h.MemoryPeakBytes, h.MemoryLimitBytes,
 		h.NetworkRxTotal, h.NetworkTxTotal, h.SampleCount,
@@ -228,7 +228,7 @@ func (r *ResourceOptRepository) UpsertDaily(ctx context.Context, d *models.Resou
 			network_tx_total  = EXCLUDED.network_tx_total,
 			sample_count      = EXCLUDED.sample_count`
 
-	_, err := r.db.Pool().Exec(ctx, query,
+	_, err := r.db.Exec(ctx, query,
 		d.ContainerID, d.ContainerName, d.Day,
 		d.CPUAvg, d.CPUPeak, d.MemoryAvgBytes, d.MemoryPeakBytes, d.MemoryLimitBytes,
 		d.NetworkRxTotal, d.NetworkTxTotal, d.SampleCount,
@@ -249,7 +249,7 @@ func (r *ResourceOptRepository) GetHourlyUsage(ctx context.Context, containerID 
 		WHERE container_id = $1 AND hour >= $2
 		ORDER BY hour DESC`
 
-	rows, err := r.db.Pool().Query(ctx, query, containerID, since)
+	rows, err := r.db.Query(ctx, query, containerID, since)
 	if err != nil {
 		return nil, fmt.Errorf("getting hourly usage for %s: %w", containerID, err)
 	}
@@ -280,7 +280,7 @@ func (r *ResourceOptRepository) GetDailyUsage(ctx context.Context, containerID s
 		WHERE container_id = $1 AND day >= $2
 		ORDER BY day DESC`
 
-	rows, err := r.db.Pool().Query(ctx, query, containerID, since)
+	rows, err := r.db.Query(ctx, query, containerID, since)
 	if err != nil {
 		return nil, fmt.Errorf("getting daily usage for %s: %w", containerID, err)
 	}
@@ -311,7 +311,7 @@ func (r *ResourceOptRepository) CreateRecommendation(ctx context.Context, rec *m
 			$1, $2, $3, $4, $5, $6, $7, $8, $9
 		) RETURNING id, created_at`
 
-	err := r.db.Pool().QueryRow(ctx, query,
+	err := r.db.QueryRow(ctx, query,
 		rec.ContainerID, rec.ContainerName, rec.Type, rec.Severity, rec.Status,
 		rec.CurrentValue, rec.RecommendedValue, rec.EstimatedSavings, rec.Reason,
 	).Scan(&rec.ID, &rec.CreatedAt)
@@ -351,7 +351,7 @@ func (r *ResourceOptRepository) ListRecommendations(ctx context.Context, opts mo
 	// Count total matching
 	countQuery := fmt.Sprintf("SELECT COUNT(*) FROM resource_recommendations %s", where)
 	var total int
-	if err := r.db.Pool().QueryRow(ctx, countQuery, args...).Scan(&total); err != nil {
+	if err := r.db.QueryRow(ctx, countQuery, args...).Scan(&total); err != nil {
 		return nil, 0, fmt.Errorf("counting recommendations: %w", err)
 	}
 
@@ -371,7 +371,7 @@ func (r *ResourceOptRepository) ListRecommendations(ctx context.Context, opts mo
 	)
 	args = append(args, limit, offset)
 
-	rows, err := r.db.Pool().Query(ctx, dataQuery, args...)
+	rows, err := r.db.Query(ctx, dataQuery, args...)
 	if err != nil {
 		return nil, 0, fmt.Errorf("listing recommendations: %w", err)
 	}
@@ -391,7 +391,7 @@ func (r *ResourceOptRepository) ResolveRecommendation(ctx context.Context, id uu
 		SET status = $1, resolved_at = NOW(), resolved_by = $2
 		WHERE id = $3`
 
-	tag, err := r.db.Pool().Exec(ctx, query, status, resolvedBy, id)
+	tag, err := r.db.Exec(ctx, query, status, resolvedBy, id)
 	if err != nil {
 		return fmt.Errorf("resolving recommendation %s: %w", id, err)
 	}
@@ -409,7 +409,7 @@ func (r *ResourceOptRepository) GetOptStats(ctx context.Context) (*models.Resour
 	}
 
 	// Total recommendations
-	err := r.db.Pool().QueryRow(ctx,
+	err := r.db.QueryRow(ctx,
 		"SELECT COUNT(*) FROM resource_recommendations",
 	).Scan(&stats.TotalRecommendations)
 	if err != nil {
@@ -417,7 +417,7 @@ func (r *ResourceOptRepository) GetOptStats(ctx context.Context) (*models.Resour
 	}
 
 	// Open recommendations
-	err = r.db.Pool().QueryRow(ctx,
+	err = r.db.QueryRow(ctx,
 		"SELECT COUNT(*) FROM resource_recommendations WHERE status = 'open'",
 	).Scan(&stats.OpenRecommendations)
 	if err != nil {
@@ -425,7 +425,7 @@ func (r *ResourceOptRepository) GetOptStats(ctx context.Context) (*models.Resour
 	}
 
 	// By type
-	rows, err := r.db.Pool().Query(ctx,
+	rows, err := r.db.Query(ctx,
 		"SELECT type, COUNT(*) FROM resource_recommendations GROUP BY type ORDER BY COUNT(*) DESC",
 	)
 	if err != nil {
@@ -442,7 +442,7 @@ func (r *ResourceOptRepository) GetOptStats(ctx context.Context) (*models.Resour
 	}
 
 	// By status
-	rows2, err := r.db.Pool().Query(ctx,
+	rows2, err := r.db.Query(ctx,
 		"SELECT status, COUNT(*) FROM resource_recommendations GROUP BY status ORDER BY COUNT(*) DESC",
 	)
 	if err != nil {
@@ -459,7 +459,7 @@ func (r *ResourceOptRepository) GetOptStats(ctx context.Context) (*models.Resour
 	}
 
 	// Top 5 containers by recommendation count
-	rows3, err := r.db.Pool().Query(ctx,
+	rows3, err := r.db.Query(ctx,
 		"SELECT container_name, COUNT(*) AS cnt FROM resource_recommendations GROUP BY container_name ORDER BY cnt DESC LIMIT 5",
 	)
 	if err != nil {
@@ -479,7 +479,7 @@ func (r *ResourceOptRepository) GetOptStats(ctx context.Context) (*models.Resour
 
 // DeleteOldSamples removes resource usage samples older than the given time.
 func (r *ResourceOptRepository) DeleteOldSamples(ctx context.Context, before time.Time) (int64, error) {
-	tag, err := r.db.Pool().Exec(ctx,
+	tag, err := r.db.Exec(ctx,
 		"DELETE FROM resource_usage_samples WHERE sampled_at < $1", before,
 	)
 	if err != nil {
@@ -491,7 +491,7 @@ func (r *ResourceOptRepository) DeleteOldSamples(ctx context.Context, before tim
 // ClearOpenRecommendations deletes all recommendations with status 'open'.
 // This is used before regenerating recommendations.
 func (r *ResourceOptRepository) ClearOpenRecommendations(ctx context.Context) error {
-	_, err := r.db.Pool().Exec(ctx,
+	_, err := r.db.Exec(ctx,
 		"DELETE FROM resource_recommendations WHERE status = 'open'",
 	)
 	if err != nil {

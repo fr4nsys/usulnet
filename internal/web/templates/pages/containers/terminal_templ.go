@@ -9,7 +9,6 @@ import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
 import (
-	"github.com/fr4nsys/usulnet/internal/web/templates/components"
 	"github.com/fr4nsys/usulnet/internal/web/templates/layouts"
 )
 
@@ -61,7 +60,7 @@ func ContainerTerminal(data ContainerTerminalData) templ.Component {
 			var templ_7745c5c3_Var3 templ.SafeURL
 			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinURLErrs(templ.SafeURL("/containers/" + data.ContainerID))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/containers/terminal.templ`, Line: 22, Col: 61}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/containers/terminal.templ`, Line: 21, Col: 61}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 			if templ_7745c5c3_Err != nil {
@@ -74,127 +73,119 @@ func ContainerTerminal(data ContainerTerminalData) templ.Component {
 			var templ_7745c5c3_Var4 string
 			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(data.Name)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/containers/terminal.templ`, Line: 22, Col: 124}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/containers/terminal.templ`, Line: 21, Col: 124}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</a> <i class=\"fas fa-chevron-right text-xs\"></i> <span class=\"text-white\">Terminal</span></nav><!-- Header --> <div class=\"flex items-center justify-between mb-6\"><div class=\"flex items-center gap-4\"><div class=\"w-10 h-10 rounded-lg bg-dark-700 flex items-center justify-center\"><i class=\"fas fa-terminal text-lg text-primary-400\"></i></div><div><div class=\"flex items-center gap-3\"><h1 class=\"text-2xl font-bold font-display text-white\">Terminal</h1>")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			templ_7745c5c3_Err = components.HostBadge(data.PageData.ActiveHostName).Render(ctx, templ_7745c5c3_Buffer)
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</div><p class=\"text-gray-400 text-sm\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</a> <i class=\"fas fa-chevron-right text-xs\"></i> <span class=\"text-white\">Terminal</span></nav><!-- Header --> <div class=\"flex items-center justify-between mb-6\"><div class=\"flex items-center gap-4\"><div class=\"w-10 h-10 rounded-lg bg-dark-700 flex items-center justify-center\"><i class=\"fas fa-terminal text-lg text-primary-400\"></i></div><div><h1 class=\"text-2xl font-bold font-display text-white\">Terminal</h1><p class=\"text-gray-400 text-sm\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var5 string
 			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(data.Name)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/containers/terminal.templ`, Line: 38, Col: 49}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/containers/terminal.templ`, Line: 34, Col: 49}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "</p></div></div><div class=\"flex items-center gap-2\"><a href=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</p></div></div><div class=\"flex items-center gap-2\"><a href=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var6 templ.SafeURL
 			templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinURLErrs(templ.SafeURL("/containers/" + data.ContainerID))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/containers/terminal.templ`, Line: 42, Col: 62}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/containers/terminal.templ`, Line: 38, Col: 62}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "\" class=\"px-4 py-2 bg-dark-700 hover:bg-dark-600 text-gray-300 rounded-lg transition-colors\"><i class=\"fas fa-arrow-left mr-2\"></i>Back</a> <a href=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "\" class=\"px-4 py-2 bg-dark-700 hover:bg-dark-600 text-gray-300 rounded-lg transition-colors\"><i class=\"fas fa-arrow-left mr-2\"></i>Back</a> <a href=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var7 templ.SafeURL
 			templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinURLErrs(templ.SafeURL("/containers/" + data.ContainerID + "/logs"))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/containers/terminal.templ`, Line: 45, Col: 72}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/containers/terminal.templ`, Line: 41, Col: 72}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "\" class=\"px-4 py-2 bg-dark-700 hover:bg-dark-600 text-gray-300 rounded-lg transition-colors\"><i class=\"fas fa-file-alt mr-2\"></i>Logs</a></div></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "\" class=\"px-4 py-2 bg-dark-700 hover:bg-dark-600 text-gray-300 rounded-lg transition-colors\"><i class=\"fas fa-file-alt mr-2\"></i>Logs</a></div></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			if data.State != "running" {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "<!-- Container not running warning --> <div class=\"bg-yellow-500/10 border border-yellow-500/20 rounded-xl p-6 text-center\"><i class=\"fas fa-exclamation-triangle text-4xl text-yellow-400 mb-4\"></i><h2 class=\"text-lg font-semibold text-white mb-2\">Container Not Running</h2><p class=\"text-gray-400 mb-4\">The terminal is only available when the container is running.</p><button hx-post=\"")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "<!-- Container not running warning --> <div class=\"bg-yellow-500/10 border border-yellow-500/20 rounded-xl p-6 text-center\"><i class=\"fas fa-exclamation-triangle text-4xl text-yellow-400 mb-4\"></i><h2 class=\"text-lg font-semibold text-white mb-2\">Container Not Running</h2><p class=\"text-gray-400 mb-4\">The terminal is only available when the container is running.</p><button hx-post=\"")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var8 string
 				templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs("/containers/" + data.ContainerID + "/start")
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/containers/terminal.templ`, Line: 58, Col: 59}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/containers/terminal.templ`, Line: 54, Col: 59}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "\" hx-swap=\"none\" class=\"btn-primary\"><i class=\"fas fa-play mr-2\"></i>Start Container</button></div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "\" hx-swap=\"none\" class=\"btn-primary\"><i class=\"fas fa-play mr-2\"></i>Start Container</button></div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			} else {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "<!-- Terminal Container --> <div x-data=\"terminal()\" data-container-id=\"")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "<!-- Terminal Container --> <div x-data=\"terminal()\" data-container-id=\"")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var9 string
 				templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(data.ContainerID)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/containers/terminal.templ`, Line: 69, Col: 40}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/containers/terminal.templ`, Line: 65, Col: 40}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "\" class=\"bg-dark-800 rounded-xl border border-dark-600 overflow-hidden\"><!-- Terminal Header --><div class=\"flex items-center justify-between px-4 py-3 border-b border-dark-600 bg-dark-850\"><div class=\"flex items-center gap-3\"><!-- Window controls (decorative) --><div class=\"flex items-center gap-1.5\"><span class=\"w-3 h-3 rounded-full bg-red-500\"></span> <span class=\"w-3 h-3 rounded-full bg-yellow-500\"></span> <span class=\"w-3 h-3 rounded-full bg-green-500\"></span></div><span class=\"text-sm text-gray-400\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "\" class=\"bg-dark-800 rounded-xl border border-dark-600 overflow-hidden\"><!-- Terminal Header --><div class=\"flex items-center justify-between px-4 py-3 border-b border-dark-600 bg-dark-850\"><div class=\"flex items-center gap-3\"><!-- Window controls (decorative) --><div class=\"flex items-center gap-1.5\"><span class=\"w-3 h-3 rounded-full bg-red-500\"></span> <span class=\"w-3 h-3 rounded-full bg-yellow-500\"></span> <span class=\"w-3 h-3 rounded-full bg-green-500\"></span></div><span class=\"text-sm text-gray-400\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var10 string
 				templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(data.Name)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/containers/terminal.templ`, Line: 81, Col: 53}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/containers/terminal.templ`, Line: 77, Col: 53}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, " — ")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, " — ")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var11 string
 				templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(data.Shell)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/containers/terminal.templ`, Line: 81, Col: 72}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/containers/terminal.templ`, Line: 77, Col: 72}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "</span></div><div class=\"flex items-center gap-2\"><!-- Connection status --><span x-show=\"connected\" class=\"flex items-center gap-1.5 text-xs text-green-400\"><span class=\"w-2 h-2 bg-green-500 rounded-full animate-pulse\"></span> Connected</span> <span x-show=\"!connected && !connecting\" class=\"flex items-center gap-1.5 text-xs text-red-400\"><span class=\"w-2 h-2 bg-red-500 rounded-full\"></span> Disconnected</span> <span x-show=\"connecting\" class=\"flex items-center gap-1.5 text-xs text-yellow-400\"><i class=\"fas fa-spinner fa-spin\"></i> Connecting...</span><!-- Actions --><button @click=\"reconnect()\" class=\"p-2 text-gray-400 hover:text-white hover:bg-dark-600 rounded-lg transition-colors\" title=\"Reconnect\"><i class=\"fas fa-redo\"></i></button> <button @click=\"toggleFullscreen()\" class=\"p-2 text-gray-400 hover:text-white hover:bg-dark-600 rounded-lg transition-colors\" title=\"Fullscreen\"><i class=\"fas fa-expand\"></i></button></div></div><!-- Terminal Display --><div x-ref=\"terminalContainer\" id=\"terminal\" class=\"h-[500px]\"></div></div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "</span></div><div class=\"flex items-center gap-2\"><!-- Connection status --><span x-show=\"connected\" class=\"flex items-center gap-1.5 text-xs text-green-400\"><span class=\"w-2 h-2 bg-green-500 rounded-full animate-pulse\"></span> Connected</span> <span x-show=\"!connected && !connecting\" class=\"flex items-center gap-1.5 text-xs text-red-400\"><span class=\"w-2 h-2 bg-red-500 rounded-full\"></span> Disconnected</span> <span x-show=\"connecting\" class=\"flex items-center gap-1.5 text-xs text-yellow-400\"><i class=\"fas fa-spinner fa-spin\"></i> Connecting...</span><!-- Actions --><button @click=\"reconnect()\" class=\"p-2 text-gray-400 hover:text-white hover:bg-dark-600 rounded-lg transition-colors\" title=\"Reconnect\"><i class=\"fas fa-redo\"></i></button> <button @click=\"toggleFullscreen()\" class=\"p-2 text-gray-400 hover:text-white hover:bg-dark-600 rounded-lg transition-colors\" title=\"Fullscreen\"><i class=\"fas fa-expand\"></i></button></div></div><!-- Terminal Display --><div x-ref=\"terminalContainer\" id=\"terminal\" class=\"h-[500px]\"></div></div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, " <!-- xterm.js (self-hosted) --> <link rel=\"stylesheet\" href=\"/static/vendor/xterm/css/xterm.css\"><script src=\"/static/vendor/xterm/lib/xterm.js\"></script> <script src=\"/static/vendor/xterm/addons/xterm-addon-fit.js\"></script> <script src=\"/static/vendor/xterm/addons/xterm-addon-web-links.js\"></script> <script>\n\t\t\tfunction terminal() {\n\t\t\t\treturn {\n\t\t\t\t\tterm: null,\n\t\t\t\t\tws: null,\n\t\t\t\t\tfitAddon: null,\n\t\t\t\t\tconnected: false,\n\t\t\t\t\tconnecting: false,\n\t\t\t\t\tcontainerId: '',\n\t\t\t\t\t_initialized: false,\n\t\t\t\t\t_resizeHandler: null,\n\t\t\t\t\t_reconnectAttempts: 0,\n\n\t\t\t\t\tinit() {\n\t\t\t\t\t\tif (this._initialized) return;\n\t\t\t\t\t\tthis._initialized = true;\n\n\t\t\t\t\t\tthis.containerId = this.$el.dataset.containerId;\n\n\t\t\t\t\t\t// Initialize xterm.js\n\t\t\t\t\t\tthis.term = new Terminal({\n\t\t\t\t\t\t\tcursorBlink: true,\n\t\t\t\t\t\t\tcursorStyle: 'block',\n\t\t\t\t\t\t\tfontSize: 14,\n\t\t\t\t\t\t\tfontFamily: \"'IBM Plex Mono', 'Fira Code', 'Menlo', monospace\",\n\t\t\t\t\t\t\ttheme: {\n\t\t\t\t\t\t\t\tbackground: '#0d1117',\n\t\t\t\t\t\t\t\tforeground: '#e6edf3',\n\t\t\t\t\t\t\t\tcursor: '#ff6b35',\n\t\t\t\t\t\t\t\tcursorAccent: '#0d1117',\n\t\t\t\t\t\t\t\tselection: 'rgba(255, 107, 53, 0.3)',\n\t\t\t\t\t\t\t\tblack: '#0d1117',\n\t\t\t\t\t\t\t\tred: '#f85149',\n\t\t\t\t\t\t\t\tgreen: '#3fb950',\n\t\t\t\t\t\t\t\tyellow: '#d29922',\n\t\t\t\t\t\t\t\tblue: '#58a6ff',\n\t\t\t\t\t\t\t\tmagenta: '#bc8cff',\n\t\t\t\t\t\t\t\tcyan: '#76e3ea',\n\t\t\t\t\t\t\t\twhite: '#e6edf3',\n\t\t\t\t\t\t\t\tbrightBlack: '#484f58',\n\t\t\t\t\t\t\t\tbrightRed: '#ff7b72',\n\t\t\t\t\t\t\t\tbrightGreen: '#56d364',\n\t\t\t\t\t\t\t\tbrightYellow: '#e3b341',\n\t\t\t\t\t\t\t\tbrightBlue: '#79c0ff',\n\t\t\t\t\t\t\t\tbrightMagenta: '#d2a8ff',\n\t\t\t\t\t\t\t\tbrightCyan: '#a5d6ff',\n\t\t\t\t\t\t\t\tbrightWhite: '#ffffff'\n\t\t\t\t\t\t\t},\n\t\t\t\t\t\t\tscrollback: 10000,\n\t\t\t\t\t\t\tconvertEol: true,\n\t\t\t\t\t\t});\n\t\t\t\t\t\t\n\t\t\t\t\t\t// Load addons\n\t\t\t\t\t\tthis.fitAddon = new FitAddon.FitAddon();\n\t\t\t\t\t\tthis.term.loadAddon(this.fitAddon);\n\t\t\t\t\t\tthis.term.loadAddon(new WebLinksAddon.WebLinksAddon());\n\t\t\t\t\t\t\n\t\t\t\t\t\t// Open terminal in container\n\t\t\t\t\t\tthis.term.open(this.$refs.terminalContainer);\n\n\t\t\t\t\t\t// Delay fit and connect to ensure DOM layout is fully computed\n\t\t\t\t\t\tthis.$nextTick(() => {\n\t\t\t\t\t\t\tsetTimeout(() => {\n\t\t\t\t\t\t\t\tthis.fitAddon.fit();\n\t\t\t\t\t\t\t\tthis.connect();\n\t\t\t\t\t\t\t}, 50);\n\t\t\t\t\t\t});\n\t\t\t\t\t\t\n\t\t\t\t\t\t// Handle resize (store ref for cleanup)\n\t\t\t\t\t\tthis._resizeHandler = () => {\n\t\t\t\t\t\t\tif (this.fitAddon) {\n\t\t\t\t\t\t\t\tthis.fitAddon.fit();\n\t\t\t\t\t\t\t\tthis.sendResize();\n\t\t\t\t\t\t\t}\n\t\t\t\t\t\t};\n\t\t\t\t\t\twindow.addEventListener('resize', this._resizeHandler);\n\t\t\t\t\t\t\n\t\t\t\t\t\t// Handle terminal input - send raw bytes\n\t\t\t\t\t\tthis.term.onData(data => {\n\t\t\t\t\t\t\tif (this.ws && this.ws.readyState === WebSocket.OPEN) {\n\t\t\t\t\t\t\t\tthis.ws.send(JSON.stringify({ type: 'input', data: data }));\n\t\t\t\t\t\t\t}\n\t\t\t\t\t\t});\n\t\t\t\t\t\t\n\t\t\t\t\t\t// Handle terminal resize\n\t\t\t\t\t\tthis.term.onResize(({ cols, rows }) => {\n\t\t\t\t\t\t\tthis.sendResize();\n\t\t\t\t\t\t});\n\t\t\t\t\t},\n\t\t\t\t\t\n\t\t\t\t\tdestroy() {\n\t\t\t\t\t\tif (this._resizeHandler) {\n\t\t\t\t\t\t\twindow.removeEventListener('resize', this._resizeHandler);\n\t\t\t\t\t\t}\n\t\t\t\t\t\tif (this.ws) {\n\t\t\t\t\t\t\tthis.ws.onclose = null; // prevent reconnect message\n\t\t\t\t\t\t\tthis.ws.close();\n\t\t\t\t\t\t\tthis.ws = null;\n\t\t\t\t\t\t}\n\t\t\t\t\t\tif (this.term) {\n\t\t\t\t\t\t\tthis.term.dispose();\n\t\t\t\t\t\t\tthis.term = null;\n\t\t\t\t\t\t}\n\t\t\t\t\t},\n\t\t\t\t\t\n\t\t\t\t\tconnect() {\n\t\t\t\t\t\tthis.connecting = true;\n\t\t\t\t\t\t\n\t\t\t\t\t\tconst protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';\n\t\t\t\t\t\tconst { cols, rows } = this.term;\n\t\t\t\t\t\tconst url = `${protocol}//${window.location.host}/ws/exec/${this.containerId}?cols=${cols}&rows=${rows}`;\n\t\t\t\t\t\t\n\t\t\t\t\t\tthis.ws = new WebSocket(url);\n\t\t\t\t\t\t\n\t\t\t\t\t\tthis.ws.onopen = () => {\n\t\t\t\t\t\t\tthis.connected = true;\n\t\t\t\t\t\t\tthis.connecting = false;\n\t\t\t\t\t\t\tthis._reconnectAttempts = 0;\n\t\t\t\t\t\t\tthis.fitAddon.fit();\n\t\t\t\t\t\t\tthis.sendResize();\n\t\t\t\t\t\t\tthis.term.focus();\n\t\t\t\t\t\t};\n\t\t\t\t\t\t\n\t\t\t\t\t\tthis.ws.onmessage = (event) => {\n\t\t\t\t\t\t\ttry {\n\t\t\t\t\t\t\t\tconst msg = JSON.parse(event.data);\n\t\t\t\t\t\t\t\tif (msg.type === 'output') {\n\t\t\t\t\t\t\t\t\tthis.term.write(msg.data);\n\t\t\t\t\t\t\t\t} else if (msg.type === 'error') {\n\t\t\t\t\t\t\t\t\tthis.term.write('\\r\\n\\x1b[31mError: ' + (msg.data || msg.message || 'Unknown error') + '\\x1b[0m\\r\\n');\n\t\t\t\t\t\t\t\t} else if (msg.type === 'connected') {\n\t\t\t\t\t\t\t\t\t// Connection established\n\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t} catch(e) {\n\t\t\t\t\t\t\t\t// Plain text fallback\n\t\t\t\t\t\t\t\tthis.term.write(event.data);\n\t\t\t\t\t\t\t}\n\t\t\t\t\t\t};\n\t\t\t\t\t\t\n\t\t\t\t\t\tthis.ws.onclose = (event) => {\n\t\t\t\t\t\t\tthis.connected = false;\n\t\t\t\t\t\t\tthis.connecting = false;\n\t\t\t\t\t\t\tconst graceful = (event.code === 1000 || event.code === 1001);\n\t\t\t\t\t\t\tif (!this._destroyed && !graceful && this._reconnectAttempts < 5) {\n\t\t\t\t\t\t\t\tconst delay = Math.min(30000, 1000 * Math.pow(2, this._reconnectAttempts));\n\t\t\t\t\t\t\t\tthis._reconnectAttempts++;\n\t\t\t\t\t\t\t\tconst delaySec = delay * 0.001;\n\t\t\t\t\t\t\t\tthis.term.write('\\r\\n\\x1b[31mDisconnected — reconnecting in ' + delaySec + 's... (attempt ' + this._reconnectAttempts + ' of 5)\\x1b[0m\\r\\n');\n\t\t\t\t\t\t\t\tsetTimeout(() => this.connect(), delay);\n\t\t\t\t\t\t\t} else if (!graceful && this._reconnectAttempts >= 5) {\n\t\t\t\t\t\t\t\tthis.term.write('\\r\\n\\x1b[31mDisconnected — max reconnect attempts reached.\\x1b[0m\\r\\n');\n\t\t\t\t\t\t\t} else {\n\t\t\t\t\t\t\t\tthis.term.write('\\r\\n\\x1b[31mDisconnected.\\x1b[0m\\r\\n');\n\t\t\t\t\t\t\t}\n\t\t\t\t\t\t};\n\t\t\t\t\t\t\n\t\t\t\t\t\tthis.ws.onerror = () => {\n\t\t\t\t\t\t\tthis.connected = false;\n\t\t\t\t\t\t\tthis.connecting = false;\n\t\t\t\t\t\t\tthis.term.write('\\r\\n\\x1b[31mConnection error\\x1b[0m\\r\\n');\n\t\t\t\t\t\t};\n\t\t\t\t\t},\n\t\t\t\t\t\n\t\t\t\t\tsendResize() {\n\t\t\t\t\t\tif (this.ws && this.ws.readyState === WebSocket.OPEN) {\n\t\t\t\t\t\t\tconst { cols, rows } = this.term;\n\t\t\t\t\t\t\tthis.ws.send(JSON.stringify({ type: 'resize', cols: cols, rows: rows }));\n\t\t\t\t\t\t}\n\t\t\t\t\t},\n\t\t\t\t\t\n\t\t\t\t\treconnect() {\n\t\t\t\t\t\tif (this.ws) this.ws.close();\n\t\t\t\t\t\tthis._reconnectAttempts = 0;\n\t\t\t\t\t\tthis.term.clear();\n\t\t\t\t\t\tthis.term.write('\\x1b[33mReconnecting...\\x1b[0m\\r\\n');\n\t\t\t\t\t\tthis.connect();\n\t\t\t\t\t},\n\t\t\t\t\t\n\t\t\t\t\ttoggleFullscreen() {\n\t\t\t\t\t\tconst container = this.$refs.terminalContainer;\n\t\t\t\t\t\tif (document.fullscreenElement) {\n\t\t\t\t\t\t\tdocument.exitFullscreen();\n\t\t\t\t\t\t} else {\n\t\t\t\t\t\t\tcontainer.requestFullscreen();\n\t\t\t\t\t\t}\n\t\t\t\t\t\tsetTimeout(() => {\n\t\t\t\t\t\t\tthis.fitAddon.fit();\n\t\t\t\t\t\t\tthis.sendResize();\n\t\t\t\t\t\t}, 100);\n\t\t\t\t\t}\n\t\t\t\t};\n\t\t\t}\n\t\t</script> <style>\n\t\t\t#terminal {\n\t\t\t\tpadding: 8px;\n\t\t\t\tbackground: #0d1117;\n\t\t\t}\n\t\t\t\n\t\t\t#terminal:fullscreen {\n\t\t\t\tpadding: 16px;\n\t\t\t}\n\t\t\t\n\t\t\t.xterm-viewport::-webkit-scrollbar {\n\t\t\t\twidth: 8px;\n\t\t\t}\n\t\t\t\n\t\t\t.xterm-viewport::-webkit-scrollbar-track {\n\t\t\t\tbackground: #0d1117;\n\t\t\t}\n\t\t\t\n\t\t\t.xterm-viewport::-webkit-scrollbar-thumb {\n\t\t\t\tbackground: #30363d;\n\t\t\t\tborder-radius: 4px;\n\t\t\t}\n\t\t\t\n\t\t\t.xterm-viewport::-webkit-scrollbar-thumb:hover {\n\t\t\t\tbackground: #484f58;\n\t\t\t}\n\t\t</style>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, " <!-- xterm.js (self-hosted) --> <link rel=\"stylesheet\" href=\"/static/vendor/xterm/css/xterm.css\"><script src=\"/static/vendor/xterm/lib/xterm.js\"></script> <script src=\"/static/vendor/xterm/addons/xterm-addon-fit.js\"></script> <script src=\"/static/vendor/xterm/addons/xterm-addon-web-links.js\"></script> <script>\n\t\t\tfunction terminal() {\n\t\t\t\treturn {\n\t\t\t\t\tterm: null,\n\t\t\t\t\tws: null,\n\t\t\t\t\tfitAddon: null,\n\t\t\t\t\tconnected: false,\n\t\t\t\t\tconnecting: false,\n\t\t\t\t\tcontainerId: '',\n\t\t\t\t\t_initialized: false,\n\t\t\t\t\t_resizeHandler: null,\n\t\t\t\t\t_reconnectAttempts: 0,\n\n\t\t\t\t\tinit() {\n\t\t\t\t\t\tif (this._initialized) return;\n\t\t\t\t\t\tthis._initialized = true;\n\n\t\t\t\t\t\tthis.containerId = this.$el.dataset.containerId;\n\n\t\t\t\t\t\t// Initialize xterm.js\n\t\t\t\t\t\tthis.term = new Terminal({\n\t\t\t\t\t\t\tcursorBlink: true,\n\t\t\t\t\t\t\tcursorStyle: 'block',\n\t\t\t\t\t\t\tfontSize: 14,\n\t\t\t\t\t\t\tfontFamily: \"'IBM Plex Mono', 'Fira Code', 'Menlo', monospace\",\n\t\t\t\t\t\t\ttheme: {\n\t\t\t\t\t\t\t\tbackground: '#0d1117',\n\t\t\t\t\t\t\t\tforeground: '#e6edf3',\n\t\t\t\t\t\t\t\tcursor: '#ff6b35',\n\t\t\t\t\t\t\t\tcursorAccent: '#0d1117',\n\t\t\t\t\t\t\t\tselection: 'rgba(255, 107, 53, 0.3)',\n\t\t\t\t\t\t\t\tblack: '#0d1117',\n\t\t\t\t\t\t\t\tred: '#f85149',\n\t\t\t\t\t\t\t\tgreen: '#3fb950',\n\t\t\t\t\t\t\t\tyellow: '#d29922',\n\t\t\t\t\t\t\t\tblue: '#58a6ff',\n\t\t\t\t\t\t\t\tmagenta: '#bc8cff',\n\t\t\t\t\t\t\t\tcyan: '#76e3ea',\n\t\t\t\t\t\t\t\twhite: '#e6edf3',\n\t\t\t\t\t\t\t\tbrightBlack: '#484f58',\n\t\t\t\t\t\t\t\tbrightRed: '#ff7b72',\n\t\t\t\t\t\t\t\tbrightGreen: '#56d364',\n\t\t\t\t\t\t\t\tbrightYellow: '#e3b341',\n\t\t\t\t\t\t\t\tbrightBlue: '#79c0ff',\n\t\t\t\t\t\t\t\tbrightMagenta: '#d2a8ff',\n\t\t\t\t\t\t\t\tbrightCyan: '#a5d6ff',\n\t\t\t\t\t\t\t\tbrightWhite: '#ffffff'\n\t\t\t\t\t\t\t},\n\t\t\t\t\t\t\tscrollback: 10000,\n\t\t\t\t\t\t\tconvertEol: true,\n\t\t\t\t\t\t});\n\t\t\t\t\t\t\n\t\t\t\t\t\t// Load addons\n\t\t\t\t\t\tthis.fitAddon = new FitAddon.FitAddon();\n\t\t\t\t\t\tthis.term.loadAddon(this.fitAddon);\n\t\t\t\t\t\tthis.term.loadAddon(new WebLinksAddon.WebLinksAddon());\n\t\t\t\t\t\t\n\t\t\t\t\t\t// Open terminal in container\n\t\t\t\t\t\tthis.term.open(this.$refs.terminalContainer);\n\n\t\t\t\t\t\t// Delay fit and connect to ensure DOM layout is fully computed\n\t\t\t\t\t\tthis.$nextTick(() => {\n\t\t\t\t\t\t\tsetTimeout(() => {\n\t\t\t\t\t\t\t\tthis.fitAddon.fit();\n\t\t\t\t\t\t\t\tthis.connect();\n\t\t\t\t\t\t\t}, 50);\n\t\t\t\t\t\t});\n\t\t\t\t\t\t\n\t\t\t\t\t\t// Handle resize (store ref for cleanup)\n\t\t\t\t\t\tthis._resizeHandler = () => {\n\t\t\t\t\t\t\tif (this.fitAddon) {\n\t\t\t\t\t\t\t\tthis.fitAddon.fit();\n\t\t\t\t\t\t\t\tthis.sendResize();\n\t\t\t\t\t\t\t}\n\t\t\t\t\t\t};\n\t\t\t\t\t\twindow.addEventListener('resize', this._resizeHandler);\n\t\t\t\t\t\t\n\t\t\t\t\t\t// Handle terminal input - send raw bytes\n\t\t\t\t\t\tthis.term.onData(data => {\n\t\t\t\t\t\t\tif (this.ws && this.ws.readyState === WebSocket.OPEN) {\n\t\t\t\t\t\t\t\tthis.ws.send(JSON.stringify({ type: 'input', data: data }));\n\t\t\t\t\t\t\t}\n\t\t\t\t\t\t});\n\t\t\t\t\t\t\n\t\t\t\t\t\t// Handle terminal resize\n\t\t\t\t\t\tthis.term.onResize(({ cols, rows }) => {\n\t\t\t\t\t\t\tthis.sendResize();\n\t\t\t\t\t\t});\n\t\t\t\t\t},\n\t\t\t\t\t\n\t\t\t\t\tdestroy() {\n\t\t\t\t\t\tif (this._resizeHandler) {\n\t\t\t\t\t\t\twindow.removeEventListener('resize', this._resizeHandler);\n\t\t\t\t\t\t}\n\t\t\t\t\t\tif (this.ws) {\n\t\t\t\t\t\t\tthis.ws.onclose = null; // prevent reconnect message\n\t\t\t\t\t\t\tthis.ws.close();\n\t\t\t\t\t\t\tthis.ws = null;\n\t\t\t\t\t\t}\n\t\t\t\t\t\tif (this.term) {\n\t\t\t\t\t\t\tthis.term.dispose();\n\t\t\t\t\t\t\tthis.term = null;\n\t\t\t\t\t\t}\n\t\t\t\t\t},\n\t\t\t\t\t\n\t\t\t\t\tconnect() {\n\t\t\t\t\t\tthis.connecting = true;\n\t\t\t\t\t\t\n\t\t\t\t\t\tconst protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';\n\t\t\t\t\t\tconst { cols, rows } = this.term;\n\t\t\t\t\t\tconst url = `${protocol}//${window.location.host}/ws/exec/${this.containerId}?cols=${cols}&rows=${rows}`;\n\t\t\t\t\t\t\n\t\t\t\t\t\tthis.ws = new WebSocket(url);\n\t\t\t\t\t\t\n\t\t\t\t\t\tthis.ws.onopen = () => {\n\t\t\t\t\t\t\tthis.connected = true;\n\t\t\t\t\t\t\tthis.connecting = false;\n\t\t\t\t\t\t\tthis._reconnectAttempts = 0;\n\t\t\t\t\t\t\tthis.fitAddon.fit();\n\t\t\t\t\t\t\tthis.sendResize();\n\t\t\t\t\t\t\tthis.term.focus();\n\t\t\t\t\t\t};\n\t\t\t\t\t\t\n\t\t\t\t\t\tthis.ws.onmessage = (event) => {\n\t\t\t\t\t\t\ttry {\n\t\t\t\t\t\t\t\tconst msg = JSON.parse(event.data);\n\t\t\t\t\t\t\t\tif (msg.type === 'output') {\n\t\t\t\t\t\t\t\t\tthis.term.write(msg.data);\n\t\t\t\t\t\t\t\t} else if (msg.type === 'error') {\n\t\t\t\t\t\t\t\t\tthis.term.write('\\r\\n\\x1b[31mError: ' + (msg.data || msg.message || 'Unknown error') + '\\x1b[0m\\r\\n');\n\t\t\t\t\t\t\t\t} else if (msg.type === 'connected') {\n\t\t\t\t\t\t\t\t\t// Connection established\n\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t} catch(e) {\n\t\t\t\t\t\t\t\t// Plain text fallback\n\t\t\t\t\t\t\t\tthis.term.write(event.data);\n\t\t\t\t\t\t\t}\n\t\t\t\t\t\t};\n\t\t\t\t\t\t\n\t\t\t\t\t\tthis.ws.onclose = (event) => {\n\t\t\t\t\t\t\tthis.connected = false;\n\t\t\t\t\t\t\tthis.connecting = false;\n\t\t\t\t\t\t\tconst graceful = (event.code === 1000 || event.code === 1001);\n\t\t\t\t\t\t\tif (!this._destroyed && !graceful && this._reconnectAttempts < 5) {\n\t\t\t\t\t\t\t\tconst delay = Math.min(30000, 1000 * Math.pow(2, this._reconnectAttempts));\n\t\t\t\t\t\t\t\tthis._reconnectAttempts++;\n\t\t\t\t\t\t\t\tconst delaySec = delay * 0.001;\n\t\t\t\t\t\t\t\tthis.term.write('\\r\\n\\x1b[31mDisconnected — reconnecting in ' + delaySec + 's... (attempt ' + this._reconnectAttempts + ' of 5)\\x1b[0m\\r\\n');\n\t\t\t\t\t\t\t\tsetTimeout(() => this.connect(), delay);\n\t\t\t\t\t\t\t} else if (!graceful && this._reconnectAttempts >= 5) {\n\t\t\t\t\t\t\t\tthis.term.write('\\r\\n\\x1b[31mDisconnected — max reconnect attempts reached.\\x1b[0m\\r\\n');\n\t\t\t\t\t\t\t} else {\n\t\t\t\t\t\t\t\tthis.term.write('\\r\\n\\x1b[31mDisconnected.\\x1b[0m\\r\\n');\n\t\t\t\t\t\t\t}\n\t\t\t\t\t\t};\n\t\t\t\t\t\t\n\t\t\t\t\t\tthis.ws.onerror = () => {\n\t\t\t\t\t\t\tthis.connected = false;\n\t\t\t\t\t\t\tthis.connecting = false;\n\t\t\t\t\t\t\tthis.term.write('\\r\\n\\x1b[31mConnection error\\x1b[0m\\r\\n');\n\t\t\t\t\t\t};\n\t\t\t\t\t},\n\t\t\t\t\t\n\t\t\t\t\tsendResize() {\n\t\t\t\t\t\tif (this.ws && this.ws.readyState === WebSocket.OPEN) {\n\t\t\t\t\t\t\tconst { cols, rows } = this.term;\n\t\t\t\t\t\t\tthis.ws.send(JSON.stringify({ type: 'resize', cols: cols, rows: rows }));\n\t\t\t\t\t\t}\n\t\t\t\t\t},\n\t\t\t\t\t\n\t\t\t\t\treconnect() {\n\t\t\t\t\t\tif (this.ws) this.ws.close();\n\t\t\t\t\t\tthis._reconnectAttempts = 0;\n\t\t\t\t\t\tthis.term.clear();\n\t\t\t\t\t\tthis.term.write('\\x1b[33mReconnecting...\\x1b[0m\\r\\n');\n\t\t\t\t\t\tthis.connect();\n\t\t\t\t\t},\n\t\t\t\t\t\n\t\t\t\t\ttoggleFullscreen() {\n\t\t\t\t\t\tconst container = this.$refs.terminalContainer;\n\t\t\t\t\t\tif (document.fullscreenElement) {\n\t\t\t\t\t\t\tdocument.exitFullscreen();\n\t\t\t\t\t\t} else {\n\t\t\t\t\t\t\tcontainer.requestFullscreen();\n\t\t\t\t\t\t}\n\t\t\t\t\t\tsetTimeout(() => {\n\t\t\t\t\t\t\tthis.fitAddon.fit();\n\t\t\t\t\t\t\tthis.sendResize();\n\t\t\t\t\t\t}, 100);\n\t\t\t\t\t}\n\t\t\t\t};\n\t\t\t}\n\t\t</script> <style>\n\t\t\t#terminal {\n\t\t\t\tpadding: 8px;\n\t\t\t\tbackground: #0d1117;\n\t\t\t}\n\t\t\t\n\t\t\t#terminal:fullscreen {\n\t\t\t\tpadding: 16px;\n\t\t\t}\n\t\t\t\n\t\t\t.xterm-viewport::-webkit-scrollbar {\n\t\t\t\twidth: 8px;\n\t\t\t}\n\t\t\t\n\t\t\t.xterm-viewport::-webkit-scrollbar-track {\n\t\t\t\tbackground: #0d1117;\n\t\t\t}\n\t\t\t\n\t\t\t.xterm-viewport::-webkit-scrollbar-thumb {\n\t\t\t\tbackground: #30363d;\n\t\t\t\tborder-radius: 4px;\n\t\t\t}\n\t\t\t\n\t\t\t.xterm-viewport::-webkit-scrollbar-thumb:hover {\n\t\t\t\tbackground: #484f58;\n\t\t\t}\n\t\t</style>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

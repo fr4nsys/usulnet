@@ -237,7 +237,6 @@
 .light .divide-dark-600 > :not([hidden]) ~ :not([hidden]) { border-color: #cbd5e1; }
 
 /* --- Text colors --- */
-.dark .text-gray-600 { color: #9ca3af; }                  /* gray-400: fix dark-on-dark contrast */
 .light .text-white { color: #0f172a; }                    /* slate-900 */
 .light .text-gray-300 { color: #475569; }                 /* slate-600 */
 .light .text-gray-400 { color: #64748b; }                 /* slate-500 */

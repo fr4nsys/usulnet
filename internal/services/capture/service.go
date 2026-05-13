@@ -37,9 +37,6 @@ type CaptureRepository interface {
 	Delete(ctx context.Context, id uuid.UUID) error
 }
 
-// maxLiveLines is the maximum number of decoded packet lines kept in memory.
-const maxLiveLines = 500
-
 // activeCapture tracks a running tcpdump process.
 type activeCapture struct {
 	ID          uuid.UUID
@@ -47,43 +44,6 @@ type activeCapture struct {
 	cancel      context.CancelFunc
 	packetCount int64
 	mu          sync.Mutex
-
-	// Live packet lines (ring buffer of decoded stdout output)
-	lines   []string
-	linesMu sync.RWMutex
-}
-
-// appendLine adds a decoded packet line to the ring buffer and increments packetCount.
-func (ac *activeCapture) appendLine(line string) {
-	ac.linesMu.Lock()
-	ac.lines = append(ac.lines, line)
-	if len(ac.lines) > maxLiveLines {
-		// Drop oldest lines
-		ac.lines = ac.lines[len(ac.lines)-maxLiveLines:]
-	}
-	ac.linesMu.Unlock()
-
-	ac.mu.Lock()
-	ac.packetCount++
-	ac.mu.Unlock()
-}
-
-// getLines returns lines from offset onward and the current packet count.
-func (ac *activeCapture) getLines(offset int) ([]string, int64) {
-	ac.linesMu.RLock()
-	defer ac.linesMu.RUnlock()
-
-	ac.mu.Lock()
-	count := ac.packetCount
-	ac.mu.Unlock()
-
-	if offset >= len(ac.lines) {
-		return nil, count
-	}
-	// Return a copy so the caller doesn't hold a reference to the slice
-	out := make([]string, len(ac.lines)-offset)
-	copy(out, ac.lines[offset:])
-	return out, count
 }
 
 // Service manages packet capture operations.
@@ -98,8 +58,7 @@ type Service struct {
 }
 
 // NewService creates a new capture service.
-// captureDir is the base directory for storing capture files.
-func NewService(repo CaptureRepository, captureDir string, log *logger.Logger) *Service {
+func NewService(repo CaptureRepository, log *logger.Logger) *Service {
 	// Find tcpdump binary
 	tcpdumpPath, err := exec.LookPath("tcpdump")
 	if err != nil {
@@ -108,7 +67,8 @@ func NewService(repo CaptureRepository, captureDir string, log *logger.Logger) *
 	}
 
 	// Create capture directory
-	os.MkdirAll(captureDir, 0750) //nolint:errcheck // best-effort directory creation
+	captureDir := "/tmp/usulnet/captures"
+	os.MkdirAll(captureDir, 0750)
 
 	return &Service{
 		repo:       repo,
@@ -153,20 +113,15 @@ func (s *Service) StartCapture(ctx context.Context, userID uuid.UUID, input mode
 	args := []string{
 		"-i", input.Interface,
 		"-w", pcapFile,
-		"-U", // Packet-buffered output (flush each packet to file)
-		"-l", // Line-buffered stdout (for live packet display)
-		"-n", // No DNS resolution (faster output)
+		"-U", // Packet-buffered output
 	}
 
 	if input.MaxPackets > 0 {
 		args = append(args, "-c", strconv.Itoa(input.MaxPackets))
 	}
 
-	// BPF filter: split into individual words so exec passes them correctly.
-	// exec.Command does not perform shell expansion, so "tcp port 80" as a
-	// single arg would be interpreted as one token by tcpdump.
 	if input.Filter != "" {
-		args = append(args, strings.Fields(input.Filter)...)
+		args = append(args, input.Filter)
 	}
 
 	// Create a cancellable context for the capture
@@ -179,19 +134,11 @@ func (s *Service) StartCapture(ctx context.Context, userID uuid.UUID, input mode
 
 	cmd := exec.CommandContext(captureCtx, s.tcpdump, args...)
 
-	// Capture stderr for final packet count parsing
+	// Capture stderr for packet count parsing
 	stderr, err := cmd.StderrPipe()
 	if err != nil {
 		cancel()
 		s.repo.UpdateStatus(ctx, capture.ID, models.CaptureStatusError, "failed to create stderr pipe")
-		return nil, errors.Wrap(err, errors.CodeInternal, "failed to setup capture process")
-	}
-
-	// Capture stdout for live decoded packet lines
-	stdout, err := cmd.StdoutPipe()
-	if err != nil {
-		cancel()
-		s.repo.UpdateStatus(ctx, capture.ID, models.CaptureStatusError, "failed to create stdout pipe")
 		return nil, errors.Wrap(err, errors.CodeInternal, "failed to setup capture process")
 	}
 
@@ -223,10 +170,7 @@ func (s *Service) StartCapture(ctx context.Context, userID uuid.UUID, input mode
 		"file", pcapFile,
 	)
 
-	// Read decoded packet lines from stdout in background
-	go s.readLivePackets(ac, stdout)
-
-	// Monitor the capture process lifecycle in background
+	// Monitor the capture in background
 	go s.monitorCapture(ac, stderr, pcapFile)
 
 	return capture, nil
@@ -292,60 +236,6 @@ func (s *Service) monitorCapture(ac *activeCapture, stderr io.ReadCloser, pcapFi
 		"packets", packetCount,
 		"file_size", fileSize,
 	)
-}
-
-// readLivePackets reads decoded packet lines from tcpdump stdout and stores
-// them in the activeCapture ring buffer. Each line also increments packetCount.
-func (s *Service) readLivePackets(ac *activeCapture, stdout io.ReadCloser) {
-	scanner := bufio.NewScanner(stdout)
-	// Increase scanner buffer for long lines (e.g., hex dump output)
-	scanner.Buffer(make([]byte, 0, 64*1024), 256*1024)
-
-	for scanner.Scan() {
-		line := scanner.Text()
-		if line != "" {
-			ac.appendLine(line)
-		}
-	}
-	// stdout closed when process exits — nothing more to do
-}
-
-// GetLivePackets returns decoded packet lines from offset onward for a running
-// capture, plus the current live packet count. Returns nil if not running.
-func (s *Service) GetLivePackets(id uuid.UUID, offset int) ([]string, int64) {
-	s.mu.RLock()
-	ac, exists := s.active[id]
-	s.mu.RUnlock()
-
-	if !exists {
-		return nil, 0
-	}
-
-	return ac.getLines(offset)
-}
-
-// GetLiveStats returns live stats for a running capture without hitting the DB.
-// Returns packetCount, fileSize, and whether the capture is still running.
-func (s *Service) GetLiveStats(id uuid.UUID) (packetCount int64, fileSize int64, running bool) {
-	s.mu.RLock()
-	ac, exists := s.active[id]
-	s.mu.RUnlock()
-
-	if !exists {
-		return 0, 0, false
-	}
-
-	ac.mu.Lock()
-	count := ac.packetCount
-	ac.mu.Unlock()
-
-	// Get file size from disk
-	pcapFile := filepath.Join(s.captureDir, id.String()+".pcap")
-	if info, err := os.Stat(pcapFile); err == nil {
-		fileSize = info.Size()
-	}
-
-	return count, fileSize, true
 }
 
 // StopCapture stops a running capture.
@@ -417,7 +307,7 @@ func (s *Service) DeleteCapture(ctx context.Context, id uuid.UUID) error {
 	// Get capture to find file path
 	capture, err := s.repo.GetByID(ctx, id)
 	if err != nil {
-		return fmt.Errorf("get capture for delete: %w", err)
+		return err
 	}
 
 	// Delete PCAP file

@@ -1101,6 +1101,100 @@ When rate limited, the API returns `429 Too Many Requests` with a `Retry-After` 
 
 ---
 
+## Recon & Metadata (v26.5.0)
+
+The recon + metadata module is **disabled by default**. When the
+feature flag is off (`recon.enabled: false` or `USULNET_RECON_ENABLED`
+unset / false), every endpoint listed below returns
+`404 module_disabled`. When enabled, an admin must first acknowledge
+the in-app legal notice via `POST /api/v1/recon/_ack`; until that
+acknowledgement is recorded, all other recon and metadata routes
+return `409 acknowledgement_required`.
+
+The middleware chain for the subtree is:
+
+```
+auth (JWT or API key)
+  -> recon feature flag        (404 module_disabled if off)
+  -> recon acknowledgement     (409 acknowledgement_required until acked)
+  -> RBAC                      (per-route viewer / operator / admin)
+```
+
+The acknowledgement endpoint (`POST /api/v1/recon/_ack`) is mounted on
+a sibling branch that skips the acknowledgement middleware, so an
+admin can record consent without first satisfying it.
+
+### Error codes
+
+In addition to the codes documented above, the recon module surfaces:
+`ownership_required`, `ownership_pending`, `engine_unavailable`,
+`module_disabled`, `acknowledgement_required`,
+`unsupported_target_type`, `profile_target_mismatch`,
+`artifact_too_large`, `mime_not_supported`.
+
+### Targets
+
+| Method | Path | RBAC | Description |
+|--------|------|------|-------------|
+| POST | `/api/v1/recon/targets` | operator+ | Register a target identifier (domain, email, ip, ip_range, phone, username). |
+| GET | `/api/v1/recon/targets` | viewer+ | List targets (paginated; filter by `type`, `created_by`). |
+| GET | `/api/v1/recon/targets/{id}` | viewer+ | Fetch a single target. |
+| DELETE | `/api/v1/recon/targets/{id}` | operator+ | Delete a target and cascade its scans / findings. |
+| POST | `/api/v1/recon/targets/{id}/ownership/verify` | operator+ | Start and verify an ownership proof. Body: `{"method":"dns_txt|email_link|rdap_match|admin_attest|self_assert","input":{}}`. Returns 409 `ownership_pending` if the proof is started but not yet verified. |
+
+### Profiles
+
+| Method | Path | RBAC | Description |
+|--------|------|------|-------------|
+| GET | `/api/v1/recon/profiles` | viewer+ | List builtin and custom profiles. |
+| POST | `/api/v1/recon/profiles` | operator+ | Create a custom profile. Body: `{"name":"…","description":"…","target_types":["email", …],"modules":["sfp_haveibeen", …],"options":{}}`. Returns 409 `ALREADY_EXISTS` on duplicate name, 400 `INVALID_INPUT` for unknown target types or modules outside the closed catalogue. |
+| PUT | `/api/v1/recon/profiles/{id}` | operator+ | Update a custom profile (same body shape as `POST`). Returns 403 `FORBIDDEN` for builtin rows, 404 if the profile does not exist. |
+| DELETE | `/api/v1/recon/profiles/{id}` | admin | Delete a custom profile. Returns 403 `FORBIDDEN` for builtin rows, 409 `CONFLICT` when the profile is referenced by existing scans (`recon_scans.profile_id ON DELETE RESTRICT`). |
+
+### Scans
+
+| Method | Path | RBAC | Description |
+|--------|------|------|-------------|
+| POST | `/api/v1/recon/scans` | operator+ | Start a new scan. Body: `{"target_id":"<uuid>","profile_id":"<uuid>"}`. Returns 403 `ownership_required` if the target is unverified. |
+| GET | `/api/v1/recon/scans` | viewer+ | List scans (filter by `target_id`, `status`). |
+| GET | `/api/v1/recon/scans/{id}` | viewer+ | Fetch a single scan. |
+| DELETE | `/api/v1/recon/scans/{id}` | operator+ | Cancel a running scan. |
+| GET | `/api/v1/recon/scans/{id}/findings` | viewer+ | List normalised findings for a scan (filter by `severity`, `module`, `category`). |
+| GET | `/api/v1/recon/scans/{id}/report.json` | viewer+ | Self-contained JSON report (summary + findings). |
+| GET | `/api/v1/recon/scans/{id}/report.csv` | viewer+ | CSV export of all findings. |
+| GET | `/api/v1/recon/scans/{id}/report.pdf` | viewer+ | Paginated A4 PDF report (target/profile header, severity-coloured summary, one section per category). Pure-Go, byte-deterministic for the same scan inputs. |
+
+### Metadata jobs
+
+Upload limits default to **100 MiB per file** and **200 MiB per
+request body**. Both are configurable.
+
+| Method | Path | RBAC | Description |
+|--------|------|------|-------------|
+| POST | `/api/v1/metadata/jobs` | operator+ | Create an extract / strip / both job. `multipart/form-data` body: form field `mode` (one of `extract`, `strip`, `both`; default `extract`), plus one or more `files` parts. Returns 413 `artifact_too_large` if a file or the envelope exceeds limits. |
+| GET | `/api/v1/metadata/jobs` | viewer+ | List metadata jobs (filter by `status`, `created_by`). |
+| GET | `/api/v1/metadata/jobs/{id}` | viewer+ | Fetch a job and its artifact rows. |
+| GET | `/api/v1/metadata/jobs/{id}/artifacts/{aid}/stripped` | viewer+ | Stream the cleaned bytes of one artifact. Response is `application/octet-stream`. |
+
+### Connectors
+
+External-API connectors (HIBP, Shodan, …) are admin-only. Credentials
+are encrypted at rest by the existing `internal/pkg/crypto` helper and
+are never returned in responses.
+
+| Method | Path | RBAC | Description |
+|--------|------|------|-------------|
+| GET | `/api/v1/recon/connectors` | admin | List configured connectors. |
+| PUT | `/api/v1/recon/connectors/{kind}` | admin | Set credentials and/or enable state for a connector. Body: `{"enabled":true,"credentials":{...}}`. |
+
+### Acknowledgement
+
+| Method | Path | RBAC | Description |
+|--------|------|------|-------------|
+| POST | `/api/v1/recon/_ack` | admin | Acknowledge the legal notice. Idempotent (subsequent calls also return 204). Exempt from the acknowledgement middleware so an admin can unblock the gated subtree. |
+
+---
+
 ## OpenAPI Specification
 
 The full OpenAPI 3.0 specification is available at:

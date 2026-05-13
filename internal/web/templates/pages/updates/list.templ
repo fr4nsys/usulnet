@@ -2,7 +2,6 @@ package updates
 
 import (
 	"fmt"
-	"github.com/fr4nsys/usulnet/internal/web/templates/components"
 	"github.com/fr4nsys/usulnet/internal/web/templates/layouts"
 )
 
@@ -67,7 +66,6 @@ templ List(data UpdatesData) {
 					<p class="text-gray-400 mt-1">Manage container updates, auto-update policies, and rollbacks</p>
 				</div>
 				<div class="flex items-center gap-2">
-					@components.RefreshButton()
 					<button hx-post="/updates/check-all" hx-swap="none" hx-headers={ fmt.Sprintf(`{"X-CSRF-Token":"%s"}`, data.PageData.CSRFToken) } class="btn-secondary">
 						<i class="fas fa-sync mr-2"></i>Check All
 					</button>

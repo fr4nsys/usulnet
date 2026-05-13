@@ -1,0 +1,15 @@
+Write a cleaned copy of the file (default: <path>.stripped)
+
+Usage:
+  usulnet meta strip <path> [flags]
+
+Flags:
+  -h, --help            help for strip
+  -o, --output string   output path for cleaned file (default <input>.stripped)
+
+Global Flags:
+  -c, --config string    config file path (default: /etc/usulnet/config.yaml or ./config.yaml)
+      --image string     toolkit image (local mode only; default $USULNET_RECON_TOOLKIT_IMAGE)
+      --server string    usulnet API URL (forces server mode; default $USULNET_API_URL)
+      --timeout string   container timeout (e.g. 30s)
+      --token string     API token (default $USULNET_API_TOKEN)

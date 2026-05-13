@@ -137,10 +137,12 @@ func (r *OutgoingWebhookRepository) CreateDelivery(ctx context.Context, d *model
 	if d.ID == uuid.Nil {
 		d.ID = uuid.New()
 	}
+	// payload JSONB bound via nullableJSONBytes (column is nullable) —
+	// see encodeJSONObject in recon_repo.go for the simple-protocol rationale.
 	_, err := r.db.Exec(ctx, `
 		INSERT INTO webhook_deliveries (id, webhook_id, event, payload, response_code, response_body, error, duration_ms, attempt, status, delivered_at)
 		VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)`,
-		d.ID, d.WebhookID, d.Event, string(d.Payload), d.ResponseCode,
+		d.ID, d.WebhookID, d.Event, nullableJSONBytes(d.Payload), d.ResponseCode,
 		d.ResponseBody, d.Error, d.Duration, d.Attempt, d.Status, d.DeliveredAt,
 	)
 	return err

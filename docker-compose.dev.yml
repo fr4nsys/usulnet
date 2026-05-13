@@ -20,21 +20,16 @@ services:
       - usulnet_data:/app/data
       # Trivy vulnerability database cache
       - trivy_cache:/var/lib/usulnet/trivy
-      # Shared volumes for nginx reverse proxy management
-      - nginx_conf:/etc/nginx/conf.d/usulnet
-      - nginx_certs:/etc/usulnet/certs
-      - acme_webroot:/var/lib/usulnet/acme
     # Host terminal: share host PID namespace (required for nsenter)
     pid: "host"
     cap_add:
       - SYS_PTRACE   # Required to attach to PID 1
       - SYS_ADMIN     # Required to enter host namespaces
     environment:
-      - USULNET_MODE=master
-      # sslmode=require: encrypts the connection without CA cert verification (dev only)
-      - USULNET_DATABASE_URL=postgres://usulnet:usulnet_dev@postgres:5432/usulnet?sslmode=require
-      - USULNET_REDIS_URL=rediss://redis:6379
-      - USULNET_NATS_URL=natss://nats:4222
+      - USULNET_MODE=standalone
+      - USULNET_DATABASE_URL=postgres://usulnet:usulnet_dev@postgres:5432/usulnet
+      - USULNET_REDIS_URL=redis://redis:6379
+      - USULNET_NATS_URL=nats://nats:4222
       # Host Terminal
       - HOST_TERMINAL_ENABLED=true
       - HOST_TERMINAL_USER=nobody_usulnet
@@ -75,7 +70,7 @@ services:
       - ./config.agent.yaml:/app/config/agent.yaml:ro
       - agent_data:/app/data
     environment:
-      - USULNET_GATEWAY_URL=natss://nats:4222
+      - USULNET_GATEWAY_URL=nats://nats:4222
       - USULNET_AGENT_TOKEN=${AGENT_TOKEN:-change-me}
     depends_on:
       nats:
@@ -84,29 +79,10 @@ services:
       - usulnet-network
 
   # ==========================================================================
-  # Nginx — Reverse Proxy (managed by usulnet)
-  # ==========================================================================
-  nginx:
-    image: nginx:1.28-alpine
-    container_name: usulnet-nginx
-    restart: unless-stopped
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - nginx_conf:/etc/nginx/conf.d/usulnet
-      - nginx_certs:/etc/usulnet/certs
-      - acme_webroot:/var/lib/usulnet/acme
-    depends_on:
-      - usulnet
-    networks:
-      - usulnet-network
-
-  # ==========================================================================
   # Apache Guacamole Daemon — RDP Web Gateway
   # ==========================================================================
   guacd:
-    image: guacamole/guacd:1.6.0
+    image: guacamole/guacd:1.5.5
     container_name: usulnet-guacd
     restart: unless-stopped
     networks:
@@ -120,26 +96,6 @@ services:
     image: postgres:16-alpine
     container_name: usulnet-postgres
     restart: unless-stopped
-    entrypoint:
-      - /bin/sh
-      - -c
-      - |
-        set -e
-        command -v openssl >/dev/null 2>&1 || apk add --no-cache openssl >/dev/null 2>&1
-        mkdir -p /tmp/pg-certs
-        openssl req -new -x509 -days 3650 -nodes \
-          -newkey ec -pkeyopt ec_paramgen_curve:P-256 \
-          -subj "/CN=postgres/O=usulnet-dev" \
-          -addext "subjectAltName=DNS:postgres,DNS:localhost,IP:127.0.0.1" \
-          -keyout /tmp/pg-certs/server.key \
-          -out /tmp/pg-certs/server.crt 2>/dev/null
-        chown 70:70 /tmp/pg-certs/server.key /tmp/pg-certs/server.crt
-        chmod 600 /tmp/pg-certs/server.key
-        chmod 644 /tmp/pg-certs/server.crt
-        exec docker-entrypoint.sh postgres \
-          -c ssl=on \
-          -c ssl_cert_file=/tmp/pg-certs/server.crt \
-          -c ssl_key_file=/tmp/pg-certs/server.key
     environment:
       POSTGRES_USER: usulnet
       POSTGRES_PASSWORD: usulnet_dev
@@ -160,34 +116,12 @@ services:
     image: redis:8-alpine
     container_name: usulnet-redis
     restart: unless-stopped
-    entrypoint:
-      - /bin/sh
-      - -c
-      - |
-        set -e
-        command -v openssl >/dev/null 2>&1 || apk add --no-cache openssl >/dev/null 2>&1
-        mkdir -p /tmp/redis-certs
-        openssl req -new -x509 -days 3650 -nodes \
-          -newkey ec -pkeyopt ec_paramgen_curve:P-256 \
-          -subj "/CN=redis/O=usulnet" \
-          -addext "subjectAltName=DNS:redis,DNS:localhost,IP:127.0.0.1" \
-          -keyout /tmp/redis-certs/server.key \
-          -out /tmp/redis-certs/server.crt 2>/dev/null
-        chmod 600 /tmp/redis-certs/server.key
-        chmod 644 /tmp/redis-certs/server.crt
-        exec redis-server \
-          --tls-port 6379 \
-          --port 0 \
-          --tls-cert-file /tmp/redis-certs/server.crt \
-          --tls-key-file /tmp/redis-certs/server.key \
-          --tls-auth-clients no \
-          --appendonly yes
     ports:
       - "6379:6379"
     volumes:
       - redis_data:/data
     healthcheck:
-      test: ["CMD", "redis-cli", "--tls", "--insecure", "ping"]
+      test: ["CMD", "redis-cli", "ping"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -201,24 +135,7 @@ services:
     ports:
       - "4222:4222"
       - "8222:8222"
-    entrypoint:
-      - /bin/sh
-      - -c
-      - |
-        set -e
-        mkdir -p /tmp/nats-certs
-        command -v openssl >/dev/null 2>&1 || apk add --no-cache openssl >/dev/null 2>&1
-        openssl req -new -x509 -days 3650 -nodes \
-          -newkey ec -pkeyopt ec_paramgen_curve:P-256 \
-          -subj "/CN=nats/O=usulnet-dev" \
-          -addext "subjectAltName=DNS:nats,DNS:localhost,IP:127.0.0.1" \
-          -keyout /tmp/nats-certs/server.key \
-          -out /tmp/nats-certs/server.crt 2>/dev/null
-        chmod 600 /tmp/nats-certs/server.key
-        chmod 644 /tmp/nats-certs/server.crt
-        exec nats-server \
-          --jetstream --store_dir=/data -m 8222 \
-          --tls --tlscert=/tmp/nats-certs/server.crt --tlskey=/tmp/nats-certs/server.key
+    command: ["--jetstream", "--store_dir=/data", "-m", "8222"]
     volumes:
       - nats_data:/data
     healthcheck:
@@ -236,9 +153,6 @@ volumes:
   usulnet_data:
   trivy_cache:
   agent_data:
-  nginx_conf:
-  nginx_certs:
-  acme_webroot:
 
 networks:
   usulnet-network:

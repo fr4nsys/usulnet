@@ -174,7 +174,7 @@ func (a *stackAdapter) Deploy(ctx context.Context, name, composeFile string) err
 	stack, err := a.svc.Create(ctx, resolveHostID(ctx, a.hostID), input)
 	if err != nil {
 		slog.Error("stackAdapter.Deploy: create failed", "name", name, "error", err)
-		return fmt.Errorf("create stack: %w", err)
+		return err
 	}
 	slog.Info("stackAdapter.Deploy: stack created, deploying", "name", name, "id", stack.ID)
 
@@ -185,7 +185,7 @@ func (a *stackAdapter) Deploy(ctx context.Context, name, composeFile string) err
 		if delErr := a.svc.Delete(ctx, stack.ID, true); delErr != nil {
 			slog.Warn("stackAdapter.Deploy: failed to clean up stack after deploy error", "name", name, "error", delErr)
 		}
-		return fmt.Errorf("deploy stack: %w", err)
+		return err
 	}
 	if result != nil && !result.Success {
 		slog.Error("stackAdapter.Deploy: deploy failed, cleaning up",
@@ -203,46 +203,6 @@ func (a *stackAdapter) Deploy(ctx context.Context, name, composeFile string) err
 	return nil
 }
 
-// DeployStream creates the stack and streams docker compose output to logCh.
-// It closes logCh when done. Returns the stack name on success (empty on failure).
-func (a *stackAdapter) DeployStream(ctx context.Context, name, composeFile string, logCh chan<- string) (string, error) {
-	if a.svc == nil {
-		close(logCh)
-		return "", ErrServiceNotConfigured
-	}
-
-	input := &models.CreateStackInput{
-		Name:        name,
-		ComposeFile: composeFile,
-	}
-
-	slog.Info("stackAdapter.DeployStream: creating stack", "name", name)
-	stack, err := a.svc.Create(ctx, resolveHostID(ctx, a.hostID), input)
-	if err != nil {
-		close(logCh)
-		slog.Error("stackAdapter.DeployStream: create failed", "name", name, "error", err)
-		return "", fmt.Errorf("create stack: %w", err)
-	}
-	slog.Info("stackAdapter.DeployStream: stack created, deploying", "name", name, "id", stack.ID)
-
-	result, err := a.svc.DeployWithStream(ctx, stack.ID, logCh)
-	close(logCh)
-	if err != nil {
-		if delErr := a.svc.Delete(ctx, stack.ID, true); delErr != nil {
-			slog.Warn("stackAdapter.DeployStream: failed to clean up after error", "name", name, "error", delErr)
-		}
-		return "", fmt.Errorf("deploy stack: %w", err)
-	}
-	if result != nil && !result.Success {
-		if delErr := a.svc.Delete(ctx, stack.ID, true); delErr != nil {
-			slog.Warn("stackAdapter.DeployStream: failed to clean up after failure", "name", name, "error", delErr)
-		}
-		return "", fmt.Errorf("docker compose failed: %s", result.Error)
-	}
-	slog.Info("stackAdapter.DeployStream: deploy succeeded", "name", name)
-	return name, nil
-}
-
 func (a *stackAdapter) Start(ctx context.Context, name string) error {
 	if a.svc == nil {
 		return ErrServiceNotConfigured
@@ -250,7 +210,7 @@ func (a *stackAdapter) Start(ctx context.Context, name string) error {
 
 	s, err := a.svc.GetByName(ctx, resolveHostID(ctx, a.hostID), name)
 	if err != nil {
-		return fmt.Errorf("get stack for start: %w", err)
+		return err
 	}
 
 	return a.svc.Start(ctx, s.ID)
@@ -263,7 +223,7 @@ func (a *stackAdapter) Stop(ctx context.Context, name string) error {
 
 	s, err := a.svc.GetByName(ctx, resolveHostID(ctx, a.hostID), name)
 	if err != nil {
-		return fmt.Errorf("get stack for stop: %w", err)
+		return err
 	}
 
 	return a.svc.Stop(ctx, s.ID, false)
@@ -276,7 +236,7 @@ func (a *stackAdapter) Restart(ctx context.Context, name string) error {
 
 	s, err := a.svc.GetByName(ctx, resolveHostID(ctx, a.hostID), name)
 	if err != nil {
-		return fmt.Errorf("get stack for restart: %w", err)
+		return err
 	}
 
 	return a.svc.Restart(ctx, s.ID)
@@ -289,7 +249,7 @@ func (a *stackAdapter) Remove(ctx context.Context, name string) error {
 
 	s, err := a.svc.GetByName(ctx, resolveHostID(ctx, a.hostID), name)
 	if err != nil {
-		return fmt.Errorf("get stack for remove: %w", err)
+		return err
 	}
 
 	return a.svc.Delete(ctx, s.ID, false)

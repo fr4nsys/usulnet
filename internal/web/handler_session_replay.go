@@ -53,7 +53,7 @@ func (h *Handler) SessionReplayPage(w http.ResponseWriter, r *http.Request) {
 <head>
 <meta charset="utf-8">
 <title>Session Replay</title>
-<link rel="stylesheet" href="/static/vendor/asciinema-player/asciinema-player.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/asciinema-player@3.7.1/dist/bundle/asciinema-player.css">
 <style>body { background: #0d1117; margin: 0; padding: 20px; }
 .header { color: #c9d1d9; font-family: sans-serif; margin-bottom: 16px; }
 .header a { color: #58a6ff; text-decoration: none; }
@@ -65,7 +65,7 @@ func (h *Handler) SessionReplayPage(w http.ResponseWriter, r *http.Request) {
   <h2>Session Replay</h2>
 </div>
 <div id="player"></div>
-<script src="/static/vendor/asciinema-player/asciinema-player.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/asciinema-player@3.7.1/dist/bundle/asciinema-player.min.js"></script>
 <script>
 AsciinemaPlayer.create('/session-replay/` + sessionID + `/data', document.getElementById('player'), {
   theme: 'monokai',

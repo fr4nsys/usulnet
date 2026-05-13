@@ -126,20 +126,20 @@ func (h *BackupHandler) Routes() chi.Router {
 
 // CreateBackupRequest represents a backup creation request.
 type CreateBackupRequest struct {
-	HostID        string `json:"host_id" validate:"required,uuid"`
-	Type          string `json:"type" validate:"required,oneof=volume container stack system"`
-	TargetID      string `json:"target_id" validate:"required"`
-	TargetName    string `json:"target_name,omitempty" validate:"omitempty,min=1,max=255"`
-	Trigger       string `json:"trigger,omitempty" validate:"omitempty,oneof=manual scheduled pre_update automatic"`
-	Compression   string `json:"compression,omitempty" validate:"omitempty,oneof=none gzip zstd"`
+	HostID        string `json:"host_id"`
+	Type          string `json:"type"`
+	TargetID      string `json:"target_id"`
+	TargetName    string `json:"target_name,omitempty"`
+	Trigger       string `json:"trigger,omitempty"`
+	Compression   string `json:"compression,omitempty"`
 	Encrypt       bool   `json:"encrypt,omitempty"`
-	RetentionDays *int   `json:"retention_days,omitempty" validate:"omitempty,min=1,max=3650"`
+	RetentionDays *int   `json:"retention_days,omitempty"`
 	StopContainer bool   `json:"stop_container,omitempty"`
 }
 
 // RestoreBackupRequest represents a restore request.
 type RestoreBackupRequest struct {
-	TargetName        string `json:"target_name,omitempty" validate:"omitempty,min=1,max=255"`
+	TargetName        string `json:"target_name,omitempty"`
 	OverwriteExisting bool   `json:"overwrite_existing,omitempty"`
 	StopContainers    bool   `json:"stop_containers,omitempty"`
 	StartAfterRestore bool   `json:"start_after_restore,omitempty"`
@@ -156,29 +156,29 @@ type VerifyBackupRequest struct {
 
 // PruneTargetRequest represents a prune request.
 type PruneTargetRequest struct {
-	KeepCount int `json:"keep_count" validate:"min=1,max=1000"`
+	KeepCount int `json:"keep_count"`
 }
 
 // CreateScheduleRequest represents a schedule creation request.
 type CreateScheduleRequest struct {
-	HostID        string `json:"host_id" validate:"required,uuid"`
-	Type          string `json:"type" validate:"required,oneof=volume container stack system"`
-	TargetID      string `json:"target_id" validate:"required"`
-	Schedule      string `json:"schedule" validate:"required,min=9"`
-	Compression   string `json:"compression,omitempty" validate:"omitempty,oneof=none gzip zstd"`
+	HostID        string `json:"host_id"`
+	Type          string `json:"type"`
+	TargetID      string `json:"target_id"`
+	Schedule      string `json:"schedule"`
+	Compression   string `json:"compression,omitempty"`
 	Encrypted     bool   `json:"encrypted,omitempty"`
-	RetentionDays int    `json:"retention_days,omitempty" validate:"omitempty,min=1,max=3650"`
-	MaxBackups    int    `json:"max_backups,omitempty" validate:"omitempty,min=1,max=1000"`
+	RetentionDays int    `json:"retention_days,omitempty"`
+	MaxBackups    int    `json:"max_backups,omitempty"`
 	IsEnabled     bool   `json:"is_enabled,omitempty"`
 }
 
 // UpdateScheduleRequest represents a schedule update request.
 type UpdateScheduleRequest struct {
-	Schedule      *string `json:"schedule,omitempty" validate:"omitempty,min=9"`
-	Compression   *string `json:"compression,omitempty" validate:"omitempty,oneof=none gzip zstd"`
+	Schedule      *string `json:"schedule,omitempty"`
+	Compression   *string `json:"compression,omitempty"`
 	Encrypted     *bool   `json:"encrypted,omitempty"`
-	RetentionDays *int    `json:"retention_days,omitempty" validate:"omitempty,min=1,max=3650"`
-	MaxBackups    *int    `json:"max_backups,omitempty" validate:"omitempty,min=1,max=1000"`
+	RetentionDays *int    `json:"retention_days,omitempty"`
+	MaxBackups    *int    `json:"max_backups,omitempty"`
 	IsEnabled     *bool   `json:"is_enabled,omitempty"`
 }
 

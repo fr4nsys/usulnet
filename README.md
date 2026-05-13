@@ -1,1359 +1,203 @@
-<p align="center">
-  <a href="https://usulnet.com/"><img src="docs/screenshots/logo.png" alt="usulnet" width="320" /></a>
-</p>
+# usulnet
 
-<p align="center">
-  <strong>Self-Hosted Docker Management Platform</strong><br/>
-  A modern, feature-rich platform for managing Docker infrastructure across single and multi-node deployments.
-</p>
+Self-hosted Docker management plane with built-in OSINT and metadata-hygiene
+modules. Single Go binary, AGPL-3.0.
 
-<p align="center">
-  <a href="#installation"><img src="https://img.shields.io/badge/Go-1.25+-00ADD8?style=flat-square&logo=go&logoColor=white" alt="Go 1.25+"/></a>
-  <a href="#license"><img src="https://img.shields.io/badge/License-AGPL--3.0-blue?style=flat-square" alt="AGPL-3.0"/></a>
-  <a href="#deployment"><img src="https://img.shields.io/badge/Docker-Ready-2496ED?style=flat-square&logo=docker&logoColor=white" alt="Docker Ready"/></a>
-  <a href="https://github.com/fr4nsys/usulnet/releases"><img src="https://img.shields.io/github/v/release/fr4nsys/usulnet?style=flat-square&color=success&include_prereleases" alt="Release"/></a> <!-- Stable only:https://img.shields.io/github/v/release/fr4nsys/usulnet?style=flat-square&color=success -->
-</p>
+[![Go](https://img.shields.io/badge/go-1.25%2B-00ADD8?logo=go&logoColor=white)](go.mod)
+[![License](https://img.shields.io/badge/license-AGPL--3.0-blue)](LICENSE)
+[![Release](https://img.shields.io/github/v/release/fr4nsys/usulnet?include_prereleases&color=success)](https://github.com/fr4nsys/usulnet/releases)
 
-<p align="center">
-  <a href="#-fast-deployment">Fast Deploy</a>&nbsp;&bull;
-  <a href="#features">Features</a>&nbsp;&bull;
-  <a href="#screenshots">Screenshots</a>&nbsp;&bull;
-  <a href="#deployment">Deployment</a>&nbsp;&bull;
-  <a href="#configuration">Configuration</a>&nbsp;&bull;
-  <a href="#api">API</a>&nbsp;&bull;
-  <a href="#architecture">Architecture</a>&nbsp;&bull;
-  <a href="#contributing">Contributing</a>
-</p>
+usulnet runs container lifecycle, security scanning, backups, reverse-proxy
+configuration, monitoring, multi-node orchestration, and an opt-in privacy
+module (OSINT recon plus file metadata hygiene) from a single process on
+hardware you own.
 
----
+v26.5.0 Beta — functional, but rough edges are expected. Bug reports:
+[issues](https://github.com/fr4nsys/usulnet/issues).
 
-> **v26.2.7 &mdash; Latest Release**
->
-> usulnet is in active development. We appreciate your feedback &mdash; please report any issues on [GitHub Issues](https://github.com/fr4nsys/usulnet/issues). Your reports help improve usulnet for everyone.
-
----
-
-## Support the Project
-
-usulnet is built and maintained only by me at the moment. If you find it useful, consider supporting its continued development:
-
-<p align="center">
-  <a href="https://buymeacoffee.com/fransys"><img src="https://img.shields.io/badge/Buy%20Me%20a%20Coffee-ffdd00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black" alt="Buy Me a Coffee"/></a>&nbsp;&nbsp;
-  <a href="https://usulnet.com/#pricing"><img src="https://img.shields.io/badge/Business%20License-ff6b35?style=for-the-badge&logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJibGFjayI+PHBhdGggZD0iTTEyIDFMMyA1djZjMCA1LjU1IDMuODQgMTAuNzQgOSAxMiA1LjE2LTEuMjYgOS02LjQ1IDktMTJWNWwtOS00eiIvPjwvc3ZnPg==&logoColor=black" alt="Business License"/></a>
-</p>
-
-| Channel | Description |
-|---|---|
-| [Buy Me a Coffee](https://buymeacoffee.com/fransys) | One-time or recurring donations to support development |
-| [Business License](https://usulnet.com/#pricing) | Purchase a Business or Enterprise license starting at &euro;79/node/year |
-| [GitHub Sponsors](https://github.com/sponsors/fr4nsys) | Sponsor via GitHub for recurring monthly support |
-
-Every contribution, whether a coffee, a license purchase, or a star on GitHub, help to keep this project alive and growing. Thank you.
-
----
-
-## &#9889; Fast Deployment
-
-Deploy usulnet in one command. No manual configuration needed &mdash; all secrets are generated automatically.
+## Quick start
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/fr4nsys/usulnet/main/deploy/install.sh | sudo bash
 ```
 
-This will:
-- Download the production Docker Compose configuration
-- Auto-generate secure database passwords, JWT secrets, and encryption keys
-- Start usulnet with PostgreSQL, Redis, NATS, Nginx, and Guacamole
-- Be ready in under 60 seconds (pre-built images, no compilation)
-
-**Access:** `https://your-server-ip:7443` &mdash; Default credentials: `admin` / `usulnet`
-
-Or deploy manually with Docker Compose (requires sudo/root):
-
-```bash
-# Download the files
-sudo mkdir -p /opt/usulnet && cd /opt/usulnet
-sudo curl -fsSL https://raw.githubusercontent.com/fr4nsys/usulnet/main/deploy/docker-compose.prod.yml -o docker-compose.yml
-sudo curl -fsSL https://raw.githubusercontent.com/fr4nsys/usulnet/main/deploy/.env.example -o .env
-# IMPORTANT: download config.yaml — without this, Docker creates a directory and the app boot-loops
-sudo curl -fsSL https://raw.githubusercontent.com/fr4nsys/usulnet/main/config.yaml -o config.yaml
-# NATS server configuration (required — the compose file mounts this into the NATS container)
-sudo curl -fsSL https://raw.githubusercontent.com/fr4nsys/usulnet/main/deploy/nats-server.conf -o nats-server.conf
-
-# Generate secrets
-DB_PASS=$(openssl rand -base64 24 | tr -dc 'a-zA-Z0-9' | head -c 32)
-JWT_SECRET=$(openssl rand -hex 32)
-ENCRYPTION_KEY=$(openssl rand -hex 32)
-# Set database password in .env (used by PostgreSQL service)
-sudo sed -i "s|CHANGE_ME_GENERATE_RANDOM_PASSWORD|${DB_PASS}|" .env
-# Set secrets in config.yaml (used by usulnet application)
-sudo sed -i "s|usulnet_dev|${DB_PASS}|" config.yaml
-sudo sed -i "s|edbdbc0721315fc2529c04509d65c62e7c51ce9b10941078f2fae131acfb0e96|${JWT_SECRET}|" config.yaml
-sudo sed -i "s|ed2cb601a830465890822d80d13668530b5af3c1c372799310339e8daf02e2e6|${ENCRYPTION_KEY}|" config.yaml
-
-# Generate TLS certificates for PostgreSQL, Redis, and NATS (self-signed ECDSA P-256)
-sudo mkdir -p certs
-sudo openssl req -new -x509 -days 3650 -nodes \
-    -newkey ec -pkeyopt ec_paramgen_curve:P-256 \
-    -subj "/CN=postgres/O=usulnet" \
-    -addext "subjectAltName=DNS:postgres,DNS:localhost,IP:127.0.0.1" \
-    -keyout certs/postgres-server.key -out certs/postgres-server.crt 2>/dev/null
-sudo openssl req -new -x509 -days 3650 -nodes \
-    -newkey ec -pkeyopt ec_paramgen_curve:P-256 \
-    -subj "/CN=redis/O=usulnet" \
-    -addext "subjectAltName=DNS:redis,DNS:localhost,IP:127.0.0.1" \
-    -keyout certs/redis-server.key -out certs/redis-server.crt 2>/dev/null
-sudo openssl req -new -x509 -days 3650 -nodes \
-    -newkey ec -pkeyopt ec_paramgen_curve:P-256 \
-    -subj "/CN=nats/O=usulnet" \
-    -addext "subjectAltName=DNS:nats,DNS:localhost,IP:127.0.0.1" \
-    -keyout certs/nats-server.key -out certs/nats-server.crt 2>/dev/null
-sudo chmod 600 certs/*.key
-
-# Start
-sudo docker compose up -d
-```
-
----
-
-## Overview
-
-**usulnet** is a self-hosted Docker management platform built with Go that gives engineering teams full control over their container infrastructure. It replaces the need for multiple tools by providing a unified interface for container orchestration, security scanning, backup management, reverse proxy configuration, monitoring, and multi-node deployment &mdash; all from a single, modern web UI.
-
-Designed for **sysadmins**, **DevOps engineers**, and **platform teams** who need a production-grade, self-hosted alternative to cloud-native container management solutions without vendor lock-in or usage telemetry.
-
-### Why usulnet?
-
-- **Single binary** &mdash; No runtime dependencies like Node.js or Python. Templates are compiled into the binary at build time.
-- **Multi-node out of the box** &mdash; Master/agent architecture with NATS messaging, mTLS, and auto-deployment of agents.
-- **Security-first** &mdash; Built-in Trivy scanning, RBAC with 46 permissions, 2FA, LDAP/OIDC auth, encrypted secrets, audit logging.
-- **Full-stack management** &mdash; Containers, images, volumes, networks, stacks, proxies, backups, SSH, databases, LDAP, Git &mdash; everything in one place.
-- **Lightweight** &mdash; ~70 MB binary. No Electron, no bloated frontend frameworks. Pure Templ + Tailwind + Alpine.js + HTMX.
-
----
+Open `https://<host>:7443`, log in as `admin` / `usulnet`, then change the
+password. The installer pulls the production compose file, generates the
+database password, JWT secret, AES-256 key, and a self-signed TLS cert.
+Manual Docker Compose install, binary install, and offline procedures live
+in [docs/installation.md](docs/installation.md).
 
 ## Features
 
-### Core Docker Management
-
-| Feature | Description |
-|---|---|
-| **Containers** | Full lifecycle management &mdash; create, start, stop, restart, pause, kill, remove. Bulk operations, real-time stats, settings editor, filesystem browser. |
-| **Images** | Pull, inspect, remove, prune. Registry support (Docker Hub, private registries). Layer history and size analysis. |
-| **Volumes** | Create, inspect, remove, prune. Built-in file browser for volume contents. |
-| **Networks** | Create, inspect, remove, prune. Connect/disconnect containers. Bridge, overlay, macvlan support. |
-| **Stacks** | Docker Compose deployment, management, and monitoring. Built-in stack catalog with one-click deployment. |
-| **Docker Swarm** | Initialize clusters, manage nodes, create HA services, scale replicas, convert standalone containers. |
-
-### Security & Compliance
-
-| Feature | Description |
-|---|---|
-| **Vulnerability Scanning** | Integrated Trivy scanner for container images and filesystems. CVE detection with severity classification. |
-| **Security Scoring** | 0-100 composite security score per container and across the infrastructure. Trends tracking over time. |
-| **SBOM Generation** | Software Bill of Materials in CycloneDX and SPDX formats. |
-| **RBAC** | Role-based access control with 46 granular permissions. Custom roles. Team-based resource scoping. |
-| **2FA / TOTP** | Two-factor authentication with TOTP (Google Authenticator, Authy) and backup codes. |
-| **LDAP / OIDC** | Enterprise authentication via Active Directory, LDAP, OAuth2, and OIDC (GitHub, Google, Microsoft, custom). |
-| **Audit Logging** | User actions persisted to PostgreSQL with IP, timestamp, and details. Exportable as CSV. In-memory cache for fast dashboard rendering. |
-| **Encrypted Secrets** | AES-256-GCM encryption for all sensitive configuration values (passwords, tokens, keys). |
-| **API Key Auth** | Programmatic access via `X-API-KEY` header alongside JWT authentication. |
-
-### Monitoring & Alerting
-
-| Feature | Description |
-|---|---|
-| **Real-time Metrics** | CPU, memory, network I/O, disk I/O per container and per host. WebSocket-powered live dashboards. |
-| **Alert Rules** | Threshold-based alerts on any metric. States: OK &rarr; Pending &rarr; Firing &rarr; Resolved. Silence rules. |
-| **11 Notification Channels** | Email, Slack, Discord, Telegram, Gotify, ntfy, PagerDuty, Opsgenie, Microsoft Teams, Generic Webhook, Custom. |
-| **Event Stream** | Real-time Docker event stream (container, image, volume, network events) with filtering. |
-| **Centralized Logs** | Aggregated container logs with search, filtering, and custom log file upload for analysis. |
-| **Prometheus Metrics** | Native `/metrics` endpoint for Prometheus scraping (admin auth required). Go runtime and process metrics included. |
-
-### Backup & Recovery
-
-| Feature | Description |
-|---|---|
-| **Backup Targets** | Back up individual containers, volumes, or entire stacks. |
-| **Scheduled Backups** | Cron-based backup scheduling with retention policies. |
-| **Storage Backends** | Local filesystem, AWS S3, MinIO, Azure Blob, Google Cloud Storage, Backblaze B2, SFTP. |
-| **Compression** | gzip or zstd compression with configurable levels. |
-| **One-click Restore** | Restore any backup to its original or a different target. |
-
-### Multi-Node Architecture
-
-| Feature | Description |
-|---|---|
-| **Operation Modes** | `master` (full server), `agent` (worker node). |
-| **NATS Messaging** | Inter-node communication via NATS with JetStream persistence. |
-| **Internal PKI & mTLS** | Auto-generated certificates for secure agent-master communication. |
-| **Auto Agent Deploy** | Deploy agents to remote hosts directly from the web UI via SSH. |
-| **Gateway Routing** | API gateway automatically routes requests to the correct node. |
-| **Host Switching** | Seamlessly switch between managed hosts from any page. |
-
-### Reverse Proxy
-
-| Feature | Description |
-|---|---|
-| **Nginx Reverse Proxy** | Built-in nginx reverse proxy with auto-HTTPS via Let's Encrypt. |
-| **Certificate Management** | Let's Encrypt, custom certificates, auto-renewal, expiration alerts. |
-| **Stream Proxying** | TCP/UDP stream proxy configuration for non-HTTP services. |
-
-### DNS Server
-
-| Feature | Description |
-|---|---|
-| **Embedded DNS Server** | Built-in authoritative DNS server powered by miekg/dns (the library behind CoreDNS). UDP + TCP on configurable port. |
-| **Zone Management** | Create and manage DNS zones (primary, secondary, forward) with full SOA configuration. Serial auto-increment on changes. |
-| **Record Types** | A, AAAA, CNAME, MX, TXT, NS, SRV, PTR, CAA, SOA records with per-record TTL and enable/disable toggle. |
-| **TSIG Keys** | Transaction Signature keys for secure zone transfers. Secrets encrypted at rest with AES-256-GCM. |
-| **Upstream Forwarding** | Recursive queries forwarded to configurable upstream servers (default: Cloudflare 1.1.1.3 + 1.0.0.3 malware-blocking DNS). |
-| **Live Statistics** | Real-time query counters (total, success, failed), zones loaded, and server uptime. Health check endpoint. |
-| **Audit Logging** | All zone/record/key changes logged with user, action, resource, and timestamp. Browsable from the web UI. |
-| **Service Discovery** | Auto-register containers as DNS A/SRV records — `redis.containers.local` → container IP |
-
-### Developer Tools
-
-| Feature | Description |
-|---|---|
-| **Terminal Hub** | Multi-tab terminal with container exec and host SSH in the browser (xterm.js). |
-| **Monaco Editor** | Full VS Code editor experience in the browser for editing files inside containers and on hosts. |
-| **Neovim in Browser** | Neovim with lazy.nvim plugin manager running directly in the browser via WebSocket. |
-| **Container Filesystem** | Browse, read, edit, upload, download, and delete files inside running containers. |
-| **Host Filesystem** | Browse and manage files on managed hosts (requires nsenter). |
-| **SFTP Browser** | Browse remote filesystems over SSH/SFTP with upload, download, and directory management. |
-| **Snippets** | Save and manage code snippets and configuration files with the built-in editor. |
-| **Command Cheat Sheet** | Quick-reference for Docker, Linux, networking, and custom commands. |
-
-### Connections & Integrations
-
-| Feature | Description |
-|---|---|
-| **SSH Connections** | Manage SSH connections with password or key-based auth. Web terminal, SFTP browser, tunnel/port forwarding. |
-| **RDP/VNC Connections** | Remote Desktop access via Apache Guacamole (guacd). RDP and VNC connections in the browser &mdash; no client software needed. Clipboard sync, file transfer, multi-session support. |
-| **Database Browser** | Connect to PostgreSQL, MySQL/MariaDB, MongoDB, Redis, and SQLite. Execute queries, browse tables. |
-| **LDAP Browser** | Connect to LDAP directories. Search, browse entries, view attributes. Settings and delete management. |
-| **Git Integration** | Unified Git provider support (Gitea, GitHub, GitLab). Repository management, file editing, PRs, issues, CI/CD workflows. |
-| **Container Registries** | Manage authentication for multiple private registries with encrypted credentials. |
-| **Web Shortcuts** | Bookmark frequently accessed URLs with custom icons and categories. |
-
-### Automation
-
-| Feature | Description |
-|---|---|
-| **Outgoing Webhooks** | HTTP webhooks triggered by container events (start, stop, die, health changes). Delivery logs with retry. |
-| **Auto-Deploy Rules** | Automatically redeploy stacks on Git push events. Match by source repo and branch. |
-| **Runbooks** | Define multi-step operational procedures. Execute manually or triggered by events. Execution history. |
-| **Crontab Manager** | Web-based cron job manager. Create, edit, enable/disable, and run cron jobs from the UI. Supports shell commands, Docker exec, and HTTP webhooks. Full execution history with output, exit codes, and duration tracking. Auto-cleanup of old execution records (30-day retention). |
-| **Scheduled Jobs** | Cron-based scheduling for backups, security scans, metrics collection, update checks, and cleanup tasks. |
-| **Image Updates** | Detect available image updates, apply individually or in batch, with rollback capability. |
-
-### API & Extensibility
-
-| Feature | Description |
-|---|---|
-| **REST API** | Full CRUD API at `/api/v1` with JWT and API key authentication. |
-| **OpenAPI 3.0** | Auto-generated specification at `/api/v1/openapi.json`. Swagger UI at `/docs/api`. |
-| **WebSocket API** | Real-time streams for logs, exec, stats, events, metrics, and terminal sessions. |
-| **Network Capture** | Packet capture on container network interfaces for traffic analysis. |
-
-### Enterprise Features
-
-| Feature | Description | Edition |
-|---|---|---|
-| **Custom Dashboards** | Drag-and-drop dashboard builder with 15 widget types (gauges, charts, tables, feeds). Multiple layouts. | Enterprise |
-| **GitOps / Git Sync** | Synchronize stacks with Git repositories. Auto-deploy on push, conflict detection, branch selection. | Business |
-| **Firewall Manager** | Visual iptables/nftables management from the UI. Rules per container, per network, per port. Create/edit/delete rules, apply to host, sync from host, audit log. Supports both iptables and nftables backends. | Business |
-| **SSL Observatory** | SSL/TLS scanner for all services. Monitors certificate health with automatic grading (A+ to F), expiration alerts, cipher suite analysis, protocol version detection, OCSP stapling & Certificate Transparency checks. Dashboard with grade distribution. | Business |
-| **Backup Verification** | Automated backup integrity verification. Supports extract, container, and database verification methods. Validates checksums, file readability, container mounting, and data integrity. Schedulable with cron expressions. | Business |
-| **WireGuard VPN** | Native WireGuard VPN management from the UI. Create interfaces with auto-generated keys, manage peers, QR config generation, transfer statistics, multi-interface support with per-peer allowed IPs and keepalive settings. | Business |
-| **Container Marketplace** | Curated app marketplace with one-click deployment. Browse, search, and install Docker Compose apps by category. User ratings and reviews, featured apps, configurable deployment fields, installation tracking, and community app submissions. | Business |
-| **Container Image Builder** | Build Docker images from Dockerfiles in the UI. Multi-stage build support, build arguments, platform targeting, and reusable Dockerfile templates. | Business |
-| **Automated Rollback** | Automatic stack rollback on deploy failure or health check failure. Configurable rollback policies, retry limits, cooldown periods, and full execution history. | Business |
-| **Ephemeral Environments** | TTL-based short-lived Docker environments for testing and CI/CD previews. API-driven. | Enterprise |
-| **Manifest Builder** | Visual Docker Compose editor with service templates, validation, and YAML preview. | Enterprise |
-| **OPA Policies** | Open Policy Agent integration for deployment policy enforcement. Rego policies, violation tracking. | Enterprise |
-| **Runtime Security** | Real-time container runtime monitoring &mdash; process tracking, file integrity, network anomaly detection. | Enterprise |
-| **Image Signing** | Cosign/Sigstore image signing and verification. Key management, policy enforcement. | Enterprise |
-| **Compliance** | Map infrastructure to CIS Docker Benchmark, SOC 2, PCI DSS, and HIPAA frameworks. Exportable reports. | Enterprise |
-| **Resource Optimization** | Right-sizing recommendations based on actual usage. Over/under-provisioned detection, cost analysis. | Enterprise |
-| **Log Aggregation** | Centralized log collection, indexing, and full-text search across all containers. Configurable retention. | Enterprise |
-| **Drift Detection** | Detect configuration drift between expected and actual container state. Change events audit trail. | Enterprise |
-| **Change Audit Feed** | Chronological feed of all infrastructure changes with filtering by type, user, and time range. | Enterprise |
-
----
-
-## Screenshots
-
-### Dashboard
-
-> Infrastructure overview with container status, resource utilization, security score, and recent events.
-
-![Dashboard](docs/screenshots/dashboard.png)
-
-### Login & 2FA
-
-> Secure login with optional TOTP two-factor authentication, backup codes, and account lockout protection.
-
-![Login](docs/screenshots/login01.png)
-
-<details>
-<summary>More screenshots</summary>
-
-![2FA Setup](docs/screenshots/2fa.png)
-![2FA Login](docs/screenshots/2falogin.png)
-![2FA Login Code](docs/screenshots/2falogin01.png)
-![2FA Disable](docs/screenshots/2fadisable.png)
-
-</details>
-
-### Container Management
-
-> Full container lifecycle management with real-time stats, logs, exec terminal, filesystem browser, and settings editor.
-
-![Containers](docs/screenshots/containers.png)
-
-<details>
-<summary>More screenshots</summary>
-
-![Containers List](docs/screenshots/containers01.png)
-![Container Detail](docs/screenshots/containers02.png)
-![Container Stats](docs/screenshots/containers03.png)
-![Container Logs](docs/screenshots/containers04.png)
-![Container Exec](docs/screenshots/containers05.png)
-![Container Filesystem](docs/screenshots/containers06.png)
-![Container Settings](docs/screenshots/containers07.png)
-![Container Network](docs/screenshots/containers08.png)
-![Container Volumes](docs/screenshots/container09.png)
-![Container Environment](docs/screenshots/containers10.png)
-![Container Actions](docs/screenshots/container11.png)
-
-</details>
-
-### Images
-
-> Pull, inspect, remove, and prune Docker images. Registry support with layer history and size analysis.
-
-![Images](docs/screenshots/images.png)
-
-### Volumes
-
-> Create, inspect, remove, and prune Docker volumes. Built-in file browser for volume contents.
-
-![Volumes](docs/screenshots/volumes.png)
-
-### Networks
-
-> Create, inspect, and manage Docker networks. Bridge, overlay, and macvlan support with interactive D3.js force-directed topology graph — drag, zoom, hover-highlight connections, and click nodes for details.
-
-![Networks](docs/screenshots/networks.png)
-
-<details>
-<summary>More screenshots</summary>
-
-![Networks Detail](docs/screenshots/networks01.png)
-![Networks Config](docs/screenshots/networks02.png)
-![Network Topology](docs/screenshots/net-topology.png)
-
-</details>
-
-### Stacks & Deployment
-
-> Deploy Docker Compose stacks from YAML, from Git repositories, or from the built-in stack catalog.
-
-![Stacks](docs/screenshots/stacks.png)
-
-<details>
-<summary>More screenshots</summary>
-
-![Deploy Stacks](docs/screenshots/deploystacks.png)
-![Custom Deploy](docs/screenshots/deploy-custom.png)
-![Custom Deploy Detail](docs/screenshots/deploy-custom01.png)
-
-</details>
-
-### Security & Vulnerability Scanning
-
-> Trivy-powered vulnerability scanning with security scoring, trend analysis, SBOM generation, and exportable reports.
-
-![Security](docs/screenshots/security.png)
-
-<details>
-<summary>More screenshots</summary>
-
-![Security Overview](docs/screenshots/security01.png)
-![Security Scan](docs/screenshots/security02.png)
-![Security Details](docs/screenshots/security03.png)
-![Security Report](docs/screenshots/securityreport.png)
-![Security Report Detail](docs/screenshots/securityreport01.png)
-![Security Report Export](docs/screenshots/securityreport02.png)
-
-</details>
-
-### Logs
-
-> Aggregated container logs with search and filtering. Centralized log collection and custom log file upload for analysis.
-
-![Logs](docs/screenshots/logs.png)
-
-<details>
-<summary>More screenshots</summary>
-
-![Centralized Logs](docs/screenshots/centralized-logs.png)
-![Centralized Logs Detail](docs/screenshots/centralized-logs01.png)
-
-</details>
-
-### Terminal & SSH
-
-> Multi-tab browser terminal with container exec and host SSH. SFTP browser, tunnel/port forwarding. Powered by xterm.js.
-
-![SSH](docs/screenshots/ssh.png)
-
-<details>
-<summary>More screenshots</summary>
-
-![SSH Session](docs/screenshots/ssh01.png)
-![SSH SFTP](docs/screenshots/ssh02.png)
-
-</details>
-
-### Code Editor
-
-> Full VS Code editor (Monaco) and Neovim in the browser for editing files inside containers, on hosts, or in your snippet library.
-
-![Monaco Editor](docs/screenshots/monaco.png)
-
-<details>
-<summary>More screenshots</summary>
-
-![Neovim](docs/screenshots/nvim.png)
-
-</details>
-
-### Multi-Node Management
-
-> Manage Docker hosts across your infrastructure from a single pane of glass. Auto-deploy agents via SSH with mTLS.
-
-![Nodes](docs/screenshots/nodes.png)
-
-<details>
-<summary>More screenshots</summary>
-
-![Nodes List](docs/screenshots/nodes01.png)
-![Node Detail](docs/screenshots/nodes02.png)
-![Node Stats](docs/screenshots/nodes03.png)
-![Node Config](docs/screenshots/node04.png)
-![Node Agent](docs/screenshots/nodes05.png)
-![Node Deploy](docs/screenshots/nodes06.png)
-
-</details>
-
-### Users & Teams
-
-> User management with role assignment, team-based resource scoping, and profile editing.
-
-![Users](docs/screenshots/users.png)
-
-<details>
-<summary>More screenshots</summary>
-
-![Edit User](docs/screenshots/edituser.png)
-![Teams](docs/screenshots/teams.png)
-
-</details>
-
-### Roles & Permissions
-
-> Role-based access control with 46 granular permissions. Create custom roles with fine-grained permission assignment.
-
-![Roles](docs/screenshots/roles.png)
-
-<details>
-<summary>More screenshots</summary>
-
-![Custom Role](docs/screenshots/custom-role.png)
-
-</details>
-
-### LDAP Integration
-
-> Enterprise authentication via Active Directory and LDAP. Provider management, group mapping, and connection testing.
-
-![LDAP](docs/screenshots/ldap.png)
-
-<details>
-<summary>More screenshots</summary>
-
-![LDAP Config](docs/screenshots/ldap--.png)
-![LDAP Provider](docs/screenshots/ldap01.png)
-![LDAP Groups](docs/screenshots/ldap02.png)
-![LDAP Test](docs/screenshots/ldap03.png)
-![LDAP Browser](docs/screenshots/ldap04.png)
-
-</details>
-
-### Settings & Administration
-
-> Platform settings, license management, update checker, and command cheat sheet.
-
-![Settings](docs/screenshots/settings.png)
-
-<details>
-<summary>More screenshots</summary>
-
-![License](docs/screenshots/license.png)
-![Updates](docs/screenshots/updates.png)
-![Cheatsheet](docs/screenshots/cheatsheet.png)
-
-</details>
-
----
-
-## Quick Start
-
-### Docker &mdash; Pre-built Image (recommended)
-
-The fastest way to get started. Uses pre-built images, no compilation required:
-
-```bash
-curl -fsSL https://raw.githubusercontent.com/fr4nsys/usulnet/main/deploy/install.sh | bash
-```
-
-See [Fast Deployment](#-fast-deployment) above for details and manual options.
-
-### Build from Source
-
-```bash
-# Prerequisites: Go 1.25+, Make, Docker
-git clone https://github.com/fr4nsys/usulnet.git
-cd usulnet
-
-# Build and run with Docker Compose (builds from source, ~10-15 min first time)
-docker compose -f docker-compose.dev.yml build
-docker compose -f docker-compose.dev.yml up -d
-
-# Or build natively
-make build && make run
-```
-
----
-
-## Deployment
-
-### Docker Compose (Production)
-
-```yaml
-services:
-  usulnet:
-    image: ghcr.io/fr4nsys/usulnet:latest
-    ports:
-      - "8080:8080"    # HTTP
-      - "7443:7443"    # HTTPS (auto-TLS)
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-      - usulnet-data:/var/lib/usulnet
-      - nginx-conf:/etc/nginx/conf.d/usulnet
-      - nginx-certs:/etc/usulnet/certs
-      - acme-webroot:/var/lib/usulnet/acme
-    environment:
-      # sslmode=require: encrypted connection (self-signed cert, no CA verification needed)
-      - USULNET_DATABASE_URL=postgres://usulnet:secret@postgres:5432/usulnet?sslmode=require
-      - USULNET_REDIS_URL=rediss://redis:6379/0
-      - USULNET_NATS_URL=natss://nats:4222
-      - USULNET_SECURITY_JWT_SECRET=your-secret-key-min-32-chars-long
-      - USULNET_SECURITY_CONFIG_ENCRYPTION_KEY=your-64-hex-char-aes-256-key-here
-    depends_on:
-      postgres:
-        condition: service_healthy
-      redis:
-        condition: service_started
-      nats:
-        condition: service_started
-    restart: unless-stopped
-
-  postgres:
-    image: postgres:16-alpine
-    environment:
-      POSTGRES_DB: usulnet
-      POSTGRES_USER: usulnet
-      POSTGRES_PASSWORD: secret
-    volumes:
-      - postgres-data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U usulnet"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
-    restart: unless-stopped
-
-  redis:
-    image: redis:8-alpine
-    entrypoint:
-      - /bin/sh
-      - -c
-      - |
-        set -e
-        apk add --no-cache openssl >/dev/null 2>&1
-        mkdir -p /tmp/redis-certs
-        openssl req -new -x509 -days 3650 -nodes \
-          -newkey ec -pkeyopt ec_paramgen_curve:P-256 \
-          -subj "/CN=redis/O=usulnet" \
-          -keyout /tmp/redis-certs/server.key \
-          -out /tmp/redis-certs/server.crt 2>/dev/null
-        chmod 600 /tmp/redis-certs/server.key
-        chmod 644 /tmp/redis-certs/server.crt
-        exec redis-server \
-          --tls-port 6379 --port 0 \
-          --tls-cert-file /tmp/redis-certs/server.crt \
-          --tls-key-file /tmp/redis-certs/server.key \
-          --tls-auth-clients no \
-          --maxmemory 256mb --maxmemory-policy allkeys-lru
-    volumes:
-      - redis-data:/data
-    restart: unless-stopped
-
-  nats:
-    image: nats:2.12-alpine
-    command: ["--jetstream", "--store_dir", "/data"]
-    volumes:
-      - nats-data:/data
-    restart: unless-stopped
-
-  nginx:
-    image: nginx:1.28-alpine
-    ports:
-      - "80:80"      # Public HTTP (ACME + redirect)
-      - "443:443"    # Public HTTPS (reverse proxy)
-    volumes:
-      - nginx-conf:/etc/nginx/conf.d/usulnet:ro
-      - nginx-certs:/etc/usulnet/certs:ro
-      - acme-webroot:/var/lib/usulnet/acme:ro
-    depends_on:
-      - usulnet
-    restart: unless-stopped
-
-  guacd:
-    image: guacamole/guacd:1.6.0
-    restart: unless-stopped    # RDP/VNC gateway for remote desktop
-
-volumes:
-  usulnet-data:
-  postgres-data:
-  redis-data:
-  nats-data:
-  nginx-conf:
-  nginx-certs:
-  acme-webroot:
-```
-
-### Multi-Node Deployment
-
-**Master node:**
-
-```yaml
-# config.yaml on master
-mode: master
-server:
-  port: 8080
-nats:
-  url: natss://nats-server:4222
-  jetstream:
-    enabled: true
-```
-
-**Agent node:**
-
-```yaml
-# config.yaml on agent
-mode: agent
-agent:
-  master_url: natss://master-nats:4222
-  name: worker-01
-  token: your-auth-token
-  heartbeat_interval: 30s
-  metrics_interval: 1m
-```
-
-Or deploy agents directly from the web UI:
-
-1. Go to **Nodes** &rarr; **Add Node**
-2. Enter the host's SSH credentials
-3. Click **Deploy Agent** &mdash; usulnet will install and configure the agent automatically
-
-### System Requirements
-
-| Component | Minimum | Recommended |
-|---|---|---|
-| **CPU** | 1 vCPU | 2+ vCPU |
-| **RAM** | 2 GB | 4 GB (single node) / 8 GB (master with agents) |
-| **Disk** | 10 GB | 50 GB+ (with backups) |
-| **OS** | Linux (amd64, arm64) | Debian/Ubuntu/RHEL |
-| **Docker** | 20.10+ | Latest stable |
-| **PostgreSQL** | 12+ | 16+ |
-| **Redis** | 7+ | 8+ |
-| **NATS** | 2.0+ | 2.12+ |
-
----
-
-## Configuration
-
-usulnet is configured via `config.yaml` or environment variables (prefix `USULNET_`, nested with `_`).
-
-### Server
-
-```yaml
-server:
-  host: 0.0.0.0
-  port: 8080
-  https_port: 7443
-  base_url: https://usulnet.example.com
-  read_timeout: 30s
-  write_timeout: 30s
-  idle_timeout: 120s
-  max_request_size: 52428800  # 50 MB
-  rate_limit_rps: 100
-  tls:
-    enabled: true
-    auto_tls: true            # Auto-generate self-signed certs
-    # cert_file: /path/to/cert.pem   # Or use custom certs
-    # key_file: /path/to/key.pem
-```
-
-### Database
-
-```yaml
-database:
-  # sslmode=require — TLS-encrypted, no CA verification (default; works with self-signed cert).
-  # Use sslmode=verify-full and set USULNET_DATABASE_SSL_ROOTCERT for full cert verification.
-  url: postgres://usulnet:password@localhost:5432/usulnet?sslmode=require
-  max_open_conns: 25
-  max_idle_conns: 10
-  conn_max_lifetime: 30m
-  query_timeout: 30s
-```
-
-> **PostgreSQL TLS:** All Docker Compose files ship with PostgreSQL TLS enabled by default. A self-signed ECDSA P-256 certificate is auto-generated on every container startup — no external cert files, no init containers. `sslmode=require` encrypts the connection without needing a CA cert. To verify the server certificate, use `sslmode=verify-full` and mount your CA cert, then set `USULNET_DATABASE_SSL_ROOTCERT=/path/to/ca.crt`.
-
-> **Redis TLS:** All Docker Compose files ship with Redis TLS enabled by default. A self-signed ECDSA P-256 certificate is auto-generated on every container startup. The `rediss://` URL scheme enables TLS automatically. To use your own certificate, mount `redis-server.crt` and `redis-server.key` into the container at `/certs-src/`. To verify the server certificate, set `tls_ca_file` in the Redis configuration and disable `tls_skip_verify`.
-
-### Security
-
-```yaml
-security:
-  jwt_secret: "your-secret-at-least-32-characters"
-  jwt_expiry: 24h
-  refresh_expiry: 168h                  # 7 days
-  config_encryption_key: "64-hex-chars" # AES-256 key for secrets at rest
-  cookie_secure: true
-  cookie_samesite: strict
-  password_min_length: 8
-  password_require_uppercase: true
-  password_require_number: true
-  max_failed_logins: 5
-  lockout_duration: 15m
-```
-
-### Backup Storage
-
-```yaml
-storage:
-  type: s3                    # local | s3
-  path: /var/lib/usulnet      # local storage path
-  s3:
-    endpoint: s3.amazonaws.com
-    bucket: usulnet-backups
-    region: us-east-1
-    access_key: AKIA...
-    secret_key: ...
-    use_path_style: false     # true for MinIO
-  backup:
-    compression: zstd         # gzip | zstd
-    compression_level: 3
-    default_retention_days: 30
-```
-
-### Trivy Security Scanner
-
-```yaml
-trivy:
-  enabled: true
-  cache_dir: /var/lib/usulnet/trivy
-  timeout: 5m
-  severity: CRITICAL,HIGH,MEDIUM
-  ignore_unfixed: false
-  update_db_on_start: true
-```
-
-### Reverse Proxy (Nginx)
-
-```yaml
-nginx:
-  acme_email: admin@example.com
-  config_dir: "/etc/nginx/conf.d/usulnet"
-  cert_dir: "/etc/usulnet/certs"
-  acme_web_root: "/var/lib/usulnet/acme"
-  listen_http: ":80"
-  listen_https: ":443"
-```
-
-### DNS Server
-
-```yaml
-dns:
-  enabled: true                  # Enable the embedded DNS server
-  listen_addr: ":53"             # UDP/TCP listen address
-  forwarders:                    # Upstream servers for recursive queries
-    - "1.1.1.3"                  # Cloudflare malware-blocking DNS
-    - "1.0.0.3"
-```
-
-The embedded DNS server runs in-process and is fully managed from the web UI. Zones and records are stored in PostgreSQL (source of truth) and pushed to the in-memory server on every change. The server supports authoritative responses for managed zones and forwards all other queries to the configured upstream resolvers.
-
-#### Service Discovery
-
-```yaml
-dns:
-  service_discovery:
-    enabled: true
-    domain: "containers.local"
-    ttl: 30
-    create_srv: true
-    include_stopped_cleanup: true
-```
-
-When enabled, running containers are automatically registered as DNS records in a `containers.local` zone. A records map `<container>.containers.local` to the container IP. SRV records are created for exposed ports.
-
-**Environment variables:**
-
-```bash
-USULNET_DNS_ENABLED=true         # Enable/disable DNS server
-USULNET_DNS_LISTEN_ADDR=:53      # Listen address
-USULNET_DNS_SD_ENABLED=true      # Enable service discovery
-USULNET_DNS_SD_DOMAIN=containers.local  # Service discovery domain
-USULNET_DNS_SD_TTL=30            # TTL for auto-registered records
-USULNET_DNS_SD_CREATE_SRV=true   # Create SRV records for exposed ports
-```
-
-### Notifications (Examples)
-
-Notification channels are configured through the web UI at **Admin &rarr; Notification Channels**. Supported types:
-
-```
-Email (SMTP), Slack, Discord, Telegram, Gotify, ntfy,
-PagerDuty, Opsgenie, Microsoft Teams, Generic Webhook
-```
-
-### Environment Variables
-
-Any configuration key can be set via environment variable:
-
-```bash
-USULNET_SERVER_PORT=9090
-USULNET_DATABASE_URL=postgres://...
-USULNET_SECURITY_JWT_SECRET=...
-USULNET_REDIS_URL=rediss://...
-USULNET_NATS_URL=natss://...
-USULNET_TRIVY_ENABLED=true
-USULNET_MODE=master
-```
-
----
-
-## API
-
-usulnet exposes a full REST API at `/api/v1` with OpenAPI 3.0 documentation.
-
-### Authentication
-
-```bash
-# Login to get a JWT token
-curl -X POST http://localhost:8080/api/v1/auth/login \
-  -H "Content-Type: application/json" \
-  -d '{"username": "admin", "password": "usulnet"}'
-
-# Use the token
-curl http://localhost:8080/api/v1/containers \
-  -H "Authorization: Bearer <token>"
-
-# Or use an API key
-curl http://localhost:8080/api/v1/containers \
-  -H "X-API-KEY: your-api-key"
-```
-
-### Endpoints
-
-| Method | Endpoint | Description |
-|---|---|---|
-| **Auth** | | |
-| `POST` | `/auth/login` | Authenticate and receive JWT |
-| `POST` | `/auth/refresh` | Refresh expired token |
-| `POST` | `/auth/logout` | Invalidate session |
-| **System** | | |
-| `GET` | `/system/info` | System and Docker engine info |
-| `GET` | `/system/version` | Application version |
-| `GET` | `/system/health` | Health status |
-| `GET` | `/system/metrics` | System metrics |
-| **Containers** | | |
-| `GET` | `/containers` | List all containers |
-| `GET` | `/containers/{id}` | Container details |
-| `POST` | `/containers/{id}/start` | Start container |
-| `POST` | `/containers/{id}/stop` | Stop container |
-| `POST` | `/containers/{id}/restart` | Restart container |
-| `DELETE` | `/containers/{id}` | Remove container |
-| `GET` | `/containers/{id}/logs` | Container logs |
-| `GET` | `/containers/{id}/stats` | Resource stats |
-| **Images** | | |
-| `GET` | `/images` | List images |
-| `GET` | `/images/{id}` | Image details |
-| `POST` | `/images/pull` | Pull image |
-| `DELETE` | `/images/{id}` | Remove image |
-| **Volumes** | | |
-| `GET` | `/volumes` | List volumes |
-| `POST` | `/volumes` | Create volume |
-| `GET` | `/volumes/{name}` | Volume details |
-| `DELETE` | `/volumes/{name}` | Remove volume |
-| **Networks** | | |
-| `GET` | `/networks` | List networks |
-| `POST` | `/networks` | Create network |
-| `GET` | `/networks/{id}` | Network details |
-| `DELETE` | `/networks/{id}` | Remove network |
-| **Stacks** | | |
-| `GET` | `/stacks` | List stacks |
-| `POST` | `/stacks/deploy` | Deploy stack |
-| `GET` | `/stacks/{name}` | Stack details |
-| `DELETE` | `/stacks/{name}` | Remove stack |
-| **Hosts** | | |
-| `GET` | `/hosts` | List managed nodes |
-| `POST` | `/hosts` | Add node |
-| `GET` | `/hosts/{id}` | Node details |
-| `PUT` | `/hosts/{id}` | Update node |
-| `DELETE` | `/hosts/{id}` | Remove node |
-| **Backups** | | |
-| `GET` | `/backups` | List backups |
-| `POST` | `/backups` | Create backup |
-| `POST` | `/backups/{id}/restore` | Restore backup |
-| `DELETE` | `/backups/{id}` | Delete backup |
-| **Security** | | |
-| `POST` | `/security/scan` | Scan all containers |
-| `POST` | `/security/scan/{id}` | Scan specific container |
-| **Updates** | | |
-| `GET` | `/updates` | List available updates |
-| `POST` | `/updates/check` | Check for updates |
-| **Proxy** | | |
-| `GET` | `/proxy/hosts` | List proxy hosts |
-| `POST` | `/proxy/hosts` | Create proxy host |
-| `PUT` | `/proxy/hosts/{id}` | Update proxy host |
-| `DELETE` | `/proxy/hosts/{id}` | Remove proxy host |
-| **Users** (admin) | | |
-| `GET` | `/users` | List users |
-| `POST` | `/users` | Create user |
-| `PUT` | `/users/{id}` | Update user |
-| `DELETE` | `/users/{id}` | Delete user |
-
-### WebSocket Endpoints
-
-| Endpoint | Description |
-|---|---|
-| `/ws/logs/{id}` | Real-time container log streaming |
-| `/ws/exec/{id}` | Interactive container terminal |
-| `/ws/stats/{id}` | Live container resource stats |
-| `/ws/events` | Docker event stream |
-| `/ws/metrics` | System metrics stream |
-| `/ws/monitoring/stats` | Monitoring dashboard data |
-| `/ws/monitoring/container/{id}` | Per-container monitoring |
-| `/ws/jobs/{id}` | Job progress tracking |
-| `/ws/capture/{id}` | Packet capture stream |
-| `/ws/editor/nvim` | Neovim terminal session |
-
-### OpenAPI Documentation
-
-Interactive API documentation is available at:
-- **Swagger UI**: `http://localhost:8080/docs/api`
-- **OpenAPI JSON**: `http://localhost:8080/api/v1/openapi.json`
-
----
+### Docker control plane
+
+| Area | Capability |
+| --- | --- |
+| Containers | Full lifecycle (create / start / stop / restart / pause / kill / remove), bulk operations, real-time stats, exec terminal, log viewer, filesystem browser. |
+| Images | Pull, inspect, prune, layer history; Docker Hub and private registries with encrypted credentials. |
+| Volumes and networks | Create, inspect, prune, file browser; bridge / overlay / macvlan; connect and disconnect containers. |
+| Stacks | Docker Compose deployments from YAML, Git repositories, or built-in catalogue. |
+| Swarm | Cluster init, node management, services, replica scaling, standalone-to-swarm conversion. |
+| Multi-node | `standalone`, `master`, and `agent` modes; agent ↔ master traffic over NATS with mTLS; agent deploy from the UI via SSH. |
+| Reverse proxy | Caddy and Nginx Proxy Manager adapters; Let's Encrypt with auto-renewal; TCP/UDP stream proxying. |
+| Backups | Container / volume / stack targets; cron schedules with retention; gzip or zstd; local, S3, MinIO, Azure Blob, GCS, B2, SFTP. |
+| Monitoring | Per-container and per-host CPU / RAM / network / disk; threshold alerts with `OK → Pending → Firing → Resolved` state machine; 11 notification channels (Email, Slack, Discord, Telegram, Gotify, ntfy, PagerDuty, Opsgenie, Microsoft Teams, generic webhook, custom). |
+| Logs and events | Aggregated container logs with search; Docker event stream with filtering; packet capture per network interface. |
+| Vulnerabilities | Trivy CVE scans for images and filesystems; 0–100 security score per container and infrastructure-wide; SBOM in CycloneDX and SPDX; Docker CIS Benchmark checks. |
+
+### Privacy and recon (opt-in)
+
+Off by default — every recon route returns 404 until an admin sets
+`USULNET_RECON_ENABLED=true` and records the legal-notice acknowledgement
+(`POST /api/v1/recon/_ack`). Full design and threat model in
+[docs/recon.md](docs/recon.md); signed v26.5 review at
+[docs/v26.5/security-review-checklist.md](docs/v26.5/security-review-checklist.md).
+
+| Area | Capability |
+| --- | --- |
+| OSINT recon | SpiderFoot-driven passive scans against emails, domains, phones, IPs, usernames. Ownership is verified (DNS TXT, e-mail link, RDAP, admin-attest, self-assert) before a scan can start. |
+| Scan profiles | Four built-in profiles plus full CRUD for user-defined profiles. Built-in rows are immutable; the module catalogue is closed. |
+| Reports | Per-scan JSON, CSV, and paginated A4 PDF at `/api/v1/recon/scans/{id}/report.{json,csv,pdf}`. PDF is pure Go and byte-deterministic. |
+| Metadata hygiene | `mat2` strip plus `exiftool` / `pdfid` / `oletools` extract. Each job runs in a fresh container with read-only rootfs, all Linux capabilities dropped, seccomp default, and PID / memory caps. |
+| Sandbox network | Dedicated `usulnet-recon` Docker network with a strict egress allow-list (DNS, 80, 443 by default). |
+| HIBP connector | Optional Have-I-Been-Pwned integration. Credentials AES-256-GCM at rest in `recon_connectors`; keys are never returned through the API or logs. |
+| Retention | Daily prune of findings, scans, and audit log past the per-tenant TTL (default 90 days). Two-phase delete on metadata artifacts. |
+| Audit | Append-only `recon_audit_log` records every state-changing action with actor, target, and request hash. |
+
+### Auth, RBAC, platform
+
+| Area | Capability |
+| --- | --- |
+| Authentication | JWT with configurable expiry; `X-API-KEY` for programmatic access; TOTP 2FA with backup codes; LDAP / Active Directory; OAuth2 / OIDC (GitHub, Google, Microsoft, custom). |
+| Authorisation | RBAC with 44+ granular permissions, custom roles, team-based resource scoping. |
+| Secrets | AES-256-GCM at rest for every sensitive value; bcrypt password hashing; configurable password complexity; account lockout. |
+| Transport | TLS with auto-generated self-signed certs (or BYO); mTLS for inter-node messaging; configurable rate limiting; CSRF; secure cookie defaults. |
+| Audit | Per-user action log persisted to PostgreSQL with IP, timestamp, detail; CSV export. |
+| Observability | Prometheus `/metrics` (admin-auth) including Go runtime and process metrics; OpenTelemetry instrumentation. |
+| API | REST under `/api/v1`; OpenAPI 3.0 at `/api/v1/openapi.json`; Swagger UI at `/docs/api`; WebSocket streams for logs, exec, stats, events, metrics, packet capture, and nvim. |
+
+### Developer tools
+
+Web-based terminal hub (xterm.js) with container exec and host SSH. Monaco
+editor and Neovim with `lazy.nvim` for in-browser file editing. Filesystem
+browsers for containers, hosts, and SFTP. Snippets and cheat sheets.
+Outgoing webhooks on container events with retry. Auto-deploy rules
+triggered by Git push. Runbooks for multi-step operations. Cron-scheduled
+jobs for backups, scans, metrics, update checks, recon retention, and
+cleanup.
 
 ## Architecture
 
-### System Architecture
+usulnet ships as a single binary that runs in one of three modes:
 
-```
-                                    +-------------------+
-                                    |    Web Browser     |
-                                    |  (Tailwind/Alpine/ |
-                                    |   HTMX/xterm.js)  |
-                                    +---------+---------+
-                                              |
-                                    HTTP/WS/HTTPS
-                                              |
-+---------------------------------------------------------------------+
-|                          usulnet (master)                            |
-|                                                                     |
-|  +------------+  +------------+  +-----------+  +----------------+  |
-|  | Chi Router |  | Templ UI   |  | REST API  |  | WebSocket Hub  |  |
-|  | (Frontend) |  | (SSR HTML) |  | (JSON)    |  | (Real-time)    |  |
-|  +------+-----+  +------+-----+  +-----+-----+  +-------+--------+  |
-|         |               |              |                 |           |
-|  +------+---------------+--------------+-----------------+--------+  |
-|  |                     Service Layer                              |  |
-|  |  container | image | volume | network | stack | security       |  |
-|  |  backup | proxy | auth | user | team | ssh | git | monitoring  |  |
-|  +------+---------------+--------------+-----------------+--------+  |
-|         |               |              |                 |           |
-|  +------+-----+  +------+-----+  +----+------+  +-------+-------+  |
-|  | PostgreSQL  |  |   Redis    |  |   NATS    |  |Docker Socket  |  |
-|  | (Data)      |  | (Sessions/ |  | (JetStream|  |(Docker API)   |  |
-|  |             |  |  Cache)    |  |  Messaging|  |               |  |
-|  +-------------+  +------------+  +-----------+  +---------------+  |
-+---------------------------------------------------------------------+
-         |                                    |
-    NATS (mTLS)                          NATS (mTLS)
-         |                                    |
-+--------+--------+               +----------+--------+
-| usulnet (agent)  |               | usulnet (agent)  |
-|   worker-01      |               |   worker-02      |
-|  +-------------+ |               |  +-------------+ |
-|  |Docker Socket| |               |  |Docker Socket| |
-|  +-------------+ |               |  +-------------+ |
-+------------------+               +------------------+
-```
+- `standalone` — one Docker host, all services local. NATS not required.
+- `master` — `standalone` plus a NATS gateway server for remote agents.
+- `agent` — connects to a master via NATS. No web UI; executes Docker
+  operations against its local host.
 
-### Tech Stack
+PostgreSQL stores domain state (44 migrations covering users, RBAC,
+connections, backups, scans, alerts, recon, audit log, etc.). Redis backs
+session storage and JWT blacklisting. NATS with JetStream carries
+inter-node traffic with persistence. Full component diagram, request flow,
+and topology in [docs/architecture.md](docs/architecture.md); the
+agent protocol is documented in [docs/agents.md](docs/agents.md).
 
-| Layer | Technology |
-|---|---|
-| **Language** | Go 1.25+ |
-| **Web Framework** | [Chi](https://github.com/go-chi/chi) v5 |
-| **Templates** | [Templ](https://templ.guide) &mdash; compile-time type-safe HTML |
-| **CSS** | [Tailwind CSS](https://tailwindcss.com) (standalone CLI, no Node.js) |
-| **Frontend JS** | [Alpine.js](https://alpinejs.dev) + [HTMX](https://htmx.org) |
-| **Terminal** | [xterm.js](https://xtermjs.org) v5 |
-| **Editor** | [Monaco](https://microsoft.github.io/monaco-editor/) v0.52 + [Neovim](https://neovim.io) |
-| **Database** | PostgreSQL 16 ([pgx](https://github.com/jackc/pgx) + [sqlx](https://github.com/jmoiron/sqlx)) |
-| **Cache** | Redis 8 (TLS) |
-| **Messaging** | [NATS](https://nats.io) 2.12 with JetStream |
-| **Auth** | JWT + OAuth2/OIDC + LDAP + TOTP |
-| **Security** | [Trivy](https://trivy.dev) vulnerability scanner |
-| **Logging** | [zap](https://github.com/uber-go/zap) (structured JSON) |
-| **Scheduling** | [cron](https://github.com/robfig/cron) v3 |
-| **Docker** | [Docker SDK](https://pkg.go.dev/github.com/docker/docker) for Go |
+### Stack
 
-### Directory Structure
+| Layer | Component |
+| --- | --- |
+| Language | Go 1.25.7 |
+| HTTP router | Chi v5 |
+| Templates | Templ (compile-time HTML) |
+| CSS | Tailwind via the standalone CLI (no Node.js) |
+| Browser | Alpine.js, HTMX, xterm.js, Monaco |
+| Database | PostgreSQL 16 via pgx/v5 and sqlx |
+| Cache / sessions | Redis 7 |
+| Messaging | NATS 2.10 with JetStream |
+| Auth | JWT, OAuth2 / OIDC, LDAP, TOTP |
+| Vulnerability scanner | Trivy |
+| PDF | gofpdf (pure Go) |
+| Scheduling | robfig/cron v3 |
 
-```
-cmd/
-  usulnet/              # Main application entry point (serve, migrate, config, admin)
-  usulnet-agent/        # Agent binary entry point
+## Configuration
 
-internal/
-  api/                  # REST API handlers, middleware, router
-    handlers/           # Per-resource API handlers
-    middleware/         # Auth, RBAC, CORS, rate limiting, logging
-  app/                  # Application bootstrap, config loading, service wiring
-  agent/                # Agent mode: heartbeat, inventory, command execution
-  docker/               # Docker client wrapper with multi-host support
-  gateway/              # API gateway for master mode (routes to agents)
-  integrations/         # External system integrations
-    gitea/              # Gitea Git provider
-    github/             # GitHub Git provider
-    gitlab/             # GitLab Git provider
-  models/               # Domain models and types
-  nats/                 # NATS client with JetStream support
-  pkg/                  # Shared packages
-    crypto/             # AES-256-GCM encryption, password hashing
-    logger/             # Structured logging (zap wrapper)
-    validator/          # Request validation
-  repository/           # Data access layer
-    postgres/           # PostgreSQL repositories (54 migrations)
-    redis/              # Redis session store, JWT blacklist
-  scheduler/            # Cron job scheduler
-    workers/            # Job implementations (backup, scan, cleanup, metrics)
-  services/             # Business logic (54 services)
-    auth/               # JWT, OIDC, LDAP authentication
-    backup/             # Backup creation, restore, scheduling
-    container/          # Container lifecycle management
-    dns/                # DNS server (zones, records, TSIG keys, embedded miekg/dns backend)
-    git/                # Unified Git provider (Gitea/GitHub/GitLab)
-    image/              # Image pull, inspect, prune
-    monitoring/         # Metrics collection, alert engine
-    network/            # Docker network management
-    notification/       # Multi-channel notification dispatch
-    proxy/              # Nginx reverse proxy
-    security/           # Trivy scanning, scoring, SBOM
-    ssh/                # SSH connections, SFTP, tunnels
-    stack/              # Docker Compose stack management
-    storage/            # S3/local backup storage
-    volume/             # Docker volume management
-  web/                  # Web UI layer
-    templates/          # Templ templates (~144 files)
-      components/       # Reusable UI components
-      layouts/          # Page layouts (base, auth)
-      pages/            # Full page templates
-      partials/         # HTMX partial responses
-    handler_*.go        # 45 web handlers
-
-web/
-  static/               # Static assets
-    src/input.css        # Tailwind source CSS
-    css/output.css       # Compiled CSS
-    js/                  # Alpine.js, HTMX, xterm.js, Monaco
-
-deploy/                 # Production Docker Compose files
-docs/                   # Developer documentation
-nvim/                   # Neovim editor configuration (lazy.nvim)
-```
-
-### Database Schema
-
-54 migrations managing tables for:
-
-- Users, roles, permissions, teams
-- SSH connections, SSH keys
-- Container registries
-- Configuration variables and templates
-- Backup schedules and metadata
-- Security scan results and issues
-- Notification configurations
-- Alert rules, events, and silences
-- Outgoing webhooks and delivery logs
-- Auto-deploy rules
-- Runbooks and execution history
-- Git connections and repositories
-- Terminal session history
-- Metrics time-series data
-- Audit log entries
-- User preferences
-- DNS zones, records, TSIG keys, and audit log
-
----
-
-## CLI Reference
+`config.yaml` plus environment variables prefixed `USULNET_` (nested keys
+joined by `_`). The Viper loader treats environment overrides as canonical.
+Examples:
 
 ```bash
-usulnet [command] [flags]
-
-Commands:
-  serve           Start the usulnet server
-  migrate         Database migration management
-  config          Configuration utilities
-  admin           Administrative commands
-  version         Print version information
-
-# Server
-usulnet serve --config config.yaml --mode master
-
-# Migrations
-usulnet migrate up                    # Apply pending migrations
-usulnet migrate down [N]              # Rollback N migrations (default: 1)
-usulnet migrate status                # Show migration status
-
-# Config
-usulnet config check                  # Validate configuration
-usulnet config show                   # Display config (secrets masked)
-
-# Admin
-usulnet admin reset-password [PASS]   # Reset admin password (default: usulnet)
-
-# Version
-usulnet version                       # Show version, commit, build date
+USULNET_SERVER_PORT=9090
+USULNET_DATABASE_URL=postgres://usulnet:secret@db/usulnet?sslmode=disable
+USULNET_SECURITY_JWT_SECRET=...
+USULNET_RECON_ENABLED=true
+USULNET_MODE=standalone
 ```
 
----
+Full reference, defaults, and the production compose template are in
+[docs/installation.md](docs/installation.md).
+
+## CLI
+
+```
+usulnet serve              # run the server
+usulnet migrate up         # apply pending migrations
+usulnet migrate status     # show migration state
+usulnet migrate down [N]   # roll back N migrations (default 1)
+usulnet config check       # validate configuration
+usulnet config show        # display config with secrets masked
+usulnet admin reset-password   # reset the admin password
+usulnet version            # print build info
+```
+
+The agent binary (`usulnet-agent`) is documented in
+[docs/agents.md](docs/agents.md).
+
+## Documentation
+
+| Topic | Path |
+| --- | --- |
+| Installation and deployment | [docs/installation.md](docs/installation.md) |
+| Development setup and workflow | [docs/development.md](docs/development.md) |
+| REST and WebSocket API | [docs/api.md](docs/api.md) |
+| Architecture | [docs/architecture.md](docs/architecture.md) |
+| Recon and metadata modules | [docs/recon.md](docs/recon.md) |
+| Multi-node agents | [docs/agents.md](docs/agents.md) |
+| Licensing | [docs/licensing.md](docs/licensing.md) |
+| Signed security review (recon, v26.5) | [docs/v26.5/security-review-checklist.md](docs/v26.5/security-review-checklist.md) |
+| Release notes | [CHANGELOG.md](CHANGELOG.md) |
+| Screenshots | [docs/screenshots/](docs/screenshots/) |
 
 ## Development
 
-### Prerequisites
-
-- Go 1.25+
-- Make
-- Docker & Docker Compose (for dev services)
-
-### Setup
-
 ```bash
-# Clone
 git clone https://github.com/fr4nsys/usulnet.git
 cd usulnet
-
-# Start dev services (PostgreSQL, Redis, NATS, MinIO)
-make dev-up
-
-# Install Templ CLI
-go install github.com/a-h/templ/cmd/templ@latest
-
-# Full build
-make build
-
-# Run
+make dev-up      # postgres, redis, nats, minio
+make build       # templ generate + tailwind compile + go build
 make run
 ```
 
-### Development Workflow
+`make quality` runs the lint, vet, and 40% coverage gate. The full
+developer guide — workflow, hooks, profiling, debugging — is in
+[docs/development.md](docs/development.md).
 
-```bash
-# Terminal 1: Watch and regenerate templates
-make templ-watch
-
-# Terminal 2: Watch and recompile CSS
-make css-watch
-
-# Terminal 3: Run the application
-make run
-```
-
-### Testing
-
-```bash
-# Run all tests with race detection
-make test
-
-# Generate HTML coverage report
-make test-coverage
-
-# Lint
-make lint
-
-# Format
-make fmt
-```
-
-### Build Targets
-
-```bash
-make build           # Build main binary (templ + css + go build)
-make build-agent     # Build agent binary
-make build-all       # Build both binaries
-make frontend        # Regenerate templates + CSS only
-make clean           # Clean build artifacts
-make docker-build    # Build Docker image
-```
-
----
+Commits follow [Conventional Commits](https://www.conventionalcommits.org).
 
 ## Security
 
-### Reporting Vulnerabilities
+Report vulnerabilities to <security@usulnet.com>. Do not open public issues
+for security findings.
 
-If you discover a security vulnerability, please report it responsibly:
-
-1. **Do not** open a public issue
-2. Email: [security@usulnet.com](mailto:security@usulnet.com)
-3. Include a detailed description and steps to reproduce
-4. We will respond within 48 hours
-
-### Security Features Checklist
-
-- [x] JWT authentication with configurable expiry
-- [x] API key authentication for programmatic access
-- [x] TOTP 2FA with backup codes
-- [x] LDAP/Active Directory integration
-- [x] OAuth2/OIDC (GitHub, Google, Microsoft, custom)
-- [x] RBAC with 46 granular permissions
-- [x] Team-based resource scoping
-- [x] AES-256-GCM encryption for secrets at rest
-- [x] bcrypt password hashing
-- [x] Account lockout after failed logins
-- [x] Password complexity policies
-- [x] CSRF protection
-- [x] Secure cookie settings (HttpOnly, SameSite)
-- [x] TLS/HTTPS with auto-generated certificates
-- [x] Redis TLS encryption by default (ECDSA P-256 self-signed)
-- [x] PostgreSQL TLS encryption by default (ECDSA P-256 self-signed)
-- [x] mTLS for inter-node communication
-- [x] Rate limiting (configurable per endpoint)
-- [x] Comprehensive audit logging
-- [x] Trivy vulnerability scanning
-- [x] SBOM generation (CycloneDX, SPDX)
-- [x] Security scoring (0-100)
-- [x] Docker CIS Benchmark compliance checks
-
----
+The recon module ships with a signed
+[security review checklist](docs/v26.5/security-review-checklist.md):
+feature-flagged off by default, admin acknowledgement enforced before any
+route resolves, append-only audit log, AES-256-GCM at rest for raw engine
+payloads and connector credentials, hardened container sandbox (read-only
+rootfs, all caps dropped, seccomp default), PII hashing for indexed
+identifiers.
 
 ## License
 
-### Open-Source License (AGPL-3.0)
-
-usulnet is licensed under the [GNU Affero General Public License v3.0](LICENSE) (AGPL-3.0-or-later).
-
-This means you are free to use, modify, and distribute usulnet, provided that:
-
-- Any modified version that is made available over a network must also be released under AGPL-3.0
-- The source code must be made available to users who interact with the software over a network
-- All copyright notices and license headers are preserved
-
-### Commercial Editions (Business / Enterprise)
-
-Paid editions are activated with a signed JWT license key obtained from the [License Portal](https://id.usulnet.com).
-
-**One instance per license key** — each key can be active on exactly one host at a time. Attempting to activate on a second host while another is active returns a conflict error.
-
-**How activation works:**
-
-1. Go to **Settings &rarr; License &rarr; Activate** and paste your JWT license key
-2. The application contacts `api.usulnet.com` to register the instance and receives a signed **Activation Receipt** — a short-lived JWT (7-day TTL) cryptographically bound to the instance fingerprint
-3. A background process renews the receipt every 6 hours
-4. If the server cannot be reached, the existing receipt remains valid for up to 14 days &mdash; after 7 days a sync warning is displayed in the dashboard; after 14 days the instance automatically downgrades to Community Edition
-
-**Releasing an instance remotely (via the portal):**
-
-1. Sign in at [id.usulnet.com](https://id.usulnet.com) with your purchase email
-2. Click **Release Instance** next to your active license
-3. The release takes effect on the next check-in cycle (up to 6 hours)
-4. Once released, the license can be activated on a different host
-
-For commercial licensing, contact [license@usulnet.com](mailto:license@usulnet.com).
-
----
-
-## Contributing
-
-Contributions are welcome. Please follow these steps to submit a pull request:
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/my-feature`)
-3. Commit your changes (`git commit -m 'feat: add my feature'`)
-4. Push to the branch (`git push origin feature/my-feature`)
-5. Open a Pull Request
-
-### Commit Convention
-
-This project follows [Conventional Commits](https://www.conventionalcommits.org/):
-
-```
-feat: add new feature
-fix: resolve bug
-docs: update documentation
-refactor: restructure code
-test: add or update tests
-chore: maintenance tasks
-```
-
----
-
-## Acknowledgments
-
-usulnet is built on the shoulders of exceptional open-source projects:
-
-- [Go](https://go.dev) &mdash; The language that makes this possible
-- [Docker](https://docker.com) &mdash; Container runtime
-- [Chi](https://github.com/go-chi/chi) &mdash; HTTP router
-- [Templ](https://templ.guide) &mdash; Type-safe HTML templates
-- [Tailwind CSS](https://tailwindcss.com) &mdash; Utility-first CSS
-- [Alpine.js](https://alpinejs.dev) &mdash; Lightweight JS framework
-- [HTMX](https://htmx.org) &mdash; HTML over the wire
-- [xterm.js](https://xtermjs.org) &mdash; Terminal emulator
-- [Monaco Editor](https://microsoft.github.io/monaco-editor/) &mdash; Code editor
-- [Trivy](https://trivy.dev) &mdash; Vulnerability scanner
-- [NATS](https://nats.io) &mdash; Messaging system
-- [PostgreSQL](https://postgresql.org) &mdash; Database
-
----
-
-<p align="center">
-  <sub>Built with care for the infrastructure community.</sub><br/>
-  <sub><strong>v26.2.7</strong> &mdash; Found a bug? <a href="https://github.com/fr4nsys/usulnet/issues/new">Report it here</a>. Your feedback makes usulnet better.</sub><br/><br/>
-  <a href="https://github.com/fr4nsys/usulnet">GitHub</a>&nbsp;&bull;
-  <a href="https://github.com/fr4nsys/usulnet/issues">Issues</a>&nbsp;&bull;
-  <a href="https://github.com/fr4nsys/usulnet/discussions">Discussions</a>
-</p>
+[AGPL-3.0-or-later](LICENSE). Self-hosted use is free in perpetuity;
+commercial licensing terms (SSO, audit retention, on-prem support) are
+documented in [docs/licensing.md](docs/licensing.md).

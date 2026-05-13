@@ -101,14 +101,14 @@ func RegisterFrontendRoutes(r chi.Router, h *Handler, m *Middleware) {
 		r.Use(m.ThemeMiddleware)
 		r.Use(SecureHeaders)
 
-		// Auth pages (POST routes are rate-limited to prevent brute force)
+		// Auth pages
 		r.Get("/login", h.LoginPageTempl)
-		r.With(WebAuthRateLimit()).Post("/login", h.LoginSubmit)
-		r.Get("/logout", h.Logout)
+		r.Post("/login", h.LoginSubmit)
+		r.Post("/logout", h.Logout)
 
-		// TOTP 2FA verification (during login, rate-limited)
+		// TOTP 2FA verification (during login)
 		r.Get("/login/totp", h.TOTPVerifyPageTempl)
-		r.With(WebAuthRateLimit()).Post("/login/totp", h.TOTPVerifySubmit)
+		r.Post("/login/totp", h.TOTPVerifySubmit)
 
 		// LDAP login (redirect to main login with method hint)
 		r.Get("/login/ldap", func(w http.ResponseWriter, r *http.Request) {
@@ -127,9 +127,6 @@ func RegisterFrontendRoutes(r chi.Router, h *Handler, m *Middleware) {
 
 		// Webhooks (public, validated by HMAC)
 		r.Post("/webhooks/gitea", h.GiteaWebhookReceiver)
-
-		// Prometheus metrics (public, for scraping)
-		r.Get("/metrics", h.PrometheusMetrics)
 	})
 
 	// Protected routes (auth required)
@@ -142,9 +139,6 @@ func RegisterFrontendRoutes(r chi.Router, h *Handler, m *Middleware) {
 		r.Use(SecureHeaders)
 		r.Use(NoCache)
 		r.Use(MaxRequestBody(10 * 1024 * 1024)) // 10 MB body size limit
-
-		// Logout (CSRF-protected POST)
-		r.Post("/logout", h.Logout)
 
 		// Dashboard
 		r.Get("/", h.DashboardTempl)
@@ -370,7 +364,6 @@ func RegisterFrontendRoutes(r chi.Router, h *Handler, m *Middleware) {
 			r.Group(func(r chi.Router) {
 				r.Use(m.RequirePermission("security:scan"))
 				r.Post("/scan", h.SecurityScan)
-				r.Post("/scan/", h.SecurityScan) // handle trailing slash
 				r.Post("/scan/{id}", h.SecurityScanContainer)
 				r.Post("/issues/{id}/ignore", h.SecurityIssueIgnore)
 				r.Post("/issues/{id}/resolve", h.SecurityIssueResolve)
@@ -388,11 +381,13 @@ func RegisterFrontendRoutes(r chi.Router, h *Handler, m *Middleware) {
 			// Apply updates (settings:update)
 			r.Group(func(r chi.Router) {
 				r.Use(m.RequirePermission("settings:update"))
+				r.Post("/check", h.UpdatesCheckTempl)
 				r.Post("/check-all", h.UpdatesCheckTempl)
 				r.Post("/apply-all", h.UpdateBatch)
 				r.Post("/manual", h.UpdateManual)
 				r.Post("/{id}/apply", h.UpdateApplyTempl)
 				r.Post("/{id}/rollback", h.UpdateRollbackTempl)
+				r.Post("/batch", h.UpdateBatch)
 				r.Post("/policies", h.AutoUpdatePolicyCreate)
 				r.Post("/policies/{id}/toggle", h.AutoUpdatePolicyToggle)
 				r.Post("/policies/{id}/delete", h.AutoUpdatePolicyDelete)
@@ -464,27 +459,6 @@ func RegisterFrontendRoutes(r chi.Router, h *Handler, m *Middleware) {
 				r.Post("/variables/{id}/delete", h.ConfigVarDelete)
 				r.Delete("/variables/{id}", h.ConfigVarDelete)
 			})
-
-			// Docker Daemon Configuration
-			r.Route("/docker", func(r chi.Router) {
-				r.Group(func(r chi.Router) {
-					r.Use(m.RequirePermission("config:view"))
-					r.Get("/", h.DockerConfigTempl)
-				})
-				r.Group(func(r chi.Router) {
-					r.Use(m.RequirePermission("config:update"))
-					r.Post("/network", h.DockerConfigUpdateNetwork)
-					r.Post("/logging", h.DockerConfigUpdateLogging)
-					r.Post("/registry", h.DockerConfigUpdateRegistry)
-					r.Post("/runtime", h.DockerConfigUpdateRuntime)
-					r.Post("/proxy", h.DockerConfigUpdateProxy)
-					r.Post("/security", h.DockerConfigUpdateSecurity)
-					r.Post("/general", h.DockerConfigUpdateGeneral)
-					r.Post("/reload", h.DockerConfigReload)
-					r.Post("/restart", h.DockerConfigRestart)
-					r.Post("/backup/restore/{name}", h.DockerConfigRestoreBackup)
-				})
-			})
 		})
 
 		// Terminal Hub (multi-tab terminal) - requires container:exec
@@ -508,11 +482,6 @@ func RegisterFrontendRoutes(r chi.Router, h *Handler, m *Middleware) {
 				r.Use(m.RequirePermission("host:view"))
 				r.Get("/", h.HostsTempl)
 				r.Get("/{id}", h.HostDetailTempl)
-			})
-
-			// Terminal and file browser - requires host:view (same as node detail)
-			r.Group(func(r chi.Router) {
-				r.Use(m.RequirePermission("host:view"))
 				r.Get("/{id}/terminal", h.HostTerminalTempl)
 				r.Get("/{id}/files", h.HostFilesTempl)
 				r.Get("/{id}/files/*", h.HostFilesTempl)
@@ -555,24 +524,22 @@ func RegisterFrontendRoutes(r chi.Router, h *Handler, m *Middleware) {
 			r.Group(func(r chi.Router) {
 				r.Use(m.RequirePermission("host:view"))
 				r.Get("/", h.SwarmClusterTempl)
-				r.Get("/services/{serviceID}", h.SwarmServiceDetailTempl)
-				r.Get("/services/{serviceID}/logs", h.SwarmServiceLogsTempl)
+				r.Get("/services/{serviceID}", func(w http.ResponseWriter, r *http.Request) {
+					serviceID := chi.URLParam(r, "serviceID")
+					http.Redirect(w, r, "/swarm?service="+serviceID, http.StatusSeeOther)
+				})
 			})
 
 			// Create/manage - require host:create (Swarm operations are privileged)
 			r.Group(func(r chi.Router) {
 				r.Use(m.RequirePermission("host:create"))
 				r.Post("/init", h.SwarmInitTempl)
-				r.Post("/join", h.SwarmJoinTempl)
 				r.Post("/leave", h.SwarmLeaveTempl)
-				r.Post("/nodes/{nodeID}/update", h.SwarmNodeUpdateTempl)
 				r.Delete("/nodes/{nodeID}", h.SwarmNodeRemoveTempl)
 				r.Get("/services/new", h.SwarmServiceCreateFormTempl)
 				r.Post("/services/create", h.SwarmServiceCreateTempl)
-				r.Post("/services/{serviceID}/update", h.SwarmServiceUpdateTempl)
-				r.Post("/services/{serviceID}/rollback", h.SwarmServiceRollbackTempl)
-				r.Post("/services/{serviceID}/scale", h.SwarmServiceScaleTempl)
 				r.Delete("/services/{serviceID}", h.SwarmServiceRemoveTempl)
+				r.Post("/services/{serviceID}/scale", h.SwarmServiceScaleTempl)
 				r.Post("/convert", h.SwarmConvertContainerTempl)
 			})
 		})
@@ -686,174 +653,6 @@ func RegisterFrontendRoutes(r chi.Router, h *Handler, m *Middleware) {
 			})
 		})
 
-		// DNS Server Management
-		r.Route("/dns", func(r chi.Router) {
-			r.Use(m.RequirePermission("host:view"))
-			r.Get("/", h.DNSZonesTempl)
-			r.Get("/settings", h.DNSSettingsTempl)
-			r.Get("/audit", h.DNSAuditTempl)
-
-			// Mutations require host:update
-			r.Group(func(r chi.Router) {
-				r.Use(m.RequirePermission("host:update"))
-				r.Get("/zones/new", h.DNSZoneNewTempl)
-				r.Post("/zones", h.DNSZoneCreateTempl)
-				r.Get("/zones/{id}", h.DNSZoneDetailTempl)
-				r.Get("/zones/{id}/edit", h.DNSZoneEditTempl)
-				r.Post("/zones/{id}", h.DNSZoneUpdateTempl)
-				r.Delete("/zones/{id}", h.DNSZoneDeleteTempl)
-
-				// Records within a zone
-				r.Post("/zones/{zoneID}/records", h.DNSRecordCreateTempl)
-				r.Get("/zones/{zoneID}/records/{id}/edit", h.DNSRecordEditTempl)
-				r.Post("/zones/{zoneID}/records/{id}", h.DNSRecordUpdateTempl)
-				r.Delete("/zones/{zoneID}/records/{id}", h.DNSRecordDeleteTempl)
-			})
-		})
-
-		// Crontab Manager
-		r.Route("/crontab", func(r chi.Router) {
-			r.Use(m.RequirePermission("host:view"))
-			r.Get("/", h.CrontabListTempl)
-
-			// Mutations require host:update
-			r.Group(func(r chi.Router) {
-				r.Use(m.RequirePermission("host:update"))
-				r.Get("/new", h.CrontabNewTempl)
-				r.Post("/", h.CrontabCreateTempl)
-				r.Get("/{id}", h.CrontabDetailTempl)
-				r.Get("/{id}/edit", h.CrontabEditTempl)
-				r.Post("/{id}", h.CrontabUpdateTempl)
-				r.Delete("/{id}", h.CrontabDeleteTempl)
-				r.Post("/{id}/toggle", h.CrontabToggleTempl)
-				r.Post("/{id}/run", h.CrontabRunNowTempl)
-			})
-		})
-
-		// Firewall Manager
-		r.Route("/firewall", func(r chi.Router) {
-			r.Use(m.RequirePermission("host:view"))
-			r.Get("/", h.FirewallListTempl)
-			r.Get("/audit", h.FirewallAuditTempl)
-
-			// Mutations require host:update
-			r.Group(func(r chi.Router) {
-				r.Use(m.RequirePermission("host:update"))
-				r.Get("/new", h.FirewallNewTempl)
-				r.Post("/", h.FirewallCreateTempl)
-				r.Post("/apply", h.FirewallApplyTempl)
-				r.Post("/sync", h.FirewallSyncTempl)
-				r.Get("/{id}", h.FirewallDetailTempl)
-				r.Get("/{id}/edit", h.FirewallEditTempl)
-				r.Post("/{id}", h.FirewallUpdateTempl)
-				r.Delete("/{id}", h.FirewallDeleteTempl)
-			})
-		})
-
-		// SSL Observatory
-		r.Route("/ssl", func(r chi.Router) {
-			r.Use(m.RequirePermission("host:view"))
-			r.Get("/", h.SSLDashboardTempl)
-			r.Get("/targets", h.SSLTargetListTempl)
-
-			r.Group(func(r chi.Router) {
-				r.Use(m.RequirePermission("host:update"))
-				r.Get("/targets/new", h.SSLTargetNewTempl)
-				r.Post("/targets", h.SSLTargetCreateTempl)
-				r.Get("/targets/{id}", h.SSLTargetDetailTempl)
-				r.Delete("/targets/{id}", h.SSLTargetDeleteTempl)
-				r.Post("/targets/{id}/scan", h.SSLScanTargetTempl)
-				r.Post("/scan-all", h.SSLScanAllTempl)
-			})
-		})
-
-		// Backup Verification
-		r.Route("/backup-verify", func(r chi.Router) {
-			r.Use(m.RequirePermission("backup:view"))
-			r.Get("/", h.BackupVerifyListTempl)
-			r.Get("/schedules", h.BackupVerifyScheduleListTempl)
-
-			r.Group(func(r chi.Router) {
-				r.Use(m.RequirePermission("backup:create"))
-				r.Post("/{backupID}/verify", h.BackupVerifyRunTempl)
-				r.Get("/{id}", h.BackupVerifyDetailTempl)
-				r.Get("/schedules/new", h.BackupVerifyScheduleNewTempl)
-				r.Post("/schedules", h.BackupVerifyScheduleCreateTempl)
-				r.Delete("/schedules/{id}", h.BackupVerifyScheduleDeleteTempl)
-			})
-		})
-
-		// Image Builder
-		r.Route("/image-builder", func(r chi.Router) {
-			r.Use(m.RequirePermission("container:view"))
-			r.Get("/", h.ImageBuilderListTempl)
-			r.Get("/templates", h.ImageBuilderTemplateListTempl)
-
-			r.Group(func(r chi.Router) {
-				r.Use(m.RequirePermission("container:create"))
-				r.Get("/new", h.ImageBuilderNewTempl)
-				r.Post("/", h.ImageBuilderCreateTempl)
-				r.Get("/{id}", h.ImageBuilderDetailTempl)
-				r.Get("/templates/new", h.ImageBuilderTemplateNewTempl)
-				r.Post("/templates", h.ImageBuilderTemplateCreateTempl)
-				r.Delete("/templates/{id}", h.ImageBuilderTemplateDeleteTempl)
-			})
-		})
-
-		// Automated Rollback
-		r.Route("/rollback", func(r chi.Router) {
-			r.Use(m.RequirePermission("stack:view"))
-			r.Get("/", h.RollbackListTempl)
-			r.Get("/policies", h.RollbackPolicyListTempl)
-
-			r.Group(func(r chi.Router) {
-				r.Use(m.RequirePermission("stack:manage"))
-				r.Get("/{id}", h.RollbackDetailTempl)
-				r.Post("/{stackID}/execute", h.RollbackExecuteTempl)
-				r.Get("/policies/new", h.RollbackPolicyNewTempl)
-				r.Post("/policies", h.RollbackPolicyCreateTempl)
-				r.Get("/policies/{id}/edit", h.RollbackPolicyEditTempl)
-				r.Post("/policies/{id}", h.RollbackPolicyUpdateTempl)
-				r.Delete("/policies/{id}", h.RollbackPolicyDeleteTempl)
-			})
-		})
-
-		// WireGuard VPN
-		r.Route("/wireguard", func(r chi.Router) {
-			r.Use(m.RequirePermission("network:view"))
-			r.Get("/", h.WireGuardListTempl)
-			r.Get("/peers", h.WireGuardPeerListTempl)
-
-			r.Group(func(r chi.Router) {
-				r.Use(m.RequirePermission("network:create"))
-				r.Get("/new", h.WireGuardNewTempl)
-				r.Post("/", h.WireGuardCreateTempl)
-				r.Get("/{id}", h.WireGuardDetailTempl)
-				r.Post("/{id}/delete", h.WireGuardDeleteTempl)
-				r.Get("/{id}/peers/new", h.WireGuardPeerNewTempl)
-				r.Post("/{id}/peers", h.WireGuardPeerCreateTempl)
-				r.Get("/peers/{peerID}", h.WireGuardPeerDetailTempl)
-				r.Post("/peers/{peerID}/delete", h.WireGuardPeerDeleteTempl)
-			})
-		})
-
-		// Container Marketplace
-		r.Route("/marketplace", func(r chi.Router) {
-			r.Use(m.RequirePermission("container:view"))
-			r.Get("/", h.MarketplaceListTempl)
-			r.Get("/installed", h.MarketplaceInstalledTempl)
-
-			r.Group(func(r chi.Router) {
-				r.Use(m.RequirePermission("container:create"))
-				r.Get("/submit", h.MarketplaceSubmitTempl)
-				r.Post("/submit", h.MarketplaceSubmitCreateTempl)
-				r.Get("/{slug}", h.MarketplaceDetailTempl)
-				r.Get("/{slug}/install", h.MarketplaceInstallTempl)
-				r.Post("/{slug}/install", h.MarketplaceInstallCreateTempl)
-				r.Post("/installations/{id}/uninstall", h.MarketplaceUninstallTempl)
-			})
-		})
-
 		// Storage (S3, Azure, GCS, B2, SFTP, Local)
 		r.Route("/storage", func(r chi.Router) {
 			r.Use(m.RequirePermission("backup:view"))
@@ -903,16 +702,7 @@ func RegisterFrontendRoutes(r chi.Router, h *Handler, m *Middleware) {
 			r.Route("/ssh", func(r chi.Router) {
 				r.Use(h.requireServiceMiddleware(
 					func() bool { return h.sshService != nil },
-					"SSH Connections",
-					`<p class="mb-3 text-gray-400">SSH requires an <strong class="text-gray-200">encryption key</strong> to securely store credentials. The key is auto-derived from your JWT secret if not set explicitly.</p>`+
-						`<p class="mb-2 text-gray-400">If you see this message, the encryption key failed to initialize. Check the application logs for details.</p>`+
-						`<p class="mb-2 text-gray-400"><strong class="text-gray-200">To set a key explicitly:</strong></p>`+
-						`<ol class="list-decimal list-inside space-y-1 text-gray-400 mb-3">`+
-						`<li>Generate a 64-character hex key: <code class="bg-dark-700 px-1.5 py-0.5 rounded text-primary-400 text-xs">openssl rand -hex 32</code></li>`+
-						`<li>Set the environment variable: <code class="bg-dark-700 px-1.5 py-0.5 rounded text-primary-400 text-xs">USULNET_ENCRYPTION_KEY=&lt;your-64-hex-chars&gt;</code></li>`+
-						`<li>Or set <code class="bg-dark-700 px-1.5 py-0.5 rounded text-primary-400 text-xs">security.config_encryption_key</code> in config.yaml</li>`+
-						`</ol>`+
-						`<p class="text-xs text-gray-600">The key must be exactly 64 hexadecimal characters (32 bytes for AES-256).</p>`,
+					"SSH Connections", "Enable SSH by configuring an encryption key (USULNET_ENCRYPTION_KEY)",
 				))
 				// Read-only (inherits host:view)
 				r.Get("/", h.SSHConnectionsTempl)
@@ -1038,12 +828,12 @@ func RegisterFrontendRoutes(r chi.Router, h *Handler, m *Middleware) {
 			})
 		})
 
-		// WebSocket for SSH Terminal (rate-limited; host:view already required by auth group)
-		r.With(WebSocketRateLimit(), m.RequirePermission("host:view")).
+		// WebSocket for SSH Terminal (requires host:update + rate limit)
+		r.With(WebSocketRateLimit(), m.RequirePermission("host:update")).
 			Get("/ws/ssh/{id}", h.WSSSHExec)
 
-		// WebSocket for RDP Session (via guacd) (rate-limited; host:view already required by auth group)
-		r.With(WebSocketRateLimit(), m.RequirePermission("host:view")).
+		// WebSocket for RDP Session (via guacd) (requires host:update + rate limit)
+		r.With(WebSocketRateLimit(), m.RequirePermission("host:update")).
 			Get("/ws/rdp/{id}", h.WSRDPExec)
 
 		// Gitea Integration (legacy routes - kept for backwards compatibility)
@@ -1314,76 +1104,14 @@ func RegisterFrontendRoutes(r chi.Router, h *Handler, m *Middleware) {
 
 		// Tools
 		r.Route("/tools", func(r chi.Router) {
-			// Dev Tools index
-			r.Get("/", h.ToolsIndex)
-
-			// Crypto & Security
-			r.Get("/token", h.ToolToken)
-			r.Get("/hash", h.ToolHash)
-			r.Get("/bcrypt", h.ToolBcrypt)
-			r.Get("/hmac", h.ToolHMAC)
-			r.Get("/encrypt", h.ToolEncrypt)
-			r.Get("/password", h.ToolPassword)
-			r.Get("/rsa", h.ToolRSA)
-
-			// Generators
-			r.Get("/uuid", h.ToolUUID)
-			r.Get("/ulid", h.ToolULID)
-			r.Get("/lorem", h.ToolLorem)
-			r.Get("/crontab", h.ToolCrontab)
-			r.Get("/port", h.ToolPort)
-			r.Get("/qrcode", h.ToolQRCode)
-			r.Get("/mac-gen", h.ToolMACGen)
-
-			// Encoders & Decoders
-			r.Get("/base64", h.ToolBase64)
-			r.Get("/url-encode", h.ToolURLEncode)
-			r.Get("/html-entities", h.ToolHTMLEntities)
-			r.Get("/jwt", h.ToolJWT)
-			r.Get("/basic-auth", h.ToolBasicAuth)
-
-			// Converters
-			r.Get("/json-yaml", h.ToolJSONYAML)
-			r.Get("/json-toml", h.ToolJSONTOML)
-			r.Get("/yaml-toml", h.ToolYAMLTOML)
-			r.Get("/base-converter", h.ToolBaseConverter)
-			r.Get("/color", h.ToolColor)
-			r.Get("/datetime", h.ToolDatetime)
-			r.Get("/case", h.ToolCase)
-			r.Get("/ipv4-convert", h.ToolIPv4Convert)
-
-			// Formatters
-			r.Get("/json-format", h.ToolJSONFormat)
-			r.Get("/sql-format", h.ToolSQLFormat)
-			r.Get("/xml-format", h.ToolXMLFormat)
-			r.Get("/yaml-format", h.ToolYAMLFormat)
-			r.Get("/json-csv", h.ToolJSONCSV)
-
-			// Network
-			r.Get("/subnet", h.ToolSubnet)
-			r.Get("/ipv6-ula", h.ToolIPv6ULA)
-			r.Get("/mac-lookup", h.ToolMACLookup)
-
-			// Text & Dev
-			r.Get("/regex", h.ToolRegex)
-			r.Get("/text-diff", h.ToolTextDiff)
-			r.Get("/text-stats", h.ToolTextStats)
-			r.Get("/slugify", h.ToolSlugify)
-			r.Get("/docker-compose", h.ToolDockerCompose)
-			r.Get("/chmod", h.ToolChmod)
-			r.Get("/http-codes", h.ToolHTTPCodes)
-			r.Get("/markdown", h.ToolMarkdown)
-
 			// Command Cheat Sheet (any authenticated user)
 			r.Get("/cheatsheet", h.CheatSheet)
 			r.Post("/cheatsheet/custom", h.CheatSheetCustomCreate)
 			r.Delete("/cheatsheet/custom/{id}", h.CheatSheetCustomDelete)
 
-			// Ansible Inventory Browser
-			r.Get("/ansible", h.AnsibleInventory)
-			r.Post("/ansible/upload", h.AnsibleInventoryUpload)
-			r.Post("/ansible/parse", h.AnsibleInventoryParse)
-			r.Delete("/ansible/{id}", h.AnsibleInventoryDelete)
+			// Ansible Inventory Browser — removed: stub handler that silently
+			// discarded data. No database persistence, repository, or service
+			// was ever implemented. Will be re-added when properly implemented.
 
 			// Network Packet Capture (host:update - highly sensitive)
 			r.Group(func(r chi.Router) {
@@ -1398,40 +1126,8 @@ func RegisterFrontendRoutes(r chi.Router, h *Handler, m *Middleware) {
 			})
 		})
 
-		// Calendar
-		r.Route("/calendar", func(r chi.Router) {
-			r.Get("/", h.CalendarPage)
-
-			// AJAX JSON endpoints (session auth + CSRF via X-CSRF-Token header)
-			r.Route("/events", func(r chi.Router) {
-				r.Get("/", h.CalendarListEvents)
-				r.Post("/", h.CalendarCreateEvent)
-				r.Put("/{id}", h.CalendarUpdateEvent)
-				r.Delete("/{id}", h.CalendarDeleteEvent)
-			})
-			r.Route("/tasks", func(r chi.Router) {
-				r.Get("/", h.CalendarListTasks)
-				r.Post("/", h.CalendarCreateTask)
-				r.Patch("/{id}/toggle", h.CalendarToggleTask)
-				r.Delete("/{id}", h.CalendarDeleteTask)
-			})
-			r.Route("/notes", func(r chi.Router) {
-				r.Get("/", h.CalendarListNotes)
-				r.Post("/", h.CalendarCreateNote)
-				r.Put("/{id}", h.CalendarUpdateNote)
-				r.Delete("/{id}", h.CalendarDeleteNote)
-			})
-			r.Route("/checklists", func(r chi.Router) {
-				r.Get("/", h.CalendarListChecklists)
-				r.Post("/", h.CalendarCreateChecklist)
-				r.Put("/{id}", h.CalendarUpdateChecklist)
-				r.Delete("/{id}", h.CalendarDeleteChecklist)
-			})
-		})
-
 		// Topology (requires container:view — shows container relationships)
 		r.With(m.RequirePermission("container:view")).Get("/topology", h.TopologyTempl)
-		r.With(m.RequirePermission("container:view")).Get("/topology/api", h.TopologyAPITempl)
 
 		// Dependencies (full dependency graph — requires container:view)
 		r.With(m.RequirePermission("container:view")).Get("/dependencies", h.DependenciesTempl)
@@ -1580,13 +1276,12 @@ func RegisterFrontendRoutes(r chi.Router, h *Handler, m *Middleware) {
 			r.Get("/", h.DriftTempl)
 			r.Post("/{id}/accept", h.DriftAcceptAPI)
 			r.Post("/{id}/remediate", h.DriftRemediateAPI)
-			r.Post("/{id}/set-baseline", h.DriftSetBaselineAPI)
 		})
 
 		// Drift Detection API
 		r.Route("/api/v1/drift", func(r chi.Router) {
 			r.Use(m.RequirePermission("audit:view"))
-			r.Get("/", h.DriftListAPI)
+			r.Get("/", h.DriftTempl)
 			r.Get("/stats", h.DriftStatsAPI)
 			r.Get("/{id}", h.DriftDetailAPI)
 		})
@@ -1667,7 +1362,7 @@ func RegisterFrontendRoutes(r chi.Router, h *Handler, m *Middleware) {
 
 		// Profile
 		r.Route("/profile", func(r chi.Router) {
-			r.Get("/", h.ProfilePage)
+			r.Get("/", h.ProfileTempl)
 			r.Post("/", h.UpdateProfile)
 			r.Post("/password", h.UpdatePassword)
 			r.Put("/preferences", h.UpdatePreferences)
@@ -1897,8 +1592,17 @@ func RegisterFrontendRoutes(r chi.Router, h *Handler, m *Middleware) {
 			r.With(m.RequirePermission("host:view")).Get("/monitoring/container/{id}", h.WsMonitoringContainer)
 		})
 
-		// Internal API for host filesystem browser (requires nsenter) - admin only
-		r.Route("/api/v1/hosts/{hostID}", func(r chi.Router) {
+		// Internal host filesystem browser endpoints (require nsenter).
+		// Web layer mounts these under /hosts/{hostID}/fs/* so the
+		// session-cookie + CSRF middleware applies. The previous mount
+		// at /api/v1/hosts/{hostID}/* shadowed the JSON-API host CRUD
+		// (chi's trie resolves the deeper Route() to this subtree),
+		// silently breaking GET / PUT / DELETE /api/v1/hosts/{id} and
+		// POST /api/v1/hosts/{id}/reconnect for any Bearer-token API
+		// client. The fix mirrors PR #43's recon split: the canonical
+		// JSON-API surface stays unchallenged under /api/v1/* and the
+		// HTMX UI gets its own web-prefixed namespace.
+		r.Route("/hosts/{hostID}/fs", func(r chi.Router) {
 			r.Use(m.RequirePermission("host:update"))
 			r.Get("/browse", h.APIHostBrowse)
 			r.Get("/browse/*", h.APIHostBrowse)
@@ -1906,7 +1610,6 @@ func RegisterFrontendRoutes(r chi.Router, h *Handler, m *Middleware) {
 			r.Get("/download/*", h.APIHostDownloadFile)
 			r.Post("/mkdir/*", h.APIHostMkdir)
 			r.Delete("/file/*", h.APIHostDeleteFile)
-			r.Post("/validate-user", h.APIHostValidateUser)
 		})
 
 		// Terminal session history API (requires container:view — exposes session metadata)
@@ -2137,6 +1840,10 @@ func RegisterFrontendRoutes(r chi.Router, h *Handler, m *Middleware) {
 				r.Get("/history", h.MonitoringHistoryJSON)
 			})
 		})
+
+		// Privacy & Recon (v26.5.0). Routes self-disable when the recon
+		// feature flag is off; see internal/web/routes_recon.go.
+		RegisterReconRoutes(r, h, m)
 	})
 	}) // end r.Group wrapper
 }

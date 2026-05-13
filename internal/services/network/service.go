@@ -222,7 +222,7 @@ func (s *Service) Create(ctx context.Context, hostID uuid.UUID, input *models.Cr
 func (s *Service) Delete(ctx context.Context, hostID uuid.UUID, networkID string) error {
 	client, err := s.hostService.GetClient(ctx, hostID)
 	if err != nil {
-		return fmt.Errorf("get docker client for network delete: %w", err)
+		return err
 	}
 
 	if err := client.NetworkRemove(ctx, networkID); err != nil {
@@ -237,7 +237,7 @@ func (s *Service) Delete(ctx context.Context, hostID uuid.UUID, networkID string
 func (s *Service) Connect(ctx context.Context, hostID uuid.UUID, networkID, containerID string, aliases []string) error {
 	client, err := s.hostService.GetClient(ctx, hostID)
 	if err != nil {
-		return fmt.Errorf("get docker client for network connect: %w", err)
+		return err
 	}
 
 	opts := docker.NetworkConnectOptions{
@@ -257,7 +257,7 @@ func (s *Service) Connect(ctx context.Context, hostID uuid.UUID, networkID, cont
 func (s *Service) Disconnect(ctx context.Context, hostID uuid.UUID, networkID, containerID string, force bool) error {
 	client, err := s.hostService.GetClient(ctx, hostID)
 	if err != nil {
-		return fmt.Errorf("get docker client for network disconnect: %w", err)
+		return err
 	}
 
 	if err := client.NetworkDisconnect(ctx, networkID, containerID, force); err != nil {

@@ -6,15 +6,12 @@ package web
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"strconv"
 
-	dockertypes "github.com/docker/docker/api/types"
 	"github.com/google/uuid"
 
 	"github.com/fr4nsys/usulnet/internal/docker"
-	"github.com/fr4nsys/usulnet/internal/gateway/protocol"
 	"github.com/fr4nsys/usulnet/internal/models"
 	containersvc "github.com/fr4nsys/usulnet/internal/services/container"
 	hostsvc "github.com/fr4nsys/usulnet/internal/services/host"
@@ -180,15 +177,8 @@ func (a *securityAdapter) Scan(ctx context.Context, containerID string) (*Securi
 		return nil, fmt.Errorf("security service not initialized")
 	}
 
-	hostID := resolveHostID(ctx, a.hostID)
-
-	// Check if this is an agent host — if so, route scan via gateway
-	if a.isAgentHost(ctx, hostID) {
-		return a.scanViaGateway(ctx, hostID, containerID, false)
-	}
-
 	// Get Docker client for this host
-	dockerClient, err := a.hostSvc.GetClient(ctx, hostID)
+	dockerClient, err := a.hostSvc.GetClient(ctx, resolveHostID(ctx, a.hostID))
 	if err != nil {
 		return nil, fmt.Errorf("failed to get docker client: %w", err)
 	}
@@ -200,7 +190,7 @@ func (a *securityAdapter) Scan(ctx context.Context, containerID string) (*Securi
 	}
 
 	// Run security scan
-	scan, err := a.svc.ScanContainerJSON(ctx, inspectData, hostID)
+	scan, err := a.svc.ScanContainerJSON(ctx, inspectData, resolveHostID(ctx, a.hostID))
 	if err != nil {
 		return nil, fmt.Errorf("scan failed: %w", err)
 	}
@@ -222,16 +212,8 @@ func (a *securityAdapter) ScanAll(ctx context.Context) error {
 		return fmt.Errorf("security service not initialized")
 	}
 
-	hostID := resolveHostID(ctx, a.hostID)
-
-	// Check if this is an agent host — if so, route scan via gateway
-	if a.isAgentHost(ctx, hostID) {
-		_, err := a.scanViaGateway(ctx, hostID, "", true)
-		return err
-	}
-
 	// Get Docker client
-	dockerClient, err := a.hostSvc.GetClient(ctx, hostID)
+	dockerClient, err := a.hostSvc.GetClient(ctx, resolveHostID(ctx, a.hostID))
 	if err != nil {
 		return fmt.Errorf("failed to get docker client: %w", err)
 	}
@@ -248,88 +230,12 @@ func (a *securityAdapter) ScanAll(ctx context.Context) error {
 		if err != nil {
 			continue // skip containers we can't inspect
 		}
-		if _, err := a.svc.ScanContainerJSON(ctx, inspectData, hostID); err != nil {
+		if _, err := a.svc.ScanContainerJSON(ctx, inspectData, resolveHostID(ctx, a.hostID)); err != nil {
 			continue // skip failed scans
 		}
 	}
 
 	return nil
-}
-
-// isAgentHost checks if a host is a remote agent node.
-func (a *securityAdapter) isAgentHost(ctx context.Context, hostID uuid.UUID) bool {
-	host, err := a.hostSvc.Get(ctx, hostID)
-	if err != nil {
-		return false
-	}
-	return host.EndpointType == models.EndpointAgent
-}
-
-// scanViaGateway routes a security scan through the NATS gateway to a remote agent.
-// The agent collects container inspect data and sends it back; the master runs analysis.
-func (a *securityAdapter) scanViaGateway(ctx context.Context, hostID uuid.UUID, containerID string, scanAll bool) (*SecurityScanView, error) {
-	cmd := &protocol.Command{
-		Type: protocol.CmdSecurityScan,
-		Params: protocol.CommandParams{
-			ContainerID: containerID,
-			All:         scanAll,
-		},
-	}
-
-	result, err := a.hostSvc.SendCommand(ctx, hostID, cmd)
-	if err != nil {
-		return nil, fmt.Errorf("gateway security scan: %w", err)
-	}
-	if result.Status != protocol.CommandStatusCompleted {
-		errMsg := "unknown error"
-		if result.Error != nil {
-			errMsg = result.Error.Message
-		}
-		return nil, fmt.Errorf("agent security scan failed: %s", errMsg)
-	}
-
-	// Decode response — agent returns SecurityScanResponse with inspect data
-	respBytes, err := json.Marshal(result.Data)
-	if err != nil {
-		return nil, fmt.Errorf("marshal scan response: %w", err)
-	}
-
-	var scanResp struct {
-		Scans []struct {
-			ContainerID   string                    `json:"container_id"`
-			ContainerName string                    `json:"container_name"`
-			Image         string                    `json:"image"`
-			InspectData   dockertypes.ContainerJSON `json:"inspect_data"`
-		} `json:"scans"`
-		Warnings []string `json:"warnings,omitempty"`
-	}
-	if err := json.Unmarshal(respBytes, &scanResp); err != nil {
-		return nil, fmt.Errorf("decode scan response: %w", err)
-	}
-
-	// Run security analysis on master for each container's inspect data
-	var lastScan *models.SecurityScan
-	for _, s := range scanResp.Scans {
-		scan, err := a.svc.ScanContainerJSON(ctx, s.InspectData, hostID)
-		if err != nil {
-			continue // skip failed scans
-		}
-		// Update container record with security score
-		if a.containerSvc != nil && scan != nil {
-			_ = a.containerSvc.UpdateSecurityInfo(ctx, s.ContainerID, scan.Score, string(scan.Grade))
-		}
-		lastScan = scan
-	}
-
-	if lastScan == nil {
-		if len(scanResp.Scans) == 0 {
-			return nil, fmt.Errorf("no containers found to scan on agent")
-		}
-		return nil, fmt.Errorf("all scans failed on agent host")
-	}
-
-	view := securityScanToView(lastScan)
-	return &view, nil
 }
 
 func (a *securityAdapter) ListIssues(ctx context.Context) ([]IssueView, error) {
@@ -360,7 +266,7 @@ func (a *securityAdapter) IgnoreIssue(ctx context.Context, id string) error {
 
 	issueID, err := parseIssueID(id)
 	if err != nil {
-		return fmt.Errorf("parse issue ID for ignore: %w", err)
+		return err
 	}
 
 	return a.svc.UpdateIssueStatus(ctx, issueID, models.IssueStatusIgnored, nil)
@@ -373,7 +279,7 @@ func (a *securityAdapter) ResolveIssue(ctx context.Context, id string) error {
 
 	issueID, err := parseIssueID(id)
 	if err != nil {
-		return fmt.Errorf("parse issue ID for resolve: %w", err)
+		return err
 	}
 
 	return a.svc.UpdateIssueStatus(ctx, issueID, models.IssueStatusResolved, nil)

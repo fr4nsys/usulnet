@@ -11,7 +11,7 @@ type SetupData struct {
 	Health      string
 	Error       string
 	Success     string
-	ProxyMode   string // "nginx"
+	ProxyMode   string // "caddy" or "npm"
 }
 
 templ Setup(data SetupData) {
@@ -30,61 +30,150 @@ templ Setup(data SetupData) {
 					</div>
 				}
 
-				<h2 class="text-xl font-display font-bold text-white mb-2">Nginx Reverse Proxy</h2>
-				<p class="text-gray-400 mb-6">Nginx is the built-in reverse proxy backend. Proxy hosts, SSL certificates, and DNS providers are managed directly through usulnet.</p>
+				if data.ProxyMode == "caddy" {
+					<!-- Caddy Mode -->
+					<h2 class="text-xl font-display font-bold text-white mb-2">Caddy Reverse Proxy</h2>
+					<p class="text-gray-400 mb-6">Caddy is the built-in reverse proxy. Proxy hosts are managed directly through usulnet.</p>
 
-				<div class="bg-dark-800 border border-dark-700 rounded-lg p-6 mb-6">
-					<div class="flex items-center gap-3 mb-4">
-						if data.Health == "healthy" {
-							<div class="w-3 h-3 rounded-full bg-green-500"></div>
-							<span class="text-white font-medium">Nginx Active</span>
-							<span class="text-green-400 text-sm">(healthy)</span>
-						} else {
-							<div class="w-3 h-3 rounded-full bg-yellow-500"></div>
-							<span class="text-white font-medium">Nginx</span>
-							<span class="text-yellow-400 text-sm">(starting)</span>
-						}
-					</div>
-					<div class="space-y-2 text-sm">
-						<div class="flex justify-between">
-							<span class="text-gray-400">Backend</span>
-							<span class="text-white">Nginx</span>
+					<div class="bg-dark-800 border border-dark-700 rounded-lg p-6 mb-6">
+						<div class="flex items-center gap-3 mb-4">
+							if data.Health == "healthy" {
+								<div class="w-3 h-3 rounded-full bg-green-500"></div>
+								<span class="text-white font-medium">Caddy Active</span>
+								<span class="text-green-400 text-sm">(healthy)</span>
+							} else {
+								<div class="w-3 h-3 rounded-full bg-yellow-500"></div>
+								<span class="text-white font-medium">Caddy</span>
+								<span class="text-yellow-400 text-sm">(starting)</span>
+							}
 						</div>
-						<div class="flex justify-between">
-							<span class="text-gray-400">Status</span>
-							<span class={ templ.KV("text-green-400", data.Health == "healthy"), templ.KV("text-yellow-400", data.Health != "healthy") }>
+						<div class="space-y-2 text-sm">
+							<div class="flex justify-between">
+								<span class="text-gray-400">Mode</span>
+								<span class="text-white">Built-in Caddy</span>
+							</div>
+							<div class="flex justify-between">
+								<span class="text-gray-400">Status</span>
+								<span class={ templ.KV("text-green-400", data.Health == "healthy"), templ.KV("text-yellow-400", data.Health != "healthy") }>
+									if data.Health == "healthy" {
+										Operational
+									} else {
+										Initializing
+									}
+								</span>
+							</div>
+						</div>
+						<div class="flex gap-2 mt-4">
+							<form method="POST" action="/proxy/setup/test">
+								<input type="hidden" name="csrf_token" value={ data.PageData.CSRFToken }/>
+								<button type="submit" class="btn btn-sm btn-secondary">
+									<i class="fas fa-heartbeat mr-1"></i> Health Check
+								</button>
+							</form>
+						</div>
+					</div>
+
+					<div class="bg-dark-800/50 border border-dark-700 rounded-lg p-4">
+						<p class="text-sm text-gray-400">
+							<i class="fas fa-info-circle text-primary-400 mr-2"></i>
+							Caddy proxy is automatically configured. Manage proxy hosts from the
+							<a href="/proxy" class="text-primary-400 hover:text-primary-300">Proxy Hosts</a> page.
+							To switch to Nginx Proxy Manager (NPM), configure NPM in your docker-compose and restart usulnet.
+						</p>
+					</div>
+				} else {
+					<!-- NPM Mode -->
+					<h2 class="text-xl font-display font-bold text-white mb-2">NPM Connection</h2>
+					<p class="text-gray-400 mb-6">Configure the connection to your Nginx Proxy Manager instance.</p>
+
+					if data.Connected {
+						<!-- Connected state -->
+						<div class="bg-dark-800 border border-dark-700 rounded-lg p-6 mb-6">
+							<div class="flex items-center gap-3 mb-4">
 								if data.Health == "healthy" {
-									Operational
+									<div class="w-3 h-3 rounded-full bg-green-500"></div>
 								} else {
-									Initializing
+									<div class="w-3 h-3 rounded-full bg-red-500"></div>
 								}
-							</span>
+								<span class="text-white font-medium">Connected</span>
+								if data.Health != "" {
+									<span class="text-gray-400 text-sm">({ data.Health })</span>
+								}
+							</div>
+							<div class="space-y-2 text-sm">
+								<div class="flex justify-between">
+									<span class="text-gray-400">URL</span>
+									<span class="text-white">{ data.BaseURL }</span>
+								</div>
+								<div class="flex justify-between">
+									<span class="text-gray-400">Admin Email</span>
+									<span class="text-white">{ data.AdminEmail }</span>
+								</div>
+							</div>
+							<div class="flex gap-2 mt-4">
+								<form method="POST" action="/proxy/setup/test">
+									<input type="hidden" name="csrf_token" value={ data.PageData.CSRFToken }/>
+									<button type="submit" class="btn btn-sm btn-secondary">
+										<i class="fas fa-heartbeat mr-1"></i> Test Connection
+									</button>
+								</form>
+								<form method="POST" action="/proxy/setup/delete" onsubmit="return confirm('Delete NPM connection?')">
+									<input type="hidden" name="csrf_token" value={ data.PageData.CSRFToken }/>
+									<button type="submit" class="btn btn-sm btn-danger">
+										<i class="fas fa-trash mr-1"></i> Disconnect
+									</button>
+								</form>
+							</div>
 						</div>
-					</div>
-					<div class="flex gap-2 mt-4">
-						<form method="POST" action="/proxy/setup/test">
-							<input type="hidden" name="csrf_token" value={ data.PageData.CSRFToken }/>
-							<button type="submit" class="btn btn-sm btn-secondary">
-								<i class="fas fa-heartbeat mr-1"></i> Health Check
-							</button>
-						</form>
-						<form method="POST" action="/proxy/sync">
-							<input type="hidden" name="csrf_token" value={ data.PageData.CSRFToken }/>
-							<button type="submit" class="btn btn-sm btn-secondary">
-								<i class="fas fa-sync-alt mr-1"></i> Sync Config
-							</button>
-						</form>
-					</div>
-				</div>
+					}
 
-				<div class="bg-dark-800/50 border border-dark-700 rounded-lg p-4">
-					<p class="text-sm text-gray-400">
-						<i class="fas fa-info-circle text-primary-400 mr-2"></i>
-						Nginx reverse proxy is automatically configured. Manage proxy hosts from the
-						<a href="/proxy" class="text-primary-400 hover:text-primary-300">Proxy Hosts</a> page.
-						SSL certificates are managed via Let's Encrypt (HTTP-01 and DNS-01 challenges) or custom uploads.
-					</p>
-				</div>
+					<!-- Setup Form -->
+					<form method="POST" action="/proxy/setup" class="space-y-4">
+						<input type="hidden" name="csrf_token" value={ data.PageData.CSRFToken }/>
+						<div>
+							<label class="block text-sm font-medium text-gray-300 mb-1">NPM Base URL</label>
+							<input
+								type="url"
+								name="base_url"
+								value={ data.BaseURL }
+								placeholder="http://npm:81"
+								required
+								class="w-full bg-dark-800 border border-dark-600 text-white rounded-lg px-3 py-2 focus:ring-2 focus:ring-accent-500 focus:border-transparent"
+							/>
+							<p class="text-gray-500 text-xs mt-1">The NPM admin API URL (usually port 81)</p>
+						</div>
+						<div>
+							<label class="block text-sm font-medium text-gray-300 mb-1">Admin Email</label>
+							<input
+								type="email"
+								name="admin_email"
+								value={ data.AdminEmail }
+								placeholder="admin@example.com"
+								required
+								class="w-full bg-dark-800 border border-dark-600 text-white rounded-lg px-3 py-2 focus:ring-2 focus:ring-accent-500 focus:border-transparent"
+							/>
+						</div>
+						<div>
+							<label class="block text-sm font-medium text-gray-300 mb-1">Admin Password</label>
+							<input
+								type="password"
+								name="admin_password"
+								placeholder={ templ.EscapeString(func() string { if data.Connected { return "••••••••" }; return "Enter password" }()) }
+								class="w-full bg-dark-800 border border-dark-600 text-white rounded-lg px-3 py-2 focus:ring-2 focus:ring-accent-500 focus:border-transparent"
+							/>
+							if data.Connected {
+								<p class="text-gray-500 text-xs mt-1">Leave empty to keep current password</p>
+							}
+						</div>
+						<button type="submit" class="btn btn-primary">
+							if data.Connected {
+								<i class="fas fa-save mr-1"></i> Update Connection
+							} else {
+								<i class="fas fa-plug mr-1"></i> Connect to NPM
+							}
+						</button>
+					</form>
+				}
 			</div>
 		</div>
 	}

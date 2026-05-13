@@ -5,10 +5,7 @@
 package app
 
 import (
-	"crypto/rand"
-	"encoding/hex"
 	"fmt"
-	"log/slog"
 	"net/http"
 	"strings"
 	"time"
@@ -18,50 +15,86 @@ import (
 
 // Config holds all application configuration
 type Config struct {
-	Mode     string         `mapstructure:"mode"`
-	Server   ServerConfig   `mapstructure:"server"`
-	Database DatabaseConfig `mapstructure:"database"`
-	Redis    RedisConfig    `mapstructure:"redis"`
-	NATS     NATSConfig     `mapstructure:"nats"`
-	Security SecurityConfig `mapstructure:"security"`
-	Storage  StorageConfig  `mapstructure:"storage"`
-	Agent    AgentConfig    `mapstructure:"agent"`
-	Docker   DockerConfig   `mapstructure:"docker"`
-	Trivy    TrivyConfig    `mapstructure:"trivy"`
-	Nginx    NginxConfig    `mapstructure:"nginx"`
-	Minio    MinIOConfig    `mapstructure:"minio"`
+	Mode          string              `mapstructure:"mode"`
+	Server        ServerConfig        `mapstructure:"server"`
+	Database      DatabaseConfig      `mapstructure:"database"`
+	Redis         RedisConfig         `mapstructure:"redis"`
+	NATS          NATSConfig          `mapstructure:"nats"`
+	Security      SecurityConfig      `mapstructure:"security"`
+	Storage       StorageConfig       `mapstructure:"storage"`
+	Agent         AgentConfig         `mapstructure:"agent"`
+	Docker        DockerConfig        `mapstructure:"docker"`
+	Trivy         TrivyConfig         `mapstructure:"trivy"`
+	NPM           NPMConfig           `mapstructure:"npm"`
+	Caddy         CaddyConfig         `mapstructure:"caddy"`
+	Nginx         NginxConfig         `mapstructure:"nginx"`
+	Minio         MinIOConfig         `mapstructure:"minio"`
 	Logging       LoggingConfig       `mapstructure:"logging"`
 	Metrics       MetricsConfig       `mapstructure:"metrics"`
 	Observability ObservabilityConfig `mapstructure:"observability"`
-	Terminal TerminalConfig `mapstructure:"terminal"`
-	Guacd   GuacdConfig    `mapstructure:"guacd"`
-	DNS     DNSConfig      `mapstructure:"dns"`
+	Terminal      TerminalConfig      `mapstructure:"terminal"`
+	Guacd         GuacdConfig         `mapstructure:"guacd"`
+	Recon         ReconConfig         `mapstructure:"recon"`
 }
 
-// DNSConfig holds embedded DNS server configuration.
-type DNSConfig struct {
-	// Enabled activates the embedded DNS server. Default: true.
+// ReconConfig holds runtime knobs for the recon / privacy module.
+// See docs/recon.md §13 and docs/v26.5/technical-notes.md "Feature flag".
+//
+// Enabled gates the entire module: when false, none of the recon
+// services, workers, network, or containers are constructed at runtime.
+type ReconConfig struct {
+	// Enabled toggles the whole module. Default: false.
 	Enabled bool `mapstructure:"enabled"`
-	// ListenAddr is the UDP/TCP address to listen on (default ":53").
-	ListenAddr string `mapstructure:"listen_addr"`
-	// Forwarders are upstream DNS servers for recursive resolution.
-	Forwarders []string `mapstructure:"forwarders"`
-	// ServiceDiscovery configures automatic DNS registration for containers.
-	ServiceDiscovery ServiceDiscoveryConfig `mapstructure:"service_discovery"`
+
+	// RetentionDays controls how long findings and metadata artifacts
+	// survive before the retention worker sweeps them. Default: 90.
+	RetentionDays int `mapstructure:"retention_days"`
+
+	// MaxConcurrentScans caps how many recon scans the scheduler may
+	// run in parallel. Default: 2.
+	MaxConcurrentScans int `mapstructure:"max_concurrent_scans"`
+
+	// InstallationOrg is the organisation name the RDAP-match ownership
+	// strategy compares against. Blank means "RDAP-based verification
+	// fails closed"; operators must set this explicitly to use the
+	// rdap_match method.
+	InstallationOrg string `mapstructure:"installation_org"`
+
+	// BaseURL overrides the public origin used to build email
+	// verification links. Falls back to Server.BaseURL when empty.
+	BaseURL string `mapstructure:"base_url"`
+
+	SpiderFoot ReconEngineConfig     `mapstructure:"spiderfoot"`
+	Toolkit    ReconEngineConfig     `mapstructure:"toolkit"`
+	Egress     ReconEgressConfig     `mapstructure:"egress"`
+	Connectors ReconConnectorsConfig `mapstructure:"connectors"`
 }
 
-// ServiceDiscoveryConfig holds container DNS service discovery settings.
-type ServiceDiscoveryConfig struct {
-	// Enabled activates automatic container→DNS registration. Default: true.
+// ReconEngineConfig is the per-engine image override (pin a digest in
+// air-gapped installs or when CI publishes a new image).
+type ReconEngineConfig struct {
+	Image  string `mapstructure:"image"`
+	Listen string `mapstructure:"listen"`
+}
+
+// ReconEgressConfig holds the egress allow-list applied at network
+// creation. An empty list keeps the default policy (DNS + 80 + 443).
+type ReconEgressConfig struct {
+	Allowlist []string `mapstructure:"allowlist"`
+}
+
+// ReconConnectorsConfig toggles optional external-API connectors. The
+// credentials themselves live in recon_connectors (encrypted) and are
+// configured via the UI; these flags only control whether the
+// connector is registered at startup.
+type ReconConnectorsConfig struct {
+	HIBP   ReconConnectorToggle `mapstructure:"hibp"`
+	Shodan ReconConnectorToggle `mapstructure:"shodan"`
+}
+
+// ReconConnectorToggle is the minimal enable/disable for a connector.
+type ReconConnectorToggle struct {
 	Enabled bool `mapstructure:"enabled"`
-	// Domain is the base zone for discovered containers (default "containers.local").
-	Domain string `mapstructure:"domain"`
-	// TTL is the record TTL in seconds for auto-created records (default 30).
-	TTL int `mapstructure:"ttl"`
-	// CreateSRV generates SRV records for exposed container ports. Default: true.
-	CreateSRV bool `mapstructure:"create_srv"`
-	// IncludeStoppedCleanup removes DNS records when containers stop. Default: true.
-	IncludeStoppedCleanup bool `mapstructure:"include_stopped_cleanup"`
 }
 
 // DockerConfig holds Docker daemon connection configuration.
@@ -124,10 +157,7 @@ type ServerTLSConfig struct {
 // DatabaseConfig holds PostgreSQL configuration
 type DatabaseConfig struct {
 	URL             string        `mapstructure:"url"`
-	SSLMode         string        `mapstructure:"ssl_mode"`     // disable, allow, prefer, require, verify-ca, verify-full
-	SSLRootCert     string        `mapstructure:"ssl_rootcert"` // CA certificate path for server verification (verify-ca/verify-full)
-	SSLCert         string        `mapstructure:"ssl_cert"`     // Client certificate path (optional, for mTLS)
-	SSLKey          string        `mapstructure:"ssl_key"`      // Client key path (optional, for mTLS)
+	SSLMode         string        `mapstructure:"ssl_mode"` // disable, allow, prefer, require, verify-ca, verify-full
 	MaxOpenConns    int           `mapstructure:"max_open_conns"`
 	MaxIdleConns    int           `mapstructure:"max_idle_conns"`
 	ConnMaxLifetime time.Duration `mapstructure:"conn_max_lifetime"`
@@ -137,17 +167,17 @@ type DatabaseConfig struct {
 
 // RedisConfig holds Redis configuration
 type RedisConfig struct {
-	URL          string        `mapstructure:"url"`
-	TLSEnabled   bool          `mapstructure:"tls_enabled"`   // Force TLS even with redis:// URL
-	TLSCertFile  string        `mapstructure:"tls_cert_file"` // Client certificate for mTLS
-	TLSKeyFile   string        `mapstructure:"tls_key_file"`  // Client key for mTLS
-	TLSCAFile    string        `mapstructure:"tls_ca_file"`   // Custom CA for server verification
-	TLSSkipVerify bool         `mapstructure:"tls_skip_verify"` // Skip server cert verification
-	PoolSize     int           `mapstructure:"pool_size"`
-	MinIdleConns int           `mapstructure:"min_idle_conns"`
-	DialTimeout  time.Duration `mapstructure:"dial_timeout"`
-	ReadTimeout  time.Duration `mapstructure:"read_timeout"`
-	WriteTimeout time.Duration `mapstructure:"write_timeout"`
+	URL           string        `mapstructure:"url"`
+	TLSEnabled    bool          `mapstructure:"tls_enabled"`     // Force TLS even with redis:// URL
+	TLSCertFile   string        `mapstructure:"tls_cert_file"`   // Client certificate for mTLS
+	TLSKeyFile    string        `mapstructure:"tls_key_file"`    // Client key for mTLS
+	TLSCAFile     string        `mapstructure:"tls_ca_file"`     // Custom CA for server verification
+	TLSSkipVerify bool          `mapstructure:"tls_skip_verify"` // Skip server cert verification
+	PoolSize      int           `mapstructure:"pool_size"`
+	MinIdleConns  int           `mapstructure:"min_idle_conns"`
+	DialTimeout   time.Duration `mapstructure:"dial_timeout"`
+	ReadTimeout   time.Duration `mapstructure:"read_timeout"`
+	WriteTimeout  time.Duration `mapstructure:"write_timeout"`
 }
 
 // NATSConfig holds NATS configuration
@@ -196,11 +226,10 @@ type SecurityConfig struct {
 
 // StorageConfig holds storage configuration
 type StorageConfig struct {
-	Type      string   `mapstructure:"type"` // local | s3
-	Path      string   `mapstructure:"path"`
-	StacksDir string   `mapstructure:"stacks_dir"` // Directory for stack/compose files (default: <path>/stacks)
-	S3        S3Config `mapstructure:"s3"`
-	Backup    struct {
+	Type   string   `mapstructure:"type"` // local | s3
+	Path   string   `mapstructure:"path"`
+	S3     S3Config `mapstructure:"s3"`
+	Backup struct {
 		Compression      string `mapstructure:"compression"`
 		CompressionLevel int    `mapstructure:"compression_level"`
 		RetentionDays    int    `mapstructure:"default_retention_days"`
@@ -224,7 +253,6 @@ type AgentConfig struct {
 	ID                string        `mapstructure:"id"`
 	Name              string        `mapstructure:"name"`
 	Token             string        `mapstructure:"token"`
-	DataDir           string        `mapstructure:"data_dir"` // Agent local state directory (default: /var/lib/usulnet-agent)
 	HeartbeatInterval time.Duration `mapstructure:"heartbeat_interval"`
 	InventoryInterval time.Duration `mapstructure:"inventory_interval"`
 	MetricsInterval   time.Duration `mapstructure:"metrics_interval"`
@@ -248,11 +276,27 @@ type TrivyConfig struct {
 	UpdateDBOnStart bool          `mapstructure:"update_db_on_start"`
 }
 
+// NPMConfig holds Nginx Proxy Manager integration configuration.
+// NPM connections are managed manually via the Settings UI.
+type NPMConfig struct {
+	Enabled bool `mapstructure:"enabled"`
+}
+
+// CaddyConfig holds Caddy reverse proxy configuration.
+// Users connect their existing Caddy instance via the Settings UI.
+type CaddyConfig struct {
+	Enabled     bool   `mapstructure:"enabled"`
+	AdminURL    string `mapstructure:"admin_url"`
+	ACMEEmail   string `mapstructure:"acme_email"`
+	ListenHTTP  string `mapstructure:"listen_http"`
+	ListenHTTPS string `mapstructure:"listen_https"`
+}
+
 // NginxConfig holds nginx reverse proxy configuration.
-// Usulnet manages nginx configuration files and Let's Encrypt certificates
-// directly. The nginx backend is always enabled when an encryption key is
-// available (required for certificate private key storage).
+// When enabled, usulnet manages nginx configuration files and Let's Encrypt
+// certificates directly. This is the default/recommended proxy backend.
 type NginxConfig struct {
+	Enabled        bool   `mapstructure:"enabled"`
 	ConfigDir      string `mapstructure:"config_dir"`
 	CertDir        string `mapstructure:"cert_dir"`
 	ACMEEmail      string `mapstructure:"acme_email"`
@@ -260,7 +304,6 @@ type NginxConfig struct {
 	ACMEAccountDir string `mapstructure:"acme_account_dir"`
 	ListenHTTP     string `mapstructure:"listen_http"`
 	ListenHTTPS    string `mapstructure:"listen_https"`
-	ContainerName  string `mapstructure:"container_name"`
 }
 
 // MinIOConfig holds MinIO/S3 configuration.
@@ -333,15 +376,14 @@ func LoadConfig(cfgFile string) (*Config, error) {
 	// Dual-binding: USULNET_ prefixed (canonical) + unprefixed (Docker Compose compat).
 	// BindEnv picks the first set: USULNET_DATABASE_URL takes priority over DATABASE_URL.
 	_ = v.BindEnv("database.url", "USULNET_DATABASE_URL", "DATABASE_URL")
-	_ = v.BindEnv("database.ssl_rootcert", "USULNET_DATABASE_SSL_ROOTCERT")
-	_ = v.BindEnv("database.ssl_cert", "USULNET_DATABASE_SSL_CERT")
-	_ = v.BindEnv("database.ssl_key", "USULNET_DATABASE_SSL_KEY")
 	_ = v.BindEnv("redis.url", "USULNET_REDIS_URL", "REDIS_URL")
 	_ = v.BindEnv("nats.url", "USULNET_NATS_URL", "NATS_URL")
 	_ = v.BindEnv("security.jwt_secret", "USULNET_JWT_SECRET", "JWT_SECRET")
 	_ = v.BindEnv("security.config_encryption_key", "USULNET_ENCRYPTION_KEY", "CONFIG_ENCRYPTION_KEY")
 	_ = v.BindEnv("storage.s3.access_key", "USULNET_S3_ACCESS_KEY", "S3_ACCESS_KEY")
 	_ = v.BindEnv("storage.s3.secret_key", "USULNET_S3_SECRET_KEY", "S3_SECRET_KEY")
+	_ = v.BindEnv("caddy.admin_url", "USULNET_CADDY_ADMIN_URL")
+	_ = v.BindEnv("caddy.acme_email", "USULNET_CADDY_ACME_EMAIL")
 	// Backwards-compatible bindings for legacy HOST_TERMINAL_* env vars
 	_ = v.BindEnv("terminal.enabled", "USULNET_TERMINAL_ENABLED", "HOST_TERMINAL_ENABLED")
 	_ = v.BindEnv("terminal.user", "USULNET_TERMINAL_USER", "HOST_TERMINAL_USER")
@@ -352,16 +394,6 @@ func LoadConfig(cfgFile string) (*Config, error) {
 	_ = v.BindEnv("guacd.port", "USULNET_GUACD_PORT", "GUACD_PORT")
 	// Docker socket path (for rootless Docker or custom socket locations)
 	_ = v.BindEnv("docker.socket", "USULNET_DOCKER_SOCKET", "DOCKER_SOCKET")
-	// Nginx container name (for Docker exec to run nginx -t / nginx -s reload)
-	_ = v.BindEnv("nginx.container_name", "USULNET_NGINX_CONTAINER_NAME", "NGINX_CONTAINER_NAME")
-	// Embedded DNS server
-	_ = v.BindEnv("dns.enabled", "USULNET_DNS_ENABLED", "DNS_ENABLED")
-	_ = v.BindEnv("dns.listen_addr", "USULNET_DNS_LISTEN_ADDR", "DNS_LISTEN_ADDR")
-	// DNS service discovery
-	_ = v.BindEnv("dns.service_discovery.enabled", "USULNET_DNS_SD_ENABLED", "DNS_SD_ENABLED")
-	_ = v.BindEnv("dns.service_discovery.domain", "USULNET_DNS_SD_DOMAIN", "DNS_SD_DOMAIN")
-	_ = v.BindEnv("dns.service_discovery.ttl", "USULNET_DNS_SD_TTL", "DNS_SD_TTL")
-	_ = v.BindEnv("dns.service_discovery.create_srv", "USULNET_DNS_SD_CREATE_SRV", "DNS_SD_CREATE_SRV")
 
 	// Set defaults
 	setDefaults(v)
@@ -385,7 +417,7 @@ func LoadConfig(cfgFile string) (*Config, error) {
 // setDefaults sets default configuration values
 func setDefaults(v *viper.Viper) {
 	// Mode
-	v.SetDefault("mode", "master")
+	v.SetDefault("mode", "standalone")
 
 	// Server
 	v.SetDefault("server.host", "0.0.0.0")
@@ -404,7 +436,7 @@ func setDefaults(v *viper.Viper) {
 	v.SetDefault("server.redirect_https", true)
 
 	// Database (tuned to reduce connection churn under moderate load)
-	v.SetDefault("database.ssl_mode", "require")
+	v.SetDefault("database.ssl_mode", "prefer")
 	v.SetDefault("database.max_open_conns", 25)
 	v.SetDefault("database.max_idle_conns", 10)
 	v.SetDefault("database.conn_max_lifetime", "30m")
@@ -439,15 +471,13 @@ func setDefaults(v *viper.Viper) {
 
 	// Storage
 	v.SetDefault("storage.type", "local")
-	v.SetDefault("storage.path", "/app/data")
-	v.SetDefault("storage.stacks_dir", "") // empty = storage.path + "/stacks"
+	v.SetDefault("storage.path", "/var/lib/usulnet")
 	v.SetDefault("storage.backup.compression", "zstd")
 	v.SetDefault("storage.backup.compression_level", 3)
 	v.SetDefault("storage.backup.default_retention_days", 30)
 	v.SetDefault("storage.s3.use_ssl", true)
 
 	// Agent
-	v.SetDefault("agent.data_dir", "/var/lib/usulnet-agent")
 	v.SetDefault("agent.heartbeat_interval", "30s")
 	v.SetDefault("agent.inventory_interval", "5m")
 	v.SetDefault("agent.metrics_interval", "1m")
@@ -462,15 +492,11 @@ func setDefaults(v *viper.Viper) {
 	v.SetDefault("trivy.ignore_unfixed", false)
 	v.SetDefault("trivy.update_db_on_start", true)
 
-	// Nginx reverse proxy (always enabled when encryption key is available)
-	v.SetDefault("nginx.config_dir", "/etc/nginx/conf.d/usulnet")
-	v.SetDefault("nginx.cert_dir", "/etc/usulnet/certs")
-	v.SetDefault("nginx.acme_email", "")
-	v.SetDefault("nginx.acme_web_root", "/var/lib/usulnet/acme")
-	v.SetDefault("nginx.acme_account_dir", "/var/lib/usulnet/acme/account")
-	v.SetDefault("nginx.listen_http", ":80")
-	v.SetDefault("nginx.listen_https", ":443")
-	v.SetDefault("nginx.container_name", "usulnet-nginx")
+	// Caddy reverse proxy (connect your existing Caddy instance via Settings)
+	v.SetDefault("caddy.admin_url", "")
+	v.SetDefault("caddy.acme_email", "")
+	v.SetDefault("caddy.listen_http", ":80")
+	v.SetDefault("caddy.listen_https", ":443")
 
 	// Logging
 	v.SetDefault("logging.level", "info")
@@ -507,17 +533,16 @@ func setDefaults(v *viper.Viper) {
 	v.SetDefault("guacd.host", "guacd")
 	v.SetDefault("guacd.port", 4822)
 
-	// Embedded DNS server (miekg/dns)
-	v.SetDefault("dns.enabled", true)
-	v.SetDefault("dns.listen_addr", ":53")
-	v.SetDefault("dns.forwarders", []string{"1.1.1.3", "1.0.0.3"})
-
-	// DNS service discovery (auto-register containers as DNS records)
-	v.SetDefault("dns.service_discovery.enabled", true)
-	v.SetDefault("dns.service_discovery.domain", "containers.local")
-	v.SetDefault("dns.service_discovery.ttl", 30)
-	v.SetDefault("dns.service_discovery.create_srv", true)
-	v.SetDefault("dns.service_discovery.include_stopped_cleanup", true)
+	// Recon / privacy module (disabled by default — see docs/recon.md §7)
+	v.SetDefault("recon.enabled", false)
+	v.SetDefault("recon.retention_days", 90)
+	v.SetDefault("recon.max_concurrent_scans", 2)
+	v.SetDefault("recon.installation_org", "")
+	v.SetDefault("recon.base_url", "")
+	v.SetDefault("recon.spiderfoot.listen", "127.0.0.1:5001")
+	v.SetDefault("recon.egress.allowlist", []string{})
+	v.SetDefault("recon.connectors.hibp.enabled", false)
+	v.SetDefault("recon.connectors.shodan.enabled", false)
 }
 
 // Validate validates the configuration.
@@ -526,23 +551,23 @@ func (c *Config) Validate() error {
 	var errs []error
 
 	// Mode validation
-	validModes := map[string]bool{"master": true, "agent": true}
+	validModes := map[string]bool{"standalone": true, "master": true, "agent": true}
 	if !validModes[c.Mode] {
-		errs = append(errs, fmt.Errorf("invalid mode: %s (must be master or agent)", c.Mode))
+		errs = append(errs, fmt.Errorf("invalid mode: %s (must be standalone, master, or agent)", c.Mode))
 	}
 
-	// Database URL required for master
+	// Database URL required for master/standalone
 	if c.Mode != "agent" && c.Database.URL == "" {
 		errs = append(errs, fmt.Errorf("database.url is required for %s mode", c.Mode))
 	}
 
-	// Redis URL required for master
+	// Redis URL required for master/standalone
 	if c.Mode != "agent" && c.Redis.URL == "" {
 		errs = append(errs, fmt.Errorf("redis.url is required for %s mode", c.Mode))
 	}
 
-	// NATS URL required for all modes (master and agent both need NATS)
-	if c.NATS.URL == "" {
+	// NATS URL required for master/agent
+	if c.Mode != "standalone" && c.NATS.URL == "" {
 		errs = append(errs, fmt.Errorf("nats.url is required for %s mode", c.Mode))
 	}
 
@@ -556,37 +581,19 @@ func (c *Config) Validate() error {
 		}
 	}
 
-	// Security validation for master
+	// Security validation for master/standalone
 	if c.Mode != "agent" {
 		if c.Security.JWTSecret == "" {
-			// Auto-generate a JWT secret for first-run convenience.
-			// This secret changes on every restart if not persisted in config,
-			// which invalidates all existing sessions — acceptable for initial setup
-			// but operators MUST set a stable secret for production.
-			b := make([]byte, 32)
-			if _, err := rand.Read(b); err != nil {
-				errs = append(errs, fmt.Errorf("security.jwt_secret is required (auto-generation failed: %w)", err))
-			} else {
-				c.Security.JWTSecret = hex.EncodeToString(b)
-				slog.Warn("security.jwt_secret not configured — auto-generated a temporary secret. Sessions will be invalidated on restart. Set a permanent secret in config.yaml or via USULNET_SECURITY_JWT_SECRET.")
-			}
+			errs = append(errs, fmt.Errorf("security.jwt_secret is required"))
 		} else if len(c.Security.JWTSecret) < 32 {
 			errs = append(errs, fmt.Errorf("security.jwt_secret must be at least 32 characters"))
 		}
-
-		// Note: if ConfigEncryptionKey is empty, init_services.go will derive
-		// a deterministic key from jwt_secret via SHA-256. This is preferable
-		// to auto-generating a random key here because the derived key survives
-		// restarts and keeps encrypted data (SSH credentials, TOTP secrets,
-		// config values) readable across application lifecycles.
 	}
 
 	// Encryption key validation (64 hex chars = 32 bytes for AES-256)
 	if c.Mode != "agent" && c.Security.ConfigEncryptionKey != "" {
 		if len(c.Security.ConfigEncryptionKey) != 64 {
 			errs = append(errs, fmt.Errorf("security.config_encryption_key must be exactly 64 hex characters (got %d)", len(c.Security.ConfigEncryptionKey)))
-		} else if _, err := hex.DecodeString(c.Security.ConfigEncryptionKey); err != nil {
-			errs = append(errs, fmt.Errorf("security.config_encryption_key must be valid hexadecimal: %w", err))
 		}
 	}
 
@@ -791,16 +798,9 @@ func (c *Config) PrintMasked() {
 	fmt.Printf("Log Format: %s\n", c.Logging.Format)
 	fmt.Printf("Metrics Enabled: %v\n", c.Metrics.Enabled)
 	fmt.Printf("Trivy Enabled: %v\n", c.Trivy.Enabled)
-	fmt.Printf("Nginx Config Dir: %s\n", c.Nginx.ConfigDir)
-	if c.Nginx.ContainerName != "" {
-		fmt.Printf("Nginx Container: %s\n", c.Nginx.ContainerName)
-	}
-	if c.Nginx.ACMEEmail != "" {
-		fmt.Printf("Nginx ACME Email: %s\n", c.Nginx.ACMEEmail)
-	}
-	fmt.Printf("DNS Server Enabled: %v\n", c.DNS.Enabled)
-	if c.DNS.Enabled {
-		fmt.Printf("DNS Listen: %s\n", c.DNS.ListenAddr)
+	fmt.Printf("Caddy Enabled: %v\n", c.Caddy.Enabled)
+	if c.Caddy.Enabled {
+		fmt.Printf("Caddy Admin URL: %s\n", c.Caddy.AdminURL)
 	}
 }
 

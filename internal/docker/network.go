@@ -77,9 +77,6 @@ func (c *Client) NetworkList(ctx context.Context, opts NetworkListOptions) ([]Ne
 		return nil, errors.New(errors.CodeDockerConnection, "client is closed")
 	}
 
-	ctx, cancel := context.WithTimeout(ctx, c.timeout)
-	defer cancel()
-
 	// Build filters
 	f := filters.NewArgs()
 	for key, values := range opts.Filters {
@@ -117,9 +114,6 @@ func (c *Client) NetworkGet(ctx context.Context, networkID string) (*Network, er
 	if c.closed {
 		return nil, errors.New(errors.CodeDockerConnection, "client is closed")
 	}
-
-	ctx, cancel := context.WithTimeout(ctx, c.timeout)
-	defer cancel()
 
 	net, err := c.cli.NetworkInspect(ctx, networkID, network.InspectOptions{
 		Verbose: true,

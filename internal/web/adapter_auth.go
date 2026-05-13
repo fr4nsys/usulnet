@@ -19,40 +19,13 @@ type authAdapter struct {
 }
 
 // ValidateSession implements the AuthService interface required by middleware.
-// It validates that the session exists AND that the user is still active.
-// This ensures that admin-disabled or locked users are immediately rejected
-// instead of being allowed to continue using existing sessions.
+// It validates that the session's user still exists and is active.
 func (a *authAdapter) ValidateSession(ctx context.Context, sessionID string) (*UserContext, error) {
 	// If we have a session store, we can look up the session data
 	if a.sessionStore != nil && a.sessionStore.redisStore != nil {
 		session, err := a.sessionStore.redisStore.Get(ctx, sessionID)
 		if err != nil || session == nil {
 			return nil, fmt.Errorf("session not found")
-		}
-
-		// Verify the user is still active in the database.
-		// This catches admin-disabled accounts, locked users, or deleted users.
-		if a.svc != nil {
-			uid, parseErr := uuid.Parse(session.UserID)
-			if parseErr != nil {
-				return nil, fmt.Errorf("invalid user ID in session: %w", parseErr)
-			}
-			user, userErr := a.svc.GetUserByID(ctx, uid)
-			if userErr != nil {
-				return nil, fmt.Errorf("user not found: %w", userErr)
-			}
-			if !user.IsActive {
-				return nil, fmt.Errorf("user account is disabled")
-			}
-			if user.IsLocked() {
-				return nil, fmt.Errorf("user account is locked")
-			}
-			// Return fresh role from DB to pick up role changes
-			return &UserContext{
-				ID:       session.UserID,
-				Username: session.Username,
-				Role:     string(user.Role),
-			}, nil
 		}
 
 		return &UserContext{
@@ -201,7 +174,7 @@ func (a *authAdapter) Logout(ctx context.Context, sessionID string) error {
 
 	sid, err := uuid.Parse(sessionID)
 	if err != nil {
-		return fmt.Errorf("parse session ID for logout: %w", err)
+		return err
 	}
 
 	return a.svc.Logout(ctx, sid)
@@ -235,11 +208,10 @@ func (a *authAdapter) OAuthCallback(ctx context.Context, providerName, code, use
 	}
 
 	return &UserContext{
-		ID:           result.User.ID.String(),
-		Username:     result.User.Username,
-		Email:        email,
-		Role:         string(result.User.Role),
-		RequiresTOTP: result.RequiresTOTP,
+		ID:       result.User.ID.String(),
+		Username: result.User.Username,
+		Email:    email,
+		Role:     string(result.User.Role),
 	}, nil
 }
 

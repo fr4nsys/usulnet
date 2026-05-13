@@ -6,41 +6,17 @@ import (
 )
 
 type EditData struct {
-	PageData     layouts.PageData
-	Connected    bool
-	Host         ProxyHostEdit
-	Error        string
-	Certificates []CertView
-	AccessLists  []ACLView
-}
-
-type ProxyHostEdit struct {
-	ID                    string
-	DomainName            string
-	ForwardScheme         string
-	ForwardHost           string
-	ForwardPort           int
-	CertificateID         int
-	SSLEnabled            bool
-	SSLForced             bool
-	HSTSEnabled           bool
-	HSTSSubdomains        bool
-	HTTP2Support          bool
-	BlockExploits         bool
-	CachingEnabled        bool
-	AllowWebsocketUpgrade bool
-	AccessListID          int
-	AdvancedConfig        string
-	Enabled               bool
-	ContainerName         string
-	LastSync              string
+	PageData  layouts.PageData
+	Connected bool
+	Host      ProxyHost
+	Error     string
 }
 
 templ Edit(data EditData) {
 	@layouts.Base(data.PageData) {
 		<div class="space-y-6">
 			@Nav("hosts", data.Connected)
-			<div class="max-w-3xl">
+			<div class="max-w-2xl">
 				<div class="flex items-center gap-3 mb-6">
 					<a href={ templ.SafeURL(fmt.Sprintf("/proxy/%s", data.Host.ID)) } class="text-gray-400 hover:text-white">
 						<i class="fas fa-arrow-left"></i>
@@ -56,211 +32,66 @@ templ Edit(data EditData) {
 
 				<form method="POST" action={ templ.SafeURL(fmt.Sprintf("/proxy/hosts/%s", data.Host.ID)) } class="space-y-4">
 					<input type="hidden" name="csrf_token" value={ data.PageData.CSRFToken }/>
-
-					<!-- Tabs -->
-					<div class="border-b border-dark-700">
-						<nav class="flex gap-1 -mb-px" id="proxy-tabs">
-							<button type="button" class="proxy-tab active px-4 py-2 text-sm font-medium border-b-2 border-primary-500 text-primary-400" data-tab="details">Details</button>
-							<button type="button" class="proxy-tab px-4 py-2 text-sm font-medium border-b-2 border-transparent text-gray-400 hover:text-white" data-tab="ssl">SSL</button>
-							<button type="button" class="proxy-tab px-4 py-2 text-sm font-medium border-b-2 border-transparent text-gray-400 hover:text-white" data-tab="advanced">Advanced</button>
-						</nav>
+					<div>
+						<label class="block text-sm font-medium text-gray-300 mb-1">Domain Name</label>
+						<input
+							type="text"
+							name="domain"
+							value={ data.Host.DomainName }
+							required
+							class="w-full bg-dark-800 border border-dark-600 text-white rounded-lg px-3 py-2 focus:ring-2 focus:ring-accent-500 focus:border-transparent"
+						/>
 					</div>
-
-					<!-- Tab: Details -->
-					<div id="tab-details" class="proxy-tab-content space-y-4">
+					<div class="grid grid-cols-2 gap-4">
 						<div>
-							<label class="block text-sm font-medium text-gray-300 mb-1">Domain Names</label>
+							<label class="block text-sm font-medium text-gray-300 mb-1">Forward Host</label>
 							<input
 								type="text"
-								name="domain"
-								value={ data.Host.DomainName }
+								name="forward_host"
+								value={ data.Host.ForwardHost }
 								required
 								class="w-full bg-dark-800 border border-dark-600 text-white rounded-lg px-3 py-2 focus:ring-2 focus:ring-accent-500 focus:border-transparent"
 							/>
-							<p class="text-xs text-gray-500 mt-1">Separate multiple domains with commas</p>
 						</div>
 						<div>
-							<label class="block text-sm font-medium text-gray-300 mb-1">Scheme</label>
-							<select name="forward_scheme" class="w-full bg-dark-800 border border-dark-600 text-white rounded-lg px-3 py-2 focus:ring-2 focus:ring-accent-500 focus:border-transparent">
-								<option value="http" if data.Host.ForwardScheme == "http" || data.Host.ForwardScheme == "" { selected }>http</option>
-								<option value="https" if data.Host.ForwardScheme == "https" { selected }>https</option>
-							</select>
-						</div>
-						<div class="grid grid-cols-2 gap-4">
-							<div>
-								<label class="block text-sm font-medium text-gray-300 mb-1">Forward Hostname / IP</label>
-								<input
-									type="text"
-									name="forward_host"
-									value={ data.Host.ForwardHost }
-									required
-									class="w-full bg-dark-800 border border-dark-600 text-white rounded-lg px-3 py-2 focus:ring-2 focus:ring-accent-500 focus:border-transparent"
-								/>
-							</div>
-							<div>
-								<label class="block text-sm font-medium text-gray-300 mb-1">Forward Port</label>
-								<input
-									type="number"
-									name="forward_port"
-									value={ fmt.Sprintf("%d", data.Host.ForwardPort) }
-									min="1"
-									max="65535"
-									required
-									class="w-full bg-dark-800 border border-dark-600 text-white rounded-lg px-3 py-2 focus:ring-2 focus:ring-accent-500 focus:border-transparent"
-								/>
-							</div>
-						</div>
-						<div class="flex items-center gap-6 pt-2">
-							<label class="flex items-center gap-2 text-sm text-gray-300 cursor-pointer">
-								<input
-									type="checkbox"
-									name="caching_enabled"
-									value="on"
-									if data.Host.CachingEnabled {
-										checked
-									}
-									class="rounded border-dark-600 bg-dark-800 text-accent-500 focus:ring-accent-500"
-								/>
-								Cache Assets
-							</label>
-							<label class="flex items-center gap-2 text-sm text-gray-300 cursor-pointer">
-								<input
-									type="checkbox"
-									name="block_exploits"
-									value="on"
-									if data.Host.BlockExploits {
-										checked
-									}
-									class="rounded border-dark-600 bg-dark-800 text-accent-500 focus:ring-accent-500"
-								/>
-								Block Common Exploits
-							</label>
-							<label class="flex items-center gap-2 text-sm text-gray-300 cursor-pointer">
-								<input
-									type="checkbox"
-									name="allow_websocket_upgrade"
-									value="on"
-									if data.Host.AllowWebsocketUpgrade {
-										checked
-									}
-									class="rounded border-dark-600 bg-dark-800 text-accent-500 focus:ring-accent-500"
-								/>
-								Websockets Support
-							</label>
-						</div>
-						<div class="flex items-center gap-6 pt-2">
-							<label class="flex items-center gap-2 text-sm text-gray-300 cursor-pointer">
-								<input
-									type="checkbox"
-									name="enabled"
-									value="on"
-									if data.Host.Enabled {
-										checked
-									}
-									class="rounded border-dark-600 bg-dark-800 text-accent-500 focus:ring-accent-500"
-								/>
-								Enabled
-							</label>
+							<label class="block text-sm font-medium text-gray-300 mb-1">Forward Port</label>
+							<input
+								type="number"
+								name="forward_port"
+								value={ fmt.Sprintf("%d", data.Host.ForwardPort) }
+								min="1"
+								max="65535"
+								required
+								class="w-full bg-dark-800 border border-dark-600 text-white rounded-lg px-3 py-2 focus:ring-2 focus:ring-accent-500 focus:border-transparent"
+							/>
 						</div>
 					</div>
-
-					<!-- Tab: SSL -->
-					<div id="tab-ssl" class="proxy-tab-content space-y-4 hidden">
-						<div>
-							<label class="block text-sm font-medium text-gray-300 mb-1">SSL Certificate</label>
-							<select name="certificate_id" class="w-full bg-dark-800 border border-dark-600 text-white rounded-lg px-3 py-2 focus:ring-2 focus:ring-accent-500 focus:border-transparent">
-								<option value="0">None</option>
-								<option value="-1" if data.Host.CertificateID == -1 { selected }>Request a new Let's Encrypt certificate</option>
-								for _, cert := range data.Certificates {
-									<option
-										value={ fmt.Sprintf("%d", cert.ID) }
-										if cert.ID == data.Host.CertificateID {
-											selected
-										}
-									>{ cert.NiceName }</option>
+					<div class="flex items-center gap-6 pt-2">
+						<label class="flex items-center gap-2 text-sm text-gray-300 cursor-pointer">
+							<input
+								type="checkbox"
+								name="ssl_enabled"
+								value="true"
+								if data.Host.SSLEnabled {
+									checked
 								}
-							</select>
-						</div>
-						<div class="flex items-center gap-6 pt-2">
-							<label class="flex items-center gap-2 text-sm text-gray-300 cursor-pointer">
-								<input
-									type="checkbox"
-									name="ssl_enabled"
-									value="on"
-									if data.Host.SSLEnabled {
-										checked
-									}
-									class="rounded border-dark-600 bg-dark-800 text-accent-500 focus:ring-accent-500"
-								/>
-								Enable SSL
-							</label>
-							<label class="flex items-center gap-2 text-sm text-gray-300 cursor-pointer">
-								<input
-									type="checkbox"
-									name="ssl_forced"
-									value="on"
-									if data.Host.SSLForced {
-										checked
-									}
-									class="rounded border-dark-600 bg-dark-800 text-accent-500 focus:ring-accent-500"
-								/>
-								Force SSL
-							</label>
-							<label class="flex items-center gap-2 text-sm text-gray-300 cursor-pointer">
-								<input
-									type="checkbox"
-									name="http2_support"
-									value="on"
-									if data.Host.HTTP2Support {
-										checked
-									}
-									class="rounded border-dark-600 bg-dark-800 text-accent-500 focus:ring-accent-500"
-								/>
-								HTTP/2 Support
-							</label>
-						</div>
-						<div class="flex items-center gap-6">
-							<label class="flex items-center gap-2 text-sm text-gray-300 cursor-pointer">
-								<input
-									type="checkbox"
-									name="hsts_enabled"
-									value="on"
-									if data.Host.HSTSEnabled {
-										checked
-									}
-									class="rounded border-dark-600 bg-dark-800 text-accent-500 focus:ring-accent-500"
-								/>
-								HSTS Enabled
-							</label>
-							<label class="flex items-center gap-2 text-sm text-gray-300 cursor-pointer">
-								<input
-									type="checkbox"
-									name="hsts_subdomains"
-									value="on"
-									if data.Host.HSTSSubdomains {
-										checked
-									}
-									class="rounded border-dark-600 bg-dark-800 text-accent-500 focus:ring-accent-500"
-								/>
-								HSTS Subdomains
-							</label>
-						</div>
+								class="rounded border-dark-600 bg-dark-800 text-accent-500 focus:ring-accent-500"
+							/>
+							Enable SSL
+						</label>
+						<label class="flex items-center gap-2 text-sm text-gray-300 cursor-pointer">
+							<input
+								type="checkbox"
+								name="enabled"
+								value="true"
+								if data.Host.Enabled {
+									checked
+								}
+								class="rounded border-dark-600 bg-dark-800 text-accent-500 focus:ring-accent-500"
+							/>
+							Enabled
+						</label>
 					</div>
-
-					<!-- Tab: Advanced -->
-					<div id="tab-advanced" class="proxy-tab-content space-y-4 hidden">
-						<div>
-							<label class="block text-sm font-medium text-gray-300 mb-1">Custom Nginx Configuration</label>
-							<textarea
-								name="advanced_config"
-								rows="10"
-								placeholder="# Add custom nginx directives here..."
-								class="w-full bg-dark-800 border border-dark-600 text-white rounded-lg px-3 py-2 focus:ring-2 focus:ring-accent-500 focus:border-transparent font-mono text-sm"
-							>{ data.Host.AdvancedConfig }</textarea>
-							<p class="text-xs text-gray-500 mt-1">These directives will be added inside the server block</p>
-						</div>
-					</div>
-
 					<div class="flex gap-2 pt-4">
 						<button type="submit" class="btn btn-primary">
 							<i class="fas fa-save mr-1"></i> Save Changes
@@ -270,6 +101,5 @@ templ Edit(data EditData) {
 				</form>
 			</div>
 		</div>
-		@proxyTabScript()
 	}
 }

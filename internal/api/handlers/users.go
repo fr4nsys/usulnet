@@ -99,28 +99,28 @@ func (h *UserHandler) Routes() chi.Router {
 
 // CreateUserRequest represents a user creation request.
 type CreateUserRequest struct {
-	Username string `json:"username" validate:"required,min=3,max=64"`
-	Email    string `json:"email,omitempty" validate:"omitempty,email"`
-	Password string `json:"password" validate:"required,min=8,max=128"`
-	Role     string `json:"role,omitempty" validate:"omitempty,oneof=admin operator viewer"`
+	Username string `json:"username"`
+	Email    string `json:"email,omitempty"`
+	Password string `json:"password"`
+	Role     string `json:"role,omitempty"`
 }
 
 // UpdateUserRequest represents a user update request.
 type UpdateUserRequest struct {
-	Email    *string `json:"email,omitempty" validate:"omitempty,email"`
-	Role     *string `json:"role,omitempty" validate:"omitempty,oneof=admin operator viewer"`
+	Email    *string `json:"email,omitempty"`
+	Role     *string `json:"role,omitempty"`
 	IsActive *bool   `json:"is_active,omitempty"`
 }
 
 // UpdateProfileRequest represents a profile update request.
 type UpdateProfileRequest struct {
-	Email *string `json:"email,omitempty" validate:"omitempty,email"`
+	Email *string `json:"email,omitempty"`
 }
 
 // CreateAPIKeyRequest represents an API key creation request.
 type CreateAPIKeyRequest struct {
-	Name      string  `json:"name" validate:"required,min=1,max=128"`
-	ExpiresAt *string `json:"expires_at,omitempty" validate:"omitempty"`
+	Name      string  `json:"name"`
+	ExpiresAt *string `json:"expires_at,omitempty"`
 }
 
 // UserResponse represents a user in API responses.
@@ -291,13 +291,6 @@ func (h *UserHandler) Update(w http.ResponseWriter, r *http.Request) {
 	var req UpdateUserRequest
 	if err := h.ParseJSON(r, &req); err != nil {
 		h.HandleError(w, err)
-		return
-	}
-
-	// Prevent self-role-change (admins should not modify their own role)
-	currentUserID, _ := h.GetUserID(r)
-	if req.Role != nil && userID == currentUserID {
-		h.BadRequest(w, "cannot change your own role — ask another admin")
 		return
 	}
 

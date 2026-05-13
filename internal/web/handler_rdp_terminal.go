@@ -11,6 +11,7 @@ import (
 	"io"
 	"net"
 	"net/http"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -119,7 +120,7 @@ func (h *Handler) WSRDPExec(w http.ResponseWriter, r *http.Request) {
 	ws.NetConn().SetDeadline(time.Time{})
 
 	// Connect to guacd
-	guacdAddr := net.JoinHostPort(guacdCfg.Host, fmt.Sprintf("%d", guacdCfg.Port))
+	guacdAddr := net.JoinHostPort(guacdCfg.Host, strconv.Itoa(guacdCfg.Port))
 	guacdConn, err := net.DialTimeout("tcp", guacdAddr, 10*time.Second)
 	if err != nil {
 		h.logger.Error("RDP: failed to connect to guacd", "address", guacdAddr, "error", err)
@@ -249,6 +250,7 @@ func (h *Handler) WSRDPExec(w http.ResponseWriter, r *http.Request) {
 		ws.WriteMessage(websocket.TextMessage, []byte(guacEncode("error", "RDP connection failed", "519")))
 		return
 	}
+	_ = string(readyBuf[:rn]) // log payload omitted to keep PII out of debug
 	h.logger.Debug("RDP guacd connect response", "bytes", rn)
 
 	// Forward the guacd response to the browser — the JS client needs it

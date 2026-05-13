@@ -18,9 +18,6 @@ import (
 	aatmpl "github.com/fr4nsys/usulnet/internal/web/templates/pages/accessaudit"
 )
 
-// maxAccessAuditEntries is the maximum number of in-memory audit entries to keep.
-const maxAccessAuditEntries = 500
-
 // In-memory access audit cache for fast dashboard rendering.
 // Events are also persisted to PostgreSQL via the audit service when configured.
 var (
@@ -77,8 +74,8 @@ func RecordAccessEvent(userName, userID, action, resourceType, resourceID, resou
 		ErrorMsg:     errMsg,
 		CreatedAt:    time.Now(),
 	}}, accessAuditEntries...)
-	if len(accessAuditEntries) > maxAccessAuditEntries {
-		accessAuditEntries = accessAuditEntries[:maxAccessAuditEntries]
+	if len(accessAuditEntries) > 500 {
+		accessAuditEntries = accessAuditEntries[:500]
 	}
 	accessAuditMu.Unlock()
 

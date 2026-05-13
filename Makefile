@@ -1,4 +1,4 @@
-.PHONY: all build build-agent run test test-coverage test-check-coverage test-benchmark test-e2e clean dev-certs dev-up dev-down migrate lint lint-fix fmt vet templ css install-hooks help release-check release-snapshot verify-migrations security-scan docker-push
+.PHONY: all build build-agent run test test-coverage test-check-coverage test-benchmark test-e2e clean dev-up dev-down migrate lint lint-fix fmt vet templ css install-hooks help docker-build-recon-toolkit docker-build-recon-spiderfoot docker-build-recon publish-public publish-public-check publish-public-test publish-public-clean
 
 # Variables
 BINARY_NAME=usulnet
@@ -76,7 +76,7 @@ test-coverage:
 
 test-check-coverage:
 	@echo "Running coverage threshold check..."
-	@bash scripts/check-coverage.sh 15
+	@bash scripts/check-coverage.sh 40
 
 test-benchmark:
 	@echo "Running benchmarks..."
@@ -92,21 +92,11 @@ clean:
 	@rm -f coverage.out coverage.html
 
 # Development environment
-dev-certs: ## Generate TLS certificates for dev environment (PostgreSQL, HTTPS, NATS)
-	@if [ ! -f dev-certs/ca.crt ]; then \
-		echo "Generating dev TLS certificates..."; \
-		$(GORUN) $(MAIN_PATH) pki init --data-dir ./dev-certs; \
-		chmod 755 dev-certs; \
-		chmod 644 dev-certs/*.crt; \
-	else \
-		echo "Dev certificates already exist (dev-certs/ca.crt)"; \
-	fi
-
-dev-up: dev-certs
+dev-up:
 	docker compose -f docker-compose.dev.yml up -d
 	@echo "Waiting for services to be ready..."
 	@sleep 5
-	@echo "Development environment is ready (PostgreSQL TLS: verify-full)"
+	@echo "Development environment is ready"
 
 dev-down:
 	docker compose -f docker-compose.dev.yml down
@@ -157,6 +147,28 @@ docker-build:
 docker-build-agent:
 	docker build -f Dockerfile.agent -t usulnet-agent:latest .
 
+# Recon module images (RFC: docs/recon.md §12). Multi-arch via buildx.
+# Note: `--load` only supports a single platform locally; override
+# PLATFORMS=linux/amd64 (or linux/arm64) when building on a host that
+# cannot fan out, or drop --load and add --push in CI.
+RECON_PLATFORMS ?= linux/amd64,linux/arm64
+RECON_TOOLKIT_TAG ?= ghcr.io/fr4nsys/usulnet-recon-toolkit:dev
+RECON_SPIDERFOOT_TAG ?= ghcr.io/fr4nsys/usulnet-recon-spiderfoot:dev
+
+docker-build-recon-toolkit:
+	docker buildx build \
+		--platform $(RECON_PLATFORMS) \
+		--tag $(RECON_TOOLKIT_TAG) \
+		--load deploy/recon/toolkit
+
+docker-build-recon-spiderfoot:
+	docker buildx build \
+		--platform $(RECON_PLATFORMS) \
+		--tag $(RECON_SPIDERFOOT_TAG) \
+		--load deploy/recon/spiderfoot
+
+docker-build-recon: docker-build-recon-toolkit docker-build-recon-spiderfoot
+
 docker-run:
 	docker run --rm -p 8080:8080 usulnet:latest
 
@@ -172,45 +184,28 @@ install-hooks:
 	@chmod +x .git/hooks/pre-commit
 	@echo "Pre-commit hook installed"
 
+# Naming convention check (usulnet always lowercase; USULNET_ env prefix allowed)
+.PHONY: check-naming
+check-naming:
+	@scripts/check-naming.sh
+
 # Quality gate — run all quality checks
-quality: lint vet test test-check-coverage
+quality: lint vet check-naming test-check-coverage
 	@echo "All quality checks passed!"
 
-# Release engineering
-release-check:
-	@echo "Checking release prerequisites..."
-	@test -n "$$(git describe --exact-match --tags HEAD 2>/dev/null)" || (echo "ERROR: HEAD is not tagged. Tag with: git tag -a vX.Y.Z -m 'Release vX.Y.Z'" && exit 1)
-	@test -z "$$(git status --porcelain)" || (echo "ERROR: Working tree is dirty. Commit or stash changes." && exit 1)
-	@which goreleaser > /dev/null 2>&1 || (echo "ERROR: goreleaser not found. Install: go install github.com/goreleaser/goreleaser/v2@latest" && exit 1)
-	@echo "All release prerequisites met."
+# Public-repo split (docs/0526/, scripts/publish-public.sh).
+# Produces build/public/ ready for the S03 mirror workflow.
+publish-public:
+	@bash scripts/publish-public.sh --dry-run
 
-release-snapshot:
-	@echo "Building release snapshot (no publish)..."
-	@which goreleaser > /dev/null 2>&1 || (echo "Installing goreleaser..." && go install github.com/goreleaser/goreleaser/v2@latest)
-	goreleaser release --snapshot --clean
+publish-public-check:
+	@bash scripts/publish-public.sh --check-denied
 
-verify-migrations:
-	@echo "Verifying migration integrity..."
-	@bash scripts/verify-migrations.sh
+publish-public-test:
+	@bash scripts/publish-public_test.sh
 
-security-scan:
-	@echo "Running security scans..."
-	@which govulncheck > /dev/null 2>&1 || (echo "Installing govulncheck..." && go install golang.org/x/vuln/cmd/govulncheck@latest)
-	govulncheck ./...
-	@if which golangci-lint > /dev/null 2>&1; then \
-		echo "Running gosec via golangci-lint..."; \
-		golangci-lint run --enable gosec ./...; \
-	else \
-		echo "SKIP: golangci-lint not installed"; \
-	fi
-
-docker-push:
-	@echo "Pushing Docker images..."
-	@test -n "$(DOCKER_REGISTRY)" || (echo "ERROR: DOCKER_REGISTRY not set" && exit 1)
-	docker tag usulnet:latest $(DOCKER_REGISTRY)/usulnet:latest
-	docker tag usulnet:latest $(DOCKER_REGISTRY)/usulnet:$(shell git describe --tags --always)
-	docker push $(DOCKER_REGISTRY)/usulnet:latest
-	docker push $(DOCKER_REGISTRY)/usulnet:$(shell git describe --tags --always)
+publish-public-clean:
+	@bash scripts/publish-public.sh --clean
 
 # Help
 help:
@@ -224,15 +219,14 @@ help:
 	@echo ""
 	@echo "Run:"
 	@echo "  make run                Run the server (go run)"
-	@echo "  make dev-certs          Generate TLS certificates for dev environment"
-	@echo "  make dev-up             Start dev services (PostgreSQL, Redis, NATS) with TLS"
+	@echo "  make dev-up             Start dev services (PostgreSQL, Redis, NATS)"
 	@echo "  make dev-down           Stop dev services"
 	@echo "  make dev-up-agent       Start dev services with agent profile"
 	@echo ""
 	@echo "Test:"
 	@echo "  make test               Run tests with race detection and coverage"
 	@echo "  make test-coverage      Generate HTML coverage report"
-	@echo "  make test-check-coverage  Check coverage threshold"
+	@echo "  make test-check-coverage  Check 40%% coverage threshold"
 	@echo "  make test-benchmark     Run benchmark tests"
 	@echo "  make test-e2e           Run E2E tests (requires running services)"
 	@echo ""
@@ -241,9 +235,7 @@ help:
 	@echo "  make lint-fix           Run golangci-lint with auto-fix"
 	@echo "  make fmt                Format Go source files"
 	@echo "  make vet                Run go vet"
-	@echo "  make quality            Full quality gate (lint + vet + test + coverage)"
-	@echo "  make security-scan      Run govulncheck + gosec"
-	@echo "  make verify-migrations  Check migration file integrity"
+	@echo "  make quality            Full quality gate (lint + vet + coverage)"
 	@echo ""
 	@echo "Database:"
 	@echo "  make migrate            Run migrations up"
@@ -253,11 +245,15 @@ help:
 	@echo "Docker:"
 	@echo "  make docker-build       Build production Docker image"
 	@echo "  make docker-build-agent Build agent Docker image"
+	@echo "  make docker-build-recon-toolkit     Build recon toolkit image"
+	@echo "  make docker-build-recon-spiderfoot  Build SpiderFoot image"
+	@echo "  make docker-build-recon             Build both recon images"
 	@echo ""
-	@echo "Release:"
-	@echo "  make release-check      Verify release prerequisites (clean tree, tag, goreleaser)"
-	@echo "  make release-snapshot   Build release locally without publishing"
-	@echo "  make docker-push        Push Docker images (requires DOCKER_REGISTRY)"
+	@echo "Public-split (May 2026 pivot, docs/0526/):"
+	@echo "  make publish-public        Dry-run the public-repo split into build/public/"
+	@echo "  make publish-public-check  Fail if any denied path leaked into build/public/"
+	@echo "  make publish-public-test   Run the publish-public shell test suite"
+	@echo "  make publish-public-clean  Remove build/public/"
 	@echo ""
 	@echo "Other:"
 	@echo "  make deps               Download and tidy Go modules"

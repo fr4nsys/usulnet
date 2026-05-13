@@ -415,7 +415,7 @@ func (s *SFTPStorage) Reconnect(ctx context.Context) error {
 	// Create new connection
 	newStorage, err := NewSFTPStorage(ctx, s.config)
 	if err != nil {
-		return fmt.Errorf("reconnect to SFTP server: %w", err)
+		return err
 	}
 
 	// Replace fields

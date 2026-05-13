@@ -168,7 +168,7 @@ func (h *Handler) WebhookCreate(w http.ResponseWriter, r *http.Request) {
 		Name:        name,
 		URL:         webhookURL,
 		Events:      events,
-		IsEnabled:   r.FormValue("is_enabled") == "on" || r.FormValue("is_enabled") == "true",
+		IsEnabled:   r.FormValue("is_enabled") == "on",
 		RetryCount:  retryCount,
 		TimeoutSecs: timeoutSecs,
 	}
@@ -259,7 +259,7 @@ func (h *Handler) WebhookUpdate(w http.ResponseWriter, r *http.Request) {
 	existing.Name = name
 	existing.URL = webhookURL
 	existing.Events = events
-	existing.IsEnabled = r.FormValue("is_enabled") == "on" || r.FormValue("is_enabled") == "true"
+	existing.IsEnabled = r.FormValue("is_enabled") == "on"
 	existing.RetryCount = retryCount
 	existing.TimeoutSecs = timeoutSecs
 
@@ -335,7 +335,7 @@ func (h *Handler) AutoDeployCreate(w http.ResponseWriter, r *http.Request) {
 		SourceType: r.FormValue("source_type"),
 		SourceRepo: sourceRepo,
 		Action:     r.FormValue("action"),
-		IsEnabled:  r.FormValue("is_enabled") == "on" || r.FormValue("is_enabled") == "true",
+		IsEnabled:  r.FormValue("is_enabled") == "on",
 	}
 
 	if branch := r.FormValue("source_branch"); branch != "" {

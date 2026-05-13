@@ -53,6 +53,7 @@ func (r *NotificationConfigRepository) SaveChannelConfig(ctx context.Context, co
 			updated_at = EXCLUDED.updated_at
 	`
 
+	// JSONB columns bound as string; see encodeJSONObject in recon_repo.go.
 	_, err = r.db.Pool().Exec(ctx, query,
 		config.Name,
 		config.Type,
@@ -212,18 +213,14 @@ func (r *NotificationConfigRepository) SaveRoutingRules(ctx context.Context, rul
 		categoriesJSON, _ := json.Marshal(rule.Categories)
 		channelsJSON, _ := json.Marshal(rule.Channels)
 		excludeJSON, _ := json.Marshal(rule.ExcludeChannels)
-
+		
 		var timeWindowJSON []byte
 		if rule.TimeWindow != nil {
 			timeWindowJSON, _ = json.Marshal(rule.TimeWindow)
 		}
 
-		var timeWindowStr *string
-		if timeWindowJSON != nil {
-			s := string(timeWindowJSON)
-			timeWindowStr = &s
-		}
-
+		// JSONB columns bound as string; nullable time_window keeps SQL NULL
+		// when the rule has no window. See encodeJSONObject in recon_repo.go.
 		_, err := tx.Exec(ctx, query,
 			rule.Name,
 			rule.Enabled,
@@ -232,7 +229,7 @@ func (r *NotificationConfigRepository) SaveRoutingRules(ctx context.Context, rul
 			string(categoriesJSON),
 			string(channelsJSON),
 			string(excludeJSON),
-			timeWindowStr,
+			nullableJSONBytes(timeWindowJSON),
 			i, // position for ordering
 		)
 		if err != nil {

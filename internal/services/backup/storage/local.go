@@ -58,7 +58,7 @@ func (s *LocalStorage) Write(ctx context.Context, path string, reader io.Reader,
 	// Validate path
 	fullPath, err := s.resolvePath(path)
 	if err != nil {
-		return fmt.Errorf("resolve write path: %w", err)
+		return err
 	}
 
 	// Create parent directory
@@ -115,7 +115,7 @@ func (s *LocalStorage) Write(ctx context.Context, path string, reader io.Reader,
 func (s *LocalStorage) Read(ctx context.Context, path string) (io.ReadCloser, error) {
 	fullPath, err := s.resolvePath(path)
 	if err != nil {
-		return nil, fmt.Errorf("resolve read path: %w", err)
+		return nil, err
 	}
 
 	file, err := os.Open(fullPath)
@@ -133,7 +133,7 @@ func (s *LocalStorage) Read(ctx context.Context, path string) (io.ReadCloser, er
 func (s *LocalStorage) Delete(ctx context.Context, path string) error {
 	fullPath, err := s.resolvePath(path)
 	if err != nil {
-		return fmt.Errorf("resolve delete path: %w", err)
+		return err
 	}
 
 	if err := os.Remove(fullPath); err != nil {
@@ -153,7 +153,7 @@ func (s *LocalStorage) Delete(ctx context.Context, path string) error {
 func (s *LocalStorage) Exists(ctx context.Context, path string) (bool, error) {
 	fullPath, err := s.resolvePath(path)
 	if err != nil {
-		return false, fmt.Errorf("resolve exists path: %w", err)
+		return false, err
 	}
 
 	_, err = os.Stat(fullPath)
@@ -199,7 +199,7 @@ func (s *LocalStorage) List(ctx context.Context, prefix string) ([]backup.Storag
 			if os.IsNotExist(err) {
 				return nil
 			}
-			return fmt.Errorf("list storage entries: walk %q: %w", path, err)
+			return err
 		}
 
 		// Check for cancellation
@@ -351,7 +351,7 @@ func copyWithContext(ctx context.Context, dst io.Writer, src io.Reader) (int64, 
 func (s *LocalStorage) EnsureSpace(ctx context.Context, requiredBytes int64) error {
 	stats, err := s.Stats(ctx)
 	if err != nil {
-		return fmt.Errorf("ensure storage space: get stats: %w", err)
+		return err
 	}
 
 	// Add 10% buffer

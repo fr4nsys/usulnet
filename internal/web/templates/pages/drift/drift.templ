@@ -236,11 +236,6 @@ templ driftRow(d DriftView) {
 						<i class="fas fa-wrench text-sm"></i>
 					</button>
 				</form>
-				<form method="POST" action={ templ.SafeURL(fmt.Sprintf("/drift/%s/set-baseline", d.ID)) } class="inline">
-					<button type="submit" class="p-1.5 text-gray-400 hover:text-blue-400 transition-colors" title="Set current state as baseline">
-						<i class="fas fa-bookmark text-sm"></i>
-					</button>
-				</form>
 			}
 		</div>
 	</div>

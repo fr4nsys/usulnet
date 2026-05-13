@@ -154,9 +154,9 @@ func (t *TelegramChannel) Send(ctx context.Context, msg RenderedMessage) error {
 // Test sends a test notification to verify configuration.
 func (t *TelegramChannel) Test(ctx context.Context) error {
 	testMsg := RenderedMessage{
-		Title:     "USULNET Test Notification",
-		Body:      "This is a test notification from USULNET to verify Telegram integration.",
-		BodyPlain: "This is a test notification from USULNET to verify Telegram integration.",
+		Title:     "usulnet Test Notification",
+		Body:      "This is a test notification from usulnet to verify Telegram integration.",
+		BodyPlain: "This is a test notification from usulnet to verify Telegram integration.",
 		Priority:  PriorityNormal,
 		Timestamp: time.Now(),
 		Type:      TypeTestMessage,

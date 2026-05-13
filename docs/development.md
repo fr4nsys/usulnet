@@ -17,6 +17,7 @@
 8. [Testing](#testing)
 9. [Pull Request Process](#pull-request-process)
 10. [Common Development Tasks](#common-development-tasks)
+11. [Profiling](#profiling)
 
 ---
 
@@ -605,6 +606,203 @@ curl http://localhost:8222/varz
 # Check Docker socket
 curl --unix-socket /var/run/docker.sock http://localhost/version
 ```
+
+---
+
+## Profiling
+
+The Go runtime ships with first-class CPU and heap profilers; this
+section is the repeatable procedure for using them against usulnet.
+
+The goal is not to chase micro-optimizations — it's to find the
+*real* hot paths and prove any change pays for itself with a
+benchmark before/after. Two rules govern this loop:
+
+1. **Numbers come from the same machine on the same load.** Capture
+   the baseline (`git stash`), pop the patch, capture the after run.
+   Never compare a stash-pop after to a number you wrote down hours
+   earlier — machine load drift is huge and will fool you.
+2. **<5% improvement is noise — drop the change.** Use
+   `-benchtime=5s -count=8` so per-bench variance is small enough
+   for a 5% delta to actually mean something. If the delta is
+   smaller than that, your change is decoration, not optimization.
+
+### Tools
+
+| Tool | Install | Purpose |
+|---|---|---|
+| `go test -bench` | bundled with Go | Repeatable micro-benchmarks (the source of truth for "is this faster?"). |
+| `go tool pprof` | bundled with Go | Analyze CPU and heap profiles. |
+| `hey` | `go install github.com/rakyll/hey@latest` | Hammer a running server when you want a profile that reflects real HTTP traffic. |
+| `k6` | https://k6.io | Optional — `tests/load/k6_api_test.js` is shipped; use it for scripted scenarios that hit auth + multiple endpoints. |
+
+### Baseline benchmarks (per-PR before/after)
+
+`tests/benchmarks/benchmark_test.go` covers the API hot paths
+(router, JWT, JSON, health, paginated responses). The repeatable
+A/B loop:
+
+```bash
+# 1. Baseline (current code).
+git stash
+go test -bench=. -benchmem -benchtime=5s -count=8 \
+    ./tests/benchmarks/ | tee /tmp/profile/bench-before.txt
+
+# 2. Apply the change.
+git stash pop
+
+# 3. After.
+go test -bench=. -benchmem -benchtime=5s -count=8 \
+    ./tests/benchmarks/ | tee /tmp/profile/bench-after.txt
+
+# 4. Compare (benchstat is the canonical diff tool).
+go install golang.org/x/perf/cmd/benchstat@latest
+benchstat /tmp/profile/bench-before.txt /tmp/profile/bench-after.txt
+```
+
+Paste the `benchstat` output into the PR body. The Liveness fast-path
+in #46 is the worked example — `ns/op -9.0%`, `B/op -5.6%`,
+`allocs/op -14.3%`, all comfortably above the 5% noise floor.
+
+### CPU and heap profiles from the benchmarks
+
+When the question is *which line* dominates, capture profiles from
+the benchmark binary itself — they're reproducible across machines
+and don't need any server up:
+
+```bash
+mkdir -p /tmp/profile
+go test -bench=. -benchmem -benchtime=5s -count=1 \
+    -cpuprofile=/tmp/profile/cpu.prof \
+    -memprofile=/tmp/profile/mem.prof \
+    ./tests/benchmarks/
+
+# Top-N flat (where time is *spent*, not just attributed):
+go tool pprof -top -flat -nodecount=20 \
+    ./tests/benchmarks/benchmarks.test /tmp/profile/cpu.prof
+
+# Top-N cumulative (which call tree owns the cost):
+go tool pprof -top -cum -nodecount=15 \
+    ./tests/benchmarks/benchmarks.test /tmp/profile/cpu.prof
+
+# Drill into a specific function (use the symbol shown by -top):
+go tool pprof -list 'SystemHandler.*Health' \
+    ./tests/benchmarks/benchmarks.test /tmp/profile/cpu.prof
+
+# Heap (objects allocated, not just bytes — alloc count usually
+# dominates GC pressure):
+go tool pprof -top -alloc_objects -nodecount=15 \
+    ./tests/benchmarks/benchmarks.test /tmp/profile/mem.prof
+```
+
+### Profiles from a running server (real traffic shape)
+
+The benchmarks miss anything outside the API hot path (DB queries,
+templated HTML, websocket terminal, background workers). For those,
+profile against a running `usulnet serve` while a load generator
+hammers it:
+
+```bash
+# Terminal 1 — run the server.
+make dev-up
+USULNET_RECON_ENABLED=true make run
+
+# Terminal 2 — sustained load. Pick whichever shape matches what
+# you're investigating. JWT auth path:
+TOKEN=$(curl -sS -X POST http://127.0.0.1:8080/api/v1/auth/login \
+    -H 'Content-Type: application/json' \
+    -d '{"username":"admin","password":"usulnet"}' | jq -r .access_token)
+hey -z 60s -c 50 \
+    -H "Authorization: Bearer $TOKEN" \
+    http://127.0.0.1:8080/api/v1/containers
+
+# Terminal 3 — capture CPU + heap concurrently.
+go tool pprof -seconds=30 \
+    http://127.0.0.1:8080/debug/pprof/profile > /tmp/profile/cpu-live.prof
+go tool pprof http://127.0.0.1:8080/debug/pprof/heap > /tmp/profile/heap-live.prof
+```
+
+> **Note (v26.5.0)**: the `/debug/pprof` endpoints are not wired into
+> the API router yet; profiling a running server today still goes
+> through the benchmark binary, or requires a debug build that
+> imports `net/http/pprof`. Adding a config-gated `/debug/pprof`
+> mount on a separate listener is a small, isolated follow-up that
+> belongs in its own PR.
+
+### Baseline snapshot — May 2026
+
+Reference numbers from `tests/benchmarks/` on an Intel Xeon @ 2.10 GHz,
+4 cores, Go 1.25.7, `-benchtime=5s -count=1`. Use them to spot
+regressions, not as a fixed target — machine drift makes absolute
+numbers noisy across hardware.
+
+| Benchmark | ns/op | B/op | allocs/op |
+|---|---:|---:|---:|
+| `LivenessEndpoint` (post-#46) | 4 638 | 7 053 | 30 |
+| `HealthEndpoint` (2 checkers) | 7 464 | 8 273 | 50 |
+| `HealthWithMultipleCheckers` (4 checkers) | 9 696 | 9 158 | 68 |
+| `AuthenticatedRequest` | 123 168 | 13 187 | 117 |
+| `JWTTokenGeneration` | 4 186 | 2 905 | 34 |
+| `JWTTokenValidation` | 6 794 | 3 264 | 53 |
+| `JSONSerialization` | 1 294 | 512 | 7 |
+| `JSONDeserialization` | 1 201 | 1 008 | 10 |
+| `PaginatedResponse` (100 items, `[]map[string]any`) | 62 421 | 27 859 | 703 |
+
+**Top cumulative CPU contributors** (from the May-2026 baseline run):
+
+1. `runtime.mallocgc` — ~27 % cum. Allocation-heavy: any reduction
+   in per-request allocs feeds back here.
+2. `encoding/json` (`mapEncoder.encode`, `structEncoder.encode`,
+   `appendString`) — ~19 % cum. Map-shaped payloads are the
+   expensive case (key sort, reflection, per-element encoder
+   lookup); typed structs are several times cheaper. The
+   `PaginatedResponse` benchmark's 703 allocs/op is the smoking
+   gun — it's encoding `[]map[string]any`.
+3. `chi/v5.(*Mux).ServeHTTP` — ~19 % cum. Routing trie walk plus
+   middleware orchestration. Hard to move without forking chi;
+   middleware ordering is the lever we control.
+4. JWT validation (`jwt.ParseWithClaims` + HMAC SHA-256) — ~1 % cum
+   flat, but the dominant per-call cost on
+   `AuthenticatedRequest`. CPU-bound HMAC; the practical lever is
+   caching validated tokens for short windows when the token store
+   already supports it.
+
+### Known wins shipped so far
+
+- **#46 — Liveness fast-path.** Pre-encoded response body.
+  -9.0 % ns/op, -14.3 % allocs/op.
+
+### Catalogued non-wins (and why)
+
+These were tried and rejected because they didn't clear the 5%
+threshold or because the win was masked by an unrelated bottleneck.
+Recorded here so future profiling rounds don't redo the work:
+
+- **Health-handler single-checker fast-path.** A synchronous code
+  path for the `n == 1` case avoids a goroutine spawn, the
+  `WaitGroup`, the per-component mutex and a `context.WithTimeout`
+  child. Real win — but the existing `BenchmarkHealthEndpoint`
+  setup uses 2 mock checkers and `BenchmarkHealthWithMultipleCheckers`
+  uses 4, so the optimised branch is never executed. The win would
+  only show up against a new single-checker benchmark; not in this
+  series.
+- **Hoisting the per-request `secrets` slice in
+  `middleware.Auth`.** ~40 B and one `append` per authenticated
+  request. Total impact on `BenchmarkAuthenticatedRequest`
+  (~13 kB/req) is well below 1 % — drowned in JWT verification
+  cost. Skipped.
+
+### Profiling fix workflow
+
+1. Pick **one** hot path. Don't stack optimisations.
+2. Capture before with `-count=8` so per-run jitter washes out.
+3. Make the change.
+4. Capture after the same way. Run `benchstat`.
+5. **≥ 5 % on at least one of `ns/op`, `B/op`, `allocs/op`?** Ship
+   it (one PR per fix), paste the `benchstat` table in the PR body.
+6. **< 5 %?** Drop the change. Add a brief entry to the
+   "Catalogued non-wins" list above so the next profiler doesn't
+   chase the same dead end.
 
 ---
 

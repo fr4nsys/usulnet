@@ -8,6 +8,7 @@ import (
 	"context"
 	"fmt"
 	"net"
+	"strconv"
 	"time"
 
 	"github.com/google/uuid"
@@ -131,7 +132,7 @@ func (s *Service) TestConnection(ctx context.Context, id uuid.UUID) (bool, strin
 		return false, "Connection not found", 0, err
 	}
 
-	addr := net.JoinHostPort(conn.Host, fmt.Sprintf("%d", conn.Port))
+	addr := net.JoinHostPort(conn.Host, strconv.Itoa(conn.Port))
 	start := time.Now()
 	tcpConn, err := net.DialTimeout("tcp", addr, 5*time.Second)
 	latency := time.Since(start)

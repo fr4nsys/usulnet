@@ -78,6 +78,36 @@ type ContainerCreateOptions struct {
 	NetworkID      string
 	NetworkAliases []string
 	IPAddress      string
+
+	// Sandbox hardening (added for recon module sandbox launcher).
+	// Setting these via the existing options struct keeps the recon
+	// launcher on the public *Client API without spawning a parallel
+	// docker SDK client.
+
+	// ReadonlyRootfs mounts the container's root filesystem read-only.
+	ReadonlyRootfs bool
+
+	// SecurityOpt sets per-container security options (e.g.
+	// "no-new-privileges:true", "seccomp=default").
+	SecurityOpt []string
+
+	// Tmpfs maps in-container mount paths to tmpfs option strings
+	// (e.g. {"/tmp": "size=128m,exec"}).
+	Tmpfs map[string]string
+
+	// PidsLimit caps the number of PIDs the container may spawn.
+	// Zero (the default) means no cap; the sandbox launcher always
+	// sets a positive value.
+	PidsLimit int64
+}
+
+// pidsLimitPtr returns a pointer to n unless n is zero, in which case
+// nil tells Docker to leave the PID limit unset (host default).
+func pidsLimitPtr(n int64) *int64 {
+	if n == 0 {
+		return nil
+	}
+	return &n
 }
 
 // ContainerList returns a list of containers
@@ -90,9 +120,6 @@ func (c *Client) ContainerList(ctx context.Context, opts ContainerListOptions) (
 	if c.closed {
 		return nil, errors.New(errors.CodeDockerConnection, "client is closed")
 	}
-
-	ctx, cancel := context.WithTimeout(ctx, c.timeout)
-	defer cancel()
 
 	// Build filters
 	f := filters.NewArgs()
@@ -135,9 +162,6 @@ func (c *Client) ContainerGet(ctx context.Context, containerID string) (*Contain
 		return nil, errors.New(errors.CodeDockerConnection, "client is closed")
 	}
 
-	ctx, cancel := context.WithTimeout(ctx, c.timeout)
-	defer cancel()
-
 	inspect, err := c.cli.ContainerInspect(ctx, containerID)
 	if err != nil {
 		if client.IsErrNotFound(err) {
@@ -161,9 +185,6 @@ func (c *Client) ContainerInspectRaw(ctx context.Context, containerID string) (t
 	if c.closed {
 		return types.ContainerJSON{}, errors.New(errors.CodeDockerConnection, "client is closed")
 	}
-
-	ctx, cancel := context.WithTimeout(ctx, c.timeout)
-	defer cancel()
 
 	inspect, err := c.cli.ContainerInspect(ctx, containerID)
 	if err != nil {
@@ -230,12 +251,15 @@ func (c *Client) ContainerCreate(ctx context.Context, opts ContainerCreateOption
 			Name:              container.RestartPolicyMode(opts.RestartPolicy.Name),
 			MaximumRetryCount: opts.RestartPolicy.MaximumRetryCount,
 		},
-		AutoRemove: opts.AutoRemove,
-		Privileged: opts.Privileged,
-		CapAdd:     opts.CapAdd,
-		CapDrop:    opts.CapDrop,
-		DNS:        opts.DNS,
-		ExtraHosts: opts.ExtraHosts,
+		AutoRemove:     opts.AutoRemove,
+		Privileged:     opts.Privileged,
+		CapAdd:         opts.CapAdd,
+		CapDrop:        opts.CapDrop,
+		DNS:            opts.DNS,
+		ExtraHosts:     opts.ExtraHosts,
+		ReadonlyRootfs: opts.ReadonlyRootfs,
+		SecurityOpt:    opts.SecurityOpt,
+		Tmpfs:          opts.Tmpfs,
 		Resources: container.Resources{
 			Memory:     opts.Memory,
 			MemorySwap: opts.MemorySwap,
@@ -243,6 +267,7 @@ func (c *Client) ContainerCreate(ctx context.Context, opts ContainerCreateOption
 			CPUPeriod:  opts.CPUPeriod,
 			CPUQuota:   opts.CPUQuota,
 			NanoCPUs:   opts.NanoCPUs,
+			PidsLimit:  pidsLimitPtr(opts.PidsLimit),
 			Devices:    devices,
 		},
 	}
@@ -742,6 +767,19 @@ func (c *Client) ContainerCopyFromContainer(ctx context.Context, containerID, sr
 	}
 
 	return reader, stat, nil
+}
+
+// ContainerCopyFileStream is a thin wrapper over ContainerCopyFromContainer
+// that drops the PathStat result. The recon sandbox launcher uses this
+// when extracting a single artefact (e.g., a cleaned file produced by
+// mat2) out of a stopped one-shot container; the PathStat metadata is
+// not needed in that path.
+func (c *Client) ContainerCopyFileStream(ctx context.Context, containerID, srcPath string) (io.ReadCloser, error) {
+	rc, _, err := c.ContainerCopyFromContainer(ctx, containerID, srcPath)
+	if err != nil {
+		return nil, err
+	}
+	return rc, nil
 }
 
 // WaitForHealthy waits for a container to become healthy

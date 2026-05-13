@@ -154,10 +154,9 @@ templ Schedules(data SchedulesData) {
 					</div>
 
 					<!-- Target -->
-					<input type="hidden" name="target_name" id="sched-target-name" value=""/>
 					<div id="sched-target-container">
 						<label class="block text-sm font-medium text-gray-300 mb-2">Container</label>
-						<select name="target_id" id="sched-container-select" class="input">
+						<select name="target_id" class="input">
 							<option value="">Select...</option>
 							for _, c := range data.Containers {
 								<option value={ c.ID }>{ c.Name }</option>
@@ -229,43 +228,12 @@ templ Schedules(data SchedulesData) {
 		</dialog>
 
 		<script>
-			(function() {
-				var typeSelect = document.getElementById('schedule-type-select');
-				var nameField = document.getElementById('sched-target-name');
-
-				typeSelect.addEventListener('change', function() {
-					document.getElementById('sched-target-container').classList.add('hidden');
-					document.getElementById('sched-target-volume').classList.add('hidden');
-					document.getElementById('sched-target-stack').classList.add('hidden');
-					document.getElementById('sched-target-' + this.value).classList.remove('hidden');
-					nameField.value = '';
-				});
-
-				// Container select: capture human-readable name
-				var containerSel = document.getElementById('sched-container-select');
-				if (containerSel) {
-					containerSel.addEventListener('change', function() {
-						var opt = this.options[this.selectedIndex];
-						nameField.value = opt ? opt.text : '';
-					});
-				}
-
-				// Volume select: name === value, just copy it
-				var volumeSel = document.querySelector('#sched-target-volume select');
-				if (volumeSel) {
-					volumeSel.addEventListener('change', function() {
-						nameField.value = this.value;
-					});
-				}
-
-				// Stack select: name === value, just copy it
-				var stackSel = document.querySelector('#sched-target-stack select');
-				if (stackSel) {
-					stackSel.addEventListener('change', function() {
-						nameField.value = this.value;
-					});
-				}
-			})();
+			document.getElementById('schedule-type-select').addEventListener('change', function() {
+				document.getElementById('sched-target-container').classList.add('hidden');
+				document.getElementById('sched-target-volume').classList.add('hidden');
+				document.getElementById('sched-target-stack').classList.add('hidden');
+				document.getElementById('sched-target-' + this.value).classList.remove('hidden');
+			});
 		</script>
 	}
 }

@@ -128,7 +128,7 @@ func GetWorkerDescriptions() []WorkerInfo {
 		{Type: "volume_prune", Description: "Removes unused Docker volumes"},
 		{Type: "network_prune", Description: "Removes unused Docker networks"},
 		{Type: "stack_deploy", Description: "Deploys or updates a compose stack"},
-		{Type: "proxy_sync", Description: "Synchronizes reverse proxy configuration"},
+		{Type: "npm_sync", Description: "Synchronizes with Nginx Proxy Manager"},
 		{Type: "host_inventory", Description: "Collects complete inventory of Docker resources on a host"},
 		{Type: "metrics_collection", Description: "Collects resource usage metrics from host and containers"},
 		{Type: "cleanup", Description: "Performs system cleanup (images, volumes, networks, old jobs)"},

@@ -9,7 +9,6 @@ import (
 	"crypto/x509"
 	_ "embed"
 	"encoding/pem"
-	"errors"
 	"fmt"
 	"time"
 
@@ -19,6 +18,7 @@ import (
 //go:embed keys/public.pem
 var publicKeyPEM []byte
 
+// Claims are the JWT payload fields inside a usulnet license key.
 type Claims struct {
 	LicenseID string    `json:"lid"`
 	EmailHash string    `json:"eml"`
@@ -29,10 +29,12 @@ type Claims struct {
 	jwt.RegisteredClaims
 }
 
+// Validator verifies license JWTs using the embedded RSA-4096 public key.
 type Validator struct {
 	publicKey *rsa.PublicKey
 }
 
+// NewValidator parses the embedded public key and returns a ready Validator.
 func NewValidator() (*Validator, error) {
 	block, _ := pem.Decode(publicKeyPEM)
 	if block == nil {
@@ -56,9 +58,12 @@ func NewValidator() (*Validator, error) {
 	return &Validator{publicKey: rsaPub}, nil
 }
 
+// Validate parses and cryptographically verifies a license JWT string.
+// Returns the validated claims or an error explaining the failure.
 func (v *Validator) Validate(licenseKey string) (*Claims, error) {
 	token, err := jwt.ParseWithClaims(licenseKey, &Claims{},
 		func(token *jwt.Token) (interface{}, error) {
+			// Reject any algorithm except RS512 (prevents alg=none and alg=HS* attacks)
 			if token.Method.Alg() != "RS512" {
 				return nil, fmt.Errorf("license: unexpected signing algorithm %q, expected RS512", token.Method.Alg())
 			}
@@ -77,12 +82,15 @@ func (v *Validator) Validate(licenseKey string) (*Claims, error) {
 		return nil, fmt.Errorf("license: invalid claims")
 	}
 
+	// Validate edition
 	switch claims.Edition {
 	case Business, Enterprise:
+		// ok
 	default:
 		return nil, fmt.Errorf("license: unknown edition %q", claims.Edition)
 	}
 
+	// Validate license ID prefix
 	if len(claims.LicenseID) < 4 || claims.LicenseID[:4] != "USN-" {
 		return nil, fmt.Errorf("license: invalid license ID format")
 	}
@@ -90,6 +98,11 @@ func (v *Validator) Validate(licenseKey string) (*Claims, error) {
 	return claims, nil
 }
 
+// ClaimsToInfo converts validated JWT claims into a runtime Info struct.
+// When the JWT does not contain an explicit features list, the full set
+// of features for the edition is used (AllBusinessFeatures or
+// AllEnterpriseFeatures). This ensures that a license JWT that relies on
+// the edition field alone still grants access to all edition features.
 func ClaimsToInfo(claims *Claims, instanceID string) *Info {
 	info := &Info{
 		Edition:    claims.Edition,
@@ -106,9 +119,12 @@ func ClaimsToInfo(claims *Claims, instanceID string) *Info {
 		}
 	}
 
+	// Build limits and resolve features from claims + edition defaults
 	switch claims.Edition {
 	case Business:
 		info.Limits = BusinessDefaultLimits()
+		// Purchased nodes (from JWT "nod") are added on top of the CE base
+		// so a customer who buys 3 nodes gets 3 + 1 (CE) = 4 total.
 		if claims.MaxNodes > 0 {
 			info.Limits.MaxNodes = claims.MaxNodes + CEBaseNodes
 		}
@@ -122,99 +138,19 @@ func ClaimsToInfo(claims *Claims, instanceID string) *Info {
 	return info
 }
 
-type ReceiptLimits struct {
-	MaxNodes                int `json:"nod"`
-	MaxUsers                int `json:"usr"`
-	MaxTeams                int `json:"tea"`
-	MaxLDAPServers          int `json:"ldp"`
-	MaxOAuthProviders       int `json:"oau"`
-	MaxAPIKeys              int `json:"apk"`
-	MaxGitConnections       int `json:"git"`
-	MaxS3Connections        int `json:"s3c"`
-	MaxBackupDestinations   int `json:"bkp"`
-	MaxNotificationChannels int `json:"ntf"`
-}
-
-func (rl ReceiptLimits) ToLimits() Limits {
-	return Limits{
-		MaxNodes:                rl.MaxNodes,
-		MaxUsers:                rl.MaxUsers,
-		MaxTeams:                rl.MaxTeams,
-		MaxLDAPServers:          rl.MaxLDAPServers,
-		MaxOAuthProviders:       rl.MaxOAuthProviders,
-		MaxAPIKeys:              rl.MaxAPIKeys,
-		MaxGitConnections:       rl.MaxGitConnections,
-		MaxS3Connections:        rl.MaxS3Connections,
-		MaxBackupDestinations:   rl.MaxBackupDestinations,
-		MaxNotificationChannels: rl.MaxNotificationChannels,
-	}
-}
-
-type ReceiptClaims struct {
-	LicenseID  string        `json:"lid"`
-	InstanceID string        `json:"iid"`
-	Edition    Edition       `json:"edt"`
-	Limits     ReceiptLimits `json:"lim"`
-	Features   []Feature     `json:"fts"`
-	jwt.RegisteredClaims
-}
-
-func (v *Validator) ValidateReceipt(receiptJWT, expectedInstanceID string) (*ReceiptClaims, error) {
-	token, err := jwt.ParseWithClaims(receiptJWT, &ReceiptClaims{},
-		func(token *jwt.Token) (interface{}, error) {
-			if token.Method.Alg() != "RS512" {
-				return nil, fmt.Errorf("license: unexpected receipt algorithm %q, expected RS512", token.Method.Alg())
-			}
-			return v.publicKey, nil
-		},
-		jwt.WithValidMethods([]string{"RS512"}),
-		jwt.WithExpirationRequired(),
-		jwt.WithIssuedAt(),
-	)
-	if err != nil {
-		return nil, fmt.Errorf("license: invalid activation receipt: %w", err)
-	}
-
-	claims, ok := token.Claims.(*ReceiptClaims)
-	if !ok || !token.Valid {
-		return nil, fmt.Errorf("license: invalid activation receipt claims")
-	}
-
-	if claims.InstanceID != expectedInstanceID {
-		return nil, fmt.Errorf("license: receipt instance mismatch (receipt bound to %q, this instance is %q)",
-			claims.InstanceID, expectedInstanceID)
-	}
-
-	return claims, nil
-}
-
-func (v *Validator) ParseReceiptClaims(receiptJWT string) (*ReceiptClaims, error) {
-	token, err := jwt.ParseWithClaims(receiptJWT, &ReceiptClaims{},
-		func(token *jwt.Token) (interface{}, error) {
-			if token.Method.Alg() != "RS512" {
-				return nil, fmt.Errorf("license: unexpected receipt algorithm %q", token.Method.Alg())
-			}
-			return v.publicKey, nil
-		},
-		jwt.WithValidMethods([]string{"RS512"}),
-	)
-	if err != nil && !errors.Is(err, jwt.ErrTokenExpired) {
-		return nil, fmt.Errorf("license: cannot parse receipt: %w", err)
-	}
-
-	claims, ok := token.Claims.(*ReceiptClaims)
-	if !ok {
-		return nil, fmt.Errorf("license: invalid receipt claims structure")
-	}
-
-	return claims, nil
-}
-
+// resolveFeatures returns the effective feature set for a license.
+// If the JWT provides an explicit feature list, the result is the union
+// of that list with the edition defaults — ensuring no edition feature
+// is accidentally omitted. If the JWT list is empty, the full edition
+// defaults are used.
 func resolveFeatures(jwtFeatures []Feature, editionDefaults []Feature) []Feature {
 	if len(jwtFeatures) == 0 {
 		return editionDefaults
 	}
 
+	// Build a set from edition defaults, then merge any JWT-explicit features
+	// that may not be in the defaults (forward-compatibility: a newer JWT
+	// could grant features not yet known to this binary's defaults).
 	seen := make(map[Feature]struct{}, len(editionDefaults)+len(jwtFeatures))
 	merged := make([]Feature, 0, len(editionDefaults)+len(jwtFeatures))
 

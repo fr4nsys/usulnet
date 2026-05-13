@@ -653,7 +653,7 @@ templ NotificationChannels(data NotificationChannelsData) {
 							const resp = await fetch('/admin/notifications/channels/' + encodeURIComponent(name) + '/test', {
 								method: 'POST',
 								headers: {
-									'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]')?.content || ''
+									'X-CSRF-Token': document.querySelector('input[name="csrf_token"]')?.value || ''
 								}
 							});
 							const data = await resp.json();

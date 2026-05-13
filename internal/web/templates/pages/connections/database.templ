@@ -241,10 +241,7 @@ templ DatabaseConnectionsList(data DatabaseConnectionsListData) {
 			document.getElementById('new-connection-modal').classList.add('hidden');
 		}
 		function testConnection(id) {
-			fetch(`/connections/database/${id}/test`, {
-				method: 'POST',
-				headers: { 'X-CSRF-Token': document.querySelector('meta[name=csrf-token]')?.content || '' }
-			})
+			fetch(`/connections/database/${id}/test`, { method: 'POST' })
 				.then(r => r.json())
 				.then(data => {
 					if (data.success) {
@@ -469,13 +466,10 @@ templ DatabaseBrowser(data DatabaseBrowserData) {
 				toggleWriteMode() {
 					fetch(`/connections/database/${this.connID}/write-mode`, {
 						method: 'POST',
-						headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': document.querySelector('meta[name=csrf-token]')?.content || '' },
+						headers: { 'Content-Type': 'application/json' },
 						body: JSON.stringify({ enabled: this.writeEnabled })
-					}).then(resp => {
-						if (resp.ok) { location.reload(); }
-						else if (window.usulnet) { window.usulnet.toast('Failed to toggle write mode', 'error'); }
-					}).catch(() => {
-						if (window.usulnet) { window.usulnet.toast('Network error toggling write mode', 'error'); }
+					}).then(() => {
+						location.reload();
 					});
 				},
 
@@ -567,10 +561,7 @@ func boolToString(b bool) string {
 }
 
 script testDbConnection(id string) {
-	fetch(`/connections/database/${id}/test`, {
-		method: 'POST',
-		headers: { 'X-CSRF-Token': document.querySelector('meta[name=csrf-token]')?.content || '' }
-	})
+	fetch(`/connections/database/${id}/test`, { method: 'POST' })
 		.then(r => r.json())
 		.then(data => {
 			if (data.success) {

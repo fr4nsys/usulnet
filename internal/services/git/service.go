@@ -192,7 +192,7 @@ func (s *Service) DeleteConnection(ctx context.Context, id uuid.UUID) error {
 	}
 
 	if err := s.connRepo.Delete(ctx, id); err != nil {
-		return fmt.Errorf("delete git connection %s: %w", id, err)
+		return err
 	}
 	s.logger.Info("git connection deleted", "id", id)
 	return nil

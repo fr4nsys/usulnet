@@ -8,7 +8,6 @@ package dashboard
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 
 	"github.com/google/uuid"
 
@@ -167,7 +166,7 @@ func (s *Service) UpdateLayout(ctx context.Context, userID uuid.UUID, layoutID u
 func (s *Service) DeleteLayout(ctx context.Context, userID uuid.UUID, layoutID uuid.UUID) error {
 	layout, err := s.repo.GetLayout(ctx, layoutID)
 	if err != nil {
-		return fmt.Errorf("get layout for delete: %w", err)
+		return err
 	}
 
 	if layout.UserID == nil || *layout.UserID != userID {
@@ -316,12 +315,12 @@ func (s *Service) UpdateWidget(ctx context.Context, userID uuid.UUID, widgetID u
 func (s *Service) RemoveWidget(ctx context.Context, userID uuid.UUID, widgetID uuid.UUID) error {
 	widget, err := s.repo.GetWidget(ctx, widgetID)
 	if err != nil {
-		return fmt.Errorf("get widget for remove: %w", err)
+		return err
 	}
 
 	layout, err := s.repo.GetLayout(ctx, widget.LayoutID)
 	if err != nil {
-		return fmt.Errorf("get layout for widget remove: %w", err)
+		return err
 	}
 	if layout.UserID == nil || *layout.UserID != userID {
 		return errors.New(errors.CodeForbidden, "can only remove widgets from own layouts")

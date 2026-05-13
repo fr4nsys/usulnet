@@ -57,27 +57,27 @@ func webhookEventsStr(events []string) string {
 
 templ List(data WebhooksData) {
 	@layouts.Base(data.PageData) {
-		<div class="space-y-6" x-data="webhooksPage()">
+		<div class="p-6 space-y-6" x-data="webhooksPage()">
 			<div class="flex items-center justify-between">
 				<div>
-					<h1 class="text-2xl font-display font-bold text-white">Webhooks &amp; Automation</h1>
-					<p class="text-gray-400 mt-1">Configure outgoing webhooks and auto-deploy rules.</p>
+					<h1 class="text-2xl font-bold text-gray-900 dark:text-white">Webhooks & Automation</h1>
+					<p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Configure outgoing webhooks and auto-deploy rules.</p>
 				</div>
 			</div>
 
 			<!-- Tabs -->
-			<div class="border-b border-dark-600">
+			<div class="border-b border-gray-200 dark:border-gray-700">
 				<nav class="-mb-px flex space-x-8">
-					<a href="/webhooks?tab=webhooks" class={ "whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm", templ.KV("border-primary-500 text-primary-400", data.Tab == "webhooks" || data.Tab == ""), templ.KV("border-transparent text-gray-500 hover:text-gray-300 hover:border-dark-400", data.Tab != "webhooks" && data.Tab != "") }>
+					<a href="/webhooks?tab=webhooks" class={ "whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm", templ.KV("border-primary-500 text-primary-600 dark:text-primary-400", data.Tab == "webhooks" || data.Tab == ""), templ.KV("border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400", data.Tab != "webhooks" && data.Tab != "") }>
 						Outgoing Webhooks
-						<span class="ml-2 bg-dark-700 text-gray-300 py-0.5 px-2.5 rounded-full text-xs font-medium">{ lenStr(data.Webhooks) }</span>
+						<span class="ml-2 bg-gray-100 text-gray-900 dark:bg-gray-700 dark:text-gray-300 py-0.5 px-2.5 rounded-full text-xs font-medium">{ lenStr(data.Webhooks) }</span>
 					</a>
-					<a href="/webhooks?tab=deliveries" class={ "whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm", templ.KV("border-primary-500 text-primary-400", data.Tab == "deliveries"), templ.KV("border-transparent text-gray-500 hover:text-gray-300 hover:border-dark-400", data.Tab != "deliveries") }>
+					<a href="/webhooks?tab=deliveries" class={ "whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm", templ.KV("border-primary-500 text-primary-600 dark:text-primary-400", data.Tab == "deliveries"), templ.KV("border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400", data.Tab != "deliveries") }>
 						Delivery Log
 					</a>
-					<a href="/webhooks?tab=autodeploy" class={ "whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm", templ.KV("border-primary-500 text-primary-400", data.Tab == "autodeploy"), templ.KV("border-transparent text-gray-500 hover:text-gray-300 hover:border-dark-400", data.Tab != "autodeploy") }>
+					<a href="/webhooks?tab=autodeploy" class={ "whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm", templ.KV("border-primary-500 text-primary-600 dark:text-primary-400", data.Tab == "autodeploy"), templ.KV("border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400", data.Tab != "autodeploy") }>
 						Auto-Deploy
-						<span class="ml-2 bg-dark-700 text-gray-300 py-0.5 px-2.5 rounded-full text-xs font-medium">{ lenStr(data.AutoDeploy) }</span>
+						<span class="ml-2 bg-gray-100 text-gray-900 dark:bg-gray-700 dark:text-gray-300 py-0.5 px-2.5 rounded-full text-xs font-medium">{ lenStr(data.AutoDeploy) }</span>
 					</a>
 				</nav>
 			</div>
@@ -91,120 +91,120 @@ templ List(data WebhooksData) {
 			}
 
 			<!-- Webhook Create/Edit Modal -->
-			<div x-show="showWebhookModal" x-cloak class="fixed inset-0 z-50 flex items-center justify-center">
-				<div class="fixed inset-0 bg-black/50" @click="showWebhookModal = false"></div>
-				<div class="relative bg-dark-800 border border-dark-600 rounded-xl shadow-2xl w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto">
-					<form method="POST" :action="whEdit.id ? ('/webhooks/' + whEdit.id + '/update') : '/webhooks'">
-						<input type="hidden" name="csrf_token" value={ data.PageData.CSRFToken }/>
-						<div class="px-6 py-4 border-b border-dark-600">
-							<h3 class="text-lg font-medium text-white" x-text="whEdit.id ? 'Edit Webhook' : 'Create Outgoing Webhook'"></h3>
-						</div>
-						<div class="p-6 space-y-4">
-							<div>
-								<label class="block text-sm font-medium text-gray-300 mb-1">Name</label>
-								<input type="text" name="name" required x-model="whEdit.name" class="input"/>
-							</div>
-							<div>
-								<label class="block text-sm font-medium text-gray-300 mb-1">URL</label>
-								<input type="url" name="url" required x-model="whEdit.url" class="input"/>
-							</div>
-							<div>
-								<label class="block text-sm font-medium text-gray-300 mb-1">
-									HMAC Secret
-									<span class="text-gray-500 font-normal" x-show="whEdit.id">(leave blank to keep current)</span>
-								</label>
-								<input type="password" name="secret" class="input"/>
-							</div>
-							<div>
-								<label class="block text-sm font-medium text-gray-300 mb-1">Events (comma-separated)</label>
-								<input type="text" name="events" required x-model="whEdit.events" class="input" placeholder="container.start, container.stop, stack.deploy"/>
-								<p class="mt-1 text-xs text-gray-500">Events: container.start, container.stop, container.die, image.pull, stack.deploy, backup.completed, security.alert, host.offline</p>
-							</div>
-							<div>
-								<label class="block text-sm font-medium text-gray-300 mb-1">Custom Headers (JSON, optional)</label>
-								<textarea name="headers" rows="2" x-model="whEdit.headers" placeholder='{"X-Custom-Header": "value"}' class="input font-mono text-xs"></textarea>
-							</div>
-							<div class="grid grid-cols-2 gap-4">
+			<div x-show="showWebhookModal" x-cloak class="fixed inset-0 z-50 overflow-y-auto">
+				<div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+					<div x-show="showWebhookModal" class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" @click="showWebhookModal = false"></div>
+					<div x-show="showWebhookModal" class="inline-block align-bottom bg-white dark:bg-gray-800 rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6">
+						<form method="POST" :action="whEdit.id ? ('/webhooks/' + whEdit.id + '/update') : '/webhooks'">
+							<input type="hidden" name="csrf_token" value={ data.PageData.CSRFToken }/>
+							<h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4" x-text="whEdit.id ? 'Edit Webhook' : 'Create Outgoing Webhook'"></h3>
+							<div class="space-y-4">
 								<div>
-									<label class="block text-sm font-medium text-gray-300 mb-1">Retry Count</label>
-									<input type="number" name="retry_count" min="0" max="10" x-model="whEdit.retry_count" class="input"/>
+									<label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Name</label>
+									<input type="text" name="name" required x-model="whEdit.name" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white sm:text-sm"/>
 								</div>
 								<div>
-									<label class="block text-sm font-medium text-gray-300 mb-1">Timeout (seconds)</label>
-									<input type="number" name="timeout_secs" min="1" max="60" x-model="whEdit.timeout_secs" class="input"/>
+									<label class="block text-sm font-medium text-gray-700 dark:text-gray-300">URL</label>
+									<input type="url" name="url" required x-model="whEdit.url" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white sm:text-sm"/>
+								</div>
+								<div>
+									<label class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+										HMAC Secret
+										<span class="text-gray-400 font-normal" x-show="whEdit.id">(leave blank to keep current)</span>
+									</label>
+									<input type="password" name="secret" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white sm:text-sm"/>
+								</div>
+								<div>
+									<label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Events (comma-separated)</label>
+									<input type="text" name="events" required x-model="whEdit.events" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white sm:text-sm" placeholder="container.start, container.stop, stack.deploy"/>
+									<p class="mt-1 text-xs text-gray-400">Events: container.start, container.stop, container.die, image.pull, stack.deploy, backup.completed, security.alert, host.offline</p>
+								</div>
+								<div>
+									<label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Custom Headers (JSON, optional)</label>
+									<textarea name="headers" rows="2" x-model="whEdit.headers" placeholder='{"X-Custom-Header": "value"}' class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white sm:text-sm font-mono text-xs"></textarea>
+								</div>
+								<div class="grid grid-cols-2 gap-4">
+									<div>
+										<label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Retry Count</label>
+										<input type="number" name="retry_count" min="0" max="10" x-model="whEdit.retry_count" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white sm:text-sm"/>
+									</div>
+									<div>
+										<label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Timeout (seconds)</label>
+										<input type="number" name="timeout_secs" min="1" max="60" x-model="whEdit.timeout_secs" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white sm:text-sm"/>
+									</div>
+								</div>
+								<div class="flex items-center">
+									<input type="checkbox" name="is_enabled" id="wh_enabled" x-model="whEdit.is_enabled" class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"/>
+									<label for="wh_enabled" class="ml-2 block text-sm text-gray-700 dark:text-gray-300">Enable webhook</label>
 								</div>
 							</div>
-							<div class="flex items-center gap-2">
-								<input type="checkbox" name="is_enabled" id="wh_enabled" x-model="whEdit.is_enabled" class="rounded border-dark-600 bg-dark-700 text-primary-500"/>
-								<label for="wh_enabled" class="text-sm text-gray-300">Enable webhook</label>
+							<div class="mt-5 sm:mt-6 sm:flex sm:flex-row-reverse gap-3">
+								<button type="submit" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-primary-600 text-base font-medium text-white hover:bg-primary-700 sm:w-auto sm:text-sm" x-text="whEdit.id ? 'Update' : 'Create'"></button>
+								<button type="button" @click="showWebhookModal = false" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 sm:mt-0 sm:w-auto sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300">Cancel</button>
 							</div>
-						</div>
-						<div class="px-6 py-4 border-t border-dark-600 flex justify-end gap-3">
-							<button type="button" @click="showWebhookModal = false" class="btn-secondary">Cancel</button>
-							<button type="submit" class="btn-primary" x-text="whEdit.id ? 'Update' : 'Create'"></button>
-						</div>
-					</form>
+						</form>
+					</div>
 				</div>
 			</div>
 
 			<!-- Auto-Deploy Create Modal -->
-			<div x-show="showAutoDeployModal" x-cloak class="fixed inset-0 z-50 flex items-center justify-center">
-				<div class="fixed inset-0 bg-black/50" @click="showAutoDeployModal = false"></div>
-				<div class="relative bg-dark-800 border border-dark-600 rounded-xl shadow-2xl w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto">
-					<form method="POST" action="/webhooks/autodeploy">
-						<input type="hidden" name="csrf_token" value={ data.PageData.CSRFToken }/>
-						<div class="px-6 py-4 border-b border-dark-600">
-							<h3 class="text-lg font-medium text-white">Create Auto-Deploy Rule</h3>
-						</div>
-						<div class="p-6 space-y-4">
-							<div>
-								<label class="block text-sm font-medium text-gray-300 mb-1">Name</label>
-								<input type="text" name="name" required placeholder="e.g., Deploy on push" class="input"/>
+			<div x-show="showAutoDeployModal" x-cloak class="fixed inset-0 z-50 overflow-y-auto">
+				<div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+					<div x-show="showAutoDeployModal" class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" @click="showAutoDeployModal = false"></div>
+					<div x-show="showAutoDeployModal" class="inline-block align-bottom bg-white dark:bg-gray-800 rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6">
+						<form method="POST" action="/webhooks/autodeploy">
+							<input type="hidden" name="csrf_token" value={ data.PageData.CSRFToken }/>
+							<h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Create Auto-Deploy Rule</h3>
+							<div class="space-y-4">
+								<div>
+									<label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Name</label>
+									<input type="text" name="name" required placeholder="e.g., Deploy on push" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white sm:text-sm"/>
+								</div>
+								<div>
+									<label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Source Type</label>
+									<select name="source_type" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white sm:text-sm">
+										<option value="github">GitHub</option>
+										<option value="gitlab">GitLab</option>
+										<option value="gitea">Gitea</option>
+										<option value="dockerhub">Docker Hub</option>
+										<option value="registry">Container Registry</option>
+									</select>
+								</div>
+								<div>
+									<label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Source Repository</label>
+									<input type="text" name="source_repo" required placeholder="e.g., owner/repo or image:tag" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white sm:text-sm"/>
+								</div>
+								<div>
+									<label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Branch (optional)</label>
+									<input type="text" name="source_branch" placeholder="e.g., main" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white sm:text-sm"/>
+								</div>
+								<div>
+									<label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Action</label>
+									<select name="action" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white sm:text-sm">
+										<option value="pull_and_restart">Pull Image & Restart</option>
+										<option value="recreate">Recreate Container</option>
+										<option value="stack_redeploy">Redeploy Stack</option>
+									</select>
+								</div>
+								<div>
+									<label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Target Stack ID (optional)</label>
+									<input type="text" name="target_stack_id" placeholder="Stack UUID" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white sm:text-sm"/>
+								</div>
+								<div>
+									<label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Target Service (optional)</label>
+									<input type="text" name="target_service" placeholder="Service name within stack" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white sm:text-sm"/>
+								</div>
+								<div class="flex items-center">
+									<input type="checkbox" name="is_enabled" id="ad_enabled" checked class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"/>
+									<label for="ad_enabled" class="ml-2 block text-sm text-gray-700 dark:text-gray-300">Enable rule</label>
+								</div>
 							</div>
-							<div>
-								<label class="block text-sm font-medium text-gray-300 mb-1">Source Type</label>
-								<select name="source_type" required class="input">
-									<option value="github">GitHub</option>
-									<option value="gitlab">GitLab</option>
-									<option value="gitea">Gitea</option>
-									<option value="dockerhub">Docker Hub</option>
-									<option value="registry">Container Registry</option>
-								</select>
+							<div class="mt-5 sm:mt-6 sm:flex sm:flex-row-reverse gap-3">
+								<button type="submit" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-primary-600 text-base font-medium text-white hover:bg-primary-700 sm:w-auto sm:text-sm">Create</button>
+								<button type="button" @click="showAutoDeployModal = false" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 sm:mt-0 sm:w-auto sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300">Cancel</button>
 							</div>
-							<div>
-								<label class="block text-sm font-medium text-gray-300 mb-1">Source Repository</label>
-								<input type="text" name="source_repo" required placeholder="e.g., owner/repo or image:tag" class="input"/>
-							</div>
-							<div>
-								<label class="block text-sm font-medium text-gray-300 mb-1">Branch (optional)</label>
-								<input type="text" name="source_branch" placeholder="e.g., main" class="input"/>
-							</div>
-							<div>
-								<label class="block text-sm font-medium text-gray-300 mb-1">Action</label>
-								<select name="action" required class="input">
-									<option value="pull_and_restart">Pull Image &amp; Restart</option>
-									<option value="recreate">Recreate Container</option>
-									<option value="stack_redeploy">Redeploy Stack</option>
-								</select>
-							</div>
-							<div>
-								<label class="block text-sm font-medium text-gray-300 mb-1">Target Stack ID (optional)</label>
-								<input type="text" name="target_stack_id" placeholder="Stack UUID" class="input"/>
-							</div>
-							<div>
-								<label class="block text-sm font-medium text-gray-300 mb-1">Target Service (optional)</label>
-								<input type="text" name="target_service" placeholder="Service name within stack" class="input"/>
-							</div>
-							<div class="flex items-center gap-2">
-								<input type="checkbox" name="is_enabled" id="ad_enabled" checked class="rounded border-dark-600 bg-dark-700 text-primary-500"/>
-								<label for="ad_enabled" class="text-sm text-gray-300">Enable rule</label>
-							</div>
-						</div>
-						<div class="px-6 py-4 border-t border-dark-600 flex justify-end gap-3">
-							<button type="button" @click="showAutoDeployModal = false" class="btn-secondary">Cancel</button>
-							<button type="submit" class="btn-primary">Create</button>
-						</div>
-					</form>
+						</form>
+					</div>
 				</div>
 			</div>
 		</div>
@@ -239,61 +239,62 @@ templ webhooksTab(data WebhooksData) {
 	<div class="flex justify-end mb-4">
 		<button
 			@click="openCreateWebhook()"
-			class="btn-primary"
+			class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-primary-600 border border-transparent rounded-lg hover:bg-primary-700"
 		>
-			<i class="fas fa-plus mr-2"></i>Add Webhook
+			<svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+			Add Webhook
 		</button>
 	</div>
 
 	if len(data.Webhooks) == 0 {
 		<div class="text-center py-12">
-			<i class="fas fa-link text-4xl text-gray-600 mb-4"></i>
-			<h3 class="text-sm font-medium text-white">No outgoing webhooks</h3>
-			<p class="mt-1 text-sm text-gray-500">Create a webhook to send events to external systems.</p>
+			<svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
+			<h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-white">No outgoing webhooks</h3>
+			<p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Create a webhook to send events to external systems.</p>
 		</div>
 	} else {
-		<div class="card overflow-hidden">
-			<table class="table">
-				<thead>
+		<div class="bg-white dark:bg-gray-800 shadow rounded-lg overflow-hidden">
+			<table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+				<thead class="bg-gray-50 dark:bg-gray-900">
 					<tr>
-						<th>Name</th>
-						<th>URL</th>
-						<th>Events</th>
-						<th>Config</th>
-						<th>Status</th>
-						<th class="text-right">Actions</th>
+						<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Name</th>
+						<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">URL</th>
+						<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Events</th>
+						<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Config</th>
+						<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Status</th>
+						<th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Actions</th>
 					</tr>
 				</thead>
-				<tbody>
+				<tbody class="divide-y divide-gray-200 dark:divide-gray-700">
 					for _, wh := range data.Webhooks {
-						<tr>
-							<td class="font-medium text-white">{ wh.Name }</td>
-							<td class="font-mono text-xs text-gray-400 truncate max-w-xs">{ wh.URL }</td>
-							<td>
+						<tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50">
+							<td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">{ wh.Name }</td>
+							<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 truncate max-w-xs font-mono text-xs">{ wh.URL }</td>
+							<td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
 								<div class="flex flex-wrap gap-1">
 									for _, evt := range wh.Events {
-										<span class="badge badge-info text-xs">{ evt }</span>
+										<span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300">{ evt }</span>
 									}
 								</div>
 							</td>
-							<td class="text-xs text-gray-400">
+							<td class="px-6 py-4 whitespace-nowrap text-xs text-gray-400">
 								{ fmt.Sprintf("retry:%d timeout:%ds", wh.RetryCount, wh.TimeoutSecs) }
 							</td>
-							<td>
+							<td class="px-6 py-4 whitespace-nowrap">
 								if wh.IsEnabled {
-									<span class="badge badge-success">Active</span>
+									<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">Active</span>
 								} else {
-									<span class="badge">Disabled</span>
+									<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300">Disabled</span>
 								}
 							</td>
-							<td class="text-right space-x-2">
+							<td class="px-6 py-4 whitespace-nowrap text-right text-sm space-x-2">
 								<button
 									@click={ fmt.Sprintf("openEditWebhook('%s', '%s', '%s', '%s', %d, %d, %t)", wh.ID, escStr(wh.Name), escStr(wh.URL), escStr(webhookEventsStr(wh.Events)), wh.RetryCount, wh.TimeoutSecs, wh.IsEnabled) }
-									class="text-primary-400 hover:text-primary-300 text-sm"
+									class="text-primary-600 hover:text-primary-900 dark:text-primary-400"
 								>Edit</button>
 								<form method="POST" action={ templ.SafeURL("/webhooks/" + wh.ID + "/delete") } class="inline" onsubmit="return confirm('Delete this webhook?')">
 									<input type="hidden" name="csrf_token" value={ data.PageData.CSRFToken }/>
-									<button type="submit" class="text-red-400 hover:text-red-300 text-sm">Delete</button>
+									<button type="submit" class="text-red-600 hover:text-red-900 dark:text-red-400">Delete</button>
 								</form>
 							</td>
 						</tr>
@@ -307,40 +308,40 @@ templ webhooksTab(data WebhooksData) {
 templ deliveriesTab(data WebhooksData) {
 	if len(data.Deliveries) == 0 {
 		<div class="text-center py-12">
-			<i class="fas fa-inbox text-4xl text-gray-600 mb-4"></i>
-			<h3 class="text-sm font-medium text-white">No deliveries yet</h3>
-			<p class="mt-1 text-sm text-gray-500">Webhook deliveries will appear here when events are sent.</p>
+			<svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
+			<h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-white">No deliveries yet</h3>
+			<p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Webhook deliveries will appear here when events are sent.</p>
 		</div>
 	} else {
-		<div class="card overflow-hidden">
-			<table class="table">
-				<thead>
+		<div class="bg-white dark:bg-gray-800 shadow rounded-lg overflow-hidden">
+			<table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+				<thead class="bg-gray-50 dark:bg-gray-900">
 					<tr>
-						<th>Webhook</th>
-						<th>Event</th>
-						<th>Status</th>
-						<th>Response</th>
-						<th>Duration</th>
-						<th>Delivered</th>
+						<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Webhook</th>
+						<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Event</th>
+						<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Status</th>
+						<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Response</th>
+						<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Duration</th>
+						<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Delivered</th>
 					</tr>
 				</thead>
-				<tbody>
+				<tbody class="divide-y divide-gray-200 dark:divide-gray-700">
 					for _, d := range data.Deliveries {
-						<tr>
-							<td class="text-white">{ d.WebhookName }</td>
-							<td class="text-gray-400">{ d.Event }</td>
-							<td>
+						<tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50">
+							<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{ d.WebhookName }</td>
+							<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{ d.Event }</td>
+							<td class="px-6 py-4 whitespace-nowrap">
 								@deliveryStatusBadge(d.Status)
 							</td>
-							<td class="text-gray-400">
+							<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
 								if d.ResponseCode > 0 {
 									{ intToStr(d.ResponseCode) }
 								} else if d.Error != "" {
-									<span class="text-red-400" title={ d.Error }>Error</span>
+									<span class="text-red-500" title={ d.Error }>Error</span>
 								}
 							</td>
-							<td class="text-gray-400">{ intToStr(d.Duration) }ms</td>
-							<td class="text-gray-400">{ d.DeliveredAt }</td>
+							<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{ intToStr(d.Duration) }ms</td>
+							<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{ d.DeliveredAt }</td>
 						</tr>
 					}
 				</tbody>
@@ -353,59 +354,60 @@ templ autoDeployTab(data WebhooksData) {
 	<div class="flex justify-end mb-4">
 		<button
 			@click="openCreateAutoDeploy()"
-			class="btn-primary"
+			class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-primary-600 border border-transparent rounded-lg hover:bg-primary-700"
 		>
-			<i class="fas fa-plus mr-2"></i>Add Auto-Deploy Rule
+			<svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+			Add Auto-Deploy Rule
 		</button>
 	</div>
 
 	if len(data.AutoDeploy) == 0 {
 		<div class="text-center py-12">
-			<i class="fas fa-rocket text-4xl text-gray-600 mb-4"></i>
-			<h3 class="text-sm font-medium text-white">No auto-deploy rules</h3>
-			<p class="mt-1 text-sm text-gray-500">Create rules to automatically deploy when webhooks are received.</p>
+			<svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+			<h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-white">No auto-deploy rules</h3>
+			<p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Create rules to automatically deploy when webhooks are received.</p>
 		</div>
 	} else {
-		<div class="card overflow-hidden">
-			<table class="table">
-				<thead>
+		<div class="bg-white dark:bg-gray-800 shadow rounded-lg overflow-hidden">
+			<table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+				<thead class="bg-gray-50 dark:bg-gray-900">
 					<tr>
-						<th>Name</th>
-						<th>Source</th>
-						<th>Target</th>
-						<th>Action</th>
-						<th>Status</th>
-						<th class="text-right">Actions</th>
+						<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Name</th>
+						<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Source</th>
+						<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Target</th>
+						<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Action</th>
+						<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Status</th>
+						<th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Actions</th>
 					</tr>
 				</thead>
-				<tbody>
+				<tbody class="divide-y divide-gray-200 dark:divide-gray-700">
 					for _, rule := range data.AutoDeploy {
-						<tr>
-							<td class="font-medium text-white">{ rule.Name }</td>
-							<td class="text-gray-400">
+						<tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50">
+							<td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">{ rule.Name }</td>
+							<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
 								<span class="font-medium">{ rule.SourceType }</span>: { rule.SourceRepo }
 								if rule.SourceBranch != "" {
-									<span class="text-xs text-gray-500">({ rule.SourceBranch })</span>
+									<span class="text-xs text-gray-400">({ rule.SourceBranch })</span>
 								}
 							</td>
-							<td class="text-gray-400">
+							<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
 								{ rule.TargetStack }
 								if rule.TargetService != "" {
-									<span class="text-xs text-gray-500">/ { rule.TargetService }</span>
+									<span class="text-xs text-gray-400">/ { rule.TargetService }</span>
 								}
 							</td>
-							<td class="text-gray-400">{ rule.Action }</td>
-							<td>
+							<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{ rule.Action }</td>
+							<td class="px-6 py-4 whitespace-nowrap">
 								if rule.IsEnabled {
-									<span class="badge badge-success">Active</span>
+									<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">Active</span>
 								} else {
-									<span class="badge">Disabled</span>
+									<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300">Disabled</span>
 								}
 							</td>
-							<td class="text-right">
+							<td class="px-6 py-4 whitespace-nowrap text-right text-sm">
 								<form method="POST" action={ templ.SafeURL("/webhooks/autodeploy/" + rule.ID + "/delete") } class="inline" onsubmit="return confirm('Delete this rule?')">
 									<input type="hidden" name="csrf_token" value={ data.PageData.CSRFToken }/>
-									<button type="submit" class="text-red-400 hover:text-red-300 text-sm">Delete</button>
+									<button type="submit" class="text-red-600 hover:text-red-900 dark:text-red-400">Delete</button>
 								</form>
 							</td>
 						</tr>
@@ -418,11 +420,11 @@ templ autoDeployTab(data WebhooksData) {
 
 templ deliveryStatusBadge(status string) {
 	if status == "success" {
-		<span class="badge badge-success">Success</span>
+		<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">Success</span>
 	} else if status == "failed" {
-		<span class="badge badge-danger">Failed</span>
+		<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200">Failed</span>
 	} else {
-		<span class="badge badge-warning">Pending</span>
+		<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200">Pending</span>
 	}
 }
 

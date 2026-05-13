@@ -89,16 +89,13 @@ func (a *backupAdapter) Restore(ctx context.Context, id string) error {
 
 	uid, err := uuid.Parse(id)
 	if err != nil {
-		return fmt.Errorf("parse backup ID for restore: %w", err)
+		return err
 	}
 
 	_, err = a.svc.Restore(ctx, backupsvc.RestoreOptions{
 		BackupID: uid,
 	})
-	if err != nil {
-		return fmt.Errorf("restore backup: %w", err)
-	}
-	return nil
+	return err
 }
 
 func (a *backupAdapter) Remove(ctx context.Context, id string) error {
@@ -108,7 +105,7 @@ func (a *backupAdapter) Remove(ctx context.Context, id string) error {
 
 	uid, err := uuid.Parse(id)
 	if err != nil {
-		return fmt.Errorf("parse backup ID for remove: %w", err)
+		return err
 	}
 
 	return a.svc.Delete(ctx, uid)
@@ -351,7 +348,7 @@ func (a *backupAdapter) DeleteSchedule(ctx context.Context, id string) error {
 
 	uid, err := uuid.Parse(id)
 	if err != nil {
-		return fmt.Errorf("parse schedule ID for delete: %w", err)
+		return err
 	}
 
 	return a.svc.DeleteSchedule(ctx, uid)
@@ -364,12 +361,9 @@ func (a *backupAdapter) RunSchedule(ctx context.Context, id string) error {
 
 	uid, err := uuid.Parse(id)
 	if err != nil {
-		return fmt.Errorf("parse schedule ID for run: %w", err)
+		return err
 	}
 
 	_, err = a.svc.RunSchedule(ctx, uid)
-	if err != nil {
-		return fmt.Errorf("run backup schedule: %w", err)
-	}
-	return nil
+	return err
 }

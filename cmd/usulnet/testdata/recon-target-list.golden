@@ -1,0 +1,13 @@
+List recon targets
+
+Usage:
+  usulnet recon target list [flags]
+
+Flags:
+  -h, --help   help for list
+
+Global Flags:
+  -c, --config string   config file path (default: /etc/usulnet/config.yaml or ./config.yaml)
+      --output string   output format: table|json|yaml (default "table")
+      --server string   usulnet API URL (default $USULNET_API_URL)
+      --token string    API token (default $USULNET_API_TOKEN)

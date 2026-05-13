@@ -155,7 +155,7 @@ func (h *Handler) CostOptStatsAPI(w http.ResponseWriter, r *http.Request) {
 		h.jsonError(w, "failed to get resource optimization stats", http.StatusInternalServerError)
 		return
 	}
-	h.jsonResponse(w, stats)
+	h.jsonOK(w, stats)
 }
 
 // recommendationToView converts a ResourceRecommendation model to a template view.

@@ -168,13 +168,13 @@ func (i Issue) WithDetail(key string, value interface{}) Issue {
 // ContainerDataFromInspect converts Docker API inspect response to ContainerData
 func ContainerDataFromInspect(inspect types.ContainerJSON) *ContainerData {
 	data := &ContainerData{
-		ID:   inspect.ID,
-		Name: strings.TrimPrefix(inspect.Name, "/"),
+		ID:    inspect.ID,
+		Name:  strings.TrimPrefix(inspect.Name, "/"),
+		Image: inspect.Config.Image,
 	}
 
 	// Configuration
 	if inspect.Config != nil {
-		data.Image = inspect.Config.Image
 		data.User = inspect.Config.User
 		data.Env = inspect.Config.Env
 		data.Labels = inspect.Config.Labels

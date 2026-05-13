@@ -61,23 +61,21 @@ func (h *AuthHandler) Routes() chi.Router {
 
 // LoginRequest represents a login request.
 type LoginRequest struct {
-	Username string `json:"username" validate:"required,min=3,max=64"`
-	Password string `json:"password" validate:"required,max=128"`
-	TOTPCode string `json:"totp_code,omitempty" validate:"omitempty,len=6"`
+	Username string `json:"username"`
+	Password string `json:"password"`
 }
 
 // LoginResponse represents a login response.
 type LoginResponse struct {
-	AccessToken  string       `json:"access_token,omitempty"`
-	RefreshToken string       `json:"refresh_token,omitempty"`
-	ExpiresAt    string       `json:"expires_at,omitempty"`
+	AccessToken  string       `json:"access_token"`
+	RefreshToken string       `json:"refresh_token"`
+	ExpiresAt    string       `json:"expires_at"`
 	User         UserResponse `json:"user"`
-	RequiresTOTP bool         `json:"requires_totp,omitempty"`
 }
 
 // RefreshRequest represents a token refresh request.
 type RefreshRequest struct {
-	RefreshToken string `json:"refresh_token" validate:"required"`
+	RefreshToken string `json:"refresh_token"`
 }
 
 // RefreshResponse represents a token refresh response.
@@ -89,8 +87,8 @@ type RefreshResponse struct {
 
 // ChangePasswordRequest represents a password change request.
 type ChangePasswordRequest struct {
-	CurrentPassword string `json:"current_password" validate:"required,max=128"`
-	NewPassword     string `json:"new_password" validate:"required,min=8,max=128"`
+	CurrentPassword string `json:"current_password"`
+	NewPassword     string `json:"new_password"`
 }
 
 // SessionResponse represents a session in API responses.
@@ -135,42 +133,6 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 	result, err := h.authService.Login(r.Context(), input)
 	if err != nil {
 		h.Error(w, apierrors.Unauthorized("invalid credentials"))
-		return
-	}
-
-	// If the user has 2FA enabled, credentials are valid but we must not
-	// return tokens yet. The client must re-submit with a TOTP code.
-	if result.RequiresTOTP {
-		// If the TOTP code was provided in the same request, verify it now
-		if req.TOTPCode != "" {
-			valid, verifyErr := h.authService.ValidateTOTPCode(r.Context(), result.User.ID, req.TOTPCode)
-			if verifyErr != nil || !valid {
-				h.Error(w, apierrors.Unauthorized("invalid TOTP code"))
-				return
-			}
-			// TOTP valid — create session
-			sessionResult, sessionErr := h.authService.CreateSessionForUser(r.Context(), result.User, input)
-			if sessionErr != nil {
-				h.Error(w, apierrors.Internal("session creation failed"))
-				return
-			}
-			resp := LoginResponse{
-				AccessToken:  sessionResult.AccessToken,
-				RefreshToken: sessionResult.RefreshToken,
-				ExpiresAt:    sessionResult.ExpiresAt.Format(time.RFC3339),
-				User:         toUserResponse(sessionResult.User),
-			}
-			h.OK(w, resp)
-			return
-		}
-
-		// No TOTP code provided — return 200 with requires_totp flag.
-		// The client must re-submit with username + password + totp_code.
-		resp := LoginResponse{
-			User:         toUserResponse(result.User),
-			RequiresTOTP: true,
-		}
-		h.OK(w, resp)
 		return
 	}
 
@@ -229,13 +191,6 @@ func (h *AuthHandler) Logout(w http.ResponseWriter, r *http.Request) {
 		if err == nil {
 			if err := h.authService.Logout(r.Context(), sessionID); err != nil {
 				h.logger.Warn("logout failed", "error", err)
-			}
-		}
-
-		// Audit log the logout event
-		if claims.UserID != "" {
-			if userID, err := uuid.Parse(claims.UserID); err == nil {
-				h.authService.LogLogoutEvent(r.Context(), userID, claims.Username, getClientIP(r), r.UserAgent())
 			}
 		}
 	}
@@ -390,8 +345,6 @@ func (h *AuthHandler) ChangePassword(w http.ResponseWriter, r *http.Request) {
 		UserID:          userID,
 		CurrentPassword: req.CurrentPassword,
 		NewPassword:     req.NewPassword,
-		IPAddress:       getClientIP(r),
-		UserAgent:       r.UserAgent(),
 	}
 
 	if err := h.authService.ChangePassword(r.Context(), input); err != nil {

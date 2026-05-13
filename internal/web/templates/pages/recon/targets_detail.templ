@@ -1,0 +1,101 @@
+package recon
+
+import (
+	"fmt"
+
+	"github.com/fr4nsys/usulnet/internal/web/templates/layouts"
+)
+
+templ TargetDetail(data TargetDetailData) {
+	@layouts.Base(data.PageData) {
+		<div class="space-y-6">
+			<!-- Breadcrumb / header -->
+			<div class="flex items-center justify-between">
+				<div>
+					<a href="/recon/targets" class="text-xs text-primary-400 hover:underline">
+						<i class="fas fa-chevron-left mr-1"></i>Back to targets
+					</a>
+					<h1 class="text-2xl font-display font-bold text-white mt-1">{ data.Target.Value }</h1>
+					<p class="text-gray-400 mt-1">
+						<span class="px-2 py-0.5 rounded text-xs font-medium bg-dark-600 text-gray-300 uppercase mr-2">{ data.Target.Type }</span>
+						<span class="text-xs">created { data.Target.CreatedAt }</span>
+					</p>
+				</div>
+				<div class="flex items-center gap-2">
+					<button
+						type="button"
+						class="btn-primary"
+						hx-post={ "/recon/targets/" + data.Target.ID + "/scan" }
+						hx-confirm="Start a new scan against this target?"
+					>
+						<i class="fas fa-play mr-2"></i>Start Scan
+					</button>
+				</div>
+			</div>
+
+			<!-- Ownership -->
+			<div class="card p-5">
+				<h2 class="text-lg font-display font-semibold text-white mb-3">Ownership</h2>
+				if data.Target.OwnershipOK {
+					<p class="text-sm text-green-400">
+						<i class="fas fa-check-circle mr-1"></i>Ownership verified via { data.Target.OwnershipMethod }.
+					</p>
+				} else {
+					<p class="text-sm text-yellow-400 mb-3">
+						<i class="fas fa-exclamation-triangle mr-1"></i>Ownership must be verified before scans can run.
+					</p>
+				}
+				if len(data.OwnershipProofs) > 0 {
+					<table class="w-full text-sm mt-3">
+						<thead class="text-xs uppercase tracking-wide text-gray-400">
+							<tr>
+								<th class="text-left py-2">Method</th>
+								<th class="text-left py-2">Status</th>
+								<th class="text-left py-2">Challenge</th>
+								<th class="text-left py-2">Verified</th>
+							</tr>
+						</thead>
+						<tbody class="divide-y divide-dark-700">
+							for _, p := range data.OwnershipProofs {
+								<tr>
+									<td class="py-2 text-gray-300">{ p.Method }</td>
+									<td class="py-2 text-gray-300">{ p.Status }</td>
+									<td class="py-2 text-gray-400 text-xs font-mono">{ p.Challenge }</td>
+									<td class="py-2 text-gray-400">{ p.VerifiedAt }</td>
+								</tr>
+							}
+						</tbody>
+					</table>
+				}
+			</div>
+
+			<!-- Scans -->
+			<div class="card p-5">
+				<h2 class="text-lg font-display font-semibold text-white mb-3">Scans ({ fmt.Sprintf("%d", len(data.Scans)) })</h2>
+				if len(data.Scans) == 0 {
+					<p class="text-sm text-gray-500 py-6 text-center">No scans yet.</p>
+				} else {
+					<div class="space-y-2">
+						for _, s := range data.Scans {
+							@scanRow(s)
+						}
+					</div>
+				}
+			</div>
+
+			<!-- Findings -->
+			<div class="card p-5">
+				<h2 class="text-lg font-display font-semibold text-white mb-3">All Findings ({ fmt.Sprintf("%d", len(data.Findings)) })</h2>
+				if len(data.Findings) == 0 {
+					<p class="text-sm text-gray-500 py-6 text-center">No findings recorded for this target.</p>
+				} else {
+					<div class="space-y-2">
+						for _, f := range data.Findings {
+							@findingRow(f)
+						}
+					</div>
+				}
+			</div>
+		</div>
+	}
+}

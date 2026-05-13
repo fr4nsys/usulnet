@@ -102,6 +102,9 @@ func (r *AuditLogRepository) Create(ctx context.Context, input *CreateAuditLogIn
 		}
 	}
 
+	// detailsJSON is sent as string (not []byte) because the connection
+	// pool uses pgx.QueryExecModeSimpleProtocol; see encodeJSONObject in
+	// recon_repo.go for the full rationale.
 	_, err = r.db.Exec(ctx, query,
 		input.UserID,
 		input.Action,

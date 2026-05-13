@@ -1421,12 +1421,10 @@ func (r *ManifestBuilderRepository) SeedBuiltinComponents(ctx context.Context) e
 			return fmt.Errorf("failed to marshal depends_on for %s: %w", comp.Name, err)
 		}
 
-		var healthCheckStr *string
-		if healthCheckJSON != nil {
-			s := string(healthCheckJSON)
-			healthCheckStr = &s
-		}
-
+		// JSONB columns bound as string; health_check is nullable so it
+		// goes through nullableJSONBytes to preserve SQL NULL when the
+		// component has no healthcheck. See encodeJSONObject in
+		// recon_repo.go for the simple-protocol rationale.
 		_, err = tx.Exec(ctx, `
 			INSERT INTO manifest_builder_components (
 				id, name, description, category, icon,
@@ -1439,7 +1437,8 @@ func (r *ManifestBuilderRepository) SeedBuiltinComponents(ctx context.Context) e
 				WHERE name = $2 AND is_builtin = true
 			)`,
 			uuid.New(), comp.Name, comp.Description, comp.Category, comp.Icon,
-			string(defaultConfigJSON), string(portsJSON), string(volumesJSON), string(envJSON), healthCheckStr, string(dependsOnJSON),
+			string(defaultConfigJSON), string(portsJSON), string(volumesJSON),
+			string(envJSON), nullableJSONBytes(healthCheckJSON), string(dependsOnJSON),
 		)
 		if err != nil {
 			return errors.Wrap(err, errors.CodeDatabaseError,

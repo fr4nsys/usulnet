@@ -70,191 +70,212 @@ func Topology(data TopologyData) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"space-y-6\"><!-- Header --><div class=\"flex items-center justify-between\"><div><h1 class=\"text-2xl font-display font-bold text-white\">Network Topology</h1><p class=\"text-gray-400 mt-1\">Interactive force-directed graph of container network connections</p></div><div class=\"flex items-center gap-2\"><button id=\"btn-reset-zoom\" class=\"btn btn-sm btn-secondary\" title=\"Reset zoom\"><i class=\"fas fa-compress-arrows-alt mr-1\"></i>Reset</button> <button id=\"btn-toggle-labels\" class=\"btn btn-sm btn-secondary\" title=\"Toggle labels\"><i class=\"fas fa-tags mr-1\"></i>Labels</button> <button id=\"btn-fullscreen\" class=\"btn btn-sm btn-secondary\" title=\"Fullscreen\"><i class=\"fas fa-expand mr-1\"></i>Fullscreen</button></div></div><div class=\"grid grid-cols-1 lg:grid-cols-4 gap-6\"><!-- Graph Canvas --><div class=\"lg:col-span-3\"><div class=\"card overflow-hidden\" id=\"topology-card\"><div id=\"topology-graph\" style=\"height: 600px; position: relative; background: linear-gradient(135deg, rgba(13,17,23,0.95) 0%, rgba(22,27,34,0.95) 100%);\"><div id=\"topology-loading\" class=\"absolute inset-0 flex items-center justify-center\"><div class=\"text-center\"><i class=\"fas fa-spinner fa-spin text-3xl text-primary-400 mb-3\"></i><p class=\"text-gray-400\">Loading topology data...</p></div></div><div id=\"topology-empty\" class=\"absolute inset-0 flex items-center justify-center\" style=\"display:none\"><div class=\"text-center\"><i class=\"fas fa-project-diagram text-4xl text-gray-500 mb-3\"></i><p class=\"text-gray-400\">No topology data available</p><p class=\"text-gray-500 text-sm mt-1\">Connect Docker hosts to see network topology</p></div></div></div></div></div><!-- Sidebar --><div class=\"space-y-4\"><!-- Summary --><div class=\"card p-4\"><h3 class=\"font-medium text-white mb-3\"><i class=\"fas fa-chart-pie mr-2 text-primary-400\"></i>Summary</h3><div class=\"space-y-2 text-sm\"><div class=\"flex justify-between\"><span class=\"text-gray-400\">Networks</span> <span class=\"text-white font-mono\">")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			var templ_7745c5c3_Var3 string
-			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", len(data.Networks)))
-			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/topology.templ`, Line: 86, Col: 82}
-			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</span></div><div class=\"flex justify-between\"><span class=\"text-gray-400\">Containers</span> <span class=\"text-white font-mono\">")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			var templ_7745c5c3_Var4 string
-			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", len(data.Containers)))
-			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/topology.templ`, Line: 90, Col: 84}
-			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</span></div><div class=\"flex justify-between\"><span class=\"text-gray-400\">Connections</span> <span id=\"connection-count\" class=\"text-white font-mono\">-</span></div></div></div><!-- Legend --><div class=\"card p-4\"><h3 class=\"font-medium text-white mb-3\"><i class=\"fas fa-palette mr-2 text-primary-400\"></i>Legend</h3><div class=\"space-y-3 text-sm\"><div class=\"text-gray-500 text-xs uppercase tracking-wide mb-2\">Node Types</div><div class=\"flex items-center gap-2\"><svg width=\"16\" height=\"16\"><rect width=\"16\" height=\"16\" rx=\"3\" fill=\"#3b82f6\" opacity=\"0.8\"></rect></svg> <span class=\"text-gray-300\">Network</span></div><div class=\"flex items-center gap-2\"><svg width=\"16\" height=\"16\"><circle cx=\"8\" cy=\"8\" r=\"7\" fill=\"#22c55e\" opacity=\"0.8\"></circle></svg> <span class=\"text-gray-300\">Container (running)</span></div><div class=\"flex items-center gap-2\"><svg width=\"16\" height=\"16\"><circle cx=\"8\" cy=\"8\" r=\"7\" fill=\"#ef4444\" opacity=\"0.8\"></circle></svg> <span class=\"text-gray-300\">Container (stopped)</span></div><div class=\"text-gray-500 text-xs uppercase tracking-wide mt-3 mb-2\">Network Drivers</div><div class=\"flex items-center gap-2\"><span class=\"w-3 h-3 rounded\" style=\"background:#3b82f6\"></span> <span class=\"text-gray-400\">bridge</span></div><div class=\"flex items-center gap-2\"><span class=\"w-3 h-3 rounded\" style=\"background:#22c55e\"></span> <span class=\"text-gray-400\">overlay</span></div><div class=\"flex items-center gap-2\"><span class=\"w-3 h-3 rounded\" style=\"background:#eab308\"></span> <span class=\"text-gray-400\">host</span></div><div class=\"flex items-center gap-2\"><span class=\"w-3 h-3 rounded\" style=\"background:#a855f7\"></span> <span class=\"text-gray-400\">macvlan</span></div></div></div><!-- Node Details (populated by clicking a node) --><div id=\"node-details\" class=\"card p-4\" style=\"display:none\"><h3 class=\"font-medium text-white mb-3\"><i class=\"fas fa-info-circle mr-2 text-primary-400\"></i>Node Details</h3><div id=\"node-details-content\" class=\"space-y-2 text-sm\"></div></div><!-- Isolated Containers -->")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			if hasIsolatedContainers(data.Containers) {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<div class=\"card p-4\"><h3 class=\"font-medium text-white mb-3\"><i class=\"fas fa-exclamation-triangle mr-2 text-yellow-400\"></i>Isolated</h3><div class=\"space-y-2\">")
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-				for _, c := range data.Containers {
-					if len(c.Networks) == 0 {
-						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<div class=\"flex items-center gap-2 text-sm\"><span class=\"w-2 h-2 rounded-full bg-yellow-500\"></span> <span class=\"text-yellow-400\">")
-						if templ_7745c5c3_Err != nil {
-							return templ_7745c5c3_Err
-						}
-						var templ_7745c5c3_Var5 string
-						templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(c.Name)
-						if templ_7745c5c3_Err != nil {
-							return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/topology.templ`, Line: 157, Col: 49}
-						}
-						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
-						if templ_7745c5c3_Err != nil {
-							return templ_7745c5c3_Err
-						}
-						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "</span></div>")
-						if templ_7745c5c3_Err != nil {
-							return templ_7745c5c3_Err
-						}
-					}
-				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "</div></div>")
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "</div></div><!-- Network Cards (collapsible detail view) --><details class=\"group\"><summary class=\"cursor-pointer text-gray-400 hover:text-white flex items-center gap-2 text-sm\"><i class=\"fas fa-chevron-right group-open:rotate-90 transition-transform\"></i> <span>Show detailed network list (")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			var templ_7745c5c3_Var6 string
-			templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", len(data.Networks)))
-			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/topology.templ`, Line: 171, Col: 78}
-			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, " networks)</span></summary><div class=\"mt-4 grid grid-cols-1 md:grid-cols-2 gap-4\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"space-y-6\"><!-- Header --><div class=\"flex items-center justify-between\"><div><h1 class=\"text-2xl font-display font-bold text-white\">Network Topology</h1><p class=\"text-gray-400 mt-1\">Visualize container network connections</p></div></div><!-- Topology View --><div class=\"grid grid-cols-1 lg:grid-cols-3 gap-6\"><!-- Networks Column --><div class=\"lg:col-span-2 space-y-4\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			for _, network := range data.Networks {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "<div class=\"card p-4\"><div class=\"flex items-center justify-between mb-3\"><div class=\"flex items-center gap-3\"><div class=\"w-8 h-8 rounded-lg bg-primary-500/20 flex items-center justify-center\"><i class=\"fas fa-network-wired text-primary-400 text-sm\"></i></div><div><h4 class=\"font-medium text-white text-sm\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<div class=\"card p-4\"><div class=\"flex items-center justify-between mb-4\"><div class=\"flex items-center gap-3\"><div class=\"w-10 h-10 rounded-lg bg-primary-500/20 flex items-center justify-center\"><i class=\"fas fa-network-wired text-primary-400\"></i></div><div><h3 class=\"font-medium text-white\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				var templ_7745c5c3_Var7 string
-				templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(network.Name)
+				var templ_7745c5c3_Var3 string
+				templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(network.Name)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/topology.templ`, Line: 182, Col: 67}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/topology.templ`, Line: 55, Col: 59}
 				}
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "</h4><div class=\"text-xs text-gray-400 space-x-1\"><span>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</h3><div class=\"text-sm text-gray-400 space-x-2\"><span>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				var templ_7745c5c3_Var8 string
-				templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(network.Driver)
+				var templ_7745c5c3_Var4 string
+				templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(network.Driver)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/topology.templ`, Line: 184, Col: 33}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/topology.templ`, Line: 57, Col: 33}
+				}
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</span> ")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				if network.Subnet != "" {
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<span>•</span> <span>")
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
+					var templ_7745c5c3_Var5 string
+					templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(network.Subnet)
+					if templ_7745c5c3_Err != nil {
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/topology.templ`, Line: 60, Col: 34}
+					}
+					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "</span> ")
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
+				}
+				if network.Gateway != "" {
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "<span>•</span> <span>GW ")
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
+					var templ_7745c5c3_Var6 string
+					templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(network.Gateway)
+					if templ_7745c5c3_Err != nil {
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/topology.templ`, Line: 64, Col: 38}
+					}
+					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "</span> ")
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
+				}
+				if network.Scope != "" {
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "<span>•</span> <span>")
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
+					var templ_7745c5c3_Var7 string
+					templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(network.Scope)
+					if templ_7745c5c3_Err != nil {
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/topology.templ`, Line: 68, Col: 33}
+					}
+					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "</span> ")
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
+				}
+				if network.Internal {
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "<span>•</span> <span class=\"text-yellow-400\">internal</span>")
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
+				}
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "</div></div></div><a href=\"")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				var templ_7745c5c3_Var8 templ.SafeURL
+				templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinURLErrs(templ.SafeURL("/networks/" + network.ID))
+				if templ_7745c5c3_Err != nil {
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/topology.templ`, Line: 77, Col: 58}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "</span> ")
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-				if network.Subnet != "" {
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "<span>|</span> <span>")
-					if templ_7745c5c3_Err != nil {
-						return templ_7745c5c3_Err
-					}
-					var templ_7745c5c3_Var9 string
-					templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(network.Subnet)
-					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/topology.templ`, Line: 187, Col: 34}
-					}
-					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
-					if templ_7745c5c3_Err != nil {
-						return templ_7745c5c3_Err
-					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "</span>")
-					if templ_7745c5c3_Err != nil {
-						return templ_7745c5c3_Err
-					}
-				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "</div></div></div><a href=\"")
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-				var templ_7745c5c3_Var10 templ.SafeURL
-				templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinURLErrs(templ.SafeURL("/networks/" + network.ID))
-				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/topology.templ`, Line: 192, Col: 58}
-				}
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "\" class=\"text-gray-400 hover:text-white text-sm\"><i class=\"fas fa-external-link-alt\"></i></a></div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "\" class=\"text-gray-400 hover:text-white\"><i class=\"fas fa-external-link-alt\"></i></a></div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				if len(network.Containers) > 0 {
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "<div class=\"flex flex-wrap gap-1\">")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "<div class=\"flex flex-wrap gap-2\">")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
 					for _, containerName := range network.Containers {
-						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "<span class=\"px-2 py-0.5 bg-dark-700 rounded text-xs text-gray-300\">")
+						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "<span class=\"px-3 py-1.5 bg-dark-700 rounded-lg text-sm text-gray-300 flex items-center gap-2\"><span class=\"w-2 h-2 rounded-full bg-green-500\"></span> ")
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
-						var templ_7745c5c3_Var11 string
-						templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(containerName)
+						var templ_7745c5c3_Var9 string
+						templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(containerName)
 						if templ_7745c5c3_Err != nil {
-							return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/topology.templ`, Line: 199, Col: 93}
+							return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/topology.templ`, Line: 87, Col: 26}
 						}
-						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
+						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
-						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "</span>")
+						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "</span>")
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 20, "</div>")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "</div>")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
 				} else {
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 21, "<p class=\"text-xs text-gray-500\">No containers</p>")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "<p class=\"text-sm text-gray-500\">No containers connected</p>")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 22, "</div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "</div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 23, "</div></details></div><!-- D3.js Force Graph --> <script src=\"/static/vendor/js/d3-7.9.0.min.js\"></script> <script>\n\t\t(function() {\n\t\t\tconst graphEl = document.getElementById('topology-graph');\n\t\t\tconst loadingEl = document.getElementById('topology-loading');\n\t\t\tconst emptyEl = document.getElementById('topology-empty');\n\t\t\tlet showLabels = true;\n\t\t\tlet simulation, svg, g, link, node, labels;\n\n\t\t\tconst driverColors = {\n\t\t\t\t'bridge': '#3b82f6',\n\t\t\t\t'overlay': '#22c55e',\n\t\t\t\t'host': '#eab308',\n\t\t\t\t'macvlan': '#a855f7',\n\t\t\t\t'none': '#6b7280'\n\t\t\t};\n\n\t\t\tfunction getNodeColor(d) {\n\t\t\t\tif (d.type === 'network') {\n\t\t\t\t\treturn driverColors[d.driver] || '#3b82f6';\n\t\t\t\t}\n\t\t\t\tif (d.state === 'running') return '#22c55e';\n\t\t\t\tif (d.state === 'exited' || d.state === 'dead') return '#ef4444';\n\t\t\t\treturn '#6b7280';\n\t\t\t}\n\n\t\t\tfunction getNodeRadius(d) {\n\t\t\t\treturn d.type === 'network' ? 24 : 16;\n\t\t\t}\n\n\t\t\tfunction getNodeShape(d) {\n\t\t\t\treturn d.type;\n\t\t\t}\n\n\t\t\tfetch('/topology/api')\n\t\t\t\t.then(r => r.json())\n\t\t\t\t.then(data => {\n\t\t\t\t\tloadingEl.style.display = 'none';\n\n\t\t\t\t\tif (!data.nodes || data.nodes.length === 0) {\n\t\t\t\t\t\temptyEl.style.display = '';\n\t\t\t\t\t\treturn;\n\t\t\t\t\t}\n\n\t\t\t\t\t// Update connection count\n\t\t\t\t\tconst countEl = document.getElementById('connection-count');\n\t\t\t\t\tif (countEl) countEl.textContent = data.links.length;\n\n\t\t\t\t\tconst width = graphEl.clientWidth;\n\t\t\t\t\tconst height = graphEl.clientHeight;\n\n\t\t\t\t\tsvg = d3.select('#topology-graph')\n\t\t\t\t\t\t.append('svg')\n\t\t\t\t\t\t.attr('width', width)\n\t\t\t\t\t\t.attr('height', height);\n\n\t\t\t\t\t// Defs for glow filter\n\t\t\t\t\tconst defs = svg.append('defs');\n\t\t\t\t\tconst filter = defs.append('filter').attr('id', 'glow');\n\t\t\t\t\tfilter.append('feGaussianBlur').attr('stdDeviation', '3').attr('result', 'coloredBlur');\n\t\t\t\t\tconst feMerge = filter.append('feMerge');\n\t\t\t\t\tfeMerge.append('feMergeNode').attr('in', 'coloredBlur');\n\t\t\t\t\tfeMerge.append('feMergeNode').attr('in', 'SourceGraphic');\n\n\t\t\t\t\t// Arrow marker\n\t\t\t\t\tdefs.append('marker')\n\t\t\t\t\t\t.attr('id', 'arrowhead')\n\t\t\t\t\t\t.attr('viewBox', '-0 -5 10 10')\n\t\t\t\t\t\t.attr('refX', 20)\n\t\t\t\t\t\t.attr('refY', 0)\n\t\t\t\t\t\t.attr('orient', 'auto')\n\t\t\t\t\t\t.attr('markerWidth', 6)\n\t\t\t\t\t\t.attr('markerHeight', 6)\n\t\t\t\t\t\t.append('path')\n\t\t\t\t\t\t.attr('d', 'M 0,-5 L 10 ,0 L 0,5')\n\t\t\t\t\t\t.attr('fill', '#374151')\n\t\t\t\t\t\t.style('stroke', 'none');\n\n\t\t\t\t\tg = svg.append('g');\n\n\t\t\t\t\t// Zoom behavior\n\t\t\t\t\tconst zoom = d3.zoom()\n\t\t\t\t\t\t.scaleExtent([0.2, 5])\n\t\t\t\t\t\t.on('zoom', (event) => {\n\t\t\t\t\t\t\tg.attr('transform', event.transform);\n\t\t\t\t\t\t});\n\t\t\t\t\tsvg.call(zoom);\n\n\t\t\t\t\t// Links\n\t\t\t\t\tlink = g.append('g')\n\t\t\t\t\t\t.selectAll('line')\n\t\t\t\t\t\t.data(data.links)\n\t\t\t\t\t\t.join('line')\n\t\t\t\t\t\t.attr('stroke', '#374151')\n\t\t\t\t\t\t.attr('stroke-width', 1.5)\n\t\t\t\t\t\t.attr('stroke-opacity', 0.6);\n\n\t\t\t\t\t// Node groups\n\t\t\t\t\tnode = g.append('g')\n\t\t\t\t\t\t.selectAll('g')\n\t\t\t\t\t\t.data(data.nodes)\n\t\t\t\t\t\t.join('g')\n\t\t\t\t\t\t.call(d3.drag()\n\t\t\t\t\t\t\t.on('start', dragstarted)\n\t\t\t\t\t\t\t.on('drag', dragged)\n\t\t\t\t\t\t\t.on('end', dragended));\n\n\t\t\t\t\t// Draw network nodes as rounded rects\n\t\t\t\t\tnode.filter(d => d.type === 'network')\n\t\t\t\t\t\t.append('rect')\n\t\t\t\t\t\t.attr('width', 48)\n\t\t\t\t\t\t.attr('height', 48)\n\t\t\t\t\t\t.attr('x', -24)\n\t\t\t\t\t\t.attr('y', -24)\n\t\t\t\t\t\t.attr('rx', 8)\n\t\t\t\t\t\t.attr('fill', d => getNodeColor(d))\n\t\t\t\t\t\t.attr('fill-opacity', 0.15)\n\t\t\t\t\t\t.attr('stroke', d => getNodeColor(d))\n\t\t\t\t\t\t.attr('stroke-width', 2)\n\t\t\t\t\t\t.attr('stroke-opacity', 0.6);\n\n\t\t\t\t\t// Network icon\n\t\t\t\t\tnode.filter(d => d.type === 'network')\n\t\t\t\t\t\t.append('text')\n\t\t\t\t\t\t.attr('text-anchor', 'middle')\n\t\t\t\t\t\t.attr('dominant-baseline', 'central')\n\t\t\t\t\t\t.attr('fill', d => getNodeColor(d))\n\t\t\t\t\t\t.attr('font-size', '16px')\n\t\t\t\t\t\t.attr('font-family', '\"Font Awesome 6 Free\"')\n\t\t\t\t\t\t.attr('font-weight', '900')\n\t\t\t\t\t\t.text('\\uf6ff');\n\n\t\t\t\t\t// Draw container nodes as circles\n\t\t\t\t\tnode.filter(d => d.type === 'container')\n\t\t\t\t\t\t.append('circle')\n\t\t\t\t\t\t.attr('r', 16)\n\t\t\t\t\t\t.attr('fill', d => getNodeColor(d))\n\t\t\t\t\t\t.attr('fill-opacity', 0.15)\n\t\t\t\t\t\t.attr('stroke', d => getNodeColor(d))\n\t\t\t\t\t\t.attr('stroke-width', 2)\n\t\t\t\t\t\t.attr('stroke-opacity', 0.6);\n\n\t\t\t\t\t// Container icon\n\t\t\t\t\tnode.filter(d => d.type === 'container')\n\t\t\t\t\t\t.append('text')\n\t\t\t\t\t\t.attr('text-anchor', 'middle')\n\t\t\t\t\t\t.attr('dominant-baseline', 'central')\n\t\t\t\t\t\t.attr('fill', d => getNodeColor(d))\n\t\t\t\t\t\t.attr('font-size', '12px')\n\t\t\t\t\t\t.attr('font-family', '\"Font Awesome 6 Free\"')\n\t\t\t\t\t\t.attr('font-weight', '900')\n\t\t\t\t\t\t.text('\\uf4b8');\n\n\t\t\t\t\t// Labels\n\t\t\t\t\tlabels = g.append('g')\n\t\t\t\t\t\t.selectAll('text')\n\t\t\t\t\t\t.data(data.nodes)\n\t\t\t\t\t\t.join('text')\n\t\t\t\t\t\t.attr('text-anchor', 'middle')\n\t\t\t\t\t\t.attr('dy', d => d.type === 'network' ? 38 : 28)\n\t\t\t\t\t\t.attr('fill', '#9ca3af')\n\t\t\t\t\t\t.attr('font-size', '11px')\n\t\t\t\t\t\t.attr('font-family', 'system-ui, sans-serif')\n\t\t\t\t\t\t.attr('pointer-events', 'none')\n\t\t\t\t\t\t.text(d => d.label.length > 20 ? d.label.substring(0, 18) + '...' : d.label);\n\n\t\t\t\t\t// Hover effects\n\t\t\t\t\tnode.on('mouseover', function(event, d) {\n\t\t\t\t\t\td3.select(this).select('rect, circle')\n\t\t\t\t\t\t\t.transition().duration(200)\n\t\t\t\t\t\t\t.attr('fill-opacity', 0.3)\n\t\t\t\t\t\t\t.attr('stroke-opacity', 1);\n\n\t\t\t\t\t\t// Highlight connected links\n\t\t\t\t\t\tlink.attr('stroke', l => (l.source.id === d.id || l.target.id === d.id) ? getNodeColor(d) : '#374151')\n\t\t\t\t\t\t\t.attr('stroke-width', l => (l.source.id === d.id || l.target.id === d.id) ? 2.5 : 1.5)\n\t\t\t\t\t\t\t.attr('stroke-opacity', l => (l.source.id === d.id || l.target.id === d.id) ? 0.8 : 0.3);\n\n\t\t\t\t\t\t// Dim non-connected nodes\n\t\t\t\t\t\tnode.attr('opacity', n => {\n\t\t\t\t\t\t\tif (n.id === d.id) return 1;\n\t\t\t\t\t\t\tconst connected = data.links.some(l =>\n\t\t\t\t\t\t\t\t(l.source.id === d.id && l.target.id === n.id) ||\n\t\t\t\t\t\t\t\t(l.target.id === d.id && l.source.id === n.id)\n\t\t\t\t\t\t\t);\n\t\t\t\t\t\t\treturn connected ? 1 : 0.3;\n\t\t\t\t\t\t});\n\t\t\t\t\t\tlabels.attr('opacity', n => {\n\t\t\t\t\t\t\tif (n.id === d.id) return 1;\n\t\t\t\t\t\t\tconst connected = data.links.some(l =>\n\t\t\t\t\t\t\t\t(l.source.id === d.id && l.target.id === n.id) ||\n\t\t\t\t\t\t\t\t(l.target.id === d.id && l.source.id === n.id)\n\t\t\t\t\t\t\t);\n\t\t\t\t\t\t\treturn connected ? 1 : 0.2;\n\t\t\t\t\t\t});\n\t\t\t\t\t}).on('mouseout', function() {\n\t\t\t\t\t\tnode.select('rect, circle')\n\t\t\t\t\t\t\t.transition().duration(200)\n\t\t\t\t\t\t\t.attr('fill-opacity', 0.15)\n\t\t\t\t\t\t\t.attr('stroke-opacity', 0.6);\n\t\t\t\t\t\tlink.attr('stroke', '#374151').attr('stroke-width', 1.5).attr('stroke-opacity', 0.6);\n\t\t\t\t\t\tnode.attr('opacity', 1);\n\t\t\t\t\t\tlabels.attr('opacity', 1);\n\t\t\t\t\t});\n\n\t\t\t\t\t// Click to show details\n\t\t\t\t\tnode.on('click', function(event, d) {\n\t\t\t\t\t\tconst detailsEl = document.getElementById('node-details');\n\t\t\t\t\t\tconst contentEl = document.getElementById('node-details-content');\n\t\t\t\t\t\tdetailsEl.style.display = '';\n\n\t\t\t\t\t\tlet html = '';\n\t\t\t\t\t\tif (d.type === 'network') {\n\t\t\t\t\t\t\thtml = '<div class=\"flex items-center gap-2 mb-2\"><i class=\"fas fa-network-wired text-primary-400\"></i><span class=\"text-white font-medium\">' + d.label + '</span></div>';\n\t\t\t\t\t\t\thtml += '<div class=\"bg-dark-800 rounded-lg p-3 space-y-1\">';\n\t\t\t\t\t\t\thtml += '<div class=\"flex justify-between\"><span class=\"text-gray-400\">Type</span><span class=\"text-white\">Network</span></div>';\n\t\t\t\t\t\t\tif (d.driver) html += '<div class=\"flex justify-between\"><span class=\"text-gray-400\">Driver</span><span class=\"text-white\">' + d.driver + '</span></div>';\n\t\t\t\t\t\t\tif (d.subnet) html += '<div class=\"flex justify-between\"><span class=\"text-gray-400\">Subnet</span><span class=\"text-white font-mono text-xs\">' + d.subnet + '</span></div>';\n\t\t\t\t\t\t\tconst connectedCount = data.links.filter(l => l.source.id === d.id || l.target.id === d.id).length;\n\t\t\t\t\t\t\thtml += '<div class=\"flex justify-between\"><span class=\"text-gray-400\">Containers</span><span class=\"text-white\">' + connectedCount + '</span></div>';\n\t\t\t\t\t\t\thtml += '</div>';\n\t\t\t\t\t\t} else {\n\t\t\t\t\t\t\thtml = '<div class=\"flex items-center gap-2 mb-2\"><i class=\"fas fa-cube text-green-400\"></i><span class=\"text-white font-medium\">' + d.label + '</span></div>';\n\t\t\t\t\t\t\thtml += '<div class=\"bg-dark-800 rounded-lg p-3 space-y-1\">';\n\t\t\t\t\t\t\thtml += '<div class=\"flex justify-between\"><span class=\"text-gray-400\">Type</span><span class=\"text-white\">Container</span></div>';\n\t\t\t\t\t\t\thtml += '<div class=\"flex justify-between\"><span class=\"text-gray-400\">State</span><span class=\"' + (d.state === 'running' ? 'text-green-400' : 'text-red-400') + '\">' + (d.state || 'unknown') + '</span></div>';\n\t\t\t\t\t\t\tif (d.image) html += '<div class=\"flex justify-between\"><span class=\"text-gray-400\">Image</span><span class=\"text-white text-xs font-mono\">' + d.image + '</span></div>';\n\t\t\t\t\t\t\tconst nets = data.links.filter(l => l.source.id === d.id || l.target.id === d.id).length;\n\t\t\t\t\t\t\thtml += '<div class=\"flex justify-between\"><span class=\"text-gray-400\">Networks</span><span class=\"text-white\">' + nets + '</span></div>';\n\t\t\t\t\t\t\thtml += '</div>';\n\t\t\t\t\t\t}\n\t\t\t\t\t\tcontentEl.innerHTML = html;\n\t\t\t\t\t});\n\n\t\t\t\t\t// Force simulation\n\t\t\t\t\tsimulation = d3.forceSimulation(data.nodes)\n\t\t\t\t\t\t.force('link', d3.forceLink(data.links).id(d => d.id).distance(100))\n\t\t\t\t\t\t.force('charge', d3.forceManyBody().strength(-300))\n\t\t\t\t\t\t.force('center', d3.forceCenter(width / 2, height / 2))\n\t\t\t\t\t\t.force('collision', d3.forceCollide().radius(d => getNodeRadius(d) + 10))\n\t\t\t\t\t\t.on('tick', ticked);\n\n\t\t\t\t\tfunction ticked() {\n\t\t\t\t\t\tlink\n\t\t\t\t\t\t\t.attr('x1', d => d.source.x)\n\t\t\t\t\t\t\t.attr('y1', d => d.source.y)\n\t\t\t\t\t\t\t.attr('x2', d => d.target.x)\n\t\t\t\t\t\t\t.attr('y2', d => d.target.y);\n\n\t\t\t\t\t\tnode.attr('transform', d => 'translate(' + d.x + ',' + d.y + ')');\n\t\t\t\t\t\tlabels.attr('x', d => d.x).attr('y', d => d.y);\n\t\t\t\t\t}\n\n\t\t\t\t\tfunction dragstarted(event, d) {\n\t\t\t\t\t\tif (!event.active) simulation.alphaTarget(0.3).restart();\n\t\t\t\t\t\td.fx = d.x;\n\t\t\t\t\t\td.fy = d.y;\n\t\t\t\t\t}\n\n\t\t\t\t\tfunction dragged(event, d) {\n\t\t\t\t\t\td.fx = event.x;\n\t\t\t\t\t\td.fy = event.y;\n\t\t\t\t\t}\n\n\t\t\t\t\tfunction dragended(event, d) {\n\t\t\t\t\t\tif (!event.active) simulation.alphaTarget(0);\n\t\t\t\t\t\td.fx = null;\n\t\t\t\t\t\td.fy = null;\n\t\t\t\t\t}\n\n\t\t\t\t\t// Toolbar buttons\n\t\t\t\t\tdocument.getElementById('btn-reset-zoom').addEventListener('click', function() {\n\t\t\t\t\t\tsvg.transition().duration(500).call(zoom.transform, d3.zoomIdentity);\n\t\t\t\t\t\t// Reset pinned nodes\n\t\t\t\t\t\tdata.nodes.forEach(d => { d.fx = null; d.fy = null; });\n\t\t\t\t\t\tsimulation.alpha(0.5).restart();\n\t\t\t\t\t});\n\n\t\t\t\t\tdocument.getElementById('btn-toggle-labels').addEventListener('click', function() {\n\t\t\t\t\t\tshowLabels = !showLabels;\n\t\t\t\t\t\tlabels.attr('display', showLabels ? null : 'none');\n\t\t\t\t\t});\n\n\t\t\t\t\tdocument.getElementById('btn-fullscreen').addEventListener('click', function() {\n\t\t\t\t\t\tconst card = document.getElementById('topology-card');\n\t\t\t\t\t\tif (!document.fullscreenElement) {\n\t\t\t\t\t\t\tcard.requestFullscreen();\n\t\t\t\t\t\t} else {\n\t\t\t\t\t\t\tdocument.exitFullscreen();\n\t\t\t\t\t\t}\n\t\t\t\t\t});\n\n\t\t\t\t\t// Handle fullscreen resize\n\t\t\t\t\tdocument.addEventListener('fullscreenchange', function() {\n\t\t\t\t\t\tsetTimeout(function() {\n\t\t\t\t\t\t\tconst w = graphEl.clientWidth;\n\t\t\t\t\t\t\tconst h = graphEl.clientHeight;\n\t\t\t\t\t\t\tsvg.attr('width', w).attr('height', h);\n\t\t\t\t\t\t\tsimulation.force('center', d3.forceCenter(w / 2, h / 2));\n\t\t\t\t\t\t\tsimulation.alpha(0.3).restart();\n\t\t\t\t\t\t}, 100);\n\t\t\t\t\t});\n\n\t\t\t\t\t// Handle window resize\n\t\t\t\t\twindow.addEventListener('resize', function() {\n\t\t\t\t\t\tconst w = graphEl.clientWidth;\n\t\t\t\t\t\tconst h = graphEl.clientHeight;\n\t\t\t\t\t\tsvg.attr('width', w).attr('height', h);\n\t\t\t\t\t});\n\t\t\t\t})\n\t\t\t\t.catch(err => {\n\t\t\t\t\tloadingEl.style.display = 'none';\n\t\t\t\t\temptyEl.style.display = '';\n\t\t\t\t\tconsole.error('Topology fetch error:', err);\n\t\t\t\t});\n\t\t})();\n\t\t</script>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 20, "</div><!-- Legend / Stats --><div class=\"space-y-4\"><div class=\"card p-4\"><h3 class=\"font-medium text-white mb-3\">Summary</h3><div class=\"space-y-2 text-sm\"><div class=\"flex justify-between\"><span class=\"text-gray-400\">Networks</span> <span class=\"text-white\">")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var10 string
+			templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", len(data.Networks)))
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/topology.templ`, Line: 105, Col: 72}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 21, "</span></div><div class=\"flex justify-between\"><span class=\"text-gray-400\">Containers</span> <span class=\"text-white\">")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var11 string
+			templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", len(data.Containers)))
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/topology.templ`, Line: 109, Col: 74}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 22, "</span></div></div></div><div class=\"card p-4\"><h3 class=\"font-medium text-white mb-3\">Network Drivers</h3><div class=\"space-y-2 text-sm\"><div class=\"flex items-center gap-2\"><span class=\"w-3 h-3 rounded bg-blue-500\"></span> <span class=\"text-gray-400\">bridge</span></div><div class=\"flex items-center gap-2\"><span class=\"w-3 h-3 rounded bg-green-500\"></span> <span class=\"text-gray-400\">overlay</span></div><div class=\"flex items-center gap-2\"><span class=\"w-3 h-3 rounded bg-yellow-500\"></span> <span class=\"text-gray-400\">host</span></div><div class=\"flex items-center gap-2\"><span class=\"w-3 h-3 rounded bg-purple-500\"></span> <span class=\"text-gray-400\">macvlan</span></div></div></div><div class=\"card p-4\"><h3 class=\"font-medium text-white mb-3\">Isolated Containers</h3><div class=\"space-y-2\">")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			for _, c := range data.Containers {
+				if len(c.Networks) == 0 {
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 23, "<div class=\"flex items-center gap-2 text-sm\"><span class=\"w-2 h-2 rounded-full bg-yellow-500\"></span> <span class=\"text-yellow-400\">")
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
+					var templ_7745c5c3_Var12 string
+					templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(c.Name)
+					if templ_7745c5c3_Err != nil {
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/topology.templ`, Line: 143, Col: 48}
+					}
+					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 24, "</span></div>")
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
+				}
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 25, "</div></div></div></div></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -266,15 +287,6 @@ func Topology(data TopologyData) templ.Component {
 		}
 		return nil
 	})
-}
-
-func hasIsolatedContainers(containers []ContainerNode) bool {
-	for _, c := range containers {
-		if len(c.Networks) == 0 {
-			return true
-		}
-	}
-	return false
 }
 
 var _ = templruntime.GeneratedTemplate

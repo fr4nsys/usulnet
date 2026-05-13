@@ -118,7 +118,7 @@ func (s *Service) CreateConnection(ctx context.Context, input models.CreateStora
 	}
 
 	if err := s.connRepo.Create(ctx, conn); err != nil {
-		return nil, fmt.Errorf("create storage connection %q: %w", input.Name, err)
+		return nil, err
 	}
 
 	// Test connectivity
@@ -154,7 +154,7 @@ func (s *Service) ListConnections(ctx context.Context) ([]*models.StorageConnect
 func (s *Service) UpdateConnection(ctx context.Context, id uuid.UUID, input models.UpdateStorageConnectionInput, userID string) (*models.StorageConnection, error) {
 	conn, err := s.connRepo.GetByID(ctx, id)
 	if err != nil {
-		return nil, fmt.Errorf("get storage connection %s: %w", id, err)
+		return nil, err
 	}
 
 	if input.Name != nil {
@@ -191,7 +191,7 @@ func (s *Service) UpdateConnection(ctx context.Context, id uuid.UUID, input mode
 	}
 
 	if err := s.connRepo.Update(ctx, conn); err != nil {
-		return nil, fmt.Errorf("update storage connection %s: %w", id, err)
+		return nil, err
 	}
 
 	// Invalidate cached client
@@ -207,13 +207,13 @@ func (s *Service) UpdateConnection(ctx context.Context, id uuid.UUID, input mode
 func (s *Service) DeleteConnection(ctx context.Context, id uuid.UUID, userID string) error {
 	conn, err := s.connRepo.GetByID(ctx, id)
 	if err != nil {
-		return fmt.Errorf("get storage connection %s: %w", id, err)
+		return err
 	}
 
 	_ = s.bucketRepo.DeleteByConnection(ctx, id)
 
 	if err := s.connRepo.Delete(ctx, id); err != nil {
-		return fmt.Errorf("delete storage connection %s: %w", id, err)
+		return err
 	}
 
 	s.mu.Lock()
@@ -229,7 +229,7 @@ func (s *Service) TestConnection(ctx context.Context, id uuid.UUID) error {
 	client, err := s.clientFor(ctx, id)
 	if err != nil {
 		_ = s.connRepo.UpdateStatus(ctx, id, models.StorageConnectionError, err.Error())
-		return fmt.Errorf("get client for connection %s: %w", id, err)
+		return err
 	}
 	if !client.Healthy(ctx) {
 		msg := "connection test failed"
@@ -280,12 +280,12 @@ func (s *Service) ListBuckets(ctx context.Context, connID uuid.UUID) ([]*models.
 func (s *Service) CreateBucket(ctx context.Context, connID uuid.UUID, input models.CreateBucketInput, userID string) error {
 	client, err := s.clientFor(ctx, connID)
 	if err != nil {
-		return fmt.Errorf("get client for connection %s: %w", connID, err)
+		return err
 	}
 
 	conn, err := s.connRepo.GetByID(ctx, connID)
 	if err != nil {
-		return fmt.Errorf("get storage connection %s: %w", connID, err)
+		return err
 	}
 	region := input.Region
 	if region == "" {
@@ -293,7 +293,7 @@ func (s *Service) CreateBucket(ctx context.Context, connID uuid.UUID, input mode
 	}
 
 	if err := client.CreateBucket(ctx, input.Name, region); err != nil {
-		return fmt.Errorf("create bucket %q: %w", input.Name, err)
+		return err
 	}
 
 	if input.Versioning {
@@ -323,10 +323,10 @@ func (s *Service) CreateBucket(ctx context.Context, connID uuid.UUID, input mode
 func (s *Service) DeleteBucket(ctx context.Context, connID uuid.UUID, name, userID string) error {
 	client, err := s.clientFor(ctx, connID)
 	if err != nil {
-		return fmt.Errorf("get client for connection %s: %w", connID, err)
+		return err
 	}
 	if err := client.DeleteBucket(ctx, name); err != nil {
-		return fmt.Errorf("delete bucket %q: %w", name, err)
+		return err
 	}
 	_ = s.bucketRepo.Delete(ctx, connID, name)
 	s.audit(ctx, connID, "delete_bucket", "bucket", name, userID, nil)
@@ -346,7 +346,7 @@ func (s *Service) GetBucketStats(ctx context.Context, connID uuid.UUID) (*models
 func (s *Service) ListObjects(ctx context.Context, connID uuid.UUID, bucket, prefix string) (*ListObjectsResult, error) {
 	client, err := s.clientFor(ctx, connID)
 	if err != nil {
-		return nil, fmt.Errorf("get client for connection %s: %w", connID, err)
+		return nil, err
 	}
 	return client.ListObjects(ctx, bucket, prefix, "/", 1000)
 }
@@ -355,7 +355,7 @@ func (s *Service) ListObjects(ctx context.Context, connID uuid.UUID, bucket, pre
 func (s *Service) GetObject(ctx context.Context, connID uuid.UUID, bucket, key string) (io.ReadCloser, *ObjectMeta, error) {
 	client, err := s.clientFor(ctx, connID)
 	if err != nil {
-		return nil, nil, fmt.Errorf("get client for connection %s: %w", connID, err)
+		return nil, nil, err
 	}
 	return client.GetObject(ctx, bucket, key)
 }
@@ -364,10 +364,10 @@ func (s *Service) GetObject(ctx context.Context, connID uuid.UUID, bucket, key s
 func (s *Service) UploadObject(ctx context.Context, connID uuid.UUID, bucket, key string, reader io.Reader, size int64, contentType, userID string) error {
 	client, err := s.clientFor(ctx, connID)
 	if err != nil {
-		return fmt.Errorf("get client for connection %s: %w", connID, err)
+		return err
 	}
 	if err := client.PutObject(ctx, bucket, key, reader, size, contentType); err != nil {
-		return fmt.Errorf("upload object %s/%s: %w", bucket, key, err)
+		return err
 	}
 	s.audit(ctx, connID, "upload", "object", bucket+"/"+key, userID, map[string]interface{}{
 		"size": size, "content_type": contentType,
@@ -379,10 +379,10 @@ func (s *Service) UploadObject(ctx context.Context, connID uuid.UUID, bucket, ke
 func (s *Service) DeleteObject(ctx context.Context, connID uuid.UUID, bucket, key, userID string) error {
 	client, err := s.clientFor(ctx, connID)
 	if err != nil {
-		return fmt.Errorf("get client for connection %s: %w", connID, err)
+		return err
 	}
 	if err := client.DeleteObject(ctx, bucket, key); err != nil {
-		return fmt.Errorf("delete object %s/%s: %w", bucket, key, err)
+		return err
 	}
 	s.audit(ctx, connID, "delete", "object", bucket+"/"+key, userID, nil)
 	return nil
@@ -392,10 +392,10 @@ func (s *Service) DeleteObject(ctx context.Context, connID uuid.UUID, bucket, ke
 func (s *Service) DeleteObjects(ctx context.Context, connID uuid.UUID, bucket string, keys []string, userID string) error {
 	client, err := s.clientFor(ctx, connID)
 	if err != nil {
-		return fmt.Errorf("get client for connection %s: %w", connID, err)
+		return err
 	}
 	if err := client.DeleteObjects(ctx, bucket, keys); err != nil {
-		return fmt.Errorf("delete objects in bucket %q: %w", bucket, err)
+		return err
 	}
 	s.audit(ctx, connID, "delete_batch", "object", fmt.Sprintf("%s (%d objects)", bucket, len(keys)), userID, nil)
 	return nil
@@ -405,10 +405,10 @@ func (s *Service) DeleteObjects(ctx context.Context, connID uuid.UUID, bucket st
 func (s *Service) CreateFolder(ctx context.Context, connID uuid.UUID, bucket, prefix, userID string) error {
 	client, err := s.clientFor(ctx, connID)
 	if err != nil {
-		return fmt.Errorf("get client for connection %s: %w", connID, err)
+		return err
 	}
 	if err := CreateFolder(ctx, client, bucket, prefix); err != nil {
-		return fmt.Errorf("create folder %s/%s: %w", bucket, prefix, err)
+		return err
 	}
 	s.audit(ctx, connID, "create_folder", "object", bucket+"/"+prefix, userID, nil)
 	return nil
@@ -418,7 +418,7 @@ func (s *Service) CreateFolder(ctx context.Context, connID uuid.UUID, bucket, pr
 func (s *Service) PresignDownload(ctx context.Context, connID uuid.UUID, bucket, key string, expiry time.Duration) (string, error) {
 	client, err := s.clientFor(ctx, connID)
 	if err != nil {
-		return "", fmt.Errorf("get client for connection %s: %w", connID, err)
+		return "", err
 	}
 	return client.PresignGetObject(ctx, bucket, key, expiry)
 }
@@ -427,7 +427,7 @@ func (s *Service) PresignDownload(ctx context.Context, connID uuid.UUID, bucket,
 func (s *Service) PresignUpload(ctx context.Context, connID uuid.UUID, bucket, key string, expiry time.Duration) (string, error) {
 	client, err := s.clientFor(ctx, connID)
 	if err != nil {
-		return "", fmt.Errorf("get client for connection %s: %w", connID, err)
+		return "", err
 	}
 	return client.PresignPutObject(ctx, bucket, key, expiry)
 }
@@ -455,7 +455,7 @@ func (s *Service) clientFor(ctx context.Context, connID uuid.UUID) (S3Client, er
 
 	conn, err := s.connRepo.GetByID(ctx, connID)
 	if err != nil {
-		return nil, fmt.Errorf("get storage connection %s: %w", connID, err)
+		return nil, err
 	}
 
 	accessKey, err := s.encryptor.DecryptString(conn.AccessKey)
@@ -480,7 +480,7 @@ func (s *Service) buildClient(ctx context.Context, conn *models.StorageConnectio
 		UseSSL:       conn.UseSSL,
 	})
 	if err != nil {
-		return nil, fmt.Errorf("build S3 client for connection %s: %w", conn.ID, err)
+		return nil, err
 	}
 
 	s.mu.Lock()

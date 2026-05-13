@@ -146,7 +146,7 @@ func (h *Handler) probeConnections(ctx context.Context) []pages.ConnectionStatus
 	}
 	conns = append(conns, redisConn)
 
-	// NATS (required for all modes — enables agent management)
+	// NATS
 	natsConn := pages.ConnectionStatus{
 		Name:    "NATS",
 		Status:  "disconnected",
@@ -163,9 +163,6 @@ func (h *Handler) probeConnections(ctx context.Context) []pages.ConnectionStatus
 			}
 			natsConn.Details = h.natsProber.ServerInfo()
 		}
-	} else {
-		natsConn.Status = "not configured"
-		natsConn.TLSInfo = "n/a"
 	}
 	conns = append(conns, natsConn)
 
@@ -400,11 +397,8 @@ func addTarEntry(tw *tar.Writer, name string, data []byte) error {
 		ModTime: time.Now(),
 	}
 	if err := tw.WriteHeader(header); err != nil {
-		return fmt.Errorf("addTarEntry: write header for %q: %w", name, err)
+		return err
 	}
 	_, err := tw.Write(data)
-	if err != nil {
-		return fmt.Errorf("addTarEntry: write data for %q: %w", name, err)
-	}
-	return nil
+	return err
 }

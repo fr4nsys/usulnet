@@ -59,7 +59,7 @@ func Manifest(data ManifestData) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"p-6 space-y-6\"><!-- Breadcrumb --><nav class=\"flex items-center space-x-2 text-sm text-gray-400\"><a href=\"/registries\" class=\"hover:text-primary-400\">Registries</a> <svg class=\"w-4 h-4\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5l7 7-7 7\"></path></svg> <a href=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"p-6 space-y-6\"><!-- Breadcrumb --><nav class=\"flex items-center space-x-2 text-sm text-gray-500 dark:text-gray-400\"><a href=\"/registries\" class=\"hover:text-primary-600 dark:hover:text-primary-400\">Registries</a> <svg class=\"w-4 h-4\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5l7 7-7 7\"></path></svg> <a href=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -72,14 +72,14 @@ func Manifest(data ManifestData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "\" class=\"hover:text-primary-400\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "\" class=\"hover:text-primary-600 dark:hover:text-primary-400\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var4 string
 			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(data.RegName)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/registries/manifest.templ`, Line: 28, Col: 121}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/registries/manifest.templ`, Line: 28, Col: 149}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 			if templ_7745c5c3_Err != nil {
@@ -98,40 +98,40 @@ func Manifest(data ManifestData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "\" class=\"hover:text-primary-400\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "\" class=\"hover:text-primary-600 dark:hover:text-primary-400\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var6 string
 			templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(data.RepoName)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/registries/manifest.templ`, Line: 30, Col: 145}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/registries/manifest.templ`, Line: 30, Col: 173}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "</a> <svg class=\"w-4 h-4\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5l7 7-7 7\"></path></svg> <span class=\"text-white font-medium\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "</a> <svg class=\"w-4 h-4\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 5l7 7-7 7\"></path></svg> <span class=\"text-gray-900 dark:text-white font-medium\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var7 string
 			templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(data.Reference)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/registries/manifest.templ`, Line: 32, Col: 57}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/registries/manifest.templ`, Line: 32, Col: 76}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "</span></nav><div><h1 class=\"text-2xl font-bold text-white\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "</span></nav><div><h1 class=\"text-2xl font-bold text-gray-900 dark:text-white\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var8 string
 			templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(data.RepoName)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/registries/manifest.templ`, Line: 36, Col: 61}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/registries/manifest.templ`, Line: 36, Col: 80}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 			if templ_7745c5c3_Err != nil {
@@ -144,39 +144,39 @@ func Manifest(data ManifestData) templ.Component {
 			var templ_7745c5c3_Var9 string
 			templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(data.Reference)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/registries/manifest.templ`, Line: 36, Col: 80}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/registries/manifest.templ`, Line: 36, Col: 99}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "</h1><p class=\"mt-1 text-sm text-gray-400\">Image manifest details</p></div><div class=\"bg-dark-800 rounded-lg overflow-hidden border border-dark-600\"><div class=\"px-6 py-4 border-b border-dark-600\"><h2 class=\"text-lg font-medium text-white\">Manifest Details</h2></div><dl class=\"divide-y divide-dark-600\"><div class=\"px-6 py-4 sm:grid sm:grid-cols-3 sm:gap-4\"><dt class=\"text-sm font-medium text-gray-400\">Digest</dt><dd class=\"mt-1 text-sm text-white sm:col-span-2 sm:mt-0 font-mono break-all\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "</h1><p class=\"mt-1 text-sm text-gray-500 dark:text-gray-400\">Image manifest details</p></div><div class=\"bg-white dark:bg-gray-800 shadow rounded-lg overflow-hidden\"><div class=\"px-6 py-4 border-b border-gray-200 dark:border-gray-700\"><h2 class=\"text-lg font-medium text-gray-900 dark:text-white\">Manifest Details</h2></div><dl class=\"divide-y divide-gray-200 dark:divide-gray-700\"><div class=\"px-6 py-4 sm:grid sm:grid-cols-3 sm:gap-4\"><dt class=\"text-sm font-medium text-gray-500 dark:text-gray-400\">Digest</dt><dd class=\"mt-1 text-sm text-gray-900 dark:text-white sm:col-span-2 sm:mt-0 font-mono break-all\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var10 string
 			templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(data.Digest)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/registries/manifest.templ`, Line: 47, Col: 97}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/registries/manifest.templ`, Line: 47, Col: 116}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "</dd></div><div class=\"px-6 py-4 sm:grid sm:grid-cols-3 sm:gap-4\"><dt class=\"text-sm font-medium text-gray-400\">Media Type</dt><dd class=\"mt-1 text-sm text-white sm:col-span-2 sm:mt-0 font-mono\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "</dd></div><div class=\"px-6 py-4 sm:grid sm:grid-cols-3 sm:gap-4\"><dt class=\"text-sm font-medium text-gray-500 dark:text-gray-400\">Media Type</dt><dd class=\"mt-1 text-sm text-gray-900 dark:text-white sm:col-span-2 sm:mt-0 font-mono\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var11 string
 			templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(data.MediaType)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/registries/manifest.templ`, Line: 51, Col: 90}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/registries/manifest.templ`, Line: 51, Col: 109}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "</dd></div><div class=\"px-6 py-4 sm:grid sm:grid-cols-3 sm:gap-4\"><dt class=\"text-sm font-medium text-gray-400\">Size</dt><dd class=\"mt-1 text-sm text-white sm:col-span-2 sm:mt-0\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "</dd></div><div class=\"px-6 py-4 sm:grid sm:grid-cols-3 sm:gap-4\"><dt class=\"text-sm font-medium text-gray-500 dark:text-gray-400\">Size</dt><dd class=\"mt-1 text-sm text-gray-900 dark:text-white sm:col-span-2 sm:mt-0\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -201,14 +201,14 @@ func Manifest(data ManifestData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			if data.Platform != "" {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "<div class=\"px-6 py-4 sm:grid sm:grid-cols-3 sm:gap-4\"><dt class=\"text-sm font-medium text-gray-400\">Platform</dt><dd class=\"mt-1 text-sm text-white sm:col-span-2 sm:mt-0\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "<div class=\"px-6 py-4 sm:grid sm:grid-cols-3 sm:gap-4\"><dt class=\"text-sm font-medium text-gray-500 dark:text-gray-400\">Platform</dt><dd class=\"mt-1 text-sm text-gray-900 dark:text-white sm:col-span-2 sm:mt-0\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var13 string
 				templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(data.Platform)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/registries/manifest.templ`, Line: 66, Col: 80}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/registries/manifest.templ`, Line: 66, Col: 99}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
 				if templ_7745c5c3_Err != nil {
@@ -219,20 +219,20 @@ func Manifest(data ManifestData) templ.Component {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "<div class=\"px-6 py-4 sm:grid sm:grid-cols-3 sm:gap-4\"><dt class=\"text-sm font-medium text-gray-400\">Layers</dt><dd class=\"mt-1 text-sm text-white sm:col-span-2 sm:mt-0\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "<div class=\"px-6 py-4 sm:grid sm:grid-cols-3 sm:gap-4\"><dt class=\"text-sm font-medium text-gray-500 dark:text-gray-400\">Layers</dt><dd class=\"mt-1 text-sm text-gray-900 dark:text-white sm:col-span-2 sm:mt-0\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var14 string
 			templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", data.Layers))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/registries/manifest.templ`, Line: 71, Col: 96}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/registries/manifest.templ`, Line: 71, Col: 115}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var14))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "</dd></div></dl></div><!-- Pull command --><div class=\"bg-dark-800 rounded-lg overflow-hidden border border-dark-600\"><div class=\"px-6 py-4 border-b border-dark-600\"><h2 class=\"text-lg font-medium text-white\">Pull Command</h2></div><div class=\"px-6 py-4\"><div class=\"bg-dark-900 rounded-lg p-4 font-mono text-sm text-green-400 overflow-x-auto\" x-data=\"{ copied: false }\"><div class=\"flex items-center justify-between\"><code>docker pull ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "</dd></div></dl></div><!-- Pull command --><div class=\"bg-white dark:bg-gray-800 shadow rounded-lg overflow-hidden\"><div class=\"px-6 py-4 border-b border-gray-200 dark:border-gray-700\"><h2 class=\"text-lg font-medium text-gray-900 dark:text-white\">Pull Command</h2></div><div class=\"px-6 py-4\"><div class=\"bg-gray-900 rounded-lg p-4 font-mono text-sm text-green-400 overflow-x-auto\" x-data=\"{ copied: false }\"><div class=\"flex items-center justify-between\"><code>docker pull ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

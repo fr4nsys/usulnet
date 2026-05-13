@@ -323,9 +323,6 @@ func (h *Handler) runbookExecuteSync(r *http.Request, rb *models.Runbook, exec *
 			if containerID == "" {
 				result["status"] = "skipped"
 				result["error"] = "missing container_id in step config"
-			} else if h.services == nil {
-				result["status"] = "failed"
-				result["error"] = "service registry not available"
 			} else {
 				ctx := r.Context()
 				var actionErr error

@@ -28,10 +28,10 @@ func TestGetRealIP(t *testing.T) {
 			want:       "203.0.113.50",
 		},
 		{
-			name:       "X-Forwarded-For multiple IPs (rightmost non-private used)",
+			name:       "X-Forwarded-For multiple IPs (first used)",
 			headers:    map[string]string{"X-Forwarded-For": "203.0.113.50, 70.41.3.18, 150.172.238.178"},
 			remoteAddr: "127.0.0.1:12345",
-			want:       "150.172.238.178",
+			want:       "203.0.113.50",
 		},
 		{
 			name:       "X-Forwarded-For with spaces",
@@ -46,10 +46,10 @@ func TestGetRealIP(t *testing.T) {
 			want:       "192.168.1.100",
 		},
 		{
-			name:       "X-Real-IP takes precedence over X-Forwarded-For",
+			name:       "X-Forwarded-For takes precedence over X-Real-IP",
 			headers:    map[string]string{"X-Forwarded-For": "10.0.0.1", "X-Real-IP": "10.0.0.2"},
 			remoteAddr: "127.0.0.1:12345",
-			want:       "10.0.0.2",
+			want:       "10.0.0.1",
 		},
 		{
 			name:       "fallback to RemoteAddr with port",

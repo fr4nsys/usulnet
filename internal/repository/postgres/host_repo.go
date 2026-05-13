@@ -600,7 +600,7 @@ func (r *HostRepository) ExistsByName(ctx context.Context, name string) (bool, e
 
 // DeleteOldMetrics deletes host metrics older than the given retention period.
 func (r *HostRepository) DeleteOldMetrics(ctx context.Context, retention time.Duration) (int64, error) {
-	query := `DELETE FROM host_metrics WHERE recorded_at < $1`
+	query := `DELETE FROM host_metrics WHERE created_at < $1`
 
 	cutoff := time.Now().Add(-retention)
 	result, err := r.db.ExecContext(ctx, query, cutoff)
@@ -878,19 +878,19 @@ func (r *HostRepository) SetMaintenance(ctx context.Context, hostID uuid.UUID, r
 func (r *HostRepository) InsertMetrics(ctx context.Context, metrics *models.HostMetrics) error {
 	query := `
 		INSERT INTO host_metrics (
-			host_id, cpu_percent, memory_used, memory_total,
-			disk_used, disk_total, network_rx_bytes, network_tx_bytes,
-			containers_running, containers_stopped, containers_total, recorded_at
+			host_id, cpu_percent, memory_used, memory_total, memory_percent,
+			disk_used, disk_total, disk_percent, network_rx_bytes, network_tx_bytes,
+			container_count, running_count, collected_at
 		) VALUES (
-			$1, $2, $3, $4, $5, $6, $7, $8, $9, 0, $10, $11
+			$1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13
 		)
 	`
 
 	_, err := r.db.ExecContext(ctx, query,
 		metrics.HostID, metrics.CPUPercent, metrics.MemoryUsed, metrics.MemoryTotal,
-		metrics.DiskUsed, metrics.DiskTotal,
-		metrics.NetworkRxBytes, metrics.NetworkTxBytes, metrics.RunningCount,
-		metrics.ContainerCount, metrics.CollectedAt,
+		metrics.MemoryPercent, metrics.DiskUsed, metrics.DiskTotal, metrics.DiskPercent,
+		metrics.NetworkRxBytes, metrics.NetworkTxBytes, metrics.ContainerCount,
+		metrics.RunningCount, metrics.CollectedAt,
 	)
 	if err != nil {
 		return errors.Wrap(err, errors.CodeInternal, "failed to insert metrics")
@@ -901,63 +901,22 @@ func (r *HostRepository) InsertMetrics(ctx context.Context, metrics *models.Host
 
 // GetLatestMetrics retrieves the latest metrics for a host.
 func (r *HostRepository) GetLatestMetrics(ctx context.Context, hostID uuid.UUID) (*models.HostMetrics, error) {
-	// Check host_metrics first (populated by agent heartbeats / RecordMetrics).
-	// Table columns differ from Go struct — compute derived fields and alias.
 	query := `
-		SELECT 0 AS id, host_id,
-		       COALESCE(cpu_percent, 0) AS cpu_percent,
-		       COALESCE(memory_used, 0) AS memory_used,
-		       COALESCE(memory_total, 0) AS memory_total,
-		       CASE WHEN COALESCE(memory_total, 0) > 0
-		            THEN (memory_used::float8 / memory_total * 100)
-		            ELSE 0 END AS memory_percent,
-		       COALESCE(disk_used, 0) AS disk_used,
-		       COALESCE(disk_total, 0) AS disk_total,
-		       CASE WHEN COALESCE(disk_total, 0) > 0
-		            THEN (disk_used::float8 / disk_total * 100)
-		            ELSE 0 END AS disk_percent,
-		       COALESCE(network_rx_bytes, 0) AS network_rx_bytes,
-		       COALESCE(network_tx_bytes, 0) AS network_tx_bytes,
-		       COALESCE(containers_total, 0) AS container_count,
-		       COALESCE(containers_running, 0) AS running_count,
-		       recorded_at AS collected_at
+		SELECT id, host_id, cpu_percent, memory_used, memory_total, memory_percent,
+		       disk_used, disk_total, disk_percent, network_rx_bytes, network_tx_bytes,
+		       container_count, running_count, collected_at
 		FROM host_metrics
 		WHERE host_id = $1
-		ORDER BY recorded_at DESC
+		ORDER BY collected_at DESC
 		LIMIT 1
 	`
 
 	var metrics models.HostMetrics
 	if err := r.db.GetContext(ctx, &metrics, query, hostID); err != nil {
-		if err != sql.ErrNoRows {
-			return nil, errors.Wrap(err, errors.CodeInternal, "failed to get latest metrics")
+		if err == sql.ErrNoRows {
+			return nil, nil
 		}
-		// Fall back to metrics_snapshots (populated by MetricsCollectionWorker)
-		fallbackQuery := `
-			SELECT 0 AS id, host_id,
-			       COALESCE(cpu_percent, 0) AS cpu_percent,
-			       COALESCE(memory_used, 0) AS memory_used,
-			       COALESCE(memory_total, 0) AS memory_total,
-			       COALESCE(memory_percent, 0) AS memory_percent,
-			       COALESCE(disk_used, 0) AS disk_used,
-			       COALESCE(disk_total, 0) AS disk_total,
-			       COALESCE(disk_percent, 0) AS disk_percent,
-			       COALESCE(network_rx_bytes, 0) AS network_rx_bytes,
-			       COALESCE(network_tx_bytes, 0) AS network_tx_bytes,
-			       COALESCE(containers_total, 0) AS container_count,
-			       COALESCE(containers_running, 0) AS running_count,
-			       collected_at
-			FROM metrics_snapshots
-			WHERE host_id = $1 AND metric_type = 'host'
-			ORDER BY collected_at DESC
-			LIMIT 1
-		`
-		if err := r.db.GetContext(ctx, &metrics, fallbackQuery, hostID); err != nil {
-			if err == sql.ErrNoRows {
-				return nil, nil
-			}
-			return nil, errors.Wrap(err, errors.CodeInternal, "failed to get latest metrics from snapshots")
-		}
+		return nil, errors.Wrap(err, errors.CodeInternal, "failed to get latest metrics")
 	}
 
 	return &metrics, nil
@@ -966,26 +925,12 @@ func (r *HostRepository) GetLatestMetrics(ctx context.Context, hostID uuid.UUID)
 // GetMetricsHistory retrieves metrics history for a host.
 func (r *HostRepository) GetMetricsHistory(ctx context.Context, hostID uuid.UUID, since time.Time, limit int) ([]*models.HostMetrics, error) {
 	query := `
-		SELECT 0 AS id, host_id,
-		       COALESCE(cpu_percent, 0) AS cpu_percent,
-		       COALESCE(memory_used, 0) AS memory_used,
-		       COALESCE(memory_total, 0) AS memory_total,
-		       CASE WHEN COALESCE(memory_total, 0) > 0
-		            THEN (memory_used::float8 / memory_total * 100)
-		            ELSE 0 END AS memory_percent,
-		       COALESCE(disk_used, 0) AS disk_used,
-		       COALESCE(disk_total, 0) AS disk_total,
-		       CASE WHEN COALESCE(disk_total, 0) > 0
-		            THEN (disk_used::float8 / disk_total * 100)
-		            ELSE 0 END AS disk_percent,
-		       COALESCE(network_rx_bytes, 0) AS network_rx_bytes,
-		       COALESCE(network_tx_bytes, 0) AS network_tx_bytes,
-		       COALESCE(containers_total, 0) AS container_count,
-		       COALESCE(containers_running, 0) AS running_count,
-		       recorded_at AS collected_at
+		SELECT id, host_id, cpu_percent, memory_used, memory_total, memory_percent,
+		       disk_used, disk_total, disk_percent, network_rx_bytes, network_tx_bytes,
+		       container_count, running_count, collected_at
 		FROM host_metrics
-		WHERE host_id = $1 AND recorded_at >= $2
-		ORDER BY recorded_at DESC
+		WHERE host_id = $1 AND collected_at >= $2
+		ORDER BY collected_at DESC
 		LIMIT $3
 	`
 

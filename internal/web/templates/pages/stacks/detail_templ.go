@@ -705,7 +705,7 @@ func Detail(data StackDetailData) templ.Component {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 69, "</div></div><!-- Compare Modal --><div x-show=\"showCompareModal\" x-transition style=\"display: none;\" class=\"fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4\" @click.self=\"showCompareModal = false\" x-cloak><div class=\"bg-dark-800 border border-dark-700 rounded-xl w-full max-w-sm\"><div class=\"px-6 py-4 border-b border-dark-700\"><h3 class=\"text-lg font-medium text-white\">Compare Versions</h3></div><div class=\"p-6 space-y-4\"><div><label class=\"block text-sm text-gray-400 mb-2\">Compare from</label> <select x-model=\"compareFrom\" class=\"w-full bg-dark-700 border border-dark-600 rounded-lg text-white px-3 py-2\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 69, "</div></div><!-- Compare Modal --><div x-show=\"showCompareModal\" x-transition class=\"fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4\" @click.self=\"showCompareModal = false\" x-cloak><div class=\"bg-dark-800 border border-dark-700 rounded-xl w-full max-w-sm\"><div class=\"px-6 py-4 border-b border-dark-700\"><h3 class=\"text-lg font-medium text-white\">Compare Versions</h3></div><div class=\"p-6 space-y-4\"><div><label class=\"block text-sm text-gray-400 mb-2\">Compare from</label> <select x-model=\"compareFrom\" class=\"w-full bg-dark-700 border border-dark-600 rounded-lg text-white px-3 py-2\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -717,7 +717,7 @@ func Detail(data StackDetailData) templ.Component {
 				var templ_7745c5c3_Var39 string
 				templ_7745c5c3_Var39, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", v.Version))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/stacks/detail.templ`, Line: 364, Col: 53}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/stacks/detail.templ`, Line: 363, Col: 53}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var39))
 				if templ_7745c5c3_Err != nil {
@@ -730,7 +730,7 @@ func Detail(data StackDetailData) templ.Component {
 				var templ_7745c5c3_Var40 string
 				templ_7745c5c3_Var40, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", v.Version))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/stacks/detail.templ`, Line: 364, Col: 87}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/stacks/detail.templ`, Line: 363, Col: 87}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var40))
 				if templ_7745c5c3_Err != nil {
@@ -743,7 +743,7 @@ func Detail(data StackDetailData) templ.Component {
 				var templ_7745c5c3_Var41 string
 				templ_7745c5c3_Var41, templ_7745c5c3_Err = templ.JoinStringErrs(v.Comment)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/stacks/detail.templ`, Line: 364, Col: 103}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/stacks/detail.templ`, Line: 363, Col: 103}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var41))
 				if templ_7745c5c3_Err != nil {
@@ -766,7 +766,7 @@ func Detail(data StackDetailData) templ.Component {
 				var templ_7745c5c3_Var42 string
 				templ_7745c5c3_Var42, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", v.Version))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/stacks/detail.templ`, Line: 372, Col: 53}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/stacks/detail.templ`, Line: 371, Col: 53}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var42))
 				if templ_7745c5c3_Err != nil {
@@ -779,7 +779,7 @@ func Detail(data StackDetailData) templ.Component {
 				var templ_7745c5c3_Var43 string
 				templ_7745c5c3_Var43, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", v.Version))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/stacks/detail.templ`, Line: 372, Col: 87}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/stacks/detail.templ`, Line: 371, Col: 87}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var43))
 				if templ_7745c5c3_Err != nil {
@@ -792,7 +792,7 @@ func Detail(data StackDetailData) templ.Component {
 				var templ_7745c5c3_Var44 string
 				templ_7745c5c3_Var44, templ_7745c5c3_Err = templ.JoinStringErrs(v.Comment)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/stacks/detail.templ`, Line: 372, Col: 103}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/stacks/detail.templ`, Line: 371, Col: 103}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var44))
 				if templ_7745c5c3_Err != nil {

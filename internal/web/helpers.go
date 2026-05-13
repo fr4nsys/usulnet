@@ -380,29 +380,6 @@ func GenerateCSRFToken() string {
 	return hex.EncodeToString(b)
 }
 
-// isSafeReturnURL validates a return URL to prevent open redirects.
-// Only accepts relative paths starting with '/' that don't escape the origin.
-func isSafeReturnURL(u string) bool {
-	if u == "" || u == "/login" || u == "/login/" {
-		return false
-	}
-	// Must start with exactly one slash (not //, not \)
-	if !strings.HasPrefix(u, "/") || strings.HasPrefix(u, "//") || strings.HasPrefix(u, "/\\") {
-		return false
-	}
-	// Reject backslashes (some browsers interpret \ as /)
-	if strings.ContainsAny(u, "\\") {
-		return false
-	}
-	// Reject control characters and null bytes
-	for _, c := range u {
-		if c < 0x20 || c == 0x7f {
-			return false
-		}
-	}
-	return true
-}
-
 // FormatPortMappings formats a list of port mappings for display.
 func FormatPortMappings(ports []PortView) string {
 	if len(ports) == 0 {

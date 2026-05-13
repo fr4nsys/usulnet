@@ -56,7 +56,7 @@ func (a *TarArchiver) Create(
 	var fileCount int
 	err = filepath.Walk(sourcePath, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
-			return fmt.Errorf("create archive: calculate source size: walk %q: %w", path, err)
+			return err
 		}
 		select {
 		case <-ctx.Done():
@@ -113,7 +113,7 @@ func (a *TarArchiver) Create(
 
 	err = filepath.Walk(sourcePath, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
-			return fmt.Errorf("create archive: walk %q: %w", path, err)
+			return err
 		}
 
 		// Check for cancellation
@@ -126,7 +126,7 @@ func (a *TarArchiver) Create(
 		// Get relative path for archive
 		relPath, err := filepath.Rel(basePath, path)
 		if err != nil {
-			return fmt.Errorf("create archive: relative path for %q: %w", path, err)
+			return err
 		}
 
 		// Skip the root directory itself
@@ -386,7 +386,7 @@ func (a *TarArchiver) List(
 func CalculateChecksum(reader io.Reader) (string, error) {
 	hash := sha256.New()
 	if _, err := io.Copy(hash, reader); err != nil {
-		return "", fmt.Errorf("calculate checksum: %w", err)
+		return "", err
 	}
 	return hex.EncodeToString(hash.Sum(nil)), nil
 }
@@ -395,13 +395,13 @@ func CalculateChecksum(reader io.Reader) (string, error) {
 func VerifyChecksum(path string, expectedChecksum string) (bool, error) {
 	file, err := os.Open(path)
 	if err != nil {
-		return false, fmt.Errorf("open file for checksum verification: %w", err)
+		return false, err
 	}
 	defer file.Close()
 
 	checksum, err := CalculateChecksum(file)
 	if err != nil {
-		return false, fmt.Errorf("calculate checksum for verification: %w", err)
+		return false, err
 	}
 
 	return checksum == expectedChecksum, nil

@@ -14,6 +14,7 @@ import (
 	"encoding/pem"
 	"fmt"
 	"net"
+	"strconv"
 	"sync"
 	"time"
 
@@ -174,7 +175,7 @@ func (s *Service) GenerateKey(ctx context.Context, input models.CreateSSHKeyInpu
 	}
 
 	if err := s.keyRepo.Create(ctx, key); err != nil {
-		return nil, fmt.Errorf("save generated SSH key: %w", err)
+		return nil, err
 	}
 
 	s.logger.Info("SSH key generated", "key_id", key.ID, "type", input.KeyType, "user_id", userID)
@@ -228,7 +229,7 @@ func (s *Service) ImportKey(ctx context.Context, input models.CreateSSHKeyInput,
 	}
 
 	if err := s.keyRepo.Create(ctx, key); err != nil {
-		return nil, fmt.Errorf("save imported SSH key: %w", err)
+		return nil, err
 	}
 
 	s.logger.Info("SSH key imported", "key_id", key.ID, "type", keyType, "user_id", userID)
@@ -248,7 +249,7 @@ func (s *Service) ListKeys(ctx context.Context, userID uuid.UUID) ([]*models.SSH
 // DeleteKey removes an SSH key.
 func (s *Service) DeleteKey(ctx context.Context, id uuid.UUID) error {
 	if err := s.keyRepo.Delete(ctx, id); err != nil {
-		return fmt.Errorf("delete SSH key: %w", err)
+		return err
 	}
 	s.logger.Info("SSH key deleted", "key_id", id)
 	return nil
@@ -299,7 +300,7 @@ func (s *Service) CreateConnection(ctx context.Context, input models.CreateSSHCo
 	}
 
 	if err := s.connRepo.Create(ctx, conn); err != nil {
-		return nil, fmt.Errorf("save SSH connection: %w", err)
+		return nil, err
 	}
 
 	s.logger.Info("SSH connection created", "conn_id", conn.ID, "host", conn.Host, "user_id", userID)
@@ -310,7 +311,7 @@ func (s *Service) CreateConnection(ctx context.Context, input models.CreateSSHCo
 func (s *Service) GetConnection(ctx context.Context, id uuid.UUID) (*models.SSHConnection, error) {
 	conn, err := s.connRepo.GetByID(ctx, id)
 	if err != nil {
-		return nil, fmt.Errorf("get SSH connection: %w", err)
+		return nil, err
 	}
 
 	// Load associated key if present
@@ -338,7 +339,7 @@ func (s *Service) ListConnectionsByCategory(ctx context.Context, userID uuid.UUI
 func (s *Service) UpdateConnection(ctx context.Context, id uuid.UUID, input models.UpdateSSHConnectionInput) (*models.SSHConnection, error) {
 	conn, err := s.connRepo.GetByID(ctx, id)
 	if err != nil {
-		return nil, fmt.Errorf("get SSH connection for update: %w", err)
+		return nil, err
 	}
 
 	if input.Name != nil {
@@ -383,7 +384,7 @@ func (s *Service) UpdateConnection(ctx context.Context, id uuid.UUID, input mode
 	}
 
 	if err := s.connRepo.Update(ctx, conn); err != nil {
-		return nil, fmt.Errorf("update SSH connection: %w", err)
+		return nil, err
 	}
 
 	// Invalidate cached client
@@ -399,7 +400,7 @@ func (s *Service) DeleteConnection(ctx context.Context, id uuid.UUID) error {
 	s.closeClient(id)
 
 	if err := s.connRepo.Delete(ctx, id); err != nil {
-		return fmt.Errorf("delete SSH connection: %w", err)
+		return err
 	}
 
 	s.logger.Info("SSH connection deleted", "conn_id", id)
@@ -420,7 +421,7 @@ func (s *Service) GetCategories(ctx context.Context, userID uuid.UUID) ([]string
 func (s *Service) TestConnection(ctx context.Context, id uuid.UUID) (*models.SSHTestResult, error) {
 	conn, err := s.GetConnection(ctx, id)
 	if err != nil {
-		return nil, fmt.Errorf("get connection %s for test: %w", id, err)
+		return nil, err
 	}
 
 	result := &models.SSHTestResult{
@@ -457,13 +458,13 @@ func (s *Service) TestConnection(ctx context.Context, id uuid.UUID) (*models.SSH
 func (s *Service) Connect(ctx context.Context, connID uuid.UUID, userID uuid.UUID, clientIP string) (*ssh.Client, *models.SSHSession, error) {
 	conn, err := s.GetConnection(ctx, connID)
 	if err != nil {
-		return nil, nil, fmt.Errorf("get connection %s: %w", connID, err)
+		return nil, nil, err
 	}
 
 	client, err := s.dial(ctx, conn)
 	if err != nil {
 		_ = s.connRepo.UpdateStatus(ctx, connID, models.SSHConnectionError, err.Error())
-		return nil, nil, fmt.Errorf("dial SSH connection %s: %w", connID, err)
+		return nil, nil, err
 	}
 
 	// Create session record
@@ -478,7 +479,7 @@ func (s *Service) Connect(ctx context.Context, connID uuid.UUID, userID uuid.UUI
 
 	if err := s.sessionRepo.Create(ctx, session); err != nil {
 		client.Close()
-		return nil, nil, fmt.Errorf("create SSH session: %w", err)
+		return nil, nil, err
 	}
 
 	// Update key last used if applicable
@@ -495,7 +496,7 @@ func (s *Service) Connect(ctx context.Context, connID uuid.UUID, userID uuid.UUI
 // CreateSession saves an SSH session record (used for runtime-credential connections).
 func (s *Service) CreateSession(ctx context.Context, session *models.SSHSession) error {
 	if err := s.sessionRepo.Create(ctx, session); err != nil {
-		return fmt.Errorf("create SSH session: %w", err)
+		return err
 	}
 	s.logger.Info("SSH session created", "session_id", session.ID, "conn_id", session.ConnectionID)
 	return nil
@@ -504,21 +505,9 @@ func (s *Service) CreateSession(ctx context.Context, session *models.SSHSession)
 // EndSession marks an SSH session as ended.
 func (s *Service) EndSession(ctx context.Context, sessionID uuid.UUID) error {
 	if err := s.sessionRepo.End(ctx, sessionID); err != nil {
-		return fmt.Errorf("end SSH session %s: %w", sessionID, err)
+		return err
 	}
 	s.logger.Info("SSH session ended", "session_id", sessionID)
-	return nil
-}
-
-// DisconnectSession forcefully disconnects an SSH session and cleans up resources.
-// It is idempotent: disconnecting an unknown or already-ended session is a no-op.
-func (s *Service) DisconnectSession(ctx context.Context, sessionID uuid.UUID) error {
-	if err := s.sessionRepo.End(ctx, sessionID); err != nil {
-		// Session not found or already ended — treat as success (idempotent)
-		s.logger.Debug("disconnect session: session not found or already ended", "session_id", sessionID)
-		return nil
-	}
-	s.logger.Info("SSH session disconnected", "session_id", sessionID)
 	return nil
 }
 
@@ -539,10 +528,10 @@ func (s *Service) GetSessionHistory(ctx context.Context, connID uuid.UUID, limit
 func (s *Service) dial(ctx context.Context, conn *models.SSHConnection) (*ssh.Client, error) {
 	config, err := s.buildSSHConfig(ctx, conn)
 	if err != nil {
-		return nil, fmt.Errorf("build SSH config for %s@%s: %w", conn.Username, conn.Host, err)
+		return nil, err
 	}
 
-	addr := net.JoinHostPort(conn.Host, fmt.Sprintf("%d", conn.Port))
+	addr := net.JoinHostPort(conn.Host, strconv.Itoa(conn.Port))
 
 	// Handle jump host if configured
 	if conn.JumpHost != nil {
@@ -610,7 +599,7 @@ func (s *Service) buildSSHConfig(ctx context.Context, conn *models.SSHConnection
 
 		key, err := s.keyRepo.GetByID(ctx, *conn.KeyID)
 		if err != nil {
-			return nil, fmt.Errorf("get SSH key %s: %w", *conn.KeyID, err)
+			return nil, err
 		}
 
 		privateKey, err := s.encryptor.DecryptString(key.PrivateKey)
@@ -780,13 +769,13 @@ func (s *Service) validateKeyPair(publicKey, privateKey, passphrase string) erro
 		signer, err = ssh.ParsePrivateKey([]byte(privateKey))
 	}
 	if err != nil {
-		return fmt.Errorf("validate key pair: parse private key: %w", err)
+		return err
 	}
 
 	// Verify public key matches
 	pubKey, _, _, _, err := ssh.ParseAuthorizedKey([]byte(publicKey))
 	if err != nil {
-		return fmt.Errorf("validate key pair: parse public key: %w", err)
+		return err
 	}
 
 	if string(pubKey.Marshal()) != string(signer.PublicKey().Marshal()) {
@@ -843,7 +832,7 @@ func (s *Service) CreateTunnel(ctx context.Context, input models.CreateSSHTunnel
 	}
 
 	if err := s.tunnelRepo.Create(ctx, tunnel); err != nil {
-		return nil, fmt.Errorf("create SSH tunnel: %w", err)
+		return nil, err
 	}
 
 	s.logger.Info("tunnel created", "tunnel_id", tunnel.ID, "type", tunnel.Type, "local_port", tunnel.LocalPort)
@@ -886,7 +875,7 @@ func (s *Service) StartTunnel(ctx context.Context, tunnelID uuid.UUID) error {
 
 	tunnel, err := s.tunnelRepo.GetByID(ctx, tunnelID)
 	if err != nil {
-		return fmt.Errorf("get tunnel %s: %w", tunnelID, err)
+		return err
 	}
 
 	// Check if already running
@@ -907,7 +896,7 @@ func (s *Service) StartTunnel(ctx context.Context, tunnelID uuid.UUID) error {
 	client, err := s.dial(ctx, conn)
 	if err != nil {
 		s.tunnelRepo.UpdateStatus(ctx, tunnelID, models.SSHTunnelStatusError, err.Error())
-		return fmt.Errorf("dial SSH for tunnel %s: %w", tunnelID, err)
+		return err
 	}
 
 	// Create stop channel
@@ -1026,8 +1015,8 @@ func (s *Service) runLocalForward(tunnel *models.SSHTunnel, client *ssh.Client, 
 
 // runRemoteForward handles remote port forwarding (-R).
 func (s *Service) runRemoteForward(tunnel *models.SSHTunnel, client *ssh.Client, stopCh chan struct{}) {
-	remoteAddr := net.JoinHostPort(tunnel.RemoteHost, fmt.Sprintf("%d", tunnel.RemotePort))
-	localAddr := net.JoinHostPort(tunnel.LocalHost, fmt.Sprintf("%d", tunnel.LocalPort))
+	remoteAddr := net.JoinHostPort(tunnel.RemoteHost, strconv.Itoa(tunnel.RemotePort))
+	localAddr := net.JoinHostPort(tunnel.LocalHost, strconv.Itoa(tunnel.LocalPort))
 
 	listener, err := client.Listen("tcp", remoteAddr)
 	if err != nil {

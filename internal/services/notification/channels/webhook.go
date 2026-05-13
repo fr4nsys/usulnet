@@ -160,9 +160,9 @@ func (w *WebhookChannel) Send(ctx context.Context, msg RenderedMessage) error {
 // Test sends a test notification to verify configuration.
 func (w *WebhookChannel) Test(ctx context.Context) error {
 	testMsg := RenderedMessage{
-		Title:     "USULNET Test Notification",
-		Body:      "This is a test notification from USULNET to verify webhook configuration.",
-		BodyPlain: "This is a test notification from USULNET to verify webhook configuration.",
+		Title:     "usulnet Test Notification",
+		Body:      "This is a test notification from usulnet to verify webhook configuration.",
+		BodyPlain: "This is a test notification from usulnet to verify webhook configuration.",
 		Priority:  PriorityNormal,
 		Timestamp: time.Now(),
 		Type:      TypeTestMessage,

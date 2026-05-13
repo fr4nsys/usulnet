@@ -83,29 +83,10 @@ if [ "$(id -u)" = "0" ]; then
     # Write PID file for healthcheck
     echo $$ > /app/data/agent.pid
 
-    # Auto-add --config flag if config file exists and no --config was passed
-    _has_config=false
-    for _arg in "$@"; do
-        [ "$_arg" = "--config" ] && _has_config=true
-    done
-    if [ -f /app/config/agent.yaml ] && [ "$_has_config" = "false" ]; then
-        set -- "$@" --config /app/config/agent.yaml
-    fi
-
     # Drop privileges and exec the command
     exec su-exec "$USULNET_USER" "$@"
 fi
 
 # Already running as non-root
 echo $$ > /app/data/agent.pid
-
-# Auto-add --config flag if config file exists and no --config was passed
-_has_config=false
-for _arg in "$@"; do
-    [ "$_arg" = "--config" ] && _has_config=true
-done
-if [ -f /app/config/agent.yaml ] && [ "$_has_config" = "false" ]; then
-    set -- "$@" --config /app/config/agent.yaml
-fi
-
 exec "$@"

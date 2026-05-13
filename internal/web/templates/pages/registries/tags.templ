@@ -24,17 +24,17 @@ templ Tags(data TagsData) {
 	@layouts.Base(data.PageData) {
 		<div class="p-6 space-y-6">
 			<!-- Breadcrumb -->
-			<nav class="flex items-center space-x-2 text-sm text-gray-400">
-				<a href="/registries" class="hover:text-primary-400">Registries</a>
+			<nav class="flex items-center space-x-2 text-sm text-gray-500 dark:text-gray-400">
+				<a href="/registries" class="hover:text-primary-600 dark:hover:text-primary-400">Registries</a>
 				<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
-				<a href={ templ.SafeURL("/registries/" + data.RegistryID + "/browse") } class="hover:text-primary-400">{ data.RegName }</a>
+				<a href={ templ.SafeURL("/registries/" + data.RegistryID + "/browse") } class="hover:text-primary-600 dark:hover:text-primary-400">{ data.RegName }</a>
 				<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
-				<span class="text-white font-medium">{ data.RepoName }</span>
+				<span class="text-gray-900 dark:text-white font-medium">{ data.RepoName }</span>
 			</nav>
 
 			<div>
-				<h1 class="text-2xl font-bold text-white">{ data.RepoName }</h1>
-				<p class="mt-1 text-sm text-gray-400">
+				<h1 class="text-2xl font-bold text-gray-900 dark:text-white">{ data.RepoName }</h1>
+				<p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
 					{ fmt.Sprintf("%d tags", len(data.Tags)) } in { data.RegName }
 				</p>
 			</div>
@@ -42,45 +42,45 @@ templ Tags(data TagsData) {
 			if len(data.Tags) == 0 {
 				<div class="text-center py-12">
 					<svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path></svg>
-					<h3 class="mt-2 text-sm font-medium text-white">No tags found</h3>
-					<p class="mt-1 text-sm text-gray-400">This repository has no tags.</p>
+					<h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-white">No tags found</h3>
+					<p class="mt-1 text-sm text-gray-500 dark:text-gray-400">This repository has no tags.</p>
 				</div>
 			} else {
-				<div class="bg-dark-800 rounded-lg overflow-hidden border border-dark-600">
-					<table class="min-w-full divide-y divide-dark-600">
-						<thead class="bg-dark-900">
+				<div class="bg-white dark:bg-gray-800 shadow rounded-lg overflow-hidden">
+					<table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+						<thead class="bg-gray-50 dark:bg-gray-900">
 							<tr>
-								<th class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Tag</th>
-								<th class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Digest</th>
-								<th class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Size</th>
-								<th class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Pushed</th>
-								<th class="px-6 py-3 text-right text-xs font-medium text-gray-400 uppercase tracking-wider">Actions</th>
+								<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Tag</th>
+								<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Digest</th>
+								<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Size</th>
+								<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Pushed</th>
+								<th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Actions</th>
 							</tr>
 						</thead>
-						<tbody class="divide-y divide-dark-600">
+						<tbody class="divide-y divide-gray-200 dark:divide-gray-700">
 							for _, tag := range data.Tags {
-								<tr class="hover:bg-dark-700/50">
+								<tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50">
 									<td class="px-6 py-4 whitespace-nowrap">
 										<div class="flex items-center">
 											<svg class="w-4 h-4 text-gray-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path></svg>
-											<span class="text-sm font-mono font-medium text-white">{ tag.Name }</span>
+											<span class="text-sm font-mono font-medium text-gray-900 dark:text-white">{ tag.Name }</span>
 										</div>
 									</td>
 									<td class="px-6 py-4 whitespace-nowrap">
 										if tag.Digest != "" {
-											<span class="text-xs font-mono text-gray-400" title={ tag.Digest }>{ truncateDigest(tag.Digest) }</span>
+											<span class="text-xs font-mono text-gray-500 dark:text-gray-400" title={ tag.Digest }>{ truncateDigest(tag.Digest) }</span>
 										} else {
 											<span class="text-sm text-gray-400">—</span>
 										}
 									</td>
-									<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-400">
+									<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
 										if tag.Size > 0 {
 											{ formatBytes(tag.Size) }
 										} else {
 											—
 										}
 									</td>
-									<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-400">
+									<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
 										if tag.LastPushed != "" {
 											{ tag.LastPushed }
 										} else {
@@ -88,7 +88,7 @@ templ Tags(data TagsData) {
 										}
 									</td>
 									<td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-										<a href={ templ.SafeURL(fmt.Sprintf("/registries/%s/manifest?repo=%s&ref=%s", data.RegistryID, data.RepoName, tag.Name)) } class="text-primary-400 hover:text-primary-300">
+										<a href={ templ.SafeURL(fmt.Sprintf("/registries/%s/manifest?repo=%s&ref=%s", data.RegistryID, data.RepoName, tag.Name)) } class="text-primary-600 hover:text-primary-900 dark:text-primary-400 dark:hover:text-primary-300">
 											Inspect
 										</a>
 									</td>

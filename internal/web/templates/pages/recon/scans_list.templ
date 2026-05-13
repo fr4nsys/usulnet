@@ -1,0 +1,115 @@
+package recon
+
+import (
+	"github.com/fr4nsys/usulnet/internal/web/templates/layouts"
+)
+
+templ ScansList(data ScansListData) {
+	@layouts.Base(data.PageData) {
+		<div class="space-y-6">
+			<div class="flex items-center justify-between">
+				<div>
+					<h1 class="text-2xl font-display font-bold text-white">Recon Scans</h1>
+					<p class="text-gray-400 mt-1">Every scan run, with progress, findings count, and engine.</p>
+				</div>
+			</div>
+
+			<!-- Filter -->
+			<form method="GET" action="/recon/scans" class="card p-4">
+				<div class="flex flex-wrap items-end gap-3">
+					<div>
+						<label class="block text-xs text-gray-400 mb-1">Status</label>
+						<select name="status" class="bg-dark-700 border border-dark-500 rounded px-3 py-1.5 text-sm text-white">
+							<option value="">All</option>
+							<option value="queued" selected?={ data.FilterStatus == "queued" }>Queued</option>
+							<option value="running" selected?={ data.FilterStatus == "running" }>Running</option>
+							<option value="completed" selected?={ data.FilterStatus == "completed" }>Completed</option>
+							<option value="failed" selected?={ data.FilterStatus == "failed" }>Failed</option>
+							<option value="cancelled" selected?={ data.FilterStatus == "cancelled" }>Cancelled</option>
+						</select>
+					</div>
+					<button type="submit" class="btn-primary">Apply</button>
+					<a href="/recon/scans" class="btn-secondary">Clear</a>
+				</div>
+			</form>
+
+			if len(data.Scans) == 0 {
+				<div class="card p-12 text-center">
+					<i class="fas fa-radar text-4xl text-gray-500 mb-4"></i>
+					<h3 class="text-lg font-medium text-white mb-2">No Scans</h3>
+					<p class="text-gray-400">Scans started from a target page will appear here.</p>
+				</div>
+			} else {
+				<div class="card overflow-hidden">
+					<table class="w-full text-sm">
+						<thead class="bg-dark-800 text-gray-400 text-xs uppercase tracking-wide">
+							<tr>
+								<th class="text-left px-4 py-3">Status</th>
+								<th class="text-left px-4 py-3">Target</th>
+								<th class="text-left px-4 py-3">Engine</th>
+								<th class="text-left px-4 py-3">Started</th>
+								<th class="text-left px-4 py-3">Duration</th>
+								<th class="text-left px-4 py-3">Progress</th>
+								<th class="text-right px-4 py-3">Actions</th>
+							</tr>
+						</thead>
+						<tbody class="divide-y divide-dark-700">
+							for _, s := range data.Scans {
+								@scanListRow(s)
+							}
+						</tbody>
+					</table>
+				</div>
+			}
+		</div>
+	}
+}
+
+templ scanListRow(s ScanView) {
+	<tr class="hover:bg-dark-700 transition-colors">
+		<td class="px-4 py-3">
+			<span class={ "px-2 py-0.5 rounded text-xs font-medium border " + StatusClass(s.Status) }>{ s.Status }</span>
+		</td>
+		<td class="px-4 py-3">
+			<a href={ templ.SafeURL("/recon/targets/" + s.TargetID) } class="text-primary-400 hover:underline">{ s.TargetValue }</a>
+			if s.TargetType != "" {
+				<span class="ml-2 text-[10px] text-gray-500 uppercase">{ s.TargetType }</span>
+			}
+		</td>
+		<td class="px-4 py-3 text-gray-300">{ s.Engine }</td>
+		<td class="px-4 py-3 text-gray-400">{ s.StartedAt }</td>
+		<td class="px-4 py-3 text-gray-400">{ s.Duration }</td>
+		<td class="px-4 py-3 w-40">
+			<div class="w-full h-2 bg-dark-700 rounded overflow-hidden">
+				<div class="h-full bg-primary-500" style={ "width:" + progressPct(s.Progress) }></div>
+			</div>
+		</td>
+		<td class="px-4 py-3 text-right">
+			<a href={ templ.SafeURL("/recon/scans/" + s.ID) } class="text-gray-400 hover:text-primary-400">
+				<i class="fas fa-eye"></i>
+			</a>
+		</td>
+	</tr>
+}
+
+func progressPct(n int) string {
+	if n < 0 {
+		n = 0
+	}
+	if n > 100 {
+		n = 100
+	}
+	return intToStr(n) + "%"
+}
+
+func intToStr(n int) string {
+	if n == 0 {
+		return "0"
+	}
+	digits := ""
+	for n > 0 {
+		digits = string(rune('0'+n%10)) + digits
+		n /= 10
+	}
+	return digits
+}

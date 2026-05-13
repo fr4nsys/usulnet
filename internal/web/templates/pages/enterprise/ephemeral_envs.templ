@@ -61,8 +61,8 @@ templ EphemeralEnvs(data EphemeralEnvsData) {
 							<i class="fas fa-hourglass-half text-purple-400"></i>
 						</div>
 						<div>
-							<p class="text-2xl font-bold text-white" x-text="dashboard.expired_count || 0"></p>
-							<p class="text-xs text-gray-500">Expired</p>
+							<p class="text-2xl font-bold text-white">-</p>
+							<p class="text-xs text-gray-500">Average TTL</p>
 						</div>
 					</div>
 				</div>
@@ -72,8 +72,8 @@ templ EphemeralEnvs(data EphemeralEnvsData) {
 							<i class="fas fa-clock text-yellow-400"></i>
 						</div>
 						<div>
-							<p class="text-2xl font-bold text-white" x-text="(dashboard.status_counts && dashboard.status_counts.failed) || 0"></p>
-							<p class="text-xs text-gray-500">Failed</p>
+							<p class="text-2xl font-bold text-white" x-text="'-'"></p>
+							<p class="text-xs text-gray-500">Expiring Soon</p>
 						</div>
 					</div>
 				</div>

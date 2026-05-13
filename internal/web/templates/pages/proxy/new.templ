@@ -1,23 +1,18 @@
 package proxy
 
-import (
-	"fmt"
-	"github.com/fr4nsys/usulnet/internal/web/templates/layouts"
-)
+import "github.com/fr4nsys/usulnet/internal/web/templates/layouts"
 
 type NewData struct {
-	PageData     layouts.PageData
-	Connected    bool
-	Error        string
-	Certificates []CertView
-	AccessLists  []ACLView
+	PageData  layouts.PageData
+	Connected bool
+	Error     string
 }
 
 templ New(data NewData) {
 	@layouts.Base(data.PageData) {
 		<div class="space-y-6">
 			@Nav("hosts", data.Connected)
-			<div class="max-w-3xl">
+			<div class="max-w-2xl">
 				<div class="flex items-center gap-3 mb-6">
 					<a href="/proxy" class="text-gray-400 hover:text-white">
 						<i class="fas fa-arrow-left"></i>
@@ -33,128 +28,50 @@ templ New(data NewData) {
 
 				<form method="POST" action="/proxy/hosts" class="space-y-4">
 					<input type="hidden" name="csrf_token" value={ data.PageData.CSRFToken }/>
-
-					<!-- Tabs -->
-					<div class="border-b border-dark-700">
-						<nav class="flex gap-1 -mb-px" id="proxy-tabs">
-							<button type="button" class="proxy-tab active px-4 py-2 text-sm font-medium border-b-2 border-primary-500 text-primary-400" data-tab="details">Details</button>
-							<button type="button" class="proxy-tab px-4 py-2 text-sm font-medium border-b-2 border-transparent text-gray-400 hover:text-white" data-tab="ssl">SSL</button>
-							<button type="button" class="proxy-tab px-4 py-2 text-sm font-medium border-b-2 border-transparent text-gray-400 hover:text-white" data-tab="advanced">Advanced</button>
-						</nav>
+					<div>
+						<label class="block text-sm font-medium text-gray-300 mb-1">Domain Name</label>
+						<input
+							type="text"
+							name="domain"
+							placeholder="example.com"
+							required
+							class="w-full bg-dark-800 border border-dark-600 text-white rounded-lg px-3 py-2 focus:ring-2 focus:ring-accent-500 focus:border-transparent"
+						/>
 					</div>
-
-					<!-- Tab: Details -->
-					<div id="tab-details" class="proxy-tab-content space-y-4">
+					<div class="grid grid-cols-2 gap-4">
 						<div>
-							<label class="block text-sm font-medium text-gray-300 mb-1">Domain Names</label>
+							<label class="block text-sm font-medium text-gray-300 mb-1">Forward Host</label>
 							<input
 								type="text"
-								name="domain"
-								placeholder="example.com"
+								name="forward_host"
+								placeholder="192.168.1.100 or container_name"
 								required
 								class="w-full bg-dark-800 border border-dark-600 text-white rounded-lg px-3 py-2 focus:ring-2 focus:ring-accent-500 focus:border-transparent"
 							/>
-							<p class="text-xs text-gray-500 mt-1">Separate multiple domains with commas</p>
 						</div>
 						<div>
-							<label class="block text-sm font-medium text-gray-300 mb-1">Scheme</label>
-							<select name="forward_scheme" class="w-full bg-dark-800 border border-dark-600 text-white rounded-lg px-3 py-2 focus:ring-2 focus:ring-accent-500 focus:border-transparent">
-								<option value="http" selected>http</option>
-								<option value="https">https</option>
-							</select>
-						</div>
-						<div class="grid grid-cols-2 gap-4">
-							<div>
-								<label class="block text-sm font-medium text-gray-300 mb-1">Forward Hostname / IP</label>
-								<input
-									type="text"
-									name="forward_host"
-									placeholder="192.168.1.100 or container_name"
-									required
-									class="w-full bg-dark-800 border border-dark-600 text-white rounded-lg px-3 py-2 focus:ring-2 focus:ring-accent-500 focus:border-transparent"
-								/>
-							</div>
-							<div>
-								<label class="block text-sm font-medium text-gray-300 mb-1">Forward Port</label>
-								<input
-									type="number"
-									name="forward_port"
-									value="80"
-									min="1"
-									max="65535"
-									required
-									class="w-full bg-dark-800 border border-dark-600 text-white rounded-lg px-3 py-2 focus:ring-2 focus:ring-accent-500 focus:border-transparent"
-								/>
-							</div>
-						</div>
-						<div class="flex items-center gap-6 pt-2">
-							<label class="flex items-center gap-2 text-sm text-gray-300 cursor-pointer">
-								<input type="checkbox" name="caching_enabled" value="on" class="rounded border-dark-600 bg-dark-800 text-accent-500 focus:ring-accent-500"/>
-								Cache Assets
-							</label>
-							<label class="flex items-center gap-2 text-sm text-gray-300 cursor-pointer">
-								<input type="checkbox" name="block_exploits" value="on" checked class="rounded border-dark-600 bg-dark-800 text-accent-500 focus:ring-accent-500"/>
-								Block Common Exploits
-							</label>
-							<label class="flex items-center gap-2 text-sm text-gray-300 cursor-pointer">
-								<input type="checkbox" name="allow_websocket_upgrade" value="on" class="rounded border-dark-600 bg-dark-800 text-accent-500 focus:ring-accent-500"/>
-								Websockets Support
-							</label>
+							<label class="block text-sm font-medium text-gray-300 mb-1">Forward Port</label>
+							<input
+								type="number"
+								name="forward_port"
+								value="80"
+								min="1"
+								max="65535"
+								required
+								class="w-full bg-dark-800 border border-dark-600 text-white rounded-lg px-3 py-2 focus:ring-2 focus:ring-accent-500 focus:border-transparent"
+							/>
 						</div>
 					</div>
-
-					<!-- Tab: SSL -->
-					<div id="tab-ssl" class="proxy-tab-content space-y-4 hidden">
-						<div>
-							<label class="block text-sm font-medium text-gray-300 mb-1">SSL Certificate</label>
-							<select name="certificate_id" class="w-full bg-dark-800 border border-dark-600 text-white rounded-lg px-3 py-2 focus:ring-2 focus:ring-accent-500 focus:border-transparent">
-								<option value="0">None</option>
-								<option value="-1">Request a new Let's Encrypt certificate</option>
-								for _, cert := range data.Certificates {
-									<option value={ fmt.Sprintf("%d", cert.ID) }>{ cert.NiceName }</option>
-								}
-							</select>
-						</div>
-						<div class="flex items-center gap-6 pt-2">
-							<label class="flex items-center gap-2 text-sm text-gray-300 cursor-pointer">
-								<input type="checkbox" name="ssl_enabled" value="on" class="rounded border-dark-600 bg-dark-800 text-accent-500 focus:ring-accent-500"/>
-								Enable SSL
-							</label>
-							<label class="flex items-center gap-2 text-sm text-gray-300 cursor-pointer">
-								<input type="checkbox" name="ssl_forced" value="on" class="rounded border-dark-600 bg-dark-800 text-accent-500 focus:ring-accent-500"/>
-								Force SSL
-							</label>
-							<label class="flex items-center gap-2 text-sm text-gray-300 cursor-pointer">
-								<input type="checkbox" name="http2_support" value="on" checked class="rounded border-dark-600 bg-dark-800 text-accent-500 focus:ring-accent-500"/>
-								HTTP/2 Support
-							</label>
-						</div>
-						<div class="flex items-center gap-6">
-							<label class="flex items-center gap-2 text-sm text-gray-300 cursor-pointer">
-								<input type="checkbox" name="hsts_enabled" value="on" class="rounded border-dark-600 bg-dark-800 text-accent-500 focus:ring-accent-500"/>
-								HSTS Enabled
-							</label>
-							<label class="flex items-center gap-2 text-sm text-gray-300 cursor-pointer">
-								<input type="checkbox" name="hsts_subdomains" value="on" class="rounded border-dark-600 bg-dark-800 text-accent-500 focus:ring-accent-500"/>
-								HSTS Subdomains
-							</label>
-						</div>
+					<div class="flex items-center gap-6 pt-2">
+						<label class="flex items-center gap-2 text-sm text-gray-300 cursor-pointer">
+							<input type="checkbox" name="ssl_enabled" value="true" class="rounded border-dark-600 bg-dark-800 text-accent-500 focus:ring-accent-500"/>
+							Enable SSL
+						</label>
+						<label class="flex items-center gap-2 text-sm text-gray-300 cursor-pointer">
+							<input type="checkbox" name="block_exploits" value="true" checked class="rounded border-dark-600 bg-dark-800 text-accent-500 focus:ring-accent-500"/>
+							Block Exploits
+						</label>
 					</div>
-
-					<!-- Tab: Advanced -->
-					<div id="tab-advanced" class="proxy-tab-content space-y-4 hidden">
-						<div>
-							<label class="block text-sm font-medium text-gray-300 mb-1">Custom Nginx Configuration</label>
-							<textarea
-								name="advanced_config"
-								rows="10"
-								placeholder="# Add custom nginx directives here..."
-								class="w-full bg-dark-800 border border-dark-600 text-white rounded-lg px-3 py-2 focus:ring-2 focus:ring-accent-500 focus:border-transparent font-mono text-sm"
-							></textarea>
-							<p class="text-xs text-gray-500 mt-1">These directives will be added inside the server block</p>
-						</div>
-					</div>
-
 					<div class="flex gap-2 pt-4">
 						<button type="submit" class="btn btn-primary">
 							<i class="fas fa-plus mr-1"></i> Create Proxy Host
@@ -164,33 +81,5 @@ templ New(data NewData) {
 				</form>
 			</div>
 		</div>
-		@proxyTabScript()
 	}
-}
-
-templ proxyTabScript() {
-	<script>
-		document.addEventListener('DOMContentLoaded', function() {
-			const tabs = document.querySelectorAll('.proxy-tab');
-			const contents = document.querySelectorAll('.proxy-tab-content');
-			tabs.forEach(function(tab) {
-				tab.addEventListener('click', function() {
-					const target = tab.getAttribute('data-tab');
-					tabs.forEach(function(t) {
-						t.classList.remove('active', 'border-primary-500', 'text-primary-400');
-						t.classList.add('border-transparent', 'text-gray-400');
-					});
-					tab.classList.add('active', 'border-primary-500', 'text-primary-400');
-					tab.classList.remove('border-transparent', 'text-gray-400');
-					contents.forEach(function(c) {
-						if (c.id === 'tab-' + target) {
-							c.classList.remove('hidden');
-						} else {
-							c.classList.add('hidden');
-						}
-					});
-				});
-			});
-		});
-	</script>
 }

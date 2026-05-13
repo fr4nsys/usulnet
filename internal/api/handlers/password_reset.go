@@ -42,7 +42,7 @@ func (h *PasswordResetHandler) Routes() chi.Router {
 
 // RequestResetRequest represents a password reset request
 type RequestResetRequest struct {
-	Email string `json:"email" validate:"required,email"`
+	Email string `json:"email"`
 }
 
 // RequestResetResponse represents the response to a password reset request
@@ -93,7 +93,7 @@ func (h *PasswordResetHandler) RequestReset(w http.ResponseWriter, r *http.Reque
 
 // ValidateTokenRequest represents a token validation request
 type ValidateTokenRequest struct {
-	Token string `json:"token" validate:"required"`
+	Token string `json:"token"`
 }
 
 // ValidateTokenResponse represents the response to token validation
@@ -140,9 +140,9 @@ func (h *PasswordResetHandler) ValidateToken(w http.ResponseWriter, r *http.Requ
 
 // ResetPasswordRequest represents a password reset request
 type ResetPasswordRequest struct {
-	Token           string `json:"token" validate:"required"`
-	NewPassword     string `json:"new_password" validate:"required,min=8,max=128"`
-	ConfirmPassword string `json:"confirm_password" validate:"required,min=8,max=128"`
+	Token           string `json:"token"`
+	NewPassword     string `json:"new_password"`
+	ConfirmPassword string `json:"confirm_password"`
 }
 
 // ResetPasswordResponse represents the response to a password reset

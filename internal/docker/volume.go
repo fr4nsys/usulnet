@@ -49,9 +49,6 @@ func (c *Client) VolumeList(ctx context.Context, opts VolumeListOptions) ([]Volu
 		return nil, errors.New(errors.CodeDockerConnection, "client is closed")
 	}
 
-	ctx, cancel := context.WithTimeout(ctx, c.timeout)
-	defer cancel()
-
 	// Build filters
 	f := filters.NewArgs()
 	for key, values := range opts.Filters {
@@ -90,9 +87,6 @@ func (c *Client) VolumeGet(ctx context.Context, volumeName string) (*Volume, err
 		return nil, errors.New(errors.CodeDockerConnection, "client is closed")
 	}
 
-	ctx, cancel := context.WithTimeout(ctx, c.timeout)
-	defer cancel()
-
 	vol, err := c.cli.VolumeInspect(ctx, volumeName)
 	if err != nil {
 		if client.IsErrNotFound(err) {
@@ -117,9 +111,6 @@ func (c *Client) VolumeCreate(ctx context.Context, opts VolumeCreateOptions) (*V
 	if c.closed {
 		return nil, errors.New(errors.CodeDockerConnection, "client is closed")
 	}
-
-	ctx, cancel := context.WithTimeout(ctx, c.timeout)
-	defer cancel()
 
 	createOpts := volume.CreateOptions{
 		Name:       opts.Name,

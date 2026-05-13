@@ -206,10 +206,7 @@ func (s *Service) SyncConfigToContainer(ctx context.Context, hostID uuid.UUID, c
 		PreserveNetworks: true,
 		RemoveOld:        true,
 	})
-	if err != nil {
-		return fmt.Errorf("sync config to container %s: %w", containerID, err)
-	}
-	return nil
+	return err
 }
 
 // GetContainerEnv retrieves environment variables from a container.

@@ -7,7 +7,6 @@ package user
 import (
 	"context"
 	"fmt"
-	"strings"
 	"testing"
 	"time"
 
@@ -144,16 +143,6 @@ func (r *mockUserRepo) CountByRole(_ context.Context) (map[models.UserRole]int64
 		counts[u.Role]++
 	}
 	return counts, nil
-}
-
-func (r *mockUserRepo) CountActiveAdmins(_ context.Context) (int64, error) {
-	var count int64
-	for _, u := range r.users {
-		if u.Role == models.RoleAdmin && u.IsActive {
-			count++
-		}
-	}
-	return count, nil
 }
 
 type mockAPIKeyRepo struct {
@@ -322,8 +311,8 @@ func TestCreate_DuplicateUsername(t *testing.T) {
 	if err == nil {
 		t.Fatal("second Create() should fail with duplicate username")
 	}
-	if got := err.Error(); !strings.Contains(got, "username already exists") {
-		t.Errorf("error = %q, want substring 'username already exists'", got)
+	if got := err.Error(); got != "CONFLICT: username already exists" {
+		t.Errorf("error = %q, want 'CONFLICT: username already exists'", got)
 	}
 }
 
@@ -389,14 +378,14 @@ func TestCreate_Validation(t *testing.T) {
 		modify  func(*CreateInput)
 		wantErr string
 	}{
-		{"empty username", func(i *CreateInput) { i.Username = "" }, "username is required"},
-		{"short username", func(i *CreateInput) { i.Username = "ab" }, "username must be at least 3 characters"},
-		{"long username", func(i *CreateInput) { i.Username = string(make([]byte, 51)) }, "username must not exceed 50 characters"},
-		{"invalid username chars", func(i *CreateInput) { i.Username = "user@name" }, "username contains invalid characters"},
-		{"short password", func(i *CreateInput) { i.Password = "Pass1" }, "password must be at least 8 characters"},
-		{"no uppercase", func(i *CreateInput) { i.Password = "password1" }, "password must contain at least one uppercase letter"},
-		{"no digit", func(i *CreateInput) { i.Password = "Password" }, "password must contain at least one digit"},
-		{"invalid email", func(i *CreateInput) { i.Email = "notanemail" }, "invalid email format"},
+		{"empty username", func(i *CreateInput) { i.Username = "" }, "BAD_REQUEST: username is required"},
+		{"short username", func(i *CreateInput) { i.Username = "ab" }, "BAD_REQUEST: username must be at least 3 characters"},
+		{"long username", func(i *CreateInput) { i.Username = string(make([]byte, 51)) }, "BAD_REQUEST: username must not exceed 50 characters"},
+		{"invalid username chars", func(i *CreateInput) { i.Username = "user@name" }, "BAD_REQUEST: username contains invalid characters"},
+		{"short password", func(i *CreateInput) { i.Password = "Pass1" }, "BAD_REQUEST: password must be at least 8 characters"},
+		{"no uppercase", func(i *CreateInput) { i.Password = "password1" }, "BAD_REQUEST: password must contain at least one uppercase letter"},
+		{"no digit", func(i *CreateInput) { i.Password = "Password" }, "BAD_REQUEST: password must contain at least one digit"},
+		{"invalid email", func(i *CreateInput) { i.Email = "notanemail" }, "BAD_REQUEST: invalid email format"},
 	}
 
 	for _, tt := range tests {
@@ -407,8 +396,8 @@ func TestCreate_Validation(t *testing.T) {
 			if err == nil {
 				t.Fatal("expected error, got nil")
 			}
-			if got := err.Error(); !strings.Contains(got, tt.wantErr) {
-				t.Errorf("error = %q, want substring %q", got, tt.wantErr)
+			if got := err.Error(); got != tt.wantErr {
+				t.Errorf("error = %q, want %q", got, tt.wantErr)
 			}
 		})
 	}

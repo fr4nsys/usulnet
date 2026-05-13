@@ -63,7 +63,7 @@ type Priority int
 
 const (
 	// PriorityLow for informational notifications.
-	PriorityLow Priority = iota + 1
+	PriorityLow Priority = iota
 
 	// PriorityNormal for standard notifications.
 	PriorityNormal

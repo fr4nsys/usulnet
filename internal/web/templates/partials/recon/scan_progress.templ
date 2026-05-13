@@ -1,0 +1,76 @@
+package recon
+
+import "fmt"
+
+// ScanProgressData is the payload for the live progress partial. The
+// outer page swaps this in via SSE (reusing the existing
+// /api/v1/events stream) or via the every-10s HTMX poll fallback.
+type ScanProgressData struct {
+	ScanID   string
+	Status   string
+	Progress int
+	Engine   string
+	Error    string
+}
+
+templ ScanProgress(data ScanProgressData) {
+	<div
+		id={ "scan-progress-" + data.ScanID }
+		hx-get={ "/recon/scans/" + data.ScanID + "/progress" }
+		hx-trigger={ "sse:recon-scan-" + data.ScanID + " from:body, every 10s" }
+		hx-swap="outerHTML"
+		class="card p-4"
+	>
+		<div class="flex items-center justify-between mb-2">
+			<p class="text-sm text-gray-300">
+				<span class={ "px-2 py-0.5 rounded text-xs font-medium border " + progressStatusClass(data.Status) }>{ data.Status }</span>
+				<span class="ml-2">Engine: { data.Engine }</span>
+			</p>
+			<span class="text-xs text-gray-400">{ fmt.Sprintf("%d%%", data.Progress) }</span>
+		</div>
+		<div class="w-full h-2 bg-dark-700 rounded overflow-hidden">
+			<div class={ "h-full transition-all " + progressBarClass(data.Status) } style={ fmt.Sprintf("width:%d%%", clamp(data.Progress)) }></div>
+		</div>
+		if data.Error != "" {
+			<p class="text-xs text-red-400 mt-2">{ data.Error }</p>
+		}
+	</div>
+}
+
+func clamp(n int) int {
+	if n < 0 {
+		return 0
+	}
+	if n > 100 {
+		return 100
+	}
+	return n
+}
+
+func progressStatusClass(status string) string {
+	switch status {
+	case "completed":
+		return "text-green-400 bg-green-500/10 border-green-500/20"
+	case "running":
+		return "text-primary-400 bg-primary-500/10 border-primary-500/20"
+	case "queued":
+		return "text-yellow-400 bg-yellow-500/10 border-yellow-500/20"
+	case "failed":
+		return "text-red-400 bg-red-500/10 border-red-500/20"
+	default:
+		return "text-gray-400 bg-gray-500/10 border-gray-500/20"
+	}
+}
+
+func progressBarClass(status string) string {
+	switch status {
+	case "completed":
+		return "bg-green-500"
+	case "failed":
+		return "bg-red-500"
+	case "cancelled":
+		return "bg-gray-500"
+	default:
+		return "bg-primary-500"
+	}
+}

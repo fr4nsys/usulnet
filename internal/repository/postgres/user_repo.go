@@ -669,16 +669,6 @@ func (r *UserRepository) CountByRole(ctx context.Context) (map[models.UserRole]i
 	return counts, nil
 }
 
-// CountActiveAdmins returns the number of active admin users.
-func (r *UserRepository) CountActiveAdmins(ctx context.Context) (int64, error) {
-	var count int64
-	err := r.db.QueryRow(ctx, `SELECT COUNT(*) FROM users WHERE role = 'admin' AND is_active = true`).Scan(&count)
-	if err != nil {
-		return 0, fmt.Errorf("count active admins: %w", err)
-	}
-	return count, nil
-}
-
 // ============================================================================
 // TOTP Methods
 // ============================================================================

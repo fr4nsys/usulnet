@@ -28,9 +28,9 @@ type updateBackupAdapter struct {
 func (a *updateBackupAdapter) Create(ctx context.Context, opts updatesvc.BackupCreateOptions) (*updatesvc.BackupResult, error) {
 	result, err := a.svc.Create(ctx, backupsvc.CreateOptions{
 		HostID:      opts.HostID,
-		Type:        models.BackupTypeContainer,
+		Type:        models.BackupTypeVolume,
 		TargetID:    opts.ContainerID,
-		TargetName:  opts.ContainerName,
+		TargetName:  opts.ContainerID, // Will be resolved by backup service
 		Trigger:     models.BackupTriggerPreUpdate,
 		Compression: models.BackupCompressionGzip,
 		CreatedBy:   opts.CreatedBy,

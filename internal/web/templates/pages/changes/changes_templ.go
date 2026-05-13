@@ -1028,7 +1028,7 @@ func actionBadgeClass(action string) string {
 }
 
 func diffClickExpr(id string) string {
-	return fmt.Sprintf("showDiff = true; fetch('/api/v1/changes/%s').then(r => { if (!r.ok) throw new Error('Failed'); return r.json(); }).then(d => { diffData = d }).catch(() => { showDiff = false; if (window.usulnet) window.usulnet.toast('Failed to load diff', 'error'); })", id)
+	return fmt.Sprintf("showDiff = true; fetch('/api/v1/changes/%s').then(r => r.json()).then(d => { diffData = d })", id)
 }
 
 func paginationURL(data ChangesData, page int) string {

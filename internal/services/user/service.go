@@ -117,7 +117,6 @@ type UserRepository interface {
 	SavePasswordHistory(ctx context.Context, userID uuid.UUID, passwordHash string) error
 	GetStats(ctx context.Context) (*postgres.UserStats, error)
 	CountByRole(ctx context.Context) (map[models.UserRole]int64, error)
-	CountActiveAdmins(ctx context.Context) (int64, error)
 }
 
 // APIKeyRepository defines the persistence interface for API key operations.
@@ -281,7 +280,7 @@ func (s *Service) validateCreateInput(input CreateInput) error {
 	}
 
 	if err := s.validatePasswordPolicy(input.Password); err != nil {
-		return fmt.Errorf("validate registration input: password policy: %w", err)
+		return err
 	}
 
 	if input.Email != "" && !isValidEmail(input.Email) {
@@ -514,30 +513,10 @@ func (s *Service) Update(ctx context.Context, id uuid.UUID, input UpdateInput) (
 		if !input.Role.IsValid() {
 			return nil, apperrors.InvalidInput("invalid role")
 		}
-		// Prevent demoting the last admin — this would permanently lock out the platform
-		if user.Role == models.RoleAdmin && *input.Role != models.RoleAdmin {
-			adminCount, countErr := s.userRepo.CountActiveAdmins(ctx)
-			if countErr != nil {
-				return nil, fmt.Errorf("check admin count: %w", countErr)
-			}
-			if adminCount <= 1 {
-				return nil, apperrors.InvalidInput("cannot demote the last admin — at least one admin must exist")
-			}
-		}
 		user.Role = *input.Role
 	}
 
 	if input.IsActive != nil {
-		// Prevent deactivating the last admin
-		if user.Role == models.RoleAdmin && !*input.IsActive && user.IsActive {
-			adminCount, countErr := s.userRepo.CountActiveAdmins(ctx)
-			if countErr != nil {
-				return nil, fmt.Errorf("check admin count: %w", countErr)
-			}
-			if adminCount <= 1 {
-				return nil, apperrors.InvalidInput("cannot deactivate the last admin — at least one active admin must exist")
-			}
-		}
 		user.IsActive = *input.IsActive
 	}
 
@@ -557,18 +536,7 @@ func (s *Service) Update(ctx context.Context, id uuid.UUID, input UpdateInput) (
 func (s *Service) Delete(ctx context.Context, id uuid.UUID) error {
 	user, err := s.userRepo.GetByID(ctx, id)
 	if err != nil {
-		return fmt.Errorf("delete user %s: get user: %w", id, err)
-	}
-
-	// Prevent deleting the last admin
-	if user.Role == models.RoleAdmin && user.IsActive {
-		adminCount, countErr := s.userRepo.CountActiveAdmins(ctx)
-		if countErr != nil {
-			return fmt.Errorf("check admin count: %w", countErr)
-		}
-		if adminCount <= 1 {
-			return apperrors.InvalidInput("cannot delete the last admin — at least one admin must exist")
-		}
+		return err
 	}
 
 	// Delete associated API keys
@@ -651,7 +619,7 @@ func (s *Service) List(ctx context.Context, opts ListOptions) (*ListResult, erro
 func (s *Service) Activate(ctx context.Context, id uuid.UUID) error {
 	user, err := s.userRepo.GetByID(ctx, id)
 	if err != nil {
-		return fmt.Errorf("activate user %s: get user: %w", id, err)
+		return err
 	}
 
 	if user.IsActive {
@@ -671,7 +639,7 @@ func (s *Service) Activate(ctx context.Context, id uuid.UUID) error {
 func (s *Service) Deactivate(ctx context.Context, id uuid.UUID) error {
 	user, err := s.userRepo.GetByID(ctx, id)
 	if err != nil {
-		return fmt.Errorf("deactivate user %s: get user: %w", id, err)
+		return err
 	}
 
 	if !user.IsActive {
@@ -803,7 +771,7 @@ func (s *Service) DeleteAPIKey(ctx context.Context, userID, keyID uuid.UUID) err
 	// Get API key
 	apiKey, err := s.apiKeyRepo.GetByID(ctx, keyID)
 	if err != nil {
-		return fmt.Errorf("delete api key %s: get key: %w", keyID, err)
+		return err
 	}
 
 	// Verify ownership

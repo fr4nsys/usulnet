@@ -29,7 +29,7 @@ func (h *Handler) HealthDashTempl(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	containers, _, err := containerSvc.List(ctx, nil)
+	containers, err := containerSvc.List(ctx, nil)
 	if err != nil {
 		h.renderTempl(w, r, hdtmpl.HealthDashboard(hdtmpl.HealthDashData{
 			PageData: pageData,

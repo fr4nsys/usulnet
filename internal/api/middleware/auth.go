@@ -88,13 +88,10 @@ type AuthConfig struct {
 }
 
 // DefaultAuthConfig returns a default auth configuration.
-// Tokens are only accepted from the Authorization header with Bearer prefix.
-// Query parameter tokens are intentionally NOT supported as they appear in
-// server logs, browser history, Referer headers, and proxy logs.
 func DefaultAuthConfig(secret string) AuthConfig {
 	return AuthConfig{
 		Secret:       secret,
-		TokenLookup:  "header:Authorization",
+		TokenLookup:  "header:Authorization,query:token",
 		AuthScheme:   "Bearer",
 		ContextKey:   UserContextKey,
 		ErrorHandler: defaultAuthErrorHandler,
@@ -282,16 +279,13 @@ func headerExtractor(name, authScheme string) tokenExtractor {
 			return ""
 		}
 
-		// Require auth scheme prefix (e.g. "Bearer ") per RFC 6750.
-		// Accepting tokens without a scheme prefix can cause token confusion
-		// with other auth schemes (Basic, Digest, etc.)
+		// Check for auth scheme prefix
 		if authScheme != "" {
 			prefix := authScheme + " "
 			if strings.HasPrefix(header, prefix) {
 				return strings.TrimPrefix(header, prefix)
 			}
-			// No valid scheme prefix found — reject
-			return ""
+			// Also accept without prefix for backwards compatibility
 		}
 
 		return header

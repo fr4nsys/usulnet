@@ -96,7 +96,8 @@ func (h *OpenAPIHandler) buildTags() []map[string]any {
 		{"name": "Notifications", "description": "Notification channel and delivery management"},
 		{"name": "Users", "description": "User management (admin)"},
 		{"name": "Audit", "description": "Audit log viewing and export (admin)"},
-		{"name": "Proxy", "description": "Nginx reverse proxy management"},
+		{"name": "Proxy", "description": "Caddy reverse proxy management"},
+		{"name": "NPM", "description": "Nginx Proxy Manager integration"},
 		{"name": "SSH", "description": "SSH key and connection management"},
 		{"name": "Registries", "description": "Container registry management and browsing (Business+)"},
 		{"name": "WebSocket", "description": "Real-time container logs, stats, and exec via WebSocket"},
@@ -692,10 +693,13 @@ func (h *OpenAPIHandler) buildPaths() map[string]any {
 		},
 
 		// =====================================================================
-		// Proxy (Nginx)
+		// Proxy (Caddy)
 		// =====================================================================
 		"/proxy/health": map[string]any{
-			"get": op("Proxy", "GetHealth", "Get nginx proxy backend health status", http.StatusOK),
+			"get": op("Proxy", "GetHealth", "Get proxy server health status", http.StatusOK),
+		},
+		"/proxy/upstreams": map[string]any{
+			"get": op("Proxy", "GetUpstreamStatus", "Get upstream status", http.StatusOK),
 		},
 		"/proxy/hosts": map[string]any{
 			"get":  op("Proxy", "ListHosts", "List proxy hosts", http.StatusOK),
@@ -730,10 +734,49 @@ func (h *OpenAPIHandler) buildPaths() map[string]any {
 			"delete": op("Proxy", "DeleteDNSProvider", "Delete a DNS provider (operator+)", http.StatusNoContent),
 		},
 		"/proxy/sync": map[string]any{
-			"post": op("Proxy", "SyncProxy", "Sync proxy configuration to nginx (operator+)", http.StatusOK),
+			"post": op("Proxy", "SyncToCaddy", "Sync proxy configuration to Caddy (operator+)", http.StatusOK),
 		},
 		"/proxy/audit-logs": map[string]any{
 			"get": op("Proxy", "ListAuditLogs", "Get proxy audit logs with pagination", http.StatusOK),
+		},
+
+		// =====================================================================
+		// NPM (Nginx Proxy Manager)
+		// =====================================================================
+		"/npm/connections": map[string]any{
+			"post": op("NPM", "ConfigureConnection", "Configure NPM connection (operator+)", http.StatusCreated),
+		},
+		"/npm/connections/{hostID}": map[string]any{
+			"get": op("NPM", "GetConnection", "Get NPM connection for a host", http.StatusOK),
+		},
+		"/npm/connections/{hostID}/test": map[string]any{
+			"post": op("NPM", "TestConnection", "Test NPM connection", http.StatusOK),
+		},
+		"/npm/{hostID}/proxy-hosts": map[string]any{
+			"get":  op("NPM", "ListProxyHosts", "List NPM proxy hosts", http.StatusOK),
+			"post": op("NPM", "CreateProxyHost", "Create NPM proxy host (operator+)", http.StatusCreated),
+		},
+		"/npm/{hostID}/proxy-hosts/{proxyID}": map[string]any{
+			"get":    op("NPM", "GetProxyHost", "Get NPM proxy host details", http.StatusOK),
+			"put":    op("NPM", "UpdateProxyHost", "Update NPM proxy host (operator+)", http.StatusOK),
+			"delete": op("NPM", "DeleteProxyHost", "Delete NPM proxy host (operator+)", http.StatusNoContent),
+		},
+		"/npm/{hostID}/certificates": map[string]any{
+			"get": op("NPM", "ListCertificates", "List NPM certificates", http.StatusOK),
+		},
+		"/npm/{hostID}/certificates/letsencrypt": map[string]any{
+			"post": op("NPM", "RequestLetsEncrypt", "Request Let's Encrypt certificate (operator+)", http.StatusOK),
+		},
+		"/npm/{hostID}/redirections": map[string]any{
+			"get":  op("NPM", "ListRedirections", "List NPM redirections", http.StatusOK),
+			"post": op("NPM", "CreateRedirection", "Create NPM redirection (operator+)", http.StatusCreated),
+		},
+		"/npm/{hostID}/access-lists": map[string]any{
+			"get":  op("NPM", "ListAccessLists", "List NPM access lists", http.StatusOK),
+			"post": op("NPM", "CreateAccessList", "Create NPM access list (operator+)", http.StatusCreated),
+		},
+		"/npm/{hostID}/audit-logs": map[string]any{
+			"get": op("NPM", "ListAuditLogs", "Get NPM audit logs with pagination", http.StatusOK),
 		},
 
 		// =====================================================================

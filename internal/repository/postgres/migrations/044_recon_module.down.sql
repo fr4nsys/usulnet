@@ -1,0 +1,12 @@
+-- Rollback recon module schema.
+DROP TABLE IF EXISTS recon_audit_log;
+DROP TABLE IF EXISTS recon_connectors;
+DROP TABLE IF EXISTS recon_metadata_artifacts;
+DROP TABLE IF EXISTS recon_metadata_jobs;
+DROP TABLE IF EXISTS recon_scan_summary;
+DROP TABLE IF EXISTS recon_findings_raw;
+DROP TABLE IF EXISTS recon_findings;
+DROP TABLE IF EXISTS recon_scans;
+DROP TABLE IF EXISTS recon_profiles;
+DROP TABLE IF EXISTS recon_ownership_proofs;
+DROP TABLE IF EXISTS recon_targets;

@@ -2,7 +2,7 @@
 // Copyright (c) 2024-2026 usulnet contributors
 // https://github.com/fr4nsys/usulnet
 
-// Package notification provides the notification service for USULNET.
+// Package notification provides the notification service for usulnet.
 // Department L: Notifications - Adapter for Department J Workers
 package notification
 

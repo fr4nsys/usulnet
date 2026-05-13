@@ -20,11 +20,6 @@ import (
 // ============================================================================
 
 func (h *Handler) TeamsTempl(w http.ResponseWriter, r *http.Request) {
-	if h.services.Teams() == nil {
-		h.RenderServiceNotConfigured(w, r, "Teams", "")
-		return
-	}
-
 	ctx := r.Context()
 	pageData := h.prepareTemplPageData(r, "Teams", "teams")
 
@@ -83,11 +78,6 @@ func (h *Handler) TeamNewTempl(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) TeamCreate(w http.ResponseWriter, r *http.Request) {
-	if h.services.Teams() == nil {
-		http.Error(w, "Teams service not available", http.StatusServiceUnavailable)
-		return
-	}
-
 	ctx := r.Context()
 
 	if err := r.ParseForm(); err != nil {
@@ -128,11 +118,6 @@ func (h *Handler) TeamCreate(w http.ResponseWriter, r *http.Request) {
 // ============================================================================
 
 func (h *Handler) TeamDetailTempl(w http.ResponseWriter, r *http.Request) {
-	if h.services.Teams() == nil {
-		h.RenderServiceNotConfigured(w, r, "Teams", "")
-		return
-	}
-
 	ctx := r.Context()
 	idStr := chi.URLParam(r, "id")
 	tab := r.URL.Query().Get("tab")
@@ -306,11 +291,6 @@ func (h *Handler) TeamDetailTempl(w http.ResponseWriter, r *http.Request) {
 // ============================================================================
 
 func (h *Handler) TeamEditTempl(w http.ResponseWriter, r *http.Request) {
-	if h.services.Teams() == nil {
-		h.RenderServiceNotConfigured(w, r, "Teams", "")
-		return
-	}
-
 	ctx := r.Context()
 	idStr := chi.URLParam(r, "id")
 
@@ -345,11 +325,6 @@ func (h *Handler) TeamEditTempl(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) TeamUpdate(w http.ResponseWriter, r *http.Request) {
-	if h.services.Teams() == nil {
-		http.Error(w, "Teams service not available", http.StatusServiceUnavailable)
-		return
-	}
-
 	ctx := r.Context()
 	idStr := chi.URLParam(r, "id")
 
@@ -390,11 +365,6 @@ func (h *Handler) TeamUpdate(w http.ResponseWriter, r *http.Request) {
 // ============================================================================
 
 func (h *Handler) TeamDelete(w http.ResponseWriter, r *http.Request) {
-	if h.services.Teams() == nil {
-		http.Error(w, "Teams service not available", http.StatusServiceUnavailable)
-		return
-	}
-
 	ctx := r.Context()
 	idStr := chi.URLParam(r, "id")
 
@@ -420,11 +390,6 @@ func (h *Handler) TeamDelete(w http.ResponseWriter, r *http.Request) {
 // ============================================================================
 
 func (h *Handler) TeamAddMember(w http.ResponseWriter, r *http.Request) {
-	if h.services.Teams() == nil {
-		http.Error(w, "Teams service not available", http.StatusServiceUnavailable)
-		return
-	}
-
 	ctx := r.Context()
 	idStr := chi.URLParam(r, "id")
 
@@ -473,11 +438,6 @@ func (h *Handler) TeamAddMember(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) TeamRemoveMember(w http.ResponseWriter, r *http.Request) {
-	if h.services.Teams() == nil {
-		http.Error(w, "Teams service not available", http.StatusServiceUnavailable)
-		return
-	}
-
 	ctx := r.Context()
 	idStr := chi.URLParam(r, "id")
 	userIDStr := chi.URLParam(r, "userID")
@@ -510,11 +470,6 @@ func (h *Handler) TeamRemoveMember(w http.ResponseWriter, r *http.Request) {
 // ============================================================================
 
 func (h *Handler) TeamGrantPermission(w http.ResponseWriter, r *http.Request) {
-	if h.services.Teams() == nil {
-		http.Error(w, "Teams service not available", http.StatusServiceUnavailable)
-		return
-	}
-
 	ctx := r.Context()
 	idStr := chi.URLParam(r, "id")
 
@@ -569,20 +524,9 @@ func (h *Handler) TeamGrantPermission(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) TeamRevokePermission(w http.ResponseWriter, r *http.Request) {
-	if h.services.Teams() == nil {
-		http.Error(w, "Teams service not available", http.StatusServiceUnavailable)
-		return
-	}
-
 	ctx := r.Context()
 	idStr := chi.URLParam(r, "id")
 	permIDStr := chi.URLParam(r, "permID")
-
-	teamID, err := uuid.Parse(idStr)
-	if err != nil {
-		h.redirect(w, r, "/teams")
-		return
-	}
 
 	permID, err := uuid.Parse(permIDStr)
 	if err != nil {
@@ -590,9 +534,8 @@ func (h *Handler) TeamRevokePermission(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Validate that the permission belongs to this team (prevent IDOR)
-	if err := h.services.Teams().RevokeAccessByIDForTeam(ctx, permID, teamID); err != nil {
-		slog.Error("Failed to revoke permission", "perm_id", permID, "team_id", teamID, "error", err)
+	if err := h.services.Teams().RevokeAccessByID(ctx, permID); err != nil {
+		slog.Error("Failed to revoke permission", "perm_id", permID, "error", err)
 		h.setFlash(w, r, "error", "Failed to revoke permission: "+err.Error())
 		h.redirect(w, r, "/teams/"+idStr+"?tab=permissions")
 		return

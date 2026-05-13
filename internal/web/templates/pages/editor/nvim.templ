@@ -10,14 +10,12 @@ import (
 // ============================================================================
 
 type NvimData struct {
-	PageData  layouts.PageData
-	RepoID    string
-	RepoName  string
-	FilePath  string
-	Ref       string
-	Language  string
-	SnippetID string
-	Content   string
+	PageData layouts.PageData
+	RepoID   string
+	RepoName string
+	FilePath string
+	Ref      string
+	Language string
 }
 
 // ============================================================================
@@ -89,12 +87,11 @@ templ Nvim(data NvimData) {
 			</div>
 
 			<!-- Terminal Container -->
-			<div id="nvim-terminal"
+			<div id="nvim-terminal" 
 				class="flex-1 bg-[#0d1117] overflow-hidden"
 				data-repo-id={ data.RepoID }
 				data-file-path={ data.FilePath }
-				data-ref={ data.Ref }
-				data-snippet-id={ data.SnippetID }></div>
+				data-ref={ data.Ref }></div>
 		</div>
 
 		<!-- xterm.js (self-hosted) -->
@@ -118,9 +115,8 @@ templ Nvim(data NvimData) {
 		var repoID = container.dataset.repoId || '';
 		var filePath = container.dataset.filePath || '';
 		var ref = container.dataset.ref || '';
-		var snippetID = container.dataset.snippetId || '';
-
-		console.log('[Nvim] Init mode:', repoID ? 'git' : (snippetID ? 'snippet' : 'standalone'), 'file:', filePath);
+		
+		console.log('[Nvim] Init mode:', repoID ? 'git' : 'standalone', 'file:', filePath);
 
 		document.addEventListener('DOMContentLoaded', function() {
 			initNvimTerminal();
@@ -212,7 +208,6 @@ templ Nvim(data NvimData) {
 				+ '?repo=' + encodeURIComponent(repoID)
 				+ '&file=' + encodeURIComponent(filePath)
 				+ '&ref=' + encodeURIComponent(ref)
-				+ '&snippet=' + encodeURIComponent(snippetID)
 				+ '&cols=' + cols
 				+ '&rows=' + rows;
 

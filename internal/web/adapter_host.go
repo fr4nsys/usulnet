@@ -77,7 +77,6 @@ func (a *hostAdapter) List(ctx context.Context) ([]HostView, error) {
 			TLSEnabled:        s.TLSEnabled,
 			Containers:        s.ContainerCount,
 			ContainersRunning: s.RunningCount,
-			Images:            s.ImageCount,
 		}
 		if s.DisplayName != nil {
 			v.DisplayName = *s.DisplayName
@@ -225,7 +224,7 @@ func (a *hostAdapter) Create(ctx context.Context, hv *HostView) (string, error) 
 	}
 	host, err := a.svc.Create(ctx, input)
 	if err != nil {
-		return "", fmt.Errorf("create host: %w", err)
+		return "", err
 	}
 	return host.ID.String(), nil
 }
@@ -248,10 +247,7 @@ func (a *hostAdapter) Update(ctx context.Context, hv *HostView) error {
 	// Always pass TLS enabled state so it can be toggled off
 	input.TLSEnabled = &hv.TLSEnabled
 	_, err = a.svc.Update(ctx, uid, input)
-	if err != nil {
-		return fmt.Errorf("hostAdapter.Update: update host %s: %w", hv.ID, err)
-	}
-	return nil
+	return err
 }
 
 func (a *hostAdapter) Remove(ctx context.Context, id string) error {

@@ -111,36 +111,36 @@ type UISettings struct {
 
 // UpdateSettingsRequest represents a request to update settings.
 type UpdateSettingsRequest struct {
-	General  *UpdateGeneralSettings  `json:"general,omitempty" validate:"omitempty"`
-	Security *UpdateSecuritySettings `json:"security,omitempty" validate:"omitempty"`
-	UI       *UpdateUISettings       `json:"ui,omitempty" validate:"omitempty"`
+	General  *UpdateGeneralSettings  `json:"general,omitempty"`
+	Security *UpdateSecuritySettings `json:"security,omitempty"`
+	UI       *UpdateUISettings       `json:"ui,omitempty"`
 }
 
 // UpdateGeneralSettings represents updatable general settings.
 type UpdateGeneralSettings struct {
-	AppName     *string `json:"app_name,omitempty" validate:"omitempty,min=1,max=255"`
-	AppURL      *string `json:"app_url,omitempty" validate:"omitempty,url"`
-	SessionTTL  *int    `json:"session_ttl_minutes,omitempty" validate:"omitempty,min=1,max=43200"`
+	AppName     *string `json:"app_name,omitempty"`
+	AppURL      *string `json:"app_url,omitempty"`
+	SessionTTL  *int    `json:"session_ttl_minutes,omitempty"`
 	EnableSignup *bool  `json:"enable_signup,omitempty"`
-	DefaultRole *string `json:"default_role,omitempty" validate:"omitempty,oneof=viewer operator admin"`
+	DefaultRole *string `json:"default_role,omitempty"`
 }
 
 // UpdateSecuritySettings represents updatable security settings.
 type UpdateSecuritySettings struct {
-	PasswordMinLength *int  `json:"password_min_length,omitempty" validate:"omitempty,min=6,max=128"`
+	PasswordMinLength *int  `json:"password_min_length,omitempty"`
 	RequireUppercase  *bool `json:"require_uppercase,omitempty"`
 	RequireLowercase  *bool `json:"require_lowercase,omitempty"`
 	RequireNumbers    *bool `json:"require_numbers,omitempty"`
 	RequireSpecial    *bool `json:"require_special,omitempty"`
-	MaxLoginAttempts  *int  `json:"max_login_attempts,omitempty" validate:"omitempty,min=1,max=100"`
-	LockoutDuration   *int  `json:"lockout_duration_minutes,omitempty" validate:"omitempty,min=1,max=1440"`
+	MaxLoginAttempts  *int  `json:"max_login_attempts,omitempty"`
+	LockoutDuration   *int  `json:"lockout_duration_minutes,omitempty"`
 }
 
 // UpdateUISettings represents updatable UI settings.
 type UpdateUISettings struct {
-	Theme            *string `json:"theme,omitempty" validate:"omitempty,oneof=light dark system"`
-	ItemsPerPage     *int    `json:"items_per_page,omitempty" validate:"omitempty,min=5,max=100"`
-	DateFormat       *string `json:"date_format,omitempty" validate:"omitempty,max=50"`
+	Theme            *string `json:"theme,omitempty"`
+	ItemsPerPage     *int    `json:"items_per_page,omitempty"`
+	DateFormat       *string `json:"date_format,omitempty"`
 	EnableAnimations *bool   `json:"enable_animations,omitempty"`
 }
 
@@ -176,15 +176,15 @@ type LDAPConfigResponse struct {
 
 // UpdateLDAPRequest represents a request to create or update LDAP config.
 type UpdateLDAPRequest struct {
-	Name          string `json:"name" validate:"required,min=1,max=255"`
-	Host          string `json:"host" validate:"required"`
-	Port          int    `json:"port" validate:"required,min=1,max=65535"`
+	Name          string `json:"name"`
+	Host          string `json:"host"`
+	Port          int    `json:"port"`
 	UseTLS        bool   `json:"use_tls"`
 	StartTLS      bool   `json:"start_tls"`
 	SkipTLSVerify bool   `json:"skip_tls_verify"`
-	BindDN        string `json:"bind_dn" validate:"required"`
+	BindDN        string `json:"bind_dn"`
 	BindPassword  string `json:"bind_password,omitempty"`
-	BaseDN        string `json:"base_dn" validate:"required"`
+	BaseDN        string `json:"base_dn"`
 	UserFilter    string `json:"user_filter"`
 	UsernameAttr  string `json:"username_attr"`
 	EmailAttr     string `json:"email_attr"`
@@ -192,20 +192,20 @@ type UpdateLDAPRequest struct {
 	GroupAttr     string `json:"group_attr,omitempty"`
 	AdminGroup    string `json:"admin_group,omitempty"`
 	OperatorGroup string `json:"operator_group,omitempty"`
-	DefaultRole   string `json:"default_role" validate:"required,oneof=viewer operator admin"`
+	DefaultRole   string `json:"default_role"`
 	IsEnabled     bool   `json:"is_enabled"`
 }
 
 // TestLDAPRequest represents a request to test LDAP connection.
 type TestLDAPRequest struct {
-	Host          string `json:"host" validate:"required"`
-	Port          int    `json:"port" validate:"required,min=1,max=65535"`
+	Host          string `json:"host"`
+	Port          int    `json:"port"`
 	UseTLS        bool   `json:"use_tls"`
 	StartTLS      bool   `json:"start_tls"`
 	SkipTLSVerify bool   `json:"skip_tls_verify"`
-	BindDN        string `json:"bind_dn" validate:"required"`
-	BindPassword  string `json:"bind_password" validate:"required"`
-	BaseDN        string `json:"base_dn" validate:"required"`
+	BindDN        string `json:"bind_dn"`
+	BindPassword  string `json:"bind_password"`
+	BaseDN        string `json:"base_dn"`
 	// Optional: test authentication with specific credentials
 	TestUsername string `json:"test_username,omitempty"`
 	TestPassword string `json:"test_password,omitempty"`
@@ -462,7 +462,7 @@ func (h *SettingsHandler) UpdateSettings(w http.ResponseWriter, r *http.Request)
 			Details: map[string]any{
 				"updated_fields": updatedFields,
 			},
-			IPAddress: strPtr(getClientIP(r)),
+			IPAddress: strPtr(r.RemoteAddr),
 			UserAgent: strPtr(r.UserAgent()),
 			Success:   true,
 		})
@@ -630,7 +630,7 @@ func (h *SettingsHandler) UpdateLDAPSettings(w http.ResponseWriter, r *http.Requ
 				"name": req.Name,
 				"host": req.Host,
 			},
-			IPAddress: strPtr(getClientIP(r)),
+			IPAddress: strPtr(r.RemoteAddr),
 			UserAgent: strPtr(r.UserAgent()),
 			Success:   true,
 		})
@@ -693,7 +693,7 @@ func (h *SettingsHandler) TestLDAPConnection(w http.ResponseWriter, r *http.Requ
 				"host": req.Host,
 				"port": req.Port,
 			},
-			IPAddress: strPtr(getClientIP(r)),
+			IPAddress: strPtr(r.RemoteAddr),
 			UserAgent: strPtr(r.UserAgent()),
 			Success:   true,
 		})

@@ -1,0 +1,130 @@
+package metadata
+
+import (
+	"github.com/fr4nsys/usulnet/internal/web/templates/layouts"
+)
+
+templ Upload(data UploadData) {
+	@layouts.Base(data.PageData) {
+		<div class="space-y-6" x-data="metadataUpload()">
+			<div>
+				<h1 class="text-2xl font-display font-bold text-white">Metadata Hygiene</h1>
+				<p class="text-gray-400 mt-1">Extract and strip EXIF/XMP/IPTC/PDF/Office metadata from files. Processing runs in an isolated container.</p>
+			</div>
+
+			<!-- Upload form. POSTs to the web-routed mirror so the
+			     session-cookie + CSRF middleware applies; the canonical
+			     JSON-API equivalent is /api/v1/metadata/jobs (Bearer auth). -->
+			<form
+				class="card p-5 space-y-4"
+				hx-post="/recon/metadata/jobs"
+				hx-encoding="multipart/form-data"
+				hx-target="#metadata-result"
+				hx-swap="innerHTML"
+				x-on:htmx:xhr:progress.camel="progress = Math.round(($event.detail.loaded / $event.detail.total) * 100)"
+				x-on:htmx:before-request="progress = 0; busy = true"
+				x-on:htmx:after-request="busy = false"
+			>
+				<label class="block">
+					<span class="block text-sm text-gray-300 mb-2">Files</span>
+					<input
+						type="file"
+						name="files"
+						multiple
+						required
+						class="block w-full text-sm text-gray-200 file:mr-3 file:py-2 file:px-4 file:rounded file:border-0 file:bg-primary-500 file:text-black file:font-medium hover:file:bg-primary-400"
+					/>
+				</label>
+
+				<div class="grid grid-cols-2 gap-4">
+					<label class="block">
+						<span class="block text-sm text-gray-300 mb-2">Mode</span>
+						<select name="mode" class="w-full bg-dark-700 border border-dark-500 rounded px-3 py-1.5 text-sm text-white">
+							<option value="both">Extract + Strip</option>
+							<option value="extract">Extract only</option>
+							<option value="strip">Strip only</option>
+						</select>
+					</label>
+					<div class="flex items-end justify-end">
+						<button
+							type="submit"
+							class="btn-primary"
+							:disabled="busy"
+						>
+							<span x-show="!busy">
+								<i class="fas fa-upload mr-2"></i>Upload
+							</span>
+							<span x-show="busy" style="display:none">
+								<i class="fas fa-spinner fa-spin mr-2"></i>Processing…
+							</span>
+						</button>
+					</div>
+				</div>
+
+				<!-- Progress bar (Alpine drives via htmx:xhr:progress) -->
+				<div x-show="busy || progress > 0" style="display:none">
+					<div class="w-full h-2 bg-dark-700 rounded overflow-hidden">
+						<div class="h-full bg-primary-500 transition-all" :style="`width:${progress}%`"></div>
+					</div>
+					<p class="text-xs text-gray-400 mt-1" x-text="`${progress}%`"></p>
+				</div>
+			</form>
+
+			<!-- Result swap target -->
+			<div id="metadata-result"></div>
+
+			<!-- Recent jobs -->
+			if len(data.RecentJobs) > 0 {
+				<div class="card p-5">
+					<h2 class="text-lg font-display font-semibold text-white mb-3">Recent Jobs</h2>
+					<table class="w-full text-sm">
+						<thead class="text-xs uppercase tracking-wide text-gray-400">
+							<tr>
+								<th class="text-left py-2">Status</th>
+								<th class="text-left py-2">Files</th>
+								<th class="text-left py-2">Mode</th>
+								<th class="text-left py-2">Created</th>
+								<th class="text-right py-2"></th>
+							</tr>
+						</thead>
+						<tbody class="divide-y divide-dark-700">
+							for _, j := range data.RecentJobs {
+								<tr class="hover:bg-dark-700 transition-colors">
+									<td class="py-2">
+										<span class={ "px-2 py-0.5 rounded text-xs font-medium border " + StatusClass(j.Status) }>{ j.Status }</span>
+									</td>
+									<td class="py-2 text-gray-300">{ intToStrJobs(j.ArtifactCount) }</td>
+									<td class="py-2 text-gray-300">{ j.Mode }</td>
+									<td class="py-2 text-gray-400">{ j.CreatedAt }</td>
+									<td class="py-2 text-right">
+										<a href={ templ.SafeURL("/recon/metadata/jobs/" + j.ID) } class="text-primary-400 hover:text-primary-300">
+											<i class="fas fa-eye"></i>
+										</a>
+									</td>
+								</tr>
+							}
+						</tbody>
+					</table>
+				</div>
+			}
+		</div>
+		<!-- Alpine component (kept inline; <5 lines of imperative code) -->
+		<script>
+			function metadataUpload() {
+				return { busy: false, progress: 0 };
+			}
+		</script>
+	}
+}
+
+func intToStrJobs(n int) string {
+	if n == 0 {
+		return "0"
+	}
+	digits := ""
+	for n > 0 {
+		digits = string(rune('0'+n%10)) + digits
+		n /= 10
+	}
+	return digits
+}

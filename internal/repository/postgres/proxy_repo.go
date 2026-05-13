@@ -53,13 +53,12 @@ func (r *ProxyHostRepository) Create(ctx context.Context, h *models.ProxyHost) e
 			upstream_scheme, upstream_host, upstream_port, upstream_path,
 			ssl_mode, ssl_force_https, certificate_id, dns_provider_id,
 			enable_websocket, enable_compression, enable_hsts, enable_http2,
-			block_exploits, caching_enabled, custom_nginx_config, hsts_subdomains, access_list_id,
 			health_check_enabled, health_check_path, health_check_interval,
 			container_id, container_name, auto_created,
 			created_by, updated_by, created_at, updated_at
 		) VALUES (
 			$1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,
-			$16,$17,$18,$19,$20,$21,$22,$23,$24,$25,$26,$27,$28,$29,$30,$31,$32,$33,$34
+			$16,$17,$18,$19,$20,$21,$22,$23,$24,$25,$26,$27,$28,$29
 		)`
 
 	_, err := r.db.Exec(ctx, query,
@@ -67,7 +66,6 @@ func (r *ProxyHostRepository) Create(ctx context.Context, h *models.ProxyHost) e
 		string(h.UpstreamScheme), h.UpstreamHost, h.UpstreamPort, h.UpstreamPath,
 		string(h.SSLMode), h.SSLForceHTTPS, h.CertificateID, h.DNSProviderID,
 		h.EnableWebSocket, h.EnableCompression, h.EnableHSTS, h.EnableHTTP2,
-		h.BlockExploits, h.CachingEnabled, h.CustomNginxConfig, h.HSTSSubdomains, h.AccessListID,
 		h.HealthCheckEnabled, h.HealthCheckPath, h.HealthCheckInterval,
 		h.ContainerID, h.ContainerName, h.AutoCreated,
 		h.CreatedBy, h.UpdatedBy, h.CreatedAt, h.UpdatedAt,
@@ -146,10 +144,9 @@ func (r *ProxyHostRepository) Update(ctx context.Context, h *models.ProxyHost) e
 			upstream_scheme=$7, upstream_host=$8, upstream_port=$9, upstream_path=$10,
 			ssl_mode=$11, ssl_force_https=$12, certificate_id=$13, dns_provider_id=$14,
 			enable_websocket=$15, enable_compression=$16, enable_hsts=$17, enable_http2=$18,
-			block_exploits=$19, caching_enabled=$20, custom_nginx_config=$21, hsts_subdomains=$22, access_list_id=$23,
-			health_check_enabled=$24, health_check_path=$25, health_check_interval=$26,
-			container_id=$27, container_name=$28,
-			updated_by=$29, updated_at=$30
+			health_check_enabled=$19, health_check_path=$20, health_check_interval=$21,
+			container_id=$22, container_name=$23,
+			updated_by=$24, updated_at=$25
 		WHERE id=$1`
 
 	ct, err := r.db.Exec(ctx, query,
@@ -157,7 +154,6 @@ func (r *ProxyHostRepository) Update(ctx context.Context, h *models.ProxyHost) e
 		string(h.UpstreamScheme), h.UpstreamHost, h.UpstreamPort, h.UpstreamPath,
 		string(h.SSLMode), h.SSLForceHTTPS, h.CertificateID, h.DNSProviderID,
 		h.EnableWebSocket, h.EnableCompression, h.EnableHSTS, h.EnableHTTP2,
-		h.BlockExploits, h.CachingEnabled, h.CustomNginxConfig, h.HSTSSubdomains, h.AccessListID,
 		h.HealthCheckEnabled, h.HealthCheckPath, h.HealthCheckInterval,
 		h.ContainerID, h.ContainerName,
 		h.UpdatedBy, h.UpdatedAt,

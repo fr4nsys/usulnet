@@ -274,7 +274,7 @@ func (h *Handler) MaintenanceExecute(w http.ResponseWriter, r *http.Request) {
 
 	// 1. Stop containers if requested
 	if actions.StopContainers && containerSvc != nil {
-		if containers, _, err := containerSvc.List(ctx, nil); err == nil {
+		if containers, err := containerSvc.List(ctx, nil); err == nil {
 			stopped := 0
 			for _, c := range containers {
 				if c.State == "running" {
@@ -316,7 +316,7 @@ func (h *Handler) MaintenanceExecute(w http.ResponseWriter, r *http.Request) {
 
 	// 5. Restart containers
 	if actions.RestartContainers && containerSvc != nil {
-		if containers, _, err := containerSvc.List(ctx, nil); err == nil {
+		if containers, err := containerSvc.List(ctx, nil); err == nil {
 			restarted := 0
 			for _, c := range containers {
 				if c.State == "running" {

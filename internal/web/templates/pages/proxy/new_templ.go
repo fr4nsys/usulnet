@@ -8,17 +8,12 @@ package proxy
 import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
-import (
-	"fmt"
-	"github.com/fr4nsys/usulnet/internal/web/templates/layouts"
-)
+import "github.com/fr4nsys/usulnet/internal/web/templates/layouts"
 
 type NewData struct {
-	PageData     layouts.PageData
-	Connected    bool
-	Error        string
-	Certificates []CertView
-	AccessLists  []ACLView
+	PageData  layouts.PageData
+	Connected bool
+	Error     string
 }
 
 func New(data NewData) templ.Component {
@@ -62,7 +57,7 @@ func New(data NewData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<div class=\"max-w-3xl\"><div class=\"flex items-center gap-3 mb-6\"><a href=\"/proxy\" class=\"text-gray-400 hover:text-white\"><i class=\"fas fa-arrow-left\"></i></a><h2 class=\"text-xl font-display font-bold text-white\">New Proxy Host</h2></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<div class=\"max-w-2xl\"><div class=\"flex items-center gap-3 mb-6\"><a href=\"/proxy\" class=\"text-gray-400 hover:text-white\"><i class=\"fas fa-arrow-left\"></i></a><h2 class=\"text-xl font-display font-bold text-white\">New Proxy Host</h2></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -74,7 +69,7 @@ func New(data NewData) templ.Component {
 				var templ_7745c5c3_Var3 string
 				templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(data.Error)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/proxy/new.templ`, Line: 30, Col: 50}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/proxy/new.templ`, Line: 25, Col: 50}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 				if templ_7745c5c3_Err != nil {
@@ -92,88 +87,19 @@ func New(data NewData) templ.Component {
 			var templ_7745c5c3_Var4 string
 			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(data.PageData.CSRFToken)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/proxy/new.templ`, Line: 35, Col: 75}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/proxy/new.templ`, Line: 30, Col: 75}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "\"><!-- Tabs --><div class=\"border-b border-dark-700\"><nav class=\"flex gap-1 -mb-px\" id=\"proxy-tabs\"><button type=\"button\" class=\"proxy-tab active px-4 py-2 text-sm font-medium border-b-2 border-primary-500 text-primary-400\" data-tab=\"details\">Details</button> <button type=\"button\" class=\"proxy-tab px-4 py-2 text-sm font-medium border-b-2 border-transparent text-gray-400 hover:text-white\" data-tab=\"ssl\">SSL</button> <button type=\"button\" class=\"proxy-tab px-4 py-2 text-sm font-medium border-b-2 border-transparent text-gray-400 hover:text-white\" data-tab=\"advanced\">Advanced</button></nav></div><!-- Tab: Details --><div id=\"tab-details\" class=\"proxy-tab-content space-y-4\"><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Domain Names</label> <input type=\"text\" name=\"domain\" placeholder=\"example.com\" required class=\"w-full bg-dark-800 border border-dark-600 text-white rounded-lg px-3 py-2 focus:ring-2 focus:ring-accent-500 focus:border-transparent\"><p class=\"text-xs text-gray-500 mt-1\">Separate multiple domains with commas</p></div><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Scheme</label> <select name=\"forward_scheme\" class=\"w-full bg-dark-800 border border-dark-600 text-white rounded-lg px-3 py-2 focus:ring-2 focus:ring-accent-500 focus:border-transparent\"><option value=\"http\" selected>http</option> <option value=\"https\">https</option></select></div><div class=\"grid grid-cols-2 gap-4\"><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Forward Hostname / IP</label> <input type=\"text\" name=\"forward_host\" placeholder=\"192.168.1.100 or container_name\" required class=\"w-full bg-dark-800 border border-dark-600 text-white rounded-lg px-3 py-2 focus:ring-2 focus:ring-accent-500 focus:border-transparent\"></div><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Forward Port</label> <input type=\"number\" name=\"forward_port\" value=\"80\" min=\"1\" max=\"65535\" required class=\"w-full bg-dark-800 border border-dark-600 text-white rounded-lg px-3 py-2 focus:ring-2 focus:ring-accent-500 focus:border-transparent\"></div></div><div class=\"flex items-center gap-6 pt-2\"><label class=\"flex items-center gap-2 text-sm text-gray-300 cursor-pointer\"><input type=\"checkbox\" name=\"caching_enabled\" value=\"on\" class=\"rounded border-dark-600 bg-dark-800 text-accent-500 focus:ring-accent-500\"> Cache Assets</label> <label class=\"flex items-center gap-2 text-sm text-gray-300 cursor-pointer\"><input type=\"checkbox\" name=\"block_exploits\" value=\"on\" checked class=\"rounded border-dark-600 bg-dark-800 text-accent-500 focus:ring-accent-500\"> Block Common Exploits</label> <label class=\"flex items-center gap-2 text-sm text-gray-300 cursor-pointer\"><input type=\"checkbox\" name=\"allow_websocket_upgrade\" value=\"on\" class=\"rounded border-dark-600 bg-dark-800 text-accent-500 focus:ring-accent-500\"> Websockets Support</label></div></div><!-- Tab: SSL --><div id=\"tab-ssl\" class=\"proxy-tab-content space-y-4 hidden\"><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">SSL Certificate</label> <select name=\"certificate_id\" class=\"w-full bg-dark-800 border border-dark-600 text-white rounded-lg px-3 py-2 focus:ring-2 focus:ring-accent-500 focus:border-transparent\"><option value=\"0\">None</option> <option value=\"-1\">Request a new Let's Encrypt certificate</option> ")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			for _, cert := range data.Certificates {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "<option value=\"")
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-				var templ_7745c5c3_Var5 string
-				templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", cert.ID))
-				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/proxy/new.templ`, Line: 114, Col: 51}
-				}
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "\">")
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-				var templ_7745c5c3_Var6 string
-				templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(cert.NiceName)
-				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/proxy/new.templ`, Line: 114, Col: 69}
-				}
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "</option>")
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "</select></div><div class=\"flex items-center gap-6 pt-2\"><label class=\"flex items-center gap-2 text-sm text-gray-300 cursor-pointer\"><input type=\"checkbox\" name=\"ssl_enabled\" value=\"on\" class=\"rounded border-dark-600 bg-dark-800 text-accent-500 focus:ring-accent-500\"> Enable SSL</label> <label class=\"flex items-center gap-2 text-sm text-gray-300 cursor-pointer\"><input type=\"checkbox\" name=\"ssl_forced\" value=\"on\" class=\"rounded border-dark-600 bg-dark-800 text-accent-500 focus:ring-accent-500\"> Force SSL</label> <label class=\"flex items-center gap-2 text-sm text-gray-300 cursor-pointer\"><input type=\"checkbox\" name=\"http2_support\" value=\"on\" checked class=\"rounded border-dark-600 bg-dark-800 text-accent-500 focus:ring-accent-500\"> HTTP/2 Support</label></div><div class=\"flex items-center gap-6\"><label class=\"flex items-center gap-2 text-sm text-gray-300 cursor-pointer\"><input type=\"checkbox\" name=\"hsts_enabled\" value=\"on\" class=\"rounded border-dark-600 bg-dark-800 text-accent-500 focus:ring-accent-500\"> HSTS Enabled</label> <label class=\"flex items-center gap-2 text-sm text-gray-300 cursor-pointer\"><input type=\"checkbox\" name=\"hsts_subdomains\" value=\"on\" class=\"rounded border-dark-600 bg-dark-800 text-accent-500 focus:ring-accent-500\"> HSTS Subdomains</label></div></div><!-- Tab: Advanced --><div id=\"tab-advanced\" class=\"proxy-tab-content space-y-4 hidden\"><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Custom Nginx Configuration</label> <textarea name=\"advanced_config\" rows=\"10\" placeholder=\"# Add custom nginx directives here...\" class=\"w-full bg-dark-800 border border-dark-600 text-white rounded-lg px-3 py-2 focus:ring-2 focus:ring-accent-500 focus:border-transparent font-mono text-sm\"></textarea><p class=\"text-xs text-gray-500 mt-1\">These directives will be added inside the server block</p></div></div><div class=\"flex gap-2 pt-4\"><button type=\"submit\" class=\"btn btn-primary\"><i class=\"fas fa-plus mr-1\"></i> Create Proxy Host</button> <a href=\"/proxy\" class=\"btn btn-secondary\">Cancel</a></div></form></div></div>")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			templ_7745c5c3_Err = proxyTabScript().Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "\"><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Domain Name</label> <input type=\"text\" name=\"domain\" placeholder=\"example.com\" required class=\"w-full bg-dark-800 border border-dark-600 text-white rounded-lg px-3 py-2 focus:ring-2 focus:ring-accent-500 focus:border-transparent\"></div><div class=\"grid grid-cols-2 gap-4\"><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Forward Host</label> <input type=\"text\" name=\"forward_host\" placeholder=\"192.168.1.100 or container_name\" required class=\"w-full bg-dark-800 border border-dark-600 text-white rounded-lg px-3 py-2 focus:ring-2 focus:ring-accent-500 focus:border-transparent\"></div><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Forward Port</label> <input type=\"number\" name=\"forward_port\" value=\"80\" min=\"1\" max=\"65535\" required class=\"w-full bg-dark-800 border border-dark-600 text-white rounded-lg px-3 py-2 focus:ring-2 focus:ring-accent-500 focus:border-transparent\"></div></div><div class=\"flex items-center gap-6 pt-2\"><label class=\"flex items-center gap-2 text-sm text-gray-300 cursor-pointer\"><input type=\"checkbox\" name=\"ssl_enabled\" value=\"true\" class=\"rounded border-dark-600 bg-dark-800 text-accent-500 focus:ring-accent-500\"> Enable SSL</label> <label class=\"flex items-center gap-2 text-sm text-gray-300 cursor-pointer\"><input type=\"checkbox\" name=\"block_exploits\" value=\"true\" checked class=\"rounded border-dark-600 bg-dark-800 text-accent-500 focus:ring-accent-500\"> Block Exploits</label></div><div class=\"flex gap-2 pt-4\"><button type=\"submit\" class=\"btn btn-primary\"><i class=\"fas fa-plus mr-1\"></i> Create Proxy Host</button> <a href=\"/proxy\" class=\"btn btn-secondary\">Cancel</a></div></form></div></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			return nil
 		})
 		templ_7745c5c3_Err = layouts.Base(data.PageData).Render(templ.WithChildren(ctx, templ_7745c5c3_Var2), templ_7745c5c3_Buffer)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		return nil
-	})
-}
-
-func proxyTabScript() templ.Component {
-	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
-		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
-		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
-			return templ_7745c5c3_CtxErr
-		}
-		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
-		if !templ_7745c5c3_IsBuffer {
-			defer func() {
-				templ_7745c5c3_BufErr := templruntime.ReleaseBuffer(templ_7745c5c3_Buffer)
-				if templ_7745c5c3_Err == nil {
-					templ_7745c5c3_Err = templ_7745c5c3_BufErr
-				}
-			}()
-		}
-		ctx = templ.InitializeContext(ctx)
-		templ_7745c5c3_Var7 := templ.GetChildren(ctx)
-		if templ_7745c5c3_Var7 == nil {
-			templ_7745c5c3_Var7 = templ.NopComponent
-		}
-		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "<script>\n\t\tdocument.addEventListener('DOMContentLoaded', function() {\n\t\t\tconst tabs = document.querySelectorAll('.proxy-tab');\n\t\t\tconst contents = document.querySelectorAll('.proxy-tab-content');\n\t\t\ttabs.forEach(function(tab) {\n\t\t\t\ttab.addEventListener('click', function() {\n\t\t\t\t\tconst target = tab.getAttribute('data-tab');\n\t\t\t\t\ttabs.forEach(function(t) {\n\t\t\t\t\t\tt.classList.remove('active', 'border-primary-500', 'text-primary-400');\n\t\t\t\t\t\tt.classList.add('border-transparent', 'text-gray-400');\n\t\t\t\t\t});\n\t\t\t\t\ttab.classList.add('active', 'border-primary-500', 'text-primary-400');\n\t\t\t\t\ttab.classList.remove('border-transparent', 'text-gray-400');\n\t\t\t\t\tcontents.forEach(function(c) {\n\t\t\t\t\t\tif (c.id === 'tab-' + target) {\n\t\t\t\t\t\t\tc.classList.remove('hidden');\n\t\t\t\t\t\t} else {\n\t\t\t\t\t\t\tc.classList.add('hidden');\n\t\t\t\t\t\t}\n\t\t\t\t\t});\n\t\t\t\t});\n\t\t\t});\n\t\t});\n\t</script>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

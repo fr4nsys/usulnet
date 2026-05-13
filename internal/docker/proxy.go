@@ -977,9 +977,6 @@ func (p *AgentProxyClient) SwarmNodeList(_ context.Context) ([]SwarmNodeInfo, er
 func (p *AgentProxyClient) SwarmNodeRemove(_ context.Context, _ string, _ bool) error {
 	return errSwarmNotProxied
 }
-func (p *AgentProxyClient) SwarmNodeUpdate(_ context.Context, _ string, _, _ string) error {
-	return errSwarmNotProxied
-}
 func (p *AgentProxyClient) SwarmServiceCreate(_ context.Context, _ SwarmServiceCreateOptions) (string, error) {
 	return "", errSwarmNotProxied
 }
@@ -996,12 +993,6 @@ func (p *AgentProxyClient) SwarmServiceScale(_ context.Context, _ string, _ uint
 	return errSwarmNotProxied
 }
 func (p *AgentProxyClient) SwarmServiceUpdate(_ context.Context, _ string, _ SwarmServiceUpdateOptions) error {
-	return errSwarmNotProxied
-}
-func (p *AgentProxyClient) SwarmServiceLogs(_ context.Context, _ string, _ string, _ bool) (io.ReadCloser, error) {
-	return nil, errSwarmNotProxied
-}
-func (p *AgentProxyClient) SwarmServiceRollback(_ context.Context, _ string) error {
 	return errSwarmNotProxied
 }
 func (p *AgentProxyClient) SwarmTaskList(_ context.Context, _ string) ([]SwarmTaskInfo, error) {

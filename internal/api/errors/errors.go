@@ -19,55 +19,119 @@ type ErrorCode string
 
 const (
 	// Authentication/Authorization errors
-	ErrCodeUnauthorized     ErrorCode = "UNAUTHORIZED"
-	ErrCodeForbidden        ErrorCode = "FORBIDDEN"
-	ErrCodeInvalidToken     ErrorCode = "INVALID_TOKEN"
-	ErrCodeExpiredToken     ErrorCode = "EXPIRED_TOKEN"
-	ErrCodeRevokedToken     ErrorCode = "REVOKED_TOKEN"
-	ErrCodeInvalidAPIKey    ErrorCode = "INVALID_API_KEY"
-	ErrCodeSessionExpired   ErrorCode = "SESSION_EXPIRED"
+	ErrCodeUnauthorized       ErrorCode = "UNAUTHORIZED"
+	ErrCodeForbidden          ErrorCode = "FORBIDDEN"
+	ErrCodeInvalidToken       ErrorCode = "INVALID_TOKEN"
+	ErrCodeExpiredToken       ErrorCode = "EXPIRED_TOKEN"
+	ErrCodeRevokedToken       ErrorCode = "REVOKED_TOKEN"
+	ErrCodeInvalidAPIKey      ErrorCode = "INVALID_API_KEY"
+	ErrCodeSessionExpired     ErrorCode = "SESSION_EXPIRED"
 	ErrCodeInvalidCredentials ErrorCode = "INVALID_CREDENTIALS"
 
 	// Validation errors
-	ErrCodeValidation       ErrorCode = "VALIDATION_ERROR"
-	ErrCodeInvalidInput     ErrorCode = "INVALID_INPUT"
-	ErrCodeMissingField     ErrorCode = "MISSING_FIELD"
-	ErrCodeInvalidFormat    ErrorCode = "INVALID_FORMAT"
+	ErrCodeValidation    ErrorCode = "VALIDATION_ERROR"
+	ErrCodeInvalidInput  ErrorCode = "INVALID_INPUT"
+	ErrCodeMissingField  ErrorCode = "MISSING_FIELD"
+	ErrCodeInvalidFormat ErrorCode = "INVALID_FORMAT"
 
 	// Resource errors
-	ErrCodeNotFound         ErrorCode = "NOT_FOUND"
-	ErrCodeAlreadyExists    ErrorCode = "ALREADY_EXISTS"
-	ErrCodeConflict         ErrorCode = "CONFLICT"
-	ErrCodeGone             ErrorCode = "GONE"
+	ErrCodeNotFound      ErrorCode = "NOT_FOUND"
+	ErrCodeAlreadyExists ErrorCode = "ALREADY_EXISTS"
+	ErrCodeConflict      ErrorCode = "CONFLICT"
+	ErrCodeGone          ErrorCode = "GONE"
 
 	// Rate limiting
-	ErrCodeRateLimited      ErrorCode = "RATE_LIMITED"
-	ErrCodeTooManyRequests  ErrorCode = "TOO_MANY_REQUESTS"
+	ErrCodeRateLimited     ErrorCode = "RATE_LIMITED"
+	ErrCodeTooManyRequests ErrorCode = "TOO_MANY_REQUESTS"
 
 	// Server errors
-	ErrCodeInternal         ErrorCode = "INTERNAL_ERROR"
+	ErrCodeInternal           ErrorCode = "INTERNAL_ERROR"
 	ErrCodeServiceUnavailable ErrorCode = "SERVICE_UNAVAILABLE"
-	ErrCodeTimeout          ErrorCode = "TIMEOUT"
-	ErrCodeDatabaseError    ErrorCode = "DATABASE_ERROR"
+	ErrCodeTimeout            ErrorCode = "TIMEOUT"
+	ErrCodeDatabaseError      ErrorCode = "DATABASE_ERROR"
 
 	// Docker specific errors
-	ErrCodeDockerError      ErrorCode = "DOCKER_ERROR"
+	ErrCodeDockerError       ErrorCode = "DOCKER_ERROR"
 	ErrCodeContainerNotFound ErrorCode = "CONTAINER_NOT_FOUND"
-	ErrCodeImageNotFound    ErrorCode = "IMAGE_NOT_FOUND"
-	ErrCodeNetworkNotFound  ErrorCode = "NETWORK_NOT_FOUND"
-	ErrCodeVolumeNotFound   ErrorCode = "VOLUME_NOT_FOUND"
-	ErrCodeHostNotFound     ErrorCode = "HOST_NOT_FOUND"
-	ErrCodeHostUnreachable  ErrorCode = "HOST_UNREACHABLE"
+	ErrCodeImageNotFound     ErrorCode = "IMAGE_NOT_FOUND"
+	ErrCodeNetworkNotFound   ErrorCode = "NETWORK_NOT_FOUND"
+	ErrCodeVolumeNotFound    ErrorCode = "VOLUME_NOT_FOUND"
+	ErrCodeHostNotFound      ErrorCode = "HOST_NOT_FOUND"
+	ErrCodeHostUnreachable   ErrorCode = "HOST_UNREACHABLE"
 
 	// License errors
-	ErrCodeLicenseRequired  ErrorCode = "LICENSE_REQUIRED"
-	ErrCodeLicenseExpired   ErrorCode = "LICENSE_EXPIRED"
-	ErrCodeLicenseInvalid   ErrorCode = "LICENSE_INVALID"
-	ErrCodeFeatureDisabled  ErrorCode = "FEATURE_DISABLED"
+	ErrCodeLicenseRequired ErrorCode = "LICENSE_REQUIRED"
+	ErrCodeLicenseExpired  ErrorCode = "LICENSE_EXPIRED"
+	ErrCodeLicenseInvalid  ErrorCode = "LICENSE_INVALID"
+	ErrCodeFeatureDisabled ErrorCode = "FEATURE_DISABLED"
 
 	// Not implemented
-	ErrCodeNotImplemented   ErrorCode = "NOT_IMPLEMENTED"
+	ErrCodeNotImplemented ErrorCode = "NOT_IMPLEMENTED"
+
+	// Recon / privacy module (v26.5.0). See docs/v26.5/technical-notes.md
+	// ("Error response shape"). These codes are documented in lower_snake
+	// because the recon RFC pins them as the public contract.
+	ErrCodeOwnershipRequired       ErrorCode = "ownership_required"
+	ErrCodeOwnershipPending        ErrorCode = "ownership_pending"
+	ErrCodeEngineUnavailable       ErrorCode = "engine_unavailable"
+	ErrCodeModuleDisabled          ErrorCode = "module_disabled"
+	ErrCodeAcknowledgementRequired ErrorCode = "acknowledgement_required"
+	ErrCodeUnsupportedTargetType   ErrorCode = "unsupported_target_type"
+	ErrCodeProfileTargetMismatch   ErrorCode = "profile_target_mismatch"
+	ErrCodeArtifactTooLarge        ErrorCode = "artifact_too_large"
+	ErrCodeMIMENotSupported        ErrorCode = "mime_not_supported"
 )
+
+// ============================================================================
+// Recon module error constructors
+// ============================================================================
+
+// ModuleDisabled returns a 404 used to hide all recon routes when
+// cfg.Recon.Enabled is false. The 404 (rather than 403) is intentional
+// — the RFC requires the module to be invisible when off.
+func ModuleDisabled() *APIError {
+	return NewError(http.StatusNotFound, ErrCodeModuleDisabled, "Resource not found")
+}
+
+// AcknowledgementRequired returns a 409 when an admin has not yet
+// confirmed the recon legal notice. Until acknowledged, all recon /
+// metadata routes (except the ack endpoint itself) return this.
+func AcknowledgementRequired() *APIError {
+	return NewError(http.StatusConflict, ErrCodeAcknowledgementRequired,
+		"Recon module is enabled but awaiting admin acknowledgement of the legal notice")
+}
+
+// OwnershipRequired returns a 403 when a scan is attempted against a
+// target whose ownership has not been verified.
+func OwnershipRequired(targetID string) *APIError {
+	return NewErrorWithDetails(
+		http.StatusForbidden,
+		ErrCodeOwnershipRequired,
+		"Target ownership must be verified before scanning",
+		map[string]string{"target_id": targetID},
+	)
+}
+
+// ArtifactTooLarge returns a 413 for uploads above the configured cap.
+func ArtifactTooLarge(limit int64) *APIError {
+	return NewErrorWithDetails(
+		http.StatusRequestEntityTooLarge,
+		ErrCodeArtifactTooLarge,
+		"Uploaded artifact exceeds size limit",
+		map[string]int64{"max_bytes": limit},
+	)
+}
+
+// UnsupportedTargetType returns a 400 for target types the API does not
+// accept (or that don't make sense for the called endpoint).
+func UnsupportedTargetType(typ string) *APIError {
+	return NewErrorWithDetails(
+		http.StatusBadRequest,
+		ErrCodeUnsupportedTargetType,
+		"Unsupported target type",
+		map[string]string{"type": typ},
+	)
+}
 
 // APIError represents a standardized API error response.
 type APIError struct {

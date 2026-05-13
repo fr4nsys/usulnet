@@ -22,30 +22,10 @@ services:
 
   redis-test:
     image: redis:8-alpine
-    entrypoint:
-      - /bin/sh
-      - -c
-      - |
-        set -e
-        command -v openssl >/dev/null 2>&1 || apk add --no-cache openssl >/dev/null 2>&1
-        mkdir -p /tmp/redis-certs
-        openssl req -new -x509 -days 3650 -nodes \
-          -newkey ec -pkeyopt ec_paramgen_curve:P-256 \
-          -subj "/CN=redis-test/O=usulnet" \
-          -keyout /tmp/redis-certs/server.key \
-          -out /tmp/redis-certs/server.crt 2>/dev/null
-        chmod 600 /tmp/redis-certs/server.key
-        chmod 644 /tmp/redis-certs/server.crt
-        exec redis-server \
-          --tls-port 6379 \
-          --port 0 \
-          --tls-cert-file /tmp/redis-certs/server.crt \
-          --tls-key-file /tmp/redis-certs/server.key \
-          --tls-auth-clients no
     ports:
       - "16379:6379"
     healthcheck:
-      test: ["CMD", "redis-cli", "--tls", "--insecure", "ping"]
+      test: ["CMD", "redis-cli", "ping"]
       interval: 2s
       timeout: 5s
       retries: 10

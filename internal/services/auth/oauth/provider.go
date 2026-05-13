@@ -402,7 +402,7 @@ func (p *GenericProvider) determineRole(groups []string) models.UserRole {
 // UpdateConfig updates the provider configuration.
 func (p *GenericProvider) UpdateConfig(config Config) error {
 	if err := config.Validate(); err != nil {
-		return fmt.Errorf("update oauth config: validate: %w", err)
+		return err
 	}
 
 	p.mu.Lock()
@@ -531,7 +531,7 @@ func (p *OIDCProvider) Exchange(ctx context.Context, code string) (*User, error)
 
 	user, err := p.parseUserInfo(claims)
 	if err != nil {
-		return nil, fmt.Errorf("parse OIDC user info: %w", err)
+		return nil, err
 	}
 
 	p.logger.Info("OIDC authentication successful",
@@ -565,16 +565,8 @@ func (p *OIDCProvider) parseUserInfo(claims map[string]interface{}) (*User, erro
 		user.Username = user.ID
 	}
 
-	// Extract email — only trust verified emails from OIDC providers.
-	// Accepting unverified emails would allow an attacker who controls
-	// an IdP to impersonate users at other providers.
-	if emailVerified, ok := claims["email_verified"].(bool); ok && emailVerified {
-		user.Email = getStringClaim(claims, "email")
-	} else if getStringClaim(claims, "email") != "" {
-		// email_verified is false or missing — log but don't trust the email
-		// for account matching. Still allow login by sub/username.
-		user.Email = "" // explicitly blank; do not use unverified email
-	}
+	// Extract email
+	user.Email = getStringClaim(claims, "email")
 
 	// Extract name
 	if name := getStringClaim(claims, "name"); name != "" {

@@ -92,31 +92,31 @@ func (h *StackHandler) Routes() chi.Router {
 
 // CreateStackRequest represents a stack creation request.
 type CreateStackRequest struct {
-	Name        string            `json:"name" validate:"required,min=1,max=255"`
-	ComposeFile string            `json:"compose_file" validate:"required"`
-	EnvFile     string            `json:"env_file,omitempty" validate:"omitempty"`
-	Variables   map[string]string `json:"variables,omitempty" validate:"omitempty"`
-	ProjectDir  string            `json:"project_dir,omitempty" validate:"omitempty,max=1024"`
+	Name        string            `json:"name"`
+	ComposeFile string            `json:"compose_file"`
+	EnvFile     string            `json:"env_file,omitempty"`
+	Variables   map[string]string `json:"variables,omitempty"`
+	ProjectDir  string            `json:"project_dir,omitempty"`
 	AutoStart   bool              `json:"auto_start,omitempty"`
-	HostID      string            `json:"host_id" validate:"required,uuid"`
+	HostID      string            `json:"host_id"`
 }
 
 // UpdateStackRequest represents a stack update request.
 type UpdateStackRequest struct {
-	ComposeFile string            `json:"compose_file,omitempty" validate:"omitempty"`
-	EnvFile     string            `json:"env_file,omitempty" validate:"omitempty"`
-	Variables   map[string]string `json:"variables,omitempty" validate:"omitempty"`
+	ComposeFile string            `json:"compose_file,omitempty"`
+	EnvFile     string            `json:"env_file,omitempty"`
+	Variables   map[string]string `json:"variables,omitempty"`
 }
 
 // ValidateComposeRequest represents a compose validation request.
 type ValidateComposeRequest struct {
-	HostID  string `json:"host_id" validate:"required,uuid"`
-	Content string `json:"content" validate:"required"`
+	HostID  string `json:"host_id"`
+	Content string `json:"content"`
 }
 
 // ScaleServiceRequest represents a scale service request.
 type ScaleServiceRequest struct {
-	Replicas int `json:"replicas" validate:"min=0,max=100"`
+	Replicas int `json:"replicas"`
 }
 
 // StackResponse represents a stack in API responses.
@@ -791,7 +791,7 @@ type StackVersionResponse struct {
 
 // CreateVersionRequest represents a create version request.
 type CreateVersionRequest struct {
-	Comment string `json:"comment" validate:"omitempty,max=1024"`
+	Comment string `json:"comment"`
 }
 
 // DiffResponse represents a diff between versions.
@@ -822,8 +822,8 @@ type DiffSummaryResponse struct {
 
 // DryRunRequest represents a dry-run request.
 type DryRunContentRequest struct {
-	ComposeContent string `json:"compose_content" validate:"required"`
-	EnvContent     string `json:"env_content,omitempty" validate:"omitempty"`
+	ComposeContent string `json:"compose_content"`
+	EnvContent     string `json:"env_content,omitempty"`
 }
 
 // ListVersions lists all versions of a stack.
@@ -1079,8 +1079,8 @@ type DependencyResponse struct {
 
 // AddDependencyRequest represents an add dependency request.
 type AddDependencyRequest struct {
-	DependsOnID string `json:"depends_on_id" validate:"required,uuid"`
-	Condition   string `json:"condition,omitempty" validate:"omitempty,oneof=started healthy completed"` // "started", "healthy", "completed"
+	DependsOnID string `json:"depends_on_id"`
+	Condition   string `json:"condition,omitempty"` // "started", "healthy", "completed"
 	Optional    bool   `json:"optional,omitempty"`
 }
 

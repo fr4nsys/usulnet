@@ -5,7 +5,6 @@
 package web
 
 import (
-	"context"
 	"fmt"
 	"log/slog"
 	"net/http"
@@ -28,10 +27,10 @@ func (h *Handler) requireProxySvc(w http.ResponseWriter, r *http.Request) ProxyS
 }
 
 // ============================================================================
-// Proxy Setup Handlers (Nginx Backend Status)
+// Proxy Setup Handlers (NPM Connection Management)
 // ============================================================================
 
-// ProxySetupTempl renders the proxy backend status page.
+// ProxySetupTempl renders the NPM connection setup page.
 func (h *Handler) ProxySetupTempl(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	pageData := h.prepareTemplPageData(r, "Proxy Setup", "proxy")
@@ -63,7 +62,7 @@ func (h *Handler) ProxySetupTempl(w http.ResponseWriter, r *http.Request) {
 	h.renderTempl(w, r, proxy.Setup(data))
 }
 
-// ProxySetupSaveTempl handles POST /proxy/setup (no-op for nginx backend).
+// ProxySetupSaveTempl handles POST /proxy/setup to create or update NPM connection.
 func (h *Handler) ProxySetupSaveTempl(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
@@ -102,7 +101,7 @@ func (h *Handler) ProxySetupSaveTempl(w http.ResponseWriter, r *http.Request) {
 			pPwd = &password
 		}
 		if err := proxySvc.UpdateConnectionConfig(ctx, conn.ID, pURL, pEmail, pPwd, nil, userID); err != nil {
-			slog.Error("Failed to update proxy connection", "error", err)
+			slog.Error("Failed to update NPM connection", "error", err)
 			pageData := h.prepareTemplPageData(r, "Proxy Setup", "proxy")
 			data := proxy.SetupData{
 				PageData:   pageData,
@@ -129,7 +128,7 @@ func (h *Handler) ProxySetupSaveTempl(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		if err := proxySvc.SetupConnection(ctx, baseURL, email, password, userID); err != nil {
-			slog.Error("Failed to setup proxy connection", "error", err)
+			slog.Error("Failed to setup NPM connection", "error", err)
 			pageData := h.prepareTemplPageData(r, "Proxy Setup", "proxy")
 			data := proxy.SetupData{
 				PageData:   pageData,
@@ -145,7 +144,7 @@ func (h *Handler) ProxySetupSaveTempl(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/proxy/setup", http.StatusSeeOther)
 }
 
-// ProxySetupDeleteTempl handles POST /proxy/setup/delete (no-op for nginx backend).
+// ProxySetupDeleteTempl handles POST /proxy/setup/delete to remove NPM connection.
 func (h *Handler) ProxySetupDeleteTempl(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
@@ -161,13 +160,13 @@ func (h *Handler) ProxySetupDeleteTempl(w http.ResponseWriter, r *http.Request) 
 	}
 
 	if err := proxySvc.DeleteConnection(ctx, conn.ID); err != nil {
-		slog.Error("Failed to delete proxy connection", "error", err)
+		slog.Error("Failed to delete NPM connection", "error", err)
 	}
 
 	http.Redirect(w, r, "/proxy/setup", http.StatusSeeOther)
 }
 
-// ProxySetupTestTempl handles POST /proxy/setup/test to test nginx backend health.
+// ProxySetupTestTempl handles POST /proxy/setup/test to test NPM connection.
 func (h *Handler) ProxySetupTestTempl(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	pageData := h.prepareTemplPageData(r, "Proxy Setup", "proxy")
@@ -188,7 +187,7 @@ func (h *Handler) ProxySetupTestTempl(w http.ResponseWriter, r *http.Request) {
 
 	conn, err := proxySvc.GetConnection(ctx)
 	if err != nil || conn == nil {
-		data.Error = "No proxy backend configured"
+		data.Error = "No NPM connection configured"
 		h.renderTempl(w, r, proxy.Setup(data))
 		return
 	}
@@ -216,26 +215,18 @@ func (h *Handler) ProxySetupTestTempl(w http.ResponseWriter, r *http.Request) {
 
 // ProxyNewTempl renders the new proxy host form.
 func (h *Handler) ProxyNewTempl(w http.ResponseWriter, r *http.Request) {
-	ctx := r.Context()
 	pageData := h.prepareTemplPageData(r, "New Proxy Host", "proxy")
 
 	proxySvc := h.services.Proxy()
 	connected := false
 	if proxySvc != nil {
-		connected = proxySvc.IsConnected(ctx)
+		connected = proxySvc.IsConnected(r.Context())
 	}
 
 	data := proxy.NewData{
 		PageData:  pageData,
 		Connected: connected,
 	}
-
-	// Load certificates and access lists for form dropdowns
-	if proxySvc != nil {
-		data.Certificates = h.loadCertViewsForForm(ctx, proxySvc)
-		data.AccessLists = h.loadACLViewsForForm(ctx, proxySvc)
-	}
-
 	h.renderTempl(w, r, proxy.New(data))
 }
 
@@ -382,33 +373,18 @@ func (h *Handler) ProxyEditTempl(w http.ResponseWriter, r *http.Request) {
 	data := proxy.EditData{
 		PageData:  pageData,
 		Connected: connected,
-		Host: proxy.ProxyHostEdit{
-			ID:                    idStr,
-			DomainName:            host.Domain,
-			ForwardScheme:         host.ForwardScheme,
-			ForwardHost:           host.ForwardHost,
-			ForwardPort:           host.ForwardPort,
-			CertificateID:         host.CertificateID,
-			SSLEnabled:            host.SSLEnabled,
-			SSLForced:             host.SSLForced,
-			HSTSEnabled:           host.HSTSEnabled,
-			HSTSSubdomains:        host.HSTSSubdomains,
-			HTTP2Support:          host.HTTP2Support,
-			BlockExploits:         host.BlockExploits,
-			CachingEnabled:        host.CachingEnabled,
-			AllowWebsocketUpgrade: host.AllowWebsocketUpgrade,
-			AccessListID:          host.AccessListID,
-			AdvancedConfig:        host.AdvancedConfig,
-			Enabled:               host.Enabled,
-			ContainerName:         host.Container,
-			LastSync:              host.ModifiedOn,
+		Host: proxy.ProxyHost{
+			ID:            idStr,
+			DomainName:    host.Domain,
+			ForwardHost:   host.ForwardHost,
+			ForwardPort:   host.ForwardPort,
+			SSLEnabled:    host.SSLEnabled,
+			SSLForced:     host.SSLForced,
+			Enabled:       host.Enabled,
+			ContainerName: host.Container,
+			LastSync:      host.ModifiedOn,
 		},
 	}
-
-	// Load certificates and access lists for form dropdowns
-	data.Certificates = h.loadCertViewsForForm(ctx, proxySvc)
-	data.AccessLists = h.loadACLViewsForForm(ctx, proxySvc)
-
 	h.renderTempl(w, r, proxy.Edit(data))
 }
 
@@ -476,23 +452,13 @@ func (h *Handler) ProxyHostUpdateTempl(w http.ResponseWriter, r *http.Request) {
 		data := proxy.EditData{
 			PageData:  pageData,
 			Connected: proxySvc.IsConnected(ctx),
-			Host: proxy.ProxyHostEdit{
-				ID:                    idStr,
-				DomainName:            domain,
-				ForwardScheme:         forwardScheme,
-				ForwardHost:           forwardHost,
-				ForwardPort:           forwardPort,
-				CertificateID:         certID,
-				SSLEnabled:            sslEnabled,
-				SSLForced:             host.SSLForced,
-				HSTSEnabled:           host.HSTSEnabled,
-				HSTSSubdomains:        host.HSTSSubdomains,
-				HTTP2Support:          host.HTTP2Support,
-				BlockExploits:         host.BlockExploits,
-				CachingEnabled:        host.CachingEnabled,
-				AllowWebsocketUpgrade: host.AllowWebsocketUpgrade,
-				AdvancedConfig:        host.AdvancedConfig,
-				Enabled:               enabled,
+			Host: proxy.ProxyHost{
+				ID:          idStr,
+				DomainName:  domain,
+				ForwardHost: forwardHost,
+				ForwardPort: forwardPort,
+				SSLEnabled:  sslEnabled,
+				Enabled:     enabled,
 			},
 			Error: "Failed to update: " + err.Error(),
 		}
@@ -570,53 +536,15 @@ func (h *Handler) ProxyHostDisableTempl(w http.ResponseWriter, r *http.Request) 
 	http.Redirect(w, r, fmt.Sprintf("/proxy/%s", idStr), http.StatusSeeOther)
 }
 
-// ProxySyncTempl handles POST /proxy/sync to trigger nginx config sync.
+// ProxySyncTempl handles POST /proxy/sync to trigger NPM sync.
 func (h *Handler) ProxySyncTempl(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	if proxySvc := h.services.Proxy(); proxySvc != nil {
 		if err := proxySvc.Sync(ctx); err != nil {
-			slog.Error("Failed to sync proxy config", "error", err)
+			slog.Error("Failed to sync NPM", "error", err)
 		}
 	}
 
 	http.Redirect(w, r, "/proxy", http.StatusSeeOther)
-}
-
-// ============================================================================
-// Form helper functions
-// ============================================================================
-
-// loadCertViewsForForm loads certificates and converts them to the template CertView type.
-func (h *Handler) loadCertViewsForForm(ctx context.Context, proxySvc ProxyService) []proxy.CertView {
-	certs, err := proxySvc.ListCertificates(ctx)
-	if err != nil {
-		slog.Error("Failed to load certificates for form", "error", err)
-		return nil
-	}
-	views := make([]proxy.CertView, 0, len(certs))
-	for _, c := range certs {
-		views = append(views, proxy.CertView{
-			ID:       c.ID,
-			NiceName: c.NiceName,
-		})
-	}
-	return views
-}
-
-// loadACLViewsForForm loads access lists and converts them to the template ACLView type.
-func (h *Handler) loadACLViewsForForm(ctx context.Context, proxySvc ProxyService) []proxy.ACLView {
-	acls, err := proxySvc.ListAccessLists(ctx)
-	if err != nil {
-		slog.Error("Failed to load access lists for form", "error", err)
-		return nil
-	}
-	views := make([]proxy.ACLView, 0, len(acls))
-	for _, a := range acls {
-		views = append(views, proxy.ACLView{
-			ID:   a.ID,
-			Name: a.Name,
-		})
-	}
-	return views
 }

@@ -104,7 +104,7 @@ func (h *Handler) DriftDetailAPI(w http.ResponseWriter, r *http.Request) {
 		h.jsonError(w, "drift detection not found", http.StatusNotFound)
 		return
 	}
-	h.jsonResponse(w, detection)
+	h.jsonOK(w, detection)
 }
 
 // DriftAcceptAPI accepts a drift detection (POST).
@@ -167,84 +167,6 @@ func (h *Handler) DriftRemediateAPI(w http.ResponseWriter, r *http.Request) {
 	h.redirect(w, r, "/drift")
 }
 
-// DriftSetBaselineAPI sets the current state as the new baseline (POST).
-func (h *Handler) DriftSetBaselineAPI(w http.ResponseWriter, r *http.Request) {
-	if h.driftSvc == nil {
-		h.jsonError(w, "drift detection not available", http.StatusServiceUnavailable)
-		return
-	}
-	id, err := uuid.Parse(chi.URLParam(r, "id"))
-	if err != nil {
-		h.jsonError(w, "invalid drift detection ID", http.StatusBadRequest)
-		return
-	}
-
-	// Get the drift detection to find the current snapshot ID
-	detection, err := h.driftSvc.GetDriftByID(r.Context(), id)
-	if err != nil {
-		h.logger.Error("failed to get drift detection", "id", id, "error", err)
-		h.setFlash(w, r, "error", "Failed to find drift detection.")
-		h.redirect(w, r, "/drift")
-		return
-	}
-
-	if detection.CurrentSnapshotID == nil {
-		h.setFlash(w, r, "error", "No current snapshot available to set as baseline.")
-		h.redirect(w, r, "/drift")
-		return
-	}
-
-	if err := h.driftSvc.SetBaseline(r.Context(), *detection.CurrentSnapshotID); err != nil {
-		h.logger.Error("failed to set baseline", "id", id, "snapshot_id", detection.CurrentSnapshotID, "error", err)
-		h.setFlash(w, r, "error", "Failed to set baseline.")
-		h.redirect(w, r, "/drift")
-		return
-	}
-
-	h.setFlash(w, r, "success", "Current state set as new baseline.")
-	h.redirect(w, r, "/drift")
-}
-
-// DriftListAPI returns a paginated list of drift detections as JSON.
-func (h *Handler) DriftListAPI(w http.ResponseWriter, r *http.Request) {
-	if h.driftSvc == nil {
-		h.jsonError(w, "drift detection not available", http.StatusServiceUnavailable)
-		return
-	}
-
-	opts := models.DriftListOptions{Limit: 50, Offset: 0}
-	if q := r.URL.Query().Get("status"); q != "" {
-		opts.Status = q
-	}
-	if q := r.URL.Query().Get("severity"); q != "" {
-		opts.Severity = q
-	}
-	if q := r.URL.Query().Get("resource_type"); q != "" {
-		opts.ResourceType = q
-	}
-	if q := r.URL.Query().Get("limit"); q != "" {
-		if l, err := strconv.Atoi(q); err == nil && l > 0 && l <= 200 {
-			opts.Limit = l
-		}
-	}
-	if q := r.URL.Query().Get("offset"); q != "" {
-		if o, err := strconv.Atoi(q); err == nil && o >= 0 {
-			opts.Offset = o
-		}
-	}
-
-	drifts, total, err := h.driftSvc.ListDrifts(r.Context(), opts)
-	if err != nil {
-		h.jsonError(w, "failed to list drift detections", http.StatusInternalServerError)
-		return
-	}
-
-	h.jsonResponse(w, map[string]any{
-		"detections": drifts,
-		"total":      total,
-	})
-}
-
 // DriftStatsAPI returns drift statistics as JSON.
 func (h *Handler) DriftStatsAPI(w http.ResponseWriter, r *http.Request) {
 	if h.driftSvc == nil {
@@ -257,7 +179,7 @@ func (h *Handler) DriftStatsAPI(w http.ResponseWriter, r *http.Request) {
 		h.jsonError(w, "failed to get drift stats", http.StatusInternalServerError)
 		return
 	}
-	h.jsonResponse(w, stats)
+	h.jsonOK(w, stats)
 }
 
 // driftToView converts a DriftDetection model to a template view.

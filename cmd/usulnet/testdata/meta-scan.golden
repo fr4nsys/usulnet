@@ -1,0 +1,16 @@
+Extract metadata for every file under <dir> (recurse with --recursive)
+
+Usage:
+  usulnet meta scan <dir> [flags]
+
+Flags:
+  -h, --help        help for scan
+  -r, --recursive   recurse into subdirectories
+
+Global Flags:
+  -c, --config string    config file path (default: /etc/usulnet/config.yaml or ./config.yaml)
+      --image string     toolkit image (local mode only; default $USULNET_RECON_TOOLKIT_IMAGE)
+      --output string    output format: table|json|yaml (default "table")
+      --server string    usulnet API URL (forces server mode; default $USULNET_API_URL)
+      --timeout string   container timeout (e.g. 30s)
+      --token string     API token (default $USULNET_API_TOKEN)

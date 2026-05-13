@@ -1,0 +1,182 @@
+# Build and publish the recon-toolkit and recon-spiderfoot images.
+#
+# - On PR: build for both archs and push under a disposable PR tag so
+#   the change can be tested end-to-end without polluting :latest.
+# - On main: build, push :latest + the short SHA, capture the new
+#   digests, and open a PR that bumps internal/services/recon/images.go.
+#
+# Image source: docs/recon.md §12 and docs/v26.5/technical-notes.md
+# ("Build artifacts and CI").
+
+name: build-recon-images
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "deploy/recon/**"
+      - ".github/workflows/build-recon-images.yml"
+  pull_request:
+    paths:
+      - "deploy/recon/**"
+      - ".github/workflows/build-recon-images.yml"
+
+env:
+  REGISTRY: ghcr.io
+  TOOLKIT_IMAGE: ghcr.io/fr4nsys/usulnet-recon-toolkit
+  SPIDERFOOT_IMAGE: ghcr.io/fr4nsys/usulnet-recon-spiderfoot
+  PLATFORMS: linux/amd64,linux/arm64
+
+permissions:
+  contents: read
+  packages: write
+  pull-requests: write
+
+jobs:
+  build-toolkit:
+    runs-on: ubuntu-latest
+    outputs:
+      digest: ${{ steps.build.outputs.digest }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Compute tags
+        id: meta
+        run: |
+          short_sha=$(git rev-parse --short=12 HEAD)
+          echo "short_sha=${short_sha}" >> "$GITHUB_OUTPUT"
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            echo "tags=${TOOLKIT_IMAGE}:pr-${{ github.event.pull_request.number }}-${short_sha}" >> "$GITHUB_OUTPUT"
+          else
+            echo "tags=${TOOLKIT_IMAGE}:latest,${TOOLKIT_IMAGE}:${short_sha}" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Build and push
+        id: build
+        uses: docker/build-push-action@v6
+        with:
+          context: deploy/recon/toolkit
+          platforms: ${{ env.PLATFORMS }}
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          provenance: false
+          cache-from: type=gha,scope=recon-toolkit
+          cache-to: type=gha,scope=recon-toolkit,mode=max
+
+  build-spiderfoot:
+    runs-on: ubuntu-latest
+    outputs:
+      digest: ${{ steps.build.outputs.digest }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Compute tags
+        id: meta
+        run: |
+          short_sha=$(git rev-parse --short=12 HEAD)
+          echo "short_sha=${short_sha}" >> "$GITHUB_OUTPUT"
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            echo "tags=${SPIDERFOOT_IMAGE}:pr-${{ github.event.pull_request.number }}-${short_sha}" >> "$GITHUB_OUTPUT"
+          else
+            echo "tags=${SPIDERFOOT_IMAGE}:latest,${SPIDERFOOT_IMAGE}:${short_sha}" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Build and push
+        id: build
+        uses: docker/build-push-action@v6
+        with:
+          context: deploy/recon/spiderfoot
+          platforms: ${{ env.PLATFORMS }}
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          provenance: false
+          cache-from: type=gha,scope=recon-spiderfoot
+          cache-to: type=gha,scope=recon-spiderfoot,mode=max
+
+  bump-image-pins:
+    # Only on main: open a PR that updates the digest constants in
+    # internal/services/recon/images.go so the Go binary tracks the
+    # exact image it should pull.
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: [build-toolkit, build-spiderfoot]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Update images.go
+        env:
+          TOOLKIT_DIGEST: ${{ needs.build-toolkit.outputs.digest }}
+          SPIDERFOOT_DIGEST: ${{ needs.build-spiderfoot.outputs.digest }}
+        run: |
+          set -eu
+          file=internal/services/recon/images.go
+          # Replace the two pinned digests in-place.  The constants use
+          # the form `sha256:<64hex>` so a simple sed against that
+          # pattern is unambiguous.  We rely on the lines being labelled
+          # by their preceding identifier to pick the right one.
+          python3 - "$file" "$TOOLKIT_DIGEST" "$SPIDERFOOT_DIGEST" <<'PY'
+          import re, sys
+          path, toolkit, spiderfoot = sys.argv[1], sys.argv[2], sys.argv[3]
+          src = open(path).read()
+          src = re.sub(
+              r'(ToolkitImageDigest\s*=\s*")sha256:[0-9a-f]{64}(")',
+              r'\g<1>' + toolkit + r'\g<2>',
+              src,
+          )
+          src = re.sub(
+              r'(SpiderFootImageDigest\s*=\s*")sha256:[0-9a-f]{64}(")',
+              r'\g<1>' + spiderfoot + r'\g<2>',
+              src,
+          )
+          open(path, "w").write(src)
+          PY
+
+      - name: Open PR with digest bump
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "chore(recon): bump pinned image digests"
+          title: "chore(recon): bump pinned image digests"
+          body: |
+            Automated PR opened by `build-recon-images.yml`.
+
+            Updates the pinned digests in `internal/services/recon/images.go`
+            after a successful build+push of the recon-toolkit and
+            recon-spiderfoot images on `main`.
+
+            - toolkit digest:    `${{ needs.build-toolkit.outputs.digest }}`
+            - spiderfoot digest: `${{ needs.build-spiderfoot.outputs.digest }}`
+          branch: chore/recon-image-digest-bump
+          base: main
+          delete-branch: true
+          add-paths: |
+            internal/services/recon/images.go

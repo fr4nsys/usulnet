@@ -400,7 +400,7 @@ type UpdateWebhook struct {
 	HostID      uuid.UUID  `json:"host_id" db:"host_id"`
 	TargetType  UpdateType `json:"target_type" db:"target_type"`
 	TargetID    string     `json:"target_id" db:"target_id"`
-	Token       string     `json:"token,omitempty" db:"token"` // SHA256 hash in DB; raw token only in create response
+	Token       string     `json:"token" db:"token"` // Webhook token
 	IsEnabled   bool       `json:"is_enabled" db:"is_enabled"`
 	LastUsedAt  *time.Time `json:"last_used_at,omitempty" db:"last_used_at"`
 	CreatedAt   time.Time  `json:"created_at" db:"created_at"`

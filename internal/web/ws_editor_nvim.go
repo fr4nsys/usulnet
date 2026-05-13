@@ -12,6 +12,7 @@ import (
 	"io"
 	"log/slog"
 	"net/http"
+	"net/url"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -25,8 +26,6 @@ import (
 	"github.com/creack/pty"
 	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
-
-	"github.com/fr4nsys/usulnet/internal/models"
 )
 
 // validGitRef matches safe git reference names (branches, tags).
@@ -51,36 +50,23 @@ type wsEditorMsg struct {
 //  5. Bridge pty ↔ WebSocket
 //  6. FIFO goroutine: on signal → read file → commit to Gitea
 //
-// Flow (snippet mode):
-//  1. Load snippet content → write to temp dir
-//  2. Create FIFO for save signaling
-//  3. Inject BufWritePost autocmd that writes to FIFO on :w
-//  4. Spawn nvim on a pty via creack/pty
-//  5. Bridge pty ↔ WebSocket
-//  6. FIFO goroutine: on signal → read file → update snippet
-//
-// Flow (scratch mode - no repo, no snippet):
+// Flow (scratch mode - no repo):
 //  1. Create empty temp file
-//  2. Spawn nvim without save hook
+//  2. Spawn nvim without commit hook
 //  3. Bridge pty ↔ WebSocket
 //
 // GET /ws/editor/nvim?repo={id}&file={path}&ref={branch}&cols=N&rows=N
-// GET /ws/editor/nvim?snippet={id}&file={name}&cols=N&rows=N
 // GET /ws/editor/nvim?file=scratch&cols=N&rows=N (scratch mode)
 func (h *Handler) WSEditorNvim(w http.ResponseWriter, r *http.Request) {
 	// ── Parse params ─────────────────────────────────────────────────
 	repoIDStr := r.URL.Query().Get("repo")
-	snippetIDStr := r.URL.Query().Get("snippet")
 	filePath := r.URL.Query().Get("file")
 	ref := r.URL.Query().Get("ref")
 	colsStr := r.URL.Query().Get("cols")
 	rowsStr := r.URL.Query().Get("rows")
 
-	// Determine mode
-	gitMode := repoIDStr != ""
-	snippetMode := !gitMode && snippetIDStr != ""
-	_ = !gitMode && !snippetMode // scratchMode (default)
-
+	// Scratch mode: no repo, just a blank nvim
+	scratchMode := repoIDStr == ""
 	if filePath == "" {
 		filePath = "scratch"
 	}
@@ -92,14 +78,8 @@ func (h *Handler) WSEditorNvim(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Validate filePath — reject path traversal, null bytes, and shell metacharacters
-	if strings.Contains(filePath, "..") || strings.ContainsAny(filePath, "\x00;|&`$") || len(filePath) > 4096 {
-		http.Error(w, "Invalid file path", http.StatusBadRequest)
-		return
-	}
-	// Normalize and re-check for traversal after cleaning
-	cleanPath := filepath.Clean(filePath)
-	if strings.Contains(cleanPath, "..") {
+	// Validate filePath — reject path traversal and shell metacharacters
+	if strings.Contains(filePath, "..") {
 		http.Error(w, "Invalid file path", http.StatusBadRequest)
 		return
 	}
@@ -117,14 +97,12 @@ func (h *Handler) WSEditorNvim(w http.ResponseWriter, r *http.Request) {
 
 	var repoID uuid.UUID
 	var repoName string
-	var snippetID uuid.UUID
-	var snippetUserID uuid.UUID
 	var content []byte
 	var err error
 
 	svc := h.services.Gitea()
 
-	if gitMode {
+	if !scratchMode {
 		if svc == nil {
 			http.Error(w, "Gitea not configured", http.StatusServiceUnavailable)
 			return
@@ -153,45 +131,29 @@ func (h *Handler) WSEditorNvim(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "Failed to fetch file: "+err.Error(), http.StatusInternalServerError)
 			return
 		}
-	} else if snippetMode {
-		if h.snippetRepo == nil {
-			http.Error(w, "Snippet storage not configured", http.StatusServiceUnavailable)
-			return
-		}
-
-		snippetID, err = uuid.Parse(snippetIDStr)
-		if err != nil {
-			http.Error(w, "Invalid snippet ID", http.StatusBadRequest)
-			return
-		}
-
-		user := GetUserFromContext(ctx)
-		if user == nil {
-			http.Error(w, "Unauthorized", http.StatusUnauthorized)
-			return
-		}
-		snippetUserID, err = uuid.Parse(user.ID)
-		if err != nil {
-			http.Error(w, "Invalid user ID", http.StatusBadRequest)
-			return
-		}
-
-		// ── Fetch snippet ────────────────────────────────────────────────
-		snippet, err := h.snippetRepo.Get(ctx, snippetUserID, snippetID)
-		if err != nil {
-			http.Error(w, "Snippet not found", http.StatusNotFound)
-			return
-		}
-		content = []byte(snippet.Content)
-		if filePath == "scratch" {
-			filePath = snippet.Name
-		}
 	}
 
 	// ── Upgrade WebSocket ────────────────────────────────────────────
 	upgrader := websocket.Upgrader{
-		CheckOrigin:    isAllowedWebSocketOrigin,
-		ReadBufferSize: 4096,
+		CheckOrigin: func(r *http.Request) bool {
+			origin := r.Header.Get("Origin")
+			// Require Origin header — reject bare WebSocket upgrades
+			// from non-browser clients that omit Origin entirely.
+			if origin == "" {
+				return false
+			}
+			u, err := url.Parse(origin)
+			if err != nil {
+				return false
+			}
+			// Compare hostname only (not port) to handle reverse proxies,
+			// but also verify scheme is http(s) to prevent protocol confusion.
+			if u.Scheme != "http" && u.Scheme != "https" {
+				return false
+			}
+			return u.Hostname() == r.URL.Hostname() || u.Host == r.Host
+		},
+		ReadBufferSize:  4096,
 		WriteBufferSize: 4096,
 	}
 	conn, err := upgrader.Upgrade(w, r, nil)
@@ -219,28 +181,21 @@ func (h *Handler) WSEditorNvim(w http.ResponseWriter, r *http.Request) {
 	var fifoPath string
 	var initPath string
 
-	// Setup FIFO and save hook in git mode or snippet mode
-	hasSaveHook := gitMode || snippetMode
-	if hasSaveHook {
-		// ── Create save signal FIFO ──────────────────────────────────────
+	// Only setup FIFO and commit hook in git mode
+	if !scratchMode {
+		// ── Create commit signal FIFO ────────────────────────────────────
 		fifoPath = filepath.Join(workDir, ".commit-signal")
 		if err := syscall.Mkfifo(fifoPath, 0600); err != nil {
 			editorWSSendError(conn, "Failed to create FIFO: "+err.Error())
 			return
 		}
 
-		// ── Write autocmd init for :w → save ─────────────────────────────
+		// ── Write autocmd init for :w → commit ───────────────────────────
 		initPath = filepath.Join(workDir, ".usulnet-init.lua")
-		var notifyMsg string
-		if gitMode {
-			notifyMsg = "Committed to " + ref
-		} else {
-			notifyMsg = "Saved"
-		}
-		initLua := fmt.Sprintf(`-- usulnet: auto-save on :w
+		initLua := fmt.Sprintf(`-- usulnet: auto-commit on :w
 local fifo = %q
 local fname = %q
-local notify_msg = %q
+local branch = %q
 
 vim.api.nvim_create_autocmd("BufWritePost", {
   pattern = fname,
@@ -251,14 +206,14 @@ vim.api.nvim_create_autocmd("BufWritePost", {
         if f then f:write("commit\n"); f:close() end
       end)
       if ok then
-        vim.notify(" " .. notify_msg, vim.log.levels.INFO)
+        vim.notify(" Committed to " .. branch, vim.log.levels.INFO)
       else
-        vim.notify(" Save signal failed", vim.log.levels.WARN)
+        vim.notify(" Commit signal failed", vim.log.levels.WARN)
       end
     end)
   end,
 })
-`, fifoPath, filepath.Base(filePath), notifyMsg)
+`, fifoPath, filepath.Base(filePath), ref)
 		os.WriteFile(initPath, []byte(initLua), 0644)
 	}
 
@@ -271,13 +226,16 @@ vim.api.nvim_create_autocmd("BufWritePost", {
 
 	// ── Build command ────────────────────────────────────────────────
 	var cmd *exec.Cmd
-	if hasSaveHook {
+	if scratchMode {
+		cmd = exec.Command(nvimBin, targetFile)
+	} else {
+		// Use -S (source) flag which takes a file path directly as a separate
+		// argument, avoiding the need to shell-escape the path in a string
+		// passed to --cmd.
 		cmd = exec.Command(nvimBin,
 			"-S", initPath,
 			targetFile,
 		)
-	} else {
-		cmd = exec.Command(nvimBin, targetFile)
 	}
 	cmd.Dir = workDir
 	cmd.Env = buildNvimEnv(workDir)
@@ -294,27 +252,18 @@ vim.api.nvim_create_autocmd("BufWritePost", {
 	}
 	defer ptmx.Close()
 
-	if gitMode {
-		slog.Info("nvim session started",
+	if scratchMode {
+		slog.Info("nvim scratch session started",
 			"session", sessionID,
-			"mode", "git",
-			"repo", repoName,
-			"file", filePath,
-			"ref", ref,
-			"pid", cmd.Process.Pid,
-		)
-	} else if snippetMode {
-		slog.Info("nvim session started",
-			"session", sessionID,
-			"mode", "snippet",
-			"snippet_id", snippetIDStr,
 			"file", filePath,
 			"pid", cmd.Process.Pid,
 		)
 	} else {
-		slog.Info("nvim scratch session started",
+		slog.Info("nvim session started",
 			"session", sessionID,
+			"repo", repoName,
 			"file", filePath,
+			"ref", ref,
 			"pid", cmd.Process.Pid,
 		)
 	}
@@ -353,8 +302,8 @@ vim.api.nvim_create_autocmd("BufWritePost", {
 		}
 	}()
 
-	// ── Goroutine: FIFO watcher → save on :w (git/snippet mode) ─────
-	if hasSaveHook {
+	// ── Goroutine: FIFO watcher → commit on :w (only in git mode) ────
+	if !scratchMode {
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
@@ -390,44 +339,25 @@ vim.api.nvim_create_autocmd("BufWritePost", {
 						continue
 					}
 
-					if gitMode {
-						// Commit to Gitea
-						user := GetUserFromContext(ctx)
-						author := "usulnet"
-						if user != nil {
-							author = user.Username
-						}
-						commitMsg := fmt.Sprintf("Update %s via usulnet nvim (%s)",
-							filepath.Base(filePath), author)
+					// Build commit message
+					user := GetUserFromContext(ctx)
+					author := "usulnet"
+					if user != nil {
+						author = user.Username
+					}
+					commitMsg := fmt.Sprintf("Update %s via usulnet nvim (%s)",
+						filepath.Base(filePath), author)
 
-						if err := svc.UpdateFile(ctx, repoID, filePath, ref, string(saved), commitMsg); err != nil {
-							slog.Error("gitea commit failed", "error", err)
-							wsMu.Lock()
-							editorWSSendJSON(conn, wsEditorMsg{Type: "error", Data: "Commit failed: " + err.Error()})
-							wsMu.Unlock()
-						} else {
-							slog.Info("nvim commit ok", "file", filePath, "ref", ref)
-							wsMu.Lock()
-							editorWSSendJSON(conn, wsEditorMsg{Type: "committed", Data: filePath})
-							wsMu.Unlock()
-						}
-					} else if snippetMode {
-						// Save to snippet store
-						contentStr := string(saved)
-						input := &models.UpdateSnippetInput{
-							Content: &contentStr,
-						}
-						if _, err := h.snippetRepo.Update(ctx, snippetUserID, snippetID, input); err != nil {
-							slog.Error("snippet save failed", "error", err)
-							wsMu.Lock()
-							editorWSSendJSON(conn, wsEditorMsg{Type: "error", Data: "Save failed: " + err.Error()})
-							wsMu.Unlock()
-						} else {
-							slog.Info("nvim snippet saved", "snippet_id", snippetIDStr, "file", filePath)
-							wsMu.Lock()
-							editorWSSendJSON(conn, wsEditorMsg{Type: "committed", Data: filePath})
-							wsMu.Unlock()
-						}
+					if err := svc.UpdateFile(ctx, repoID, filePath, ref, string(saved), commitMsg); err != nil {
+						slog.Error("gitea commit failed", "error", err)
+						wsMu.Lock()
+						editorWSSendJSON(conn, wsEditorMsg{Type: "error", Data: "Commit failed: " + err.Error()})
+						wsMu.Unlock()
+					} else {
+						slog.Info("nvim commit ok", "file", filePath, "ref", ref)
+						wsMu.Lock()
+						editorWSSendJSON(conn, wsEditorMsg{Type: "committed", Data: filePath})
+						wsMu.Unlock()
 					}
 				}
 				f.Close()

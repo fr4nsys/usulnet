@@ -119,7 +119,7 @@ templ Base(data PageData) {
 		if data.User != nil {
 			<!-- Authenticated Layout -->
 			<div class="flex min-h-screen">
-				@partials.Sidebar(data.Active, data.User, data.Stats, data.Edition, data.EditionName, data.SidebarPrefs)
+				@partials.Sidebar(data.Active, data.User, data.Stats, data.Edition, data.EditionName, data.SidebarPrefs, data.ReconEnabled)
 				
 				<!-- Main Content -->
 				<div class="flex-1 ml-64 flex flex-col">

@@ -1,0 +1,79 @@
+package metadata
+
+import (
+	"github.com/fr4nsys/usulnet/internal/web/templates/layouts"
+)
+
+templ JobDetail(data JobDetailData) {
+	@layouts.Base(data.PageData) {
+		<div class="space-y-6">
+			<div>
+				<a href="/recon/metadata" class="text-xs text-primary-400 hover:underline">
+					<i class="fas fa-chevron-left mr-1"></i>Back to metadata
+				</a>
+				<h1 class="text-2xl font-display font-bold text-white mt-1">Metadata Job</h1>
+				<p class="text-gray-400 mt-1">
+					<span class={ "px-2 py-0.5 rounded text-xs font-medium border " + StatusClass(data.Job.Status) }>{ data.Job.Status }</span>
+					<span class="ml-2 text-sm">{ intToStrJobs(data.Job.ArtifactCount) } files · mode { data.Job.Mode } · created { data.Job.CreatedAt }</span>
+				</p>
+			</div>
+
+			if data.Job.Error != "" {
+				<div class="card p-4 border border-red-500/30 bg-red-500/5">
+					<p class="text-sm text-red-400">
+						<i class="fas fa-exclamation-triangle mr-2"></i>{ data.Job.Error }
+					</p>
+				</div>
+			}
+
+			if len(data.Artifacts) == 0 {
+				<div class="card p-12 text-center">
+					<p class="text-gray-400">No artifacts recorded for this job yet.</p>
+				</div>
+			} else {
+				<div class="space-y-3">
+					for _, a := range data.Artifacts {
+						@artifactCard(a)
+					}
+				</div>
+			}
+		</div>
+	}
+}
+
+templ artifactCard(a ArtifactView) {
+	<div class="card p-5">
+		<div class="flex items-start justify-between mb-3">
+			<div>
+				<h2 class="text-base font-medium text-white">{ a.Filename }</h2>
+				<p class="text-xs text-gray-500 font-mono mt-1">{ a.MIME } · { a.SizeHuman }</p>
+				if a.SHA256Hex != "" {
+					<p class="text-[10px] text-gray-500 font-mono mt-1">sha256:{ a.SHA256Hex }</p>
+				}
+			</div>
+			if a.StrippedAvailable {
+				<a href={ templ.SafeURL(a.DownloadURL) } class="btn-primary text-sm">
+					<i class="fas fa-download mr-2"></i>Download stripped
+				</a>
+			}
+		</div>
+
+		if len(a.Fields) > 0 {
+			<details class="mt-2">
+				<summary class="text-sm text-primary-400 cursor-pointer hover:text-primary-300">Extracted metadata ({ intToStrJobs(len(a.Fields)) } fields)</summary>
+				<table class="w-full text-xs mt-3">
+					<tbody class="divide-y divide-dark-700">
+						for _, f := range a.Fields {
+							<tr>
+								<td class="py-1 pr-3 text-gray-400 font-mono align-top w-1/3">{ f.Key }</td>
+								<td class="py-1 text-gray-300 break-all">{ f.Value }</td>
+							</tr>
+						}
+					</tbody>
+				</table>
+			</details>
+		} else {
+			<p class="text-xs text-gray-500">No metadata extracted.</p>
+		}
+	</div>
+}

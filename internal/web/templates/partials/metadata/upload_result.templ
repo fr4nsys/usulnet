@@ -1,0 +1,74 @@
+// Package metadata contains HTMX partial templates for the metadata
+// hygiene workflow.
+package metadata
+
+import (
+	pagemeta "github.com/fr4nsys/usulnet/internal/web/templates/pages/metadata"
+)
+
+// UploadResultData is the payload returned after a successful upload.
+type UploadResultData struct {
+	Job       JobView
+	Artifacts []ArtifactView
+}
+
+// JobView and ArtifactView are aliases of the page types so handlers
+// don't have to convert twice. The partial template only consumes
+// fields that exist on both.
+type JobView = pagemeta.JobView
+type ArtifactView = pagemeta.ArtifactView
+type MetadataField = pagemeta.MetadataField
+
+templ UploadResult(data UploadResultData) {
+	<div class="card p-5 space-y-4">
+		<div class="flex items-center justify-between">
+			<h2 class="text-lg font-display font-semibold text-white">Upload complete</h2>
+			<a href={ templ.SafeURL("/recon/metadata/jobs/" + data.Job.ID) } class="text-sm text-primary-400 hover:underline">
+				<i class="fas fa-external-link-alt mr-1"></i>Open job
+			</a>
+		</div>
+
+		if data.Job.Error != "" {
+			<p class="text-sm text-red-400">{ data.Job.Error }</p>
+		}
+
+		<div class="space-y-3">
+			for _, a := range data.Artifacts {
+				@uploadArtifact(a)
+			}
+		</div>
+	</div>
+}
+
+templ uploadArtifact(a ArtifactView) {
+	<div class="border border-dark-600 rounded-lg p-4">
+		<div class="flex items-start justify-between mb-2">
+			<div>
+				<p class="text-sm font-medium text-white">{ a.Filename }</p>
+				<p class="text-xs text-gray-500 font-mono">{ a.MIME } · { a.SizeHuman }</p>
+			</div>
+			if a.StrippedAvailable {
+				<a href={ templ.SafeURL(a.DownloadURL) } class="btn-secondary text-sm">
+					<i class="fas fa-download mr-2"></i>Stripped copy
+				</a>
+			}
+		</div>
+		if len(a.Fields) == 0 {
+			<p class="text-xs text-gray-500">No metadata extracted.</p>
+		} else {
+			<details>
+				<summary class="text-xs text-primary-400 cursor-pointer">Show extracted fields</summary>
+				<table class="w-full text-xs mt-2">
+					<tbody class="divide-y divide-dark-700">
+						for _, f := range a.Fields {
+							<tr>
+								<td class="py-1 pr-3 text-gray-400 font-mono align-top w-1/3">{ f.Key }</td>
+								<td class="py-1 text-gray-300 break-all">{ f.Value }</td>
+							</tr>
+						}
+					</tbody>
+				</table>
+			</details>
+		}
+	</div>
+}

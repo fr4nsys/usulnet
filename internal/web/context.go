@@ -113,12 +113,11 @@ type BreadcrumbItem struct {
 
 // UserContext contains user information.
 type UserContext struct {
-	ID           string `json:"id"`
-	Username     string `json:"username"`
-	Email        string `json:"email,omitempty"`
-	Role         string `json:"role"`
-	RoleID       string `json:"role_id,omitempty"` // UUID of custom role for permission checking
-	RequiresTOTP bool   `json:"requires_totp,omitempty"`
+	ID       string `json:"id"`
+	Username string `json:"username"`
+	Email    string `json:"email,omitempty"`
+	Role     string `json:"role"`
+	RoleID   string `json:"role_id,omitempty"` // UUID of custom role for permission checking
 }
 
 // GlobalStats for sidebar badges.
@@ -641,7 +640,7 @@ type PortAnalysisView struct {
 	RiskReason    string `json:"risk_reason,omitempty"`
 }
 
-// ProxyHostView for reverse proxy hosts.
+// ProxyHostView for NPM proxy hosts.
 type ProxyHostView struct {
 	ID                    int      `json:"id"`
 	DomainNames           []string `json:"domain_names,omitempty"`
@@ -667,7 +666,7 @@ type ProxyHostView struct {
 	ModifiedOn            string   `json:"modified_on,omitempty"`
 }
 
-// RedirectionHostView for proxy redirections.
+// RedirectionHostView for NPM redirections.
 type RedirectionHostView struct {
 	ID              int      `json:"id"`
 	DomainNames     []string `json:"domain_names"`
@@ -681,7 +680,7 @@ type RedirectionHostView struct {
 	Enabled         bool     `json:"enabled"`
 }
 
-// StreamView for proxy TCP/UDP streams.
+// StreamView for NPM TCP/UDP streams.
 type StreamView struct {
 	ID             int    `json:"id"`
 	IncomingPort   int    `json:"incoming_port"`
@@ -692,7 +691,7 @@ type StreamView struct {
 	Enabled        bool   `json:"enabled"`
 }
 
-// DeadHostView for dead hosts (404).
+// DeadHostView for NPM dead hosts (404).
 type DeadHostView struct {
 	ID          int      `json:"id"`
 	DomainNames []string `json:"domain_names"`
@@ -702,7 +701,7 @@ type DeadHostView struct {
 	Enabled     bool     `json:"enabled"`
 }
 
-// CertificateView for SSL certificates.
+// CertificateView for NPM SSL certificates.
 type CertificateView struct {
 	ID          int      `json:"id"`
 	NiceName    string   `json:"nice_name"`
@@ -711,7 +710,7 @@ type CertificateView struct {
 	ExpiresOn   string   `json:"expires_on"`
 }
 
-// AccessListView for proxy access lists.
+// AccessListView for NPM access lists.
 type AccessListView struct {
 	ID          int    `json:"id"`
 	Name        string `json:"name"`
@@ -743,7 +742,7 @@ type AccessListClientView struct {
 	Directive string `json:"directive"`
 }
 
-// AuditLogView for proxy audit log entries.
+// AuditLogView for NPM audit log entries.
 type AuditLogView struct {
 	ID           string `json:"id"`
 	Operation    string `json:"operation"`

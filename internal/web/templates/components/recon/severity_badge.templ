@@ -1,0 +1,26 @@
+// Package recon contains reusable UI components for the v26.5.0
+// Privacy & Recon module (severity badges, the acknowledgement modal,
+// etc.). The same Tailwind palette as the security pages is used so
+// users keep one mental model.
+package recon
+
+templ SeverityBadge(severity string) {
+	<span class={ "px-2 py-0.5 rounded text-xs font-medium border " + severityBadgeClass(severity) }>{ severity }</span>
+}
+
+func severityBadgeClass(severity string) string {
+	switch severity {
+	case "critical":
+		return "text-red-400 bg-red-500/10 border-red-500/20"
+	case "high":
+		return "text-orange-400 bg-orange-500/10 border-orange-500/20"
+	case "medium":
+		return "text-yellow-400 bg-yellow-500/10 border-yellow-500/20"
+	case "low":
+		return "text-blue-400 bg-blue-500/10 border-blue-500/20"
+	case "info":
+		return "text-gray-400 bg-gray-500/10 border-gray-500/20"
+	default:
+		return "text-gray-400 bg-gray-500/10 border-gray-500/20"
+	}
+}

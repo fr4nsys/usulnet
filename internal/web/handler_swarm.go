@@ -5,7 +5,6 @@
 package web
 
 import (
-	"bufio"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -14,7 +13,6 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/google/uuid"
 
-	"github.com/fr4nsys/usulnet/internal/docker"
 	"github.com/fr4nsys/usulnet/internal/models"
 	swarmtpl "github.com/fr4nsys/usulnet/internal/web/templates/pages/swarm"
 )
@@ -31,23 +29,7 @@ func (h *Handler) SwarmClusterTempl(w http.ResponseWriter, r *http.Request) {
 		HostID:   hostID.String(),
 	}
 
-	// Detect if the active host is an agent node — Swarm ops require the master
-	masterHostID := uuid.MustParse("00000000-0000-0000-0000-000000000001")
-	if hostID != masterHostID {
-		host, hostErr := h.services.Hosts().Get(ctx, hostID.String())
-		if hostErr == nil && host.EndpointType == "agent" {
-			data.IsAgentHost = true
-			data.MasterHostID = masterHostID.String()
-		}
-	}
-
 	if h.swarmService == nil {
-		h.renderTempl(w, r, swarmtpl.Cluster(data))
-		return
-	}
-
-	// Skip Swarm API call for agent nodes — it will always fail
-	if data.IsAgentHost {
 		h.renderTempl(w, r, swarmtpl.Cluster(data))
 		return
 	}
@@ -332,214 +314,6 @@ func (h *Handler) SwarmConvertContainerTempl(w http.ResponseWriter, r *http.Requ
 
 	h.setFlash(w, r, "success", fmt.Sprintf("Container converted to Swarm service with %d replicas", replicas))
 	http.Redirect(w, r, "/swarm", http.StatusSeeOther)
-}
-
-// SwarmNodeUpdateTempl handles POST /swarm/nodes/{nodeID}/update — promote/demote/drain.
-func (h *Handler) SwarmNodeUpdateTempl(w http.ResponseWriter, r *http.Request) {
-	ctx := r.Context()
-	hostID := h.resolveHostID(r)
-	nodeID := chi.URLParam(r, "nodeID")
-
-	if h.swarmService == nil {
-		h.setFlash(w, r, "error", "Swarm service not available")
-		http.Redirect(w, r, "/swarm", http.StatusSeeOther)
-		return
-	}
-
-	role := r.FormValue("role")                 // "manager", "worker", or ""
-	availability := r.FormValue("availability") // "active", "drain", "pause", or ""
-
-	if role == "" && availability == "" {
-		h.setFlash(w, r, "error", "No changes specified")
-		http.Redirect(w, r, "/swarm", http.StatusSeeOther)
-		return
-	}
-
-	if err := h.swarmService.UpdateNode(ctx, hostID, nodeID, role, availability); err != nil {
-		h.setFlash(w, r, "error", "Failed to update node: "+err.Error())
-	} else {
-		action := "updated"
-		if role == "manager" {
-			action = "promoted to manager"
-		} else if role == "worker" {
-			action = "demoted to worker"
-		} else if availability == "drain" {
-			action = "set to drain"
-		} else if availability == "active" {
-			action = "set to active"
-		} else if availability == "pause" {
-			action = "paused"
-		}
-		h.setFlash(w, r, "success", fmt.Sprintf("Node %s", action))
-	}
-
-	http.Redirect(w, r, "/swarm", http.StatusSeeOther)
-}
-
-// SwarmJoinTempl handles POST /swarm/join — joins this host to an existing cluster.
-func (h *Handler) SwarmJoinTempl(w http.ResponseWriter, r *http.Request) {
-	ctx := r.Context()
-	hostID := h.resolveHostID(r)
-
-	if h.swarmService == nil {
-		h.setFlash(w, r, "error", "Swarm service not available")
-		http.Redirect(w, r, "/swarm", http.StatusSeeOther)
-		return
-	}
-
-	input := &models.SwarmJoinInput{
-		RemoteAddr: strings.TrimSpace(r.FormValue("remote_addr")),
-		JoinToken:  strings.TrimSpace(r.FormValue("join_token")),
-		ListenAddr: strings.TrimSpace(r.FormValue("listen_addr")),
-	}
-
-	if input.RemoteAddr == "" || input.JoinToken == "" {
-		h.setFlash(w, r, "error", "Manager address and join token are required")
-		http.Redirect(w, r, "/swarm", http.StatusSeeOther)
-		return
-	}
-
-	if err := h.swarmService.JoinSwarm(ctx, hostID, input); err != nil {
-		h.setFlash(w, r, "error", "Failed to join Swarm: "+err.Error())
-	} else {
-		h.setFlash(w, r, "success", "Successfully joined Swarm cluster")
-	}
-
-	http.Redirect(w, r, "/swarm", http.StatusSeeOther)
-}
-
-// SwarmServiceDetailTempl renders the service detail page.
-func (h *Handler) SwarmServiceDetailTempl(w http.ResponseWriter, r *http.Request) {
-	ctx := r.Context()
-	hostID := h.resolveHostID(r)
-	serviceID := chi.URLParam(r, "serviceID")
-
-	pageData := h.prepareTemplPageData(r, "Service Detail", "swarm")
-
-	if h.swarmService == nil {
-		h.setFlash(w, r, "error", "Swarm service not available")
-		http.Redirect(w, r, "/swarm", http.StatusSeeOther)
-		return
-	}
-
-	svc, err := h.swarmService.GetService(ctx, hostID, serviceID)
-	if err != nil {
-		h.setFlash(w, r, "error", "Service not found: "+err.Error())
-		http.Redirect(w, r, "/swarm", http.StatusSeeOther)
-		return
-	}
-
-	tasks, _ := h.swarmService.ListTasks(ctx, hostID, serviceID)
-
-	data := swarmtpl.ServiceDetailData{
-		PageData:  pageData,
-		Service:   *svc,
-		Tasks:     tasks,
-		ServiceID: serviceID,
-	}
-
-	h.renderTempl(w, r, swarmtpl.ServiceDetail(data))
-}
-
-// SwarmServiceUpdateTempl handles POST /swarm/services/{serviceID}/update.
-func (h *Handler) SwarmServiceUpdateTempl(w http.ResponseWriter, r *http.Request) {
-	ctx := r.Context()
-	hostID := h.resolveHostID(r)
-	serviceID := chi.URLParam(r, "serviceID")
-
-	if h.swarmService == nil {
-		h.setFlash(w, r, "error", "Swarm service not available")
-		http.Redirect(w, r, "/swarm/services/"+serviceID, http.StatusSeeOther)
-		return
-	}
-
-	opts := docker.SwarmServiceUpdateOptions{}
-
-	if img := strings.TrimSpace(r.FormValue("image")); img != "" {
-		opts.Image = &img
-	}
-
-	if replicasStr := r.FormValue("replicas"); replicasStr != "" {
-		if replicas, err := strconv.ParseUint(replicasStr, 10, 64); err == nil {
-			opts.Replicas = &replicas
-		}
-	}
-
-	if envStr := strings.TrimSpace(r.FormValue("env")); envStr != "" {
-		for _, line := range strings.Split(envStr, "\n") {
-			line = strings.TrimSpace(line)
-			if line != "" && strings.Contains(line, "=") {
-				opts.Env = append(opts.Env, line)
-			}
-		}
-	}
-
-	if err := h.swarmService.UpdateService(ctx, hostID, serviceID, opts); err != nil {
-		h.setFlash(w, r, "error", "Failed to update service: "+err.Error())
-	} else {
-		h.setFlash(w, r, "success", "Service updated successfully")
-	}
-
-	http.Redirect(w, r, "/swarm/services/"+serviceID, http.StatusSeeOther)
-}
-
-// SwarmServiceRollbackTempl handles POST /swarm/services/{serviceID}/rollback.
-func (h *Handler) SwarmServiceRollbackTempl(w http.ResponseWriter, r *http.Request) {
-	ctx := r.Context()
-	hostID := h.resolveHostID(r)
-	serviceID := chi.URLParam(r, "serviceID")
-
-	if h.swarmService == nil {
-		h.setFlash(w, r, "error", "Swarm service not available")
-		http.Redirect(w, r, "/swarm/services/"+serviceID, http.StatusSeeOther)
-		return
-	}
-
-	if err := h.swarmService.RollbackService(ctx, hostID, serviceID); err != nil {
-		h.setFlash(w, r, "error", "Failed to rollback service: "+err.Error())
-	} else {
-		h.setFlash(w, r, "success", "Service rolled back to previous version")
-	}
-
-	http.Redirect(w, r, "/swarm/services/"+serviceID, http.StatusSeeOther)
-}
-
-// SwarmServiceLogsTempl streams service logs as plain text.
-func (h *Handler) SwarmServiceLogsTempl(w http.ResponseWriter, r *http.Request) {
-	ctx := r.Context()
-	hostID := h.resolveHostID(r)
-	serviceID := chi.URLParam(r, "serviceID")
-
-	if h.swarmService == nil {
-		http.Error(w, "Swarm service not available", http.StatusServiceUnavailable)
-		return
-	}
-
-	tail := r.URL.Query().Get("tail")
-	if tail == "" {
-		tail = "100"
-	}
-
-	reader, err := h.swarmService.ServiceLogs(ctx, hostID, serviceID, tail, false)
-	if err != nil {
-		http.Error(w, "Failed to get logs: "+err.Error(), http.StatusInternalServerError)
-		return
-	}
-	defer reader.Close()
-
-	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
-	w.WriteHeader(http.StatusOK)
-
-	scanner := bufio.NewScanner(reader)
-	for scanner.Scan() {
-		line := scanner.Bytes()
-		// Docker multiplexed logs have 8-byte header; strip it if present
-		if len(line) > 8 {
-			line = line[8:]
-		}
-		w.Write(line)
-		w.Write([]byte("\n"))
-	}
 }
 
 // resolveHostID gets the current active host UUID from context or query parameter.

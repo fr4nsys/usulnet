@@ -119,7 +119,7 @@ func NewDiscordChannel(config DiscordConfig) (*DiscordChannel, error) {
 
 	// Set defaults
 	if config.Username == "" {
-		config.Username = "USULNET"
+		config.Username = "usulnet"
 	}
 	if config.Timeout == 0 {
 		config.Timeout = 30
@@ -182,9 +182,9 @@ func (d *DiscordChannel) Send(ctx context.Context, msg RenderedMessage) error {
 // Test sends a test notification to verify configuration.
 func (d *DiscordChannel) Test(ctx context.Context) error {
 	testMsg := RenderedMessage{
-		Title:     "USULNET Test Notification",
-		Body:      "This is a test notification from USULNET to verify Discord integration.",
-		BodyPlain: "This is a test notification from USULNET to verify Discord integration.",
+		Title:     "usulnet Test Notification",
+		Body:      "This is a test notification from usulnet to verify Discord integration.",
+		BodyPlain: "This is a test notification from usulnet to verify Discord integration.",
 		Priority:  PriorityNormal,
 		Timestamp: time.Now(),
 		Type:      TypeTestMessage,
@@ -221,10 +221,10 @@ func (d *DiscordChannel) buildEmbed(msg RenderedMessage) DiscordEmbed {
 		Color:       d.hexToInt(msg.Color),
 		Timestamp:   msg.Timestamp.Format(time.RFC3339),
 		Footer: &DiscordEmbedFooter{
-			Text: fmt.Sprintf("USULNET • %s • %s", msg.Type.Category(), msg.Priority.String()),
+			Text: fmt.Sprintf("usulnet • %s • %s", msg.Type.Category(), msg.Priority.String()),
 		},
 		Author: &DiscordEmbedAuthor{
-			Name:    "USULNET",
+			Name:    "usulnet",
 			IconURL: d.config.AvatarURL,
 		},
 	}

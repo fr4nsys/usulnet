@@ -160,7 +160,7 @@ func (s *Service) Deploy(ctx context.Context, req DeployRequest) (string, error)
 		req.SSHPort = 22
 	}
 	if req.AgentImage == "" {
-		req.AgentImage = "usulnet/usulnet-agent:latest"
+		req.AgentImage = "usulnet-agent:latest"
 	}
 
 	deployID := uuid.New().String()[:8]
@@ -560,28 +560,14 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ./config:/app/config:ro
-      - agent_data:/app/data{{if .TLSEnabled}}
+      - ./data:/app/data{{if .TLSEnabled}}
       - ./certs:/app/certs:ro{{end}}
     environment:
       - USULNET_GATEWAY_URL={{.GatewayURL}}
       - USULNET_AGENT_TOKEN={{.Token}}
-    healthcheck:
-      test: ["CMD", "test", "-f", "/app/data/agent.pid"]
-      interval: 30s
-      timeout: 5s
-      retries: 3
-      start_period: 15s
-    deploy:
-      resources:
-        limits:
-          memory: 256M
-          cpus: "1"
     logging:
       driver: json-file
       options:
         max-size: "10m"
         max-file: "3"
-
-volumes:
-  agent_data:
 `

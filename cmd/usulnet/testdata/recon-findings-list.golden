@@ -1,0 +1,15 @@
+List findings, optionally filtered by --target and --severity
+
+Usage:
+  usulnet recon findings list [flags]
+
+Flags:
+  -h, --help              help for list
+      --severity string   filter findings by severity
+      --target string     filter findings by target ID
+
+Global Flags:
+  -c, --config string   config file path (default: /etc/usulnet/config.yaml or ./config.yaml)
+      --output string   output format: table|json|yaml (default "table")
+      --server string   usulnet API URL (default $USULNET_API_URL)
+      --token string    API token (default $USULNET_API_TOKEN)

@@ -405,7 +405,7 @@ func (s *Service) UpdateIssueStatus(ctx context.Context, issueID int64, status m
 
 	err := s.issueRepo.UpdateStatus(ctx, issueID, status, userID)
 	if err != nil {
-		return fmt.Errorf("update issue status: %w", err)
+		return err
 	}
 
 	log.Info("Issue status updated",
@@ -442,7 +442,7 @@ func (s *Service) DeleteScan(ctx context.Context, id uuid.UUID) error {
 
 	// Delete scan
 	if err := s.scanRepo.Delete(ctx, id); err != nil {
-		return fmt.Errorf("delete scan %s: %w", id, err)
+		return err
 	}
 
 	log.Info("Scan deleted", "scan_id", id)
@@ -542,7 +542,7 @@ type SecuritySummary struct {
 // SaveScanResult persists a scan result to the database
 func (s *Service) SaveScanResult(ctx context.Context, result *ScanResult) error {
 	if err := ValidateScanResult(result); err != nil {
-		return fmt.Errorf("validate scan result: %w", err)
+		return err
 	}
 
 	// Save scan

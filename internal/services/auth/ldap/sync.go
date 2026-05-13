@@ -384,8 +384,6 @@ func (s *SyncService) processBatch(
 }
 
 // disableMissingUsers disables users that no longer exist in LDAP.
-// Only disables users whose usernames were found by THIS provider's search —
-// users belonging to other LDAP providers are not affected.
 func (s *SyncService) disableMissingUsers(
 	ctx context.Context,
 	providerName string,
@@ -405,48 +403,15 @@ func (s *SyncService) disableMissingUsers(
 		return
 	}
 
-	// Build set of all usernames known across ALL providers in this sync cycle
-	// so we only disable users that THIS provider previously created/owns.
-	// Since we don't have a provider_id column, we can only safely disable
-	// users that appear in this provider's search scope (existingUsers contains
-	// all usernames this provider returned). A user NOT in existingUsers may
-	// belong to a different provider, so we must cross-check against other
-	// providers' known users.
-	otherProviderUsers := make(map[string]bool)
-	for _, client := range s.clients {
-		if client.GetName() == providerName || !client.IsEnabled() {
-			continue
-		}
-		// Search other providers to avoid disabling their users
-		otherUsers, err := client.SearchUsers(ctx)
-		if err != nil {
-			s.logger.Warn("failed to search other LDAP provider for disable check",
-				"provider", client.GetName(), "error", err)
-			// On error, be conservative: skip disable entirely for this run
-			result.Errors = append(result.Errors,
-				fmt.Sprintf("cannot disable users: failed to verify against provider %s: %v", client.GetName(), err))
-			return
-		}
-		for _, u := range otherUsers {
-			otherProviderUsers[u.Username] = true
-		}
-	}
-
 	for _, user := range dbUsers {
-		// Skip if user still exists in this provider's LDAP
+		// Skip if user still exists in LDAP
 		if existingUsers[user.Username] {
-			continue
-		}
-
-		// Skip if user exists in another LDAP provider
-		if otherProviderUsers[user.Username] {
 			continue
 		}
 
 		if s.config.DryRun {
 			s.logger.Info("[DRY RUN] would disable user",
 				"username", user.Username,
-				"provider", providerName,
 				"reason", "not found in LDAP",
 			)
 			result.UsersDisabled++
@@ -463,7 +428,6 @@ func (s *SyncService) disableMissingUsers(
 		result.UsersDisabled++
 		s.logger.Info("disabled LDAP user",
 			"username", user.Username,
-			"provider", providerName,
 			"reason", "not found in LDAP",
 		)
 	}

@@ -196,19 +196,6 @@ func (r *TeamRepository) AddMember(ctx context.Context, member *models.TeamMembe
 	return nil
 }
 
-// CountOwners returns the number of owners in a team.
-func (r *TeamRepository) CountOwners(ctx context.Context, teamID uuid.UUID) (int64, error) {
-	var count int64
-	err := r.db.QueryRow(ctx,
-		`SELECT COUNT(*) FROM team_members WHERE team_id = $1 AND role_in_team = $2`,
-		teamID, models.TeamRoleOwner,
-	).Scan(&count)
-	if err != nil {
-		return 0, fmt.Errorf("count team owners: %w", err)
-	}
-	return count, nil
-}
-
 // RemoveMember removes a user from a team.
 func (r *TeamRepository) RemoveMember(ctx context.Context, teamID, userID uuid.UUID) error {
 	tag, err := r.db.Exec(ctx, `
@@ -322,11 +309,11 @@ func (r *TeamRepository) IsMember(ctx context.Context, teamID, userID uuid.UUID)
 // IsOwner checks if a user is an owner of a team.
 func (r *TeamRepository) IsOwner(ctx context.Context, teamID, userID uuid.UUID) (bool, error) {
 	var exists bool
-	err := r.db.QueryRow(ctx, `
+	err := r.db.QueryRow(ctx, fmt.Sprintf(`
 		SELECT EXISTS(
 			SELECT 1 FROM team_members
-			WHERE team_id = $1 AND user_id = $2 AND role_in_team = $3
-		)`, teamID, userID, models.TeamRoleOwner).Scan(&exists)
+			WHERE team_id = $1 AND user_id = $2 AND role_in_team = '%s'
+		)`, models.TeamRoleOwner), teamID, userID).Scan(&exists)
 	if err != nil {
 		return false, apperrors.Wrap(err, apperrors.CodeDatabaseError, "failed to check team ownership")
 	}

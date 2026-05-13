@@ -95,25 +95,25 @@ func (h *HostHandler) Routes() chi.Router {
 
 // CreateHostRequest represents a host creation request.
 type CreateHostRequest struct {
-	Name          string            `json:"name" validate:"required,min=1,max=253"`
-	DisplayName   string            `json:"display_name,omitempty" validate:"omitempty,max=253"`
-	EndpointType  string            `json:"endpoint_type" validate:"required,oneof=local socket tcp agent"`
-	EndpointURL   string            `json:"endpoint_url,omitempty" validate:"omitempty,uri"`
+	Name          string            `json:"name"`
+	DisplayName   string            `json:"display_name,omitempty"`
+	EndpointType  string            `json:"endpoint_type"`
+	EndpointURL   string            `json:"endpoint_url,omitempty"`
 	TLSEnabled    bool              `json:"tls_enabled,omitempty"`
-	TLSCACert     string            `json:"tls_ca_cert,omitempty" validate:"omitempty"`
-	TLSClientCert string            `json:"tls_client_cert,omitempty" validate:"omitempty"`
-	TLSClientKey  string            `json:"tls_client_key,omitempty" validate:"omitempty"`
+	TLSCACert     string            `json:"tls_ca_cert,omitempty"`
+	TLSClientCert string            `json:"tls_client_cert,omitempty"`
+	TLSClientKey  string            `json:"tls_client_key,omitempty"`
 	Labels        map[string]string `json:"labels,omitempty"`
 }
 
 // UpdateHostRequest represents a host update request.
 type UpdateHostRequest struct {
-	DisplayName   *string           `json:"display_name,omitempty" validate:"omitempty,max=253"`
-	EndpointURL   *string           `json:"endpoint_url,omitempty" validate:"omitempty,uri"`
+	DisplayName   *string           `json:"display_name,omitempty"`
+	EndpointURL   *string           `json:"endpoint_url,omitempty"`
 	TLSEnabled    *bool             `json:"tls_enabled,omitempty"`
-	TLSCACert     *string           `json:"tls_ca_cert,omitempty" validate:"omitempty"`
-	TLSClientCert *string           `json:"tls_client_cert,omitempty" validate:"omitempty"`
-	TLSClientKey  *string           `json:"tls_client_key,omitempty" validate:"omitempty"`
+	TLSCACert     *string           `json:"tls_ca_cert,omitempty"`
+	TLSClientCert *string           `json:"tls_client_cert,omitempty"`
+	TLSClientKey  *string           `json:"tls_client_key,omitempty"`
 	Labels        map[string]string `json:"labels,omitempty"`
 }
 

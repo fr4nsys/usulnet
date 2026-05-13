@@ -39,7 +39,7 @@ const (
 	JobTypeVolumePrune       JobType = "volume_prune"
 	JobTypeNetworkPrune      JobType = "network_prune"
 	JobTypeStackDeploy       JobType = "stack_deploy"
-	JobTypeProxySync         JobType = "proxy_sync"
+	JobTypeNPMSync           JobType = "npm_sync"
 	JobTypeHostInventory     JobType = "host_inventory"
 	JobTypeMetricsCollection JobType = "metrics_collection"
 	JobTypeCleanup           JobType = "cleanup"
@@ -48,6 +48,9 @@ const (
 	JobTypeRunbookExecute    JobType = "runbook_execute"
 	JobTypeAutoDeploy        JobType = "auto_deploy"
 	JobTypeSLABreach         JobType = "sla_breach"
+	JobTypeReconScan         JobType = "recon_scan"
+	JobTypeMetadataJob       JobType = "metadata_job"
+	JobTypeReconRetention    JobType = "recon_retention"
 )
 
 // JobPriority represents job priority

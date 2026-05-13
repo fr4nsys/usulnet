@@ -99,10 +99,7 @@ func (a *volumeAdapter) Create(ctx context.Context, name, driver string, labels 
 		Labels: labels,
 	}
 	_, err := a.svc.Create(ctx, resolveHostID(ctx, a.hostID), input)
-	if err != nil {
-		return fmt.Errorf("volumeAdapter.Create: create volume %q: %w", name, err)
-	}
-	return nil
+	return err
 }
 
 func (a *volumeAdapter) Remove(ctx context.Context, name string, force bool) error {
@@ -118,7 +115,7 @@ func (a *volumeAdapter) Prune(ctx context.Context) (int64, error) {
 	}
 	result, err := a.svc.Prune(ctx, resolveHostID(ctx, a.hostID))
 	if err != nil {
-		return 0, fmt.Errorf("prune volumes: %w", err)
+		return 0, err
 	}
 	return result.SpaceReclaimed, nil
 }

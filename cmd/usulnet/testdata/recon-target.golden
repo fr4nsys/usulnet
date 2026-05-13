@@ -1,0 +1,20 @@
+Manage recon targets
+
+Usage:
+  usulnet recon target [command]
+
+Available Commands:
+  add         Create a recon target (email|phone|username|domain|ip|ip_range)
+  list        List recon targets
+  verify      Start ownership verification (uses rdap_match by default)
+
+Flags:
+  -h, --help   help for target
+
+Global Flags:
+  -c, --config string   config file path (default: /etc/usulnet/config.yaml or ./config.yaml)
+      --output string   output format: table|json|yaml (default "table")
+      --server string   usulnet API URL (default $USULNET_API_URL)
+      --token string    API token (default $USULNET_API_TOKEN)
+
+Use "usulnet recon target [command] --help" for more information about a command.

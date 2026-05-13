@@ -191,11 +191,11 @@ templ LDAPConnectionsList(data LDAPConnectionsListData) {
 
 							<div class="flex items-center gap-6">
 								<label class="flex items-center gap-2 cursor-pointer">
-									<input type="checkbox" name="use_tls" class="rounded border-dark-600 bg-dark-700 text-primary-500"/>
+									<input type="checkbox" name="use_ssl" class="rounded border-dark-600 bg-dark-700 text-primary-500"/>
 									<span class="text-sm text-gray-300">Use LDAPS (SSL)</span>
 								</label>
 								<label class="flex items-center gap-2 cursor-pointer">
-									<input type="checkbox" name="start_tls" class="rounded border-dark-600 bg-dark-700 text-primary-500"/>
+									<input type="checkbox" name="use_tls" class="rounded border-dark-600 bg-dark-700 text-primary-500"/>
 									<span class="text-sm text-gray-300">Use StartTLS</span>
 								</label>
 							</div>
@@ -220,10 +220,7 @@ templ LDAPConnectionsList(data LDAPConnectionsListData) {
 			document.getElementById('new-ldap-modal').classList.add('hidden');
 		}
 		function testLDAP(id) {
-			fetch(`/connections/ldap/${id}/test`, {
-				method: 'POST',
-				headers: { 'X-CSRF-Token': document.querySelector('meta[name=csrf-token]')?.content || '' }
-			})
+			fetch(`/connections/ldap/${id}/test`, { method: 'POST' })
 				.then(r => r.json())
 				.then(data => {
 					if (data.success) {
@@ -491,13 +488,10 @@ templ LDAPBrowser(data LDAPBrowserData) {
 				toggleWriteMode() {
 					fetch(`/connections/ldap/${this.connID}/write-mode`, {
 						method: 'POST',
-						headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': document.querySelector('meta[name=csrf-token]')?.content || '' },
+						headers: { 'Content-Type': 'application/json' },
 						body: JSON.stringify({ enabled: this.writeEnabled })
-					}).then(resp => {
-						if (resp.ok) { location.reload(); }
-						else if (window.usulnet) { window.usulnet.toast('Failed to toggle write mode', 'error'); }
-					}).catch(() => {
-						if (window.usulnet) { window.usulnet.toast('Network error toggling write mode', 'error'); }
+					}).then(() => {
+						location.reload();
 					});
 				},
 
@@ -576,10 +570,7 @@ func ldapBoolToString(b bool) string {
 }
 
 script testLDAPConnection(id string) {
-	fetch(`/connections/ldap/${id}/test`, {
-		method: 'POST',
-		headers: { 'X-CSRF-Token': document.querySelector('meta[name=csrf-token]')?.content || '' }
-	})
+	fetch(`/connections/ldap/${id}/test`, { method: 'POST' })
 		.then(r => r.json())
 		.then(data => {
 			if (data.success) {

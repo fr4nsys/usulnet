@@ -639,7 +639,7 @@ func (s *AlertService) ListSilences(ctx context.Context) ([]*models.AlertSilence
 func (s *AlertService) AcknowledgeEvent(ctx context.Context, id uuid.UUID, userID uuid.UUID) error {
 	event, err := s.repo.GetEvent(ctx, id)
 	if err != nil {
-		return fmt.Errorf("get alert event for acknowledgement: %w", err)
+		return err
 	}
 
 	now := time.Now()
@@ -653,7 +653,7 @@ func (s *AlertService) AcknowledgeEvent(ctx context.Context, id uuid.UUID, userI
 func (s *AlertService) InitializeDefaults(ctx context.Context, createdBy *uuid.UUID) error {
 	rules, _, err := s.repo.ListRules(ctx, models.AlertListOptions{Limit: 1})
 	if err != nil {
-		return fmt.Errorf("list rules for default initialization: %w", err)
+		return err
 	}
 
 	// Only create defaults if no rules exist

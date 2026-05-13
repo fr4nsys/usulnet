@@ -1,0 +1,141 @@
+package recon
+
+import (
+	"fmt"
+
+	"github.com/fr4nsys/usulnet/internal/web/templates/components/recon"
+	"github.com/fr4nsys/usulnet/internal/web/templates/layouts"
+)
+
+templ Dashboard(data DashboardData) {
+	@layouts.Base(data.PageData) {
+		<div class="space-y-6">
+			<!-- Header -->
+			<div class="flex items-center justify-between">
+				<div>
+					<h1 class="text-2xl font-display font-bold text-white">Privacy &amp; Recon</h1>
+					<p class="text-gray-400 mt-1">OSINT exposure scanning and metadata hygiene for assets you own.</p>
+				</div>
+				<div class="flex items-center gap-2">
+					<a href="/recon/metadata" class="btn-secondary">
+						<i class="fas fa-file-shield mr-2"></i>Metadata
+					</a>
+					<a href="/recon/targets" class="btn-primary">
+						<i class="fas fa-bullseye mr-2"></i>Targets
+					</a>
+				</div>
+			</div>
+
+			if data.IsAdmin && !data.IsAcknowledged {
+				@recon.AckModal(data.LegalNotice)
+			}
+
+			<!-- KPI Stats -->
+			<div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+				@kpiCard("Targets", data.Stats.Targets, "fa-bullseye", "primary")
+				@kpiCard("Scans", data.Stats.Scans, "fa-radar", "blue")
+				@kpiCard("Running", data.Stats.Running, "fa-spinner", "yellow")
+				@kpiCard("Failed", data.Stats.Failed, "fa-circle-exclamation", "red")
+			</div>
+
+			<!-- Findings by severity -->
+			<div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+				@severitySummary("Critical", data.Stats.Critical, "critical")
+				@severitySummary("High", data.Stats.High, "high")
+				@severitySummary("Medium", data.Stats.Medium, "medium")
+				@severitySummary("Low", data.Stats.Low, "low")
+			</div>
+
+			<!-- Recent scans + top findings -->
+			<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+				<div class="card p-5">
+					<div class="flex items-center justify-between mb-4">
+						<h2 class="text-lg font-display font-semibold text-white">Recent Scans</h2>
+						<a href="/recon/scans" class="text-sm text-primary-400 hover:text-primary-300">View all</a>
+					</div>
+					if len(data.RecentScans) == 0 {
+						<p class="text-sm text-gray-500 py-8 text-center">No scans have run yet.</p>
+					} else {
+						<div class="space-y-2">
+							for _, s := range data.RecentScans {
+								@scanRow(s)
+							}
+						</div>
+					}
+				</div>
+				<div class="card p-5">
+					<div class="flex items-center justify-between mb-4">
+						<h2 class="text-lg font-display font-semibold text-white">Top Findings</h2>
+						<span class="text-xs text-gray-500">High &amp; critical only</span>
+					</div>
+					if len(data.TopFindings) == 0 {
+						<p class="text-sm text-gray-500 py-8 text-center">No high/critical findings.</p>
+					} else {
+						<div class="space-y-2">
+							for _, f := range data.TopFindings {
+								@findingRow(f)
+							}
+						</div>
+					}
+				</div>
+			</div>
+		</div>
+	}
+}
+
+templ kpiCard(label string, value int, icon string, tone string) {
+	<div class="card p-4">
+		<div class="flex items-center justify-between">
+			<div>
+				<p class="text-xs text-gray-400 uppercase tracking-wide">{ label }</p>
+				<p class="text-2xl font-display font-bold text-white mt-1">{ fmt.Sprintf("%d", value) }</p>
+			</div>
+			<i class={ "fas " + icon + " text-2xl " + toneTextClass(tone) }></i>
+		</div>
+	</div>
+}
+
+templ severitySummary(label string, value int, severity string) {
+	<div class={ "card p-4 border " + SeverityClass(severity) }>
+		<p class="text-xs uppercase tracking-wide opacity-80">{ label }</p>
+		<p class="text-2xl font-display font-bold mt-1">{ fmt.Sprintf("%d", value) }</p>
+	</div>
+}
+
+templ scanRow(s ScanView) {
+	<a href={ templ.SafeURL("/recon/scans/" + s.ID) } class="flex items-center gap-3 p-2 hover:bg-dark-700 rounded transition-colors">
+		<span class={ "px-2 py-0.5 rounded text-xs font-medium border " + StatusClass(s.Status) }>{ s.Status }</span>
+		<div class="flex-1 min-w-0">
+			<p class="text-sm text-white truncate">{ s.TargetValue }</p>
+			<p class="text-xs text-gray-500 truncate">{ s.Engine } · { s.CreatedAt }</p>
+		</div>
+		<span class="text-xs text-gray-400">{ s.Duration }</span>
+	</a>
+}
+
+templ findingRow(f FindingView) {
+	<a href={ templ.SafeURL("/recon/scans/" + f.ScanID) } class="flex items-center gap-3 p-2 hover:bg-dark-700 rounded transition-colors">
+		<span class={ "px-2 py-0.5 rounded text-xs font-medium border " + SeverityClass(f.Severity) }>{ f.Severity }</span>
+		<div class="flex-1 min-w-0">
+			<p class="text-sm text-white truncate">{ f.Module } · { f.Category }</p>
+			<p class="text-xs text-gray-500 truncate">{ f.Value }</p>
+		</div>
+	</a>
+}
+
+func toneTextClass(tone string) string {
+	switch tone {
+	case "primary":
+		return "text-primary-400"
+	case "blue":
+		return "text-blue-400"
+	case "yellow":
+		return "text-yellow-400"
+	case "red":
+		return "text-red-400"
+	case "green":
+		return "text-green-400"
+	default:
+		return "text-gray-400"
+	}
+}

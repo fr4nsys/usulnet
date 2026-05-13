@@ -9,7 +9,6 @@ import (
 type StacksData struct {
 	PageData layouts.PageData
 	Stacks   []StackItem
-	Error    string
 }
 
 type StackItem struct {
@@ -44,12 +43,6 @@ func stackStatusLabel(status string) string {
 templ List(data StacksData) {
 	@layouts.Base(data.PageData) {
 		<div class="space-y-6">
-			if data.Error != "" {
-				<div class="bg-red-500/10 border border-red-500/20 rounded-xl p-4 flex items-center gap-3">
-					<i class="fas fa-exclamation-circle text-red-400"></i>
-					<p class="text-sm text-red-400">{ data.Error }</p>
-				</div>
-			}
 			<!-- Header -->
 			<div class="flex items-center justify-between">
 				<div>
@@ -67,7 +60,6 @@ templ List(data StacksData) {
 					</p>
 				</div>
 				<div class="flex items-center gap-2">
-					@components.RefreshButton()
 					<a href="/stacks/catalog" class="btn-secondary">
 						<i class="fas fa-store mr-2"></i>Apps
 					</a>

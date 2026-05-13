@@ -14,16 +14,6 @@ import (
 	"github.com/go-chi/chi/v5"
 
 	"github.com/fr4nsys/usulnet/internal/scheduler"
-	crontabsvc "github.com/fr4nsys/usulnet/internal/services/crontab"
-	firewallsvc "github.com/fr4nsys/usulnet/internal/services/firewall"
-	backupverifysvc "github.com/fr4nsys/usulnet/internal/services/backupverify"
-	imagebuildersvc "github.com/fr4nsys/usulnet/internal/services/imagebuilder"
-	rollbacksvc "github.com/fr4nsys/usulnet/internal/services/rollback"
-	sslobssvc "github.com/fr4nsys/usulnet/internal/services/sslobservatory"
-	wireguardsvc "github.com/fr4nsys/usulnet/internal/services/wireguard"
-	marketplacesvc "github.com/fr4nsys/usulnet/internal/services/marketplace"
-	dnssvc "github.com/fr4nsys/usulnet/internal/services/dns"
-	dnsdiscovery "github.com/fr4nsys/usulnet/internal/services/dns/discovery"
 )
 
 // ============================================================================
@@ -45,8 +35,6 @@ func (n *nilServices) Updates() UpdateService         { return nil }
 func (n *nilServices) Hosts() HostService             { return nil }
 func (n *nilServices) Events() EventService           { return nil }
 func (n *nilServices) Proxy() ProxyService            { return nil }
-func (n *nilServices) DNS() *dnssvc.Service            { return nil }
-func (n *nilServices) DNSDiscovery() *dnsdiscovery.Service { return nil }
 func (n *nilServices) Storage() StorageService        { return nil }
 func (n *nilServices) Auth() AuthService              { return nil }
 func (n *nilServices) Stats() StatsService            { return nil }
@@ -57,14 +45,6 @@ func (n *nilServices) Git() GitService                { return nil }
 func (n *nilServices) Metrics() MetricsServiceFull    { return nil }
 func (n *nilServices) Alerts() AlertsService          { return nil }
 func (n *nilServices) Scheduler() *scheduler.Scheduler { return nil }
-func (n *nilServices) Crontab() *crontabsvc.Service    { return nil }
-func (n *nilServices) Firewall() *firewallsvc.Service  { return nil }
-func (n *nilServices) SSLObservatory() *sslobssvc.Service { return nil }
-func (n *nilServices) BackupVerify() *backupverifysvc.Service { return nil }
-func (n *nilServices) ImageBuilder() *imagebuildersvc.Service { return nil }
-func (n *nilServices) Rollback() *rollbacksvc.Service         { return nil }
-func (n *nilServices) WireGuard() *wireguardsvc.Service       { return nil }
-func (n *nilServices) Marketplace() *marketplacesvc.Service   { return nil }
 
 // ============================================================================
 // testLogger: implements Logger interface (discards all output)
@@ -194,6 +174,14 @@ func TestProxyExtHandlers_NilService(t *testing.T) {
 
 func TestAutoUpdateHandlers_NilService(t *testing.T) {
 	h := newTestHandler()
+
+	t.Run("AutoUpdatePoliciesTempl_no_panic", func(t *testing.T) {
+		rec := httptest.NewRecorder()
+		req := requestWithChi("GET", "/updates/policies", nil)
+		assertNoPanic(t, "AutoUpdatePoliciesTempl", func() {
+			h.AutoUpdatePoliciesTempl(rec, req)
+		})
+	})
 
 	t.Run("AutoUpdatePolicyCreate_redirects_on_nil", func(t *testing.T) {
 		rec := httptest.NewRecorder()

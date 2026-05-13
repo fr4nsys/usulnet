@@ -36,7 +36,7 @@ func (h *Handler) LogsPageTempl(w http.ResponseWriter, r *http.Request) {
 
 	containerSvc := h.services.Containers()
 	if containerSvc != nil {
-		containers, _, err := containerSvc.List(r.Context(), nil)
+		containers, err := containerSvc.List(r.Context(), nil)
 		if err == nil {
 			for _, c := range containers {
 				containerList = append(containerList, logs.ContainerBasicView{
@@ -441,7 +441,7 @@ func jobTypeLabel(t models.JobType) string {
 		models.JobTypeVolumePrune:       "Volume Prune",
 		models.JobTypeNetworkPrune:      "Network Prune",
 		models.JobTypeStackDeploy:       "Stack Deploy",
-		models.JobTypeProxySync:         "Proxy Sync",
+		models.JobTypeNPMSync:           "NPM Sync",
 		models.JobTypeHostInventory:     "Host Inventory",
 		models.JobTypeMetricsCollection: "Metrics Collection",
 		models.JobTypeCleanup:           "Cleanup",
@@ -469,7 +469,7 @@ func jobTypeIcon(t models.JobType) string {
 		models.JobTypeVolumePrune:       "fas fa-hdd",
 		models.JobTypeNetworkPrune:      "fas fa-network-wired",
 		models.JobTypeStackDeploy:       "fas fa-layer-group",
-		models.JobTypeProxySync:         "fas fa-globe",
+		models.JobTypeNPMSync:           "fas fa-globe",
 		models.JobTypeHostInventory:     "fas fa-server",
 		models.JobTypeMetricsCollection: "fas fa-chart-line",
 		models.JobTypeCleanup:           "fas fa-trash-alt",

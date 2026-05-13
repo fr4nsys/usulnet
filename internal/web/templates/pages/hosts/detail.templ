@@ -138,20 +138,18 @@ templ Detail(data HostDetailData) {
 			</div>
 			<div class="flex items-center gap-2">
 				if data.Host.Status == "online" {
-					if data.Host.EndpointType == "local" {
-						<a
-							href={ templ.SafeURL("/nodes/" + data.Host.ID + "/files") }
-							class="px-4 py-2 bg-dark-700 hover:bg-green-600 text-gray-300 hover:text-white rounded-lg transition-colors"
-						>
-							<i class="fas fa-folder-open mr-2"></i>Files
-						</a>
-						<a
-							href={ templ.SafeURL("/nodes/" + data.Host.ID + "/terminal") }
-							class="px-4 py-2 bg-dark-700 hover:bg-primary-600 text-gray-300 hover:text-white rounded-lg transition-colors"
-						>
-							<i class="fas fa-terminal mr-2"></i>Terminal
-						</a>
-					}
+					<a
+						href={ templ.SafeURL("/nodes/" + data.Host.ID + "/files") }
+						class="px-4 py-2 bg-dark-700 hover:bg-green-600 text-gray-300 hover:text-white rounded-lg transition-colors"
+					>
+						<i class="fas fa-folder-open mr-2"></i>Files
+					</a>
+					<a
+						href={ templ.SafeURL("/nodes/" + data.Host.ID + "/terminal") }
+						class="px-4 py-2 bg-dark-700 hover:bg-primary-600 text-gray-300 hover:text-white rounded-lg transition-colors"
+					>
+						<i class="fas fa-terminal mr-2"></i>Terminal
+					</a>
 				}
 				<a
 					href={ templ.SafeURL("/nodes/" + data.Host.ID + "/edit") }

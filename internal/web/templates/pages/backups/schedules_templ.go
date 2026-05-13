@@ -337,7 +337,7 @@ func Schedules(data SchedulesData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 28, "\"><div class=\"px-6 py-4 border-b border-dark-700\"><h3 class=\"text-lg font-medium text-white\">New Backup Schedule</h3></div><div class=\"p-6 space-y-4\"><!-- Type --><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Backup Type</label> <select name=\"type\" required class=\"input\" id=\"schedule-type-select\"><option value=\"container\">Container</option> <option value=\"volume\">Volume</option> <option value=\"stack\">Stack</option></select></div><!-- Target --><input type=\"hidden\" name=\"target_name\" id=\"sched-target-name\" value=\"\"><div id=\"sched-target-container\"><label class=\"block text-sm font-medium text-gray-300 mb-2\">Container</label> <select name=\"target_id\" id=\"sched-container-select\" class=\"input\"><option value=\"\">Select...</option> ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 28, "\"><div class=\"px-6 py-4 border-b border-dark-700\"><h3 class=\"text-lg font-medium text-white\">New Backup Schedule</h3></div><div class=\"p-6 space-y-4\"><!-- Type --><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Backup Type</label> <select name=\"type\" required class=\"input\" id=\"schedule-type-select\"><option value=\"container\">Container</option> <option value=\"volume\">Volume</option> <option value=\"stack\">Stack</option></select></div><!-- Target --><div id=\"sched-target-container\"><label class=\"block text-sm font-medium text-gray-300 mb-2\">Container</label> <select name=\"target_id\" class=\"input\"><option value=\"\">Select...</option> ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -349,7 +349,7 @@ func Schedules(data SchedulesData) templ.Component {
 				var templ_7745c5c3_Var20 string
 				templ_7745c5c3_Var20, templ_7745c5c3_Err = templ.JoinStringErrs(c.ID)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/backups/schedules.templ`, Line: 163, Col: 28}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/backups/schedules.templ`, Line: 162, Col: 28}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var20))
 				if templ_7745c5c3_Err != nil {
@@ -362,7 +362,7 @@ func Schedules(data SchedulesData) templ.Component {
 				var templ_7745c5c3_Var21 string
 				templ_7745c5c3_Var21, templ_7745c5c3_Err = templ.JoinStringErrs(c.Name)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/backups/schedules.templ`, Line: 163, Col: 39}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/backups/schedules.templ`, Line: 162, Col: 39}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var21))
 				if templ_7745c5c3_Err != nil {
@@ -385,7 +385,7 @@ func Schedules(data SchedulesData) templ.Component {
 				var templ_7745c5c3_Var22 string
 				templ_7745c5c3_Var22, templ_7745c5c3_Err = templ.JoinStringErrs(v.Name)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/backups/schedules.templ`, Line: 173, Col: 30}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/backups/schedules.templ`, Line: 172, Col: 30}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var22))
 				if templ_7745c5c3_Err != nil {
@@ -398,7 +398,7 @@ func Schedules(data SchedulesData) templ.Component {
 				var templ_7745c5c3_Var23 string
 				templ_7745c5c3_Var23, templ_7745c5c3_Err = templ.JoinStringErrs(v.Name)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/backups/schedules.templ`, Line: 173, Col: 41}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/backups/schedules.templ`, Line: 172, Col: 41}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var23))
 				if templ_7745c5c3_Err != nil {
@@ -421,7 +421,7 @@ func Schedules(data SchedulesData) templ.Component {
 				var templ_7745c5c3_Var24 string
 				templ_7745c5c3_Var24, templ_7745c5c3_Err = templ.JoinStringErrs(s.Name)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/backups/schedules.templ`, Line: 183, Col: 30}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/backups/schedules.templ`, Line: 182, Col: 30}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var24))
 				if templ_7745c5c3_Err != nil {
@@ -434,7 +434,7 @@ func Schedules(data SchedulesData) templ.Component {
 				var templ_7745c5c3_Var25 string
 				templ_7745c5c3_Var25, templ_7745c5c3_Err = templ.JoinStringErrs(s.Name)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/backups/schedules.templ`, Line: 183, Col: 41}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/backups/schedules.templ`, Line: 182, Col: 41}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var25))
 				if templ_7745c5c3_Err != nil {
@@ -445,7 +445,7 @@ func Schedules(data SchedulesData) templ.Component {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 40, "</select></div><!-- Cron Schedule --><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Schedule (Cron)</label> <input type=\"text\" name=\"schedule\" required class=\"input font-mono\" placeholder=\"0 2 * * *\"><p class=\"text-xs text-gray-500 mt-1\">Cron expression. Examples: <code class=\"text-gray-400\">0 2 * * *</code> (daily 2am), <code class=\"text-gray-400\">0 */6 * * *</code> (every 6h)</p></div><!-- Options --><div class=\"grid grid-cols-2 gap-4\"><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Compression</label> <select name=\"compression\" class=\"input\"><option value=\"gzip\">Gzip</option> <option value=\"zstd\">Zstd</option> <option value=\"none\">None</option></select></div><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Retention (days)</label> <input type=\"number\" name=\"retention_days\" value=\"30\" min=\"1\" max=\"365\" class=\"input\"></div></div><div class=\"grid grid-cols-2 gap-4\"><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Max Backups</label> <input type=\"number\" name=\"max_backups\" value=\"10\" min=\"1\" max=\"100\" class=\"input\"></div><div class=\"flex items-end pb-1\"><div class=\"flex items-center gap-2\"><input type=\"checkbox\" id=\"sched_encrypted\" name=\"encrypted\" value=\"true\" class=\"rounded border-dark-600 bg-dark-700 text-primary-500\"> <label for=\"sched_encrypted\" class=\"text-sm text-gray-300\">Encrypt backups</label></div></div></div></div><div class=\"px-6 py-4 border-t border-dark-700 flex justify-end gap-3\"><button type=\"button\" onclick=\"this.closest('dialog').close()\" class=\"btn-secondary\">Cancel</button> <button type=\"submit\" class=\"btn-primary\">Create Schedule</button></div></form></dialog><script>\n\t\t\t(function() {\n\t\t\t\tvar typeSelect = document.getElementById('schedule-type-select');\n\t\t\t\tvar nameField = document.getElementById('sched-target-name');\n\n\t\t\t\ttypeSelect.addEventListener('change', function() {\n\t\t\t\t\tdocument.getElementById('sched-target-container').classList.add('hidden');\n\t\t\t\t\tdocument.getElementById('sched-target-volume').classList.add('hidden');\n\t\t\t\t\tdocument.getElementById('sched-target-stack').classList.add('hidden');\n\t\t\t\t\tdocument.getElementById('sched-target-' + this.value).classList.remove('hidden');\n\t\t\t\t\tnameField.value = '';\n\t\t\t\t});\n\n\t\t\t\t// Container select: capture human-readable name\n\t\t\t\tvar containerSel = document.getElementById('sched-container-select');\n\t\t\t\tif (containerSel) {\n\t\t\t\t\tcontainerSel.addEventListener('change', function() {\n\t\t\t\t\t\tvar opt = this.options[this.selectedIndex];\n\t\t\t\t\t\tnameField.value = opt ? opt.text : '';\n\t\t\t\t\t});\n\t\t\t\t}\n\n\t\t\t\t// Volume select: name === value, just copy it\n\t\t\t\tvar volumeSel = document.querySelector('#sched-target-volume select');\n\t\t\t\tif (volumeSel) {\n\t\t\t\t\tvolumeSel.addEventListener('change', function() {\n\t\t\t\t\t\tnameField.value = this.value;\n\t\t\t\t\t});\n\t\t\t\t}\n\n\t\t\t\t// Stack select: name === value, just copy it\n\t\t\t\tvar stackSel = document.querySelector('#sched-target-stack select');\n\t\t\t\tif (stackSel) {\n\t\t\t\t\tstackSel.addEventListener('change', function() {\n\t\t\t\t\t\tnameField.value = this.value;\n\t\t\t\t\t});\n\t\t\t\t}\n\t\t\t})();\n\t\t</script>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 40, "</select></div><!-- Cron Schedule --><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Schedule (Cron)</label> <input type=\"text\" name=\"schedule\" required class=\"input font-mono\" placeholder=\"0 2 * * *\"><p class=\"text-xs text-gray-500 mt-1\">Cron expression. Examples: <code class=\"text-gray-400\">0 2 * * *</code> (daily 2am), <code class=\"text-gray-400\">0 */6 * * *</code> (every 6h)</p></div><!-- Options --><div class=\"grid grid-cols-2 gap-4\"><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Compression</label> <select name=\"compression\" class=\"input\"><option value=\"gzip\">Gzip</option> <option value=\"zstd\">Zstd</option> <option value=\"none\">None</option></select></div><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Retention (days)</label> <input type=\"number\" name=\"retention_days\" value=\"30\" min=\"1\" max=\"365\" class=\"input\"></div></div><div class=\"grid grid-cols-2 gap-4\"><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Max Backups</label> <input type=\"number\" name=\"max_backups\" value=\"10\" min=\"1\" max=\"100\" class=\"input\"></div><div class=\"flex items-end pb-1\"><div class=\"flex items-center gap-2\"><input type=\"checkbox\" id=\"sched_encrypted\" name=\"encrypted\" value=\"true\" class=\"rounded border-dark-600 bg-dark-700 text-primary-500\"> <label for=\"sched_encrypted\" class=\"text-sm text-gray-300\">Encrypt backups</label></div></div></div></div><div class=\"px-6 py-4 border-t border-dark-700 flex justify-end gap-3\"><button type=\"button\" onclick=\"this.closest('dialog').close()\" class=\"btn-secondary\">Cancel</button> <button type=\"submit\" class=\"btn-primary\">Create Schedule</button></div></form></dialog><script>\n\t\t\tdocument.getElementById('schedule-type-select').addEventListener('change', function() {\n\t\t\t\tdocument.getElementById('sched-target-container').classList.add('hidden');\n\t\t\t\tdocument.getElementById('sched-target-volume').classList.add('hidden');\n\t\t\t\tdocument.getElementById('sched-target-stack').classList.add('hidden');\n\t\t\t\tdocument.getElementById('sched-target-' + this.value).classList.remove('hidden');\n\t\t\t});\n\t\t</script>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

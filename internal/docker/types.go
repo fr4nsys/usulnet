@@ -485,85 +485,16 @@ func ContainerFromSummary(c types.Container) Container {
 	return cont
 }
 
-// containerStateToStatus builds a human-readable status string from a container state,
-// analogous to what the Docker list API returns (e.g. "Up 2 hours", "Exited (0)").
-// The docker list API computes this server-side; for inspect responses we reconstruct it.
-func containerStateToStatus(state *types.ContainerState, started time.Time) string {
-	if state == nil {
-		return "unknown"
-	}
-	switch state.Status {
-	case "running":
-		if !started.IsZero() {
-			return "Up " + humanizeDuration(time.Since(started))
-		}
-		return "Up"
-	case "exited":
-		return "Exited (" + strconv.Itoa(state.ExitCode) + ")"
-	case "paused":
-		return "Paused"
-	case "restarting":
-		return "Restarting"
-	case "removing":
-		return "Removing"
-	case "dead":
-		return "Dead"
-	case "created":
-		return "Created"
-	default:
-		return state.Status
-	}
-}
-
-// humanizeDuration formats a duration as a short human-readable string (e.g. "2 hours").
-func humanizeDuration(d time.Duration) string {
-	switch {
-	case d < time.Minute:
-		s := int(d.Seconds())
-		if s <= 1 {
-			return "a second"
-		}
-		return strconv.Itoa(s) + " seconds"
-	case d < time.Hour:
-		m := int(d.Minutes())
-		if m == 1 {
-			return "a minute"
-		}
-		return strconv.Itoa(m) + " minutes"
-	case d < 24*time.Hour:
-		h := int(d.Hours())
-		if h == 1 {
-			return "an hour"
-		}
-		return strconv.Itoa(h) + " hours"
-	default:
-		days := int(d.Hours() / 24)
-		if days == 1 {
-			return "a day"
-		}
-		return strconv.Itoa(days) + " days"
-	}
-}
-
 // ContainerFromInspect converts a Docker container inspect response to ContainerDetails
 func ContainerFromInspect(c types.ContainerJSON) ContainerDetails {
-	var image string
-	var labels map[string]string
-	var stateStr string
-	if c.Config != nil {
-		image = c.Config.Image
-		labels = c.Config.Labels
-	}
-	if c.State != nil {
-		stateStr = string(c.State.Status)
-	}
 	details := ContainerDetails{
 		Container: Container{
 			ID:      c.ID,
-			Image:   image,
+			Image:   c.Config.Image,
 			ImageID: c.Image,
-			State:   stateStr,
-			Labels:  labels,
+			Status:  string(c.State.Status),
+			State:   string(c.State.Status),
+			Labels:  c.Config.Labels,
 		},
 		Driver:       c.Driver,
 		MountLabel:   c.MountLabel,
@@ -601,9 +532,6 @@ func ContainerFromInspect(c types.ContainerJSON) ContainerDetails {
 		if c.State.Health != nil {
 			details.Health = string(c.State.Health.Status)
 		}
-		// Build human-readable Status (e.g. "Up 2 hours", "Exited (0)") now that
-		// the Started timestamp has been parsed.
-		details.Status = containerStateToStatus(c.State, details.Started)
 	}
 
 	// Convert mounts

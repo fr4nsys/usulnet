@@ -54,6 +54,8 @@ func (r *NotificationLogRepository) LogNotification(ctx context.Context, log *no
 		) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
 	`
 
+	// JSONB columns (channels, results) bound as string; see
+	// encodeJSONObject in recon_repo.go for the rationale.
 	_, err = r.db.Pool().Exec(ctx, query,
 		log.ID,
 		string(log.Type),

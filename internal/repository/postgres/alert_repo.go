@@ -36,6 +36,9 @@ func (r *AlertRepository) CreateRule(ctx context.Context, rule *models.AlertRule
 		autoActionsJSON = json.RawMessage("null")
 	}
 
+	// JSONB columns (auto_actions, labels) are bound as string because the
+	// connection pool uses pgx.QueryExecModeSimpleProtocol; see
+	// encodeJSONObject in recon_repo.go for the full rationale.
 	_, err := r.db.Exec(ctx, `
 		INSERT INTO alert_rules (
 			id, host_id, container_id, name, description, metric, operator, threshold,
@@ -45,8 +48,8 @@ func (r *AlertRepository) CreateRule(ctx context.Context, rule *models.AlertRule
 		rule.ID, rule.HostID, rule.ContainerID, rule.Name, rule.Description,
 		rule.Metric, rule.Operator, rule.Threshold, rule.Severity,
 		rule.Duration, rule.Cooldown, rule.EvalInterval,
-		rule.State, rule.NotifyChannels, autoActionsJSON,
-		rule.IsEnabled, labelsJSON, rule.CreatedBy,
+		rule.State, rule.NotifyChannels, string(autoActionsJSON),
+		rule.IsEnabled, string(labelsJSON), rule.CreatedBy,
 	)
 	return err
 }
@@ -86,7 +89,12 @@ func (r *AlertRepository) GetRule(ctx context.Context, id uuid.UUID) (*models.Al
 // UpdateRule updates an alert rule.
 func (r *AlertRepository) UpdateRule(ctx context.Context, rule *models.AlertRule) error {
 	labelsJSON, _ := json.Marshal(rule.Labels)
+	autoActionsJSON := rule.AutoActions
+	if autoActionsJSON == nil {
+		autoActionsJSON = json.RawMessage("null")
+	}
 
+	// JSONB columns bound as string; see encodeJSONObject in recon_repo.go.
 	_, err := r.db.Exec(ctx, `
 		UPDATE alert_rules SET
 			name=$2, description=$3, threshold=$4, severity=$5,
@@ -97,7 +105,7 @@ func (r *AlertRepository) UpdateRule(ctx context.Context, rule *models.AlertRule
 		rule.ID, rule.Name, rule.Description, rule.Threshold, rule.Severity,
 		rule.Duration, rule.Cooldown, rule.EvalInterval,
 		rule.State, rule.StateChangedAt, rule.LastEvaluated, rule.LastFiredAt, rule.FiringValue,
-		rule.NotifyChannels, rule.AutoActions, rule.IsEnabled, labelsJSON,
+		rule.NotifyChannels, string(autoActionsJSON), rule.IsEnabled, string(labelsJSON),
 	)
 	return err
 }
@@ -225,12 +233,13 @@ func (r *AlertRepository) CreateEvent(ctx context.Context, event *models.AlertEv
 
 	labelsJSON, _ := json.Marshal(event.Labels)
 
+	// JSONB bound as string; see encodeJSONObject in recon_repo.go.
 	_, err := r.db.Exec(ctx, `
 		INSERT INTO alert_events (
 			id, alert_id, host_id, container_id, state, value, threshold, message, labels, fired_at
 		) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)`,
 		event.ID, event.AlertID, event.HostID, event.ContainerID,
-		event.State, event.Value, event.Threshold, event.Message, labelsJSON, event.FiredAt,
+		event.State, event.Value, event.Threshold, event.Message, string(labelsJSON), event.FiredAt,
 	)
 	return err
 }

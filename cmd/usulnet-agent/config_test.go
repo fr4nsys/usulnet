@@ -207,7 +207,7 @@ log_level: "warn"
 	}
 
 	// Other fields should keep defaults
-	if cfg.GatewayURL != "natss://localhost:4222" {
+	if cfg.GatewayURL != "nats://localhost:4222" {
 		t.Errorf("GatewayURL should be default, got %q", cfg.GatewayURL)
 	}
 }

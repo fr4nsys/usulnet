@@ -248,7 +248,7 @@ func (s *Service) ListConfigs(ctx context.Context) ([]*models.GitSyncConfig, err
 func (s *Service) UpdateConfig(ctx context.Context, id uuid.UUID, input UpdateSyncInput) error {
 	cfg, err := s.repo.GetConfig(ctx, id)
 	if err != nil {
-		return fmt.Errorf("get sync config for update: %w", err)
+		return err
 	}
 
 	if input.Name != nil {
@@ -305,7 +305,7 @@ func (s *Service) UpdateConfig(ctx context.Context, id uuid.UUID, input UpdateSy
 func (s *Service) DeleteConfig(ctx context.Context, id uuid.UUID) error {
 	if err := s.repo.DeleteConfig(ctx, id); err != nil {
 		s.logger.Error("failed to delete sync config", "id", id, "error", err)
-		return fmt.Errorf("delete sync config %s: %w", id, err)
+		return err
 	}
 	s.logger.Info("sync config deleted", "id", id)
 	return nil
@@ -560,6 +560,8 @@ func (s *Service) SyncBidirectional(ctx context.Context, configID uuid.UUID, git
 
 	// Determine what changed relative to each other.
 	gitExists := gitErr == nil && gitFile != nil
+	gitChanged := !gitExists || gitContent != uiContent
+	uiChanged := !gitExists || uiContent != gitContent
 
 	// If both contents are equal, nothing to do.
 	if gitExists && gitContent == uiContent {
@@ -575,8 +577,13 @@ func (s *Service) SyncBidirectional(ctx context.Context, configID uuid.UUID, git
 		return s.SyncToGit(ctx, configID, gitProvider, stackProvider)
 	}
 
-	// Both sides differ from each other. Without a stored baseline we treat any
-	// difference as a potential conflict. The conflict strategy determines resolution.
+	// Both sides differ from each other.  We need to determine which side changed.
+	// Without a stored baseline/last-known content we treat any difference as a potential
+	// conflict when both sides exist and differ.
+	// If only one side has meaningful content, or a conflict strategy auto-resolves, proceed.
+
+	_ = gitChanged
+	_ = uiChanged
 
 	// Apply conflict strategy.
 	switch cfg.ConflictStrategy {

@@ -2,8 +2,7 @@ package containers
 
 import (
 	"fmt"
-
-	"github.com/fr4nsys/usulnet/internal/web/templates/components"
+	
 	"github.com/fr4nsys/usulnet/internal/web/templates/layouts"
 )
 
@@ -117,7 +116,6 @@ templ ContainerDetail(data ContainerDetailData) {
 				<div>
 					<div class="flex items-center gap-3">
 						<h1 class="text-2xl font-bold font-display text-white">{ data.Container.Name }</h1>
-						@components.HostBadge(data.PageData.ActiveHostName)
 						<span class={ "px-2.5 py-1 rounded-full text-xs font-medium", stateBadge(data.Container.State) }>
 							{ data.Container.State }
 						</span>

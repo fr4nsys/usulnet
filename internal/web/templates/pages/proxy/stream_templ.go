@@ -210,7 +210,7 @@ func StreamList(data StreamListData) templ.Component {
 					}
 				}
 			} else {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "<div class=\"card p-8 text-center\"><i class=\"fas fa-plug text-4xl text-gray-400 mb-4\"></i><h3 class=\"text-lg font-medium text-white mb-2\">Proxy Not Available</h3><p class=\"text-gray-400 mb-4\">The reverse proxy is not configured.</p><a href=\"/proxy/setup\" class=\"btn-primary\"><i class=\"fas fa-link mr-2\"></i>Setup Connection</a></div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "<div class=\"card p-8 text-center\"><i class=\"fas fa-plug text-4xl text-gray-400 mb-4\"></i><h3 class=\"text-lg font-medium text-white mb-2\">NPM Not Connected</h3><p class=\"text-gray-400 mb-4\">Connect to NPM to manage streams.</p><a href=\"/proxy/setup\" class=\"btn-primary\"><i class=\"fas fa-link mr-2\"></i>Setup Connection</a></div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -363,7 +363,7 @@ func StreamForm(data StreamFormData) templ.Component {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 30, " placeholder=\"3306\" class=\"input w-40\"><p class=\"text-xs text-gray-500 mt-1\">Port the proxy will listen on for this stream.</p></div><div class=\"grid grid-cols-3 gap-4\"><div class=\"col-span-2\"><label class=\"block text-sm font-medium text-gray-300 mb-2\">Forwarding Host</label> <input type=\"text\" name=\"forwarding_host\" required")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 30, " placeholder=\"3306\" class=\"input w-40\"><p class=\"text-xs text-gray-500 mt-1\">Port NPM will listen on for this stream.</p></div><div class=\"grid grid-cols-3 gap-4\"><div class=\"col-span-2\"><label class=\"block text-sm font-medium text-gray-300 mb-2\">Forwarding Host</label> <input type=\"text\" name=\"forwarding_host\" required")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

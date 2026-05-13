@@ -1,0 +1,15 @@
+Start a scan against a target using the named profile
+
+Usage:
+  usulnet recon scan start <target-id> [flags]
+
+Flags:
+  -h, --help             help for start
+      --profile string   profile name or UUID (required)
+      --watch            stream scan events to stdout
+
+Global Flags:
+  -c, --config string   config file path (default: /etc/usulnet/config.yaml or ./config.yaml)
+      --output string   output format: table|json|yaml (default "table")
+      --server string   usulnet API URL (default $USULNET_API_URL)
+      --token string    API token (default $USULNET_API_TOKEN)

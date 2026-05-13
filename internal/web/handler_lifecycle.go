@@ -43,7 +43,7 @@ func (h *Handler) LifecyclePoliciesTempl(w http.ResponseWriter, r *http.Request)
 
 	// Count stopped containers
 	if containerSvc != nil {
-		if containers, _, err := containerSvc.List(ctx, nil); err == nil {
+		if containers, err := containerSvc.List(ctx, nil); err == nil {
 			for _, c := range containers {
 				if c.State == "exited" || c.State == "dead" {
 					stats.StoppedContainers++
@@ -312,7 +312,7 @@ func (h *Handler) LifecyclePolicyExecute(w http.ResponseWriter, r *http.Request)
 		}
 	case "container":
 		if containerSvc := h.services.Containers(); containerSvc != nil {
-			containers, _, err := containerSvc.List(ctx, nil)
+			containers, err := containerSvc.List(ctx, nil)
 			if err == nil {
 				for _, c := range containers {
 					if c.State == "exited" || c.State == "dead" {

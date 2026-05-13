@@ -94,13 +94,12 @@ type TLSConfig struct {
 
 // Client wraps the Docker SDK client with additional functionality
 type Client struct {
-	cli           *client.Client
-	host          string
-	apiVersion    string
-	serverVersion string // Docker engine version (e.g. "29.0.2"), cached at creation
-	timeout       time.Duration
-	mu            sync.RWMutex
-	closed        bool
+	cli        *client.Client
+	host       string
+	apiVersion string
+	timeout    time.Duration
+	mu         sync.RWMutex
+	closed     bool
 }
 
 // NewClient creates a new Docker client with the given options
@@ -167,26 +166,16 @@ func NewClient(ctx context.Context, opts ClientOptions) (*Client, error) {
 
 	// Get negotiated API version
 	apiVersion := cli.ClientVersion()
-
-	// Cache the Docker engine version from /version (more reliable than /info.ServerVersion
-	// which may be absent in newer Docker daemon API versions).
-	serverVersion := ""
-	if ver, err := cli.ServerVersion(ctx); err == nil {
-		serverVersion = ver.Version
-	}
-
 	log.Debug("Docker client created",
 		"api_version", apiVersion,
-		"server_version", serverVersion,
 		"host", opts.Host,
 	)
 
 	return &Client{
-		cli:           cli,
-		host:          opts.Host,
-		apiVersion:    apiVersion,
-		serverVersion: serverVersion,
-		timeout:       opts.Timeout,
+		cli:        cli,
+		host:       opts.Host,
+		apiVersion: apiVersion,
+		timeout:    opts.Timeout,
 	}, nil
 }
 
@@ -227,13 +216,9 @@ func buildHTTPClient(opts ClientOptions) (*http.Client, error) {
 		transport.TLSClientConfig = tlsConfig
 	}
 
-	// NOTE: Do NOT set Timeout here. http.Client.Timeout applies to the entire
-	// request/response lifecycle including reading the response body, which would
-	// kill long-lived streaming connections (Docker event stream, log tailing)
-	// after 30 seconds with "context deadline exceeded". Per-operation timeouts
-	// are handled via the context passed to each method call instead.
 	return &http.Client{
 		Transport: transport,
+		Timeout:   opts.Timeout,
 	}, nil
 }
 
@@ -317,9 +302,6 @@ func (c *Client) Info(ctx context.Context) (*DockerInfo, error) {
 		return nil, errors.New(errors.CodeDockerConnection, "client is closed")
 	}
 
-	ctx, cancel := context.WithTimeout(ctx, c.timeout)
-	defer cancel()
-
 	info, err := c.cli.Info(ctx)
 	if err != nil {
 		return nil, errors.Wrap(err, errors.CodeDockerConnection, "failed to get Docker info")
@@ -332,17 +314,10 @@ func (c *Client) Info(ctx context.Context) (*DockerInfo, error) {
 	}
 	sort.Strings(runtimes)
 
-	// Use the /version endpoint's value as fallback when /info omits ServerVersion
-	// (observed with Docker 29 daemon at API 1.51).
-	serverVersion := info.ServerVersion
-	if serverVersion == "" {
-		serverVersion = c.serverVersion
-	}
-
 	return &DockerInfo{
 		ID:                info.ID,
 		Name:              info.Name,
-		ServerVersion:     serverVersion,
+		ServerVersion:     info.ServerVersion,
 		APIVersion:        c.apiVersion,
 		OS:                info.OperatingSystem,
 		OSType:            info.OSType,
@@ -376,9 +351,6 @@ func (c *Client) ServerVersion(ctx context.Context) (string, error) {
 	if c.closed {
 		return "", errors.New(errors.CodeDockerConnection, "client is closed")
 	}
-
-	ctx, cancel := context.WithTimeout(ctx, c.timeout)
-	defer cancel()
 
 	version, err := c.cli.ServerVersion(ctx)
 	if err != nil {

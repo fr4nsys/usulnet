@@ -10,11 +10,10 @@ import (
 // ============================================================================
 
 type PacketCaptureData struct {
-	PageData         layouts.PageData
-	Interfaces       []NetworkInterface
-	Captures         []CaptureSession
-	Active           *CaptureSession
-	TcpdumpAvailable bool
+	PageData    layouts.PageData
+	Interfaces  []NetworkInterface
+	Captures    []CaptureSession
+	Active      *CaptureSession
 }
 
 type NetworkInterface struct {
@@ -57,19 +56,6 @@ type PacketSummary struct {
 templ PacketCapture(data PacketCaptureData) {
 	@layouts.Base(data.PageData) {
 		<div class="space-y-6" x-data="captureApp()">
-			if !data.TcpdumpAvailable {
-				<div class="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-4 flex items-start gap-3">
-					<i class="fas fa-exclamation-triangle text-yellow-400 mt-0.5"></i>
-					<div>
-						<p class="text-yellow-300 font-medium">tcpdump not available</p>
-						<p class="text-yellow-400/80 text-sm mt-1">
-							Packet capture requires tcpdump installed on the host system.
-							Rebuild the Docker image or install tcpdump manually.
-						</p>
-					</div>
-				</div>
-			}
-
 			<!-- Header -->
 			<div class="flex items-center justify-between">
 				<div>
@@ -78,22 +64,12 @@ templ PacketCapture(data PacketCaptureData) {
 					</h1>
 					<p class="text-gray-400 mt-1">Capture and analyze network traffic using tcpdump</p>
 				</div>
-				if data.TcpdumpAvailable {
-					<button
-						onclick="document.getElementById('new-capture-modal').classList.remove('hidden')"
-						class="btn-primary"
-					>
-						<i class="fas fa-play mr-2"></i>New Capture
-					</button>
-				} else {
-					<button
-						disabled
-						class="btn-primary opacity-50 cursor-not-allowed"
-						title="tcpdump is not installed"
-					>
-						<i class="fas fa-play mr-2"></i>New Capture
-					</button>
-				}
+				<button
+					onclick="document.getElementById('new-capture-modal').classList.remove('hidden')"
+					class="btn-primary"
+				>
+					<i class="fas fa-play mr-2"></i>New Capture
+				</button>
 			</div>
 
 			<!-- Stats Cards -->
@@ -169,14 +145,12 @@ templ PacketCapture(data PacketCaptureData) {
 										<div class="font-medium text-white">{ iface.Name }</div>
 										<div class="text-xs text-gray-500 font-mono">{ iface.IP }</div>
 									</div>
-									if data.TcpdumpAvailable {
-										<button
-											@click={ "$store.capture.start('" + iface.Name + "')" }
-											class="text-primary-400 hover:text-primary-300 text-sm"
-										>
-											<i class="fas fa-play"></i>
-										</button>
-									}
+									<button
+										@click={ "$store.capture.start('" + iface.Name + "')" }
+										class="text-primary-400 hover:text-primary-300 text-sm"
+									>
+										<i class="fas fa-play"></i>
+									</button>
 								</div>
 							}
 						</div>
@@ -264,9 +238,7 @@ templ PacketCapture(data PacketCaptureData) {
 							</div>
 
 							if data.Active.Status != "running" {
-								<div class="px-4 pt-2">
-									<p class="text-xs text-gray-500">Download the PCAP and open with <a href={ templ.SafeURL("https://www.wireshark.org") } target="_blank" rel="noopener" class="text-primary-400 hover:underline">Wireshark</a> to do advanced analysis</p>
-								</div>
+								<div class="px-4 pt-2 text-xs text-gray-500">Open with Wireshark for advanced analysis (https://www.wireshark.org)</div>
 							}
 
 							<!-- Capture Info -->
@@ -289,16 +261,16 @@ templ PacketCapture(data PacketCaptureData) {
 								</div>
 							</div>
 
-							<!-- Live Capture / Packet Log -->
+							<!-- Live Capture Status -->
 							<div
+								class="max-h-[500px] overflow-y-auto font-mono text-sm"
 								id="capture-live"
 								data-capture-id={ data.Active.ID }
 							>
 								if data.Active.Status == "running" {
-									<div class="px-4 py-2 flex items-center gap-2 text-green-400 border-b border-dark-600">
+									<div class="p-4 flex items-center gap-2 text-green-400">
 										<i class="fas fa-circle animate-pulse text-xs"></i>
-										<span class="text-sm font-medium">Live packet stream</span>
-										<span class="text-xs text-gray-500 ml-auto" id="live-line-count">0 lines</span>
+										<span>Live capture monitoring active</span>
 									</div>
 								} else {
 									<div class="p-4 text-center text-gray-500">
@@ -306,11 +278,7 @@ templ PacketCapture(data PacketCaptureData) {
 										<p>Capture { data.Active.Status }</p>
 									</div>
 								}
-								<div
-									id="capture-log"
-									class="bg-dark-900 max-h-[400px] overflow-y-auto font-mono text-xs leading-5 p-2"
-									style="scroll-behavior: smooth;"
-								></div>
+								<div id="capture-log" class="divide-y divide-dark-600"></div>
 							</div>
 
 							if data.Active.Status == "stopped" || data.Active.Status == "completed" {
@@ -435,16 +403,12 @@ templ PacketCapture(data PacketCaptureData) {
 							<i class="fas fa-satellite-dish text-6xl text-gray-400 mb-4"></i>
 							<h2 class="text-xl font-semibold text-white mb-2">Network Packet Capture</h2>
 							<p class="text-gray-400 mb-6">Capture and analyze network traffic in real-time</p>
-							if data.TcpdumpAvailable {
-								<button
-									onclick="document.getElementById('new-capture-modal').classList.remove('hidden')"
-									class="btn-primary"
-								>
-									<i class="fas fa-play mr-2"></i>Start New Capture
-								</button>
-							} else {
-								<p class="text-yellow-400 text-sm">tcpdump is not installed — capture is unavailable</p>
-							}
+							<button
+								onclick="document.getElementById('new-capture-modal').classList.remove('hidden')"
+								class="btn-primary"
+							>
+								<i class="fas fa-play mr-2"></i>Start New Capture
+							</button>
 						</div>
 					}
 				</div>
@@ -486,21 +450,10 @@ templ PacketCapture(data PacketCaptureData) {
 					return {
 						ws: null,
 						_reconnectAttempts: 0,
-						_lineCount: 0,
-						_autoScroll: true,
-						_maxVisibleLines: 500,
 						init() {
 							const el = document.getElementById('capture-live');
 							if (el && el.dataset.captureId) {
 								this.connectWS(el.dataset.captureId);
-							}
-							// Track user scroll to disable auto-scroll when scrolled up
-							const logDiv = document.getElementById('capture-log');
-							if (logDiv) {
-								logDiv.addEventListener('scroll', () => {
-									const atBottom = logDiv.scrollHeight - logDiv.scrollTop - logDiv.clientHeight < 40;
-									this._autoScroll = atBottom;
-								});
 							}
 						},
 						connectWS(captureId) {
@@ -517,18 +470,15 @@ templ PacketCapture(data PacketCaptureData) {
 										const sizeEl = document.getElementById('live-file-size');
 										if (packetEl) packetEl.textContent = msg.packet_count;
 										if (sizeEl) sizeEl.textContent = this.formatSize(msg.file_size);
-									} else if (msg.type === 'packets') {
-										this.appendPacketLines(msg.lines);
 									} else if (msg.type === 'finished') {
 										const logDiv = document.getElementById('capture-log');
 										if (logDiv) {
-											const div = document.createElement('div');
-											div.className = 'p-2 text-center text-yellow-400';
-											div.innerHTML = '<i class="fas fa-check-circle mr-2"></i>';
-											const span = document.createElement('span');
-											span.textContent = msg.message || 'Capture finished';
-											div.appendChild(span);
-											logDiv.appendChild(div);
+											function escapeHtml(str) {
+												var div = document.createElement('div');
+												div.textContent = str;
+												return div.innerHTML;
+											}
+											logDiv.innerHTML = '<div class="p-4 text-center text-yellow-400"><i class="fas fa-check-circle mr-2"></i>' + escapeHtml(msg.message || 'Capture finished') + '</div>';
 										}
 										setTimeout(function() { location.reload(); }, 2000);
 									}
@@ -537,50 +487,18 @@ templ PacketCapture(data PacketCaptureData) {
 							this.ws.onclose = (event) => {
 								const logDiv = document.getElementById('capture-log');
 								const graceful = (event.code === 1000 || event.code === 1001);
-								if (!graceful && logDiv && this._reconnectAttempts < 5) {
+								if (!graceful && logDiv && !logDiv.innerHTML.includes('finished') && this._reconnectAttempts < 5) {
 									const delay = Math.min(30000, 1000 * Math.pow(2, this._reconnectAttempts));
 									this._reconnectAttempts++;
 									const delaySec = delay * 0.001;
-									const info = document.createElement('div');
-									info.className = 'p-2 text-yellow-400 text-xs';
-									info.textContent = 'Stream disconnected — reconnecting in ' + delaySec + 's... (attempt ' + this._reconnectAttempts + ' of 5)';
-									logDiv.appendChild(info);
+									logDiv.innerHTML += '<div class="p-2 text-yellow-400 text-xs"><i class="fas fa-sync-alt mr-1"></i>Stream disconnected — reconnecting in ' + delaySec + 's... (attempt ' + this._reconnectAttempts + ' of 5)</div>';
 									setTimeout(() => this.connectWS(captureId), delay);
-								} else if (!graceful && this._reconnectAttempts >= 5 && logDiv) {
-									const info = document.createElement('div');
-									info.className = 'p-2 text-red-400 text-xs';
-									info.textContent = 'Stream disconnected — max reconnect attempts reached.';
-									logDiv.appendChild(info);
+								} else if (!graceful && this._reconnectAttempts >= 5 && logDiv && !logDiv.innerHTML.includes('finished')) {
+									logDiv.innerHTML += '<div class="p-2 text-red-400 text-xs"><i class="fas fa-times-circle mr-1"></i>Stream disconnected — max reconnect attempts reached.</div>';
+								} else if (logDiv && !logDiv.innerHTML.includes('finished')) {
+									logDiv.innerHTML += '<div class="p-2 text-gray-500 text-xs">Stream disconnected</div>';
 								}
 							};
-						},
-						appendPacketLines(lines) {
-							const logDiv = document.getElementById('capture-log');
-							if (!logDiv || !lines || lines.length === 0) return;
-
-							const fragment = document.createDocumentFragment();
-							for (let i = 0; i < lines.length; i++) {
-								const row = document.createElement('div');
-								row.className = 'px-2 py-0.5 text-gray-300 hover:bg-dark-700/50 whitespace-nowrap';
-								row.textContent = lines[i];
-								fragment.appendChild(row);
-							}
-							logDiv.appendChild(fragment);
-							this._lineCount += lines.length;
-
-							// Cap visible lines
-							while (logDiv.childNodes.length > this._maxVisibleLines) {
-								logDiv.removeChild(logDiv.firstChild);
-							}
-
-							// Update line counter
-							const counter = document.getElementById('live-line-count');
-							if (counter) counter.textContent = this._lineCount + ' lines';
-
-							// Auto-scroll to bottom
-							if (this._autoScroll) {
-								logDiv.scrollTop = logDiv.scrollHeight;
-							}
 						},
 						formatSize(bytes) {
 							if (bytes === 0) return '0 B';

@@ -210,15 +210,6 @@ func (h *Handler) HostTerminalTempl(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Host terminal only works for local hosts (nsenter via PID namespace)
-	if host.EndpointType != "local" {
-		h.RenderErrorTempl(w, r, http.StatusBadRequest,
-			"Terminal Not Available",
-			"Host terminal is only available for the local master node. Use Container Terminal to access individual containers on remote nodes.",
-		)
-		return
-	}
-
 	pageData := h.prepareTemplPageData(r, "Terminal: "+host.Name, "nodes")
 
 	data := hosts.HostTerminalData{
@@ -266,13 +257,6 @@ func (h *Handler) WSHostExec(w http.ResponseWriter, r *http.Request) {
 	}
 	if ro, err := strconv.Atoi(r.URL.Query().Get("rows")); err == nil && ro > 0 {
 		rows = ro
-	}
-
-	// Verify host is local (nsenter only works for local host)
-	host, err := h.services.Hosts().Get(r.Context(), hostID)
-	if err == nil && host != nil && host.EndpointType != "local" {
-		http.Error(w, "Host terminal is only available for the local master node", http.StatusBadRequest)
-		return
 	}
 
 	// Upgrade to WebSocket

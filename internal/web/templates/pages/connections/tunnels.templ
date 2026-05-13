@@ -305,7 +305,6 @@ templ SSHTunnels(data SSHTunnelsPageData) {
 					try {
 						const resp = await fetch(`/connections/ssh/${connID}/tunnels`, {
 							method: 'POST',
-						headers: { 'X-CSRF-Token': document.querySelector('meta[name=csrf-token]')?.content || '' },
 							body: form,
 						});
 						if (resp.ok) {
@@ -324,7 +323,6 @@ templ SSHTunnels(data SSHTunnelsPageData) {
 					try {
 						const resp = await fetch(`/connections/ssh/${connID}/tunnels/${id}/toggle`, {
 							method: 'POST',
-						headers: { 'X-CSRF-Token': document.querySelector('meta[name=csrf-token]')?.content || '' },
 						});
 						if (resp.ok) {
 							location.reload();
@@ -340,7 +338,6 @@ templ SSHTunnels(data SSHTunnelsPageData) {
 					try {
 						const resp = await fetch(`/connections/ssh/${connID}/tunnels/${id}`, {
 							method: 'DELETE',
-						headers: { 'X-CSRF-Token': document.querySelector('meta[name=csrf-token]')?.content || '' },
 						});
 						if (resp.ok) {
 							location.reload();

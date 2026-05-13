@@ -130,15 +130,12 @@ type ClientAPI interface {
 	SwarmGetJoinTokens(ctx context.Context) (workerToken, managerToken string, err error)
 	SwarmNodeList(ctx context.Context) ([]SwarmNodeInfo, error)
 	SwarmNodeRemove(ctx context.Context, nodeID string, force bool) error
-	SwarmNodeUpdate(ctx context.Context, nodeID string, role, availability string) error
 	SwarmServiceCreate(ctx context.Context, opts SwarmServiceCreateOptions) (string, error)
 	SwarmServiceList(ctx context.Context) ([]SwarmServiceInfo, error)
 	SwarmServiceGet(ctx context.Context, serviceID string) (*SwarmServiceInfo, error)
 	SwarmServiceRemove(ctx context.Context, serviceID string) error
 	SwarmServiceScale(ctx context.Context, serviceID string, replicas uint64) error
 	SwarmServiceUpdate(ctx context.Context, serviceID string, opts SwarmServiceUpdateOptions) error
-	SwarmServiceLogs(ctx context.Context, serviceID string, tail string, follow bool) (io.ReadCloser, error)
-	SwarmServiceRollback(ctx context.Context, serviceID string) error
 	SwarmTaskList(ctx context.Context, serviceID string) ([]SwarmTaskInfo, error)
 }
 

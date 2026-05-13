@@ -890,8 +890,7 @@ func (s *Scheduler) registerCronJob(job *models.ScheduledJob) error {
 	}
 
 	entryID, err := s.cron.AddFunc(schedule, func() {
-		ctx, cancel := s.callbackCtx()
-		defer cancel()
+		ctx := context.Background()
 		if _, err := s.createJobFromScheduled(ctx, job); err != nil {
 			s.logger.Error("failed to create job from schedule",
 				"scheduled_job_id", job.ID,

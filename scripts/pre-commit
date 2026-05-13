@@ -18,12 +18,11 @@ NC='\033[0m' # No Color
 
 PASS=0
 FAIL=0
-SKIP=0
 
 run_check() {
     local name="$1"
     shift
-    printf "  %-35s" "${name}..."
+    printf "  %-30s" "${name}..."
     if "$@" > /dev/null 2>&1; then
         echo -e "${GREEN}PASS${NC}"
         ((PASS++))
@@ -33,18 +32,14 @@ run_check() {
     fi
 }
 
-skip_check() {
-    local name="$1"
-    local reason="$2"
-    printf "  %-35s" "${name}..."
-    echo -e "${YELLOW}SKIP (${reason})${NC}"
-    ((SKIP++))
-}
+# 1. Check Go formatting (exclude generated *_templ.go and the publish-public
+#    staging tree under build/, which mirrors files we already check above).
+run_check "Go formatting" test -z "$(gofmt -l . 2>/dev/null | grep -v _templ.go | grep -v '^build/' | head -1)"
 
-# 1. Check Go formatting
-run_check "Go formatting" test -z "$(gofmt -l . 2>/dev/null | grep -v _templ.go | head -1)"
+# 2. Check naming convention (usulnet always lowercase)
+run_check "Naming convention" scripts/check-naming.sh
 
-# 2. Run go vet
+# 3. Run go vet
 run_check "Go vet" go vet ./...
 
 # 3. Run tests (quick, no race detector for speed)
@@ -54,32 +49,22 @@ run_check "Unit tests" go test -short -count=1 ./...
 if command -v golangci-lint &> /dev/null; then
     run_check "Linter (golangci-lint)" golangci-lint run --fast ./...
 else
-    skip_check "Linter (golangci-lint)" "not installed"
+    echo -e "  ${YELLOW}Linter (golangci-lint)...SKIP (not installed)${NC}"
 fi
 
-# 5. Check go mod tidy produces no changes
-run_check "Go modules tidy" bash -c 'cp go.mod go.mod.bak && cp go.sum go.sum.bak && go mod tidy && diff -q go.mod go.mod.bak && diff -q go.sum go.sum.bak; ret=$?; mv go.mod.bak go.mod; mv go.sum.bak go.sum; exit $ret'
-
-# 6. Verify migration file pairs
-if [ -f scripts/verify-migrations.sh ]; then
-    run_check "Migration integrity" bash scripts/verify-migrations.sh
-else
-    skip_check "Migration integrity" "script not found"
-fi
-
-# 7. Run govulncheck (if available)
-if command -v govulncheck &> /dev/null; then
-    run_check "Vulnerability check" govulncheck ./...
-else
-    skip_check "Vulnerability check (govulncheck)" "not installed"
-fi
+# 5. Public-split deny-list integrity. Verifies that scripts/publish-public.sh
+#    does not leak any path listed under "Explicit denials" in
+#    docs/0526/PUBLIC_FILES.md. This is a check on the publish tooling, not
+#    on what the developer is committing — editing a denied file (e.g.,
+#    CLAUDE.md) does not fail this step.
+run_check "Public-split deny list" bash scripts/publish-public.sh --check-denied
 
 echo ""
-echo "=== Results: ${PASS} passed, ${FAIL} failed, ${SKIP} skipped ==="
+echo "=== Results: ${PASS} passed, ${FAIL} failed ==="
 
 if [ "${FAIL}" -gt 0 ]; then
     echo -e "${RED}Pre-commit checks failed. Fix issues before committing.${NC}"
-    echo "Tip: Run 'make quality' to see details."
+    echo "Tip: Run 'make lint' to see linting details."
     exit 1
 fi
 

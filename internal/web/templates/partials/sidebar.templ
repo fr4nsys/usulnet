@@ -2,7 +2,6 @@ package partials
 
 import (
 	"fmt"
-	"strings"
 
 	"github.com/fr4nsys/usulnet/internal/web/templates/types"
 )
@@ -16,7 +15,7 @@ type NavItem struct {
 	Badge  int
 }
 
-templ Sidebar(active string, user *types.UserData, stats *types.StatsData, edition string, editionName string, prefs *types.SidebarPreferences) {
+templ Sidebar(active string, user *types.UserData, stats *types.StatsData, edition string, editionName string, prefs *types.SidebarPreferences, reconEnabled bool) {
 	<nav class="fixed top-0 left-0 bottom-0 w-64 bg-dark-800 border-r border-dark-600 flex flex-col z-40">
 		<!-- Logo -->
 		<div class="p-4 border-b border-dark-600">
@@ -29,29 +28,6 @@ templ Sidebar(active string, user *types.UserData, stats *types.StatsData, editi
 					<span class="block text-[10px] text-gray-500 -mt-0.5 font-medium tracking-wide">FEAR IS THE MIND-KILLER</span>
 				</div>
 			</a>
-		</div>
-
-		<!-- Search -->
-		<div class="px-3 pt-3 pb-0" x-data="{ q: '' }">
-			<div class="relative">
-				<i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-xs pointer-events-none"></i>
-				<input
-					type="text"
-					x-model="q"
-					@input="document.querySelectorAll('#sidebar-scroll .nav-item').forEach(el => { const match = !q || el.textContent.toLowerCase().includes(q.toLowerCase()); el.style.display = match ? '' : 'none'; }); document.querySelectorAll('#sidebar-scroll [x-data]').forEach(el => { if (q && el.__x) el.__x.$data.open = true; });"
-					@keydown.escape="q = ''; document.querySelectorAll('#sidebar-scroll .nav-item').forEach(el => el.style.display = ''); $el.blur();"
-					placeholder="Search..."
-					class="w-full pl-8 pr-8 py-1.5 bg-dark-700/50 border border-dark-600/50 rounded-lg text-xs text-gray-300 placeholder-gray-500 focus:outline-none focus:border-primary-500/30 focus:bg-dark-700 transition-colors"
-				/>
-				<button
-					x-show="q"
-					@click="q = ''; document.querySelectorAll('#sidebar-scroll .nav-item').forEach(el => el.style.display = '');"
-					class="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300 text-xs"
-					style="display: none;"
-				>
-					<i class="fas fa-times"></i>
-				</button>
-			</div>
 		</div>
 
 		<!-- Navigation -->
@@ -104,14 +80,8 @@ templ Sidebar(active string, user *types.UserData, stats *types.StatsData, editi
 				}
 				@navItemPrimary("Updates", "fa-sync-alt", "/updates", active == "updates", getBadge(stats, "updates"))
 				@navItem("Backups", "fa-archive", "/backups", active == "backups", 0)
-				if isEditionAvailable(edition, "biz") {
-					@navItem("Backup Verify", "fa-check-double", "/backup-verify", active == "backup-verify", 0)
-				} else {
-					@navItemLocked("Backup Verify", "fa-check-double", "biz")
-				}
 				if !prefs.IsHidden("config") {
 					@navItem("Config", "fa-cogs", "/config", active == "config", 0)
-					@navItem("Docker Engine", "fab fa-docker", "/config/docker", active == "docker-config", 0)
 				}
 				if !prefs.IsHidden("secrets") {
 					@navItem("Secrets", "fa-lock", "/secrets", active == "secrets", 0)
@@ -123,18 +93,6 @@ templ Sidebar(active string, user *types.UserData, stats *types.StatsData, editi
 					@navItem("Maintenance", "fa-wrench", "/maintenance", active == "maintenance", 0)
 				}
 				@navItem("Bulk Operations", "fa-th-list", "/bulk-ops", active == "bulk-ops", 0)
-				@navItem("Crontab", "fa-clock", "/crontab", active == "crontab", 0)
-				if isEditionAvailable(edition, "biz") {
-					@navItem("Firewall", "fa-fire", "/firewall", active == "firewall", 0)
-				} else {
-					@navItemLocked("Firewall", "fa-fire", "biz")
-				}
-				if isEditionAvailable(edition, "biz") {
-					@navItem("SSL Observatory", "fa-lock", "/ssl", active == "ssl", 0)
-				} else {
-					@navItemLocked("SSL Observatory", "fa-lock", "biz")
-				}
-				@navItem("Rollback", "fa-undo-alt", "/rollback", active == "rollback", 0)
 			}
 
 			<!-- Connections (collapsible, default expanded) -->
@@ -151,20 +109,16 @@ templ Sidebar(active string, user *types.UserData, stats *types.StatsData, editi
 				}
 				@navItem("SSH Keys", "fa-key", "/connections/keys", active == "connections-keys", 0)
 				@navItem("Shortcuts", "fa-external-link-alt", "/connections/shortcuts", active == "connections-shortcuts", 0)
-				if isEditionAvailable(edition, "biz") {
-					@navItem("WireGuard", "fa-shield-alt", "/wireguard", active == "wireguard", 0)
-				} else {
-					@navItemLocked("WireGuard", "fa-shield-alt", "biz")
-				}
 			}
 
 			<!-- Tools (collapsible, default collapsed) -->
 			@sidebarSection("tools", "Tools", prefs) {
-				@navItem("Dev Tools", "fa-toolbox", "/tools", active == "tools", 0)
-				@navItem("Calendar", "fa-calendar-alt", "/calendar", active == "calendar", 0)
 				@navItem("Terminal Hub", "fa-terminal", "/terminal", active == "terminal", 0)
 				@navItem("Editor", "fa-edit", "/editor", active == "editor", 0)
 				@navItem("Cheat Sheet", "fa-book", "/tools/cheatsheet", active == "cheatsheet", 0)
+				if !prefs.IsHidden("ansible") {
+					@navItem("Ansible", "fa-cogs", "/tools/ansible", active == "ansible", 0)
+				}
 				if !prefs.IsHidden("capture") {
 					@navItem("Packet Capture", "fa-satellite-dish", "/tools/capture", active == "capture", 0)
 				}
@@ -174,9 +128,6 @@ templ Sidebar(active string, user *types.UserData, stats *types.StatsData, editi
 			@sidebarSection("integrations", "Integrations", prefs) {
 				if !prefs.IsHidden("proxy") {
 					@navItem("Reverse Proxy", "fa-random", "/proxy", active == "proxy", 0)
-				}
-				if !prefs.IsHidden("dns") {
-					@navItem("DNS", "fa-globe-americas", "/dns", active == "dns", 0)
 				}
 				if !prefs.IsHidden("repositories") {
 					@navItem("Repositories", "fa-code-branch", "/integrations/gitea", active == "gitea", 0)
@@ -216,6 +167,20 @@ templ Sidebar(active string, user *types.UserData, stats *types.StatsData, editi
 				}
 			}
 
+			<!-- Privacy & Recon (v26.5.0, gated by feature flag + role) -->
+			if reconEnabled && user != nil && (user.Role == "admin" || user.Role == "operator" || user.Role == "viewer") {
+				@sidebarSection("privacy-recon", "Privacy & Recon", prefs) {
+					@navItem("Dashboard", "fa-user-secret", "/recon/dashboard", active == "recon-dashboard", 0)
+					@navItem("Targets", "fa-bullseye", "/recon/targets", active == "recon-targets", 0)
+					@navItem("Scans", "fa-radar", "/recon/scans", active == "recon-scans", 0)
+					@navItem("Metadata", "fa-file-shield", "/recon/metadata", active == "recon-metadata", 0)
+					@navItem("Reports", "fa-file-export", "/recon/reports", active == "recon-reports", 0)
+					if user.Role == "admin" {
+						@navItem("Connectors", "fa-plug", "/recon/connectors", active == "recon-connectors", 0)
+					}
+				}
+			}
+
 			<!-- Enterprise Features -->
 			@sidebarSection("enterprise", "Enterprise", prefs) {
 				if isEditionAvailable(edition, "ee") {
@@ -252,27 +217,6 @@ templ Sidebar(active string, user *types.UserData, stats *types.StatsData, editi
 					@navItem("Git Sync", "fa-sync", "/git-sync", active == "git-sync", 0)
 				} else {
 					@navItemLocked("Git Sync", "fa-sync", "biz")
-				}
-				if isEditionAvailable(edition, "ee") {
-					if !prefs.IsHidden("changes") {
-						@navItem("Change Audit", "fa-history", "/changes", active == "changes", 0)
-					}
-				} else {
-					@navItemLocked("Change Audit", "fa-history", "ee")
-				}
-				if isEditionAvailable(edition, "ee") {
-					if !prefs.IsHidden("drift") {
-						@navItem("Drift Detection", "fa-random", "/drift", active == "drift", 0)
-					}
-				} else {
-					@navItemLocked("Drift Detection", "fa-random", "ee")
-				}
-				if isEditionAvailable(edition, "ee") {
-					if !prefs.IsHidden("resource-optimization") {
-						@navItem("Resource Optim.", "fa-compress-arrows-alt", "/resource-optimization", active == "resource-optimization", 0)
-					}
-				} else {
-					@navItemLocked("Resource Optim.", "fa-compress-arrows-alt", "ee")
 				}
 			}
 
@@ -341,17 +285,14 @@ templ Sidebar(active string, user *types.UserData, stats *types.StatsData, editi
 		<!-- User Section -->
 		<div class="p-4 border-t border-dark-600">
 			<div class="flex items-center gap-3">
-				<a href="/profile" class="flex items-center gap-3 flex-1 min-w-0 group" title="Profile & Preferences">
-					<div class="w-9 h-9 rounded-full bg-gradient-to-br from-primary-500/20 to-primary-600/20 flex items-center justify-center text-primary-400 font-medium text-sm flex-shrink-0 group-hover:from-primary-500/30 group-hover:to-primary-600/30 transition-colors">
-						{ getUserInitial(user) }
-					</div>
-					<div class="flex-1 min-w-0">
-						<p class="text-sm font-medium text-white truncate group-hover:text-primary-400 transition-colors">{ getUserName(user) }</p>
-						<p class="text-xs text-gray-500 truncate">{ getUserRole(user) }</p>
-					</div>
-				</a>
-				<form method="POST" action="/logout" style="display:inline" onsubmit="this.elements.csrf_token.value = document.querySelector('meta[name=csrf-token]')?.content || ''">
-					<input type="hidden" name="csrf_token" value=""/>
+				<div class="w-9 h-9 rounded-full bg-gradient-to-br from-primary-500/20 to-primary-600/20 flex items-center justify-center text-primary-400 font-medium text-sm">
+					{ getUserInitial(user) }
+				</div>
+				<div class="flex-1 min-w-0">
+					<p class="text-sm font-medium text-white truncate">{ getUserName(user) }</p>
+					<p class="text-xs text-gray-500 truncate">{ getUserRole(user) }</p>
+				</div>
+				<form method="POST" action="/logout" style="display:inline">
 					<button type="submit" class="p-2 text-gray-400 hover:text-red-400 transition-colors" title="Logout">
 						<i class="fas fa-sign-out-alt"></i>
 					</button>
@@ -406,17 +347,6 @@ templ Sidebar(active string, user *types.UserData, stats *types.StatsData, editi
 					} catch(e) {}
 				}, 500);
 			};
-
-			// Helper for Alpine x-init: reads sidebar section state from localStorage.
-			// Defined as a global so Alpine expressions can call it without try/catch
-			// (Alpine 3.x does not support try/catch in inline expressions).
-			window._sidebarSectionOpen = function(key, defaultOpen) {
-				try {
-					var s = JSON.parse(localStorage.getItem('usulnet-sidebar-collapsed') || '{}');
-					if (key in s) return !s[key];
-				} catch(e) {}
-				return defaultOpen;
-			};
 		})();
 	</script>
 }
@@ -425,7 +355,7 @@ templ Sidebar(active string, user *types.UserData, stats *types.StatsData, editi
 // the initial collapse state from server-side preferences, with localStorage
 // as the immediate toggle store for responsiveness.
 templ sidebarSection(key string, label string, prefs *types.SidebarPreferences) {
-	<div x-data={ fmt.Sprintf("{ open: !%t }", prefs.IsCollapsed(key)) } x-init={ fmt.Sprintf("open = window._sidebarSectionOpen('%s', open)", key) }>
+	<div x-data={ fmt.Sprintf("{ open: !%t }", prefs.IsCollapsed(key)) } x-init={ fmt.Sprintf("try { var s = JSON.parse(localStorage.getItem('usulnet-sidebar-collapsed') || '{}'); if ('%s' in s) open = !s['%s']; } catch(e) {}", key, key) }>
 		<button
 			@click={ fmt.Sprintf("open = !open; window._sidebarToggleSection('%s', !open)", key) }
 			class="flex items-center justify-between w-full px-3 mb-2 group"
@@ -436,7 +366,7 @@ templ sidebarSection(key string, label string, prefs *types.SidebarPreferences) 
 				class="fas text-[8px] text-gray-600 group-hover:text-gray-400 transition-colors"
 			></i>
 		</button>
-		<div x-show="open" x-transition class="space-y-1">
+		<div x-show="open" x-collapse class="space-y-1">
 			{ children... }
 		</div>
 	</div>
@@ -449,7 +379,7 @@ templ navItem(label, icon, url string, isActive bool, badge int) {
 			templ.KV("active bg-primary-500/10 text-primary-400", isActive),
 			templ.KV("text-gray-300 hover:bg-dark-700 hover:text-primary-400", !isActive) }
 	>
-		<i class={ iconClass(icon) + " w-5 text-center text-sm" }></i>
+		<i class={ "fas " + icon + " w-5 text-center text-sm" }></i>
 		<span class="text-sm font-medium">{ label }</span>
 		if badge > 0 {
 			<span class="ml-auto text-xs bg-dark-600 text-gray-300 px-2 py-0.5 rounded-full">{ itoa(badge) }</span>
@@ -464,7 +394,7 @@ templ navItemDanger(label, icon, url string, isActive bool, badge int) {
 			templ.KV("active bg-primary-500/10 text-primary-400", isActive),
 			templ.KV("text-gray-300 hover:bg-dark-700 hover:text-primary-400", !isActive) }
 	>
-		<i class={ iconClass(icon) + " w-5 text-center text-sm" }></i>
+		<i class={ "fas " + icon + " w-5 text-center text-sm" }></i>
 		<span class="text-sm font-medium">{ label }</span>
 		if badge > 0 {
 			<span class="ml-auto text-xs bg-red-500/20 text-red-400 px-2 py-0.5 rounded-full">{ itoa(badge) }</span>
@@ -479,7 +409,7 @@ templ navItemPrimary(label, icon, url string, isActive bool, badge int) {
 			templ.KV("active bg-primary-500/10 text-primary-400", isActive),
 			templ.KV("text-gray-300 hover:bg-dark-700 hover:text-primary-400", !isActive) }
 	>
-		<i class={ iconClass(icon) + " w-5 text-center text-sm" }></i>
+		<i class={ "fas " + icon + " w-5 text-center text-sm" }></i>
 		<span class="text-sm font-medium">{ label }</span>
 		if badge > 0 {
 			<span class="ml-auto text-xs bg-primary-500/20 text-primary-400 px-2 py-0.5 rounded-full">{ itoa(badge) }</span>
@@ -494,7 +424,7 @@ templ navItemLocked(label, icon string, requiredEdition string) {
 		class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-500/60 cursor-default"
 		title={ requiredEditionLabel(requiredEdition) + " feature" }
 	>
-		<i class={ iconClass(icon) + " w-5 text-center text-sm opacity-40" }></i>
+		<i class={ "fas " + icon + " w-5 text-center text-sm opacity-40" }></i>
 		<span class="text-sm font-medium">{ label }</span>
 		if requiredEdition == "biz" {
 			<span class="ml-auto text-[9px] font-semibold tracking-wide bg-blue-500/10 text-blue-400/60 px-1.5 py-0.5 rounded">Business</span>
@@ -508,14 +438,13 @@ templ navItemLocked(label, icon string, requiredEdition string) {
 
 // isEditionAvailable returns true if the current edition includes the required tier.
 func isEditionAvailable(currentEdition, requiredEdition string) bool {
-	switch requiredEdition {
-	case "biz":
+	if requiredEdition == "biz" {
 		return currentEdition == "biz" || currentEdition == "ee"
-	case "ee":
-		return currentEdition == "ee"
-	default:
-		return true
 	}
+	if requiredEdition == "ee" {
+		return currentEdition == "ee"
+	}
+	return true
 }
 
 // requiredEditionLabel returns the human-readable name for an edition code.
@@ -569,14 +498,4 @@ func getUserRole(user *types.UserData) string {
 
 func itoa(n int) string {
 	return fmt.Sprintf("%d", n)
-}
-
-// iconClass returns the full Font Awesome class for an icon. If the icon
-// already contains a prefix (e.g. "fab fa-docker"), it is returned as-is.
-// Otherwise "fas " is prepended (e.g. "fa-cogs" → "fas fa-cogs").
-func iconClass(icon string) string {
-	if strings.HasPrefix(icon, "fab ") || strings.HasPrefix(icon, "fas ") || strings.HasPrefix(icon, "far ") {
-		return icon
-	}
-	return "fas " + icon
 }

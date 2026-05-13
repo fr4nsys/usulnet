@@ -44,6 +44,7 @@ func (r *DatabaseConnectionRepository) Create(ctx context.Context, conn *models.
 		optionsJSON = []byte("{}")
 	}
 
+	// options JSONB bound as string; see encodeJSONObject in recon_repo.go.
 	_, err = r.db.Exec(ctx, `
 		INSERT INTO database_connections (
 			id, user_id, name, type, host, port, database, username, password,
@@ -176,6 +177,7 @@ func (r *DatabaseConnectionRepository) Update(ctx context.Context, id uuid.UUID,
 
 	optionsJSON, _ := json.Marshal(conn.Options)
 
+	// options JSONB bound as string; see encodeJSONObject in recon_repo.go.
 	_, err = r.db.Exec(ctx, `
 		UPDATE database_connections SET
 			name=$2, host=$3, port=$4, database=$5, username=$6, password=$7,

@@ -351,6 +351,14 @@ func (h *Handler) jsonError(w http.ResponseWriter, message string, status int) {
 	json.NewEncoder(w).Encode(map[string]string{"error": message})
 }
 
+// jsonOK is the success counterpart to jsonError used by API endpoints
+// that return arbitrary JSON-serializable payloads.
+func (h *Handler) jsonOK(w http.ResponseWriter, data interface{}) {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(data)
+}
+
 func (h *Handler) jsonSuccess(w http.ResponseWriter, data map[string]interface{}) {
 	w.Header().Set("Content-Type", "application/json")
 	data["success"] = true

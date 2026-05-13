@@ -93,7 +93,7 @@ func (h *Handler) DependenciesTempl(w http.ResponseWriter, r *http.Request) {
 
 	// Build container dependencies
 	if containerSvc != nil {
-		if containerList, _, err := containerSvc.List(ctx, nil); err == nil {
+		if containerList, err := containerSvc.List(ctx, nil); err == nil {
 			for _, c := range containerList {
 				name := c.Name
 				if len(name) > 0 && name[0] == '/' {

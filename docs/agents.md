@@ -93,7 +93,7 @@ docker run -d \
   -v /var/run/docker.sock:/var/run/docker.sock \
   -v usulnet_agent_data:/app/data \
   usulnet/usulnet-agent:latest \
-  --gateway natss://MASTER_HOST:4222 \
+  --gateway nats://MASTER_HOST:4222 \
   --token YOUR_AGENT_TOKEN
 ```
 
@@ -118,7 +118,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - agent_data:/app/data
     environment:
-      - USULNET_GATEWAY_URL=natss://MASTER_HOST:4222
+      - USULNET_GATEWAY_URL=nats://MASTER_HOST:4222
       - USULNET_AGENT_TOKEN=YOUR_AGENT_TOKEN
     deploy:
       resources:
@@ -150,7 +150,7 @@ Run the agent:
 
 ```bash
 usulnet-agent \
-  --gateway natss://MASTER_HOST:4222 \
+  --gateway nats://MASTER_HOST:4222 \
   --token YOUR_AGENT_TOKEN \
   --docker unix:///var/run/docker.sock
 ```
@@ -170,7 +170,7 @@ Type=simple
 User=root
 Group=root
 ExecStart=/usr/local/bin/usulnet-agent \
-  --gateway natss://MASTER_HOST:4222 \
+  --gateway nats://MASTER_HOST:4222 \
   --token YOUR_AGENT_TOKEN \
   --docker unix:///var/run/docker.sock \
   --log-level info \
@@ -196,7 +196,7 @@ sudo systemctl status usulnet-agent
 
 | Flag | Environment Variable | Default | Description |
 |------|---------------------|---------|-------------|
-| `--gateway` | `USULNET_GATEWAY_URL` | `natss://localhost:4222` | NATS server URL of the master |
+| `--gateway` | `USULNET_GATEWAY_URL` | `nats://localhost:4222` | NATS server URL of the master |
 | `--token` | `USULNET_AGENT_TOKEN` | *none* | **Required.** Agent authentication token |
 | `--docker` | `USULNET_DOCKER_HOST` | `unix:///var/run/docker.sock` | Docker socket path |
 | `--hostname` | `USULNET_HOSTNAME` | *auto-detected* | Override the reported hostname |
@@ -212,7 +212,7 @@ The agent can also be configured via a YAML file (`config.agent.yaml`):
 
 ```yaml
 # NATS connection to the master
-gateway_url: "natss://master.example.com:4222"
+gateway_url: "nats://master.example.com:4222"
 
 # Authentication token (generated on master)
 token: "your-secure-agent-token"
@@ -289,7 +289,7 @@ AGENT_TOKEN=your-generated-token
 
 **Agent:**
 ```bash
-usulnet-agent --gateway natss://master:4222 --token your-generated-token
+usulnet-agent --gateway nats://master:4222 --token your-generated-token
 ```
 
 ### Step 3: Expose NATS Port on the Master
@@ -423,7 +423,7 @@ Navigate to **Hosts** to see all connected agents with:
 Agent logs include connection events:
 
 ```json
-{"level":"info","msg":"Connected to gateway","url":"natss://master:4222"}
+{"level":"info","msg":"Connected to gateway","url":"nats://master:4222"}
 {"level":"info","msg":"Agent registered","agent_id":"abc-123","hostname":"worker-01"}
 {"level":"info","msg":"Heartbeat sent","active_jobs":0}
 ```

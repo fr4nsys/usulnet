@@ -148,7 +148,7 @@ func (s *Service) GetHistory(ctx context.Context, hostID uuid.UUID, imageID stri
 func (s *Service) Pull(ctx context.Context, hostID uuid.UUID, reference string, auth *models.RegistryAuthConfig) error {
 	client, err := s.hostService.GetClient(ctx, hostID)
 	if err != nil {
-		return fmt.Errorf("get docker client for image pull: %w", err)
+		return err
 	}
 
 	opts := docker.ImagePullOptions{}
@@ -209,7 +209,7 @@ func (s *Service) Push(ctx context.Context, hostID uuid.UUID, reference string, 
 func (s *Service) Tag(ctx context.Context, hostID uuid.UUID, source, target string) error {
 	client, err := s.hostService.GetClient(ctx, hostID)
 	if err != nil {
-		return fmt.Errorf("get docker client for image tag: %w", err)
+		return err
 	}
 
 	if err := client.ImageTag(ctx, source, target); err != nil {
@@ -224,7 +224,7 @@ func (s *Service) Tag(ctx context.Context, hostID uuid.UUID, source, target stri
 func (s *Service) Remove(ctx context.Context, hostID uuid.UUID, imageID string, force bool) error {
 	client, err := s.hostService.GetClient(ctx, hostID)
 	if err != nil {
-		return fmt.Errorf("get docker client for image remove: %w", err)
+		return err
 	}
 
 	_, err = client.ImageRemove(ctx, imageID, force, true)

@@ -58,10 +58,7 @@ func (a *updateAdapter) CheckAll(ctx context.Context) error {
 		return ErrServiceNotConfigured
 	}
 	_, err := a.svc.CheckForUpdates(ctx, resolveHostID(ctx, a.hostID))
-	if err != nil {
-		return fmt.Errorf("check all updates: %w", err)
-	}
-	return nil
+	return err
 }
 
 func (a *updateAdapter) GetChangelog(ctx context.Context, containerID string) (string, error) {
@@ -89,10 +86,7 @@ func (a *updateAdapter) Apply(ctx context.Context, containerID string, backup bo
 		SecurityScan:  true,
 	}
 	_, err := a.svc.UpdateContainer(ctx, resolveHostID(ctx, a.hostID), opts)
-	if err != nil {
-		return fmt.Errorf("apply container update: %w", err)
-	}
-	return nil
+	return err
 }
 
 func (a *updateAdapter) Rollback(ctx context.Context, updateID string) error {
@@ -108,10 +102,7 @@ func (a *updateAdapter) Rollback(ctx context.Context, updateID string) error {
 		RestoreBackup: true,
 	}
 	_, err = a.svc.RollbackUpdate(ctx, opts)
-	if err != nil {
-		return fmt.Errorf("rollback update: %w", err)
-	}
-	return nil
+	return err
 }
 
 func (a *updateAdapter) GetHistory(ctx context.Context) ([]UpdateHistoryView, error) {

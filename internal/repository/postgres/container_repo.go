@@ -37,17 +37,8 @@ func NewContainerRepository(db *DB) *ContainerRepository {
 // ============================================================================
 
 // Upsert inserts or updates a container in the cache.
-// The containers table has two unique constraints: PRIMARY KEY (id) and UNIQUE(host_id, name).
-// When a container is recreated in Docker (new id, same name), the old row with the same
-// (host_id, name) must be removed first to avoid a unique constraint violation that ON CONFLICT (id)
-// would not handle. The CTE cleanup removes any stale row with the same (host_id, name) but
-// different id before the INSERT, so both constraints are always satisfied.
 func (r *ContainerRepository) Upsert(ctx context.Context, container *models.Container) error {
 	query := `
-		WITH cleanup AS (
-			DELETE FROM containers
-			WHERE host_id = $2 AND name = $3 AND id != $1
-		)
 		INSERT INTO containers (
 			id, host_id, name, image, image_id, status, state,
 			created_at_docker, started_at, finished_at, ports, labels,
@@ -564,11 +555,8 @@ func (r *ContainerRepository) List(ctx context.Context, opts ContainerListOption
 	if opts.Page < 1 {
 		opts.Page = 1
 	}
-	if opts.PerPage < 1 {
+	if opts.PerPage < 1 || opts.PerPage > 100 {
 		opts.PerPage = 20
-	}
-	if opts.PerPage > 1000 {
-		opts.PerPage = 1000
 	}
 	offset := (opts.Page - 1) * opts.PerPage
 
@@ -1135,7 +1123,7 @@ func (r *ContainerRepository) GetStatsHistory(ctx context.Context, containerID s
 
 // DeleteOldStats deletes stats older than the specified duration.
 func (r *ContainerRepository) DeleteOldStats(ctx context.Context, olderThan time.Duration) (int64, error) {
-	query := `DELETE FROM container_stats WHERE recorded_at < $1`
+	query := `DELETE FROM container_stats WHERE collected_at < $1`
 
 	threshold := time.Now().UTC().Add(-olderThan)
 	result, err := r.db.Exec(ctx, query, threshold)

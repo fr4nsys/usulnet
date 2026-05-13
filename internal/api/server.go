@@ -148,6 +148,14 @@ func (s *Server) RegisterLicenseProvider(provider middleware.LicenseProvider) {
 	s.config.RouterConfig.LicenseProvider = provider
 }
 
+// RegisterReconConfig wires the recon feature flag and acknowledgement
+// store. Both are late-binding because the recon module is constructed
+// after the API server but before Setup().
+func (s *Server) RegisterReconConfig(enabled bool, ack middleware.ReconAckChecker) {
+	s.config.RouterConfig.ReconEnabled = enabled
+	s.config.RouterConfig.ReconAckChecker = ack
+}
+
 // RegisterHealthChecker registers a health checker component.
 func (s *Server) RegisterHealthChecker(name string, checker handlers.HealthChecker) {
 	s.handlers.System.RegisterHealthChecker(name, checker)
@@ -311,30 +319,9 @@ func (s *Server) StartAsync() <-chan error {
 		close(errChan)
 	}()
 
-	// Wait for the server to be ready or fail — check running state
-	// rather than using an arbitrary timer.
-	deadline := time.After(5 * time.Second)
-	ticker := time.NewTicker(10 * time.Millisecond)
-	defer ticker.Stop()
-	for {
-		select {
-		case err := <-errChan:
-			// Server failed immediately — re-send the error
-			ch := make(chan error, 1)
-			ch <- err
-			close(ch)
-			return ch
-		case <-ticker.C:
-			s.mu.Lock()
-			ready := s.running
-			s.mu.Unlock()
-			if ready {
-				return errChan
-			}
-		case <-deadline:
-			return errChan
-		}
-	}
+	// Give the server a moment to start
+	time.Sleep(100 * time.Millisecond)
+	return errChan
 }
 
 // Shutdown gracefully shuts down the server.
@@ -423,11 +410,6 @@ func (s *Server) RegisterDockerHealth(pingFn func(ctx context.Context) error) {
 // RegisterNATSHealth registers a NATS health checker.
 func (s *Server) RegisterNATSHealth(healthFn func(ctx context.Context) error) {
 	s.RegisterHealthChecker("nats", handlers.NATSHealthChecker(healthFn))
-}
-
-// RegisterDiskSpaceHealth registers a disk space health checker.
-func (s *Server) RegisterDiskSpaceHealth(path string, minFreeBytes uint64) {
-	s.RegisterHealthChecker("disk_space", handlers.DiskSpaceHealthChecker(path, minFreeBytes))
 }
 
 // ============================================================================

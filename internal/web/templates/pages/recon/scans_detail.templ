@@ -1,0 +1,123 @@
+package recon
+
+import (
+	"fmt"
+
+	"github.com/fr4nsys/usulnet/internal/web/templates/layouts"
+	reconpart "github.com/fr4nsys/usulnet/internal/web/templates/partials/recon"
+)
+
+templ ScanDetail(data ScanDetailData) {
+	@layouts.Base(data.PageData) {
+		<div class="space-y-6">
+			<div>
+				<a href="/recon/scans" class="text-xs text-primary-400 hover:underline">
+					<i class="fas fa-chevron-left mr-1"></i>Back to scans
+				</a>
+				<div class="flex items-center justify-between mt-1">
+					<div>
+						<h1 class="text-2xl font-display font-bold text-white">Scan { data.Scan.ID }</h1>
+						<p class="text-gray-400 mt-1">
+							<span class={ "px-2 py-0.5 rounded text-xs font-medium border " + StatusClass(data.Scan.Status) }>{ data.Scan.Status }</span>
+							<span class="ml-2 text-sm">Target: <a href={ templ.SafeURL("/recon/targets/" + data.Scan.TargetID) } class="text-primary-400 hover:underline">{ data.Scan.TargetValue }</a></span>
+						</p>
+					</div>
+					if data.Scan.Status == "queued" || data.Scan.Status == "running" {
+						<button
+							type="button"
+							class="btn-secondary"
+							hx-delete={ "/recon/scans/" + data.Scan.ID }
+							hx-confirm="Cancel this scan?"
+						>
+							<i class="fas fa-stop mr-2"></i>Cancel
+						</button>
+					}
+				</div>
+			</div>
+
+			<!-- Live progress (HTMX swap target) -->
+			<div
+				id={ "scan-progress-" + data.Scan.ID }
+				hx-get={ "/recon/scans/" + data.Scan.ID + "/progress" }
+				hx-trigger={ "sse:recon-scan-" + data.Scan.ID + " from:body, every 10s" }
+				hx-swap="outerHTML"
+			>
+				@reconpart.ScanProgress(reconpart.ScanProgressData{
+					ScanID:   data.Scan.ID,
+					Status:   data.Scan.Status,
+					Progress: data.Scan.Progress,
+					Engine:   data.Scan.Engine,
+					Error:    data.Scan.Error,
+				})
+			</div>
+
+			if data.Summary != nil {
+				<div class="card p-5">
+					<h2 class="text-lg font-display font-semibold text-white mb-3">Summary</h2>
+					<div class="grid grid-cols-2 md:grid-cols-5 gap-3">
+						<div class="bg-dark-700 rounded p-3 text-center">
+							<p class="text-xs text-gray-400 uppercase">Grade</p>
+							<p class="text-2xl font-display font-bold text-white mt-1">{ data.Summary.Grade }</p>
+						</div>
+						for sev, n := range data.Summary.Counts {
+							<div class={ "rounded p-3 text-center border " + SeverityClass(sev) }>
+								<p class="text-xs uppercase opacity-80">{ sev }</p>
+								<p class="text-2xl font-display font-bold mt-1">{ fmt.Sprintf("%d", n) }</p>
+							</div>
+						}
+					</div>
+					<p class="mt-3 text-xs text-gray-500">Generated { data.Summary.GeneratedAt }</p>
+				</div>
+			}
+
+			<!-- Findings (filterable; HTMX swaps the table) -->
+			<div class="card p-5">
+				<div class="flex items-center justify-between mb-3">
+					<h2 class="text-lg font-display font-semibold text-white">Findings</h2>
+					<form class="flex items-center gap-2"
+						hx-get={ "/recon/scans/" + data.Scan.ID + "/findings" }
+						hx-target={ "#scan-findings-" + data.Scan.ID }
+						hx-swap="innerHTML"
+						hx-trigger="change"
+					>
+						<select name="severity" class="bg-dark-700 border border-dark-500 rounded px-2 py-1 text-xs text-white">
+							<option value="">Any severity</option>
+							<option value="critical">Critical</option>
+							<option value="high">High</option>
+							<option value="medium">Medium</option>
+							<option value="low">Low</option>
+							<option value="info">Info</option>
+						</select>
+						<select name="module" class="bg-dark-700 border border-dark-500 rounded px-2 py-1 text-xs text-white">
+							<option value="">All modules</option>
+							for _, m := range data.Modules {
+								<option value={ m }>{ m }</option>
+							}
+						</select>
+					</form>
+				</div>
+				<div id={ "scan-findings-" + data.Scan.ID }>
+					@reconpart.FindingsTable(findingViewsToRows(data.Findings))
+				</div>
+			</div>
+		</div>
+	}
+}
+
+func findingViewsToRows(fs []FindingView) []reconpart.FindingRow {
+	rows := make([]reconpart.FindingRow, 0, len(fs))
+	for _, f := range fs {
+		rows = append(rows, reconpart.FindingRow{
+			ID:         f.ID,
+			Module:     f.Module,
+			Category:   f.Category,
+			Severity:   f.Severity,
+			Value:      f.Value,
+			Source:     f.Source,
+			Confidence: f.Confidence,
+			FirstSeen:  f.FirstSeen,
+			LastSeen:   f.LastSeen,
+		})
+	}
+	return rows
+}

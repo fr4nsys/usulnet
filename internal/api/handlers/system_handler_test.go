@@ -46,8 +46,7 @@ func TestSystemHandler_Readiness(t *testing.T) {
 func TestSystemHandler_Version(t *testing.T) {
 	ts := setupTestSuite(t)
 
-	token := generateTestToken(t, testUser(), "viewer", "viewer")
-	w := doRequest(t, ts.router, http.MethodGet, "/api/v1/system/version", "", token)
+	w := doRequest(t, ts.router, http.MethodGet, "/api/v1/system/version", "", "")
 	assertStatus(t, w, http.StatusOK)
 
 	body := assertJSON(t, w)

@@ -28,7 +28,7 @@ type AboutData struct {
 	DockerImages     int
 
 	// Instance info
-	Mode       string // master, agent
+	Mode       string // standalone, master, agent
 	Uptime     string
 	ConfigPath string
 }
@@ -117,11 +117,6 @@ templ About(data AboutData) {
 													<span class="w-2 h-2 rounded-full bg-green-400"></span>
 													Connected
 												</span>
-											} else if conn.Status == "not configured" {
-												<span class="inline-flex items-center gap-1.5 text-gray-500">
-													<span class="w-2 h-2 rounded-full bg-gray-500"></span>
-													Not configured
-												</span>
 											} else {
 												<span class="inline-flex items-center gap-1.5 text-red-400">
 													<span class="w-2 h-2 rounded-full bg-red-400"></span>
@@ -135,8 +130,6 @@ templ About(data AboutData) {
 													<i class="fas fa-lock"></i>
 													{ conn.TLSInfo }
 												</span>
-											} else if conn.TLSInfo == "n/a" {
-												<span class="text-gray-500 text-xs">—</span>
 											} else {
 												<span class="inline-flex items-center gap-1 text-yellow-400 text-xs">
 													<i class="fas fa-lock-open"></i>

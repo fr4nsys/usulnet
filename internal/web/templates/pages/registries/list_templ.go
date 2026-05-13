@@ -20,7 +20,7 @@ func editRegClickHandler(reg RegistryItem) string {
 	if reg.IsDefault {
 		isDefault = "true"
 	}
-	return fmt.Sprintf("editReg = { id: '%s', name: '%s', url: '%s', username: '%s', is_default: %s }; showEditModal = true",
+	return fmt.Sprintf("editReg = { id: '%s', name: '%s', url: '%s', username: '%s', is_default: %s }; $dispatch('open-modal', {id: 'edit-registry'})",
 		escRegStr(reg.ID), escRegStr(reg.Name), escRegStr(reg.URL), escRegStr(reg.Username), isDefault)
 }
 
@@ -77,60 +77,60 @@ func List(data RegistriesData) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"space-y-6\" x-data=\"{ editReg: { id: '', name: '', url: '', username: '', is_default: false }, showCreateModal: false, showEditModal: false }\"><div class=\"flex items-center justify-between\"><div><h1 class=\"text-2xl font-display font-bold text-white\">Container Registries</h1><p class=\"text-gray-400 mt-1\">Manage Docker container registries for image pull/push operations.</p></div><button @click=\"showCreateModal = true\" class=\"btn-primary\"><i class=\"fas fa-plus mr-2\"></i>Add Registry</button></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"p-6 space-y-6\" x-data=\"{ editReg: { id: '', name: '', url: '', username: '', is_default: false } }\"><div class=\"flex items-center justify-between\"><div><h1 class=\"text-2xl font-bold text-gray-900 dark:text-white\">Container Registries</h1><p class=\"mt-1 text-sm text-gray-500 dark:text-gray-400\">Manage Docker container registries for image pull/push operations.</p></div><button @click=\"$dispatch('open-modal', {id: 'create-registry'})\" class=\"inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-primary-600 border border-transparent rounded-lg hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500\"><svg class=\"w-4 h-4 mr-2\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M12 4v16m8-8H4\"></path></svg> Add Registry</button></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			if len(data.Registries) == 0 {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<div class=\"text-center py-12\"><i class=\"fas fa-archive text-4xl text-gray-600 mb-4\"></i><h3 class=\"text-sm font-medium text-white\">No registries configured</h3><p class=\"mt-1 text-sm text-gray-500\">Add a container registry to start pulling and pushing images.</p></div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<div class=\"text-center py-12\"><svg class=\"mx-auto h-12 w-12 text-gray-400\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4\"></path></svg><h3 class=\"mt-2 text-sm font-medium text-gray-900 dark:text-white\">No registries configured</h3><p class=\"mt-1 text-sm text-gray-500 dark:text-gray-400\">Add a container registry to start pulling and pushing images.</p></div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			} else {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<div class=\"card overflow-hidden\"><table class=\"table\"><thead><tr><th>Name</th><th>URL</th><th>Auth</th><th>Default</th><th>Created</th><th class=\"text-right\">Actions</th></tr></thead> <tbody>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<div class=\"bg-white dark:bg-gray-800 shadow rounded-lg overflow-hidden\"><table class=\"min-w-full divide-y divide-gray-200 dark:divide-gray-700\"><thead class=\"bg-gray-50 dark:bg-gray-900\"><tr><th class=\"px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider\">Name</th><th class=\"px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider\">URL</th><th class=\"px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider\">Auth</th><th class=\"px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider\">Default</th><th class=\"px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider\">Created</th><th class=\"px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider\">Actions</th></tr></thead> <tbody class=\"divide-y divide-gray-200 dark:divide-gray-700\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				for _, reg := range data.Registries {
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<tr><td><div class=\"flex items-center\"><i class=\"fas fa-archive text-gray-400 mr-3\"></i> <span class=\"font-medium text-white\">")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<tr class=\"hover:bg-gray-50 dark:hover:bg-gray-700/50\"><td class=\"px-6 py-4 whitespace-nowrap\"><div class=\"flex items-center\"><svg class=\"w-5 h-5 text-gray-400 mr-3\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4\"></path></svg> <span class=\"text-sm font-medium text-gray-900 dark:text-white\">")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
 					var templ_7745c5c3_Var3 string
 					templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(reg.Name)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/registries/list.templ`, Line: 80, Col: 58}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/registries/list.templ`, Line: 81, Col: 85}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "</span></div></td><td class=\"text-gray-400\">")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "</span></div></td><td class=\"px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400\">")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
 					var templ_7745c5c3_Var4 string
 					templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(reg.URL)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/registries/list.templ`, Line: 83, Col: 44}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/registries/list.templ`, Line: 84, Col: 99}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "</td><td>")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "</td><td class=\"px-6 py-4 whitespace-nowrap\">")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
 					if reg.Username != "" {
-						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "<span class=\"badge badge-success\">")
+						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "<span class=\"inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200\">")
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
 						var templ_7745c5c3_Var5 string
 						templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(reg.Username)
 						if templ_7745c5c3_Err != nil {
-							return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/registries/list.templ`, Line: 86, Col: 59}
+							return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/registries/list.templ`, Line: 88, Col: 26}
 						}
 						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 						if templ_7745c5c3_Err != nil {
@@ -141,68 +141,68 @@ func List(data RegistriesData) templ.Component {
 							return templ_7745c5c3_Err
 						}
 					} else {
-						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "<span class=\"text-sm text-gray-500\">Anonymous</span>")
+						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "<span class=\"text-sm text-gray-400\">Anonymous</span>")
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "</td><td>")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "</td><td class=\"px-6 py-4 whitespace-nowrap\">")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
 					if reg.IsDefault {
-						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "<span class=\"badge badge-info\">Default</span>")
+						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "<span class=\"inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200\">Default</span>")
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "</td><td class=\"text-gray-400\">")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "</td><td class=\"px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400\">")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
 					var templ_7745c5c3_Var6 string
 					templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(reg.CreatedAt)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/registries/list.templ`, Line: 96, Col: 50}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/registries/list.templ`, Line: 99, Col: 105}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "</td><td class=\"text-right space-x-2\"><a href=\"")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "</td><td class=\"px-6 py-4 whitespace-nowrap text-right text-sm font-medium\"><a href=\"")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
 					var templ_7745c5c3_Var7 templ.SafeURL
 					templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinURLErrs(templ.SafeURL("/registries/" + reg.ID + "/browse"))
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/registries/list.templ`, Line: 99, Col: 68}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/registries/list.templ`, Line: 102, Col: 68}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "\" class=\"text-primary-400 hover:text-primary-300 text-sm\">Browse</a> <button @click=\"")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "\" class=\"text-primary-600 hover:text-primary-900 dark:text-primary-400 dark:hover:text-primary-300 mr-3\">Browse</a> <button @click=\"")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
 					var templ_7745c5c3_Var8 string
 					templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(editRegClickHandler(reg))
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/registries/list.templ`, Line: 103, Col: 44}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/registries/list.templ`, Line: 106, Col: 44}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "\" class=\"text-primary-400 hover:text-primary-300 text-sm\">Edit</button><form method=\"POST\" action=\"")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "\" class=\"text-primary-600 hover:text-primary-900 dark:text-primary-400 dark:hover:text-primary-300 mr-3\">Edit</button><form method=\"POST\" action=\"")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
 					var templ_7745c5c3_Var9 templ.SafeURL
 					templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinURLErrs(templ.SafeURL("/registries/" + reg.ID + "/delete"))
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/registries/list.templ`, Line: 106, Col: 89}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/registries/list.templ`, Line: 109, Col: 89}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 					if templ_7745c5c3_Err != nil {
@@ -215,13 +215,13 @@ func List(data RegistriesData) templ.Component {
 					var templ_7745c5c3_Var10 string
 					templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(data.PageData.CSRFToken)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/registries/list.templ`, Line: 107, Col: 81}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/registries/list.templ`, Line: 110, Col: 81}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "\"> <button type=\"submit\" class=\"text-red-400 hover:text-red-300 text-sm\">Delete</button></form></td></tr>")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "\"> <button type=\"submit\" class=\"text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300\">Delete</button></form></td></tr>")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
@@ -231,39 +231,109 @@ func List(data RegistriesData) templ.Component {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "<!-- Create Registry Modal --><div x-show=\"showCreateModal\" x-cloak class=\"fixed inset-0 z-50 flex items-center justify-center\"><div class=\"fixed inset-0 bg-black/50\" @click=\"showCreateModal = false\"></div><div class=\"relative bg-dark-800 border border-dark-600 rounded-xl shadow-2xl w-full max-w-lg mx-4\"><form method=\"POST\" action=\"/registries\"><input type=\"hidden\" name=\"csrf_token\" value=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "</div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var11 string
-			templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(data.PageData.CSRFToken)
-			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/registries/list.templ`, Line: 123, Col: 76}
-			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
+			templ_7745c5c3_Err = createRegistryModal(data.PageData.CSRFToken).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 20, "\"><div class=\"px-6 py-4 border-b border-dark-600\"><h3 class=\"text-lg font-medium text-white\">Add Container Registry</h3></div><div class=\"p-6 space-y-4\"><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Name</label> <input type=\"text\" name=\"name\" required class=\"input\" placeholder=\"Docker Hub\"></div><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">URL</label> <input type=\"url\" name=\"url\" required class=\"input\" placeholder=\"https://registry-1.docker.io\"></div><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Username (optional)</label> <input type=\"text\" name=\"username\" class=\"input\"></div><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Password (optional)</label> <input type=\"password\" name=\"password\" class=\"input\"></div><div class=\"flex items-center gap-2\"><input type=\"checkbox\" name=\"is_default\" id=\"is_default\" class=\"rounded border-dark-600 bg-dark-700 text-primary-500\"> <label for=\"is_default\" class=\"text-sm text-gray-300\">Set as default registry</label></div></div><div class=\"px-6 py-4 border-t border-dark-600 flex justify-end gap-3\"><button type=\"button\" @click=\"showCreateModal = false\" class=\"btn-secondary\">Cancel</button> <button type=\"submit\" class=\"btn-primary\">Create</button></div></form></div></div><!-- Edit Registry Modal --><div x-show=\"showEditModal\" x-cloak class=\"fixed inset-0 z-50 flex items-center justify-center\"><div class=\"fixed inset-0 bg-black/50\" @click=\"showEditModal = false\"></div><div class=\"relative bg-dark-800 border border-dark-600 rounded-xl shadow-2xl w-full max-w-lg mx-4\"><form method=\"POST\" :action=\"'/registries/' + editReg.id + '/update'\"><input type=\"hidden\" name=\"csrf_token\" value=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 20, " ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var12 string
-			templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(data.PageData.CSRFToken)
-			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/registries/list.templ`, Line: 162, Col: 76}
-			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 21, "\"><div class=\"px-6 py-4 border-b border-dark-600\"><h3 class=\"text-lg font-medium text-white\">Edit Container Registry</h3></div><div class=\"p-6 space-y-4\"><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Name</label> <input type=\"text\" name=\"name\" required x-model=\"editReg.name\" class=\"input\"></div><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">URL</label> <input type=\"url\" name=\"url\" required x-model=\"editReg.url\" class=\"input\"></div><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Username (optional)</label> <input type=\"text\" name=\"username\" x-model=\"editReg.username\" class=\"input\"></div><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Password (leave blank to keep current)</label> <input type=\"password\" name=\"password\" class=\"input\"></div><div class=\"flex items-center gap-2\"><input type=\"checkbox\" name=\"is_default\" id=\"edit_is_default\" x-bind:checked=\"editReg.is_default\" class=\"rounded border-dark-600 bg-dark-700 text-primary-500\"> <label for=\"edit_is_default\" class=\"text-sm text-gray-300\">Set as default registry</label></div></div><div class=\"px-6 py-4 border-t border-dark-600 flex justify-end gap-3\"><button type=\"button\" @click=\"showEditModal = false\" class=\"btn-secondary\">Cancel</button> <button type=\"submit\" class=\"btn-primary\">Update</button></div></form></div></div></div>")
+			templ_7745c5c3_Err = editRegistryModal(data.PageData.CSRFToken).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			return nil
 		})
 		templ_7745c5c3_Err = layouts.Base(data.PageData).Render(templ.WithChildren(ctx, templ_7745c5c3_Var2), templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		return nil
+	})
+}
+
+func editRegistryModal(csrfToken string) templ.Component {
+	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
+		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
+		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
+			return templ_7745c5c3_CtxErr
+		}
+		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
+		if !templ_7745c5c3_IsBuffer {
+			defer func() {
+				templ_7745c5c3_BufErr := templruntime.ReleaseBuffer(templ_7745c5c3_Buffer)
+				if templ_7745c5c3_Err == nil {
+					templ_7745c5c3_Err = templ_7745c5c3_BufErr
+				}
+			}()
+		}
+		ctx = templ.InitializeContext(ctx)
+		templ_7745c5c3_Var11 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var11 == nil {
+			templ_7745c5c3_Var11 = templ.NopComponent
+		}
+		ctx = templ.ClearChildren(ctx)
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 21, "<div x-data=\"{ open: false }\" @open-modal.window=\"if ($event.detail.id === 'edit-registry') open = true\" x-show=\"open\" x-cloak class=\"fixed inset-0 z-50 overflow-y-auto\"><div class=\"flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0\"><div x-show=\"open\" x-transition:enter=\"ease-out duration-300\" x-transition:enter-start=\"opacity-0\" x-transition:enter-end=\"opacity-100\" class=\"fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity\" @click=\"open = false\"></div><div x-show=\"open\" x-transition:enter=\"ease-out duration-300\" x-transition:enter-start=\"opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95\" x-transition:enter-end=\"opacity-100 translate-y-0 sm:scale-100\" class=\"inline-block align-bottom bg-white dark:bg-gray-800 rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6\"><form method=\"POST\" :action=\"'/registries/' + editReg.id + '/update'\"><input type=\"hidden\" name=\"csrf_token\" value=\"")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var12 string
+		templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(csrfToken)
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/registries/list.templ`, Line: 133, Col: 61}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 22, "\"><h3 class=\"text-lg font-medium text-gray-900 dark:text-white mb-4\">Edit Container Registry</h3><div class=\"space-y-4\"><div><label class=\"block text-sm font-medium text-gray-700 dark:text-gray-300\">Name</label> <input type=\"text\" name=\"name\" required x-model=\"editReg.name\" class=\"mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white sm:text-sm\"></div><div><label class=\"block text-sm font-medium text-gray-700 dark:text-gray-300\">URL</label> <input type=\"url\" name=\"url\" required x-model=\"editReg.url\" class=\"mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white sm:text-sm\"></div><div><label class=\"block text-sm font-medium text-gray-700 dark:text-gray-300\">Username (optional)</label> <input type=\"text\" name=\"username\" x-model=\"editReg.username\" class=\"mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white sm:text-sm\"></div><div><label class=\"block text-sm font-medium text-gray-700 dark:text-gray-300\">Password (leave blank to keep current)</label> <input type=\"password\" name=\"password\" class=\"mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white sm:text-sm\"></div><div class=\"flex items-center\"><input type=\"checkbox\" name=\"is_default\" id=\"edit_is_default\" x-bind:checked=\"editReg.is_default\" class=\"h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded\"> <label for=\"edit_is_default\" class=\"ml-2 block text-sm text-gray-700 dark:text-gray-300\">Set as default registry</label></div></div><div class=\"mt-5 sm:mt-6 sm:flex sm:flex-row-reverse gap-3\"><button type=\"submit\" class=\"w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-primary-600 text-base font-medium text-white hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 sm:w-auto sm:text-sm\">Update</button> <button type=\"button\" @click=\"open = false\" class=\"mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 sm:mt-0 sm:w-auto sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300\">Cancel</button></div></form></div></div></div>")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		return nil
+	})
+}
+
+func createRegistryModal(csrfToken string) templ.Component {
+	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
+		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
+		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
+			return templ_7745c5c3_CtxErr
+		}
+		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
+		if !templ_7745c5c3_IsBuffer {
+			defer func() {
+				templ_7745c5c3_BufErr := templruntime.ReleaseBuffer(templ_7745c5c3_Buffer)
+				if templ_7745c5c3_Err == nil {
+					templ_7745c5c3_Err = templ_7745c5c3_BufErr
+				}
+			}()
+		}
+		ctx = templ.InitializeContext(ctx)
+		templ_7745c5c3_Var13 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var13 == nil {
+			templ_7745c5c3_Var13 = templ.NopComponent
+		}
+		ctx = templ.ClearChildren(ctx)
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 23, "<div x-data=\"{ open: false }\" @open-modal.window=\"if ($event.detail.id === 'create-registry') open = true\" x-show=\"open\" x-cloak class=\"fixed inset-0 z-50 overflow-y-auto\"><div class=\"flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0\"><div x-show=\"open\" x-transition:enter=\"ease-out duration-300\" x-transition:enter-start=\"opacity-0\" x-transition:enter-end=\"opacity-100\" class=\"fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity\" @click=\"open = false\"></div><div x-show=\"open\" x-transition:enter=\"ease-out duration-300\" x-transition:enter-start=\"opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95\" x-transition:enter-end=\"opacity-100 translate-y-0 sm:scale-100\" class=\"inline-block align-bottom bg-white dark:bg-gray-800 rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6\"><form method=\"POST\" action=\"/registries\"><input type=\"hidden\" name=\"csrf_token\" value=\"")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var14 string
+		templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.JoinStringErrs(csrfToken)
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/registries/list.templ`, Line: 173, Col: 61}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var14))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 24, "\"><h3 class=\"text-lg font-medium text-gray-900 dark:text-white mb-4\">Add Container Registry</h3><div class=\"space-y-4\"><div><label class=\"block text-sm font-medium text-gray-700 dark:text-gray-300\">Name</label> <input type=\"text\" name=\"name\" required class=\"mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white sm:text-sm\" placeholder=\"Docker Hub\"></div><div><label class=\"block text-sm font-medium text-gray-700 dark:text-gray-300\">URL</label> <input type=\"url\" name=\"url\" required class=\"mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white sm:text-sm\" placeholder=\"https://registry-1.docker.io\"></div><div><label class=\"block text-sm font-medium text-gray-700 dark:text-gray-300\">Username (optional)</label> <input type=\"text\" name=\"username\" class=\"mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white sm:text-sm\"></div><div><label class=\"block text-sm font-medium text-gray-700 dark:text-gray-300\">Password (optional)</label> <input type=\"password\" name=\"password\" class=\"mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white sm:text-sm\"></div><div class=\"flex items-center\"><input type=\"checkbox\" name=\"is_default\" id=\"is_default\" class=\"h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded\"> <label for=\"is_default\" class=\"ml-2 block text-sm text-gray-700 dark:text-gray-300\">Set as default registry</label></div></div><div class=\"mt-5 sm:mt-6 sm:flex sm:flex-row-reverse gap-3\"><button type=\"submit\" class=\"w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-primary-600 text-base font-medium text-white hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 sm:w-auto sm:text-sm\">Create</button> <button type=\"button\" @click=\"open = false\" class=\"mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 sm:mt-0 sm:w-auto sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300\">Cancel</button></div></form></div></div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

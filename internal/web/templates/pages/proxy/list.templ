@@ -30,7 +30,7 @@ templ List(data ProxyData) {
 			<div class="flex items-center justify-between">
 				<div>
 					<h1 class="text-2xl font-display font-bold text-white">Reverse Proxy</h1>
-					<p class="text-gray-400 mt-1">Nginx reverse proxy management</p>
+					<p class="text-gray-400 mt-1">Nginx Proxy Manager integration</p>
 				</div>
 				<div class="flex items-center gap-2">
 					if data.Connected {
@@ -39,7 +39,7 @@ templ List(data ProxyData) {
 						</span>
 						<form action="/proxy/sync" method="POST" class="inline">
 							<input type="hidden" name="csrf_token" value={ data.PageData.CSRFToken }/>
-							<button type="submit" class="btn-secondary" title="Sync Proxy">
+							<button type="submit" class="btn-secondary" title="Sync with NPM">
 								<i class="fas fa-sync-alt"></i>
 							</button>
 						</form>
@@ -62,9 +62,9 @@ templ List(data ProxyData) {
 			if !data.Connected {
 				<div class="card p-8 text-center">
 					<i class="fas fa-plug text-4xl text-gray-400 mb-4"></i>
-					<h3 class="text-lg font-medium text-white mb-2">Proxy Not Available</h3>
+					<h3 class="text-lg font-medium text-white mb-2">NPM Not Connected</h3>
 					<p class="text-gray-400 mb-4">
-						The reverse proxy is not configured. Check the setup page.
+						Connect to your Nginx Proxy Manager instance to manage reverse proxy hosts.
 					</p>
 					<a href="/proxy/setup" class="btn-primary">
 						<i class="fas fa-link mr-2"></i>Setup Connection

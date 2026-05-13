@@ -1,0 +1,119 @@
+package recon
+
+import (
+	"fmt"
+	"strings"
+
+	"github.com/fr4nsys/usulnet/internal/web/templates/layouts"
+)
+
+templ TargetsList(data TargetsListData) {
+	@layouts.Base(data.PageData) {
+		<div class="space-y-6">
+			<div class="flex items-center justify-between">
+				<div>
+					<h1 class="text-2xl font-display font-bold text-white">Recon Targets</h1>
+					<p class="text-gray-400 mt-1">Identifiers you own and have submitted for OSINT scanning.</p>
+				</div>
+				<div class="flex items-center gap-2">
+					<button
+						type="button"
+						class="btn-primary"
+						hx-get="/recon/targets/new"
+						hx-target="#modal-container"
+						hx-swap="innerHTML"
+					>
+						<i class="fas fa-plus mr-2"></i>Add Target
+					</button>
+				</div>
+			</div>
+
+			if len(data.Targets) == 0 {
+				<div class="card p-12 text-center">
+					<i class="fas fa-bullseye text-4xl text-gray-500 mb-4"></i>
+					<h3 class="text-lg font-medium text-white mb-2">No Targets</h3>
+					<p class="text-gray-400">Add an email, domain, IP, or username target to start scanning.</p>
+				</div>
+			} else {
+				<div class="card overflow-hidden">
+					<table class="w-full text-sm">
+						<thead class="bg-dark-800 text-gray-400 text-xs uppercase tracking-wide">
+							<tr>
+								<th class="text-left px-4 py-3">Type</th>
+								<th class="text-left px-4 py-3">Value</th>
+								<th class="text-left px-4 py-3">Ownership</th>
+								<th class="text-left px-4 py-3">Scans</th>
+								<th class="text-left px-4 py-3">Created</th>
+								<th class="text-right px-4 py-3">Actions</th>
+							</tr>
+						</thead>
+						<tbody class="divide-y divide-dark-700">
+							for _, t := range data.Targets {
+								@targetRow(t)
+							}
+						</tbody>
+					</table>
+				</div>
+			}
+
+			if len(data.Profiles) > 0 {
+				<div class="card p-5">
+					<h2 class="text-lg font-display font-semibold text-white mb-3">Available Profiles</h2>
+					<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+						for _, p := range data.Profiles {
+							@profileCard(p)
+						}
+					</div>
+				</div>
+			}
+		</div>
+	}
+}
+
+templ targetRow(t TargetView) {
+	<tr class="hover:bg-dark-700 transition-colors">
+		<td class="px-4 py-3">
+			<span class="px-2 py-0.5 rounded text-xs font-medium bg-dark-600 text-gray-300 uppercase">{ t.Type }</span>
+		</td>
+		<td class="px-4 py-3">
+			<a href={ templ.SafeURL("/recon/targets/" + t.ID) } class="text-primary-400 hover:underline">{ t.Value }</a>
+			if t.ValueHashPrefix != "" {
+				<span class="ml-2 text-[10px] text-gray-500 font-mono">{ t.ValueHashPrefix }</span>
+			}
+		</td>
+		<td class="px-4 py-3">
+			if t.OwnershipOK {
+				<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium bg-green-500/10 text-green-400 border border-green-500/20">
+					<i class="fas fa-check"></i>verified
+				</span>
+			} else if t.OwnershipStatus != "" {
+				<span class="px-2 py-0.5 rounded text-xs font-medium bg-yellow-500/10 text-yellow-400 border border-yellow-500/20">{ t.OwnershipStatus }</span>
+			} else {
+				<span class="px-2 py-0.5 rounded text-xs font-medium bg-red-500/10 text-red-400 border border-red-500/20">unverified</span>
+			}
+		</td>
+		<td class="px-4 py-3 text-gray-300">{ fmt.Sprintf("%d", t.ScanCount) }</td>
+		<td class="px-4 py-3 text-gray-400">{ t.CreatedAt }</td>
+		<td class="px-4 py-3 text-right space-x-2">
+			<a href={ templ.SafeURL("/recon/targets/" + t.ID) } class="text-gray-400 hover:text-primary-400" title="Details">
+				<i class="fas fa-eye"></i>
+			</a>
+		</td>
+	</tr>
+}
+
+templ profileCard(p ProfileView) {
+	<div class="bg-dark-700 rounded-lg p-3 border border-dark-600">
+		<div class="flex items-center justify-between mb-1">
+			<h3 class="text-sm font-medium text-white">{ p.Name }</h3>
+			<span class="text-[10px] uppercase tracking-wide text-gray-500">{ p.Kind }</span>
+		</div>
+		<p class="text-xs text-gray-400">{ p.Description }</p>
+		if len(p.TargetTypes) > 0 {
+			<p class="mt-2 text-[10px] text-gray-500">For: { strings.Join(p.TargetTypes, ", ") }</p>
+		}
+		if len(p.Modules) > 0 {
+			<p class="mt-1 text-[10px] text-gray-500">{ fmt.Sprintf("%d modules", len(p.Modules)) }</p>
+		}
+	</div>
+}

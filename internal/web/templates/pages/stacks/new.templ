@@ -154,82 +154,6 @@ templ New(data StackNewData) {
 					</button>
 				</div>
 			</form>
-
-		<!-- Deploy Log Modal -->
-		<div
-			x-show="showLogModal"
-			x-cloak
-			class="fixed inset-0 z-50 flex items-center justify-center p-4"
-			@keydown.escape.window="if(deployFinished) showLogModal = false"
-		>
-			<!-- Backdrop -->
-			<div class="absolute inset-0 bg-black/70 backdrop-blur-sm"></div>
-
-			<!-- Modal panel -->
-			<div class="relative w-full max-w-3xl bg-dark-800 rounded-2xl border border-dark-600 shadow-2xl flex flex-col" style="max-height: 80vh;">
-				<!-- Header -->
-				<div class="flex items-center justify-between px-5 py-4 border-b border-dark-600">
-					<div class="flex items-center gap-3">
-						<div x-show="!deployFinished" class="w-2 h-2 rounded-full bg-primary-400 animate-pulse"></div>
-						<div x-show="deployFinished && deploySuccess" class="w-2 h-2 rounded-full bg-green-400"></div>
-						<div x-show="deployFinished && !deploySuccess" class="w-2 h-2 rounded-full bg-red-400"></div>
-						<h2 class="text-base font-semibold text-white font-display">
-							<span x-show="!deployFinished">Deploying stack...</span>
-							<span x-show="deployFinished && deploySuccess" class="text-green-400">Deployment successful</span>
-							<span x-show="deployFinished && !deploySuccess" class="text-red-400">Deployment failed</span>
-						</h2>
-					</div>
-					<button
-						x-show="deployFinished"
-						@click="showLogModal = false"
-						class="p-1.5 text-gray-400 hover:text-white hover:bg-dark-700 rounded-lg transition-colors"
-					>
-						<i class="fas fa-times"></i>
-					</button>
-				</div>
-
-				<!-- Log output -->
-				<div id="deploy-log-output" class="flex-1 overflow-y-auto p-4 font-mono text-xs text-gray-300 space-y-0.5 bg-[#0d1117]" style="min-height: 300px;">
-					<template x-if="logLines.length === 0 && !deployFinished">
-						<p class="text-gray-500 italic">Waiting for output...</p>
-					</template>
-					<template x-for="(line, idx) in logLines" :key="idx">
-						<div class="leading-5 whitespace-pre-wrap break-all" x-text="line"></div>
-					</template>
-				</div>
-
-				<!-- Footer -->
-				<div class="px-5 py-3 border-t border-dark-600 flex items-center justify-between gap-3">
-					<div class="flex items-center gap-2 text-sm">
-						<span x-show="!deployFinished" class="text-gray-400">
-							<i class="fas fa-spinner fa-spin mr-1.5"></i>Running docker compose...
-						</span>
-						<span x-show="deployFinished && deploySuccess" class="text-green-400">
-							<i class="fas fa-check-circle mr-1.5"></i>All services started successfully.
-						</span>
-						<span x-show="deployFinished && !deploySuccess" class="text-red-400">
-							<i class="fas fa-exclamation-circle mr-1.5"></i><span x-text="deployError"></span>
-						</span>
-					</div>
-					<div class="flex gap-2 flex-shrink-0">
-						<button
-							x-show="deployFinished && !deploySuccess"
-							@click="showLogModal = false"
-							class="btn-secondary text-sm"
-						>
-							Close
-						</button>
-						<a
-							x-show="deployFinished && deploySuccess"
-							:href="deployRedirect"
-							class="btn-primary text-sm"
-						>
-							<i class="fas fa-arrow-right mr-1.5"></i>Go to Stack
-						</a>
-					</div>
-				</div>
-			</div>
-		</div>
 		</div>
 
 		<style>
@@ -306,11 +230,6 @@ templ New(data StackNewData) {
 				stackName: '',
 				deploying: false,
 				deployError: '',
-				showLogModal: false,
-				logLines: [],
-				deployFinished: false,
-				deploySuccess: false,
-				deployRedirect: '',
 
 				init() {
 					this.$nextTick(() => {
@@ -439,11 +358,6 @@ templ New(data StackNewData) {
 					}
 
 					this.deploying = true;
-					this.showLogModal = true;
-					this.logLines = [];
-					this.deployFinished = false;
-					this.deploySuccess = false;
-					this.deployRedirect = '';
 
 					const formData = new FormData();
 					formData.append('csrf_token', this.$refs.csrfToken.value);
@@ -455,54 +369,28 @@ templ New(data StackNewData) {
 
 					fetch('/stacks/deploy', {
 						method: 'POST',
-						headers: { 'X-Deploy-Stream': '1' },
 						body: formData,
 					})
 					.then(resp => {
-						const reader = resp.body.getReader();
-						const decoder = new TextDecoder();
-						let buf = '';
-						const self = this;
-						function pump() {
-							return reader.read().then(({ done, value }) => {
-								if (done) return;
-								buf += decoder.decode(value, { stream: true });
-								const parts = buf.split('\n\n');
-								buf = parts.pop();
-								parts.forEach(block => {
-									const lines = block.split('\n');
-									let evt = '', data = '';
-									lines.forEach(l => {
-										if (l.startsWith('event: ')) evt = l.slice(7);
-										else if (l.startsWith('data: ')) data = l.slice(6);
-									});
-									if (evt === 'log') {
-										self.logLines.push(data);
-										self.$nextTick(() => {
-											const el = document.getElementById('deploy-log-output');
-											if (el) el.scrollTop = el.scrollHeight;
-										});
-									} else if (evt === 'done') {
-										try {
-											const res = JSON.parse(data);
-											self.deployFinished = true;
-											self.deploySuccess = res.ok;
-											if (res.ok) self.deployRedirect = res.redirect;
-											else self.deployError = res.error || 'Deploy failed';
-										} catch(_) {}
-									}
-								});
-								return pump();
-							});
+						if (resp.redirected) {
+							window.location.href = resp.url;
+							return;
 						}
-						return pump();
+						if (resp.ok) {
+							const redirect = resp.headers.get('HX-Redirect');
+							if (redirect) {
+								window.location.href = redirect;
+								return;
+							}
+							window.location.href = '/stacks/' + encodeURIComponent(name);
+							return;
+						}
+						return resp.text().then(text => {
+							throw new Error(text || 'Deploy failed with status ' + resp.status);
+						});
 					})
 					.catch(err => {
 						this.deployError = err.message;
-						this.deployFinished = true;
-						this.deploySuccess = false;
-					})
-					.finally(() => {
 						this.deploying = false;
 					});
 				},

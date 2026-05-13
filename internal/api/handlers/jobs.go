@@ -91,37 +91,37 @@ func (h *JobsHandler) Routes() chi.Router {
 
 // EnqueueJobRequest represents a job enqueue request.
 type EnqueueJobRequest struct {
-	Type        string      `json:"type" validate:"required"`
-	HostID      *string     `json:"host_id,omitempty" validate:"omitempty,uuid"`
+	Type        string      `json:"type"`
+	HostID      *string     `json:"host_id,omitempty"`
 	TargetID    *string     `json:"target_id,omitempty"`
-	TargetName  *string     `json:"target_name,omitempty" validate:"omitempty,max=255"`
+	TargetName  *string     `json:"target_name,omitempty"`
 	Payload     interface{} `json:"payload,omitempty"`
-	Priority    string      `json:"priority,omitempty" validate:"omitempty,oneof=low normal high critical"`
-	MaxAttempts int         `json:"max_attempts,omitempty" validate:"omitempty,min=1,max=100"`
+	Priority    string      `json:"priority,omitempty"`
+	MaxAttempts int         `json:"max_attempts,omitempty"`
 	ScheduledAt *string     `json:"scheduled_at,omitempty"`
 }
 
 // CreateScheduledJobRequest represents a scheduled job creation request.
 type CreateScheduledJobRequest struct {
-	Name        string      `json:"name" validate:"required,min=1,max=255"`
-	Type        string      `json:"type" validate:"required"`
-	Schedule    string      `json:"schedule" validate:"required"`
-	HostID      *string     `json:"host_id,omitempty" validate:"omitempty,uuid"`
+	Name        string      `json:"name"`
+	Type        string      `json:"type"`
+	Schedule    string      `json:"schedule"`
+	HostID      *string     `json:"host_id,omitempty"`
 	TargetID    *string     `json:"target_id,omitempty"`
-	TargetName  *string     `json:"target_name,omitempty" validate:"omitempty,max=255"`
+	TargetName  *string     `json:"target_name,omitempty"`
 	Payload     interface{} `json:"payload,omitempty"`
-	Priority    string      `json:"priority,omitempty" validate:"omitempty,oneof=low normal high critical"`
-	MaxAttempts int         `json:"max_attempts,omitempty" validate:"omitempty,min=1,max=100"`
+	Priority    string      `json:"priority,omitempty"`
+	MaxAttempts int         `json:"max_attempts,omitempty"`
 	IsEnabled   bool        `json:"is_enabled,omitempty"`
 }
 
 // UpdateScheduledJobRequest represents a scheduled job update request.
 type UpdateScheduledJobRequest struct {
-	Name        *string     `json:"name,omitempty" validate:"omitempty,min=1,max=255"`
+	Name        *string     `json:"name,omitempty"`
 	Schedule    *string     `json:"schedule,omitempty"`
 	Payload     interface{} `json:"payload,omitempty"`
-	Priority    *string     `json:"priority,omitempty" validate:"omitempty,oneof=low normal high critical"`
-	MaxAttempts *int        `json:"max_attempts,omitempty" validate:"omitempty,min=1,max=100"`
+	Priority    *string     `json:"priority,omitempty"`
+	MaxAttempts *int        `json:"max_attempts,omitempty"`
 	IsEnabled   *bool       `json:"is_enabled,omitempty"`
 }
 

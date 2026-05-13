@@ -93,18 +93,16 @@ LABEL org.opencontainers.image.title="usulnet" \
       org.opencontainers.image.vendor="usulnet" \
       org.opencontainers.image.licenses="AGPL-3.0"
 
-# Runtime packages (includes nvim editor deps)
+# All runtime packages in a single layer (includes nvim editor deps)
+# Minimized apk cache by combining all installs
 RUN apk add --no-cache \
     ca-certificates tzdata curl su-exec util-linux \
     docker-cli docker-cli-compose \
-    tcpdump \
     neovim git ripgrep fd \
     musl-locales musl-locales-lang && \
-    update-ca-certificates
-
-# Install Trivy vulnerability scanner (pinned version for reproducibility)
-ARG TRIVY_VERSION=0.69.1
-RUN curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin v${TRIVY_VERSION} && \
+    # Install Trivy vulnerability scanner
+    curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin && \
+    # Clean up curl caches
     rm -rf /tmp/* /var/cache/apk/*
 
 # Overwrite Alpine's docker-cli (27.x, API 1.47) with Docker 29.2.0 (API 1.53)
@@ -126,13 +124,8 @@ RUN addgroup -g 1000 usulnet && \
     adduser -u 1000 -G usulnet -s /bin/sh -D usulnet
 
 # Create required directories with proper ownership in a single layer
-# Includes nginx shared volume dirs so Docker seeds volumes with correct ownership
-RUN mkdir -p /app/data /app/config /app/web/static/css \
-    /var/lib/usulnet/trivy \
-    /etc/nginx/conf.d/usulnet \
-    /etc/usulnet/certs \
-    /var/lib/usulnet/acme/.well-known/acme-challenge && \
-    chown -R usulnet:usulnet /app /var/lib/usulnet /etc/nginx/conf.d/usulnet /etc/usulnet/certs
+RUN mkdir -p /app/data /app/config /app/web/static/css /var/lib/usulnet/trivy && \
+    chown -R usulnet:usulnet /app /var/lib/usulnet
 
 WORKDIR /app
 

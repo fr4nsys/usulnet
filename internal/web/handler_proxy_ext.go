@@ -933,7 +933,7 @@ func certViewToTempl(c CertificateView) proxy.CertView {
 	expiresDisplay := c.ExpiresOn
 
 	if c.ExpiresOn != "" {
-		// Try parsing common date formats
+		// Try parsing NPM date formats
 		for _, layout := range []string{
 			time.RFC3339,
 			"2006-01-02T15:04:05.000Z",

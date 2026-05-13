@@ -83,41 +83,41 @@ func (h *NetworkHandler) Routes() chi.Router {
 
 // CreateNetworkRequest represents a network creation request.
 type CreateNetworkRequest struct {
-	Name       string              `json:"name" validate:"required,min=1,max=253"`
-	Driver     string              `json:"driver,omitempty" validate:"omitempty,min=1,max=64"`
+	Name       string              `json:"name"`
+	Driver     string              `json:"driver,omitempty"`
 	Internal   bool                `json:"internal,omitempty"`
 	Attachable bool                `json:"attachable,omitempty"`
 	Ingress    bool                `json:"ingress,omitempty"`
 	EnableIPv6 bool                `json:"enable_ipv6,omitempty"`
-	IPAM       *NetworkIPAMRequest `json:"ipam,omitempty" validate:"omitempty"`
+	IPAM       *NetworkIPAMRequest `json:"ipam,omitempty"`
 	Options    map[string]string   `json:"options,omitempty"`
 	Labels     map[string]string   `json:"labels,omitempty"`
 }
 
 // NetworkIPAMRequest represents IPAM configuration.
 type NetworkIPAMRequest struct {
-	Driver  string              `json:"driver,omitempty" validate:"omitempty,max=64"`
-	Config  []IPAMConfigRequest `json:"config,omitempty" validate:"omitempty,dive"`
+	Driver  string              `json:"driver,omitempty"`
+	Config  []IPAMConfigRequest `json:"config,omitempty"`
 	Options map[string]string   `json:"options,omitempty"`
 }
 
 // IPAMConfigRequest represents IPAM pool configuration.
 type IPAMConfigRequest struct {
-	Subnet     string            `json:"subnet,omitempty" validate:"omitempty,cidr"`
-	IPRange    string            `json:"ip_range,omitempty" validate:"omitempty,cidr"`
-	Gateway    string            `json:"gateway,omitempty" validate:"omitempty,ip"`
+	Subnet     string            `json:"subnet,omitempty"`
+	IPRange    string            `json:"ip_range,omitempty"`
+	Gateway    string            `json:"gateway,omitempty"`
 	AuxAddress map[string]string `json:"aux_address,omitempty"`
 }
 
 // ConnectRequest represents a container connect request.
 type ConnectRequest struct {
-	ContainerID string   `json:"container_id" validate:"required,min=1,max=128"`
-	Aliases     []string `json:"aliases,omitempty" validate:"omitempty,dive,min=1,max=253"`
+	ContainerID string   `json:"container_id"`
+	Aliases     []string `json:"aliases,omitempty"`
 }
 
 // DisconnectRequest represents a container disconnect request.
 type DisconnectRequest struct {
-	ContainerID string `json:"container_id" validate:"required,min=1,max=128"`
+	ContainerID string `json:"container_id"`
 	Force       bool   `json:"force,omitempty"`
 }
 
@@ -184,9 +184,9 @@ type PruneNetworksResponse struct {
 
 // DNSConfigRequest represents DNS configuration input.
 type DNSConfigRequest struct {
-	Servers []string `json:"servers,omitempty" validate:"omitempty,dive,ip"`
-	Search  []string `json:"search,omitempty" validate:"omitempty,dive,min=1,max=253"`
-	Options []string `json:"options,omitempty" validate:"omitempty,dive,min=1,max=253"`
+	Servers []string `json:"servers,omitempty"`
+	Search  []string `json:"search,omitempty"`
+	Options []string `json:"options,omitempty"`
 }
 
 // DNSConfigResponse represents DNS configuration output.
@@ -200,7 +200,7 @@ type DNSConfigResponse struct {
 
 // ValidateSubnetRequest represents subnet validation input.
 type ValidateSubnetRequest struct {
-	Subnet string `json:"subnet" validate:"required,cidr"`
+	Subnet string `json:"subnet"`
 }
 
 // ValidateSubnetResponse represents subnet validation output.
@@ -255,8 +255,8 @@ type SecurityRiskResponse struct {
 
 // PortSuggestionRequest represents port suggestion input.
 type PortSuggestionRequest struct {
-	Port     uint16 `json:"port" validate:"required,min=1,max=65535"`
-	Protocol string `json:"protocol,omitempty" validate:"omitempty,oneof=tcp udp sctp"`
+	Port     uint16 `json:"port"`
+	Protocol string `json:"protocol,omitempty"`
 }
 
 // PortSuggestionResponse represents port suggestion output.

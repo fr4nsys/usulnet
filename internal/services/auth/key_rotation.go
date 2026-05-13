@@ -209,9 +209,9 @@ func (s *KeyRotationService) RotateKey(ctx context.Context, rotatedBy *uuid.UUID
 	s.mu.Lock()
 	s.signingKey = newKey
 	s.validKeys = append([]*SigningKey{newKey}, s.validKeys...)
+	s.jwtService.config.Secret = newSecret
+	s.jwtService.config.RefreshSecret = newSecret
 	s.mu.Unlock()
-	// Update JWTService through its thread-safe method (uses its own mutex)
-	s.jwtService.UpdateSecret(newSecret)
 
 	s.logger.Info("JWT key rotation completed",
 		"new_key_id", newKey.ID,
@@ -322,7 +322,7 @@ func (s *KeyRotationService) NeedsRotation() bool {
 // ============================================================================
 
 func (s *KeyRotationService) registerInitialKey(ctx context.Context) error {
-	secret := s.jwtService.GetSecret()
+	secret := s.jwtService.config.Secret
 	keyHash := hashKey(secret)
 	now := time.Now().UTC()
 
@@ -368,9 +368,10 @@ func (s *KeyRotationService) loadKeys(ctx context.Context, keys []*SigningKey) e
 	s.mu.Lock()
 	s.signingKey = signingKey
 	s.validKeys = validKeys
+	// Update JWT service to use the current signing key
+	s.jwtService.config.Secret = signingKey.Secret
+	s.jwtService.config.RefreshSecret = signingKey.Secret
 	s.mu.Unlock()
-	// Update JWTService through its thread-safe method (uses its own mutex)
-	s.jwtService.UpdateSecret(signingKey.Secret)
 
 	return nil
 }
@@ -476,11 +477,8 @@ func (s *KeyRotationService) GenerateTokenWithKey(user *models.User) (string, ti
 		return "", time.Time{}, fmt.Errorf("no signing key available")
 	}
 
-	// Get config through thread-safe accessors to avoid data race
-	ttl, issuer, tokenIDGen := s.jwtService.GetTokenGenerationConfig()
-
 	now := time.Now().UTC()
-	expiresAt := now.Add(ttl)
+	expiresAt := now.Add(s.jwtService.config.AccessTokenTTL)
 
 	claims := &Claims{
 		UserID:   user.ID.String(),
@@ -488,8 +486,8 @@ func (s *KeyRotationService) GenerateTokenWithKey(user *models.User) (string, ti
 		Role:     user.Role,
 		Type:     TokenTypeAccess,
 		RegisteredClaims: jwt.RegisteredClaims{
-			ID:        tokenIDGen(),
-			Issuer:    issuer,
+			ID:        s.jwtService.config.TokenIDGenerator(),
+			Issuer:    s.jwtService.config.Issuer,
 			Subject:   user.ID.String(),
 			IssuedAt:  jwt.NewNumericDate(now),
 			ExpiresAt: jwt.NewNumericDate(expiresAt),

@@ -57,16 +57,11 @@ templ ImagesList(data ImagesListData) {
 				<p class="text-gray-400 mt-1">Manage Docker images ({ data.TotalSize } total)</p>
 			</div>
 			<div class="flex items-center gap-3">
-				@components.RefreshButton()
-				<a href="/image-builder" class="px-4 py-2 bg-dark-700 hover:bg-dark-600 text-gray-300 rounded-lg transition-colors">
-					<i class="fas fa-hammer mr-2"></i>
-					Build
-				</a>
 				<a href="/images/pull" class="px-4 py-2 bg-dark-700 hover:bg-dark-600 text-gray-300 rounded-lg transition-colors">
 					<i class="fas fa-download mr-2"></i>
 					Pull Image
 				</a>
-				<button
+				<button 
 					hx-post="/images/prune"
 					hx-confirm="Remove all unused images? This cannot be undone."
 					hx-swap="none"
@@ -230,11 +225,10 @@ templ imageRow(img Image) {
 					<i class="fas fa-info-circle text-sm"></i>
 				</a>
 				if !img.InUse {
-					<button
+					<button 
 						hx-post={ "/images/" + img.ID + "/remove" }
 						hx-confirm="Remove this image?"
-						hx-target="closest tr"
-						hx-swap="outerHTML swap:200ms"
+						hx-swap="none"
 						class="p-2 text-gray-400 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
 						title="Remove"
 					>

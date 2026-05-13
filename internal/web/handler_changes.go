@@ -131,7 +131,7 @@ func (h *Handler) ChangeDetailAPI(w http.ResponseWriter, r *http.Request) {
 		h.jsonError(w, "change event not found", http.StatusNotFound)
 		return
 	}
-	h.jsonResponse(w, event)
+	h.jsonOK(w, event)
 }
 
 // ChangeResourceAPI returns change events for a specific resource.
@@ -155,7 +155,7 @@ func (h *Handler) ChangeResourceAPI(w http.ResponseWriter, r *http.Request) {
 		h.jsonError(w, "failed to fetch resource changes", http.StatusInternalServerError)
 		return
 	}
-	h.jsonResponse(w, events)
+	h.jsonOK(w, events)
 }
 
 // ChangeStatsAPI returns change event statistics as JSON.
@@ -178,7 +178,7 @@ func (h *Handler) ChangeStatsAPI(w http.ResponseWriter, r *http.Request) {
 		h.jsonError(w, "failed to get change stats", http.StatusInternalServerError)
 		return
 	}
-	h.jsonResponse(w, stats)
+	h.jsonOK(w, stats)
 }
 
 // ChangeExportCSV exports change events as a CSV file.

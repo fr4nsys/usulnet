@@ -24,6 +24,10 @@ type PageData struct {
 	ActiveHostID       string
 	ActiveHostName     string
 	SidebarPrefs       *SidebarPreferences
+	// ReconEnabled controls visibility of the v26.5.0 Privacy & Recon
+	// sidebar section. The flag mirrors cfg.Recon.Enabled — see
+	// docs/v26.5/technical-notes.md "Feature flag".
+	ReconEnabled bool
 }
 
 // SidebarPreferences controls per-user sidebar collapse state and item visibility.

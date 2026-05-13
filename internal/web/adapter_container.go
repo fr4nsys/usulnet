@@ -25,16 +25,16 @@ type containerAdapter struct {
 	hostID uuid.UUID
 }
 
-func (a *containerAdapter) List(ctx context.Context, filters map[string]string) ([]ContainerView, int64, error) {
+func (a *containerAdapter) List(ctx context.Context, filters map[string]string) ([]ContainerView, error) {
 	if a.svc == nil {
-		return []ContainerView{}, 0, nil
+		return []ContainerView{}, nil
 	}
 
 	hostID := resolveHostID(ctx, a.hostID)
 	opts := postgres.ContainerListOptions{
 		HostID:  &hostID,
 		Page:    1,
-		PerPage: 1000,
+		PerPage: 500,
 	}
 	if search := filters["search"]; search != "" {
 		opts.Search = search
@@ -47,16 +47,16 @@ func (a *containerAdapter) List(ctx context.Context, filters map[string]string) 
 		opts.State = &state
 	}
 
-	containers, total, err := a.svc.List(ctx, opts)
+	containers, _, err := a.svc.List(ctx, opts)
 	if err != nil {
-		return nil, 0, err
+		return nil, err
 	}
 
 	views := make([]ContainerView, 0, len(containers))
 	for _, c := range containers {
 		views = append(views, containerToView(c))
 	}
-	return views, total, nil
+	return views, nil
 }
 
 func (a *containerAdapter) Get(ctx context.Context, id string) (*ContainerView, error) {

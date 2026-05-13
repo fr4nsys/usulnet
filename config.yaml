@@ -1,8 +1,8 @@
 # usulnet Configuration
 # Structure must match Go Config struct in internal/app/config.go
 
-# Operation mode: master | agent
-mode: "master"
+# Operation mode: standalone | master | agent
+mode: "standalone"
 
 # Server settings
 server:
@@ -26,52 +26,44 @@ server:
 # Database (PostgreSQL)
 database:
   url: "postgres://usulnet:usulnet_dev@postgres:5432/usulnet"
-  ssl_mode: "require"           # Options: disable, prefer, require, verify-full
-  # ssl_rootcert: ""            # CA certificate for server verification (required for verify-full)
-  # ssl_cert: ""                # Client certificate (optional, for mTLS)
-  # ssl_key: ""                 # Client private key (optional, for mTLS)
+  ssl_mode: "prefer"            # prefer: tries TLS first, falls back to plaintext. Use "require" in production.
   max_open_conns: 25
   max_idle_conns: 10
   conn_max_lifetime: "30m"
   conn_max_idle_time: "5m"
 
 # Redis (caching and sessions)
-# TLS is auto-configured when server.tls.enabled=true (default).
-# The redis:// URL is automatically upgraded to rediss:// when TLS is active.
 redis:
   url: "redis://redis:6379"
-  # tls_enabled: true           # Auto-enabled by PKI when server.tls.enabled=true
-  # tls_skip_verify: true       # Skip CA verification (default for self-signed)
-  # tls_ca_file: ""             # CA certificate for server verification
-  # tls_cert_file: ""           # Client certificate (optional, for mTLS)
-  # tls_key_file: ""            # Client private key (optional, for mTLS)
+  password: ""
+  db: 0
 
-# NATS (messaging) — TLS encrypted by default (self-signed cert)
+# NATS (messaging)
 nats:
-  url: "natss://nats:4222"
+  url: "nats://nats:4222"
   name: "usulnet"
   # token: ""              # NATS auth token (if server requires it)
   # username: ""           # NATS username (alternative to token)
   # password: ""           # NATS password
   jetstream:
     enabled: true
-  # tls:                   # TLS is auto-enabled by natss:// URL scheme
+  # tls:                   # TLS encryption for NATS connections
+  #   enabled: false
   #   cert_file: ""        # Client certificate path (for mutual TLS)
   #   key_file: ""         # Client private key path
   #   ca_file: ""          # CA certificate path (for server verification)
-  #   skip_verify: true    # Default: true (self-signed CA)
+  #   skip_verify: false   # Skip server certificate verification (dev only)
 
 # Security (JWT, encryption, passwords)
 # This is the section the app validates - NOT "auth"
 security:
-  # REQUIRED: Generate with: openssl rand -hex 32
-  # DO NOT use the example values — generate unique secrets for each deployment.
-  jwt_secret: ""
+  # Generate with: openssl rand -hex 32
+  jwt_secret: "edbdbc0721315fc2529c04509d65c62e7c51ce9b10941078f2fae131acfb0e96"
   jwt_expiry: "24h"
   refresh_expiry: "168h"
-  # REQUIRED: Generate with: openssl rand -hex 32 (must be 64 hex chars = 32 bytes)
-  config_encryption_key: ""
-  cookie_secure: true
+  # Generate with: openssl rand -hex 32 (must be 64 hex chars = 32 bytes)
+  config_encryption_key: "ed2cb601a830465890822d80d13668530b5af3c1c372799310339e8daf02e2e6"
+  cookie_secure: false
   cookie_samesite: "lax"
   password_min_length: 8
 
@@ -92,16 +84,17 @@ trivy:
   ignore_unfixed: false
   update_db_on_start: true
 
-# Reverse proxy (nginx backend, always enabled when encryption key is set)
-nginx:
-  acme_email: ""                    # Required for Let's Encrypt certificates (or env USULNET_NGINX_ACME_EMAIL)
-  config_dir: "/etc/nginx/conf.d/usulnet"
-  cert_dir: "/etc/usulnet/certs"
-  acme_web_root: "/var/lib/usulnet/acme"
-  acme_account_dir: "/var/lib/usulnet/acme/account"
+# Nginx Proxy Manager integration (connect via Settings UI)
+npm:
+  enabled: false
+
+# Caddy reverse proxy integration (connect via Settings UI)
+caddy:
+  enabled: false                    # Enable Caddy reverse proxy integration (or env USULNET_CADDY_ENABLED)
+  admin_url: ""                     # Caddy admin API (or env USULNET_CADDY_ADMIN_URL)
+  acme_email: ""                    # ACME email for Let's Encrypt (or env USULNET_CADDY_ACME_EMAIL)
   listen_http: ":80"
   listen_https: ":443"
-  container_name: "usulnet-nginx"   # Docker container name for exec (nginx -t, nginx -s reload)
 
 # MinIO/S3 storage (connect via Settings UI)
 minio:
@@ -117,6 +110,28 @@ minio:
 # Can also be set via USULNET_DOCKER_SOCKET or DOCKER_SOCKET env vars.
 # docker:
 #   socket: "/run/user/1000/docker.sock"
+
+# Recon / privacy module (v26.5.0).
+# Disabled by default; enabling requires admin acknowledgement at runtime
+# of the in-app legal notice (see docs/recon.md §7.4).
+recon:
+  enabled: false                      # USULNET_RECON_ENABLED
+  retention_days: 90                  # findings + artifact TTL
+  max_concurrent_scans: 2             # scheduler concurrency cap for recon jobs
+  installation_org: ""                # exact registrant org for RDAP ownership match (blank = fail-closed)
+  base_url: ""                        # overrides server.base_url when building email verification links
+  spiderfoot:
+    image: ""                         # override of internal/services/recon/images.go pin
+    listen: "127.0.0.1:5001"          # SpiderFoot HTTP API bind (container-local)
+  toolkit:
+    image: ""                         # override of internal/services/recon/images.go pin
+  egress:
+    allowlist: []                     # extra egress CIDRs; empty = default policy (DNS + 80 + 443)
+  connectors:
+    hibp:
+      enabled: false
+    shodan:
+      enabled: false
 
 # Logging
 logging:

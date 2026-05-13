@@ -9,10 +9,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"os"
-	"os/exec"
-	"path/filepath"
-	"strings"
 	"time"
 
 	"github.com/docker/docker/api/types/container"
@@ -91,15 +87,8 @@ func (e *Executor) registerHandlers() {
 	e.handlers[protocol.CmdSystemDf] = e.handleSystemDf
 	e.handlers[protocol.CmdSystemPing] = e.handleSystemPing
 
-	// Stack commands
-	e.handlers[protocol.CmdStackDeploy] = e.handleStackDeploy
-	e.handlers[protocol.CmdStackRemove] = e.handleStackRemove
-
 	// Security commands
 	e.registerSecurityHandlers()
-
-	// Firewall commands
-	e.registerFirewallHandlers()
 }
 
 // Execute executes a command and returns the result.
@@ -762,82 +751,6 @@ func (e *Executor) handleSystemPing(ctx context.Context, cmd *protocol.Command) 
 
 	return e.successResult(map[string]string{
 		"status": "ok",
-	})
-}
-
-// ============================================================================
-// Stack Handlers
-// ============================================================================
-
-func (e *Executor) handleStackDeploy(ctx context.Context, cmd *protocol.Command) *protocol.CommandResult {
-	if cmd.Params.StackName == "" || cmd.Params.ComposeFile == "" {
-		return e.invalidParamsResult("stack_name and compose_file are required")
-	}
-
-	stackDir := filepath.Join("/data/stacks", cmd.Params.StackName)
-	if err := os.MkdirAll(stackDir, 0755); err != nil {
-		return e.errorResult(fmt.Errorf("create stack directory: %w", err))
-	}
-
-	// Write compose file
-	composePath := filepath.Join(stackDir, "docker-compose.yml")
-	if err := os.WriteFile(composePath, []byte(cmd.Params.ComposeFile), 0644); err != nil {
-		return e.errorResult(fmt.Errorf("write compose file: %w", err))
-	}
-
-	// Write env vars if provided
-	if len(cmd.Params.EnvVars) > 0 {
-		var envContent strings.Builder
-		for k, v := range cmd.Params.EnvVars {
-			envContent.WriteString(k + "=" + v + "\n")
-		}
-		envPath := filepath.Join(stackDir, ".env")
-		if err := os.WriteFile(envPath, []byte(envContent.String()), 0644); err != nil {
-			e.log.Warn("Failed to write .env file", "error", err)
-		}
-	}
-
-	// Run docker compose up -d
-	composeCmd := exec.CommandContext(ctx, "docker", "compose", "-f", composePath, "up", "-d", "--pull", "always")
-	composeCmd.Dir = stackDir
-	output, err := composeCmd.CombinedOutput()
-	if err != nil {
-		return e.errorResult(fmt.Errorf("docker compose up failed: %s: %w", string(output), err))
-	}
-
-	e.log.Info("Stack deployed", "name", cmd.Params.StackName, "dir", stackDir)
-	return e.successResult(map[string]interface{}{
-		"stack_name": cmd.Params.StackName,
-		"action":     "deployed",
-		"output":     string(output),
-	})
-}
-
-func (e *Executor) handleStackRemove(ctx context.Context, cmd *protocol.Command) *protocol.CommandResult {
-	if cmd.Params.StackName == "" {
-		return e.invalidParamsResult("stack_name is required")
-	}
-
-	stackDir := filepath.Join("/data/stacks", cmd.Params.StackName)
-	composePath := filepath.Join(stackDir, "docker-compose.yml")
-
-	if _, err := os.Stat(composePath); os.IsNotExist(err) {
-		return e.errorResult(fmt.Errorf("stack %q not found on agent", cmd.Params.StackName))
-	}
-
-	// Run docker compose down
-	composeCmd := exec.CommandContext(ctx, "docker", "compose", "-f", composePath, "down")
-	composeCmd.Dir = stackDir
-	output, err := composeCmd.CombinedOutput()
-	if err != nil {
-		return e.errorResult(fmt.Errorf("docker compose down failed: %s: %w", string(output), err))
-	}
-
-	e.log.Info("Stack removed", "name", cmd.Params.StackName, "dir", stackDir)
-	return e.successResult(map[string]interface{}{
-		"stack_name": cmd.Params.StackName,
-		"action":     "removed",
-		"output":     string(output),
 	})
 }
 

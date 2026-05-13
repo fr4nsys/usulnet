@@ -1,175 +1,153 @@
 # =============================================================================
-# usulnet - golangci-lint configuration
+# usulnet - golangci-lint configuration (v2 schema)
 # =============================================================================
 # Run: golangci-lint run ./...
 # Docs: https://golangci-lint.run/usage/configuration/
+# Migration notes: golangci-lint v2 enables staticcheck, govet, errcheck,
+# ineffassign, and unused by default. gofmt and goimports moved to the
+# `formatters` section. See:
+# https://golangci-lint.run/docs/product/migration-guide/
 # =============================================================================
-
+version: "2"
 run:
-  timeout: 10m
   go: "1.25"
   tests: true
-  # Skip generated files
-  skip-dirs:
-    - vendor
-    - node_modules
-  skip-files:
-    - ".*_templ\\.go$"
-    - ".*\\.gen\\.go$"
-
 output:
   formats:
-    - format: colored-line-number
-  sort-results: true
+    text:
+      path: stdout
   sort-order:
     - linter
     - severity
     - file
-
 linters:
   enable:
-    # Security
-    - gosec          # Security issues
-    # Bug detection
-    - staticcheck    # Go static analysis (SA*, S*, ST*, QF* checks)
-    - govet          # Go vet checks
-    - errcheck       # Unchecked errors
-    - ineffassign    # Unused assignments
-    - unused         # Unused code (variables, functions, types)
-    # Code quality
-    - gocritic       # Go critic linter (opinionated but useful)
-    - revive         # Drop-in replacement for golint
-    - gofmt          # Go formatting
-    - goimports      # Import organization
-    # Performance
-    - prealloc       # Slice preallocation hints
-    # Error handling
-    - nilerr         # nil error return after error check
-    - errorlint      # Error wrapping best practices
-    # Style
-    - misspell       # Spelling mistakes in comments
-    - unconvert      # Unnecessary type conversions
-    - whitespace     # Whitespace issues
-
-linters-settings:
-  gosec:
-    severity: medium
-    confidence: medium
-    excludes:
-      - G101  # Hardcoded credentials (too many false positives with test files)
-      - G104  # Audit errors not checked (covered by errcheck)
-      - G304  # File path provided as taint input (needed for file operations)
-    config:
-      global:
-        audit: false
-
-  govet:
-    enable-all: true
-    disable:
-      - fieldalignment  # Too noisy, minimal real impact
-      - shadow          # Too noisy in large codebase
-
-  errcheck:
-    check-type-assertions: false
-    check-blank: false
-    exclude-functions:
-      - io.Copy
-      - io.WriteTo
-      - (io.Closer).Close
-      - (*os.File).Close
-      - (net/http.ResponseWriter).Write
-      - fmt.Fprintf
-      - fmt.Fprintln
-
-  staticcheck:
-    checks:
-      - all
-      - -SA1019  # Deprecated usage (handle separately)
-
-  gocritic:
-    enabled-tags:
-      - diagnostic
-      - performance
-    disabled-checks:
-      - hugeParam        # Too aggressive for this codebase
-      - rangeValCopy     # Often false positive with small structs
-      - commentFormatting # Too noisy
-
-  revive:
+    - errorlint
+    - gocritic
+    - gosec
+    - misspell
+    - nilerr
+    - prealloc
+    - revive
+    - unconvert
+    - whitespace
+  settings:
+    errcheck:
+      check-type-assertions: false
+      check-blank: false
+      exclude-functions:
+        - io.Copy
+        - io.WriteTo
+        - (io.Closer).Close
+        - (*os.File).Close
+        - (net/http.ResponseWriter).Write
+        - fmt.Fprintf
+        - fmt.Fprintln
+    gocritic:
+      disabled-checks:
+        - hugeParam
+        - rangeValCopy
+        - commentFormatting
+      enabled-tags:
+        - diagnostic
+        - performance
+    gosec:
+      excludes:
+        - G101
+        - G104
+        - G304
+      severity: medium
+      confidence: medium
+      config:
+        global:
+          audit: false
+    govet:
+      disable:
+        - fieldalignment
+        - shadow
+      enable-all: true
+    misspell:
+      locale: US
+    prealloc:
+      simple: true
+      range-loops: true
+      for-loops: false
+    revive:
+      rules:
+        - name: exported
+          disabled: true
+        - name: unexported-return
+          disabled: true
+        - name: var-naming
+          disabled: true
+    staticcheck:
+      checks:
+        - all
+        - -SA1019
+  exclusions:
+    generated: lax
+    presets:
+      - comments
+      - common-false-positives
+      - legacy
+      - std-error-handling
     rules:
-      - name: exported
-        disabled: true   # Too strict for initial adoption
-      - name: unexported-return
-        disabled: true
-      - name: var-naming
-        disabled: true   # Conflicts with existing naming conventions
-
-  goimports:
-    local-prefixes: github.com/fr4nsys/usulnet
-
-  misspell:
-    locale: US
-
-  prealloc:
-    simple: true
-    range-loops: true
-    for-loops: false      # Too many false positives in complex loops
-
+      - linters:
+          - errcheck
+          - gocritic
+          - gosec
+          - prealloc
+        path: _test\.go
+      - linters:
+          - all
+        path: _templ\.go
+      - linters:
+          - gocritic
+        path: migrations/
+      - linters:
+          - gocritic
+        path: internal/api/handlers/
+        text: ifElseChain
+      - linters:
+          - gocritic
+        path: cmd/
+        text: initClause
+      - path: (.+)\.go$
+        text: Error return value of .((os\.)?std(out|err)\..*|.*Close|.*Flush|os\.Remove(All)?|.*printf?|os\.(Un)?Setenv). is not checked
+      - path: (.+)\.go$
+        text: 'printf: non-constant format string'
+    paths:
+      - third_party$
+      - builtin$
+      - examples$
 issues:
-  # Don't limit output
   max-issues-per-linter: 0
   max-same-issues: 0
-
-  # Exclude test files from some strict checks
-  exclude-rules:
-    # Tests can use magic numbers and have longer functions
-    - path: _test\.go
-      linters:
-        - gosec
-        - errcheck
-        - gocritic
-        - prealloc
-
-    # Generated templ files should be excluded
-    - path: _templ\.go
-      linters:
-        - all
-
-    # Migration files have long SQL strings
-    - path: migrations/
-      linters:
-        - gocritic
-
-    # Allow some patterns in handlers (they're verbose by design)
-    - path: internal/api/handlers/
-      linters:
-        - gocritic
-      text: "ifElseChain"
-
-    # Main packages can have init()
-    - path: cmd/
-      linters:
-        - gocritic
-      text: "initClause"
-
-  # Exclude common patterns
-  exclude:
-    # errcheck: Allow ignoring errors from response.Write
-    - "Error return value of .((os\\.)?std(out|err)\\..*|.*Close|.*Flush|os\\.Remove(All)?|.*printf?|os\\.(Un)?Setenv). is not checked"
-    # govet: Allow printf-like functions
-    - "printf: non-constant format string"
-
 severity:
-  default-severity: warning
+  default: warning
   rules:
     - linters:
         - gosec
       severity: error
     - linters:
-        - govet
         - errcheck
+        - govet
       severity: error
     - linters:
         - misspell
         - whitespace
       severity: info
+formatters:
+  enable:
+    - gofmt
+    - goimports
+  settings:
+    goimports:
+      local-prefixes:
+        - github.com/fr4nsys/usulnet
+  exclusions:
+    generated: lax
+    paths:
+      - third_party$
+      - builtin$
+      - examples$

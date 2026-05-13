@@ -17,7 +17,6 @@ import (
 	"github.com/google/uuid"
 
 	"github.com/fr4nsys/usulnet/internal/models"
-	"github.com/fr4nsys/usulnet/internal/pkg/crypto"
 	"github.com/fr4nsys/usulnet/internal/pkg/errors"
 	"github.com/fr4nsys/usulnet/internal/pkg/logger"
 )
@@ -140,11 +139,10 @@ type BackupService interface {
 
 // BackupCreateOptions for creating backups
 type BackupCreateOptions struct {
-	HostID        uuid.UUID
-	ContainerID   string
-	ContainerName string
-	Trigger       string
-	CreatedBy     *uuid.UUID
+	HostID      uuid.UUID
+	ContainerID string
+	Trigger     string
+	CreatedBy   *uuid.UUID
 }
 
 // BackupResult from creating a backup
@@ -457,19 +455,18 @@ func (s *Service) executeUpdate(ctx context.Context, update *models.Update, cont
 		s.repo.UpdateStatus(ctx, update.ID, update.Status, nil)
 
 		backupResult, err := s.backupService.Create(ctx, BackupCreateOptions{
-			HostID:        update.HostID,
-			ContainerID:   update.TargetID,
-			ContainerName: update.TargetName,
-			Trigger:       "pre_update",
-			CreatedBy:     opts.CreatedBy,
+			HostID:      update.HostID,
+			ContainerID: update.TargetID,
+			Trigger:     "pre_update",
+			CreatedBy:   opts.CreatedBy,
 		})
 		if err != nil {
-			log.Warn("Pre-update backup failed, continuing update", "error", err)
-		} else {
-			update.BackupID = &backupResult.BackupID
-			result.BackupID = &backupResult.BackupID
-			log.Info("Backup created", "backup_id", backupResult.BackupID)
+			log.Error("Backup failed", "error", err)
+			return s.failUpdate(ctx, update, result, "backup failed: "+err.Error())
 		}
+		update.BackupID = &backupResult.BackupID
+		result.BackupID = &backupResult.BackupID
+		log.Info("Backup created", "backup_id", backupResult.BackupID)
 	}
 
 	// 3. Pull new image
@@ -838,14 +835,12 @@ func (s *Service) CreateWebhook(ctx context.Context, hostID uuid.UUID, targetTyp
 		return nil, err
 	}
 
-	tokenHash := crypto.HashToken(token)
-
 	webhook := &models.UpdateWebhook{
 		ID:         uuid.New(),
 		HostID:     hostID,
 		TargetType: targetType,
 		TargetID:   targetID,
-		Token:      tokenHash,
+		Token:      token,
 		IsEnabled:  true,
 		CreatedAt:  time.Now(),
 	}
@@ -854,16 +849,12 @@ func (s *Service) CreateWebhook(ctx context.Context, hostID uuid.UUID, targetTyp
 		return nil, err
 	}
 
-	// Return the raw token so the caller can display it once.
-	// The DB only stores the hash.
-	webhook.Token = token
 	return webhook, nil
 }
 
 // TriggerWebhook triggers an update via webhook
 func (s *Service) TriggerWebhook(ctx context.Context, token string) (*models.UpdateResult, error) {
-	tokenHash := crypto.HashToken(token)
-	webhook, err := s.repo.GetWebhookByToken(ctx, tokenHash)
+	webhook, err := s.repo.GetWebhookByToken(ctx, token)
 	if err != nil {
 		return nil, errors.New(errors.CodeUnauthorized, "invalid webhook token")
 	}
@@ -912,15 +903,7 @@ func (s *Service) GetPolicyByID(ctx context.Context, id uuid.UUID) (*models.Upda
 
 // ListWebhooks lists all webhooks for a host
 func (s *Service) ListWebhooks(ctx context.Context, hostID uuid.UUID) ([]*models.UpdateWebhook, error) {
-	webhooks, err := s.repo.ListWebhooks(ctx, hostID)
-	if err != nil {
-		return nil, err
-	}
-	// Clear token hashes — callers must not see them.
-	for _, w := range webhooks {
-		w.Token = ""
-	}
-	return webhooks, nil
+	return s.repo.ListWebhooks(ctx, hostID)
 }
 
 // DeleteWebhook deletes a webhook

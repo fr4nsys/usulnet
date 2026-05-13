@@ -65,7 +65,6 @@ templ ContainersList(data ContainersListData) {
 					<p class="text-gray-400 mt-1">Manage your Docker containers</p>
 				</div>
 				<div class="flex items-center gap-3">
-					@components.RefreshButton()
 					<a href="/containers/new" class="btn-primary">
 						<i class="fas fa-plus"></i>
 						New Container
@@ -492,11 +491,10 @@ templ containerRow(c Container) {
 							<i class="fas fa-chart-line w-4"></i> Stats
 						</a>
 						<hr class="my-1 border-dark-600"/>
-						<button
+						<button 
 							hx-post={ "/containers/" + c.ID + "/remove" }
 							hx-confirm="Are you sure you want to remove this container?"
-							hx-target="closest tr"
-							hx-swap="outerHTML swap:200ms"
+							hx-swap="none"
 							class="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-400 hover:bg-red-500/10"
 						>
 							<i class="fas fa-trash w-4"></i> Remove

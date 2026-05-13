@@ -1,0 +1,13 @@
+Create a recon target (email|phone|username|domain|ip|ip_range)
+
+Usage:
+  usulnet recon target add <type> <value> [flags]
+
+Flags:
+  -h, --help   help for add
+
+Global Flags:
+  -c, --config string   config file path (default: /etc/usulnet/config.yaml or ./config.yaml)
+      --output string   output format: table|json|yaml (default "table")
+      --server string   usulnet API URL (default $USULNET_API_URL)
+      --token string    API token (default $USULNET_API_TOKEN)

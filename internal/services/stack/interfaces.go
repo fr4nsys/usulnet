@@ -10,7 +10,6 @@ import (
 	"github.com/google/uuid"
 
 	"github.com/fr4nsys/usulnet/internal/docker"
-	"github.com/fr4nsys/usulnet/internal/gateway/protocol"
 	"github.com/fr4nsys/usulnet/internal/models"
 	"github.com/fr4nsys/usulnet/internal/repository/postgres"
 )
@@ -38,9 +37,4 @@ type HostService interface {
 // ContainerService defines the container operations needed by the stack service.
 type ContainerService interface {
 	ListByLabel(ctx context.Context, hostID uuid.UUID, key, value string) ([]*models.Container, error)
-}
-
-// GatewayCommandSender routes commands to remote agents via the NATS gateway.
-type GatewayCommandSender interface {
-	SendCommand(ctx context.Context, hostID uuid.UUID, cmd *protocol.Command) (*protocol.CommandResult, error)
 }

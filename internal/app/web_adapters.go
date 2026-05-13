@@ -9,18 +9,15 @@ import (
 	"fmt"
 	"net/http"
 
-	dockertypes "github.com/docker/docker/api/types"
 	"github.com/google/uuid"
 
-	dockerpkg "github.com/fr4nsys/usulnet/internal/docker"
 	"github.com/fr4nsys/usulnet/internal/models"
 	"github.com/fr4nsys/usulnet/internal/repository/postgres"
 	redisrepo "github.com/fr4nsys/usulnet/internal/repository/redis"
-	"github.com/fr4nsys/usulnet/internal/scheduler/workers"
 	metricssvc "github.com/fr4nsys/usulnet/internal/services/metrics"
 	"github.com/fr4nsys/usulnet/internal/services/notification"
 	"github.com/fr4nsys/usulnet/internal/services/notification/channels"
-	nginxbackend "github.com/fr4nsys/usulnet/internal/services/proxy/nginx"
+	"github.com/fr4nsys/usulnet/internal/scheduler/workers"
 	"github.com/fr4nsys/usulnet/internal/web"
 	"github.com/fr4nsys/usulnet/internal/web/templates/pages/profile"
 )
@@ -289,7 +286,7 @@ func (a *roleProviderAdapter) GetByID(ctx context.Context, id string) (*models.R
 
 type alertMetricsProviderAdapter struct {
 	metrics *metricssvc.Service
-	hostID  uuid.UUID // local host
+	hostID  uuid.UUID // standalone mode host
 }
 
 func (a *alertMetricsProviderAdapter) GetHostMetric(ctx context.Context, hostID uuid.UUID, metric models.AlertMetric) (float64, error) {
@@ -426,55 +423,4 @@ func (a *runbookNotificationAdapter) SendRunbookNotification(ctx context.Context
 		msg.Channels = []string{channel}
 	}
 	return a.svc.Send(ctx, msg)
-}
-
-// ============================================================================
-// Compliance Docker adapter (docker.Client → compliance.DockerInspector)
-// ============================================================================
-
-type complianceDockerAdapter struct {
-	client *dockerpkg.Client
-}
-
-func (a *complianceDockerAdapter) ListRunningContainers(ctx context.Context) ([]dockertypes.Container, error) {
-	containers, err := a.client.ContainerList(ctx, dockerpkg.ContainerListOptions{All: false})
-	if err != nil {
-		return nil, err
-	}
-	result := make([]dockertypes.Container, len(containers))
-	for i, c := range containers {
-		result[i] = dockertypes.Container{
-			ID:    c.ID,
-			Names: []string{c.Name},
-			Image: c.Image,
-			State: c.State,
-		}
-	}
-	return result, nil
-}
-
-func (a *complianceDockerAdapter) InspectContainer(ctx context.Context, id string) (dockertypes.ContainerJSON, error) {
-	return a.client.ContainerInspectRaw(ctx, id)
-}
-
-// ============================================================================
-// Nginx Docker exec adapter (docker.Client → nginx.DockerExecer)
-// ============================================================================
-
-type nginxDockerExecAdapter struct {
-	client *dockerpkg.Client
-}
-
-func (a *nginxDockerExecAdapter) ContainerExec(ctx context.Context, containerID string, cmd []string, opts nginxbackend.DockerExecOpts) (*nginxbackend.DockerExecResult, error) {
-	result, err := a.client.ContainerExec(ctx, containerID, cmd, dockerpkg.ExecOptions{
-		User: opts.User,
-	})
-	if err != nil {
-		return nil, err
-	}
-	return &nginxbackend.DockerExecResult{
-		ExitCode: result.ExitCode,
-		Stdout:   result.Stdout,
-		Stderr:   result.Stderr,
-	}, nil
 }

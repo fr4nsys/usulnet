@@ -88,76 +88,11 @@
       "type": "stat",
       "targets": [{ "expr": "usulnet_license_days_remaining", "legendFormat": "" }]
     },
-
     {
       "collapsed": false,
       "gridPos": { "h": 1, "w": 24, "x": 0, "y": 5 },
-      "id": 105,
-      "title": "HTTP Performance",
-      "type": "row"
-    },
-    {
-      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
-      "fieldConfig": {
-        "defaults": { "color": { "mode": "palette-classic" }, "unit": "s" }
-      },
-      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 6 },
-      "id": 50,
-      "options": { "legend": { "displayMode": "table", "placement": "right" }, "tooltip": { "mode": "multi" } },
-      "title": "HTTP Request Latency (p50/p95/p99)",
-      "type": "timeseries",
-      "targets": [
-        { "expr": "histogram_quantile(0.50, sum(rate(http_server_request_duration_seconds_bucket{service=\"usulnet\"}[5m])) by (le))", "legendFormat": "p50" },
-        { "expr": "histogram_quantile(0.95, sum(rate(http_server_request_duration_seconds_bucket{service=\"usulnet\"}[5m])) by (le))", "legendFormat": "p95" },
-        { "expr": "histogram_quantile(0.99, sum(rate(http_server_request_duration_seconds_bucket{service=\"usulnet\"}[5m])) by (le))", "legendFormat": "p99" }
-      ]
-    },
-    {
-      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
-      "fieldConfig": {
-        "defaults": { "color": { "mode": "palette-classic" }, "unit": "s" }
-      },
-      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 6 },
-      "id": 51,
-      "options": { "legend": { "displayMode": "table", "placement": "right" }, "tooltip": { "mode": "multi" } },
-      "title": "HTTP Latency by Route (p95)",
-      "type": "timeseries",
-      "targets": [
-        { "expr": "topk(10, histogram_quantile(0.95, sum(rate(http_server_request_duration_seconds_bucket{service=\"usulnet\"}[5m])) by (http_route, le)))", "legendFormat": "{{ http_route }}" }
-      ]
-    },
-    {
-      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
-      "fieldConfig": {
-        "defaults": { "color": { "mode": "palette-classic" }, "unit": "reqps" }
-      },
-      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 14 },
-      "id": 52,
-      "options": { "legend": { "displayMode": "table", "placement": "right" }, "tooltip": { "mode": "multi" } },
-      "title": "HTTP Request Rate by Status",
-      "type": "timeseries",
-      "targets": [
-        { "expr": "sum(rate(http_server_request_duration_seconds_count{service=\"usulnet\"}[5m])) by (http_status_code)", "legendFormat": "{{ http_status_code }}" }
-      ]
-    },
-    {
-      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
-      "fieldConfig": {
-        "defaults": { "thresholds": { "steps": [{ "color": "green", "value": null }, { "color": "yellow", "value": 50 }, { "color": "red", "value": 100 }] } }
-      },
-      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 14 },
-      "id": 53,
-      "options": { "colorMode": "value", "graphMode": "area", "reduceOptions": { "calcs": ["lastNotNull"] } },
-      "title": "Active HTTP Requests",
-      "type": "stat",
-      "targets": [{ "expr": "http_server_active_requests{service=\"usulnet\"}", "legendFormat": "" }]
-    },
-
-    {
-      "collapsed": false,
-      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 22 },
       "id": 101,
-      "title": "Containers",
+      "title": "Containers per Host",
       "type": "row"
     },
     {
@@ -165,7 +100,7 @@
       "fieldConfig": {
         "defaults": { "color": { "mode": "palette-classic" } }
       },
-      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 23 },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 6 },
       "id": 10,
       "options": { "legend": { "displayMode": "table", "placement": "right" }, "tooltip": { "mode": "multi" } },
       "title": "Containers by State",
@@ -177,53 +112,16 @@
       "fieldConfig": {
         "defaults": { "color": { "mode": "palette-classic" } }
       },
-      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 23 },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 6 },
       "id": 11,
       "options": { "legend": { "displayMode": "table", "placement": "right" }, "tooltip": { "mode": "multi" } },
       "title": "Containers per Host (Running)",
       "type": "timeseries",
       "targets": [{ "expr": "usulnet_containers_by_host{state=\"running\"}", "legendFormat": "{{ host }}" }]
     },
-
     {
       "collapsed": false,
-      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 31 },
-      "id": 106,
-      "title": "Docker Operations",
-      "type": "row"
-    },
-    {
-      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
-      "fieldConfig": {
-        "defaults": { "color": { "mode": "palette-classic" }, "unit": "s" }
-      },
-      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 32 },
-      "id": 31,
-      "options": { "legend": { "displayMode": "table", "placement": "right" }, "tooltip": { "mode": "multi" } },
-      "title": "Docker Operation Latency (avg)",
-      "type": "timeseries",
-      "targets": [
-        { "expr": "rate(usulnet_docker_operation_duration_seconds_sum[5m]) / rate(usulnet_docker_operation_duration_seconds_count[5m])", "legendFormat": "{{ operation }}" }
-      ]
-    },
-    {
-      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
-      "fieldConfig": {
-        "defaults": { "color": { "mode": "palette-classic" }, "unit": "ops" }
-      },
-      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 32 },
-      "id": 32,
-      "options": { "legend": { "displayMode": "table", "placement": "right" }, "tooltip": { "mode": "multi" } },
-      "title": "Docker Operation Rate",
-      "type": "timeseries",
-      "targets": [
-        { "expr": "sum(rate(usulnet_docker_operation_duration_seconds_count[5m])) by (operation)", "legendFormat": "{{ operation }}" }
-      ]
-    },
-
-    {
-      "collapsed": false,
-      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 40 },
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 14 },
       "id": 102,
       "title": "Security",
       "type": "row"
@@ -233,7 +131,7 @@
       "fieldConfig": {
         "defaults": { "color": { "mode": "palette-classic" } }
       },
-      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 41 },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 15 },
       "id": 20,
       "options": { "legend": { "displayMode": "table", "placement": "right" }, "tooltip": { "mode": "multi" } },
       "title": "Vulnerabilities by Severity",
@@ -245,7 +143,7 @@
       "fieldConfig": {
         "defaults": { "color": { "mode": "palette-classic" } }
       },
-      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 41 },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 15 },
       "id": 21,
       "options": { "legend": { "displayMode": "table", "placement": "right" }, "tooltip": { "mode": "multi" } },
       "title": "Security Scans",
@@ -255,79 +153,25 @@
         { "expr": "rate(usulnet_security_scans_total{status=\"failed\"}[5m])", "legendFormat": "failed/s" }
       ]
     },
-
     {
       "collapsed": false,
-      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 49 },
-      "id": 107,
-      "title": "Database & Redis",
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 23 },
+      "id": 103,
+      "title": "API Performance",
       "type": "row"
     },
     {
       "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
       "fieldConfig": {
-        "defaults": { "color": { "mode": "palette-classic" } }
+        "defaults": { "color": { "mode": "palette-classic" }, "unit": "reqps" }
       },
-      "gridPos": { "h": 8, "w": 8, "x": 0, "y": 50 },
-      "id": 60,
-      "options": { "legend": { "displayMode": "list", "placement": "bottom" }, "tooltip": { "mode": "multi" } },
-      "title": "PostgreSQL Connection Pool",
-      "type": "timeseries",
-      "targets": [
-        { "expr": "usulnet_db_pool_open_connections", "legendFormat": "open" },
-        { "expr": "usulnet_db_pool_in_use", "legendFormat": "in_use" },
-        { "expr": "usulnet_db_pool_idle", "legendFormat": "idle" }
-      ]
-    },
-    {
-      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
-      "fieldConfig": {
-        "defaults": { "color": { "mode": "palette-classic" }, "unit": "s" }
-      },
-      "gridPos": { "h": 8, "w": 8, "x": 8, "y": 50 },
-      "id": 61,
-      "options": { "legend": { "displayMode": "list", "placement": "bottom" }, "tooltip": { "mode": "multi" } },
-      "title": "Database Query Latency (avg)",
-      "type": "timeseries",
-      "targets": [
-        { "expr": "rate(usulnet_db_query_duration_seconds_sum[5m]) / rate(usulnet_db_query_duration_seconds_count[5m])", "legendFormat": "{{ query }}" }
-      ]
-    },
-    {
-      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
-      "fieldConfig": {
-        "defaults": { "color": { "mode": "palette-classic" } }
-      },
-      "gridPos": { "h": 8, "w": 8, "x": 16, "y": 50 },
-      "id": 62,
-      "options": { "legend": { "displayMode": "list", "placement": "bottom" }, "tooltip": { "mode": "multi" } },
-      "title": "Redis Operations",
-      "type": "timeseries",
-      "targets": [
-        { "expr": "rate(usulnet_redis_operations_total[5m])", "legendFormat": "{{ operation }}" }
-      ]
-    },
-
-    {
-      "collapsed": false,
-      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 58 },
-      "id": 108,
-      "title": "NATS Messaging",
-      "type": "row"
-    },
-    {
-      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
-      "fieldConfig": {
-        "defaults": { "color": { "mode": "palette-classic" }, "unit": "mps" }
-      },
-      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 59 },
-      "id": 70,
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 24 },
+      "id": 30,
       "options": { "legend": { "displayMode": "table", "placement": "right" }, "tooltip": { "mode": "multi" } },
-      "title": "NATS Message Throughput",
+      "title": "API Request Rate",
       "type": "timeseries",
       "targets": [
-        { "expr": "rate(usulnet_nats_messages_published_total[5m])", "legendFormat": "published/s" },
-        { "expr": "rate(usulnet_nats_messages_received_total[5m])", "legendFormat": "received/s" }
+        { "expr": "sum(rate(usulnet_api_requests_total[5m])) by (method)", "legendFormat": "{{ method }}" }
       ]
     },
     {
@@ -335,73 +179,18 @@
       "fieldConfig": {
         "defaults": { "color": { "mode": "palette-classic" }, "unit": "s" }
       },
-      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 59 },
-      "id": 71,
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 24 },
+      "id": 31,
       "options": { "legend": { "displayMode": "table", "placement": "right" }, "tooltip": { "mode": "multi" } },
-      "title": "NATS Command Latency",
+      "title": "Docker Operation Latency (avg)",
       "type": "timeseries",
       "targets": [
-        { "expr": "histogram_quantile(0.50, rate(usulnet_nats_command_duration_seconds_bucket[5m]))", "legendFormat": "p50" },
-        { "expr": "histogram_quantile(0.95, rate(usulnet_nats_command_duration_seconds_bucket[5m]))", "legendFormat": "p95" },
-        { "expr": "histogram_quantile(0.99, rate(usulnet_nats_command_duration_seconds_bucket[5m]))", "legendFormat": "p99" }
+        { "expr": "rate(usulnet_docker_operation_duration_seconds_sum[5m]) / rate(usulnet_docker_operation_duration_seconds_count[5m])", "legendFormat": "{{ operation }}" }
       ]
     },
-
     {
       "collapsed": false,
-      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 67 },
-      "id": 109,
-      "title": "Go Runtime",
-      "type": "row"
-    },
-    {
-      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
-      "fieldConfig": {
-        "defaults": { "color": { "mode": "palette-classic" } }
-      },
-      "gridPos": { "h": 8, "w": 8, "x": 0, "y": 68 },
-      "id": 80,
-      "options": { "legend": { "displayMode": "list", "placement": "bottom" }, "tooltip": { "mode": "multi" } },
-      "title": "Goroutines",
-      "type": "timeseries",
-      "targets": [
-        { "expr": "go_goroutines{service=\"usulnet\"}", "legendFormat": "goroutines" }
-      ]
-    },
-    {
-      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
-      "fieldConfig": {
-        "defaults": { "color": { "mode": "palette-classic" }, "unit": "bytes" }
-      },
-      "gridPos": { "h": 8, "w": 8, "x": 8, "y": 68 },
-      "id": 81,
-      "options": { "legend": { "displayMode": "list", "placement": "bottom" }, "tooltip": { "mode": "multi" } },
-      "title": "Memory Usage",
-      "type": "timeseries",
-      "targets": [
-        { "expr": "go_memstats_alloc_bytes{service=\"usulnet\"}", "legendFormat": "alloc" },
-        { "expr": "go_memstats_sys_bytes{service=\"usulnet\"}", "legendFormat": "sys" },
-        { "expr": "go_memstats_heap_inuse_bytes{service=\"usulnet\"}", "legendFormat": "heap_inuse" }
-      ]
-    },
-    {
-      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
-      "fieldConfig": {
-        "defaults": { "color": { "mode": "palette-classic" }, "unit": "s" }
-      },
-      "gridPos": { "h": 8, "w": 8, "x": 16, "y": 68 },
-      "id": 82,
-      "options": { "legend": { "displayMode": "list", "placement": "bottom" }, "tooltip": { "mode": "multi" } },
-      "title": "GC Pause Duration",
-      "type": "timeseries",
-      "targets": [
-        { "expr": "rate(go_gc_duration_seconds_sum{service=\"usulnet\"}[5m])", "legendFormat": "gc_duration/s" }
-      ]
-    },
-
-    {
-      "collapsed": false,
-      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 76 },
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 32 },
       "id": 104,
       "title": "Host Resources",
       "type": "row"
@@ -411,7 +200,7 @@
       "fieldConfig": {
         "defaults": { "color": { "mode": "palette-classic" }, "unit": "percent", "max": 100 }
       },
-      "gridPos": { "h": 8, "w": 8, "x": 0, "y": 77 },
+      "gridPos": { "h": 8, "w": 8, "x": 0, "y": 33 },
       "id": 40,
       "options": { "legend": { "displayMode": "table", "placement": "bottom" }, "tooltip": { "mode": "multi" } },
       "title": "Host CPU Usage (%)",
@@ -423,7 +212,7 @@
       "fieldConfig": {
         "defaults": { "color": { "mode": "palette-classic" }, "unit": "percent", "max": 100 }
       },
-      "gridPos": { "h": 8, "w": 8, "x": 8, "y": 77 },
+      "gridPos": { "h": 8, "w": 8, "x": 8, "y": 33 },
       "id": 41,
       "options": { "legend": { "displayMode": "table", "placement": "bottom" }, "tooltip": { "mode": "multi" } },
       "title": "Host Memory Usage (%)",
@@ -435,7 +224,7 @@
       "fieldConfig": {
         "defaults": { "color": { "mode": "palette-classic" }, "unit": "percent", "max": 100 }
       },
-      "gridPos": { "h": 8, "w": 8, "x": 16, "y": 77 },
+      "gridPos": { "h": 8, "w": 8, "x": 16, "y": 33 },
       "id": 42,
       "options": { "legend": { "displayMode": "table", "placement": "bottom" }, "tooltip": { "mode": "multi" } },
       "title": "Host Disk Usage (%)",
@@ -462,5 +251,5 @@
   "timezone": "browser",
   "title": "usulnet - Platform Overview",
   "uid": "usulnet-overview",
-  "version": 2
+  "version": 1
 }

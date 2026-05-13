@@ -308,54 +308,6 @@ func (ca *CertificateAuthority) IssueAgentCert(agentID string, hosts ...string) 
 	})
 }
 
-// IssuePostgresServerCert generates a server certificate for PostgreSQL.
-// Includes the "postgres" Docker service name and localhost as SANs.
-func (ca *CertificateAuthority) IssuePostgresServerCert(hosts ...string) (*CertPair, error) {
-	dnsNames := []string{"localhost", "postgres"}
-	var ips []net.IP
-	ips = append(ips, net.IPv4(127, 0, 0, 1), net.IPv6loopback)
-
-	for _, h := range hosts {
-		if ip := net.ParseIP(h); ip != nil {
-			ips = append(ips, ip)
-		} else {
-			dnsNames = append(dnsNames, h)
-		}
-	}
-
-	return ca.IssueCertificate(CertOptions{
-		CommonName:   "usulnet-postgres",
-		DNSNames:     dnsNames,
-		IPAddresses:  ips,
-		IsServer:     true,
-		ValidityDays: CAValidityYears * 365, // 10 years, same as CA
-	})
-}
-
-// IssueRedisServerCert generates a server certificate for Redis.
-// Includes the "redis" Docker service name and localhost as SANs.
-func (ca *CertificateAuthority) IssueRedisServerCert(hosts ...string) (*CertPair, error) {
-	dnsNames := []string{"localhost", "redis"}
-	var ips []net.IP
-	ips = append(ips, net.IPv4(127, 0, 0, 1), net.IPv6loopback)
-
-	for _, h := range hosts {
-		if ip := net.ParseIP(h); ip != nil {
-			ips = append(ips, ip)
-		} else {
-			dnsNames = append(dnsNames, h)
-		}
-	}
-
-	return ca.IssueCertificate(CertOptions{
-		CommonName:   "usulnet-redis",
-		DNSNames:     dnsNames,
-		IPAddresses:  ips,
-		IsServer:     true,
-		ValidityDays: CAValidityYears * 365, // 10 years, same as CA
-	})
-}
-
 // IssueHTTPSCert generates a server certificate for the HTTPS web interface.
 func (ca *CertificateAuthority) IssueHTTPSCert(hosts ...string) (*CertPair, error) {
 	dnsNames := []string{"localhost"}

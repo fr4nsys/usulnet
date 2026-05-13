@@ -48,7 +48,7 @@ type User struct {
 	IsActive               bool       `json:"is_active" db:"is_active"`
 	IsLDAP                 bool       `json:"is_ldap" db:"is_ldap"`
 	LDAPDN                 *string    `json:"ldap_dn,omitempty" db:"ldap_dn"`
-	FailedLoginAttempts    int        `json:"-" db:"failed_login_attempts"`
+	FailedLoginAttempts    int        `json:"failed_login_attempts" db:"failed_login_attempts"`
 	LockedUntil            *time.Time `json:"locked_until,omitempty" db:"locked_until"`
 	LastLoginAt            *time.Time `json:"last_login_at,omitempty" db:"last_login_at"`
 	PasswordChangedAt      *time.Time `json:"password_changed_at,omitempty" db:"password_changed_at"`

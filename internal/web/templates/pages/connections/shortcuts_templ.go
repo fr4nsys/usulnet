@@ -155,7 +155,7 @@ func ShortcutsList(data ShortcutsListData) templ.Component {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "</div><!-- Delete Confirmation Modal --> <div x-data=\"{ open: false, shortcutId: '', shortcutName: '' }\" x-show=\"open\" x-cloak @open-delete-modal.window=\"open = true; shortcutId = $event.detail.id; shortcutName = $event.detail.name\" class=\"fixed inset-0 z-50 flex items-center justify-center\"><div class=\"fixed inset-0 bg-black/50\" @click=\"open = false\"></div><div class=\"relative bg-dark-800 rounded-xl border border-dark-600 p-6 max-w-md w-full mx-4\"><h3 class=\"text-lg font-semibold text-white mb-4\">Delete Shortcut</h3><p class=\"text-gray-400 mb-6\">Are you sure you want to delete \"<span class=\"text-white\" x-text=\"shortcutName\"></span>\"?</p><div class=\"flex justify-end gap-3\"><button @click=\"open = false\" class=\"px-4 py-2 bg-dark-700 hover:bg-dark-600 text-gray-300 rounded-lg transition-colors\">Cancel</button> <button @click=\"deleteShortcut(shortcutId); open = false\" class=\"px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors\">Delete</button></div></div></div><script>\n\t\t\tfunction deleteShortcut(id) {\n\t\t\tfetch('/connections/shortcuts/' + id, {\n\t\t\t\tmethod: 'DELETE',\n\t\t\t\theaders: { 'X-CSRF-Token': document.querySelector('meta[name=csrf-token]')?.content || '' },\n\t\t\t}).then(response => {\n\t\t\t\tif (response.ok) {\n\t\t\t\t\twindow.location.reload();\n\t\t\t\t} else {\n\t\t\t\t\tif (window.usulnet) { window.usulnet.toast('Failed to delete shortcut', 'error'); }\n\t\t\t\t}\n\t\t\t}).catch(() => {\n\t\t\t\tif (window.usulnet) { window.usulnet.toast('Network error deleting shortcut', 'error'); }\n\t\t\t});\n\t\t}\n\t\t</script> <style>\n\t\t\t.shortcut-icon-url.fallback-icon img { display: none; }\n\t\t\t.shortcut-icon-url.fallback-icon i { display: block !important; }\n\t\t</style>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "</div><!-- Delete Confirmation Modal --> <div x-data=\"{ open: false, shortcutId: '', shortcutName: '' }\" x-show=\"open\" x-cloak @open-delete-modal.window=\"open = true; shortcutId = $event.detail.id; shortcutName = $event.detail.name\" class=\"fixed inset-0 z-50 flex items-center justify-center\"><div class=\"fixed inset-0 bg-black/50\" @click=\"open = false\"></div><div class=\"relative bg-dark-800 rounded-xl border border-dark-600 p-6 max-w-md w-full mx-4\"><h3 class=\"text-lg font-semibold text-white mb-4\">Delete Shortcut</h3><p class=\"text-gray-400 mb-6\">Are you sure you want to delete \"<span class=\"text-white\" x-text=\"shortcutName\"></span>\"?</p><div class=\"flex justify-end gap-3\"><button @click=\"open = false\" class=\"px-4 py-2 bg-dark-700 hover:bg-dark-600 text-gray-300 rounded-lg transition-colors\">Cancel</button> <button @click=\"deleteShortcut(shortcutId); open = false\" class=\"px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors\">Delete</button></div></div></div><script>\n\t\t\tfunction deleteShortcut(id) {\n\t\t\t\tfetch('/connections/shortcuts/' + id, {\n\t\t\t\t\tmethod: 'DELETE',\n\t\t\t\t}).then(response => {\n\t\t\t\t\tif (response.ok) {\n\t\t\t\t\t\twindow.location.reload();\n\t\t\t\t\t}\n\t\t\t\t});\n\t\t\t}\n\t\t</script> <style>\n\t\t\t.shortcut-icon-url.fallback-icon img { display: none; }\n\t\t\t.shortcut-icon-url.fallback-icon i { display: block !important; }\n\t\t</style>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -197,7 +197,7 @@ func shortcutCard(shortcut ShortcutData) templ.Component {
 		var templ_7745c5c3_Var6 templ.SafeURL
 		templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinURLErrs(templ.SafeURL("/connections/shortcuts/" + shortcut.ID + "/edit"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/shortcuts.templ`, Line: 167, Col: 75}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/shortcuts.templ`, Line: 162, Col: 75}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 		if templ_7745c5c3_Err != nil {
@@ -210,7 +210,7 @@ func shortcutCard(shortcut ShortcutData) templ.Component {
 		var templ_7745c5c3_Var7 string
 		templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("$dispatch('open-delete-modal', {id: '%s', name: '%s'})", shortcut.ID, shortcut.Name))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/shortcuts.templ`, Line: 174, Col: 110}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/shortcuts.templ`, Line: 169, Col: 110}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 		if templ_7745c5c3_Err != nil {
@@ -223,7 +223,7 @@ func shortcutCard(shortcut ShortcutData) templ.Component {
 		var templ_7745c5c3_Var8 templ.SafeURL
 		templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinURLErrs(templ.SafeURL(shortcut.URL))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/shortcuts.templ`, Line: 183, Col: 37}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/shortcuts.templ`, Line: 178, Col: 37}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 		if templ_7745c5c3_Err != nil {
@@ -236,7 +236,7 @@ func shortcutCard(shortcut ShortcutData) templ.Component {
 		var templ_7745c5c3_Var9 string
 		templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(getTarget(shortcut.OpenInNew))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/shortcuts.templ`, Line: 184, Col: 41}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/shortcuts.templ`, Line: 179, Col: 41}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 		if templ_7745c5c3_Err != nil {
@@ -257,7 +257,7 @@ func shortcutCard(shortcut ShortcutData) templ.Component {
 		var templ_7745c5c3_Var10 string
 		templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(shortcut.Name)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/shortcuts.templ`, Line: 194, Col: 74}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/shortcuts.templ`, Line: 189, Col: 74}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 		if templ_7745c5c3_Err != nil {
@@ -275,7 +275,7 @@ func shortcutCard(shortcut ShortcutData) templ.Component {
 			var templ_7745c5c3_Var11 string
 			templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(shortcut.Description)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/shortcuts.templ`, Line: 198, Col: 85}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/shortcuts.templ`, Line: 193, Col: 85}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 			if templ_7745c5c3_Err != nil {
@@ -298,7 +298,7 @@ func shortcutCard(shortcut ShortcutData) templ.Component {
 			var templ_7745c5c3_Var12 string
 			templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(shortcut.Category)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/shortcuts.templ`, Line: 204, Col: 92}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/shortcuts.templ`, Line: 199, Col: 92}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
 			if templ_7745c5c3_Err != nil {
@@ -362,7 +362,7 @@ func shortcutIcon(shortcut ShortcutData) templ.Component {
 			var templ_7745c5c3_Var14 string
 			templ_7745c5c3_Var14, templ_7745c5c3_Err = templruntime.SanitizeStyleAttributeValues(getIconStyle(shortcut.Color))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/shortcuts.templ`, Line: 225, Col: 39}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/shortcuts.templ`, Line: 220, Col: 39}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var14))
 			if templ_7745c5c3_Err != nil {
@@ -402,7 +402,7 @@ func shortcutIcon(shortcut ShortcutData) templ.Component {
 			var templ_7745c5c3_Var17 string
 			templ_7745c5c3_Var17, templ_7745c5c3_Err = templruntime.SanitizeStyleAttributeValues(getIconStyle(shortcut.Color))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/shortcuts.templ`, Line: 232, Col: 39}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/shortcuts.templ`, Line: 227, Col: 39}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var17))
 			if templ_7745c5c3_Err != nil {
@@ -415,7 +415,7 @@ func shortcutIcon(shortcut ShortcutData) templ.Component {
 			var templ_7745c5c3_Var18 string
 			templ_7745c5c3_Var18, templ_7745c5c3_Err = templ.JoinStringErrs(shortcut.Icon)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/shortcuts.templ`, Line: 235, Col: 23}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/shortcuts.templ`, Line: 230, Col: 23}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var18))
 			if templ_7745c5c3_Err != nil {
@@ -428,7 +428,7 @@ func shortcutIcon(shortcut ShortcutData) templ.Component {
 			var templ_7745c5c3_Var19 string
 			templ_7745c5c3_Var19, templ_7745c5c3_Err = templ.JoinStringErrs(shortcut.Name)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/shortcuts.templ`, Line: 236, Col: 23}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/shortcuts.templ`, Line: 231, Col: 23}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var19))
 			if templ_7745c5c3_Err != nil {
@@ -446,7 +446,7 @@ func shortcutIcon(shortcut ShortcutData) templ.Component {
 			var templ_7745c5c3_Var20 string
 			templ_7745c5c3_Var20, templ_7745c5c3_Err = templruntime.SanitizeStyleAttributeValues(getIconStyle(shortcut.Color))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/shortcuts.templ`, Line: 245, Col: 39}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/shortcuts.templ`, Line: 240, Col: 39}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var20))
 			if templ_7745c5c3_Err != nil {
@@ -459,7 +459,7 @@ func shortcutIcon(shortcut ShortcutData) templ.Component {
 			var templ_7745c5c3_Var21 string
 			templ_7745c5c3_Var21, templ_7745c5c3_Err = templ.JoinStringErrs(shortcut.Icon)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/shortcuts.templ`, Line: 247, Col: 18}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/shortcuts.templ`, Line: 242, Col: 18}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var21))
 			if templ_7745c5c3_Err != nil {
@@ -477,7 +477,7 @@ func shortcutIcon(shortcut ShortcutData) templ.Component {
 			var templ_7745c5c3_Var22 string
 			templ_7745c5c3_Var22, templ_7745c5c3_Err = templruntime.SanitizeStyleAttributeValues(getIconStyle(shortcut.Color))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/shortcuts.templ`, Line: 252, Col: 39}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/shortcuts.templ`, Line: 247, Col: 39}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var22))
 			if templ_7745c5c3_Err != nil {
@@ -533,13 +533,13 @@ func ShortcutNew(data ShortcutNewData) templ.Component {
 			var templ_7745c5c3_Var25 string
 			templ_7745c5c3_Var25, templ_7745c5c3_Err = templ.JoinStringErrs(data.PageData.CSRFToken)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/shortcuts.templ`, Line: 276, Col: 75}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/shortcuts.templ`, Line: 271, Col: 75}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var25))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 42, "\"><!-- Name --><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Name *</label> <input type=\"text\" name=\"name\" required placeholder=\"My Favorite Site\" class=\"w-full px-4 py-2.5 bg-dark-700 border border-dark-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-primary-500\"></div><!-- URL --><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">URL *</label> <input type=\"url\" name=\"url\" required placeholder=\"https://example.com\" class=\"w-full px-4 py-2.5 bg-dark-700 border border-dark-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-primary-500\"></div><!-- Description --><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Description</label> <input type=\"text\" name=\"description\" placeholder=\"Optional description\" class=\"w-full px-4 py-2.5 bg-dark-700 border border-dark-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-primary-500\"></div><!-- Icon Type --><div x-data=\"{ iconType: 'fa' }\"><label class=\"block text-sm font-medium text-gray-300 mb-2\">Icon</label><div class=\"flex gap-2 mb-3\"><button type=\"button\" @click=\"iconType = 'fa'\" :class=\"iconType === 'fa' ? 'bg-primary-500/20 text-primary-400 border-primary-500' : 'bg-dark-700 text-gray-400 border-dark-600'\" class=\"px-3 py-1.5 rounded-lg text-sm border transition-colors\">FontAwesome</button> <button type=\"button\" @click=\"iconType = 'url'\" :class=\"iconType === 'url' ? 'bg-primary-500/20 text-primary-400 border-primary-500' : 'bg-dark-700 text-gray-400 border-dark-600'\" class=\"px-3 py-1.5 rounded-lg text-sm border transition-colors\">URL/Favicon</button> <button type=\"button\" @click=\"iconType = 'emoji'\" :class=\"iconType === 'emoji' ? 'bg-primary-500/20 text-primary-400 border-primary-500' : 'bg-dark-700 text-gray-400 border-dark-600'\" class=\"px-3 py-1.5 rounded-lg text-sm border transition-colors\">Emoji</button></div><input type=\"hidden\" name=\"icon_type\" :value=\"iconType\"> <input type=\"text\" name=\"icon\" x-show=\"iconType === 'fa'\" :disabled=\"iconType !== 'fa'\" placeholder=\"fa-globe, fa-server, fa-database...\" class=\"w-full px-4 py-2.5 bg-dark-700 border border-dark-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-primary-500\"> <input type=\"url\" name=\"icon\" x-show=\"iconType === 'url'\" :disabled=\"iconType !== 'url'\" placeholder=\"https://example.com/favicon.ico\" class=\"w-full px-4 py-2.5 bg-dark-700 border border-dark-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-primary-500\"> <input type=\"text\" name=\"icon\" x-show=\"iconType === 'emoji'\" :disabled=\"iconType !== 'emoji'\" placeholder=\"🚀\" class=\"w-full px-4 py-2.5 bg-dark-700 border border-dark-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-primary-500\"><p class=\"text-xs text-gray-500 mt-1\" x-show=\"iconType === 'url'\">Leave empty to auto-fetch favicon from the URL</p></div><!-- Color --><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Background Color</label><div class=\"flex items-center gap-3\"><input type=\"color\" name=\"color\" value=\"#1e293b\" class=\"w-12 h-10 rounded cursor-pointer bg-transparent\"> <span class=\"text-gray-400 text-sm\">Icon background color</span></div></div><!-- Category --><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Category</label> <input type=\"text\" name=\"category\" list=\"categories\" placeholder=\"Development, Tools, etc.\" class=\"w-full px-4 py-2.5 bg-dark-700 border border-dark-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-primary-500\"> <datalist id=\"categories\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 42, "\"><!-- Name --><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Name *</label> <input type=\"text\" name=\"name\" required placeholder=\"My Favorite Site\" class=\"w-full px-4 py-2.5 bg-dark-700 border border-dark-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-primary-500\"></div><!-- URL --><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">URL *</label> <input type=\"url\" name=\"url\" required placeholder=\"https://example.com\" class=\"w-full px-4 py-2.5 bg-dark-700 border border-dark-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-primary-500\"></div><!-- Description --><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Description</label> <input type=\"text\" name=\"description\" placeholder=\"Optional description\" class=\"w-full px-4 py-2.5 bg-dark-700 border border-dark-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-primary-500\"></div><!-- Icon Type --><div x-data=\"{ iconType: 'fa' }\"><label class=\"block text-sm font-medium text-gray-300 mb-2\">Icon</label><div class=\"flex gap-2 mb-3\"><button type=\"button\" @click=\"iconType = 'fa'\" :class=\"iconType === 'fa' ? 'bg-primary-500/20 text-primary-400 border-primary-500' : 'bg-dark-700 text-gray-400 border-dark-600'\" class=\"px-3 py-1.5 rounded-lg text-sm border transition-colors\">FontAwesome</button> <button type=\"button\" @click=\"iconType = 'url'\" :class=\"iconType === 'url' ? 'bg-primary-500/20 text-primary-400 border-primary-500' : 'bg-dark-700 text-gray-400 border-dark-600'\" class=\"px-3 py-1.5 rounded-lg text-sm border transition-colors\">URL/Favicon</button> <button type=\"button\" @click=\"iconType = 'emoji'\" :class=\"iconType === 'emoji' ? 'bg-primary-500/20 text-primary-400 border-primary-500' : 'bg-dark-700 text-gray-400 border-dark-600'\" class=\"px-3 py-1.5 rounded-lg text-sm border transition-colors\">Emoji</button></div><input type=\"hidden\" name=\"icon_type\" :value=\"iconType\"> <input type=\"text\" name=\"icon\" x-show=\"iconType === 'fa'\" placeholder=\"fa-globe, fa-server, fa-database...\" class=\"w-full px-4 py-2.5 bg-dark-700 border border-dark-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-primary-500\"> <input type=\"url\" name=\"icon\" x-show=\"iconType === 'url'\" placeholder=\"https://example.com/favicon.ico\" class=\"w-full px-4 py-2.5 bg-dark-700 border border-dark-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-primary-500\"> <input type=\"text\" name=\"icon\" x-show=\"iconType === 'emoji'\" placeholder=\"🚀\" class=\"w-full px-4 py-2.5 bg-dark-700 border border-dark-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-primary-500\"><p class=\"text-xs text-gray-500 mt-1\" x-show=\"iconType === 'url'\">Leave empty to auto-fetch favicon from the URL</p></div><!-- Color --><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Background Color</label><div class=\"flex items-center gap-3\"><input type=\"color\" name=\"color\" value=\"#1e293b\" class=\"w-12 h-10 rounded cursor-pointer bg-transparent\"> <span class=\"text-gray-400 text-sm\">Icon background color</span></div></div><!-- Category --><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Category</label> <input type=\"text\" name=\"category\" list=\"categories\" placeholder=\"Development, Tools, etc.\" class=\"w-full px-4 py-2.5 bg-dark-700 border border-dark-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-primary-500\"> <datalist id=\"categories\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -551,7 +551,7 @@ func ShortcutNew(data ShortcutNewData) templ.Component {
 				var templ_7745c5c3_Var26 string
 				templ_7745c5c3_Var26, templ_7745c5c3_Err = templ.JoinStringErrs(cat)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/shortcuts.templ`, Line: 397, Col: 27}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/shortcuts.templ`, Line: 389, Col: 27}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var26))
 				if templ_7745c5c3_Err != nil {
@@ -617,7 +617,7 @@ func ShortcutEdit(data ShortcutEditData) templ.Component {
 			var templ_7745c5c3_Var29 templ.SafeURL
 			templ_7745c5c3_Var29, templ_7745c5c3_Err = templ.JoinURLErrs(templ.SafeURL("/connections/shortcuts/" + data.Shortcut.ID))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/shortcuts.templ`, Line: 474, Col: 78}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/shortcuts.templ`, Line: 466, Col: 78}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var29))
 			if templ_7745c5c3_Err != nil {
@@ -630,7 +630,7 @@ func ShortcutEdit(data ShortcutEditData) templ.Component {
 			var templ_7745c5c3_Var30 string
 			templ_7745c5c3_Var30, templ_7745c5c3_Err = templ.JoinStringErrs(data.PageData.CSRFToken)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/shortcuts.templ`, Line: 475, Col: 75}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/shortcuts.templ`, Line: 467, Col: 75}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var30))
 			if templ_7745c5c3_Err != nil {
@@ -643,7 +643,7 @@ func ShortcutEdit(data ShortcutEditData) templ.Component {
 			var templ_7745c5c3_Var31 string
 			templ_7745c5c3_Var31, templ_7745c5c3_Err = templ.JoinStringErrs(data.Shortcut.Name)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/shortcuts.templ`, Line: 483, Col: 33}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/shortcuts.templ`, Line: 475, Col: 33}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var31))
 			if templ_7745c5c3_Err != nil {
@@ -656,7 +656,7 @@ func ShortcutEdit(data ShortcutEditData) templ.Component {
 			var templ_7745c5c3_Var32 string
 			templ_7745c5c3_Var32, templ_7745c5c3_Err = templ.JoinStringErrs(data.Shortcut.URL)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/shortcuts.templ`, Line: 495, Col: 32}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/shortcuts.templ`, Line: 487, Col: 32}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var32))
 			if templ_7745c5c3_Err != nil {
@@ -669,7 +669,7 @@ func ShortcutEdit(data ShortcutEditData) templ.Component {
 			var templ_7745c5c3_Var33 string
 			templ_7745c5c3_Var33, templ_7745c5c3_Err = templ.JoinStringErrs(data.Shortcut.Description)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/shortcuts.templ`, Line: 506, Col: 40}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/shortcuts.templ`, Line: 498, Col: 40}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var33))
 			if templ_7745c5c3_Err != nil {
@@ -682,46 +682,46 @@ func ShortcutEdit(data ShortcutEditData) templ.Component {
 			var templ_7745c5c3_Var34 string
 			templ_7745c5c3_Var34, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("{ iconType: '%s' }", getIconType(data.Shortcut.IconType, data.Shortcut.Icon)))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/shortcuts.templ`, Line: 512, Col: 109}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/shortcuts.templ`, Line: 504, Col: 109}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var34))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 52, "\"><label class=\"block text-sm font-medium text-gray-300 mb-2\">Icon</label><div class=\"flex gap-2 mb-3\"><button type=\"button\" @click=\"iconType = 'fa'\" :class=\"iconType === 'fa' ? 'bg-primary-500/20 text-primary-400 border-primary-500' : 'bg-dark-700 text-gray-400 border-dark-600'\" class=\"px-3 py-1.5 rounded-lg text-sm border transition-colors\">FontAwesome</button> <button type=\"button\" @click=\"iconType = 'url'\" :class=\"iconType === 'url' ? 'bg-primary-500/20 text-primary-400 border-primary-500' : 'bg-dark-700 text-gray-400 border-dark-600'\" class=\"px-3 py-1.5 rounded-lg text-sm border transition-colors\">URL/Favicon</button> <button type=\"button\" @click=\"iconType = 'emoji'\" :class=\"iconType === 'emoji' ? 'bg-primary-500/20 text-primary-400 border-primary-500' : 'bg-dark-700 text-gray-400 border-dark-600'\" class=\"px-3 py-1.5 rounded-lg text-sm border transition-colors\">Emoji</button></div><input type=\"hidden\" name=\"icon_type\" :value=\"iconType\"> <input type=\"text\" name=\"icon\" x-show=\"iconType === 'fa'\" :disabled=\"iconType !== 'fa'\" value=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 52, "\"><label class=\"block text-sm font-medium text-gray-300 mb-2\">Icon</label><div class=\"flex gap-2 mb-3\"><button type=\"button\" @click=\"iconType = 'fa'\" :class=\"iconType === 'fa' ? 'bg-primary-500/20 text-primary-400 border-primary-500' : 'bg-dark-700 text-gray-400 border-dark-600'\" class=\"px-3 py-1.5 rounded-lg text-sm border transition-colors\">FontAwesome</button> <button type=\"button\" @click=\"iconType = 'url'\" :class=\"iconType === 'url' ? 'bg-primary-500/20 text-primary-400 border-primary-500' : 'bg-dark-700 text-gray-400 border-dark-600'\" class=\"px-3 py-1.5 rounded-lg text-sm border transition-colors\">URL/Favicon</button> <button type=\"button\" @click=\"iconType = 'emoji'\" :class=\"iconType === 'emoji' ? 'bg-primary-500/20 text-primary-400 border-primary-500' : 'bg-dark-700 text-gray-400 border-dark-600'\" class=\"px-3 py-1.5 rounded-lg text-sm border transition-colors\">Emoji</button></div><input type=\"hidden\" name=\"icon_type\" :value=\"iconType\"> <input type=\"text\" name=\"icon\" x-show=\"iconType === 'fa'\" value=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var35 string
 			templ_7745c5c3_Var35, templ_7745c5c3_Err = templ.JoinStringErrs(getIconValue(data.Shortcut.IconType, data.Shortcut.Icon, "fa"))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/shortcuts.templ`, Line: 546, Col: 77}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/shortcuts.templ`, Line: 537, Col: 77}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var35))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 53, "\" placeholder=\"fa-globe, fa-server, fa-database...\" class=\"w-full px-4 py-2.5 bg-dark-700 border border-dark-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-primary-500\"> <input type=\"url\" name=\"icon\" x-show=\"iconType === 'url'\" :disabled=\"iconType !== 'url'\" value=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 53, "\" placeholder=\"fa-globe, fa-server, fa-database...\" class=\"w-full px-4 py-2.5 bg-dark-700 border border-dark-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-primary-500\"> <input type=\"url\" name=\"icon\" x-show=\"iconType === 'url'\" value=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var36 string
 			templ_7745c5c3_Var36, templ_7745c5c3_Err = templ.JoinStringErrs(getIconValue(data.Shortcut.IconType, data.Shortcut.Icon, "url"))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/shortcuts.templ`, Line: 555, Col: 78}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/shortcuts.templ`, Line: 545, Col: 78}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var36))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 54, "\" placeholder=\"https://example.com/favicon.ico\" class=\"w-full px-4 py-2.5 bg-dark-700 border border-dark-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-primary-500\"> <input type=\"text\" name=\"icon\" x-show=\"iconType === 'emoji'\" :disabled=\"iconType !== 'emoji'\" value=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 54, "\" placeholder=\"https://example.com/favicon.ico\" class=\"w-full px-4 py-2.5 bg-dark-700 border border-dark-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-primary-500\"> <input type=\"text\" name=\"icon\" x-show=\"iconType === 'emoji'\" value=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var37 string
 			templ_7745c5c3_Var37, templ_7745c5c3_Err = templ.JoinStringErrs(getIconValue(data.Shortcut.IconType, data.Shortcut.Icon, "emoji"))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/shortcuts.templ`, Line: 564, Col: 80}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/shortcuts.templ`, Line: 553, Col: 80}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var37))
 			if templ_7745c5c3_Err != nil {
@@ -734,7 +734,7 @@ func ShortcutEdit(data ShortcutEditData) templ.Component {
 			var templ_7745c5c3_Var38 string
 			templ_7745c5c3_Var38, templ_7745c5c3_Err = templ.JoinStringErrs(getColorValue(data.Shortcut.Color))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/shortcuts.templ`, Line: 577, Col: 50}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/shortcuts.templ`, Line: 566, Col: 50}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var38))
 			if templ_7745c5c3_Err != nil {
@@ -747,7 +747,7 @@ func ShortcutEdit(data ShortcutEditData) templ.Component {
 			var templ_7745c5c3_Var39 string
 			templ_7745c5c3_Var39, templ_7745c5c3_Err = templ.JoinStringErrs(data.Shortcut.Category)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/shortcuts.templ`, Line: 591, Col: 37}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/shortcuts.templ`, Line: 580, Col: 37}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var39))
 			if templ_7745c5c3_Err != nil {
@@ -765,7 +765,7 @@ func ShortcutEdit(data ShortcutEditData) templ.Component {
 				var templ_7745c5c3_Var40 string
 				templ_7745c5c3_Var40, templ_7745c5c3_Err = templ.JoinStringErrs(cat)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/shortcuts.templ`, Line: 597, Col: 27}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/shortcuts.templ`, Line: 586, Col: 27}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var40))
 				if templ_7745c5c3_Err != nil {
@@ -813,7 +813,7 @@ func ShortcutEdit(data ShortcutEditData) templ.Component {
 			var templ_7745c5c3_Var41 string
 			templ_7745c5c3_Var41, templ_7745c5c3_Err = templ.JoinStringErrs(data.Shortcut.Type)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/shortcuts.templ`, Line: 637, Col: 64}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/shortcuts.templ`, Line: 626, Col: 64}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var41))
 			if templ_7745c5c3_Err != nil {

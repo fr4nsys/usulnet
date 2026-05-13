@@ -320,7 +320,7 @@ func DatabaseConnectionsList(data DatabaseConnectionsListData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 22, "\"><div class=\"space-y-4\"><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Connection Name</label> <input type=\"text\" name=\"name\" required class=\"input w-full\" placeholder=\"My Database\"></div><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Database Type</label><div class=\"grid grid-cols-3 gap-2\"><label class=\"cursor-pointer\"><input type=\"radio\" name=\"type\" value=\"postgres\" class=\"hidden peer\" checked><div class=\"p-3 rounded-lg border border-dark-600 text-center peer-checked:border-blue-500 peer-checked:bg-blue-500/10 hover:border-blue-500/50 transition-colors\"><i class=\"fas fa-database text-blue-400\"></i><p class=\"text-xs text-gray-400 mt-1\">PostgreSQL</p></div></label> <label class=\"cursor-pointer\"><input type=\"radio\" name=\"type\" value=\"mysql\" class=\"hidden peer\"><div class=\"p-3 rounded-lg border border-dark-600 text-center peer-checked:border-orange-500 peer-checked:bg-orange-500/10 hover:border-orange-500/50 transition-colors\"><i class=\"fas fa-database text-orange-400\"></i><p class=\"text-xs text-gray-400 mt-1\">MySQL</p></div></label> <label class=\"cursor-pointer\"><input type=\"radio\" name=\"type\" value=\"mariadb\" class=\"hidden peer\"><div class=\"p-3 rounded-lg border border-dark-600 text-center peer-checked:border-sky-500 peer-checked:bg-sky-500/10 hover:border-sky-500/50 transition-colors\"><i class=\"fas fa-database text-sky-400\"></i><p class=\"text-xs text-gray-400 mt-1\">MariaDB</p></div></label></div></div><div class=\"grid grid-cols-3 gap-4\"><div class=\"col-span-2\"><label class=\"block text-sm font-medium text-gray-300 mb-1\">Host</label> <input type=\"text\" name=\"host\" required class=\"input w-full\" placeholder=\"localhost\"></div><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Port</label> <input type=\"number\" name=\"port\" required class=\"input w-full\" placeholder=\"5432\"></div></div><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Database Name</label> <input type=\"text\" name=\"database\" required class=\"input w-full\" placeholder=\"mydb\"></div><div class=\"grid grid-cols-2 gap-4\"><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Username</label> <input type=\"text\" name=\"username\" class=\"input w-full\" placeholder=\"postgres\"></div><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Password</label> <input type=\"password\" name=\"password\" class=\"input w-full\"></div></div><div class=\"flex items-center gap-3\"><input type=\"checkbox\" name=\"ssl\" id=\"ssl\" class=\"rounded border-dark-600 bg-dark-700 text-primary-500\"> <label for=\"ssl\" class=\"text-sm text-gray-300\">Use SSL/TLS connection</label></div></div><div class=\"flex justify-end gap-3 mt-6\"><button type=\"button\" onclick=\"hideNewConnectionModal()\" class=\"btn-ghost\">Cancel</button> <button type=\"submit\" class=\"btn-primary\"><i class=\"fas fa-plus mr-2\"></i>Create Connection</button></div></form></div></div></div><script>\n\t\tfunction showNewConnectionModal() {\n\t\t\tdocument.getElementById('new-connection-modal').classList.remove('hidden');\n\t\t}\n\t\tfunction hideNewConnectionModal() {\n\t\t\tdocument.getElementById('new-connection-modal').classList.add('hidden');\n\t\t}\n\t\tfunction testConnection(id) {\n\t\t\tfetch(`/connections/database/${id}/test`, {\n\t\t\t\tmethod: 'POST',\n\t\t\t\theaders: { 'X-CSRF-Token': document.querySelector('meta[name=csrf-token]')?.content || '' }\n\t\t\t})\n\t\t\t\t.then(r => r.json())\n\t\t\t\t.then(data => {\n\t\t\t\t\tif (data.success) {\n\t\t\t\t\t\talert('Connection successful!');\n\t\t\t\t\t} else {\n\t\t\t\t\t\talert('Connection failed: ' + data.error);\n\t\t\t\t\t}\n\t\t\t\t})\n\t\t\t\t.catch(err => { console.error('Connection test failed:', err); });\n\t\t}\n\t\t</script>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 22, "\"><div class=\"space-y-4\"><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Connection Name</label> <input type=\"text\" name=\"name\" required class=\"input w-full\" placeholder=\"My Database\"></div><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Database Type</label><div class=\"grid grid-cols-3 gap-2\"><label class=\"cursor-pointer\"><input type=\"radio\" name=\"type\" value=\"postgres\" class=\"hidden peer\" checked><div class=\"p-3 rounded-lg border border-dark-600 text-center peer-checked:border-blue-500 peer-checked:bg-blue-500/10 hover:border-blue-500/50 transition-colors\"><i class=\"fas fa-database text-blue-400\"></i><p class=\"text-xs text-gray-400 mt-1\">PostgreSQL</p></div></label> <label class=\"cursor-pointer\"><input type=\"radio\" name=\"type\" value=\"mysql\" class=\"hidden peer\"><div class=\"p-3 rounded-lg border border-dark-600 text-center peer-checked:border-orange-500 peer-checked:bg-orange-500/10 hover:border-orange-500/50 transition-colors\"><i class=\"fas fa-database text-orange-400\"></i><p class=\"text-xs text-gray-400 mt-1\">MySQL</p></div></label> <label class=\"cursor-pointer\"><input type=\"radio\" name=\"type\" value=\"mariadb\" class=\"hidden peer\"><div class=\"p-3 rounded-lg border border-dark-600 text-center peer-checked:border-sky-500 peer-checked:bg-sky-500/10 hover:border-sky-500/50 transition-colors\"><i class=\"fas fa-database text-sky-400\"></i><p class=\"text-xs text-gray-400 mt-1\">MariaDB</p></div></label></div></div><div class=\"grid grid-cols-3 gap-4\"><div class=\"col-span-2\"><label class=\"block text-sm font-medium text-gray-300 mb-1\">Host</label> <input type=\"text\" name=\"host\" required class=\"input w-full\" placeholder=\"localhost\"></div><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Port</label> <input type=\"number\" name=\"port\" required class=\"input w-full\" placeholder=\"5432\"></div></div><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Database Name</label> <input type=\"text\" name=\"database\" required class=\"input w-full\" placeholder=\"mydb\"></div><div class=\"grid grid-cols-2 gap-4\"><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Username</label> <input type=\"text\" name=\"username\" class=\"input w-full\" placeholder=\"postgres\"></div><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Password</label> <input type=\"password\" name=\"password\" class=\"input w-full\"></div></div><div class=\"flex items-center gap-3\"><input type=\"checkbox\" name=\"ssl\" id=\"ssl\" class=\"rounded border-dark-600 bg-dark-700 text-primary-500\"> <label for=\"ssl\" class=\"text-sm text-gray-300\">Use SSL/TLS connection</label></div></div><div class=\"flex justify-end gap-3 mt-6\"><button type=\"button\" onclick=\"hideNewConnectionModal()\" class=\"btn-ghost\">Cancel</button> <button type=\"submit\" class=\"btn-primary\"><i class=\"fas fa-plus mr-2\"></i>Create Connection</button></div></form></div></div></div><script>\n\t\tfunction showNewConnectionModal() {\n\t\t\tdocument.getElementById('new-connection-modal').classList.remove('hidden');\n\t\t}\n\t\tfunction hideNewConnectionModal() {\n\t\t\tdocument.getElementById('new-connection-modal').classList.add('hidden');\n\t\t}\n\t\tfunction testConnection(id) {\n\t\t\tfetch(`/connections/database/${id}/test`, { method: 'POST' })\n\t\t\t\t.then(r => r.json())\n\t\t\t\t.then(data => {\n\t\t\t\t\tif (data.success) {\n\t\t\t\t\t\talert('Connection successful!');\n\t\t\t\t\t} else {\n\t\t\t\t\t\talert('Connection failed: ' + data.error);\n\t\t\t\t\t}\n\t\t\t\t})\n\t\t\t\t.catch(err => { console.error('Connection test failed:', err); });\n\t\t}\n\t\t</script>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -375,7 +375,7 @@ func DatabaseBrowser(data DatabaseBrowserData) templ.Component {
 			var templ_7745c5c3_Var19 string
 			templ_7745c5c3_Var19, templ_7745c5c3_Err = templ.JoinStringErrs(boolToString(data.WriteEnabled))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/database.templ`, Line: 265, Col: 115}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/database.templ`, Line: 262, Col: 115}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var19))
 			if templ_7745c5c3_Err != nil {
@@ -388,7 +388,7 @@ func DatabaseBrowser(data DatabaseBrowserData) templ.Component {
 			var templ_7745c5c3_Var20 string
 			templ_7745c5c3_Var20, templ_7745c5c3_Err = templ.JoinStringErrs(data.Connection.ID)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/database.templ`, Line: 265, Col: 151}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/database.templ`, Line: 262, Col: 151}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var20))
 			if templ_7745c5c3_Err != nil {
@@ -401,7 +401,7 @@ func DatabaseBrowser(data DatabaseBrowserData) templ.Component {
 			var templ_7745c5c3_Var21 string
 			templ_7745c5c3_Var21, templ_7745c5c3_Err = templ.JoinStringErrs(data.Connection.Name)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/database.templ`, Line: 273, Col: 72}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/database.templ`, Line: 270, Col: 72}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var21))
 			if templ_7745c5c3_Err != nil {
@@ -424,7 +424,7 @@ func DatabaseBrowser(data DatabaseBrowserData) templ.Component {
 				var templ_7745c5c3_Var23 templ.SafeURL
 				templ_7745c5c3_Var23, templ_7745c5c3_Err = templ.JoinURLErrs(templ.SafeURL(fmt.Sprintf("/connections/database/%s?table=%s", data.Connection.ID, table.Name)))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/database.templ`, Line: 282, Col: 111}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/database.templ`, Line: 279, Col: 111}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var23))
 				if templ_7745c5c3_Err != nil {
@@ -465,7 +465,7 @@ func DatabaseBrowser(data DatabaseBrowserData) templ.Component {
 				var templ_7745c5c3_Var25 string
 				templ_7745c5c3_Var25, templ_7745c5c3_Err = templ.JoinStringErrs(table.Name)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/database.templ`, Line: 289, Col: 42}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/database.templ`, Line: 286, Col: 42}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var25))
 				if templ_7745c5c3_Err != nil {
@@ -478,7 +478,7 @@ func DatabaseBrowser(data DatabaseBrowserData) templ.Component {
 				var templ_7745c5c3_Var26 string
 				templ_7745c5c3_Var26, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", table.RowCount))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/database.templ`, Line: 290, Col: 86}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/database.templ`, Line: 287, Col: 86}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var26))
 				if templ_7745c5c3_Err != nil {
@@ -501,7 +501,7 @@ func DatabaseBrowser(data DatabaseBrowserData) templ.Component {
 				var templ_7745c5c3_Var27 string
 				templ_7745c5c3_Var27, templ_7745c5c3_Err = templ.JoinStringErrs(data.CurrentTable)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/database.templ`, Line: 302, Col: 61}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/database.templ`, Line: 299, Col: 61}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var27))
 				if templ_7745c5c3_Err != nil {
@@ -514,7 +514,7 @@ func DatabaseBrowser(data DatabaseBrowserData) templ.Component {
 				var templ_7745c5c3_Var28 string
 				templ_7745c5c3_Var28, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d rows", data.RowCount))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/database.templ`, Line: 303, Col: 82}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/database.templ`, Line: 300, Col: 82}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var28))
 				if templ_7745c5c3_Err != nil {
@@ -552,7 +552,7 @@ func DatabaseBrowser(data DatabaseBrowserData) templ.Component {
 			var templ_7745c5c3_Var29 templ.SafeURL
 			templ_7745c5c3_Var29, templ_7745c5c3_Err = templ.JoinURLErrs(templ.SafeURL(fmt.Sprintf("/connections/database/%s/query", data.Connection.ID)))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/database.templ`, Line: 321, Col: 96}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/database.templ`, Line: 318, Col: 96}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var29))
 			if templ_7745c5c3_Err != nil {
@@ -581,7 +581,7 @@ func DatabaseBrowser(data DatabaseBrowserData) templ.Component {
 					var templ_7745c5c3_Var30 string
 					templ_7745c5c3_Var30, templ_7745c5c3_Err = templ.JoinStringErrs(col.Name)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/database.templ`, Line: 343, Col: 22}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/database.templ`, Line: 340, Col: 22}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var30))
 					if templ_7745c5c3_Err != nil {
@@ -594,7 +594,7 @@ func DatabaseBrowser(data DatabaseBrowserData) templ.Component {
 					var templ_7745c5c3_Var31 string
 					templ_7745c5c3_Var31, templ_7745c5c3_Err = templ.JoinStringErrs(col.Type)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/database.templ`, Line: 344, Col: 62}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/database.templ`, Line: 341, Col: 62}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var31))
 					if templ_7745c5c3_Err != nil {
@@ -622,7 +622,7 @@ func DatabaseBrowser(data DatabaseBrowserData) templ.Component {
 						var templ_7745c5c3_Var32 string
 						templ_7745c5c3_Var32, templ_7745c5c3_Err = templ.JoinStringErrs(formatCellValue(row[col.Name]))
 						if templ_7745c5c3_Err != nil {
-							return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/database.templ`, Line: 355, Col: 44}
+							return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/database.templ`, Line: 352, Col: 44}
 						}
 						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var32))
 						if templ_7745c5c3_Err != nil {
@@ -645,7 +645,7 @@ func DatabaseBrowser(data DatabaseBrowserData) templ.Component {
 				var templ_7745c5c3_Var33 string
 				templ_7745c5c3_Var33, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", data.Page))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/database.templ`, Line: 367, Col: 42}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/database.templ`, Line: 364, Col: 42}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var33))
 				if templ_7745c5c3_Err != nil {
@@ -658,7 +658,7 @@ func DatabaseBrowser(data DatabaseBrowserData) templ.Component {
 				var templ_7745c5c3_Var34 string
 				templ_7745c5c3_Var34, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", data.TotalPages))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/database.templ`, Line: 367, Col: 84}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/database.templ`, Line: 364, Col: 84}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var34))
 				if templ_7745c5c3_Err != nil {
@@ -676,7 +676,7 @@ func DatabaseBrowser(data DatabaseBrowserData) templ.Component {
 					var templ_7745c5c3_Var35 templ.SafeURL
 					templ_7745c5c3_Var35, templ_7745c5c3_Err = templ.JoinURLErrs(templ.SafeURL(fmt.Sprintf("/connections/database/%s?table=%s&page=%d", data.Connection.ID, data.CurrentTable, data.Page-1)))
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/database.templ`, Line: 371, Col: 141}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/database.templ`, Line: 368, Col: 141}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var35))
 					if templ_7745c5c3_Err != nil {
@@ -695,7 +695,7 @@ func DatabaseBrowser(data DatabaseBrowserData) templ.Component {
 					var templ_7745c5c3_Var36 templ.SafeURL
 					templ_7745c5c3_Var36, templ_7745c5c3_Err = templ.JoinURLErrs(templ.SafeURL(fmt.Sprintf("/connections/database/%s?table=%s&page=%d", data.Connection.ID, data.CurrentTable, data.Page+1)))
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/database.templ`, Line: 377, Col: 141}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/database.templ`, Line: 374, Col: 141}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var36))
 					if templ_7745c5c3_Err != nil {
@@ -716,7 +716,7 @@ func DatabaseBrowser(data DatabaseBrowserData) templ.Component {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 64, "</div><!-- Write Mode Modal (Danger Zone) --><div x-show=\"showWriteModal\" x-cloak class=\"fixed inset-0 z-50 overflow-y-auto\"><div class=\"flex min-h-screen items-center justify-center p-4\"><div class=\"fixed inset-0 bg-black/60\" @click=\"showWriteModal = false\"></div><div class=\"relative card w-full max-w-md p-6\"><h3 class=\"text-lg font-semibold text-white mb-4\"><i class=\"fas fa-cog text-gray-400 mr-2\"></i>Browser Settings</h3><!-- Danger Zone --><div class=\"border border-red-500/30 rounded-lg p-4 bg-red-500/5 mb-4\"><h4 class=\"text-red-400 font-medium flex items-center gap-2 mb-2\"><i class=\"fas fa-exclamation-triangle\"></i> Danger Zone</h4><p class=\"text-gray-400 text-sm mb-3\">Enabling write mode allows you to modify, insert, and delete data directly. This can cause <strong class=\"text-red-400\">irreversible data loss</strong>.</p><div class=\"flex items-center justify-between p-3 bg-dark-800 rounded-lg\"><div><p class=\"text-white text-sm font-medium\">Enable Write Mode</p><p class=\"text-gray-500 text-xs\">Allow INSERT, UPDATE, DELETE operations</p></div><label class=\"relative inline-flex items-center cursor-pointer\"><input type=\"checkbox\" x-model=\"writeEnabled\" class=\"sr-only peer\" @change=\"toggleWriteMode()\"><div class=\"w-11 h-6 bg-dark-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-red-500\"></div></label></div><div x-show=\"writeEnabled\" class=\"mt-3 p-3 bg-red-500/10 border border-red-500/20 rounded-lg\"><p class=\"text-red-400 text-xs flex items-center gap-2\"><i class=\"fas fa-shield-alt\"></i> Write mode is now enabled. Be careful with your queries!</p></div></div><!-- Other settings --><div class=\"space-y-3\"><div class=\"flex items-center justify-between\"><span class=\"text-gray-300 text-sm\">Rows per page</span> <select x-model=\"pageSize\" class=\"input text-sm w-24\"><option value=\"25\">25</option> <option value=\"50\">50</option> <option value=\"100\">100</option> <option value=\"500\">500</option></select></div></div><div class=\"flex justify-end mt-6\"><button @click=\"showWriteModal = false\" class=\"btn-primary\">Done</button></div></div></div></div></div><script>\n\t\tfunction dbBrowser() {\n\t\t\treturn {\n\t\t\t\tshowWriteModal: false,\n\t\t\t\twriteEnabled: false,\n\t\t\t\tpageSize: 50,\n\t\t\t\ttableFilter: '',\n\t\t\t\tconnID: '',\n\n\t\t\t\tinit() {\n\t\t\t\t\tthis.writeEnabled = this.$el.dataset.writeEnabled === 'true';\n\t\t\t\t\tthis.connID = this.$el.dataset.connId || '';\n\t\t\t\t},\n\n\t\t\t\ttoggleWriteMode() {\n\t\t\t\t\tfetch(`/connections/database/${this.connID}/write-mode`, {\n\t\t\t\t\t\tmethod: 'POST',\n\t\t\t\t\t\theaders: { 'Content-Type': 'application/json', 'X-CSRF-Token': document.querySelector('meta[name=csrf-token]')?.content || '' },\n\t\t\t\t\t\tbody: JSON.stringify({ enabled: this.writeEnabled })\n\t\t\t\t\t}).then(resp => {\n\t\t\t\t\t\tif (resp.ok) { location.reload(); }\n\t\t\t\t\t\telse if (window.usulnet) { window.usulnet.toast('Failed to toggle write mode', 'error'); }\n\t\t\t\t\t}).catch(() => {\n\t\t\t\t\t\tif (window.usulnet) { window.usulnet.toast('Network error toggling write mode', 'error'); }\n\t\t\t\t\t});\n\t\t\t\t},\n\n\t\t\t\tfilterTables() {\n\t\t\t\t\t// Client-side filtering for tables\n\t\t\t\t\tconst filter = this.tableFilter.toLowerCase();\n\t\t\t\t\tdocument.querySelectorAll('[data-table-item]').forEach(el => {\n\t\t\t\t\t\tconst name = el.dataset.tableName.toLowerCase();\n\t\t\t\t\t\tel.style.display = name.includes(filter) ? '' : 'none';\n\t\t\t\t\t});\n\t\t\t\t}\n\t\t\t};\n\t\t}\n\t\t</script>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 64, "</div><!-- Write Mode Modal (Danger Zone) --><div x-show=\"showWriteModal\" x-cloak class=\"fixed inset-0 z-50 overflow-y-auto\"><div class=\"flex min-h-screen items-center justify-center p-4\"><div class=\"fixed inset-0 bg-black/60\" @click=\"showWriteModal = false\"></div><div class=\"relative card w-full max-w-md p-6\"><h3 class=\"text-lg font-semibold text-white mb-4\"><i class=\"fas fa-cog text-gray-400 mr-2\"></i>Browser Settings</h3><!-- Danger Zone --><div class=\"border border-red-500/30 rounded-lg p-4 bg-red-500/5 mb-4\"><h4 class=\"text-red-400 font-medium flex items-center gap-2 mb-2\"><i class=\"fas fa-exclamation-triangle\"></i> Danger Zone</h4><p class=\"text-gray-400 text-sm mb-3\">Enabling write mode allows you to modify, insert, and delete data directly. This can cause <strong class=\"text-red-400\">irreversible data loss</strong>.</p><div class=\"flex items-center justify-between p-3 bg-dark-800 rounded-lg\"><div><p class=\"text-white text-sm font-medium\">Enable Write Mode</p><p class=\"text-gray-500 text-xs\">Allow INSERT, UPDATE, DELETE operations</p></div><label class=\"relative inline-flex items-center cursor-pointer\"><input type=\"checkbox\" x-model=\"writeEnabled\" class=\"sr-only peer\" @change=\"toggleWriteMode()\"><div class=\"w-11 h-6 bg-dark-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-red-500\"></div></label></div><div x-show=\"writeEnabled\" class=\"mt-3 p-3 bg-red-500/10 border border-red-500/20 rounded-lg\"><p class=\"text-red-400 text-xs flex items-center gap-2\"><i class=\"fas fa-shield-alt\"></i> Write mode is now enabled. Be careful with your queries!</p></div></div><!-- Other settings --><div class=\"space-y-3\"><div class=\"flex items-center justify-between\"><span class=\"text-gray-300 text-sm\">Rows per page</span> <select x-model=\"pageSize\" class=\"input text-sm w-24\"><option value=\"25\">25</option> <option value=\"50\">50</option> <option value=\"100\">100</option> <option value=\"500\">500</option></select></div></div><div class=\"flex justify-end mt-6\"><button @click=\"showWriteModal = false\" class=\"btn-primary\">Done</button></div></div></div></div></div><script>\n\t\tfunction dbBrowser() {\n\t\t\treturn {\n\t\t\t\tshowWriteModal: false,\n\t\t\t\twriteEnabled: false,\n\t\t\t\tpageSize: 50,\n\t\t\t\ttableFilter: '',\n\t\t\t\tconnID: '',\n\n\t\t\t\tinit() {\n\t\t\t\t\tthis.writeEnabled = this.$el.dataset.writeEnabled === 'true';\n\t\t\t\t\tthis.connID = this.$el.dataset.connId || '';\n\t\t\t\t},\n\n\t\t\t\ttoggleWriteMode() {\n\t\t\t\t\tfetch(`/connections/database/${this.connID}/write-mode`, {\n\t\t\t\t\t\tmethod: 'POST',\n\t\t\t\t\t\theaders: { 'Content-Type': 'application/json' },\n\t\t\t\t\t\tbody: JSON.stringify({ enabled: this.writeEnabled })\n\t\t\t\t\t}).then(() => {\n\t\t\t\t\t\tlocation.reload();\n\t\t\t\t\t});\n\t\t\t\t},\n\n\t\t\t\tfilterTables() {\n\t\t\t\t\t// Client-side filtering for tables\n\t\t\t\t\tconst filter = this.tableFilter.toLowerCase();\n\t\t\t\t\tdocument.querySelectorAll('[data-table-item]').forEach(el => {\n\t\t\t\t\t\tconst name = el.dataset.tableName.toLowerCase();\n\t\t\t\t\t\tel.style.display = name.includes(filter) ? '' : 'none';\n\t\t\t\t\t});\n\t\t\t\t}\n\t\t\t};\n\t\t}\n\t\t</script>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -805,11 +805,8 @@ func boolToString(b bool) string {
 
 func testDbConnection(id string) templ.ComponentScript {
 	return templ.ComponentScript{
-		Name: `__templ_testDbConnection_f242`,
-		Function: `function __templ_testDbConnection_f242(id){fetch(` + "`" + `/connections/database/${id}/test` + "`" + `, {
-		method: 'POST',
-		headers: { 'X-CSRF-Token': document.querySelector('meta[name=csrf-token]')?.content || '' }
-	})
+		Name: `__templ_testDbConnection_cfa5`,
+		Function: `function __templ_testDbConnection_cfa5(id){fetch(` + "`" + `/connections/database/${id}/test` + "`" + `, { method: 'POST' })
 		.then(r => r.json())
 		.then(data => {
 			if (data.success) {
@@ -820,8 +817,8 @@ func testDbConnection(id string) templ.ComponentScript {
 		})
 		.catch(err => { console.error('Connection test failed:', err); });
 }`,
-		Call:       templ.SafeScript(`__templ_testDbConnection_f242`, id),
-		CallInline: templ.SafeScriptInline(`__templ_testDbConnection_f242`, id),
+		Call:       templ.SafeScript(`__templ_testDbConnection_cfa5`, id),
+		CallInline: templ.SafeScriptInline(`__templ_testDbConnection_cfa5`, id),
 	}
 }
 

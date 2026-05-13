@@ -126,12 +126,12 @@ func (h *ConfigHandler) Routes() chi.Router {
 
 // CreateVariableRequest represents a variable creation request.
 type CreateVariableRequest struct {
-	Name         string  `json:"name" validate:"required,min=1,max=255"`
-	Value        string  `json:"value" validate:"required"`
-	Type         string  `json:"type" validate:"required,oneof=plain secret computed"`
-	Scope        string  `json:"scope" validate:"required,oneof=global template container stack"`
-	ScopeID      *string `json:"scope_id,omitempty" validate:"omitempty,uuid"`
-	Description  *string `json:"description,omitempty" validate:"omitempty,max=1024"`
+	Name         string  `json:"name"`
+	Value        string  `json:"value"`
+	Type         string  `json:"type"`  // plain, secret, computed
+	Scope        string  `json:"scope"` // global, template, container, stack
+	ScopeID      *string `json:"scope_id,omitempty"`
+	Description  *string `json:"description,omitempty"`
 	IsRequired   bool    `json:"is_required,omitempty"`
 	DefaultValue *string `json:"default_value,omitempty"`
 }
@@ -139,40 +139,40 @@ type CreateVariableRequest struct {
 // UpdateVariableRequest represents a variable update request.
 type UpdateVariableRequest struct {
 	Value        *string `json:"value,omitempty"`
-	Description  *string `json:"description,omitempty" validate:"omitempty,max=1024"`
+	Description  *string `json:"description,omitempty"`
 	IsRequired   *bool   `json:"is_required,omitempty"`
 	DefaultValue *string `json:"default_value,omitempty"`
 }
 
 // RollbackVariableRequest represents a variable rollback request.
 type RollbackVariableRequest struct {
-	Version int `json:"version" validate:"required,min=1"`
+	Version int `json:"version"`
 }
 
 // CreateTemplateRequest represents a template creation request.
 type CreateTemplateRequest struct {
-	Name        string  `json:"name" validate:"required,min=1,max=255"`
-	Description *string `json:"description,omitempty" validate:"omitempty,max=1024"`
+	Name        string  `json:"name"`
+	Description *string `json:"description,omitempty"`
 	IsDefault   bool    `json:"is_default,omitempty"`
-	CopyFrom    *string `json:"copy_from,omitempty" validate:"omitempty,uuid"`
+	CopyFrom    *string `json:"copy_from,omitempty"`
 }
 
 // UpdateTemplateRequest represents a template update request.
 type UpdateTemplateRequest struct {
-	Name        *string `json:"name,omitempty" validate:"omitempty,min=1,max=255"`
-	Description *string `json:"description,omitempty" validate:"omitempty,max=1024"`
+	Name        *string `json:"name,omitempty"`
+	Description *string `json:"description,omitempty"`
 	IsDefault   *bool   `json:"is_default,omitempty"`
 }
 
 // ExportConfigRequest represents a config export request.
 type ExportConfigRequest struct {
-	Password *string `json:"password,omitempty" validate:"omitempty,min=8"`
+	Password *string `json:"password,omitempty"`
 }
 
 // ImportConfigRequest represents a config import request.
 type ImportConfigRequest struct {
-	Data      string  `json:"data" validate:"required"`
-	Password  *string `json:"password,omitempty" validate:"omitempty,min=8"`
+	Data      string  `json:"data"`
+	Password  *string `json:"password,omitempty"`
 	Overwrite bool    `json:"overwrite,omitempty"`
 }
 
@@ -852,10 +852,10 @@ func toTemplateResponse(t *models.ConfigTemplate) TemplateResponse {
 
 // SyncConfigRequest represents a sync configuration request.
 type SyncConfigRequest struct {
-	HostID        string            `json:"host_id" validate:"required,uuid"`
-	ContainerID   string            `json:"container_id" validate:"required"`
+	HostID        string            `json:"host_id"`
+	ContainerID   string            `json:"container_id"`
 	ContainerName string            `json:"container_name"`
-	TemplateID    *string           `json:"template_id,omitempty" validate:"omitempty,uuid"`
+	TemplateID    *string           `json:"template_id,omitempty"`
 	TemplateName  *string           `json:"template_name,omitempty"`
 	Overrides     map[string]string `json:"overrides,omitempty"`
 	Force         bool              `json:"force,omitempty"`
@@ -863,9 +863,9 @@ type SyncConfigRequest struct {
 
 // BulkSyncRequest represents a bulk sync request.
 type BulkSyncRequest struct {
-	HostID       string            `json:"host_id" validate:"required,uuid"`
-	ContainerIDs []string          `json:"container_ids" validate:"required,min=1"`
-	TemplateID   *string           `json:"template_id,omitempty" validate:"omitempty,uuid"`
+	HostID       string            `json:"host_id"`
+	ContainerIDs []string          `json:"container_ids"`
+	TemplateID   *string           `json:"template_id,omitempty"`
 	Variables    map[string]string `json:"variables,omitempty"`
 	Force        bool              `json:"force,omitempty"`
 }

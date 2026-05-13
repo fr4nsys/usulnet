@@ -584,11 +584,6 @@ func (h *Handler) RuntimeMonitorAll(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if h.services == nil {
-		h.jsonError(w, "Service registry not configured", http.StatusServiceUnavailable)
-		return
-	}
-
 	hostID := h.services.Containers().GetHostID()
 	if err := h.runtimeSecSvc.MonitorAllContainers(r.Context(), hostID); err != nil {
 		h.jsonError(w, "Monitoring failed: "+err.Error(), http.StatusInternalServerError)
@@ -606,7 +601,7 @@ func (h *Handler) RuntimeMonitorAll(w http.ResponseWriter, r *http.Request) {
 // DashboardLayoutsJSON returns the user's dashboard layouts.
 func (h *Handler) DashboardLayoutsJSON(w http.ResponseWriter, r *http.Request) {
 	if h.dashboardSvc == nil {
-		h.jsonError(w, "dashboard service not available", http.StatusServiceUnavailable)
+		h.jsonError(w, "dashboard service not available", http.StatusNotImplemented)
 		return
 	}
 
@@ -633,7 +628,7 @@ func (h *Handler) DashboardLayoutsJSON(w http.ResponseWriter, r *http.Request) {
 // DashboardLayoutCreateJSON creates a new dashboard layout.
 func (h *Handler) DashboardLayoutCreateJSON(w http.ResponseWriter, r *http.Request) {
 	if h.dashboardSvc == nil {
-		h.jsonError(w, "dashboard service not available", http.StatusServiceUnavailable)
+		h.jsonError(w, "dashboard service not available", http.StatusNotImplemented)
 		return
 	}
 
@@ -663,7 +658,7 @@ func (h *Handler) DashboardLayoutCreateJSON(w http.ResponseWriter, r *http.Reque
 // DashboardLayoutGetJSON returns a single dashboard layout by ID.
 func (h *Handler) DashboardLayoutGetJSON(w http.ResponseWriter, r *http.Request) {
 	if h.dashboardSvc == nil {
-		h.jsonError(w, "dashboard service not available", http.StatusServiceUnavailable)
+		h.jsonError(w, "dashboard service not available", http.StatusNotImplemented)
 		return
 	}
 
@@ -692,7 +687,7 @@ func (h *Handler) DashboardLayoutGetJSON(w http.ResponseWriter, r *http.Request)
 // DashboardLayoutUpdateJSON updates a dashboard layout.
 func (h *Handler) DashboardLayoutUpdateJSON(w http.ResponseWriter, r *http.Request) {
 	if h.dashboardSvc == nil {
-		h.jsonError(w, "dashboard service not available", http.StatusServiceUnavailable)
+		h.jsonError(w, "dashboard service not available", http.StatusNotImplemented)
 		return
 	}
 
@@ -727,7 +722,7 @@ func (h *Handler) DashboardLayoutUpdateJSON(w http.ResponseWriter, r *http.Reque
 // DashboardLayoutDeleteJSON deletes a dashboard layout.
 func (h *Handler) DashboardLayoutDeleteJSON(w http.ResponseWriter, r *http.Request) {
 	if h.dashboardSvc == nil {
-		h.jsonError(w, "dashboard service not available", http.StatusServiceUnavailable)
+		h.jsonError(w, "dashboard service not available", http.StatusNotImplemented)
 		return
 	}
 
@@ -758,7 +753,7 @@ func (h *Handler) DashboardLayoutDeleteJSON(w http.ResponseWriter, r *http.Reque
 // DashboardWidgetsJSON returns all widgets for a layout.
 func (h *Handler) DashboardWidgetsJSON(w http.ResponseWriter, r *http.Request) {
 	if h.dashboardSvc == nil {
-		h.jsonError(w, "dashboard service not available", http.StatusServiceUnavailable)
+		h.jsonError(w, "dashboard service not available", http.StatusNotImplemented)
 		return
 	}
 
@@ -791,7 +786,7 @@ func (h *Handler) DashboardWidgetsJSON(w http.ResponseWriter, r *http.Request) {
 // DashboardWidgetCreateJSON adds a widget to a layout.
 func (h *Handler) DashboardWidgetCreateJSON(w http.ResponseWriter, r *http.Request) {
 	if h.dashboardSvc == nil {
-		h.jsonError(w, "dashboard service not available", http.StatusServiceUnavailable)
+		h.jsonError(w, "dashboard service not available", http.StatusNotImplemented)
 		return
 	}
 
@@ -827,7 +822,7 @@ func (h *Handler) DashboardWidgetCreateJSON(w http.ResponseWriter, r *http.Reque
 // DashboardWidgetUpdateJSON updates a widget.
 func (h *Handler) DashboardWidgetUpdateJSON(w http.ResponseWriter, r *http.Request) {
 	if h.dashboardSvc == nil {
-		h.jsonError(w, "dashboard service not available", http.StatusServiceUnavailable)
+		h.jsonError(w, "dashboard service not available", http.StatusNotImplemented)
 		return
 	}
 
@@ -862,7 +857,7 @@ func (h *Handler) DashboardWidgetUpdateJSON(w http.ResponseWriter, r *http.Reque
 // DashboardWidgetDeleteJSON removes a widget.
 func (h *Handler) DashboardWidgetDeleteJSON(w http.ResponseWriter, r *http.Request) {
 	if h.dashboardSvc == nil {
-		h.jsonError(w, "dashboard service not available", http.StatusServiceUnavailable)
+		h.jsonError(w, "dashboard service not available", http.StatusNotImplemented)
 		return
 	}
 

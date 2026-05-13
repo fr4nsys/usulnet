@@ -9,7 +9,6 @@ import (
 	"context"
 	"crypto/tls"
 	"fmt"
-	"strings"
 	"sync"
 	"time"
 
@@ -32,7 +31,7 @@ type Client struct {
 
 // Config holds NATS client configuration.
 type Config struct {
-	// URL is the NATS server URL (e.g., "natss://localhost:4222" for TLS, "nats://localhost:4222" for plain)
+	// URL is the NATS server URL (e.g., "nats://localhost:4222")
 	URL string
 	// Name is the client name for identification
 	Name string
@@ -66,7 +65,7 @@ type Config struct {
 // DefaultConfig returns a default NATS configuration.
 func DefaultConfig() Config {
 	return Config{
-		URL:              "natss://localhost:4222",
+		URL:              "nats://localhost:4222",
 		Name:             "usulnet-client",
 		MaxReconnects:    -1, // infinite
 		ReconnectWait:    2 * time.Second,
@@ -118,19 +117,9 @@ func (c *Client) Connect(ctx context.Context) error {
 		opts = append(opts, nats.UserInfo(c.config.Username, c.config.Password))
 	}
 
-	// TLS: auto-detect natss:// scheme (like rediss:// for Redis)
-	// natss:// is converted to tls:// (NATS native TLS scheme) with InsecureSkipVerify
-	// for self-signed CA. If an explicit TLSConfig is provided, it takes precedence.
-	connectURL := c.config.URL
+	// TLS
 	if c.config.TLSConfig != nil {
 		opts = append(opts, nats.Secure(c.config.TLSConfig))
-	} else if strings.HasPrefix(connectURL, "natss://") {
-		connectURL = "tls://" + strings.TrimPrefix(connectURL, "natss://")
-		opts = append(opts, nats.Secure(&tls.Config{
-			MinVersion:         tls.VersionTLS12,
-			InsecureSkipVerify: true, //nolint:gosec // Self-signed CA by default
-		}))
-		c.logger.Info("NATS TLS enabled (natss:// scheme, self-signed CA)")
 	}
 
 	// Callbacks
@@ -159,7 +148,7 @@ func (c *Client) Connect(ctx context.Context) error {
 		}),
 	)
 
-	conn, err := nats.Connect(connectURL, opts...)
+	conn, err := nats.Connect(c.config.URL, opts...)
 	if err != nil {
 		return fmt.Errorf("failed to connect to NATS: %w", err)
 	}

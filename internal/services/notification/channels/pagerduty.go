@@ -157,9 +157,9 @@ func (p *PagerDutyChannel) Send(ctx context.Context, msg RenderedMessage) error 
 // Test sends a test notification.
 func (p *PagerDutyChannel) Test(ctx context.Context) error {
 	return p.Send(ctx, RenderedMessage{
-		Title:     "USULNET Test Notification",
-		Body:      "This is a test notification from USULNET to verify PagerDuty integration.",
-		BodyPlain: "This is a test notification from USULNET to verify PagerDuty integration.",
+		Title:     "usulnet Test Notification",
+		Body:      "This is a test notification from usulnet to verify PagerDuty integration.",
+		BodyPlain: "This is a test notification from usulnet to verify PagerDuty integration.",
 		Priority:  PriorityNormal,
 		Timestamp: time.Now(),
 		Type:      TypeTestMessage,

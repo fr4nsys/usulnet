@@ -1716,7 +1716,7 @@ func TestRegisterChannel_SupportedTypes(t *testing.T) {
 		{"slack", map[string]interface{}{"webhook_url": "http://hooks.slack.com/test"}, false},
 		{"discord", map[string]interface{}{"webhook_url": "http://discord.com/api/webhooks/test"}, false},
 		{"telegram", map[string]interface{}{"bot_token": "tok", "chat_id": "123"}, false},
-		{"gotify", map[string]interface{}{"server_url": "http://gotify.local", "app_token": "tok"}, false},
+		{"gotify", map[string]interface{}{"url": "http://gotify.local", "token": "tok"}, false},
 		{"ntfy", map[string]interface{}{"url": "http://ntfy.local", "topic": "test"}, false},
 		{"pagerduty", map[string]interface{}{"routing_key": "key123"}, false},
 		{"opsgenie", map[string]interface{}{"api_key": "key123"}, false},

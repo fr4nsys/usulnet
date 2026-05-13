@@ -60,20 +60,17 @@ type Repository interface {
 // Service provides compliance framework management, automated assessment
 // execution, and report generation.
 type Service struct {
-	repo      Repository
-	docker    DockerInspector // nil-safe: falls back to status-based evaluation
-	logger    *logger.Logger
+	repo   Repository
+	logger *logger.Logger
 }
 
 // NewService creates a new compliance Service.
-// docker may be nil — controls will fall back to implementation-status-based evaluation.
-func NewService(repo *postgres.ComplianceFrameworkRepository, docker DockerInspector, log *logger.Logger) *Service {
+func NewService(repo *postgres.ComplianceFrameworkRepository, log *logger.Logger) *Service {
 	if log == nil {
 		log = logger.Nop()
 	}
 	return &Service{
 		repo:   repo,
-		docker: docker,
 		logger: log.Named("compliance"),
 	}
 }
@@ -222,10 +219,9 @@ func (s *Service) RunAssessment(ctx context.Context, frameworkID uuid.UUID, crea
 }
 
 // evaluateControl runs the automated check for a single control.  Controls
-// with a CheckQuery that maps to a Docker inspection check are evaluated
-// against live container state.  Controls without automated checks are
-// flagged for manual review.
-func (s *Service) evaluateControl(ctx context.Context, ctrl *models.ComplianceControl) ControlResult {
+// that carry a non-nil CheckQuery are evaluated; all others are flagged for
+// manual review.
+func (s *Service) evaluateControl(_ context.Context, ctrl *models.ComplianceControl) ControlResult {
 	result := ControlResult{
 		ControlID:   ctrl.ControlID,
 		ControlName: ctrl.Title,
@@ -243,24 +239,13 @@ func (s *Service) evaluateControl(ctx context.Context, ctrl *models.ComplianceCo
 		return result
 	}
 
-	// Try Docker-based evaluation if inspector is available
-	if s.docker != nil {
-		status, details, handled := runDockerCheck(ctx, s.docker, *ctrl.CheckQuery)
-		if handled {
-			result.Status = status
-			result.Details = details
-			return result
-		}
-	}
-
-	// Fallback: checks not handled by Docker inspection (policy/documentation
-	// checks, or Docker inspector unavailable) use implementation status.
+	// TODO: Wire to Docker inspection + OPA evaluation
 	if ctrl.ImplementationStatus == models.ControlStatusImplemented {
 		result.Status = "pass"
-		result.Details = fmt.Sprintf("Control verified via implementation status: %s", *ctrl.CheckQuery)
+		result.Details = fmt.Sprintf("Control verified: %s (implementation confirmed)", *ctrl.CheckQuery)
 	} else {
-		result.Status = "manual_review_required"
-		result.Details = fmt.Sprintf("Automated Docker check not available for '%s'; manual review required (status: %s)", *ctrl.CheckQuery, ctrl.ImplementationStatus)
+		result.Status = "fail"
+		result.Details = fmt.Sprintf("Control check '%s' failed: implementation_status is '%s', expected 'implemented'", *ctrl.CheckQuery, ctrl.ImplementationStatus)
 	}
 
 	return result

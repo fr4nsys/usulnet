@@ -139,9 +139,9 @@ func (n *NtfyChannel) Send(ctx context.Context, msg RenderedMessage) error {
 // Test sends a test notification.
 func (n *NtfyChannel) Test(ctx context.Context) error {
 	return n.Send(ctx, RenderedMessage{
-		Title:     "USULNET Test Notification",
-		Body:      "This is a test notification from USULNET to verify ntfy integration.",
-		BodyPlain: "This is a test notification from USULNET to verify ntfy integration.",
+		Title:     "usulnet Test Notification",
+		Body:      "This is a test notification from usulnet to verify ntfy integration.",
+		BodyPlain: "This is a test notification from usulnet to verify ntfy integration.",
 		Priority:  PriorityNormal,
 		Timestamp: time.Now(),
 		Type:      TypeTestMessage,

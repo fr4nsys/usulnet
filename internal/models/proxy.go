@@ -18,7 +18,7 @@ const (
 	ProxySSLModeAuto     ProxySSLMode = "auto"      // Let's Encrypt HTTP challenge
 	ProxySSLModeDNS      ProxySSLMode = "dns"       // Let's Encrypt DNS challenge (supports wildcards)
 	ProxySSLModeCustom   ProxySSLMode = "custom"    // User-provided certificate
-	ProxySSLModeInternal ProxySSLMode = "internal"  // Self-signed certificate (trusted locally)
+	ProxySSLModeInternal ProxySSLMode = "internal"  // Caddy's internal CA (self-signed, trusted locally)
 )
 
 // ProxyHostStatus represents the current status of a proxy host.
@@ -69,13 +69,6 @@ type ProxyHost struct {
 	EnableHTTP2       bool   `json:"enable_http2" db:"enable_http2"`
 	CustomHeaders     []ProxyHeader `json:"custom_headers,omitempty" db:"-"`
 
-	// Extended options
-	BlockExploits     bool       `json:"block_exploits" db:"block_exploits"`
-	CachingEnabled    bool       `json:"caching_enabled" db:"caching_enabled"`
-	CustomNginxConfig string     `json:"custom_nginx_config,omitempty" db:"custom_nginx_config"`
-	HSTSSubdomains    bool       `json:"hsts_subdomains" db:"hsts_subdomains"`
-	AccessListID      *uuid.UUID `json:"access_list_id,omitempty" db:"access_list_id"`
-
 	// Health check
 	HealthCheckEnabled  bool   `json:"health_check_enabled" db:"health_check_enabled"`
 	HealthCheckPath     string `json:"health_check_path,omitempty" db:"health_check_path"`
@@ -85,9 +78,6 @@ type ProxyHost struct {
 	ContainerID   string `json:"container_id,omitempty" db:"container_id"`
 	ContainerName string `json:"container_name,omitempty" db:"container_name"`
 	AutoCreated   bool   `json:"auto_created" db:"auto_created"`
-
-	// Loaded relations (not persisted directly, populated by service)
-	Locations []ProxyLocation `json:"locations,omitempty" db:"-"`
 
 	// Metadata
 	CreatedBy *uuid.UUID `json:"created_by,omitempty" db:"created_by"`
@@ -157,30 +147,25 @@ type ProxyAuditLog struct {
 
 // CreateProxyHostInput is the input for creating a new proxy host.
 type CreateProxyHostInput struct {
-	Name              string              `json:"name" validate:"required,max=255"`
-	Domains           []string            `json:"domains" validate:"required,min=1,dive,required"`
-	UpstreamScheme    ProxyUpstreamScheme `json:"upstream_scheme" validate:"required,oneof=http https h2c"`
-	UpstreamHost      string              `json:"upstream_host" validate:"required"`
-	UpstreamPort      int                 `json:"upstream_port" validate:"required,min=1,max=65535"`
-	UpstreamPath      string              `json:"upstream_path,omitempty"`
-	SSLMode           ProxySSLMode        `json:"ssl_mode" validate:"required,oneof=none auto dns custom internal"`
-	SSLForceHTTPS     bool                `json:"ssl_force_https"`
-	CertificateID     *uuid.UUID          `json:"certificate_id,omitempty"`
-	DNSProviderID     *uuid.UUID          `json:"dns_provider_id,omitempty"`
-	EnableWebSocket   bool                `json:"enable_websocket"`
-	EnableCompression bool                `json:"enable_compression"`
-	EnableHSTS        bool                `json:"enable_hsts"`
-	EnableHTTP2       bool                `json:"enable_http2"`
-	BlockExploits     bool                `json:"block_exploits"`
-	CachingEnabled    bool                `json:"caching_enabled"`
-	CustomNginxConfig string              `json:"custom_nginx_config,omitempty"`
-	HSTSSubdomains    bool                `json:"hsts_subdomains"`
-	AccessListID      *uuid.UUID          `json:"access_list_id,omitempty"`
-	HealthCheckEnabled  bool              `json:"health_check_enabled"`
-	HealthCheckPath     string            `json:"health_check_path,omitempty"`
-	HealthCheckInterval int               `json:"health_check_interval,omitempty"`
-	ContainerID       string              `json:"container_id,omitempty"`
-	ContainerName     string              `json:"container_name,omitempty"`
+	Name             string              `json:"name" validate:"required,max=255"`
+	Domains          []string            `json:"domains" validate:"required,min=1,dive,required"`
+	UpstreamScheme   ProxyUpstreamScheme `json:"upstream_scheme" validate:"required,oneof=http https h2c"`
+	UpstreamHost     string              `json:"upstream_host" validate:"required"`
+	UpstreamPort     int                 `json:"upstream_port" validate:"required,min=1,max=65535"`
+	UpstreamPath     string              `json:"upstream_path,omitempty"`
+	SSLMode          ProxySSLMode        `json:"ssl_mode" validate:"required,oneof=none auto dns custom internal"`
+	SSLForceHTTPS    bool                `json:"ssl_force_https"`
+	CertificateID    *uuid.UUID          `json:"certificate_id,omitempty"`
+	DNSProviderID    *uuid.UUID          `json:"dns_provider_id,omitempty"`
+	EnableWebSocket  bool                `json:"enable_websocket"`
+	EnableCompression bool               `json:"enable_compression"`
+	EnableHSTS       bool                `json:"enable_hsts"`
+	EnableHTTP2      bool                `json:"enable_http2"`
+	HealthCheckEnabled  bool             `json:"health_check_enabled"`
+	HealthCheckPath     string           `json:"health_check_path,omitempty"`
+	HealthCheckInterval int              `json:"health_check_interval,omitempty"`
+	ContainerID      string              `json:"container_id,omitempty"`
+	ContainerName    string              `json:"container_name,omitempty"`
 }
 
 // UpdateProxyHostInput is the input for updating a proxy host.
@@ -200,134 +185,34 @@ type UpdateProxyHostInput struct {
 	EnableCompression *bool                `json:"enable_compression,omitempty"`
 	EnableHSTS        *bool                `json:"enable_hsts,omitempty"`
 	EnableHTTP2       *bool                `json:"enable_http2,omitempty"`
-	BlockExploits     *bool                `json:"block_exploits,omitempty"`
-	CachingEnabled    *bool                `json:"caching_enabled,omitempty"`
-	CustomNginxConfig *string              `json:"custom_nginx_config,omitempty"`
-	HSTSSubdomains    *bool                `json:"hsts_subdomains,omitempty"`
-	AccessListID      *uuid.UUID           `json:"access_list_id,omitempty"`
 	HealthCheckEnabled  *bool              `json:"health_check_enabled,omitempty"`
 	HealthCheckPath     *string            `json:"health_check_path,omitempty"`
 	HealthCheckInterval *int               `json:"health_check_interval,omitempty"`
 }
 
-// ---- Proxy Redirection ----
-
-// ProxyRedirection represents a redirect-only proxy host (no upstream, just 3xx redirect).
-type ProxyRedirection struct {
-	ID              uuid.UUID    `json:"id" db:"id"`
-	HostID          uuid.UUID    `json:"host_id" db:"host_id"`
-	Domains         []string     `json:"domains" db:"domains"`
-	ForwardScheme   string       `json:"forward_scheme" db:"forward_scheme"`
-	ForwardDomain   string       `json:"forward_domain" db:"forward_domain"`
-	ForwardHTTPCode int          `json:"forward_http_code" db:"forward_http_code"`
-	PreservePath    bool         `json:"preserve_path" db:"preserve_path"`
-	SSLMode         ProxySSLMode `json:"ssl_mode" db:"ssl_mode"`
-	SSLForceHTTPS   bool         `json:"ssl_force_https" db:"ssl_force_https"`
-	CertificateID   *uuid.UUID   `json:"certificate_id,omitempty" db:"certificate_id"`
-	Enabled         bool         `json:"enabled" db:"enabled"`
-	CreatedAt       time.Time    `json:"created_at" db:"created_at"`
-	UpdatedAt       time.Time    `json:"updated_at" db:"updated_at"`
-}
-
-// ---- Proxy Stream (TCP/UDP) ----
-
-// ProxyStream represents a TCP/UDP stream forwarding rule (nginx stream module).
-type ProxyStream struct {
-	ID             uuid.UUID `json:"id" db:"id"`
-	HostID         uuid.UUID `json:"host_id" db:"host_id"`
-	IncomingPort   int       `json:"incoming_port" db:"incoming_port"`
-	ForwardingHost string    `json:"forwarding_host" db:"forwarding_host"`
-	ForwardingPort int       `json:"forwarding_port" db:"forwarding_port"`
-	TCPForwarding  bool      `json:"tcp_forwarding" db:"tcp_forwarding"`
-	UDPForwarding  bool      `json:"udp_forwarding" db:"udp_forwarding"`
-	Enabled        bool      `json:"enabled" db:"enabled"`
-	CreatedAt      time.Time `json:"created_at" db:"created_at"`
-	UpdatedAt      time.Time `json:"updated_at" db:"updated_at"`
-}
-
-// ---- Proxy Dead Host (404) ----
-
-// ProxyDeadHost represents a domain that should always return 404.
-type ProxyDeadHost struct {
-	ID            uuid.UUID    `json:"id" db:"id"`
-	HostID        uuid.UUID    `json:"host_id" db:"host_id"`
-	Domains       []string     `json:"domains" db:"domains"`
-	SSLMode       ProxySSLMode `json:"ssl_mode" db:"ssl_mode"`
-	SSLForceHTTPS bool         `json:"ssl_force_https" db:"ssl_force_https"`
-	CertificateID *uuid.UUID   `json:"certificate_id,omitempty" db:"certificate_id"`
-	Enabled       bool         `json:"enabled" db:"enabled"`
-	CreatedAt     time.Time    `json:"created_at" db:"created_at"`
-	UpdatedAt     time.Time    `json:"updated_at" db:"updated_at"`
-}
-
-// ---- Proxy Access List ----
-
-// ProxyAccessList represents an access control list (HTTP basic auth + IP allow/deny).
-type ProxyAccessList struct {
-	ID         uuid.UUID             `json:"id" db:"id"`
-	HostID     uuid.UUID             `json:"host_id" db:"host_id"`
-	Name       string                `json:"name" db:"name"`
-	SatisfyAny bool                  `json:"satisfy_any" db:"satisfy_any"`
-	PassAuth   bool                  `json:"pass_auth" db:"pass_auth"`
-	Enabled    bool                  `json:"enabled" db:"enabled"`
-	CreatedAt  time.Time             `json:"created_at" db:"created_at"`
-	UpdatedAt  time.Time             `json:"updated_at" db:"updated_at"`
-	// Loaded relations
-	Items   []ProxyAccessListAuth   `json:"items,omitempty" db:"-"`
-	Clients []ProxyAccessListClient `json:"clients,omitempty" db:"-"`
-}
-
-// ProxyAccessListAuth is a username/password entry in an access list.
-type ProxyAccessListAuth struct {
-	ID           uuid.UUID `json:"id" db:"id"`
-	AccessListID uuid.UUID `json:"access_list_id" db:"access_list_id"`
-	Username     string    `json:"username" db:"username"`
-	PasswordHash string    `json:"-" db:"password_hash"`
-}
-
-// ProxyAccessListClient is an IP allow/deny entry in an access list.
-type ProxyAccessListClient struct {
-	ID           uuid.UUID `json:"id" db:"id"`
-	AccessListID uuid.UUID `json:"access_list_id" db:"access_list_id"`
-	Address      string    `json:"address" db:"address"`
-	Directive    string    `json:"directive" db:"directive"` // "allow" or "deny"
-}
-
-// ---- Proxy Location (per-path routing) ----
-
-// ProxyLocation represents a custom location block within a proxy host.
-type ProxyLocation struct {
-	ID             uuid.UUID `json:"id" db:"id"`
-	ProxyHostID    uuid.UUID `json:"proxy_host_id" db:"proxy_host_id"`
-	Path           string    `json:"path" db:"path"`
-	UpstreamScheme string    `json:"upstream_scheme" db:"upstream_scheme"`
-	UpstreamHost   string    `json:"upstream_host" db:"upstream_host"`
-	UpstreamPort   int       `json:"upstream_port" db:"upstream_port"`
-	Enabled        bool      `json:"enabled" db:"enabled"`
-}
-
-// Docker labels for auto-proxy discovery.
+// Docker labels for Caddy auto-proxy discovery.
 const (
-	LabelProxyDomain    = "usulnet.proxy.domain"
-	LabelProxyPort      = "usulnet.proxy.port"
-	LabelProxySSL       = "usulnet.proxy.ssl"
-	LabelProxyWebsocket = "usulnet.proxy.websocket"
+	LabelCaddyDomain    = "usulnet.proxy.domain"
+	LabelCaddyPort      = "usulnet.proxy.port"
+	LabelCaddySSL       = "usulnet.proxy.ssl"
+	LabelCaddyWebsocket = "usulnet.proxy.websocket"
 )
 
-// Supported DNS providers for ACME DNS-01 challenge (wildcard certificates).
+// Supported DNS providers for Caddy DNS challenge.
+// These correspond to caddy-dns modules that must be compiled into the Caddy binary.
 var SupportedDNSProviders = map[string]string{
-	"cloudflare":     "Cloudflare DNS API",
-	"route53":        "AWS Route 53",
-	"duckdns":        "Duck DNS",
-	"digitalocean":   "DigitalOcean DNS",
-	"godaddy":        "GoDaddy DNS",
-	"namecheap":      "Namecheap DNS",
-	"hetzner":        "Hetzner DNS",
-	"ovh":            "OVH DNS",
-	"gandi":          "Gandi DNS",
-	"vultr":          "Vultr DNS",
-	"linode":         "Linode DNS",
-	"googleclouddns": "Google Cloud DNS",
-	"azure":          "Azure DNS",
-	"porkbun":        "Porkbun DNS",
+	"cloudflare":     "github.com/caddy-dns/cloudflare",
+	"route53":        "github.com/caddy-dns/route53",
+	"duckdns":        "github.com/caddy-dns/duckdns",
+	"digitalocean":   "github.com/caddy-dns/digitalocean",
+	"godaddy":        "github.com/caddy-dns/godaddy",
+	"namecheap":      "github.com/caddy-dns/namecheap",
+	"hetzner":        "github.com/caddy-dns/hetzner",
+	"ovh":            "github.com/caddy-dns/ovh",
+	"gandi":          "github.com/caddy-dns/gandi",
+	"vultr":          "github.com/caddy-dns/vultr",
+	"linode":         "github.com/caddy-dns/linode",
+	"googleclouddns": "github.com/caddy-dns/googleclouddns",
+	"azure":          "github.com/caddy-dns/azure",
+	"porkbun":        "github.com/caddy-dns/porkbun",
 }

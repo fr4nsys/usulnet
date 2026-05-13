@@ -52,13 +52,17 @@ type RouterConfig struct {
 	// (e.g., checking if a token has been revoked via the Redis blacklist).
 	TokenValidator middleware.TokenValidatorFunc
 
-	// OTelTraceMiddleware is an optional OpenTelemetry tracing middleware.
-	// When set, it creates a span for every HTTP request.
-	OTelTraceMiddleware func(http.Handler) http.Handler
+	// ReconEnabled toggles the recon / metadata route subtree. When
+	// false, all /api/v1/recon/* and /api/v1/metadata/* requests
+	// short-circuit with a 404 (module_disabled). See
+	// docs/recon.md §7.4 and docs/v26.5/technical-notes.md.
+	ReconEnabled bool
 
-	// OTelMetricsMiddleware is an optional OpenTelemetry metrics middleware.
-	// When set, it records HTTP server metrics for every request.
-	OTelMetricsMiddleware func(http.Handler) http.Handler
+	// ReconAckChecker is consulted by the acknowledgement middleware
+	// before any recon/metadata request is served. It is nil-safe:
+	// a nil checker means "not acknowledged yet" and every gated
+	// route returns 409 acknowledgement_required.
+	ReconAckChecker middleware.ReconAckChecker
 }
 
 // DefaultRouterConfig returns a default router configuration.
@@ -97,12 +101,14 @@ type Handlers struct {
 	Audit         *handlers.AuditHandler
 	PasswordReset *handlers.PasswordResetHandler
 	Proxy         *handlers.ProxyHandler
+	NPM           *handlers.NPMHandler
 	SSH           *handlers.SSHHandler
 	OpenAPI       *handlers.OpenAPIHandler
 	Settings      *handlers.SettingsHandler
 	License       *handlers.LicenseHandler
 	Registry      *handlers.RegistryHandler
-	Calendar      *handlers.CalendarHandler
+	Recon         *handlers.ReconHandler
+	Metadata      *handlers.MetadataHandler
 }
 
 // NewRouter creates a new chi router with all routes configured.
@@ -121,14 +127,6 @@ func NewRouter(config RouterConfig, h *Handlers) chi.Router {
 
 	// Real IP extraction from proxy headers
 	r.Use(middleware.RealIP)
-
-	// OpenTelemetry tracing and metrics (no-op when not configured)
-	if config.OTelTraceMiddleware != nil {
-		r.Use(config.OTelTraceMiddleware)
-	}
-	if config.OTelMetricsMiddleware != nil {
-		r.Use(config.OTelMetricsMiddleware)
-	}
 
 	// Request logging
 	if config.Logger != nil {
@@ -212,12 +210,9 @@ func NewRouter(config RouterConfig, h *Handlers) chi.Router {
 		// -----------------------------------------------------------------
 		r.Group(func(r chi.Router) {
 			// JWT + API Key Authentication
-			// NOTE: query:token intentionally excluded from API routes — tokens in
-			// query strings leak into server logs, browser history, and Referer
-			// headers. Only WebSocket routes accept query:token (browser limitation).
 			r.Use(middleware.Auth(middleware.AuthConfig{
 				Secret:         config.JWTSecret,
-				TokenLookup:    "header:Authorization,cookie:auth_token",
+				TokenLookup:    "header:Authorization,query:token,cookie:auth_token",
 				APIKeyAuth:     config.APIKeyAuth,
 				TokenValidator: config.TokenValidator,
 			}))
@@ -289,9 +284,6 @@ func NewRouter(config RouterConfig, h *Handlers) chi.Router {
 				if h.Registry != nil {
 					r.Mount("/registries", h.Registry.Routes())
 				}
-				if h.Calendar != nil {
-					r.Mount("/calendar", h.Calendar.Routes())
-				}
 			})
 
 			// =============================================================
@@ -301,8 +293,9 @@ func NewRouter(config RouterConfig, h *Handlers) chi.Router {
 				r.Route("/proxy", func(r chi.Router) {
 					r.Use(middleware.RequireViewer)
 
-					// Health (viewer+)
+					// Health & Status (viewer+)
 					r.Get("/health", h.Proxy.GetHealth)
+					r.Get("/upstreams", h.Proxy.GetUpstreamStatus)
 
 					// Proxy Hosts
 					r.Route("/hosts", func(r chi.Router) {
@@ -345,11 +338,107 @@ func NewRouter(config RouterConfig, h *Handlers) chi.Router {
 					// Sync & Audit (operator+)
 					r.Group(func(r chi.Router) {
 						r.Use(middleware.RequireOperator)
-						r.Post("/sync", h.Proxy.SyncProxy)
+						r.Post("/sync", h.Proxy.SyncToCaddy)
 						r.Get("/audit-logs", h.Proxy.ListAuditLogs)
 					})
 				})
 			}
+
+			// NPM routes (for Nginx Proxy Manager integration)
+			if h.NPM != nil {
+				r.Route("/npm", func(r chi.Router) {
+					r.Use(middleware.RequireViewer)
+
+					// Connection Management
+					r.Route("/connections", func(r chi.Router) {
+						r.Get("/{hostID}", h.NPM.GetConnection)
+						r.Post("/{hostID}/test", h.NPM.TestConnection)
+
+						r.Group(func(r chi.Router) {
+							r.Use(middleware.RequireOperator)
+							r.Post("/", h.NPM.ConfigureConnection)
+							r.Put("/{id}", h.NPM.UpdateConnection)
+							r.Delete("/{id}", h.NPM.DeleteConnection)
+						})
+					})
+
+					// NPM Resources (per host)
+					r.Route("/{hostID}", func(r chi.Router) {
+						// Proxy Hosts
+						r.Get("/proxy-hosts", h.NPM.ListProxyHosts)
+						r.Get("/proxy-hosts/{proxyID}", h.NPM.GetProxyHost)
+						r.Group(func(r chi.Router) {
+							r.Use(middleware.RequireOperator)
+							r.Post("/proxy-hosts", h.NPM.CreateProxyHost)
+							r.Put("/proxy-hosts/{proxyID}", h.NPM.UpdateProxyHost)
+							r.Delete("/proxy-hosts/{proxyID}", h.NPM.DeleteProxyHost)
+							r.Post("/proxy-hosts/{proxyID}/enable", h.NPM.EnableProxyHost)
+							r.Post("/proxy-hosts/{proxyID}/disable", h.NPM.DisableProxyHost)
+						})
+
+						// Certificates
+						r.Get("/certificates", h.NPM.ListCertificates)
+						r.Group(func(r chi.Router) {
+							r.Use(middleware.RequireOperator)
+							r.Post("/certificates/letsencrypt", h.NPM.RequestLetsEncryptCertificate)
+							r.Delete("/certificates/{certID}", h.NPM.DeleteCertificate)
+						})
+
+						// Redirections
+						r.Get("/redirections", h.NPM.ListRedirections)
+						r.Group(func(r chi.Router) {
+							r.Use(middleware.RequireOperator)
+							r.Post("/redirections", h.NPM.CreateRedirection)
+							r.Delete("/redirections/{redirID}", h.NPM.DeleteRedirection)
+						})
+
+						// Access Lists
+						r.Get("/access-lists", h.NPM.ListAccessLists)
+						r.Group(func(r chi.Router) {
+							r.Use(middleware.RequireOperator)
+							r.Post("/access-lists", h.NPM.CreateAccessList)
+							r.Delete("/access-lists/{listID}", h.NPM.DeleteAccessList)
+						})
+
+						// Audit Logs
+						r.Get("/audit-logs", h.NPM.ListAuditLogs)
+					})
+				})
+			}
+
+			// =============================================================
+			// Recon / metadata (v26.5.0)
+			//
+			// Chain: auth (above) -> feature flag -> acknowledgement
+			// -> RBAC (per-route, inside each handler's Routes()).
+			// The /_ack endpoint is mounted on a sibling branch that
+			// skips the acknowledgement middleware so an admin can
+			// record consent without first satisfying it.
+			// =============================================================
+			r.Group(func(r chi.Router) {
+				r.Use(middleware.ReconFeatureFlag(config.ReconEnabled))
+
+				// Acknowledgement endpoint — admin-only, no ack
+				// middleware. Registered as an explicit route so we
+				// can keep the mounted subtree (which would otherwise
+				// claim the same /recon prefix) inside the gated
+				// group below.
+				if h.Recon != nil {
+					r.With(middleware.RequireAdmin).Post("/recon/_ack", h.Recon.Acknowledge)
+				}
+
+				// Gated subtree: every recon/metadata route below
+				// requires the legal-notice acknowledgement.
+				r.Group(func(r chi.Router) {
+					r.Use(middleware.ReconAcknowledgement(config.ReconAckChecker))
+					if h.Recon != nil {
+						r.Mount("/recon", h.Recon.Routes())
+					}
+					if h.Metadata != nil {
+						r.Mount("/metadata", h.Metadata.Routes())
+					}
+				})
+			})
 
 			// =============================================================
 			// Admin-only routes
@@ -429,7 +518,7 @@ func NewRouter(config RouterConfig, h *Handlers) chi.Router {
 		r.Group(func(r chi.Router) {
 			r.Use(middleware.Auth(middleware.AuthConfig{
 				Secret:         config.JWTSecret,
-				TokenLookup:    "header:Authorization,cookie:auth_token",
+				TokenLookup:    "header:Authorization,query:token",
 				APIKeyAuth:     config.APIKeyAuth,
 				TokenValidator: config.TokenValidator,
 			}))

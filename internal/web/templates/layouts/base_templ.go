@@ -108,7 +108,7 @@ func Base(data PageData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = partials.Sidebar(data.Active, data.User, data.Stats, data.Edition, data.EditionName, data.SidebarPrefs).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = partials.Sidebar(data.Active, data.User, data.Stats, data.Edition, data.EditionName, data.SidebarPrefs, data.ReconEnabled).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

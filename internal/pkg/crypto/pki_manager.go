@@ -94,54 +94,6 @@ func (m *PKIManager) EnsureHTTPSCert(customCert, customKey string, extraHosts ..
 	return certPath, keyPath, nil
 }
 
-// EnsurePostgresServerCert returns cert/key paths for the PostgreSQL server.
-// If valid certs exist on disk they are reused; otherwise new ones are generated.
-func (m *PKIManager) EnsurePostgresServerCert(hosts ...string) (certPath, keyPath string, err error) {
-	certPath = filepath.Join(m.dataDir, "postgres-server.crt")
-	keyPath = filepath.Join(m.dataDir, "postgres-server.key")
-
-	if valid, _ := m.isCertValid(certPath); valid {
-		return certPath, keyPath, nil
-	}
-
-	m.mu.RLock()
-	pair, err := m.ca.IssuePostgresServerCert(hosts...)
-	m.mu.RUnlock()
-	if err != nil {
-		return "", "", fmt.Errorf("pki: generate PostgreSQL server cert: %w", err)
-	}
-
-	if err := pair.SaveToDir(m.dataDir, "postgres-server"); err != nil {
-		return "", "", fmt.Errorf("pki: save PostgreSQL server cert: %w", err)
-	}
-
-	return certPath, keyPath, nil
-}
-
-// EnsureRedisServerCert returns cert/key paths for the Redis server.
-// If valid certs exist on disk they are reused; otherwise new ones are generated.
-func (m *PKIManager) EnsureRedisServerCert(hosts ...string) (certPath, keyPath string, err error) {
-	certPath = filepath.Join(m.dataDir, "redis-server.crt")
-	keyPath = filepath.Join(m.dataDir, "redis-server.key")
-
-	if valid, _ := m.isCertValid(certPath); valid {
-		return certPath, keyPath, nil
-	}
-
-	m.mu.RLock()
-	pair, err := m.ca.IssueRedisServerCert(hosts...)
-	m.mu.RUnlock()
-	if err != nil {
-		return "", "", fmt.Errorf("pki: generate Redis server cert: %w", err)
-	}
-
-	if err := pair.SaveToDir(m.dataDir, "redis-server"); err != nil {
-		return "", "", fmt.Errorf("pki: save Redis server cert: %w", err)
-	}
-
-	return certPath, keyPath, nil
-}
-
 // EnsureNATSServerCert returns cert/key paths for the NATS server.
 func (m *PKIManager) EnsureNATSServerCert(hosts ...string) (certPath, keyPath string, err error) {
 	certPath = filepath.Join(m.dataDir, "nats-server.crt")

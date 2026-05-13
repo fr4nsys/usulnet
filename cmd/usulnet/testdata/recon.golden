@@ -1,0 +1,25 @@
+Manage recon targets, profiles, scans, and findings.
+
+Every recon command talks to the running usulnet server over the
+local API. Configure the server via --server or $USULNET_API_URL,
+and authenticate via $USULNET_API_TOKEN.
+
+Usage:
+  usulnet recon [command]
+
+Available Commands:
+  findings    Inspect recon findings
+  profile     Manage recon profiles
+  scan        Manage recon scans
+  target      Manage recon targets
+
+Flags:
+  -h, --help            help for recon
+      --server string   usulnet API URL (default $USULNET_API_URL)
+      --token string    API token (default $USULNET_API_TOKEN)
+
+Global Flags:
+  -c, --config string   config file path (default: /etc/usulnet/config.yaml or ./config.yaml)
+      --output string   output format: table|json|yaml (default "table")
+
+Use "usulnet recon [command] --help" for more information about a command.

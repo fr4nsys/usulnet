@@ -142,7 +142,7 @@ type SecuritySummaryResponse struct {
 
 // UpdateIssueStatusRequest represents a request to update issue status.
 type UpdateIssueStatusRequest struct {
-	Status string `json:"status" validate:"required,oneof=open acknowledged resolved ignored false_positive"`
+	Status string `json:"status"`
 }
 
 // ============================================================================

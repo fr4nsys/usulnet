@@ -282,12 +282,12 @@ func (s *Service) DeleteVariable(ctx context.Context, id uuid.UUID, userID *uuid
 	// Get variable for audit
 	v, err := s.variableRepo.GetByID(ctx, id)
 	if err != nil {
-		return fmt.Errorf("delete variable %s: get variable: %w", id, err)
+		return err
 	}
 
 	// Delete
 	if err := s.variableRepo.Delete(ctx, id); err != nil {
-		return fmt.Errorf("delete variable %s: %w", id, err)
+		return err
 	}
 
 	// Audit log
@@ -527,11 +527,11 @@ func (s *Service) DeleteTemplate(ctx context.Context, id uuid.UUID, userID *uuid
 
 	t, err := s.templateRepo.GetByID(ctx, id)
 	if err != nil {
-		return fmt.Errorf("delete template %s: get template: %w", id, err)
+		return err
 	}
 
 	if err := s.templateRepo.Delete(ctx, id); err != nil {
-		return fmt.Errorf("delete template %s: %w", id, err)
+		return err
 	}
 
 	// Audit log
@@ -554,7 +554,7 @@ func (s *Service) SetDefaultTemplate(ctx context.Context, id uuid.UUID, userID *
 	log := logger.FromContext(ctx)
 
 	if err := s.templateRepo.SetDefault(ctx, id); err != nil {
-		return fmt.Errorf("set default template %s: %w", id, err)
+		return err
 	}
 
 	t, _ := s.templateRepo.GetByID(ctx, id)

@@ -53,7 +53,7 @@ func (h *Handler) ImageDetailTempl(w http.ResponseWriter, r *http.Request) {
 	// Populate container names that use this image
 	if image.Containers > 0 {
 		if cSvc := h.services.Containers(); cSvc != nil {
-			if containers, _, err := cSvc.List(ctx, nil); err == nil {
+			if containers, err := cSvc.List(ctx, nil); err == nil {
 				for _, c := range containers {
 					match := c.Image == image.PrimaryTag
 					if !match {
@@ -127,7 +127,7 @@ func (h *Handler) VolumeDetailTempl(w http.ResponseWriter, r *http.Request) {
 	containerSvc := h.services.Containers()
 	var allContainers []ContainerView
 	if containerSvc != nil {
-		allContainers, _, _ = containerSvc.List(ctx, nil)
+		allContainers, _ = containerSvc.List(ctx, nil)
 	}
 	containerStateByName := make(map[string]string, len(allContainers))
 	for _, c := range allContainers {
@@ -282,7 +282,7 @@ func (h *Handler) getStatsData(ctx context.Context) *layouts.StatsData {
 	}
 
 	// Get container counts
-	if containers, _, err := h.services.Containers().List(ctx, nil); err == nil {
+	if containers, err := h.services.Containers().List(ctx, nil); err == nil {
 		stats.ContainersTotal = len(containers)
 		for _, c := range containers {
 			if c.State == "running" {

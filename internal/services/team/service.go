@@ -164,7 +164,7 @@ func (s *Service) UpdateTeam(ctx context.Context, id uuid.UUID, name, descriptio
 func (s *Service) DeleteTeam(ctx context.Context, id uuid.UUID) error {
 	// Verify team exists
 	if _, err := s.teamRepo.GetByID(ctx, id); err != nil {
-		return fmt.Errorf("delete team %s: verify exists: %w", id, err)
+		return err
 	}
 	// Repo handles cascading deletes via ON DELETE CASCADE in DB schema
 	return s.teamRepo.Delete(ctx, id)
@@ -182,13 +182,13 @@ func (s *Service) AddMember(ctx context.Context, teamID, userID uuid.UUID, role 
 
 	// Check team exists
 	if _, err := s.teamRepo.GetByID(ctx, teamID); err != nil {
-		return fmt.Errorf("add member to team %s: verify team exists: %w", teamID, err)
+		return err
 	}
 
 	// Check not already a member
 	isMember, err := s.teamRepo.IsMember(ctx, teamID, userID)
 	if err != nil {
-		return fmt.Errorf("add member to team %s: check membership for user %s: %w", teamID, userID, err)
+		return err
 	}
 	if isMember {
 		return apperrors.New(apperrors.CodeBadRequest, "user is already a member of this team")
@@ -205,25 +205,7 @@ func (s *Service) AddMember(ctx context.Context, teamID, userID uuid.UUID, role 
 }
 
 // RemoveMember removes a user from a team.
-// Prevents removing the last owner to avoid orphaned teams.
 func (s *Service) RemoveMember(ctx context.Context, teamID, userID uuid.UUID) error {
-	// Check if this user is an owner, and if so, whether they're the last one
-	members, err := s.teamRepo.ListMembers(ctx, teamID)
-	if err != nil {
-		return fmt.Errorf("list team members: %w", err)
-	}
-	for _, m := range members {
-		if m.UserID == userID && m.RoleInTeam == models.TeamRoleOwner {
-			ownerCount, countErr := s.teamRepo.CountOwners(ctx, teamID)
-			if countErr != nil {
-				return fmt.Errorf("count team owners: %w", countErr)
-			}
-			if ownerCount <= 1 {
-				return fmt.Errorf("cannot remove the last owner — promote another member to owner first")
-			}
-			break
-		}
-	}
 	return s.teamRepo.RemoveMember(ctx, teamID, userID)
 }
 
@@ -255,7 +237,7 @@ func (s *Service) GrantAccess(ctx context.Context, teamID uuid.UUID, resourceTyp
 
 	// Check team exists
 	if _, err := s.teamRepo.GetByID(ctx, teamID); err != nil {
-		return fmt.Errorf("grant access to team %s: verify team exists: %w", teamID, err)
+		return err
 	}
 
 	perm := &models.ResourcePermission{
@@ -276,13 +258,6 @@ func (s *Service) RevokeAccess(ctx context.Context, teamID uuid.UUID, resourceTy
 // RevokeAccessByID removes a permission by its ID.
 func (s *Service) RevokeAccessByID(ctx context.Context, permID uuid.UUID) error {
 	return s.permRepo.RevokeByID(ctx, permID)
-}
-
-// RevokeAccessByIDForTeam removes a permission by its ID, but only if it belongs
-// to the specified team. This prevents IDOR attacks where a permission from another
-// team could be revoked by guessing the permission UUID.
-func (s *Service) RevokeAccessByIDForTeam(ctx context.Context, permID, teamID uuid.UUID) error {
-	return s.permRepo.RevokeByIDForTeam(ctx, permID, teamID)
 }
 
 // ListPermissions returns all permissions for a team.
@@ -314,8 +289,8 @@ func (s *Service) GetUserScope(ctx context.Context, userID string, userRole stri
 	teamsExist, err := s.teamRepo.Exists(ctx)
 	if err != nil {
 		s.logger.Error("failed to check if teams exist", "error", err)
-		// Fail closed: return an empty scope that shows nothing rather than
-		// granting full access on a transient DB error.
+		// On error, don't filter (fail open for usability)
+		scope.NoTeamsExist = true
 		return scope, nil
 	}
 	if !teamsExist {
@@ -325,14 +300,15 @@ func (s *Service) GetUserScope(ctx context.Context, userID string, userRole stri
 
 	uid, err := uuid.Parse(userID)
 	if err != nil {
-		// Invalid UUID, can't look up teams — return restrictive scope
+		// Invalid UUID, can't look up teams
 		return scope, nil
 	}
 
 	computed, err := s.permRepo.GetUserScope(ctx, uid)
 	if err != nil {
 		s.logger.Error("failed to compute user scope", "user_id", userID, "error", err)
-		// Fail closed: return empty scope on error rather than granting full access
+		// Fail open: don't filter on error
+		scope.NoTeamsExist = true
 		return scope, nil
 	}
 

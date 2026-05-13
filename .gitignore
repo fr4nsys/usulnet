@@ -9,6 +9,15 @@ bin/
 
 # Build artifacts
 tmp/
+build/
+
+# Test coverage artifacts
+coverage.out
+coverage.html
+
+# Go test binaries — `go test -c` / `go test -bench` leave one of these
+# under the package directory (e.g. tests/benchmarks/benchmarks.test).
+*.test
 
 # IDE
 .idea/

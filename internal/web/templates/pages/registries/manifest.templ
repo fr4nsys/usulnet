@@ -22,37 +22,37 @@ templ Manifest(data ManifestData) {
 	@layouts.Base(data.PageData) {
 		<div class="p-6 space-y-6">
 			<!-- Breadcrumb -->
-			<nav class="flex items-center space-x-2 text-sm text-gray-400">
-				<a href="/registries" class="hover:text-primary-400">Registries</a>
+			<nav class="flex items-center space-x-2 text-sm text-gray-500 dark:text-gray-400">
+				<a href="/registries" class="hover:text-primary-600 dark:hover:text-primary-400">Registries</a>
 				<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
-				<a href={ templ.SafeURL("/registries/" + data.RegistryID + "/browse") } class="hover:text-primary-400">{ data.RegName }</a>
+				<a href={ templ.SafeURL("/registries/" + data.RegistryID + "/browse") } class="hover:text-primary-600 dark:hover:text-primary-400">{ data.RegName }</a>
 				<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
-				<a href={ templ.SafeURL("/registries/" + data.RegistryID + "/browse/repos/" + data.RepoName) } class="hover:text-primary-400">{ data.RepoName }</a>
+				<a href={ templ.SafeURL("/registries/" + data.RegistryID + "/browse/repos/" + data.RepoName) } class="hover:text-primary-600 dark:hover:text-primary-400">{ data.RepoName }</a>
 				<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
-				<span class="text-white font-medium">{ data.Reference }</span>
+				<span class="text-gray-900 dark:text-white font-medium">{ data.Reference }</span>
 			</nav>
 
 			<div>
-				<h1 class="text-2xl font-bold text-white">{ data.RepoName }:{ data.Reference }</h1>
-				<p class="mt-1 text-sm text-gray-400">Image manifest details</p>
+				<h1 class="text-2xl font-bold text-gray-900 dark:text-white">{ data.RepoName }:{ data.Reference }</h1>
+				<p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Image manifest details</p>
 			</div>
 
-			<div class="bg-dark-800 rounded-lg overflow-hidden border border-dark-600">
-				<div class="px-6 py-4 border-b border-dark-600">
-					<h2 class="text-lg font-medium text-white">Manifest Details</h2>
+			<div class="bg-white dark:bg-gray-800 shadow rounded-lg overflow-hidden">
+				<div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+					<h2 class="text-lg font-medium text-gray-900 dark:text-white">Manifest Details</h2>
 				</div>
-				<dl class="divide-y divide-dark-600">
+				<dl class="divide-y divide-gray-200 dark:divide-gray-700">
 					<div class="px-6 py-4 sm:grid sm:grid-cols-3 sm:gap-4">
-						<dt class="text-sm font-medium text-gray-400">Digest</dt>
-						<dd class="mt-1 text-sm text-white sm:col-span-2 sm:mt-0 font-mono break-all">{ data.Digest }</dd>
+						<dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Digest</dt>
+						<dd class="mt-1 text-sm text-gray-900 dark:text-white sm:col-span-2 sm:mt-0 font-mono break-all">{ data.Digest }</dd>
 					</div>
 					<div class="px-6 py-4 sm:grid sm:grid-cols-3 sm:gap-4">
-						<dt class="text-sm font-medium text-gray-400">Media Type</dt>
-						<dd class="mt-1 text-sm text-white sm:col-span-2 sm:mt-0 font-mono">{ data.MediaType }</dd>
+						<dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Media Type</dt>
+						<dd class="mt-1 text-sm text-gray-900 dark:text-white sm:col-span-2 sm:mt-0 font-mono">{ data.MediaType }</dd>
 					</div>
 					<div class="px-6 py-4 sm:grid sm:grid-cols-3 sm:gap-4">
-						<dt class="text-sm font-medium text-gray-400">Size</dt>
-						<dd class="mt-1 text-sm text-white sm:col-span-2 sm:mt-0">
+						<dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Size</dt>
+						<dd class="mt-1 text-sm text-gray-900 dark:text-white sm:col-span-2 sm:mt-0">
 							if data.Size > 0 {
 								{ formatBytes(data.Size) }
 							} else {
@@ -62,24 +62,24 @@ templ Manifest(data ManifestData) {
 					</div>
 					if data.Platform != "" {
 						<div class="px-6 py-4 sm:grid sm:grid-cols-3 sm:gap-4">
-							<dt class="text-sm font-medium text-gray-400">Platform</dt>
-							<dd class="mt-1 text-sm text-white sm:col-span-2 sm:mt-0">{ data.Platform }</dd>
+							<dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Platform</dt>
+							<dd class="mt-1 text-sm text-gray-900 dark:text-white sm:col-span-2 sm:mt-0">{ data.Platform }</dd>
 						</div>
 					}
 					<div class="px-6 py-4 sm:grid sm:grid-cols-3 sm:gap-4">
-						<dt class="text-sm font-medium text-gray-400">Layers</dt>
-						<dd class="mt-1 text-sm text-white sm:col-span-2 sm:mt-0">{ fmt.Sprintf("%d", data.Layers) }</dd>
+						<dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Layers</dt>
+						<dd class="mt-1 text-sm text-gray-900 dark:text-white sm:col-span-2 sm:mt-0">{ fmt.Sprintf("%d", data.Layers) }</dd>
 					</div>
 				</dl>
 			</div>
 
 			<!-- Pull command -->
-			<div class="bg-dark-800 rounded-lg overflow-hidden border border-dark-600">
-				<div class="px-6 py-4 border-b border-dark-600">
-					<h2 class="text-lg font-medium text-white">Pull Command</h2>
+			<div class="bg-white dark:bg-gray-800 shadow rounded-lg overflow-hidden">
+				<div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+					<h2 class="text-lg font-medium text-gray-900 dark:text-white">Pull Command</h2>
 				</div>
 				<div class="px-6 py-4">
-					<div class="bg-dark-900 rounded-lg p-4 font-mono text-sm text-green-400 overflow-x-auto" x-data="{ copied: false }">
+					<div class="bg-gray-900 rounded-lg p-4 font-mono text-sm text-green-400 overflow-x-auto" x-data="{ copied: false }">
 						<div class="flex items-center justify-between">
 							<code>docker pull { data.RepoName }:{ data.Reference }</code>
 							<button

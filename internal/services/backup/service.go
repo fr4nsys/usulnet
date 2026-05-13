@@ -322,7 +322,7 @@ func (s *Service) ListByTarget(ctx context.Context, hostID uuid.UUID, targetID s
 func (s *Service) Delete(ctx context.Context, id uuid.UUID) error {
 	backup, err := s.repo.Get(ctx, id)
 	if err != nil {
-		return fmt.Errorf("get backup for deletion: %w", err)
+		return err
 	}
 
 	// Delete from storage

@@ -10,7 +10,75 @@ import (
 	"strings"
 
 	"github.com/go-chi/chi/v5"
+
+	updatestmpl "github.com/fr4nsys/usulnet/internal/web/templates/pages/updates"
 )
+
+// AutoUpdatePoliciesTempl renders the auto-update policies page.
+func (h *Handler) AutoUpdatePoliciesTempl(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	updatesSvc := h.services.Updates()
+
+	// Get policies
+	var policies []UpdatePolicyView
+	if updatesSvc != nil {
+		policies, _ = updatesSvc.ListPolicies(ctx)
+	}
+
+	// Get containers for adding new policies
+	var containers []updatestmpl.ContainerBasic
+	containerSvc := h.services.Containers()
+	if containerSvc != nil {
+		if list, err := containerSvc.List(ctx, nil); err == nil {
+			for _, c := range list {
+				name := c.Name
+				if len(name) > 0 && name[0] == '/' {
+					name = name[1:]
+				}
+				containers = append(containers, updatestmpl.ContainerBasic{
+					ID:   c.ID,
+					Name: name,
+				})
+			}
+		}
+	}
+
+	// Convert policies to template view
+	var policyItems []updatestmpl.PolicyItem
+	for _, p := range policies {
+		policyItems = append(policyItems, updatestmpl.PolicyItem{
+			ID:                p.ID,
+			TargetName:        p.TargetName,
+			TargetID:          p.TargetID,
+			IsEnabled:         p.IsEnabled,
+			AutoUpdate:        p.AutoUpdate,
+			AutoBackup:        p.AutoBackup,
+			Schedule:          p.Schedule,
+			IncludePrerelease: p.IncludePrerelease,
+			NotifyOnUpdate:    p.NotifyOnUpdate,
+			NotifyOnFailure:   p.NotifyOnFailure,
+			MaxRetries:        p.MaxRetries,
+			HealthCheckWait:   p.HealthCheckWait,
+		})
+	}
+
+	// Get update history and available for full page context
+	var available []UpdateView
+	var history []UpdateHistoryView
+	if updatesSvc != nil {
+		available, _ = updatesSvc.ListAvailable(ctx)
+		history, _ = updatesSvc.GetHistory(ctx)
+	}
+
+	p := h.preparePageData(r, "Auto-Update", "updates")
+	data := ToTemplUpdatesListData(p, available, history)
+	data.Containers = containers
+	data.Policies = policyItems
+	data.ActiveTab = "policies"
+
+	h.renderTempl(w, r, updatestmpl.List(data))
+}
 
 // AutoUpdatePolicyCreate creates a new auto-update policy.
 func (h *Handler) AutoUpdatePolicyCreate(w http.ResponseWriter, r *http.Request) {

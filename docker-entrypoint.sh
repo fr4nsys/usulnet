@@ -79,11 +79,8 @@ if [ "$(id -u)" = "0" ]; then
         echo "  Set DOCKER_SOCKET or USULNET_DOCKER_SOCKET to specify the path manually."
     fi
 
-    # Ensure data and shared volume directories are owned by usulnet
+    # Ensure data directories are owned by usulnet
     chown -R "$USULNET_USER:$USULNET_USER" /app/data 2>/dev/null || true
-    # Nginx shared volumes (config, certs, ACME webroot)
-    mkdir -p /etc/nginx/conf.d/usulnet /etc/usulnet/certs /var/lib/usulnet/acme/.well-known/acme-challenge 2>/dev/null || true
-    chown -R "$USULNET_USER:$USULNET_USER" /etc/nginx/conf.d/usulnet /etc/usulnet/certs /var/lib/usulnet/acme 2>/dev/null || true
 
     # Drop privileges and exec the command
     exec su-exec "$USULNET_USER" "$@"

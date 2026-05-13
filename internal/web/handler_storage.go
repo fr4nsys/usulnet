@@ -606,7 +606,7 @@ func (h *Handler) getCurrentUsername(r *http.Request) string {
 
 // setFlash stores a flash message in the session for the next request.
 func (h *Handler) setFlash(w http.ResponseWriter, r *http.Request, msgType, message string) {
-	if h.sessionStore == nil {
+	if h == nil || h.sessionStore == nil {
 		return
 	}
 	session, _ := h.sessionStore.Get(r, CookieSession)

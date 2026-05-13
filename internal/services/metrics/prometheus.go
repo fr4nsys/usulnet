@@ -145,8 +145,8 @@ func writeGaugeIntLabels(b *strings.Builder, name, help string, value int, label
 
 // sanitizeLabel cleans a value for use as a Prometheus label value.
 func sanitizeLabel(s string) string {
-	s = strings.ReplaceAll(s, `\`, `\\`)
 	s = strings.ReplaceAll(s, `"`, `\"`)
+	s = strings.ReplaceAll(s, `\`, `\\`)
 	s = strings.ReplaceAll(s, "\n", "")
 	return s
 }

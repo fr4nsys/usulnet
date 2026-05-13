@@ -29,8 +29,8 @@ type CustomLogUploadRepository interface {
 	Delete(ctx context.Context, id uuid.UUID) error
 }
 
-// logUploadSubdir is the subdirectory under dataDir for stored log uploads.
-const logUploadSubdir = "log-uploads"
+// logUploadDir is the base directory for stored log uploads.
+const logUploadDir = "/tmp/usulnet/log-uploads"
 
 // ============================================================================
 // Log Management Handlers
@@ -55,7 +55,7 @@ func (h *Handler) LogManagement(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	containerSvc := h.services.Containers()
 	if containerSvc != nil {
-		containers, _, _ := containerSvc.List(ctx, nil)
+		containers, _ := containerSvc.List(ctx, nil)
 		for _, c := range containers {
 			data.Containers = append(data.Containers, logspages.ContainerBasicView{
 				ID:   c.ID[:12],
@@ -108,7 +108,7 @@ func (h *Handler) loadLogAggregation(ctx interface{}) logspages.LogAggregationVi
 		return agg
 	}
 
-	containers, _, err := containerSvc.List(reqCtx, nil)
+	containers, err := containerSvc.List(reqCtx, nil)
 	if err != nil {
 		return agg
 	}
@@ -187,7 +187,7 @@ func (h *Handler) loadDetectedPatterns(ctx interface{}) []logspages.DetectedPatt
 		return nil
 	}
 
-	containers, _, err := containerSvc.List(reqCtx, nil)
+	containers, err := containerSvc.List(reqCtx, nil)
 	if err != nil {
 		return nil
 	}
@@ -437,9 +437,8 @@ func (h *Handler) LogUpload(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Save file to disk
-	uploadDir := filepath.Join(h.dataDir, logUploadSubdir)
-	if err := os.MkdirAll(uploadDir, 0o750); err == nil {
-		filePath := filepath.Join(uploadDir, upload.ID.String()+".log")
+	if err := os.MkdirAll(logUploadDir, 0o750); err == nil {
+		filePath := filepath.Join(logUploadDir, upload.ID.String()+".log")
 		if err := os.WriteFile(filePath, content, 0o640); err == nil {
 			upload.FilePath = filePath
 		} else {

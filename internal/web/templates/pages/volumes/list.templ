@@ -54,7 +54,6 @@ templ VolumesList(data VolumesListData) {
 				<p class="text-gray-400 mt-1">Manage Docker volumes ({ data.TotalSize } total)</p>
 			</div>
 			<div class="flex items-center gap-3">
-				@components.RefreshButton()
 				<a href="/volumes/new" class="btn-primary">
 					<i class="fas fa-plus mr-2"></i>
 					New Volume
@@ -213,11 +212,10 @@ templ volumeRow(vol Volume) {
 					<i class="fas fa-info-circle text-sm"></i>
 				</a>
 				if !vol.InUse {
-					<button
+					<button 
 						hx-post={ "/volumes/" + vol.Name + "/remove" }
 						hx-confirm="Remove this volume? All data will be lost."
-						hx-target="closest tr"
-						hx-swap="outerHTML swap:200ms"
+						hx-swap="none"
 						class="p-2 text-gray-400 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
 						title="Remove"
 					>

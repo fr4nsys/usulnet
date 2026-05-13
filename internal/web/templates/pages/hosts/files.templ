@@ -88,16 +88,6 @@ templ hostFileBrowser(data HostFilesData) {
 
 			<!-- Actions -->
 			<div class="flex items-center gap-2">
-				<!-- Current user indicator -->
-				<button
-					@click="showUserModal = true"
-					:class="activeUser === 'root' ? 'bg-dark-600 hover:bg-dark-500 text-gray-300' : 'bg-primary-500/20 hover:bg-primary-500/30 text-primary-400 border border-primary-500/30'"
-					class="px-3 py-1.5 text-sm rounded-lg flex items-center gap-1.5"
-					title="Browse as different user"
-				>
-					<i class="fas fa-user-shield"></i>
-					<span x-text="activeUser"></span>
-				</button>
 				<button
 					@click="showNewFolderModal = true"
 					class="px-3 py-1.5 bg-dark-600 hover:bg-dark-500 text-gray-300 text-sm rounded-lg"
@@ -242,7 +232,7 @@ templ hostFileBrowser(data HostFilesData) {
 						<i class="fas fa-times"></i>
 					</button>
 				</div>
-				<div class="flex-1 overflow-hidden relative">
+				<div class="flex-1 overflow-hidden">
 					<template x-if="fileContent?.binary">
 						<div class="flex items-center justify-center h-full text-gray-400">
 							<div class="text-center">
@@ -252,11 +242,13 @@ templ hostFileBrowser(data HostFilesData) {
 						</div>
 					</template>
 					<template x-if="!fileContent?.binary">
-						<pre class="h-full overflow-auto m-0 p-4 text-sm leading-relaxed" style="background:#0d1117;color:#e6edf3;font-family:'IBM Plex Mono','JetBrains Mono','Fira Code',monospace;tab-size:4;white-space:pre;word-wrap:normal;"><code x-text="fileContent?.content || ''"></code></pre>
+						<div class="h-full" x-ref="monacoContainer" x-show="monacoReady"></div>
 					</template>
-					<div x-show="!fileContent && viewingFile" class="absolute inset-0 flex items-center justify-center bg-dark-800">
-						<i class="fas fa-spinner fa-spin text-2xl text-primary-400"></i>
-					</div>
+					<template x-if="!monacoReady && !fileContent?.binary">
+						<div class="flex items-center justify-center h-full">
+							<i class="fas fa-spinner fa-spin text-2xl text-primary-400"></i>
+						</div>
+					</template>
 					<template x-if="fileContent?.truncated">
 						<div class="absolute bottom-16 left-0 right-0 px-6">
 							<p class="text-sm text-yellow-400 bg-yellow-500/10 border border-yellow-500/30 rounded-lg px-3 py-2">
@@ -358,71 +350,15 @@ templ hostFileBrowser(data HostFilesData) {
 				</div>
 			</div>
 		</div>
-		<!-- Switch User Modal -->
-		<div
-			x-show="showUserModal"
-			x-transition
-			class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
-			@click.self="showUserModal = false"
-			style="display: none;"
-		>
-			<div class="bg-dark-800 rounded-xl border border-dark-600 w-full max-w-md mx-4 p-6 shadow-2xl">
-				<h3 class="text-lg font-medium text-white mb-2">
-					<i class="fas fa-user-shield text-primary-400 mr-2"></i>Browse as User
-				</h3>
-				<p class="text-sm text-gray-400 mb-4">
-					Enter a username to browse with that user's permissions. Leave empty to browse as root.
-				</p>
-				<div class="space-y-3">
-					<input
-						type="text"
-						x-model="userInput"
-						placeholder="Username (e.g. www-data, nginx, nobody)..."
-						class="w-full px-4 py-2 bg-dark-700 border border-dark-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500/50"
-						@keyup.enter="switchUser()"
-					/>
-					<div x-show="userError" class="text-sm text-red-400">
-						<i class="fas fa-exclamation-circle mr-1"></i><span x-text="userError"></span>
-					</div>
-					<div x-show="activeUser !== 'root'" class="text-sm text-gray-400">
-						Currently browsing as: <span class="text-primary-400 font-medium" x-text="activeUser"></span>
-					</div>
-				</div>
-				<div class="flex justify-between items-center mt-5">
-					<button
-						x-show="activeUser !== 'root'"
-						@click="resetUser()"
-						class="px-4 py-2 text-sm text-gray-400 hover:text-white transition-colors"
-					>
-						<i class="fas fa-undo mr-1"></i>Reset to root
-					</button>
-					<span x-show="activeUser === 'root'"></span>
-					<div class="flex gap-3">
-						<button
-							@click="showUserModal = false; userInput = ''; userError = ''"
-							class="px-4 py-2 bg-dark-600 hover:bg-dark-500 text-gray-300 rounded-lg"
-						>
-							Cancel
-						</button>
-						<button
-							@click="switchUser()"
-							:disabled="!userInput || userValidating"
-							class="px-4 py-2 bg-primary-600 hover:bg-primary-500 text-white rounded-lg disabled:opacity-50"
-						>
-							<template x-if="userValidating">
-								<span><i class="fas fa-spinner fa-spin mr-1"></i>Checking...</span>
-							</template>
-							<template x-if="!userValidating">
-								<span><i class="fas fa-user-check mr-1"></i>Switch</span>
-							</template>
-						</button>
-					</div>
-				</div>
-			</div>
-		</div>
 	</div>
 
+	<!-- Monaco Editor CDN -->
+	<script src="/static/vendor/monaco-editor/min/vs/loader.js"></script>
 	<script>
+		// Monaco loader config
+		require.config({
+			paths: { vs: '/static/vendor/monaco-editor/min/vs' }
+		});
 
 		function hostBrowser(hostID, initialPath) {
 			return {
@@ -436,11 +372,9 @@ templ hostFileBrowser(data HostFilesData) {
 				showNewFolderModal: false,
 				newFolderName: '',
 				deleteConfirm: null,
-				activeUser: 'root',
-				showUserModal: false,
-				userInput: '',
-				userError: '',
-				userValidating: false,
+				monacoEditor: null,
+				monacoReady: false,
+				monacoLoaded: false,
 
 				get pathParts() {
 					return this.currentPath.split('/').filter(p => p);
@@ -455,63 +389,48 @@ templ hostFileBrowser(data HostFilesData) {
 
 				async init() {
 					await this.loadFiles();
+					// Pre-load Monaco
+					this.loadMonaco();
 				},
 
-
-				hostHeaders() {
-					const h = {};
-					if (this.activeUser && this.activeUser !== 'root') {
-						h['X-Host-User'] = this.activeUser;
-					}
-					return h;
-				},
-
-				async switchUser() {
-					if (!this.userInput) return;
-					this.userValidating = true;
-					this.userError = '';
-					try {
-						const response = await fetch(`/api/v1/hosts/${this.hostID}/validate-user`, {
-							method: 'POST',
-							headers: { 'Content-Type': 'application/json' },
-							body: JSON.stringify({ username: this.userInput })
+				loadMonaco() {
+					if (this.monacoLoaded) return;
+					this.monacoLoaded = true;
+					require(['vs/editor/editor.main'], () => {
+						// Define usulnet theme
+						monaco.editor.defineTheme('usulnet-dark', {
+							base: 'vs-dark',
+							inherit: true,
+							rules: [
+								{ token: '', foreground: 'e6edf3', background: '0d1117' },
+								{ token: 'comment', foreground: '8b949e', fontStyle: 'italic' },
+								{ token: 'keyword', foreground: 'ff7b72' },
+								{ token: 'string', foreground: 'a5d6ff' },
+								{ token: 'number', foreground: '79c0ff' },
+								{ token: 'type', foreground: 'ffa657' },
+								{ token: 'function', foreground: 'd2a8ff' },
+							],
+							colors: {
+								'editor.background': '#0d1117',
+								'editor.foreground': '#e6edf3',
+								'editor.lineHighlightBackground': '#161b2233',
+								'editor.selectionBackground': '#ff6b3540',
+								'editorCursor.foreground': '#ff6b35',
+								'editorLineNumber.foreground': '#484f58',
+								'editorLineNumber.activeForeground': '#e6edf3',
+								'editorIndentGuide.background': '#21262d',
+								'editorWidget.background': '#161b22',
+								'editorWidget.border': '#30363d',
+							}
 						});
-						if (!response.ok) {
-							const data = await response.json();
-							throw new Error(data.error || 'User not found');
-						}
-						const data = await response.json();
-						this.activeUser = data.username;
-						this.showUserModal = false;
-						this.userInput = '';
-						this.userError = '';
-						// Navigate to user's home directory
-						if (data.home && data.home !== '/') {
-							this.currentPath = data.home;
-						}
-						await this.loadFiles();
-					} catch (e) {
-						this.userError = e.message;
-					} finally {
-						this.userValidating = false;
-					}
-				},
-
-				resetUser() {
-					this.activeUser = 'root';
-					this.showUserModal = false;
-					this.userInput = '';
-					this.userError = '';
-					this.loadFiles();
+					});
 				},
 
 				async loadFiles() {
 					this.loading = true;
 					this.error = null;
 					try {
-						const response = await fetch(`/api/v1/hosts/${this.hostID}/browse${this.currentPath}`, {
-							headers: this.hostHeaders()
-						});
+						const response = await fetch(`/hosts/${this.hostID}/fs/browse${this.currentPath}`);
 						if (!response.ok) {
 							const data = await response.json();
 							throw new Error(data.error || 'Failed to load files');
@@ -546,30 +465,73 @@ templ hostFileBrowser(data HostFilesData) {
 				async viewFile(file) {
 					this.viewingFile = file;
 					this.fileContent = null;
+					this.monacoReady = false;
 
 					try {
-						const response = await fetch(`/api/v1/hosts/${this.hostID}/file${file.path}`, {
-							headers: this.hostHeaders()
-						});
+						const response = await fetch(`/hosts/${this.hostID}/fs/file${file.path}`);
 						if (!response.ok) {
 							const data = await response.json();
 							throw new Error(data.error || 'Failed to read file');
 						}
 						this.fileContent = await response.json();
+
+						// Initialize Monaco after content is loaded
+						if (!this.fileContent.binary) {
+							this.$nextTick(() => this.initMonaco());
+						}
 					} catch (e) {
 						this.fileContent = { content: 'Error loading file: ' + e.message, binary: false };
 					}
 				},
 
+				initMonaco() {
+					const container = this.$refs.monacoContainer;
+					if (!container) return;
 
+					// Dispose existing editor
+					if (this.monacoEditor) {
+						this.monacoEditor.dispose();
+						this.monacoEditor = null;
+					}
+
+					require(['vs/editor/editor.main'], () => {
+						const lang = this.getLanguage(this.viewingFile?.name);
+						this.monacoEditor = monaco.editor.create(container, {
+							value: this.fileContent?.content || '',
+							language: lang,
+							theme: 'usulnet-dark',
+							readOnly: true,
+							fontSize: 13,
+							fontFamily: "'IBM Plex Mono', 'JetBrains Mono', 'Fira Code', monospace",
+							minimap: { enabled: true, scale: 1 },
+							scrollBeyondLastLine: false,
+							smoothScrolling: true,
+							cursorBlinking: 'smooth',
+							renderLineHighlight: 'all',
+							bracketPairColorization: { enabled: true },
+							guides: { bracketPairs: true, indentation: true },
+							padding: { top: 12, bottom: 12 },
+							wordWrap: 'off',
+							tabSize: 4,
+							automaticLayout: true,
+						});
+
+						this.monacoReady = true;
+					});
+				},
 
 				closeFileModal() {
+					if (this.monacoEditor) {
+						this.monacoEditor.dispose();
+						this.monacoEditor = null;
+					}
 					this.viewingFile = null;
+					this.monacoReady = false;
 				},
 
 				getDownloadUrl(file) {
 					if (!file) return '#';
-					return `/api/v1/hosts/${this.hostID}/download${file.path}`;
+					return `/hosts/${this.hostID}/fs/download${file.path}`;
 				},
 
 				deleteFile(file) {
@@ -580,10 +542,8 @@ templ hostFileBrowser(data HostFilesData) {
 					if (!this.deleteConfirm) return;
 					const file = this.deleteConfirm;
 					try {
-						const headers = { 'X-CSRF-Token': document.querySelector('meta[name=csrf-token]')?.content || '', ...this.hostHeaders() };
-						const response = await fetch(`/api/v1/hosts/${this.hostID}/file${file.path}?recursive=${file.is_dir}`, {
-							method: 'DELETE',
-							headers: headers
+						const response = await fetch(`/hosts/${this.hostID}/fs/file${file.path}?recursive=${file.is_dir}`, {
+							method: 'DELETE'
 						});
 						if (!response.ok && response.status !== 204) {
 							const data = await response.json();
@@ -603,10 +563,8 @@ templ hostFileBrowser(data HostFilesData) {
 						if (!path.endsWith('/')) path += '/';
 						path += this.newFolderName;
 
-						const headers = { 'X-CSRF-Token': document.querySelector('meta[name=csrf-token]')?.content || '', ...this.hostHeaders() };
-						const response = await fetch(`/api/v1/hosts/${this.hostID}/mkdir${path}`, {
-							method: 'POST',
-							headers: headers
+						const response = await fetch(`/hosts/${this.hostID}/fs/mkdir${path}`, {
+							method: 'POST'
 						});
 						if (!response.ok) {
 							const data = await response.json();

@@ -75,6 +75,12 @@ func (r *AgentEventRepository) Save(ctx context.Context, event *protocol.Event) 
 		)
 		ON CONFLICT (id) DO NOTHING`
 
+	// JSONB columns are passed as string (not []byte) because the
+	// connection pool runs in pgx.QueryExecModeSimpleProtocol; see
+	// encodeJSONObject in recon_repo.go for the full rationale.
+	// nullableJSONBytes preserves a SQL NULL for fields the caller
+	// never set, instead of converting them to the empty string the
+	// JSONB column would reject.
 	_, err = r.db.Exec(ctx, query,
 		event.ID,
 		string(event.Type),
@@ -82,9 +88,9 @@ func (r *AgentEventRepository) Save(ctx context.Context, event *protocol.Event) 
 		hostID,
 		string(event.Severity),
 		event.Message,
-		actorJSON,
-		attrsJSON,
-		dataJSON,
+		nullableJSONBytes(actorJSON),
+		nullableJSONBytes(attrsJSON),
+		nullableJSONBytes(dataJSON),
 		ts,
 	)
 	if err != nil {

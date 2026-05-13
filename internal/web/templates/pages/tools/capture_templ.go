@@ -18,11 +18,10 @@ import (
 // ============================================================================
 
 type PacketCaptureData struct {
-	PageData         layouts.PageData
-	Interfaces       []NetworkInterface
-	Captures         []CaptureSession
-	Active           *CaptureSession
-	TcpdumpAvailable bool
+	PageData   layouts.PageData
+	Interfaces []NetworkInterface
+	Captures   []CaptureSession
+	Active     *CaptureSession
 }
 
 type NetworkInterface struct {
@@ -94,95 +93,70 @@ func PacketCapture(data PacketCaptureData) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"space-y-6\" x-data=\"captureApp()\">")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			if !data.TcpdumpAvailable {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<div class=\"bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-4 flex items-start gap-3\"><i class=\"fas fa-exclamation-triangle text-yellow-400 mt-0.5\"></i><div><p class=\"text-yellow-300 font-medium\">tcpdump not available</p><p class=\"text-yellow-400/80 text-sm mt-1\">Packet capture requires tcpdump installed on the host system. Rebuild the Docker image or install tcpdump manually.</p></div></div>")
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<!-- Header --><div class=\"flex items-center justify-between\"><div><h1 class=\"text-2xl font-display font-bold text-white\"><i class=\"fas fa-satellite-dish text-primary-400 mr-2\"></i>Network Packet Capture</h1><p class=\"text-gray-400 mt-1\">Capture and analyze network traffic using tcpdump</p></div>")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			if data.TcpdumpAvailable {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<button onclick=\"document.getElementById('new-capture-modal').classList.remove('hidden')\" class=\"btn-primary\"><i class=\"fas fa-play mr-2\"></i>New Capture</button>")
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-			} else {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<button disabled class=\"btn-primary opacity-50 cursor-not-allowed\" title=\"tcpdump is not installed\"><i class=\"fas fa-play mr-2\"></i>New Capture</button>")
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "</div><!-- Stats Cards --><div class=\"grid grid-cols-2 md:grid-cols-4 gap-4\"><div class=\"card p-4\"><div class=\"flex items-center gap-3\"><div class=\"w-10 h-10 rounded-lg bg-green-500/10 flex items-center justify-center\"><i class=\"fas fa-network-wired text-green-400\"></i></div><div><div class=\"text-2xl font-bold text-white\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"space-y-6\" x-data=\"captureApp()\"><!-- Header --><div class=\"flex items-center justify-between\"><div><h1 class=\"text-2xl font-display font-bold text-white\"><i class=\"fas fa-satellite-dish text-primary-400 mr-2\"></i>Network Packet Capture</h1><p class=\"text-gray-400 mt-1\">Capture and analyze network traffic using tcpdump</p></div><button onclick=\"document.getElementById('new-capture-modal').classList.remove('hidden')\" class=\"btn-primary\"><i class=\"fas fa-play mr-2\"></i>New Capture</button></div><!-- Stats Cards --><div class=\"grid grid-cols-2 md:grid-cols-4 gap-4\"><div class=\"card p-4\"><div class=\"flex items-center gap-3\"><div class=\"w-10 h-10 rounded-lg bg-green-500/10 flex items-center justify-center\"><i class=\"fas fa-network-wired text-green-400\"></i></div><div><div class=\"text-2xl font-bold text-white\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var3 string
 			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", len(data.Interfaces)))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/tools/capture.templ`, Line: 107, Col: 91}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/tools/capture.templ`, Line: 83, Col: 91}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "</div><div class=\"text-xs text-gray-500\">Interfaces</div></div></div></div><div class=\"card p-4\"><div class=\"flex items-center gap-3\"><div class=\"w-10 h-10 rounded-lg bg-blue-500/10 flex items-center justify-center\"><i class=\"fas fa-play-circle text-blue-400\"></i></div><div><div class=\"text-2xl font-bold text-white\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</div><div class=\"text-xs text-gray-500\">Interfaces</div></div></div></div><div class=\"card p-4\"><div class=\"flex items-center gap-3\"><div class=\"w-10 h-10 rounded-lg bg-blue-500/10 flex items-center justify-center\"><i class=\"fas fa-play-circle text-blue-400\"></i></div><div><div class=\"text-2xl font-bold text-white\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var4 string
 			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", countActive(data.Captures)))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/tools/capture.templ`, Line: 118, Col: 97}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/tools/capture.templ`, Line: 94, Col: 97}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "</div><div class=\"text-xs text-gray-500\">Active Captures</div></div></div></div><div class=\"card p-4\"><div class=\"flex items-center gap-3\"><div class=\"w-10 h-10 rounded-lg bg-purple-500/10 flex items-center justify-center\"><i class=\"fas fa-database text-purple-400\"></i></div><div><div class=\"text-2xl font-bold text-white\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</div><div class=\"text-xs text-gray-500\">Active Captures</div></div></div></div><div class=\"card p-4\"><div class=\"flex items-center gap-3\"><div class=\"w-10 h-10 rounded-lg bg-purple-500/10 flex items-center justify-center\"><i class=\"fas fa-database text-purple-400\"></i></div><div><div class=\"text-2xl font-bold text-white\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var5 string
 			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", len(data.Captures)))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/tools/capture.templ`, Line: 129, Col: 89}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/tools/capture.templ`, Line: 105, Col: 89}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "</div><div class=\"text-xs text-gray-500\">Total Captures</div></div></div></div><div class=\"card p-4\"><div class=\"flex items-center gap-3\"><div class=\"w-10 h-10 rounded-lg bg-yellow-500/10 flex items-center justify-center\"><i class=\"fas fa-hdd text-yellow-400\"></i></div><div><div class=\"text-2xl font-bold text-white\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</div><div class=\"text-xs text-gray-500\">Total Captures</div></div></div></div><div class=\"card p-4\"><div class=\"flex items-center gap-3\"><div class=\"w-10 h-10 rounded-lg bg-yellow-500/10 flex items-center justify-center\"><i class=\"fas fa-hdd text-yellow-400\"></i></div><div><div class=\"text-2xl font-bold text-white\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var6 string
 			templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(totalSize(data.Captures))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/tools/capture.templ`, Line: 140, Col: 76}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/tools/capture.templ`, Line: 116, Col: 76}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "</div><div class=\"text-xs text-gray-500\">Total Size</div></div></div></div></div><!-- Main Content --><div class=\"grid grid-cols-1 lg:grid-cols-3 gap-6\"><!-- Interfaces & Captures List --><div class=\"lg:col-span-1 space-y-6\"><!-- Network Interfaces --><div class=\"card\"><div class=\"p-4 border-b border-dark-600\"><h2 class=\"font-semibold text-white\"><i class=\"fas fa-ethernet text-primary-400 mr-2\"></i>Network Interfaces</h2></div><div class=\"divide-y divide-dark-600\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "</div><div class=\"text-xs text-gray-500\">Total Size</div></div></div></div></div><!-- Main Content --><div class=\"grid grid-cols-1 lg:grid-cols-3 gap-6\"><!-- Interfaces & Captures List --><div class=\"lg:col-span-1 space-y-6\"><!-- Network Interfaces --><div class=\"card\"><div class=\"p-4 border-b border-dark-600\"><h2 class=\"font-semibold text-white\"><i class=\"fas fa-ethernet text-primary-400 mr-2\"></i>Network Interfaces</h2></div><div class=\"divide-y divide-dark-600\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			if len(data.Interfaces) == 0 {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "<div class=\"p-6 text-center text-gray-500\"><i class=\"fas fa-network-wired text-2xl mb-2\"></i><p class=\"text-sm\">No interfaces detected</p></div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<div class=\"p-6 text-center text-gray-500\"><i class=\"fas fa-network-wired text-2xl mb-2\"></i><p class=\"text-sm\">No interfaces detected</p></div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			}
 			for _, iface := range data.Interfaces {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "<div class=\"p-4 flex items-center gap-3\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "<div class=\"p-4 flex items-center gap-3\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -191,7 +165,7 @@ func PacketCapture(data PacketCaptureData) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "<div class=\"")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "<div class=\"")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -204,66 +178,56 @@ func PacketCapture(data PacketCaptureData) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "\"></div><div class=\"flex-1 min-w-0\"><div class=\"font-medium text-white\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "\"></div><div class=\"flex-1 min-w-0\"><div class=\"font-medium text-white\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var9 string
 				templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(iface.Name)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/tools/capture.templ`, Line: 169, Col: 58}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/tools/capture.templ`, Line: 145, Col: 58}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "</div><div class=\"text-xs text-gray-500 font-mono\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "</div><div class=\"text-xs text-gray-500 font-mono\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var10 string
 				templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(iface.IP)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/tools/capture.templ`, Line: 170, Col: 65}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/tools/capture.templ`, Line: 146, Col: 65}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "</div></div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "</div></div><button @click=\"")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				if data.TcpdumpAvailable {
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "<button @click=\"")
-					if templ_7745c5c3_Err != nil {
-						return templ_7745c5c3_Err
-					}
-					var templ_7745c5c3_Var11 string
-					templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs("$store.capture.start('" + iface.Name + "')")
-					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/tools/capture.templ`, Line: 174, Col: 64}
-					}
-					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
-					if templ_7745c5c3_Err != nil {
-						return templ_7745c5c3_Err
-					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "\" class=\"text-primary-400 hover:text-primary-300 text-sm\"><i class=\"fas fa-play\"></i></button>")
-					if templ_7745c5c3_Err != nil {
-						return templ_7745c5c3_Err
-					}
+				var templ_7745c5c3_Var11 string
+				templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs("$store.capture.start('" + iface.Name + "')")
+				if templ_7745c5c3_Err != nil {
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/tools/capture.templ`, Line: 149, Col: 63}
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "</div>")
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "\" class=\"text-primary-400 hover:text-primary-300 text-sm\"><i class=\"fas fa-play\"></i></button></div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 20, "</div></div><!-- Capture Sessions --><div class=\"card\"><div class=\"p-4 border-b border-dark-600\"><h2 class=\"font-semibold text-white\"><i class=\"fas fa-history text-primary-400 mr-2\"></i>Capture Sessions</h2></div><div class=\"divide-y divide-dark-600 max-h-[400px] overflow-y-auto\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "</div></div><!-- Capture Sessions --><div class=\"card\"><div class=\"p-4 border-b border-dark-600\"><h2 class=\"font-semibold text-white\"><i class=\"fas fa-history text-primary-400 mr-2\"></i>Capture Sessions</h2></div><div class=\"divide-y divide-dark-600 max-h-[400px] overflow-y-auto\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			if len(data.Captures) == 0 {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 21, "<div class=\"p-6 text-center text-gray-500\"><i class=\"fas fa-inbox text-2xl mb-2\"></i><p class=\"text-sm\">No captures yet</p></div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "<div class=\"p-6 text-center text-gray-500\"><i class=\"fas fa-inbox text-2xl mb-2\"></i><p class=\"text-sm\">No captures yet</p></div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -275,20 +239,20 @@ func PacketCapture(data PacketCaptureData) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 22, "<a href=\"")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "<a href=\"")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var13 templ.SafeURL
 				templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinURLErrs(templ.SafeURL("/tools/capture/" + cap.ID))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/tools/capture.templ`, Line: 201, Col: 57}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/tools/capture.templ`, Line: 175, Col: 57}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 23, "\" class=\"")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "\" class=\"")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -301,20 +265,20 @@ func PacketCapture(data PacketCaptureData) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 24, "\"><div class=\"flex items-center justify-between mb-2\"><span class=\"font-medium text-white\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "\"><div class=\"flex items-center justify-between mb-2\"><span class=\"font-medium text-white\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var15 string
 				templ_7745c5c3_Var15, templ_7745c5c3_Err = templ.JoinStringErrs(cap.Name)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/tools/capture.templ`, Line: 206, Col: 57}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/tools/capture.templ`, Line: 180, Col: 57}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var15))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 25, "</span> ")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "</span> ")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -323,7 +287,7 @@ func PacketCapture(data PacketCaptureData) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 26, "<span class=\"")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "<span class=\"")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -336,69 +300,69 @@ func PacketCapture(data PacketCaptureData) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 27, "\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 20, "\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var18 string
 				templ_7745c5c3_Var18, templ_7745c5c3_Err = templ.JoinStringErrs(cap.Status)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/tools/capture.templ`, Line: 208, Col: 23}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/tools/capture.templ`, Line: 182, Col: 23}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var18))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 28, "</span></div><div class=\"text-xs text-gray-500 flex items-center gap-2\"><span>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 21, "</span></div><div class=\"text-xs text-gray-500 flex items-center gap-2\"><span>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var19 string
 				templ_7745c5c3_Var19, templ_7745c5c3_Err = templ.JoinStringErrs(cap.Interface)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/tools/capture.templ`, Line: 212, Col: 31}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/tools/capture.templ`, Line: 186, Col: 31}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var19))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 29, "</span> <span>·</span> <span>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 22, "</span> <span>·</span> <span>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var20 string
 				templ_7745c5c3_Var20, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d packets", cap.PacketCount))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/tools/capture.templ`, Line: 214, Col: 60}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/tools/capture.templ`, Line: 188, Col: 60}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var20))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 30, "</span> <span>·</span> <span>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 23, "</span> <span>·</span> <span>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var21 string
 				templ_7745c5c3_Var21, templ_7745c5c3_Err = templ.JoinStringErrs(cap.Size)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/tools/capture.templ`, Line: 216, Col: 26}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/tools/capture.templ`, Line: 190, Col: 26}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var21))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 31, "</span></div></a>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 24, "</span></div></a>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 32, "</div></div></div><!-- Capture Details / Live View --><div class=\"lg:col-span-2\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 25, "</div></div></div><!-- Capture Details / Live View --><div class=\"lg:col-span-2\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			if data.Active != nil {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 33, "<div class=\"card\"><div class=\"p-4 border-b border-dark-600 flex items-center justify-between\"><div class=\"flex items-center gap-3\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 26, "<div class=\"card\"><div class=\"p-4 border-b border-dark-600 flex items-center justify-between\"><div class=\"flex items-center gap-3\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -407,7 +371,7 @@ func PacketCapture(data PacketCaptureData) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 34, "<div class=\"")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 27, "<div class=\"")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -420,7 +384,7 @@ func PacketCapture(data PacketCaptureData) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 35, "\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 28, "\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -429,7 +393,7 @@ func PacketCapture(data PacketCaptureData) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 36, "<i class=\"")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 29, "<i class=\"")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -442,251 +406,223 @@ func PacketCapture(data PacketCaptureData) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 37, "\"></i></div><div><h2 class=\"font-semibold text-white\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 30, "\"></i></div><div><h2 class=\"font-semibold text-white\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var26 string
 				templ_7745c5c3_Var26, templ_7745c5c3_Err = templ.JoinStringErrs(data.Active.Name)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/tools/capture.templ`, Line: 234, Col: 65}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/tools/capture.templ`, Line: 208, Col: 65}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var26))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 38, "</h2><div class=\"text-sm text-gray-400\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 31, "</h2><div class=\"text-sm text-gray-400\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var27 string
 				templ_7745c5c3_Var27, templ_7745c5c3_Err = templ.JoinStringErrs(data.Active.Filter)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/tools/capture.templ`, Line: 235, Col: 65}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/tools/capture.templ`, Line: 209, Col: 65}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var27))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 39, "</div></div></div><div class=\"flex items-center gap-2\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 32, "</div></div></div><div class=\"flex items-center gap-2\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				if data.Active.Status == "running" {
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 40, "<button hx-post=\"")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 33, "<button hx-post=\"")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
 					var templ_7745c5c3_Var28 string
 					templ_7745c5c3_Var28, templ_7745c5c3_Err = templ.JoinStringErrs("/tools/capture/" + data.Active.ID + "/stop")
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/tools/capture.templ`, Line: 241, Col: 65}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/tools/capture.templ`, Line: 215, Col: 65}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var28))
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 41, "\" hx-target=\"body\" class=\"btn-sm bg-red-500/10 text-red-400 hover:bg-red-500/20\"><i class=\"fas fa-stop mr-1\"></i>Stop</button>")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 34, "\" hx-target=\"body\" class=\"btn-sm bg-red-500/10 text-red-400 hover:bg-red-500/20\"><i class=\"fas fa-stop mr-1\"></i>Stop</button>")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
 				} else {
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 42, "<a href=\"")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 35, "<a href=\"")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
 					var templ_7745c5c3_Var29 templ.SafeURL
 					templ_7745c5c3_Var29, templ_7745c5c3_Err = templ.JoinURLErrs(templ.SafeURL("/tools/capture/" + data.Active.ID + "/download"))
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/tools/capture.templ`, Line: 249, Col: 81}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/tools/capture.templ`, Line: 223, Col: 81}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var29))
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 43, "\" class=\"btn-sm bg-blue-500/10 text-blue-400 hover:bg-blue-500/20\"><i class=\"fas fa-download mr-1\"></i>Download PCAP</a> <button hx-delete=\"")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 36, "\" class=\"btn-sm bg-blue-500/10 text-blue-400 hover:bg-blue-500/20\"><i class=\"fas fa-download mr-1\"></i>Download PCAP</a> <button hx-delete=\"")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
 					var templ_7745c5c3_Var30 string
 					templ_7745c5c3_Var30, templ_7745c5c3_Err = templ.JoinStringErrs("/tools/capture/" + data.Active.ID)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/tools/capture.templ`, Line: 255, Col: 57}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/tools/capture.templ`, Line: 229, Col: 57}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var30))
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 44, "\" hx-target=\"body\" hx-confirm=\"Delete this capture?\" class=\"btn-sm bg-red-500/10 text-red-400 hover:bg-red-500/20\"><i class=\"fas fa-trash mr-1\"></i>Delete</button>")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 37, "\" hx-target=\"body\" hx-confirm=\"Delete this capture?\" class=\"btn-sm bg-red-500/10 text-red-400 hover:bg-red-500/20\"><i class=\"fas fa-trash mr-1\"></i>Delete</button>")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 45, "</div></div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 38, "</div></div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				if data.Active.Status != "running" {
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 46, "<div class=\"px-4 pt-2\"><p class=\"text-xs text-gray-500\">Download the PCAP and open with <a href=\"")
-					if templ_7745c5c3_Err != nil {
-						return templ_7745c5c3_Err
-					}
-					var templ_7745c5c3_Var31 templ.SafeURL
-					templ_7745c5c3_Var31, templ_7745c5c3_Err = templ.JoinURLErrs(templ.SafeURL("https://www.wireshark.org"))
-					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/tools/capture.templ`, Line: 268, Col: 126}
-					}
-					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var31))
-					if templ_7745c5c3_Err != nil {
-						return templ_7745c5c3_Err
-					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 47, "\" target=\"_blank\" rel=\"noopener\" class=\"text-primary-400 hover:underline\">Wireshark</a> to do advanced analysis</p></div>")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 39, "<div class=\"px-4 pt-2 text-xs text-gray-500\">Open with Wireshark for advanced analysis (https://www.wireshark.org)</div>")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 48, "<!-- Capture Info --><div class=\"p-4 grid grid-cols-4 gap-4 border-b border-dark-600\"><div><div class=\"text-xs text-gray-500\">Interface</div><div class=\"text-white font-mono\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 40, "<!-- Capture Info --><div class=\"p-4 grid grid-cols-4 gap-4 border-b border-dark-600\"><div><div class=\"text-xs text-gray-500\">Interface</div><div class=\"text-white font-mono\">")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				var templ_7745c5c3_Var31 string
+				templ_7745c5c3_Var31, templ_7745c5c3_Err = templ.JoinStringErrs(data.Active.Interface)
+				if templ_7745c5c3_Err != nil {
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/tools/capture.templ`, Line: 248, Col: 66}
+				}
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var31))
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 41, "</div></div><div><div class=\"text-xs text-gray-500\">Packets</div><div class=\"text-white font-mono\" id=\"live-packet-count\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var32 string
-				templ_7745c5c3_Var32, templ_7745c5c3_Err = templ.JoinStringErrs(data.Active.Interface)
+				templ_7745c5c3_Var32, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", data.Active.PacketCount))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/tools/capture.templ`, Line: 276, Col: 66}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/tools/capture.templ`, Line: 252, Col: 110}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var32))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 49, "</div></div><div><div class=\"text-xs text-gray-500\">Packets</div><div class=\"text-white font-mono\" id=\"live-packet-count\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 42, "</div></div><div><div class=\"text-xs text-gray-500\">Size</div><div class=\"text-white font-mono\" id=\"live-file-size\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var33 string
-				templ_7745c5c3_Var33, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", data.Active.PacketCount))
+				templ_7745c5c3_Var33, templ_7745c5c3_Err = templ.JoinStringErrs(data.Active.Size)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/tools/capture.templ`, Line: 280, Col: 110}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/tools/capture.templ`, Line: 256, Col: 81}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var33))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 50, "</div></div><div><div class=\"text-xs text-gray-500\">Size</div><div class=\"text-white font-mono\" id=\"live-file-size\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 43, "</div></div><div><div class=\"text-xs text-gray-500\">Duration</div><div class=\"text-white font-mono\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var34 string
-				templ_7745c5c3_Var34, templ_7745c5c3_Err = templ.JoinStringErrs(data.Active.Size)
+				templ_7745c5c3_Var34, templ_7745c5c3_Err = templ.JoinStringErrs(data.Active.Duration)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/tools/capture.templ`, Line: 284, Col: 81}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/tools/capture.templ`, Line: 260, Col: 65}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var34))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 51, "</div></div><div><div class=\"text-xs text-gray-500\">Duration</div><div class=\"text-white font-mono\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 44, "</div></div></div><!-- Live Capture Status --><div class=\"max-h-[500px] overflow-y-auto font-mono text-sm\" id=\"capture-live\" data-capture-id=\"")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var35 string
-				templ_7745c5c3_Var35, templ_7745c5c3_Err = templ.JoinStringErrs(data.Active.Duration)
+				templ_7745c5c3_Var35, templ_7745c5c3_Err = templ.JoinStringErrs(data.Active.ID)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/tools/capture.templ`, Line: 288, Col: 65}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/tools/capture.templ`, Line: 268, Col: 40}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var35))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 52, "</div></div></div><!-- Live Capture / Packet Log --><div id=\"capture-live\" data-capture-id=\"")
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-				var templ_7745c5c3_Var36 string
-				templ_7745c5c3_Var36, templ_7745c5c3_Err = templ.JoinStringErrs(data.Active.ID)
-				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/tools/capture.templ`, Line: 295, Col: 40}
-				}
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var36))
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 53, "\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 45, "\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				if data.Active.Status == "running" {
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 54, "<div class=\"px-4 py-2 flex items-center gap-2 text-green-400 border-b border-dark-600\"><i class=\"fas fa-circle animate-pulse text-xs\"></i> <span class=\"text-sm font-medium\">Live packet stream</span> <span class=\"text-xs text-gray-500 ml-auto\" id=\"live-line-count\">0 lines</span></div>")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 46, "<div class=\"p-4 flex items-center gap-2 text-green-400\"><i class=\"fas fa-circle animate-pulse text-xs\"></i> <span>Live capture monitoring active</span></div>")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
 				} else {
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 55, "<div class=\"p-4 text-center text-gray-500\"><i class=\"fas fa-check-circle text-2xl mb-2\"></i><p>Capture ")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 47, "<div class=\"p-4 text-center text-gray-500\"><i class=\"fas fa-check-circle text-2xl mb-2\"></i><p>Capture ")
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
+					var templ_7745c5c3_Var36 string
+					templ_7745c5c3_Var36, templ_7745c5c3_Err = templ.JoinStringErrs(data.Active.Status)
+					if templ_7745c5c3_Err != nil {
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/tools/capture.templ`, Line: 278, Col: 41}
+					}
+					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var36))
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 48, "</p></div>")
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
+				}
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 49, "<div id=\"capture-log\" class=\"divide-y divide-dark-600\"></div></div>")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				if data.Active.Status == "stopped" || data.Active.Status == "completed" {
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 50, "<!-- Analysis Panel --> <div class=\"p-4 border-t border-dark-600\" x-data=\"")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
 					var templ_7745c5c3_Var37 string
-					templ_7745c5c3_Var37, templ_7745c5c3_Err = templ.JoinStringErrs(data.Active.Status)
+					templ_7745c5c3_Var37, templ_7745c5c3_Err = templ.JoinStringErrs("{ analysis: null, loading: false, error: '', analyzeUrl: '/tools/capture/" + data.Active.ID + "/analyze' }")
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/tools/capture.templ`, Line: 306, Col: 41}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/tools/capture.templ`, Line: 286, Col: 167}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var37))
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 56, "</p></div>")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 51, "\"><div class=\"flex items-center justify-between mb-3\"><h3 class=\"text-lg font-medium text-white\"><i class=\"fas fa-magnifying-glass-chart text-primary-400 mr-2\"></i>PCAP Analysis</h3><button @click=\"loading = true; error = ''; fetch(analyzeUrl).then(r => r.json()).then(d => { analysis = d; loading = false; }).catch(e => { error = e.message; loading = false; })\" class=\"btn-primary text-sm\" :disabled=\"loading\"><i class=\"fas fa-magnifying-glass-chart mr-1\"></i> <span x-text=\"loading ? 'Analyzing...' : 'Analyze'\"></span></button></div><template x-if=\"analysis\"><div class=\"space-y-4\"><!-- Summary stats --><div class=\"grid grid-cols-3 gap-3\"><div class=\"card p-3 text-center\"><p class=\"text-xl font-bold text-white\" x-text=\"analysis.total_packets\"></p><p class=\"text-xs text-gray-400\">Packets</p></div><div class=\"card p-3 text-center\"><p class=\"text-xl font-bold text-white\" x-text=\"analysis.total_bytes\"></p><p class=\"text-xs text-gray-400\">Bytes</p></div><div class=\"card p-3 text-center\"><p class=\"text-xl font-bold text-white\" x-text=\"analysis.duration\"></p><p class=\"text-xs text-gray-400\">Duration</p></div></div><!-- Top Talkers --><div class=\"card p-4\"><h4 class=\"text-sm font-medium text-white mb-2\">Top Talkers</h4><table class=\"w-full text-sm\"><thead><tr class=\"text-left text-gray-400 border-b border-dark-600\"><th class=\"pb-2 pr-3\">IP Address</th><th class=\"pb-2 pr-3\">Packets (src)</th><th class=\"pb-2 pr-3\">Packets (dst)</th><th class=\"pb-2\">Total</th></tr></thead> <tbody><template x-for=\"t in analysis.top_talkers\" :key=\"t.address\"><tr class=\"border-b border-dark-700\"><td class=\"py-1.5 pr-3 font-mono text-xs text-white\" x-text=\"t.address\"></td><td class=\"py-1.5 pr-3 text-gray-300\" x-text=\"t.packets_src\"></td><td class=\"py-1.5 pr-3 text-gray-300\" x-text=\"t.packets_dst\"></td><td class=\"py-1.5 font-medium text-white\" x-text=\"t.total_pkts\"></td></tr></template></tbody></table></div><!-- Protocol Breakdown --><div class=\"card p-4\"><h4 class=\"text-sm font-medium text-white mb-2\">Protocol Breakdown</h4><table class=\"w-full text-sm\"><thead><tr class=\"text-left text-gray-400 border-b border-dark-600\"><th class=\"pb-2 pr-3\">Protocol</th><th class=\"pb-2 pr-3\">Count</th><th class=\"pb-2\">%</th></tr></thead> <tbody><template x-for=\"p in analysis.protocols\" :key=\"p.protocol\"><tr class=\"border-b border-dark-700\"><td class=\"py-1.5 pr-3 text-white\" x-text=\"p.protocol\"></td><td class=\"py-1.5 pr-3 text-gray-300\" x-text=\"p.count\"></td><td class=\"py-1.5 text-gray-300\" x-text=\"p.percent.toFixed(1) + '%'\"></td></tr></template></tbody></table></div><!-- Top Connections --><div class=\"card p-4\"><h4 class=\"text-sm font-medium text-white mb-2\">Top Connections</h4><table class=\"w-full text-sm\"><thead><tr class=\"text-left text-gray-400 border-b border-dark-600\"><th class=\"pb-2 pr-3\">Source</th><th class=\"pb-2 pr-3\">Destination</th><th class=\"pb-2 pr-3\">Protocol</th><th class=\"pb-2\">Packets</th></tr></thead> <tbody><template x-for=\"c in analysis.connections\" :key=\"c.source + c.destination\"><tr class=\"border-b border-dark-700\"><td class=\"py-1.5 pr-3 font-mono text-xs text-white\" x-text=\"c.source\"></td><td class=\"py-1.5 pr-3 font-mono text-xs text-white\" x-text=\"c.destination\"></td><td class=\"py-1.5 pr-3 text-gray-300\" x-text=\"c.protocol\"></td><td class=\"py-1.5 text-gray-300\" x-text=\"c.packets\"></td></tr></template></tbody></table></div></div></template><template x-if=\"error\"><div class=\"text-red-400 text-sm mt-2\" x-text=\"error\"></div></template></div>")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 57, "<div id=\"capture-log\" class=\"bg-dark-900 max-h-[400px] overflow-y-auto font-mono text-xs leading-5 p-2\" style=\"scroll-behavior: smooth;\"></div></div>")
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-				if data.Active.Status == "stopped" || data.Active.Status == "completed" {
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 58, "<!-- Analysis Panel --> <div class=\"p-4 border-t border-dark-600\" x-data=\"")
-					if templ_7745c5c3_Err != nil {
-						return templ_7745c5c3_Err
-					}
-					var templ_7745c5c3_Var38 string
-					templ_7745c5c3_Var38, templ_7745c5c3_Err = templ.JoinStringErrs("{ analysis: null, loading: false, error: '', analyzeUrl: '/tools/capture/" + data.Active.ID + "/analyze' }")
-					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/tools/capture.templ`, Line: 318, Col: 167}
-					}
-					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var38))
-					if templ_7745c5c3_Err != nil {
-						return templ_7745c5c3_Err
-					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 59, "\"><div class=\"flex items-center justify-between mb-3\"><h3 class=\"text-lg font-medium text-white\"><i class=\"fas fa-magnifying-glass-chart text-primary-400 mr-2\"></i>PCAP Analysis</h3><button @click=\"loading = true; error = ''; fetch(analyzeUrl).then(r => r.json()).then(d => { analysis = d; loading = false; }).catch(e => { error = e.message; loading = false; })\" class=\"btn-primary text-sm\" :disabled=\"loading\"><i class=\"fas fa-magnifying-glass-chart mr-1\"></i> <span x-text=\"loading ? 'Analyzing...' : 'Analyze'\"></span></button></div><template x-if=\"analysis\"><div class=\"space-y-4\"><!-- Summary stats --><div class=\"grid grid-cols-3 gap-3\"><div class=\"card p-3 text-center\"><p class=\"text-xl font-bold text-white\" x-text=\"analysis.total_packets\"></p><p class=\"text-xs text-gray-400\">Packets</p></div><div class=\"card p-3 text-center\"><p class=\"text-xl font-bold text-white\" x-text=\"analysis.total_bytes\"></p><p class=\"text-xs text-gray-400\">Bytes</p></div><div class=\"card p-3 text-center\"><p class=\"text-xl font-bold text-white\" x-text=\"analysis.duration\"></p><p class=\"text-xs text-gray-400\">Duration</p></div></div><!-- Top Talkers --><div class=\"card p-4\"><h4 class=\"text-sm font-medium text-white mb-2\">Top Talkers</h4><table class=\"w-full text-sm\"><thead><tr class=\"text-left text-gray-400 border-b border-dark-600\"><th class=\"pb-2 pr-3\">IP Address</th><th class=\"pb-2 pr-3\">Packets (src)</th><th class=\"pb-2 pr-3\">Packets (dst)</th><th class=\"pb-2\">Total</th></tr></thead> <tbody><template x-for=\"t in analysis.top_talkers\" :key=\"t.address\"><tr class=\"border-b border-dark-700\"><td class=\"py-1.5 pr-3 font-mono text-xs text-white\" x-text=\"t.address\"></td><td class=\"py-1.5 pr-3 text-gray-300\" x-text=\"t.packets_src\"></td><td class=\"py-1.5 pr-3 text-gray-300\" x-text=\"t.packets_dst\"></td><td class=\"py-1.5 font-medium text-white\" x-text=\"t.total_pkts\"></td></tr></template></tbody></table></div><!-- Protocol Breakdown --><div class=\"card p-4\"><h4 class=\"text-sm font-medium text-white mb-2\">Protocol Breakdown</h4><table class=\"w-full text-sm\"><thead><tr class=\"text-left text-gray-400 border-b border-dark-600\"><th class=\"pb-2 pr-3\">Protocol</th><th class=\"pb-2 pr-3\">Count</th><th class=\"pb-2\">%</th></tr></thead> <tbody><template x-for=\"p in analysis.protocols\" :key=\"p.protocol\"><tr class=\"border-b border-dark-700\"><td class=\"py-1.5 pr-3 text-white\" x-text=\"p.protocol\"></td><td class=\"py-1.5 pr-3 text-gray-300\" x-text=\"p.count\"></td><td class=\"py-1.5 text-gray-300\" x-text=\"p.percent.toFixed(1) + '%'\"></td></tr></template></tbody></table></div><!-- Top Connections --><div class=\"card p-4\"><h4 class=\"text-sm font-medium text-white mb-2\">Top Connections</h4><table class=\"w-full text-sm\"><thead><tr class=\"text-left text-gray-400 border-b border-dark-600\"><th class=\"pb-2 pr-3\">Source</th><th class=\"pb-2 pr-3\">Destination</th><th class=\"pb-2 pr-3\">Protocol</th><th class=\"pb-2\">Packets</th></tr></thead> <tbody><template x-for=\"c in analysis.connections\" :key=\"c.source + c.destination\"><tr class=\"border-b border-dark-700\"><td class=\"py-1.5 pr-3 font-mono text-xs text-white\" x-text=\"c.source\"></td><td class=\"py-1.5 pr-3 font-mono text-xs text-white\" x-text=\"c.destination\"></td><td class=\"py-1.5 pr-3 text-gray-300\" x-text=\"c.protocol\"></td><td class=\"py-1.5 text-gray-300\" x-text=\"c.packets\"></td></tr></template></tbody></table></div></div></template><template x-if=\"error\"><div class=\"text-red-400 text-sm mt-2\" x-text=\"error\"></div></template></div>")
-					if templ_7745c5c3_Err != nil {
-						return templ_7745c5c3_Err
-					}
-				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 60, "</div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 52, "</div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			} else {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 61, "<!-- No Active Capture --> <div class=\"card p-12 text-center\"><i class=\"fas fa-satellite-dish text-6xl text-gray-400 mb-4\"></i><h2 class=\"text-xl font-semibold text-white mb-2\">Network Packet Capture</h2><p class=\"text-gray-400 mb-6\">Capture and analyze network traffic in real-time</p>")
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-				if data.TcpdumpAvailable {
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 62, "<button onclick=\"document.getElementById('new-capture-modal').classList.remove('hidden')\" class=\"btn-primary\"><i class=\"fas fa-play mr-2\"></i>Start New Capture</button>")
-					if templ_7745c5c3_Err != nil {
-						return templ_7745c5c3_Err
-					}
-				} else {
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 63, "<p class=\"text-yellow-400 text-sm\">tcpdump is not installed — capture is unavailable</p>")
-					if templ_7745c5c3_Err != nil {
-						return templ_7745c5c3_Err
-					}
-				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 64, "</div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 53, "<!-- No Active Capture --> <div class=\"card p-12 text-center\"><i class=\"fas fa-satellite-dish text-6xl text-gray-400 mb-4\"></i><h2 class=\"text-xl font-semibold text-white mb-2\">Network Packet Capture</h2><p class=\"text-gray-400 mb-6\">Capture and analyze network traffic in real-time</p><button onclick=\"document.getElementById('new-capture-modal').classList.remove('hidden')\" class=\"btn-primary\"><i class=\"fas fa-play mr-2\"></i>Start New Capture</button></div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 65, "</div></div><!-- Common Filters Reference --><div class=\"card\"><div class=\"p-4 border-b border-dark-600\"><h2 class=\"font-semibold text-white\"><i class=\"fas fa-filter text-primary-400 mr-2\"></i>Common Capture Filters</h2></div><div class=\"p-4\"><div class=\"grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 54, "</div></div><!-- Common Filters Reference --><div class=\"card\"><div class=\"p-4 border-b border-dark-600\"><h2 class=\"font-semibold text-white\"><i class=\"fas fa-filter text-primary-400 mr-2\"></i>Common Capture Filters</h2></div><div class=\"p-4\"><div class=\"grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -714,7 +650,7 @@ func PacketCapture(data PacketCaptureData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 66, "</div></div></div><!-- New Capture Modal -->")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 55, "</div></div></div><!-- New Capture Modal -->")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -722,7 +658,7 @@ func PacketCapture(data PacketCaptureData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 67, "<script>\n\t\t\t\tdocument.addEventListener('alpine:init', () => {\n\t\t\t\t\tAlpine.store('capture', {\n\t\t\t\t\t\tstart(iface) {\n\t\t\t\t\t\t\tdocument.getElementById('capture-interface').value = iface;\n\t\t\t\t\t\t\tdocument.getElementById('new-capture-modal').classList.remove('hidden');\n\t\t\t\t\t\t}\n\t\t\t\t\t});\n\t\t\t\t});\n\n\t\t\t\tfunction captureApp() {\n\t\t\t\t\treturn {\n\t\t\t\t\t\tws: null,\n\t\t\t\t\t\t_reconnectAttempts: 0,\n\t\t\t\t\t\t_lineCount: 0,\n\t\t\t\t\t\t_autoScroll: true,\n\t\t\t\t\t\t_maxVisibleLines: 500,\n\t\t\t\t\t\tinit() {\n\t\t\t\t\t\t\tconst el = document.getElementById('capture-live');\n\t\t\t\t\t\t\tif (el && el.dataset.captureId) {\n\t\t\t\t\t\t\t\tthis.connectWS(el.dataset.captureId);\n\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t// Track user scroll to disable auto-scroll when scrolled up\n\t\t\t\t\t\t\tconst logDiv = document.getElementById('capture-log');\n\t\t\t\t\t\t\tif (logDiv) {\n\t\t\t\t\t\t\t\tlogDiv.addEventListener('scroll', () => {\n\t\t\t\t\t\t\t\t\tconst atBottom = logDiv.scrollHeight - logDiv.scrollTop - logDiv.clientHeight < 40;\n\t\t\t\t\t\t\t\t\tthis._autoScroll = atBottom;\n\t\t\t\t\t\t\t\t});\n\t\t\t\t\t\t\t}\n\t\t\t\t\t\t},\n\t\t\t\t\t\tconnectWS(captureId) {\n\t\t\t\t\t\t\tconst protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';\n\t\t\t\t\t\t\tthis.ws = new WebSocket(protocol + '//' + window.location.host + '/ws/capture/' + captureId);\n\t\t\t\t\t\t\tthis.ws.onopen = () => {\n\t\t\t\t\t\t\t\tthis._reconnectAttempts = 0;\n\t\t\t\t\t\t\t};\n\t\t\t\t\t\t\tthis.ws.onmessage = (e) => {\n\t\t\t\t\t\t\t\ttry {\n\t\t\t\t\t\t\t\t\tconst msg = JSON.parse(e.data);\n\t\t\t\t\t\t\t\t\tif (msg.type === 'stats') {\n\t\t\t\t\t\t\t\t\t\tconst packetEl = document.getElementById('live-packet-count');\n\t\t\t\t\t\t\t\t\t\tconst sizeEl = document.getElementById('live-file-size');\n\t\t\t\t\t\t\t\t\t\tif (packetEl) packetEl.textContent = msg.packet_count;\n\t\t\t\t\t\t\t\t\t\tif (sizeEl) sizeEl.textContent = this.formatSize(msg.file_size);\n\t\t\t\t\t\t\t\t\t} else if (msg.type === 'packets') {\n\t\t\t\t\t\t\t\t\t\tthis.appendPacketLines(msg.lines);\n\t\t\t\t\t\t\t\t\t} else if (msg.type === 'finished') {\n\t\t\t\t\t\t\t\t\t\tconst logDiv = document.getElementById('capture-log');\n\t\t\t\t\t\t\t\t\t\tif (logDiv) {\n\t\t\t\t\t\t\t\t\t\t\tconst div = document.createElement('div');\n\t\t\t\t\t\t\t\t\t\t\tdiv.className = 'p-2 text-center text-yellow-400';\n\t\t\t\t\t\t\t\t\t\t\tdiv.innerHTML = '<i class=\"fas fa-check-circle mr-2\"></i>';\n\t\t\t\t\t\t\t\t\t\t\tconst span = document.createElement('span');\n\t\t\t\t\t\t\t\t\t\t\tspan.textContent = msg.message || 'Capture finished';\n\t\t\t\t\t\t\t\t\t\t\tdiv.appendChild(span);\n\t\t\t\t\t\t\t\t\t\t\tlogDiv.appendChild(div);\n\t\t\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t\t\t\tsetTimeout(function() { location.reload(); }, 2000);\n\t\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t\t} catch(err) {}\n\t\t\t\t\t\t\t};\n\t\t\t\t\t\t\tthis.ws.onclose = (event) => {\n\t\t\t\t\t\t\t\tconst logDiv = document.getElementById('capture-log');\n\t\t\t\t\t\t\t\tconst graceful = (event.code === 1000 || event.code === 1001);\n\t\t\t\t\t\t\t\tif (!graceful && logDiv && this._reconnectAttempts < 5) {\n\t\t\t\t\t\t\t\t\tconst delay = Math.min(30000, 1000 * Math.pow(2, this._reconnectAttempts));\n\t\t\t\t\t\t\t\t\tthis._reconnectAttempts++;\n\t\t\t\t\t\t\t\t\tconst delaySec = delay * 0.001;\n\t\t\t\t\t\t\t\t\tconst info = document.createElement('div');\n\t\t\t\t\t\t\t\t\tinfo.className = 'p-2 text-yellow-400 text-xs';\n\t\t\t\t\t\t\t\t\tinfo.textContent = 'Stream disconnected — reconnecting in ' + delaySec + 's... (attempt ' + this._reconnectAttempts + ' of 5)';\n\t\t\t\t\t\t\t\t\tlogDiv.appendChild(info);\n\t\t\t\t\t\t\t\t\tsetTimeout(() => this.connectWS(captureId), delay);\n\t\t\t\t\t\t\t\t} else if (!graceful && this._reconnectAttempts >= 5 && logDiv) {\n\t\t\t\t\t\t\t\t\tconst info = document.createElement('div');\n\t\t\t\t\t\t\t\t\tinfo.className = 'p-2 text-red-400 text-xs';\n\t\t\t\t\t\t\t\t\tinfo.textContent = 'Stream disconnected — max reconnect attempts reached.';\n\t\t\t\t\t\t\t\t\tlogDiv.appendChild(info);\n\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t};\n\t\t\t\t\t\t},\n\t\t\t\t\t\tappendPacketLines(lines) {\n\t\t\t\t\t\t\tconst logDiv = document.getElementById('capture-log');\n\t\t\t\t\t\t\tif (!logDiv || !lines || lines.length === 0) return;\n\n\t\t\t\t\t\t\tconst fragment = document.createDocumentFragment();\n\t\t\t\t\t\t\tfor (let i = 0; i < lines.length; i++) {\n\t\t\t\t\t\t\t\tconst row = document.createElement('div');\n\t\t\t\t\t\t\t\trow.className = 'px-2 py-0.5 text-gray-300 hover:bg-dark-700/50 whitespace-nowrap';\n\t\t\t\t\t\t\t\trow.textContent = lines[i];\n\t\t\t\t\t\t\t\tfragment.appendChild(row);\n\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\tlogDiv.appendChild(fragment);\n\t\t\t\t\t\t\tthis._lineCount += lines.length;\n\n\t\t\t\t\t\t\t// Cap visible lines\n\t\t\t\t\t\t\twhile (logDiv.childNodes.length > this._maxVisibleLines) {\n\t\t\t\t\t\t\t\tlogDiv.removeChild(logDiv.firstChild);\n\t\t\t\t\t\t\t}\n\n\t\t\t\t\t\t\t// Update line counter\n\t\t\t\t\t\t\tconst counter = document.getElementById('live-line-count');\n\t\t\t\t\t\t\tif (counter) counter.textContent = this._lineCount + ' lines';\n\n\t\t\t\t\t\t\t// Auto-scroll to bottom\n\t\t\t\t\t\t\tif (this._autoScroll) {\n\t\t\t\t\t\t\t\tlogDiv.scrollTop = logDiv.scrollHeight;\n\t\t\t\t\t\t\t}\n\t\t\t\t\t\t},\n\t\t\t\t\t\tformatSize(bytes) {\n\t\t\t\t\t\t\tif (bytes === 0) return '0 B';\n\t\t\t\t\t\t\tconst k = 1024;\n\t\t\t\t\t\t\tconst sizes = ['B', 'KB', 'MB', 'GB'];\n\t\t\t\t\t\t\tconst i = Math.floor(Math.log(bytes) / Math.log(k));\n\t\t\t\t\t\t\treturn parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];\n\t\t\t\t\t\t},\n\t\t\t\t\t\tdestroy() {\n\t\t\t\t\t\t\tif (this.ws) this.ws.close();\n\t\t\t\t\t\t}\n\t\t\t\t\t};\n\t\t\t\t}\n\t\t\t</script></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 56, "<script>\n\t\t\t\tdocument.addEventListener('alpine:init', () => {\n\t\t\t\t\tAlpine.store('capture', {\n\t\t\t\t\t\tstart(iface) {\n\t\t\t\t\t\t\tdocument.getElementById('capture-interface').value = iface;\n\t\t\t\t\t\t\tdocument.getElementById('new-capture-modal').classList.remove('hidden');\n\t\t\t\t\t\t}\n\t\t\t\t\t});\n\t\t\t\t});\n\n\t\t\t\tfunction captureApp() {\n\t\t\t\t\treturn {\n\t\t\t\t\t\tws: null,\n\t\t\t\t\t\t_reconnectAttempts: 0,\n\t\t\t\t\t\tinit() {\n\t\t\t\t\t\t\tconst el = document.getElementById('capture-live');\n\t\t\t\t\t\t\tif (el && el.dataset.captureId) {\n\t\t\t\t\t\t\t\tthis.connectWS(el.dataset.captureId);\n\t\t\t\t\t\t\t}\n\t\t\t\t\t\t},\n\t\t\t\t\t\tconnectWS(captureId) {\n\t\t\t\t\t\t\tconst protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';\n\t\t\t\t\t\t\tthis.ws = new WebSocket(protocol + '//' + window.location.host + '/ws/capture/' + captureId);\n\t\t\t\t\t\t\tthis.ws.onopen = () => {\n\t\t\t\t\t\t\t\tthis._reconnectAttempts = 0;\n\t\t\t\t\t\t\t};\n\t\t\t\t\t\t\tthis.ws.onmessage = (e) => {\n\t\t\t\t\t\t\t\ttry {\n\t\t\t\t\t\t\t\t\tconst msg = JSON.parse(e.data);\n\t\t\t\t\t\t\t\t\tif (msg.type === 'stats') {\n\t\t\t\t\t\t\t\t\t\tconst packetEl = document.getElementById('live-packet-count');\n\t\t\t\t\t\t\t\t\t\tconst sizeEl = document.getElementById('live-file-size');\n\t\t\t\t\t\t\t\t\t\tif (packetEl) packetEl.textContent = msg.packet_count;\n\t\t\t\t\t\t\t\t\t\tif (sizeEl) sizeEl.textContent = this.formatSize(msg.file_size);\n\t\t\t\t\t\t\t\t\t} else if (msg.type === 'finished') {\n\t\t\t\t\t\t\t\t\t\tconst logDiv = document.getElementById('capture-log');\n\t\t\t\t\t\t\t\t\t\tif (logDiv) {\n\t\t\t\t\t\t\t\t\t\t\tfunction escapeHtml(str) {\n\t\t\t\t\t\t\t\t\t\t\t\tvar div = document.createElement('div');\n\t\t\t\t\t\t\t\t\t\t\t\tdiv.textContent = str;\n\t\t\t\t\t\t\t\t\t\t\t\treturn div.innerHTML;\n\t\t\t\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t\t\t\t\tlogDiv.innerHTML = '<div class=\"p-4 text-center text-yellow-400\"><i class=\"fas fa-check-circle mr-2\"></i>' + escapeHtml(msg.message || 'Capture finished') + '</div>';\n\t\t\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t\t\t\tsetTimeout(function() { location.reload(); }, 2000);\n\t\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t\t} catch(err) {}\n\t\t\t\t\t\t\t};\n\t\t\t\t\t\t\tthis.ws.onclose = (event) => {\n\t\t\t\t\t\t\t\tconst logDiv = document.getElementById('capture-log');\n\t\t\t\t\t\t\t\tconst graceful = (event.code === 1000 || event.code === 1001);\n\t\t\t\t\t\t\t\tif (!graceful && logDiv && !logDiv.innerHTML.includes('finished') && this._reconnectAttempts < 5) {\n\t\t\t\t\t\t\t\t\tconst delay = Math.min(30000, 1000 * Math.pow(2, this._reconnectAttempts));\n\t\t\t\t\t\t\t\t\tthis._reconnectAttempts++;\n\t\t\t\t\t\t\t\t\tconst delaySec = delay * 0.001;\n\t\t\t\t\t\t\t\t\tlogDiv.innerHTML += '<div class=\"p-2 text-yellow-400 text-xs\"><i class=\"fas fa-sync-alt mr-1\"></i>Stream disconnected — reconnecting in ' + delaySec + 's... (attempt ' + this._reconnectAttempts + ' of 5)</div>';\n\t\t\t\t\t\t\t\t\tsetTimeout(() => this.connectWS(captureId), delay);\n\t\t\t\t\t\t\t\t} else if (!graceful && this._reconnectAttempts >= 5 && logDiv && !logDiv.innerHTML.includes('finished')) {\n\t\t\t\t\t\t\t\t\tlogDiv.innerHTML += '<div class=\"p-2 text-red-400 text-xs\"><i class=\"fas fa-times-circle mr-1\"></i>Stream disconnected — max reconnect attempts reached.</div>';\n\t\t\t\t\t\t\t\t} else if (logDiv && !logDiv.innerHTML.includes('finished')) {\n\t\t\t\t\t\t\t\t\tlogDiv.innerHTML += '<div class=\"p-2 text-gray-500 text-xs\">Stream disconnected</div>';\n\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t};\n\t\t\t\t\t\t},\n\t\t\t\t\t\tformatSize(bytes) {\n\t\t\t\t\t\t\tif (bytes === 0) return '0 B';\n\t\t\t\t\t\t\tconst k = 1024;\n\t\t\t\t\t\t\tconst sizes = ['B', 'KB', 'MB', 'GB'];\n\t\t\t\t\t\t\tconst i = Math.floor(Math.log(bytes) / Math.log(k));\n\t\t\t\t\t\t\treturn parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];\n\t\t\t\t\t\t},\n\t\t\t\t\t\tdestroy() {\n\t\t\t\t\t\t\tif (this.ws) this.ws.close();\n\t\t\t\t\t\t}\n\t\t\t\t\t};\n\t\t\t\t}\n\t\t\t</script></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -752,64 +688,64 @@ func filterCard(title, filter, description string) templ.Component {
 			}()
 		}
 		ctx = templ.InitializeContext(ctx)
-		templ_7745c5c3_Var39 := templ.GetChildren(ctx)
-		if templ_7745c5c3_Var39 == nil {
-			templ_7745c5c3_Var39 = templ.NopComponent
+		templ_7745c5c3_Var38 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var38 == nil {
+			templ_7745c5c3_Var38 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 68, "<div class=\"bg-dark-700 rounded-lg p-4 cursor-pointer hover:border hover:border-primary-500 transition-colors\" @click=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 57, "<div class=\"bg-dark-700 rounded-lg p-4 cursor-pointer hover:border hover:border-primary-500 transition-colors\" @click=\"")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var39 string
+		templ_7745c5c3_Var39, templ_7745c5c3_Err = templ.JoinStringErrs("document.getElementById('capture-filter').value = '" + filter + "'; document.getElementById('new-capture-modal').classList.remove('hidden')")
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/tools/capture.templ`, Line: 523, Col: 152}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var39))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 58, "\"><h3 class=\"font-medium text-white mb-1\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var40 string
-		templ_7745c5c3_Var40, templ_7745c5c3_Err = templ.JoinStringErrs("document.getElementById('capture-filter').value = '" + filter + "'; document.getElementById('new-capture-modal').classList.remove('hidden')")
+		templ_7745c5c3_Var40, templ_7745c5c3_Err = templ.JoinStringErrs(title)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/tools/capture.templ`, Line: 605, Col: 152}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/tools/capture.templ`, Line: 525, Col: 49}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var40))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 69, "\"><h3 class=\"font-medium text-white mb-1\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 59, "</h3><code class=\"block bg-dark-900 text-green-400 px-2 py-1 rounded text-sm font-mono mb-2\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var41 string
-		templ_7745c5c3_Var41, templ_7745c5c3_Err = templ.JoinStringErrs(title)
+		templ_7745c5c3_Var41, templ_7745c5c3_Err = templ.JoinStringErrs(filter)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/tools/capture.templ`, Line: 607, Col: 49}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/tools/capture.templ`, Line: 526, Col: 98}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var41))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 70, "</h3><code class=\"block bg-dark-900 text-green-400 px-2 py-1 rounded text-sm font-mono mb-2\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 60, "</code><p class=\"text-xs text-gray-500\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var42 string
-		templ_7745c5c3_Var42, templ_7745c5c3_Err = templ.JoinStringErrs(filter)
+		templ_7745c5c3_Var42, templ_7745c5c3_Err = templ.JoinStringErrs(description)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/tools/capture.templ`, Line: 608, Col: 98}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/tools/capture.templ`, Line: 527, Col: 48}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var42))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 71, "</code><p class=\"text-xs text-gray-500\">")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		var templ_7745c5c3_Var43 string
-		templ_7745c5c3_Var43, templ_7745c5c3_Err = templ.JoinStringErrs(description)
-		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/tools/capture.templ`, Line: 609, Col: 48}
-		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var43))
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 72, "</p></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 61, "</p></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -833,74 +769,74 @@ func newCaptureModal(csrfToken string, interfaces []NetworkInterface) templ.Comp
 			}()
 		}
 		ctx = templ.InitializeContext(ctx)
-		templ_7745c5c3_Var44 := templ.GetChildren(ctx)
-		if templ_7745c5c3_Var44 == nil {
-			templ_7745c5c3_Var44 = templ.NopComponent
+		templ_7745c5c3_Var43 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var43 == nil {
+			templ_7745c5c3_Var43 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 73, "<div id=\"new-capture-modal\" class=\"hidden fixed inset-0 z-50 overflow-y-auto\"><div class=\"fixed inset-0 bg-black/50\" onclick=\"document.getElementById('new-capture-modal').classList.add('hidden')\"></div><div class=\"relative min-h-screen flex items-center justify-center p-4\"><div class=\"relative bg-dark-800 rounded-xl border border-dark-600 max-w-lg w-full p-6\"><div class=\"flex items-center justify-between mb-6\"><h2 class=\"text-xl font-display font-bold text-white\">New Packet Capture</h2><button onclick=\"document.getElementById('new-capture-modal').classList.add('hidden')\" class=\"text-gray-400 hover:text-white\"><i class=\"fas fa-times\"></i></button></div><form action=\"/tools/capture/start\" method=\"POST\" class=\"space-y-4\"><input type=\"hidden\" name=\"csrf_token\" value=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 62, "<div id=\"new-capture-modal\" class=\"hidden fixed inset-0 z-50 overflow-y-auto\"><div class=\"fixed inset-0 bg-black/50\" onclick=\"document.getElementById('new-capture-modal').classList.add('hidden')\"></div><div class=\"relative min-h-screen flex items-center justify-center p-4\"><div class=\"relative bg-dark-800 rounded-xl border border-dark-600 max-w-lg w-full p-6\"><div class=\"flex items-center justify-between mb-6\"><h2 class=\"text-xl font-display font-bold text-white\">New Packet Capture</h2><button onclick=\"document.getElementById('new-capture-modal').classList.add('hidden')\" class=\"text-gray-400 hover:text-white\"><i class=\"fas fa-times\"></i></button></div><form action=\"/tools/capture/start\" method=\"POST\" class=\"space-y-4\"><input type=\"hidden\" name=\"csrf_token\" value=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		var templ_7745c5c3_Var45 string
-		templ_7745c5c3_Var45, templ_7745c5c3_Err = templ.JoinStringErrs(csrfToken)
+		var templ_7745c5c3_Var44 string
+		templ_7745c5c3_Var44, templ_7745c5c3_Err = templ.JoinStringErrs(csrfToken)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/tools/capture.templ`, Line: 629, Col: 61}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/tools/capture.templ`, Line: 547, Col: 61}
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var45))
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var44))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 74, "\"><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Capture Name</label> <input type=\"text\" name=\"name\" required class=\"input\" placeholder=\"e.g. Debug HTTP Traffic\"></div><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Network Interface</label> <select id=\"capture-interface\" name=\"interface\" required class=\"input\"><option value=\"\">Select interface...</option> <option value=\"any\">Any (all interfaces)</option> ")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 63, "\"><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Capture Name</label> <input type=\"text\" name=\"name\" required class=\"input\" placeholder=\"e.g. Debug HTTP Traffic\"></div><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Network Interface</label> <select id=\"capture-interface\" name=\"interface\" required class=\"input\"><option value=\"\">Select interface...</option> <option value=\"any\">Any (all interfaces)</option> ")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		for _, iface := range interfaces {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 75, "<option value=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 64, "<option value=\"")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var45 string
+			templ_7745c5c3_Var45, templ_7745c5c3_Err = templ.JoinStringErrs(iface.Name)
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/tools/capture.templ`, Line: 560, Col: 34}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var45))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 65, "\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var46 string
 			templ_7745c5c3_Var46, templ_7745c5c3_Err = templ.JoinStringErrs(iface.Name)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/tools/capture.templ`, Line: 642, Col: 34}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/tools/capture.templ`, Line: 560, Col: 49}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var46))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 76, "\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 66, " (")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var47 string
-			templ_7745c5c3_Var47, templ_7745c5c3_Err = templ.JoinStringErrs(iface.Name)
+			templ_7745c5c3_Var47, templ_7745c5c3_Err = templ.JoinStringErrs(iface.IP)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/tools/capture.templ`, Line: 642, Col: 49}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/tools/capture.templ`, Line: 560, Col: 63}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var47))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 77, " (")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			var templ_7745c5c3_Var48 string
-			templ_7745c5c3_Var48, templ_7745c5c3_Err = templ.JoinStringErrs(iface.IP)
-			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/tools/capture.templ`, Line: 642, Col: 63}
-			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var48))
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 78, ")</option>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 67, ")</option>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 79, "</select></div><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Capture Filter (BPF)</label> <input type=\"text\" id=\"capture-filter\" name=\"filter\" class=\"input font-mono\" placeholder=\"e.g. tcp port 80\"><p class=\"text-xs text-gray-500 mt-1\">Leave empty to capture all traffic</p></div><div class=\"grid grid-cols-2 gap-4\"><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Max Packets</label> <input type=\"number\" name=\"max_packets\" class=\"input\" placeholder=\"0 (unlimited)\" min=\"0\"></div><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Max Duration (seconds)</label> <input type=\"number\" name=\"max_duration\" class=\"input\" placeholder=\"0 (unlimited)\" min=\"0\"></div></div><div class=\"flex justify-end gap-3 pt-4 border-t border-dark-600\"><button type=\"button\" onclick=\"document.getElementById('new-capture-modal').classList.add('hidden')\" class=\"btn-secondary\">Cancel</button> <button type=\"submit\" class=\"btn-primary\"><i class=\"fas fa-play mr-2\"></i>Start Capture</button></div></form></div></div></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 68, "</select></div><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Capture Filter (BPF)</label> <input type=\"text\" id=\"capture-filter\" name=\"filter\" class=\"input font-mono\" placeholder=\"e.g. tcp port 80\"><p class=\"text-xs text-gray-500 mt-1\">Leave empty to capture all traffic</p></div><div class=\"grid grid-cols-2 gap-4\"><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Max Packets</label> <input type=\"number\" name=\"max_packets\" class=\"input\" placeholder=\"0 (unlimited)\" min=\"0\"></div><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Max Duration (seconds)</label> <input type=\"number\" name=\"max_duration\" class=\"input\" placeholder=\"0 (unlimited)\" min=\"0\"></div></div><div class=\"flex justify-end gap-3 pt-4 border-t border-dark-600\"><button type=\"button\" onclick=\"document.getElementById('new-capture-modal').classList.add('hidden')\" class=\"btn-secondary\">Cancel</button> <button type=\"submit\" class=\"btn-primary\"><i class=\"fas fa-play mr-2\"></i>Start Capture</button></div></form></div></div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

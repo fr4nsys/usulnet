@@ -1,0 +1,68 @@
+package recon
+
+import (
+	"github.com/fr4nsys/usulnet/internal/web/templates/layouts"
+)
+
+templ Reports(data ReportsData) {
+	@layouts.Base(data.PageData) {
+		<div class="space-y-6">
+			<div>
+				<h1 class="text-2xl font-display font-bold text-white">Recon Reports</h1>
+				<p class="text-gray-400 mt-1">Generated PDF, CSV and JSON exports of scan findings.</p>
+			</div>
+
+			if len(data.Reports) == 0 {
+				<div class="card p-12 text-center">
+					<i class="fas fa-file-export text-4xl text-gray-500 mb-4"></i>
+					<h3 class="text-lg font-medium text-white mb-2">No Reports</h3>
+					<p class="text-gray-400">Exports generated from a completed scan will appear here.</p>
+				</div>
+			} else {
+				<div class="card overflow-hidden">
+					<table class="w-full text-sm">
+						<thead class="bg-dark-800 text-gray-400 text-xs uppercase tracking-wide">
+							<tr>
+								<th class="text-left px-4 py-3">Target</th>
+								<th class="text-left px-4 py-3">Format</th>
+								<th class="text-left px-4 py-3">Size</th>
+								<th class="text-left px-4 py-3">Created</th>
+								<th class="text-right px-4 py-3">Download</th>
+							</tr>
+						</thead>
+						<tbody class="divide-y divide-dark-700">
+							for _, r := range data.Reports {
+								<tr class="hover:bg-dark-700 transition-colors">
+									<td class="px-4 py-3 text-gray-300">{ r.TargetValue }</td>
+									<td class="px-4 py-3">
+										<span class="px-2 py-0.5 rounded text-xs font-medium bg-dark-600 text-gray-300 uppercase">{ r.Format }</span>
+									</td>
+									<td class="px-4 py-3 text-gray-400">{ humanReportSize(r.SizeBytes) }</td>
+									<td class="px-4 py-3 text-gray-400">{ r.CreatedAt }</td>
+									<td class="px-4 py-3 text-right">
+										<a href={ templ.SafeURL(r.DownloadURL) } class="text-primary-400 hover:text-primary-300">
+											<i class="fas fa-download"></i>
+										</a>
+									</td>
+								</tr>
+							}
+						</tbody>
+					</table>
+				</div>
+			}
+		</div>
+	}
+}
+
+func humanReportSize(n int64) string {
+	if n <= 0 {
+		return "—"
+	}
+	if n < 1024 {
+		return intToStr(int(n)) + " B"
+	}
+	if n < 1024*1024 {
+		return intToStr(int(n/1024)) + " KB"
+	}
+	return intToStr(int(n/1024/1024)) + " MB"
+}

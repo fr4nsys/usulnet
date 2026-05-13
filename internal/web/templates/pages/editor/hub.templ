@@ -126,23 +126,14 @@ templ Hub(data HubData) {
 										</div>
 									</div>
 								</a>
-								<div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-									<a
-										href={ templ.SafeURL("/editor/nvim?snippet=" + snip.ID) }
-										class="text-green-400 hover:text-green-300 p-2"
-										title="Open in nvim"
-									>
-										<i class="fas fa-terminal"></i>
-									</a>
-									<button
-										hx-delete={ "/api/snippets/" + snip.ID }
-										hx-target="body"
-										hx-confirm="Delete this snippet?"
-										class="text-red-400 hover:text-red-300 p-2"
-									>
-										<i class="fas fa-trash-alt"></i>
-									</button>
-								</div>
+								<button
+									hx-delete={ "/api/snippets/" + snip.ID }
+									hx-target="body"
+									hx-confirm="Delete this snippet?"
+									class="opacity-0 group-hover:opacity-100 text-red-400 hover:text-red-300 p-2 transition-opacity"
+								>
+									<i class="fas fa-trash-alt"></i>
+								</button>
 							</div>
 						}
 					</div>

@@ -76,11 +76,11 @@ func List(data RunbooksData) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"space-y-6\" x-data=\"runbooksPage()\"><div class=\"flex items-center justify-between\"><div><h1 class=\"text-2xl font-display font-bold text-white\">Runbooks</h1><p class=\"text-gray-400 mt-1\">Operational runbooks for automated incident response and maintenance.</p></div><button @click=\"openCreate()\" class=\"btn-primary\"><i class=\"fas fa-plus mr-2\"></i>Create Runbook</button></div><!-- Tabs --><div class=\"border-b border-dark-600\"><nav class=\"-mb-px flex space-x-8\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"p-6 space-y-6\" x-data=\"runbooksPage()\"><div class=\"flex items-center justify-between\"><div><h1 class=\"text-2xl font-bold text-gray-900 dark:text-white\">Runbooks</h1><p class=\"mt-1 text-sm text-gray-500 dark:text-gray-400\">Operational runbooks for automated incident response and maintenance.</p></div><button @click=\"openCreate()\" class=\"inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-primary-600 border border-transparent rounded-lg hover:bg-primary-700\"><svg class=\"w-4 h-4 mr-2\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M12 4v16m8-8H4\"></path></svg> Create Runbook</button></div><!-- Tabs --><div class=\"border-b border-gray-200 dark:border-gray-700\"><nav class=\"-mb-px flex space-x-8\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var3 = []any{"whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm", templ.KV("border-primary-500 text-primary-400", data.Tab == "runbooks" || data.Tab == ""), templ.KV("border-transparent text-gray-500 hover:text-gray-300 hover:border-dark-400", data.Tab != "runbooks" && data.Tab != "")}
+			var templ_7745c5c3_Var3 = []any{"whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm", templ.KV("border-primary-500 text-primary-600 dark:text-primary-400", data.Tab == "runbooks" || data.Tab == ""), templ.KV("border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400", data.Tab != "runbooks" && data.Tab != "")}
 			templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var3...)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
@@ -98,14 +98,14 @@ func List(data RunbooksData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "\">Runbooks <span class=\"ml-2 bg-dark-700 text-gray-300 py-0.5 px-2.5 rounded-full text-xs font-medium\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "\">Runbooks <span class=\"ml-2 bg-gray-100 text-gray-900 dark:bg-gray-700 dark:text-gray-300 py-0.5 px-2.5 rounded-full text-xs font-medium\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var5 string
 			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", len(data.Runbooks)))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/runbooks/list.templ`, Line: 59, Col: 137}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/runbooks/list.templ`, Line: 60, Col: 173}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 			if templ_7745c5c3_Err != nil {
@@ -115,7 +115,7 @@ func List(data RunbooksData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var6 = []any{"whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm", templ.KV("border-primary-500 text-primary-400", data.Tab == "executions"), templ.KV("border-transparent text-gray-500 hover:text-gray-300 hover:border-dark-400", data.Tab != "executions")}
+			var templ_7745c5c3_Var6 = []any{"whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm", templ.KV("border-primary-500 text-primary-600 dark:text-primary-400", data.Tab == "executions"), templ.KV("border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400", data.Tab != "executions")}
 			templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var6...)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
@@ -148,20 +148,20 @@ func List(data RunbooksData) templ.Component {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "<!-- Create Runbook Modal --><div x-show=\"showModal\" x-cloak class=\"fixed inset-0 z-50 flex items-center justify-center\"><div class=\"fixed inset-0 bg-black/50\" @click=\"showModal = false\"></div><div class=\"relative bg-dark-800 border border-dark-600 rounded-xl shadow-2xl w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto\"><form method=\"POST\" action=\"/runbooks\" @submit=\"prepareSubmit()\"><input type=\"hidden\" name=\"csrf_token\" value=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "<!-- Create Runbook Modal --><div x-show=\"showModal\" x-cloak class=\"fixed inset-0 z-50 overflow-y-auto\"><div class=\"flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0\"><div x-show=\"showModal\" class=\"fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity\" @click=\"showModal = false\"></div><div x-show=\"showModal\" class=\"inline-block align-bottom bg-white dark:bg-gray-800 rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full sm:p-6\"><form method=\"POST\" action=\"/runbooks\" @submit=\"prepareSubmit()\"><input type=\"hidden\" name=\"csrf_token\" value=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var8 string
 			templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(data.PageData.CSRFToken)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/runbooks/list.templ`, Line: 78, Col: 76}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/runbooks/list.templ`, Line: 80, Col: 77}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "\"> <input type=\"hidden\" name=\"steps\" x-bind:value=\"stepsJSON()\"><div class=\"px-6 py-4 border-b border-dark-600\"><h3 class=\"text-lg font-medium text-white\">Create Runbook</h3></div><div class=\"p-6 space-y-4\"><div class=\"grid grid-cols-2 gap-4\"><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Name</label> <input type=\"text\" name=\"name\" required x-model=\"rb.name\" placeholder=\"e.g., Restart Web Stack\" class=\"input\"></div><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Category</label> <select name=\"category\" x-model=\"rb.category\" class=\"input\"><option value=\"\">None</option> <option value=\"incident\">Incident Response</option> <option value=\"maintenance\">Maintenance</option> <option value=\"deployment\">Deployment</option> <option value=\"monitoring\">Monitoring</option> <option value=\"backup\">Backup</option> <option value=\"security\">Security</option></select></div></div><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Description</label> <textarea name=\"description\" rows=\"2\" x-model=\"rb.description\" placeholder=\"What does this runbook do?\" class=\"input\"></textarea></div><!-- Steps Builder --><div><div class=\"flex items-center justify-between mb-2\"><label class=\"block text-sm font-medium text-gray-300\">Steps</label> <button type=\"button\" @click=\"addStep()\" class=\"text-xs text-primary-400 hover:text-primary-300 font-medium\">+ Add Step</button></div><div class=\"space-y-3\"><template x-for=\"(step, idx) in rb.steps\" :key=\"idx\"><div class=\"border border-dark-500 rounded-lg p-3 bg-dark-700/50\"><div class=\"flex items-center justify-between mb-2\"><span class=\"text-xs font-medium text-gray-400\" x-text=\"'Step ' + (idx + 1)\"></span> <button type=\"button\" @click=\"removeStep(idx)\" class=\"text-red-400 hover:text-red-300 text-xs\">Remove</button></div><div class=\"grid grid-cols-3 gap-2 mb-2\"><div><input type=\"text\" x-model=\"step.name\" placeholder=\"Step name\" class=\"input text-xs\"></div><div><select x-model=\"step.type\" class=\"input text-xs\"><option value=\"command\">Docker Action</option> <option value=\"api_call\">API Call</option> <option value=\"wait\">Wait</option> <option value=\"condition\">Condition</option> <option value=\"notify\">Notify</option> <option value=\"approval\">Approval</option></select></div><div><select x-model=\"step.on_failure\" class=\"input text-xs\"><option value=\"continue\">On fail: Continue</option> <option value=\"stop\">On fail: Stop</option></select></div></div><!-- Docker Action config --><template x-if=\"step.type === 'command' || step.type === 'docker_exec'\"><div class=\"grid grid-cols-2 gap-2\"><input type=\"text\" x-model=\"step.config.container_id\" placeholder=\"Container ID\" class=\"input text-xs\"> <select x-model=\"step.config.action\" class=\"input text-xs\"><option value=\"restart\">Restart</option> <option value=\"start\">Start</option> <option value=\"stop\">Stop</option></select></div></template><!-- API Call config --><template x-if=\"step.type === 'api_call'\"><div class=\"space-y-2\"><div class=\"grid grid-cols-4 gap-2\"><select x-model=\"step.config.method\" class=\"input text-xs\"><option value=\"GET\">GET</option> <option value=\"POST\">POST</option> <option value=\"PUT\">PUT</option> <option value=\"DELETE\">DELETE</option></select> <input type=\"text\" x-model=\"step.config.url\" placeholder=\"https://...\" class=\"col-span-3 input text-xs font-mono\"></div><input type=\"text\" x-model=\"step.config.auth_header\" placeholder=\"Authorization header (optional)\" class=\"input text-xs\"></div></template><!-- Wait config --><template x-if=\"step.type === 'wait'\"><div><input type=\"number\" x-model.number=\"step.timeout\" min=\"1\" max=\"60\" placeholder=\"Seconds to wait\" class=\"input text-xs\"></div></template><!-- Condition config --><template x-if=\"step.type === 'condition'\"><div class=\"space-y-2\"><select x-model=\"step.config.condition_type\" class=\"input text-xs\"><option value=\"container_status\">Container Status</option> <option value=\"compare\">Compare Values</option> <option value=\"http_health\">HTTP Health Check</option> <option value=\"dns_resolve\">DNS Resolution</option> <option value=\"metric_threshold\">Metric Threshold</option></select><template x-if=\"step.config.condition_type === 'container_status'\"><div class=\"grid grid-cols-2 gap-2\"><input type=\"text\" x-model=\"step.config.container_id\" placeholder=\"Container ID\" class=\"input text-xs\"> <select x-model=\"step.config.expected_status\" class=\"input text-xs\"><option value=\"running\">Running</option> <option value=\"stopped\">Stopped</option> <option value=\"exited\">Exited</option></select></div></template><template x-if=\"step.config.condition_type === 'http_health'\"><div class=\"grid grid-cols-2 gap-2\"><input type=\"text\" x-model=\"step.config.url\" placeholder=\"URL to check\" class=\"input text-xs\"> <input type=\"number\" x-model.number=\"step.config.expected_status\" placeholder=\"Expected status (e.g. 200)\" class=\"input text-xs\"></div></template><template x-if=\"step.config.condition_type === 'dns_resolve'\"><div class=\"grid grid-cols-2 gap-2\"><input type=\"text\" x-model=\"step.config.hostname\" placeholder=\"Hostname to resolve\" class=\"input text-xs\"> <input type=\"text\" x-model=\"step.config.expected_ip\" placeholder=\"Expected IP (optional)\" class=\"input text-xs\"></div></template><template x-if=\"step.config.condition_type === 'metric_threshold'\"><div class=\"space-y-2\"><div class=\"grid grid-cols-2 gap-2\"><input type=\"text\" x-model=\"step.config.metric\" placeholder=\"Metric name\" class=\"input text-xs\"> <select x-model=\"step.config.operator\" class=\"input text-xs\"><option value=\"gt\">Greater than</option> <option value=\"gte\">Greater than or equal</option> <option value=\"lt\">Less than</option> <option value=\"lte\">Less than or equal</option> <option value=\"eq\">Equal</option></select></div><div class=\"grid grid-cols-2 gap-2\"><input type=\"number\" x-model.number=\"step.config.threshold\" placeholder=\"Threshold\" class=\"input text-xs\"> <input type=\"number\" x-model.number=\"step.config.value\" placeholder=\"Current value\" class=\"input text-xs\"></div></div></template></div></template><!-- Notify config --><template x-if=\"step.type === 'notify'\"><div class=\"grid grid-cols-2 gap-2\"><input type=\"text\" x-model=\"step.config.channel\" placeholder=\"Channel name\" class=\"input text-xs\"> <input type=\"text\" x-model=\"step.config.message\" placeholder=\"Message\" class=\"input text-xs\"></div></template><!-- Approval config --><template x-if=\"step.type === 'approval'\"><div class=\"text-xs text-gray-500 py-2 text-center\">This step pauses execution until manually approved.</div></template></div></template><template x-if=\"rb.steps.length === 0\"><p class=\"text-xs text-gray-500 text-center py-4\">No steps added. Click &quot;+ Add Step&quot; to start building your runbook.</p></template></div></div><div class=\"flex items-center gap-2\"><input type=\"checkbox\" name=\"is_enabled\" id=\"rb_enabled\" checked class=\"rounded border-dark-600 bg-dark-700 text-primary-500\"> <label for=\"rb_enabled\" class=\"text-sm text-gray-300\">Enable runbook</label></div></div><div class=\"px-6 py-4 border-t border-dark-600 flex justify-end gap-3\"><button type=\"button\" @click=\"showModal = false\" class=\"btn-secondary\">Cancel</button> <button type=\"submit\" class=\"btn-primary\">Create</button></div></form></div></div></div><script>\n\t\t\tfunction runbooksPage() {\n\t\t\t\treturn {\n\t\t\t\t\tshowModal: false,\n\t\t\t\t\trb: { name: '', description: '', category: '', steps: [] },\n\n\t\t\t\t\topenCreate() {\n\t\t\t\t\t\tthis.rb = { name: '', description: '', category: '', steps: [] };\n\t\t\t\t\t\tthis.showModal = true;\n\t\t\t\t\t},\n\n\t\t\t\t\taddStep() {\n\t\t\t\t\t\tthis.rb.steps.push({\n\t\t\t\t\t\t\torder: this.rb.steps.length + 1,\n\t\t\t\t\t\t\tname: '',\n\t\t\t\t\t\t\ttype: 'command',\n\t\t\t\t\t\t\tconfig: { action: 'restart', method: 'GET', condition_type: 'container_status', expected_status: 'running' },\n\t\t\t\t\t\t\ton_failure: 'continue',\n\t\t\t\t\t\t\ttimeout: 10\n\t\t\t\t\t\t});\n\t\t\t\t\t},\n\n\t\t\t\t\tremoveStep(idx) {\n\t\t\t\t\t\tthis.rb.steps.splice(idx, 1);\n\t\t\t\t\t\t// Re-number\n\t\t\t\t\t\tthis.rb.steps.forEach((s, i) => s.order = i + 1);\n\t\t\t\t\t},\n\n\t\t\t\t\tstepsJSON() {\n\t\t\t\t\t\treturn JSON.stringify(this.rb.steps);\n\t\t\t\t\t},\n\n\t\t\t\t\tprepareSubmit() {\n\t\t\t\t\t\t// Steps are serialized via the hidden input\n\t\t\t\t\t}\n\t\t\t\t};\n\t\t\t}\n\t\t</script>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "\"> <input type=\"hidden\" name=\"steps\" x-bind:value=\"stepsJSON()\"><h3 class=\"text-lg font-medium text-gray-900 dark:text-white mb-4\">Create Runbook</h3><div class=\"space-y-4\"><div class=\"grid grid-cols-2 gap-4\"><div><label class=\"block text-sm font-medium text-gray-700 dark:text-gray-300\">Name</label> <input type=\"text\" name=\"name\" required x-model=\"rb.name\" placeholder=\"e.g., Restart Web Stack\" class=\"mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white sm:text-sm\"></div><div><label class=\"block text-sm font-medium text-gray-700 dark:text-gray-300\">Category</label> <select name=\"category\" x-model=\"rb.category\" class=\"mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white sm:text-sm\"><option value=\"\">None</option> <option value=\"incident\">Incident Response</option> <option value=\"maintenance\">Maintenance</option> <option value=\"deployment\">Deployment</option> <option value=\"monitoring\">Monitoring</option> <option value=\"backup\">Backup</option> <option value=\"security\">Security</option></select></div></div><div><label class=\"block text-sm font-medium text-gray-700 dark:text-gray-300\">Description</label> <textarea name=\"description\" rows=\"2\" x-model=\"rb.description\" placeholder=\"What does this runbook do?\" class=\"mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white sm:text-sm\"></textarea></div><!-- Steps Builder --><div><div class=\"flex items-center justify-between mb-2\"><label class=\"block text-sm font-medium text-gray-700 dark:text-gray-300\">Steps</label> <button type=\"button\" @click=\"addStep()\" class=\"text-xs text-primary-600 hover:text-primary-500 dark:text-primary-400 font-medium\">+ Add Step</button></div><div class=\"space-y-3\"><template x-for=\"(step, idx) in rb.steps\" :key=\"idx\"><div class=\"border border-gray-200 dark:border-gray-600 rounded-lg p-3 bg-gray-50 dark:bg-gray-700/50\"><div class=\"flex items-center justify-between mb-2\"><span class=\"text-xs font-medium text-gray-500 dark:text-gray-400\" x-text=\"'Step ' + (idx + 1)\"></span> <button type=\"button\" @click=\"removeStep(idx)\" class=\"text-red-400 hover:text-red-600 text-xs\">Remove</button></div><div class=\"grid grid-cols-3 gap-2 mb-2\"><div><input type=\"text\" x-model=\"step.name\" placeholder=\"Step name\" class=\"block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:bg-gray-600 dark:border-gray-500 dark:text-white text-xs\"></div><div><select x-model=\"step.type\" class=\"block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:bg-gray-600 dark:border-gray-500 dark:text-white text-xs\"><option value=\"command\">Docker Action</option> <option value=\"api_call\">API Call</option> <option value=\"wait\">Wait</option> <option value=\"condition\">Condition</option> <option value=\"notify\">Notify</option> <option value=\"approval\">Approval</option></select></div><div><select x-model=\"step.on_failure\" class=\"block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:bg-gray-600 dark:border-gray-500 dark:text-white text-xs\"><option value=\"continue\">On fail: Continue</option> <option value=\"stop\">On fail: Stop</option></select></div></div><!-- Docker Action config --><template x-if=\"step.type === 'command' || step.type === 'docker_exec'\"><div class=\"grid grid-cols-2 gap-2\"><input type=\"text\" x-model=\"step.config.container_id\" placeholder=\"Container ID\" class=\"block w-full rounded-md border-gray-300 shadow-sm dark:bg-gray-600 dark:border-gray-500 dark:text-white text-xs\"> <select x-model=\"step.config.action\" class=\"block w-full rounded-md border-gray-300 shadow-sm dark:bg-gray-600 dark:border-gray-500 dark:text-white text-xs\"><option value=\"restart\">Restart</option> <option value=\"start\">Start</option> <option value=\"stop\">Stop</option></select></div></template><!-- API Call config --><template x-if=\"step.type === 'api_call'\"><div class=\"space-y-2\"><div class=\"grid grid-cols-4 gap-2\"><select x-model=\"step.config.method\" class=\"block w-full rounded-md border-gray-300 shadow-sm dark:bg-gray-600 dark:border-gray-500 dark:text-white text-xs\"><option value=\"GET\">GET</option> <option value=\"POST\">POST</option> <option value=\"PUT\">PUT</option> <option value=\"DELETE\">DELETE</option></select> <input type=\"text\" x-model=\"step.config.url\" placeholder=\"https://...\" class=\"col-span-3 block w-full rounded-md border-gray-300 shadow-sm dark:bg-gray-600 dark:border-gray-500 dark:text-white text-xs font-mono\"></div><input type=\"text\" x-model=\"step.config.auth_header\" placeholder=\"Authorization header (optional)\" class=\"block w-full rounded-md border-gray-300 shadow-sm dark:bg-gray-600 dark:border-gray-500 dark:text-white text-xs\"></div></template><!-- Wait config --><template x-if=\"step.type === 'wait'\"><div><input type=\"number\" x-model.number=\"step.timeout\" min=\"1\" max=\"60\" placeholder=\"Seconds to wait\" class=\"block w-full rounded-md border-gray-300 shadow-sm dark:bg-gray-600 dark:border-gray-500 dark:text-white text-xs\"></div></template><!-- Condition config --><template x-if=\"step.type === 'condition'\"><div class=\"space-y-2\"><select x-model=\"step.config.condition_type\" class=\"block w-full rounded-md border-gray-300 shadow-sm dark:bg-gray-600 dark:border-gray-500 dark:text-white text-xs\"><option value=\"container_status\">Container Status</option> <option value=\"compare\">Compare Values</option> <option value=\"http_health\">HTTP Health Check</option> <option value=\"dns_resolve\">DNS Resolution</option> <option value=\"metric_threshold\">Metric Threshold</option></select><template x-if=\"step.config.condition_type === 'container_status'\"><div class=\"grid grid-cols-2 gap-2\"><input type=\"text\" x-model=\"step.config.container_id\" placeholder=\"Container ID\" class=\"block w-full rounded-md border-gray-300 shadow-sm dark:bg-gray-600 dark:border-gray-500 dark:text-white text-xs\"> <select x-model=\"step.config.expected_status\" class=\"block w-full rounded-md border-gray-300 shadow-sm dark:bg-gray-600 dark:border-gray-500 dark:text-white text-xs\"><option value=\"running\">Running</option> <option value=\"stopped\">Stopped</option> <option value=\"exited\">Exited</option></select></div></template><template x-if=\"step.config.condition_type === 'http_health'\"><div class=\"grid grid-cols-2 gap-2\"><input type=\"text\" x-model=\"step.config.url\" placeholder=\"URL to check\" class=\"block w-full rounded-md border-gray-300 shadow-sm dark:bg-gray-600 dark:border-gray-500 dark:text-white text-xs\"> <input type=\"number\" x-model.number=\"step.config.expected_status\" placeholder=\"Expected status (e.g. 200)\" class=\"block w-full rounded-md border-gray-300 shadow-sm dark:bg-gray-600 dark:border-gray-500 dark:text-white text-xs\"></div></template><template x-if=\"step.config.condition_type === 'dns_resolve'\"><div class=\"grid grid-cols-2 gap-2\"><input type=\"text\" x-model=\"step.config.hostname\" placeholder=\"Hostname to resolve\" class=\"block w-full rounded-md border-gray-300 shadow-sm dark:bg-gray-600 dark:border-gray-500 dark:text-white text-xs\"> <input type=\"text\" x-model=\"step.config.expected_ip\" placeholder=\"Expected IP (optional)\" class=\"block w-full rounded-md border-gray-300 shadow-sm dark:bg-gray-600 dark:border-gray-500 dark:text-white text-xs\"></div></template><template x-if=\"step.config.condition_type === 'metric_threshold'\"><div class=\"space-y-2\"><div class=\"grid grid-cols-2 gap-2\"><input type=\"text\" x-model=\"step.config.metric\" placeholder=\"Metric name\" class=\"block w-full rounded-md border-gray-300 shadow-sm dark:bg-gray-600 dark:border-gray-500 dark:text-white text-xs\"> <select x-model=\"step.config.operator\" class=\"block w-full rounded-md border-gray-300 shadow-sm dark:bg-gray-600 dark:border-gray-500 dark:text-white text-xs\"><option value=\"gt\">Greater than</option> <option value=\"gte\">Greater than or equal</option> <option value=\"lt\">Less than</option> <option value=\"lte\">Less than or equal</option> <option value=\"eq\">Equal</option></select></div><div class=\"grid grid-cols-2 gap-2\"><input type=\"number\" x-model.number=\"step.config.threshold\" placeholder=\"Threshold\" class=\"block w-full rounded-md border-gray-300 shadow-sm dark:bg-gray-600 dark:border-gray-500 dark:text-white text-xs\"> <input type=\"number\" x-model.number=\"step.config.value\" placeholder=\"Current value\" class=\"block w-full rounded-md border-gray-300 shadow-sm dark:bg-gray-600 dark:border-gray-500 dark:text-white text-xs\"></div></div></template></div></template><!-- Notify config --><template x-if=\"step.type === 'notify'\"><div class=\"grid grid-cols-2 gap-2\"><input type=\"text\" x-model=\"step.config.channel\" placeholder=\"Channel name\" class=\"block w-full rounded-md border-gray-300 shadow-sm dark:bg-gray-600 dark:border-gray-500 dark:text-white text-xs\"> <input type=\"text\" x-model=\"step.config.message\" placeholder=\"Message\" class=\"block w-full rounded-md border-gray-300 shadow-sm dark:bg-gray-600 dark:border-gray-500 dark:text-white text-xs\"></div></template><!-- Approval config --><template x-if=\"step.type === 'approval'\"><div class=\"text-xs text-gray-400 dark:text-gray-500 py-2 text-center\">This step pauses execution until manually approved.</div></template></div></template><template x-if=\"rb.steps.length === 0\"><p class=\"text-xs text-gray-400 text-center py-4\">No steps added. Click &quot;+ Add Step&quot; to start building your runbook.</p></template></div></div><div class=\"flex items-center\"><input type=\"checkbox\" name=\"is_enabled\" id=\"rb_enabled\" checked class=\"h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded\"> <label for=\"rb_enabled\" class=\"ml-2 block text-sm text-gray-700 dark:text-gray-300\">Enable runbook</label></div></div><div class=\"mt-5 sm:mt-6 sm:flex sm:flex-row-reverse gap-3\"><button type=\"submit\" class=\"w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-primary-600 text-base font-medium text-white hover:bg-primary-700 sm:w-auto sm:text-sm\">Create</button> <button type=\"button\" @click=\"showModal = false\" class=\"mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 sm:mt-0 sm:w-auto sm:text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300\">Cancel</button></div></form></div></div></div></div><script>\n\t\t\tfunction runbooksPage() {\n\t\t\t\treturn {\n\t\t\t\t\tshowModal: false,\n\t\t\t\t\trb: { name: '', description: '', category: '', steps: [] },\n\n\t\t\t\t\topenCreate() {\n\t\t\t\t\t\tthis.rb = { name: '', description: '', category: '', steps: [] };\n\t\t\t\t\t\tthis.showModal = true;\n\t\t\t\t\t},\n\n\t\t\t\t\taddStep() {\n\t\t\t\t\t\tthis.rb.steps.push({\n\t\t\t\t\t\t\torder: this.rb.steps.length + 1,\n\t\t\t\t\t\t\tname: '',\n\t\t\t\t\t\t\ttype: 'command',\n\t\t\t\t\t\t\tconfig: { action: 'restart', method: 'GET', condition_type: 'container_status', expected_status: 'running' },\n\t\t\t\t\t\t\ton_failure: 'continue',\n\t\t\t\t\t\t\ttimeout: 10\n\t\t\t\t\t\t});\n\t\t\t\t\t},\n\n\t\t\t\t\tremoveStep(idx) {\n\t\t\t\t\t\tthis.rb.steps.splice(idx, 1);\n\t\t\t\t\t\t// Re-number\n\t\t\t\t\t\tthis.rb.steps.forEach((s, i) => s.order = i + 1);\n\t\t\t\t\t},\n\n\t\t\t\t\tstepsJSON() {\n\t\t\t\t\t\treturn JSON.stringify(this.rb.steps);\n\t\t\t\t\t},\n\n\t\t\t\t\tprepareSubmit() {\n\t\t\t\t\t\t// Steps are serialized via the hidden input\n\t\t\t\t\t}\n\t\t\t\t};\n\t\t\t}\n\t\t</script>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -197,7 +197,7 @@ func runbooksGrid(data RunbooksData) templ.Component {
 		}
 		ctx = templ.ClearChildren(ctx)
 		if len(data.Runbooks) == 0 {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "<div class=\"text-center py-12\"><i class=\"fas fa-book text-4xl text-gray-600 mb-4\"></i><h3 class=\"text-sm font-medium text-white\">No runbooks</h3><p class=\"mt-1 text-sm text-gray-500\">Create a runbook to automate operational tasks.</p></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "<div class=\"text-center py-12\"><svg class=\"mx-auto h-12 w-12 text-gray-400\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z\"></path></svg><h3 class=\"mt-2 text-sm font-medium text-gray-900 dark:text-white\">No runbooks</h3><p class=\"mt-1 text-sm text-gray-500 dark:text-gray-400\">Create a runbook to automate operational tasks.</p></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -207,14 +207,14 @@ func runbooksGrid(data RunbooksData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			for _, rb := range data.Runbooks {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "<div class=\"card hover:border-dark-500 transition-colors\"><div class=\"p-5\"><div class=\"flex items-center justify-between\"><div class=\"flex items-center\"><i class=\"fas fa-book w-6 text-gray-400 text-lg\"></i><h3 class=\"ml-3 text-base font-medium text-white\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "<div class=\"bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg hover:shadow-md transition-shadow\"><div class=\"p-5\"><div class=\"flex items-center justify-between\"><div class=\"flex items-center\"><svg class=\"h-6 w-6 text-gray-400\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z\"></path></svg><h3 class=\"ml-3 text-lg font-medium text-gray-900 dark:text-white\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var10 string
 				templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(rb.Name)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/runbooks/list.templ`, Line: 316, Col: 67}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/runbooks/list.templ`, Line: 317, Col: 84}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 				if templ_7745c5c3_Err != nil {
@@ -225,12 +225,12 @@ func runbooksGrid(data RunbooksData) templ.Component {
 					return templ_7745c5c3_Err
 				}
 				if rb.IsEnabled {
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "<span class=\"badge badge-success\">Active</span>")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "<span class=\"inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200\">Active</span>")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
 				} else {
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "<span class=\"badge\">Disabled</span>")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "<span class=\"inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300\">Disabled</span>")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
@@ -240,14 +240,14 @@ func runbooksGrid(data RunbooksData) templ.Component {
 					return templ_7745c5c3_Err
 				}
 				if rb.Description != "" {
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "<p class=\"mt-2 text-sm text-gray-400 line-clamp-2\">")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "<p class=\"mt-2 text-sm text-gray-500 dark:text-gray-400 line-clamp-2\">")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
 					var templ_7745c5c3_Var11 string
 					templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(rb.Description)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/runbooks/list.templ`, Line: 325, Col: 74}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/runbooks/list.templ`, Line: 326, Col: 93}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 					if templ_7745c5c3_Err != nil {
@@ -258,19 +258,19 @@ func runbooksGrid(data RunbooksData) templ.Component {
 						return templ_7745c5c3_Err
 					}
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "<div class=\"mt-4 flex items-center justify-between text-sm text-gray-400\"><div class=\"flex items-center space-x-4\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "<div class=\"mt-4 flex items-center justify-between text-sm text-gray-500 dark:text-gray-400\"><div class=\"flex items-center space-x-4\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				if rb.Category != "" {
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "<span class=\"badge badge-info\">")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "<span class=\"inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200\">")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
 					var templ_7745c5c3_Var12 string
 					templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(rb.Category)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/runbooks/list.templ`, Line: 330, Col: 53}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/runbooks/list.templ`, Line: 331, Col: 171}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
 					if templ_7745c5c3_Err != nil {
@@ -288,7 +288,7 @@ func runbooksGrid(data RunbooksData) templ.Component {
 				var templ_7745c5c3_Var13 string
 				templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d steps", rb.StepCount))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/runbooks/list.templ`, Line: 332, Col: 53}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/runbooks/list.templ`, Line: 333, Col: 53}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
 				if templ_7745c5c3_Err != nil {
@@ -301,20 +301,20 @@ func runbooksGrid(data RunbooksData) templ.Component {
 				var templ_7745c5c3_Var14 string
 				templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", rb.Version))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/runbooks/list.templ`, Line: 333, Col: 46}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/runbooks/list.templ`, Line: 334, Col: 46}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var14))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 23, "</span></div></div></div><div class=\"px-5 py-3 border-t border-dark-600 flex justify-between\"><form method=\"POST\" action=\"")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 23, "</span></div></div></div><div class=\"bg-gray-50 dark:bg-gray-700/50 px-5 py-3 flex justify-between\"><form method=\"POST\" action=\"")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var15 templ.SafeURL
 				templ_7745c5c3_Var15, templ_7745c5c3_Err = templ.JoinURLErrs(templ.SafeURL("/runbooks/" + rb.ID + "/execute"))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/runbooks/list.templ`, Line: 338, Col: 83}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/runbooks/list.templ`, Line: 339, Col: 83}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var15))
 				if templ_7745c5c3_Err != nil {
@@ -327,20 +327,20 @@ func runbooksGrid(data RunbooksData) templ.Component {
 				var templ_7745c5c3_Var16 string
 				templ_7745c5c3_Var16, templ_7745c5c3_Err = templ.JoinStringErrs(data.PageData.CSRFToken)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/runbooks/list.templ`, Line: 339, Col: 77}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/runbooks/list.templ`, Line: 340, Col: 77}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var16))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 25, "\"> <button type=\"submit\" class=\"text-sm text-primary-400 hover:text-primary-300 font-medium\">Run</button></form><form method=\"POST\" action=\"")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 25, "\"> <button type=\"submit\" class=\"text-sm text-primary-600 hover:text-primary-500 dark:text-primary-400 font-medium\">Run</button></form><form method=\"POST\" action=\"")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var17 templ.SafeURL
 				templ_7745c5c3_Var17, templ_7745c5c3_Err = templ.JoinURLErrs(templ.SafeURL("/runbooks/" + rb.ID + "/delete"))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/runbooks/list.templ`, Line: 342, Col: 82}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/runbooks/list.templ`, Line: 343, Col: 82}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var17))
 				if templ_7745c5c3_Err != nil {
@@ -353,13 +353,13 @@ func runbooksGrid(data RunbooksData) templ.Component {
 				var templ_7745c5c3_Var18 string
 				templ_7745c5c3_Var18, templ_7745c5c3_Err = templ.JoinStringErrs(data.PageData.CSRFToken)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/runbooks/list.templ`, Line: 343, Col: 77}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/runbooks/list.templ`, Line: 344, Col: 77}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var18))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 27, "\"> <button type=\"submit\" class=\"text-sm text-red-400 hover:text-red-300\">Delete</button></form></div></div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 27, "\"> <button type=\"submit\" class=\"text-sm text-red-600 hover:text-red-500 dark:text-red-400\">Delete</button></form></div></div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -395,30 +395,30 @@ func executionsTable(data RunbooksData) templ.Component {
 		}
 		ctx = templ.ClearChildren(ctx)
 		if len(data.Executions) == 0 {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 29, "<div class=\"text-center py-12\"><i class=\"fas fa-history text-4xl text-gray-600 mb-4\"></i><h3 class=\"text-sm font-medium text-white\">No executions</h3><p class=\"mt-1 text-sm text-gray-500\">Run a runbook to see execution history here.</p></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 29, "<div class=\"text-center py-12\"><svg class=\"mx-auto h-12 w-12 text-gray-400\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M13 10V3L4 14h7v7l9-11h-7z\"></path></svg><h3 class=\"mt-2 text-sm font-medium text-gray-900 dark:text-white\">No executions</h3><p class=\"mt-1 text-sm text-gray-500 dark:text-gray-400\">Run a runbook to see execution history here.</p></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		} else {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 30, "<div class=\"card overflow-hidden\"><table class=\"table\"><thead><tr><th>Runbook</th><th>Status</th><th>Trigger</th><th>Duration</th><th>Started</th><th>Finished</th></tr></thead> <tbody>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 30, "<div class=\"bg-white dark:bg-gray-800 shadow rounded-lg overflow-hidden\"><table class=\"min-w-full divide-y divide-gray-200 dark:divide-gray-700\"><thead class=\"bg-gray-50 dark:bg-gray-900\"><tr><th class=\"px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase\">Runbook</th><th class=\"px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase\">Status</th><th class=\"px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase\">Trigger</th><th class=\"px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase\">Duration</th><th class=\"px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase\">Started</th><th class=\"px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase\">Finished</th></tr></thead> <tbody class=\"divide-y divide-gray-200 dark:divide-gray-700\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			for _, exec := range data.Executions {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 31, "<tr><td class=\"font-medium text-white\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 31, "<tr class=\"hover:bg-gray-50 dark:hover:bg-gray-700/50\"><td class=\"px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var20 string
 				templ_7745c5c3_Var20, templ_7745c5c3_Err = templ.JoinStringErrs(exec.RunbookName)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/runbooks/list.templ`, Line: 376, Col: 60}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/runbooks/list.templ`, Line: 377, Col: 115}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var20))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 32, "</td><td>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 32, "</td><td class=\"px-6 py-4 whitespace-nowrap\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -426,53 +426,53 @@ func executionsTable(data RunbooksData) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 33, "</td><td class=\"text-gray-400\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 33, "</td><td class=\"px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var21 string
 				templ_7745c5c3_Var21, templ_7745c5c3_Err = templ.JoinStringErrs(exec.Trigger)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/runbooks/list.templ`, Line: 380, Col: 47}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/runbooks/list.templ`, Line: 381, Col: 102}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var21))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 34, "</td><td class=\"text-gray-400\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 34, "</td><td class=\"px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var22 string
 				templ_7745c5c3_Var22, templ_7745c5c3_Err = templ.JoinStringErrs(exec.Duration)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/runbooks/list.templ`, Line: 381, Col: 48}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/runbooks/list.templ`, Line: 382, Col: 103}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var22))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 35, "</td><td class=\"text-gray-400\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 35, "</td><td class=\"px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var23 string
 				templ_7745c5c3_Var23, templ_7745c5c3_Err = templ.JoinStringErrs(exec.StartedAt)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/runbooks/list.templ`, Line: 382, Col: 49}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/runbooks/list.templ`, Line: 383, Col: 104}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var23))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 36, "</td><td class=\"text-gray-400\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 36, "</td><td class=\"px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var24 string
 				templ_7745c5c3_Var24, templ_7745c5c3_Err = templ.JoinStringErrs(exec.FinishedAt)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/runbooks/list.templ`, Line: 383, Col: 50}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/runbooks/list.templ`, Line: 384, Col: 105}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var24))
 				if templ_7745c5c3_Err != nil {
@@ -514,44 +514,44 @@ func executionStatusBadge(status string) templ.Component {
 		}
 		ctx = templ.ClearChildren(ctx)
 		if status == "completed" {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 39, "<span class=\"badge badge-success\">Completed</span>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 39, "<span class=\"inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200\">Completed</span>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		} else if status == "running" {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 40, "<span class=\"badge badge-info\">Running</span>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 40, "<span class=\"inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200\">Running</span>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		} else if status == "failed" {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 41, "<span class=\"badge badge-danger\">Failed</span>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 41, "<span class=\"inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200\">Failed</span>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		} else if status == "partial_failure" {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 42, "<span class=\"badge badge-warning\">Partial Failure</span>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 42, "<span class=\"inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200\">Partial Failure</span>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		} else if status == "cancelled" {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 43, "<span class=\"badge\">Cancelled</span>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 43, "<span class=\"inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300\">Cancelled</span>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		} else if status == "waiting_approval" {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 44, "<span class=\"badge\" style=\"background-color: rgba(139,92,246,0.15); color: #a78bfa;\">Waiting Approval</span>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 44, "<span class=\"inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200\">Waiting Approval</span>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		} else {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 45, "<span class=\"badge\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 45, "<span class=\"inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var26 string
 			templ_7745c5c3_Var26, templ_7745c5c3_Err = templ.JoinStringErrs(status)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/runbooks/list.templ`, Line: 406, Col: 30}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/runbooks/list.templ`, Line: 407, Col: 158}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var26))
 			if templ_7745c5c3_Err != nil {

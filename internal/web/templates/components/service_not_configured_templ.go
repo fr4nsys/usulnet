@@ -10,7 +10,7 @@ import templruntime "github.com/a-h/templ/runtime"
 
 // ServiceNotConfigured renders a centered card informing the user that
 // a particular service has not been configured yet. It shows the service
-// name, a human-readable description, and optional setup steps.
+// name, which config section to update, and an optional docs link.
 func ServiceNotConfigured(serviceName, configHint string) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
@@ -32,7 +32,7 @@ func ServiceNotConfigured(serviceName, configHint string) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"flex flex-col items-center justify-center py-16 px-4\"><div class=\"bg-dark-800 rounded-xl border border-dark-600 p-8 max-w-xl text-center shadow-lg\"><div class=\"mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-dark-700\"><i class=\"fas fa-puzzle-piece text-2xl text-gray-400\"></i></div><h3 class=\"text-xl font-semibold text-gray-200 mb-2\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"flex flex-col items-center justify-center py-16 px-4\"><div class=\"bg-dark-800 rounded-xl border border-dark-600 p-8 max-w-lg text-center shadow-lg\"><div class=\"mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-dark-700\"><i class=\"fas fa-puzzle-piece text-2xl text-gray-400\"></i></div><h3 class=\"text-xl font-semibold text-gray-200 mb-2\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -50,15 +50,20 @@ func ServiceNotConfigured(serviceName, configHint string) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		if configHint != "" {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<div class=\"text-sm text-gray-500 text-left bg-dark-900 rounded-lg p-4 mt-2\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<p class=\"text-sm text-gray-500\">Add the <code class=\"bg-dark-700 px-2 py-0.5 rounded text-primary-400\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templ.Raw(configHint).Render(ctx, templ_7745c5c3_Buffer)
+			var templ_7745c5c3_Var3 string
+			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(configHint)
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/components/service_not_configured.templ`, Line: 20, Col: 88}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</code> section to your <code class=\"bg-dark-700 px-2 py-0.5 rounded text-primary-400\">config.yaml</code> to enable this service.</p>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

@@ -1,3 +1,7 @@
+// SPDX-License-Identifier: AGPL-3.0-or-later
+// Copyright (c) 2024-2026 usulnet contributors
+// https://github.com/fr4nsys/usulnet
+
 package handlers
 
 import (
@@ -12,12 +16,14 @@ import (
 	"github.com/fr4nsys/usulnet/internal/services/audit"
 )
 
+// LicenseHandler handles license management endpoints.
 type LicenseHandler struct {
 	BaseHandler
 	licenseProvider *license.Provider
 	auditService    *audit.Service
 }
 
+// NewLicenseHandler creates a new license handler.
 func NewLicenseHandler(
 	licenseProvider *license.Provider,
 	auditService *audit.Service,
@@ -30,6 +36,7 @@ func NewLicenseHandler(
 	}
 }
 
+// Routes returns the license routes.
 func (h *LicenseHandler) Routes() chi.Router {
 	r := chi.NewRouter()
 
@@ -41,22 +48,23 @@ func (h *LicenseHandler) Routes() chi.Router {
 	return r
 }
 
-type LicenseInfoResponse struct {
-	Edition     string                `json:"edition"`
-	EditionName string                `json:"edition_name"`
-	Valid       bool                  `json:"valid"`
-	LicenseID   string                `json:"license_id,omitempty"`
-	ExpiresAt   *string               `json:"expires_at,omitempty"`
-	Features    []string              `json:"features"`
-	Limits      LicenseLimitsResponse `json:"limits"`
-	InstanceID  string                `json:"instance_id,omitempty"`
+// ============================================================================
+// Request/Response types
+// ============================================================================
 
-	ActivatedAt       *string `json:"activated_at,omitempty"`
-	LastCheckinAt     *string `json:"last_checkin_at,omitempty"`
-	SyncWarning       bool    `json:"sync_warning,omitempty"`
-	SyncDegradationAt *string `json:"sync_degradation_at,omitempty"`
+// LicenseInfoResponse represents the current license information.
+type LicenseInfoResponse struct {
+	Edition    string           `json:"edition"`
+	EditionName string         `json:"edition_name"`
+	Valid      bool             `json:"valid"`
+	LicenseID  string          `json:"license_id,omitempty"`
+	ExpiresAt  *string         `json:"expires_at,omitempty"`
+	Features   []string         `json:"features"`
+	Limits     LicenseLimitsResponse `json:"limits"`
+	InstanceID string           `json:"instance_id,omitempty"`
 }
 
+// LicenseLimitsResponse represents the resource limits.
 type LicenseLimitsResponse struct {
 	MaxNodes                int `json:"max_nodes"`
 	MaxUsers                int `json:"max_users"`
@@ -71,31 +79,41 @@ type LicenseLimitsResponse struct {
 	MaxNotificationChannels int `json:"max_notification_channels"`
 }
 
+// ActivateLicenseRequest represents a request to activate a license.
 type ActivateLicenseRequest struct {
-	LicenseKey string `json:"license_key" validate:"required"`
+	LicenseKey string `json:"license_key"`
 }
 
+// ActivateLicenseResponse represents the result of activating a license.
 type ActivateLicenseResponse struct {
-	Success bool               `json:"success"`
-	Message string             `json:"message"`
+	Success bool              `json:"success"`
+	Message string            `json:"message"`
 	License LicenseInfoResponse `json:"license"`
 }
 
+// DeactivateLicenseResponse represents the result of deactivating a license.
 type DeactivateLicenseResponse struct {
 	Success bool   `json:"success"`
 	Message string `json:"message"`
 }
 
+// LicenseStatusResponse provides detailed license status including degradation state.
 type LicenseStatusResponse struct {
-	License       LicenseInfoResponse   `json:"license"`
-	DaysRemaining int                   `json:"days_remaining"`
-	IsExpired     bool                  `json:"is_expired"`
-	IsDegraded    bool                  `json:"is_degraded"`
-	DegradedFrom  string                `json:"degraded_from,omitempty"`
-	ActiveLimits  LicenseLimitsResponse `json:"active_limits"`
-	StatusMessage string                `json:"status_message"`
+	License        LicenseInfoResponse `json:"license"`
+	DaysRemaining  int                 `json:"days_remaining"`
+	IsExpired      bool                `json:"is_expired"`
+	IsDegraded     bool                `json:"is_degraded"`
+	DegradedFrom   string              `json:"degraded_from,omitempty"`
+	ActiveLimits   LicenseLimitsResponse `json:"active_limits"`
+	StatusMessage  string              `json:"status_message"`
 }
 
+// ============================================================================
+// License handlers
+// ============================================================================
+
+// GetLicense returns the current license information.
+// GET /api/v1/license
 func (h *LicenseHandler) GetLicense(w http.ResponseWriter, r *http.Request) {
 	if h.licenseProvider == nil {
 		h.OK(w, toLicenseInfoResponse(license.NewCEInfo(), ""))
@@ -108,6 +126,8 @@ func (h *LicenseHandler) GetLicense(w http.ResponseWriter, r *http.Request) {
 	h.OK(w, toLicenseInfoResponse(info, instanceID))
 }
 
+// ActivateLicense activates a new license key.
+// POST /api/v1/license
 func (h *LicenseHandler) ActivateLicense(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
@@ -133,7 +153,9 @@ func (h *LicenseHandler) ActivateLicense(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
+	// Activate the license
 	if err := h.licenseProvider.Activate(req.LicenseKey); err != nil {
+		// Audit log failed activation
 		if h.auditService != nil {
 			claims := h.GetClaims(r)
 			var username *string
@@ -149,7 +171,7 @@ func (h *LicenseHandler) ActivateLicense(w http.ResponseWriter, r *http.Request)
 				Details: map[string]any{
 					"error": errMsg,
 				},
-				IPAddress: strPtr(getClientIP(r)),
+				IPAddress: strPtr(r.RemoteAddr),
 				UserAgent: strPtr(r.UserAgent()),
 				Success:   false,
 				ErrorMsg:  &errMsg,
@@ -168,6 +190,7 @@ func (h *LicenseHandler) ActivateLicense(w http.ResponseWriter, r *http.Request)
 	info := h.licenseProvider.GetInfo()
 	instanceID := h.licenseProvider.InstanceID()
 
+	// Audit log successful activation
 	if h.auditService != nil {
 		claims := h.GetClaims(r)
 		var username *string
@@ -184,7 +207,7 @@ func (h *LicenseHandler) ActivateLicense(w http.ResponseWriter, r *http.Request)
 				"edition":    string(info.Edition),
 				"license_id": info.LicenseID,
 			},
-			IPAddress: strPtr(getClientIP(r)),
+			IPAddress: strPtr(r.RemoteAddr),
 			UserAgent: strPtr(r.UserAgent()),
 			Success:   true,
 		})
@@ -197,6 +220,8 @@ func (h *LicenseHandler) ActivateLicense(w http.ResponseWriter, r *http.Request)
 	})
 }
 
+// DeactivateLicense removes the current license and reverts to CE.
+// DELETE /api/v1/license
 func (h *LicenseHandler) DeactivateLicense(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
@@ -211,6 +236,7 @@ func (h *LicenseHandler) DeactivateLicense(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
+	// Get current license info before deactivation for audit
 	currentInfo := h.licenseProvider.GetInfo()
 
 	if err := h.licenseProvider.Deactivate(); err != nil {
@@ -218,6 +244,7 @@ func (h *LicenseHandler) DeactivateLicense(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
+	// Audit log
 	if h.auditService != nil {
 		claims := h.GetClaims(r)
 		var username *string
@@ -234,7 +261,7 @@ func (h *LicenseHandler) DeactivateLicense(w http.ResponseWriter, r *http.Reques
 				"previous_edition": string(currentInfo.Edition),
 				"license_id":       currentInfo.LicenseID,
 			},
-			IPAddress: strPtr(getClientIP(r)),
+			IPAddress: strPtr(r.RemoteAddr),
 			UserAgent: strPtr(r.UserAgent()),
 			Success:   true,
 		})
@@ -246,6 +273,8 @@ func (h *LicenseHandler) DeactivateLicense(w http.ResponseWriter, r *http.Reques
 	})
 }
 
+// GetLicenseStatus returns detailed license status including degradation state.
+// GET /api/v1/license/status
 func (h *LicenseHandler) GetLicenseStatus(w http.ResponseWriter, r *http.Request) {
 	var info *license.Info
 	var instanceID string
@@ -283,6 +312,10 @@ func (h *LicenseHandler) GetLicenseStatus(w http.ResponseWriter, r *http.Request
 	})
 }
 
+// ============================================================================
+// Helpers
+// ============================================================================
+
 func toLicenseInfoResponse(info *license.Info, instanceID string) LicenseInfoResponse {
 	features := make([]string, len(info.Features))
 	for i, f := range info.Features {
@@ -295,27 +328,13 @@ func toLicenseInfoResponse(info *license.Info, instanceID string) LicenseInfoRes
 		expiresAt = &s
 	}
 
-	var activatedAt, lastCheckinAt, syncDegradationAt *string
-	if info.ActivatedAt != nil {
-		s := info.ActivatedAt.UTC().Format(time.RFC3339)
-		activatedAt = &s
-	}
-	if info.LastCheckinAt != nil {
-		s := info.LastCheckinAt.UTC().Format(time.RFC3339)
-		lastCheckinAt = &s
-	}
-	if info.SyncDegradationAt != nil {
-		s := info.SyncDegradationAt.UTC().Format(time.RFC3339)
-		syncDegradationAt = &s
-	}
-
 	return LicenseInfoResponse{
-		Edition:           string(info.Edition),
-		EditionName:       info.EditionName(),
-		Valid:             info.Valid,
-		LicenseID:         info.LicenseID,
-		ExpiresAt:         expiresAt,
-		Features:          features,
+		Edition:     string(info.Edition),
+		EditionName: info.EditionName(),
+		Valid:       info.Valid,
+		LicenseID:   info.LicenseID,
+		ExpiresAt:   expiresAt,
+		Features:    features,
 		Limits: LicenseLimitsResponse{
 			MaxNodes:                info.Limits.MaxNodes,
 			MaxUsers:                info.Limits.MaxUsers,
@@ -329,10 +348,7 @@ func toLicenseInfoResponse(info *license.Info, instanceID string) LicenseInfoRes
 			MaxBackupDestinations:   info.Limits.MaxBackupDestinations,
 			MaxNotificationChannels: info.Limits.MaxNotificationChannels,
 		},
-		InstanceID:        instanceID,
-		ActivatedAt:       activatedAt,
-		LastCheckinAt:     lastCheckinAt,
-		SyncWarning:       info.SyncWarning,
-		SyncDegradationAt: syncDegradationAt,
+		InstanceID: instanceID,
 	}
 }
+

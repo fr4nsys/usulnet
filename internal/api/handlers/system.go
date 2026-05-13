@@ -7,14 +7,12 @@ package handlers
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 	"runtime"
 	"sync"
 	"time"
 
 	"github.com/go-chi/chi/v5"
-	"golang.org/x/sys/unix"
 
 	"github.com/fr4nsys/usulnet/internal/pkg/logger"
 )
@@ -203,10 +201,21 @@ func (h *SystemHandler) Health(w http.ResponseWriter, r *http.Request) {
 	h.JSON(w, statusCode, health)
 }
 
+// livenessResponseBody is the pre-encoded liveness JSON. The endpoint
+// is hit on every Kubernetes/load-balancer liveness probe (often once
+// per second per pod), and returns a fixed payload — pre-encoding
+// avoids the per-request map allocation, json.NewEncoder allocation
+// and Marshal overhead the generic h.OK helper incurs. Includes the
+// trailing newline json.Encoder appends so the wire shape matches the
+// previous behaviour byte-for-byte.
+var livenessResponseBody = []byte("{\"status\":\"alive\"}\n")
+
 // Liveness handles GET /api/v1/system/health/live
 // Returns 200 if the service is alive.
-func (h *SystemHandler) Liveness(w http.ResponseWriter, r *http.Request) {
-	h.OK(w, map[string]string{"status": "alive"})
+func (h *SystemHandler) Liveness(w http.ResponseWriter, _ *http.Request) {
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	w.WriteHeader(http.StatusOK)
+	_, _ = w.Write(livenessResponseBody)
 }
 
 // ReadinessResponse represents the readiness check response.
@@ -370,45 +379,4 @@ func DockerHealthChecker(pingFn func(ctx context.Context) error) HealthChecker {
 // The healthFn should perform a real round-trip check (e.g. FlushTimeout).
 func NATSHealthChecker(healthFn func(ctx context.Context) error) HealthChecker {
 	return DatabaseHealthChecker(healthFn) // Same ping-style logic
-}
-
-// DiskSpaceHealthChecker creates a health checker that verifies available disk space.
-// It reports "unhealthy" when available space drops below minFreeBytes, and "degraded"
-// when it's below 2x that threshold.
-func DiskSpaceHealthChecker(path string, minFreeBytes uint64) HealthChecker {
-	return func(_ context.Context) *HealthStatus {
-		var stat unix.Statfs_t
-		if err := unix.Statfs(path, &stat); err != nil {
-			return &HealthStatus{
-				Status:  "unhealthy",
-				Message: fmt.Sprintf("failed to check disk space on %s: %v", path, err),
-			}
-		}
-
-		availBytes := stat.Bavail * uint64(stat.Bsize)
-		totalBytes := stat.Blocks * uint64(stat.Bsize)
-		usedPct := 0.0
-		if totalBytes > 0 {
-			usedPct = float64(totalBytes-availBytes) / float64(totalBytes) * 100
-		}
-
-		msg := fmt.Sprintf("%.1f%% used, %d MB available", usedPct, availBytes/(1024*1024))
-
-		if availBytes < minFreeBytes {
-			return &HealthStatus{
-				Status:  "unhealthy",
-				Message: msg,
-			}
-		}
-		if availBytes < minFreeBytes*2 {
-			return &HealthStatus{
-				Status:  "degraded",
-				Message: msg,
-			}
-		}
-		return &HealthStatus{
-			Status:  "healthy",
-			Message: msg,
-		}
-	}
 }

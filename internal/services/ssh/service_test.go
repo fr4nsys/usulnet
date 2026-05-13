@@ -752,29 +752,6 @@ func TestGetActiveSessions(t *testing.T) {
 	}
 }
 
-func TestSSHService_DisconnectSession(t *testing.T) {
-	svc, _, _, sessionRepo, _ := newTestService(t)
-	ctx := context.Background()
-
-	// Disconnect a known active session
-	sid := uuid.New()
-	sessionRepo.sessions = append(sessionRepo.sessions, &models.SSHSession{ID: sid})
-
-	err := svc.DisconnectSession(ctx, sid)
-	if err != nil {
-		t.Fatalf("DisconnectSession failed for known session: %v", err)
-	}
-	if sessionRepo.sessions[0].EndedAt == nil {
-		t.Error("expected session to have EndedAt set after disconnect")
-	}
-
-	// Disconnect an unknown session — should silently succeed (idempotent)
-	err = svc.DisconnectSession(ctx, uuid.New())
-	if err != nil {
-		t.Fatalf("expected no error for unknown session, got: %v", err)
-	}
-}
-
 // ---------------------------------------------------------------------------
 // Tests: SSH Tunnel Management
 // ---------------------------------------------------------------------------

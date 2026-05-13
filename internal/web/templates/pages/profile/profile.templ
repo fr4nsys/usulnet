@@ -73,7 +73,6 @@ type ProfilePageData struct {
 	FlashMsg    string
 	FlashType   string // "success", "error"
 	CSRFToken   string
-	TotpEnabled bool
 }
 
 // ============================================================================
@@ -231,14 +230,11 @@ templ profileInfoTab(data ProfilePageData) {
 				<h3 class="text-sm font-semibold text-red-400 mb-3">Danger Zone</h3>
 				<p class="text-xs text-gray-400 mb-3">Export your data or delete your account. These actions cannot be undone.</p>
 				<div class="space-y-2">
-					<form method="POST" action="/profile/export">
-						<input type="hidden" name="csrf_token" value={ data.CSRFToken }/>
-						<button type="submit"
-							class="w-full px-3 py-1.5 text-xs font-medium text-gray-300 bg-dark-700 hover:bg-dark-600 rounded-lg transition-colors border border-dark-500">
-							<i class="fas fa-download mr-1.5"></i>Export Data
-						</button>
-					</form>
-					<button hx-delete="/profile" hx-confirm="Are you sure you want to delete your account? This action cannot be undone."
+					<button hx-post="/profile/export" hx-swap="none"
+						class="w-full px-3 py-1.5 text-xs font-medium text-gray-300 bg-dark-700 hover:bg-dark-600 rounded-lg transition-colors border border-dark-500">
+						<i class="fas fa-download mr-1.5"></i>Export Data
+					</button>
+					<button hx-delete="/profile" hx-confirm="This will permanently delete your account. Type your username to confirm." hx-swap="none"
 						class="w-full px-3 py-1.5 text-xs font-medium text-red-400 bg-red-500/10 hover:bg-red-500/20 rounded-lg transition-colors border border-red-500/20">
 						<i class="fas fa-trash-alt mr-1.5"></i>Delete Account
 					</button>
@@ -262,7 +258,7 @@ templ preferencesTab(data ProfilePageData) {
 			<div class="grid grid-cols-1 md:grid-cols-2 gap-5">
 				<div>
 					<label class="block text-sm font-medium text-gray-300 mb-1.5">Theme</label>
-					<div x-data={ fmt.Sprintf("{ theme: '%s' }", data.Prefs.Theme) } class="grid grid-cols-3 gap-2">
+					<div class="grid grid-cols-3 gap-2">
 						@themeOption("dark", "fa-moon", "Dark", data.Prefs.Theme)
 						@themeOption("light", "fa-sun", "Light", data.Prefs.Theme)
 						@themeOption("system", "fa-desktop", "System", data.Prefs.Theme)
@@ -317,7 +313,7 @@ templ preferencesTab(data ProfilePageData) {
 			<div class="grid grid-cols-1 md:grid-cols-2 gap-5">
 				<div>
 					<label class="block text-sm font-medium text-gray-300 mb-1.5">Container View</label>
-					<div x-data={ fmt.Sprintf("{ selected: '%s' }", data.Prefs.ContainerView) } class="grid grid-cols-2 gap-2">
+					<div class="grid grid-cols-2 gap-2">
 						@viewOption("table", "fa-list", "Table", data.Prefs.ContainerView)
 						@viewOption("grid", "fa-th-large", "Grid", data.Prefs.ContainerView)
 					</div>
@@ -365,10 +361,11 @@ templ preferencesTab(data ProfilePageData) {
 			<div class="grid grid-cols-1 md:grid-cols-3 gap-5">
 				<div>
 					<label class="block text-sm font-medium text-gray-300 mb-1.5">Default Editor</label>
-					<div x-data={ fmt.Sprintf("{ selected: '%s' }", data.Prefs.EditorMode) } class="grid grid-cols-2 gap-2">
+					<div class="grid grid-cols-2 gap-2">
 						@viewOption("monaco", "fa-code", "Monaco", data.Prefs.EditorMode)
 						@viewOption("nvim", "fa-terminal", "Neovim", data.Prefs.EditorMode)
 					</div>
+					<input type="hidden" name="editor_mode" id="editor_mode_hidden" value={ data.Prefs.EditorMode }/>
 				</div>
 				<div>
 					<label class="block text-sm font-medium text-gray-300 mb-1.5">Font Size</label>
@@ -452,7 +449,7 @@ templ securityTab(data ProfilePageData) {
 			if len(data.Sessions) > 0 {
 				<div class="divide-y divide-dark-700">
 					for _, s := range data.Sessions {
-						<div id={ "session-" + s.ID } class="px-6 py-3 flex items-center justify-between">
+						<div class="px-6 py-3 flex items-center justify-between">
 							<div class="flex items-center gap-3">
 								<div class={ "w-8 h-8 rounded-lg flex items-center justify-center text-xs",
 									templ.KV("bg-primary-500/10 text-primary-400", s.IsCurrent),
@@ -475,7 +472,7 @@ templ securityTab(data ProfilePageData) {
 									<div class="text-[10px] text-gray-400">Created { s.Created }</div>
 								</div>
 								if !s.IsCurrent {
-									<button hx-delete={ fmt.Sprintf("/profile/sessions/%s", s.ID) } hx-swap="outerHTML" hx-target={ "#session-" + s.ID }
+									<button hx-delete={ fmt.Sprintf("/profile/sessions/%s", s.ID) } hx-swap="outerHTML" hx-target="closest div"
 										class="p-1.5 text-gray-500 hover:text-red-400 hover:bg-red-500/10 rounded transition-colors" title="Revoke">
 										<i class="fas fa-times text-xs"></i>
 									</button>
@@ -491,29 +488,14 @@ templ securityTab(data ProfilePageData) {
 			}
 		</div>
 
-		<!-- Two-Factor Authentication -->
+		<!-- Two-Factor Authentication (placeholder) -->
 		<div class="bg-dark-800 rounded-xl border border-dark-600 p-6">
 			<div class="flex items-center justify-between">
 				<div>
 					<h2 class="text-base font-semibold text-white">Two-Factor Authentication</h2>
-					if data.TotpEnabled {
-						<p class="text-sm text-gray-400 mt-1">Your account is protected with TOTP two-factor authentication.</p>
-					} else {
-						<p class="text-sm text-gray-400 mt-1">Add an extra layer of security to your account.</p>
-					}
+					<p class="text-sm text-gray-400 mt-1">Add an extra layer of security to your account.</p>
 				</div>
-				<div class="flex items-center gap-3">
-					if data.TotpEnabled {
-						<span class="px-2.5 py-1 text-xs font-medium text-emerald-400 bg-emerald-900/30 rounded-lg border border-emerald-800/50">Enabled</span>
-					}
-					<a href="/settings/totp" class="btn-secondary text-sm">
-						if data.TotpEnabled {
-							Manage 2FA
-						} else {
-							Configure 2FA
-						}
-					</a>
-				</div>
+				<span class="px-2.5 py-1 text-xs font-medium text-yellow-400 bg-yellow-900/30 rounded-lg border border-yellow-800/50">Planned</span>
 			</div>
 		</div>
 	</div>
@@ -524,9 +506,9 @@ templ securityTab(data ProfilePageData) {
 // ============================================================================
 
 templ themeOption(value string, icon string, label string, current string) {
-	<label @click={ "theme = '" + value + "'" }
-		:class={ "theme === '" + value + "' ? 'border-primary-500 bg-primary-500/10 text-primary-400' : 'border-dark-500 bg-dark-700 text-gray-400 hover:border-dark-400'" }
-		class="flex flex-col items-center gap-1.5 px-3 py-2.5 rounded-lg border cursor-pointer transition-colors">
+	<label class={ "flex flex-col items-center gap-1.5 px-3 py-2.5 rounded-lg border cursor-pointer transition-colors",
+		templ.KV("border-primary-500 bg-primary-500/10 text-primary-400", current == value),
+		templ.KV("border-dark-500 bg-dark-700 text-gray-400 hover:border-dark-400", current != value) }>
 		<input type="radio" name="theme" value={ value } checked?={ current == value } class="sr-only"/>
 		<i class={ "fas " + icon }></i>
 		<span class="text-xs font-medium">{ label }</span>
@@ -534,9 +516,9 @@ templ themeOption(value string, icon string, label string, current string) {
 }
 
 templ viewOption(value string, icon string, label string, current string) {
-	<label @click={ "selected = '" + value + "'" }
-		:class={ "selected === '" + value + "' ? 'border-primary-500 bg-primary-500/10 text-primary-400' : 'border-dark-500 bg-dark-700 text-gray-400 hover:border-dark-400'" }
-		class="flex items-center justify-center gap-2 px-3 py-2 rounded-lg border cursor-pointer transition-colors text-sm">
+	<label class={ "flex items-center justify-center gap-2 px-3 py-2 rounded-lg border cursor-pointer transition-colors text-sm",
+		templ.KV("border-primary-500 bg-primary-500/10 text-primary-400", current == value),
+		templ.KV("border-dark-500 bg-dark-700 text-gray-400 hover:border-dark-400", current != value) }>
 		<input type="radio" name={ radioName(value, current) } value={ value } checked?={ current == value } class="sr-only"/>
 		<i class={ "fas " + icon, "text-xs" }></i>
 		<span class="font-medium">{ label }</span>
@@ -562,8 +544,8 @@ templ toggleSwitch(name string, label string, description string, checked bool) 
 			<p class="text-xs text-gray-500">{ description }</p>
 		</div>
 		<div class="relative">
-			<input type="checkbox" name={ name } value="true" checked?={ checked } class="sr-only peer"/>
 			<input type="hidden" name={ name } value="false"/>
+			<input type="checkbox" name={ name } value="true" checked?={ checked } class="sr-only peer"/>
 			<div class="w-10 h-5 bg-dark-500 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary-500"></div>
 		</div>
 	</label>

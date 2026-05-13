@@ -115,11 +115,11 @@ type StatsMessage struct {
 
 // WSExecRequest represents an exec request via WebSocket.
 type WSExecRequest struct {
-	Cmd        []string `json:"cmd" validate:"required,min=1"`
+	Cmd        []string `json:"cmd"`
 	Tty        bool     `json:"tty,omitempty"`
 	Env        []string `json:"env,omitempty"`
-	WorkingDir string   `json:"working_dir,omitempty" validate:"omitempty,max=4096"`
-	User       string   `json:"user,omitempty" validate:"omitempty,max=255"`
+	WorkingDir string   `json:"working_dir,omitempty"`
+	User       string   `json:"user,omitempty"`
 }
 
 // ============================================================================

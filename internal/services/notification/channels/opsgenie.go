@@ -171,9 +171,9 @@ func (o *OpsgenieChannel) Send(ctx context.Context, msg RenderedMessage) error {
 // Test sends a test notification.
 func (o *OpsgenieChannel) Test(ctx context.Context) error {
 	return o.Send(ctx, RenderedMessage{
-		Title:     "USULNET Test Notification",
-		Body:      "This is a test notification from USULNET to verify Opsgenie integration.",
-		BodyPlain: "This is a test notification from USULNET to verify Opsgenie integration.",
+		Title:     "usulnet Test Notification",
+		Body:      "This is a test notification from usulnet to verify Opsgenie integration.",
+		BodyPlain: "This is a test notification from usulnet to verify Opsgenie integration.",
 		Priority:  PriorityNormal,
 		Timestamp: time.Now(),
 		Type:      TypeTestMessage,

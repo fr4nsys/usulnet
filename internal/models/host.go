@@ -167,7 +167,6 @@ type HostSummary struct {
 	Host
 	ContainerCount int     `json:"container_count"`
 	RunningCount   int     `json:"running_count"`
-	ImageCount     int     `json:"image_count"`
 	CPUPercent     float64 `json:"cpu_percent"`
 	MemoryPercent  float64 `json:"memory_percent"`
 	DiskPercent    float64 `json:"disk_percent"`

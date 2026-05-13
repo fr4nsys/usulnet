@@ -1,0 +1,64 @@
+package recon
+
+import (
+	"github.com/fr4nsys/usulnet/internal/web/templates/layouts"
+)
+
+templ Connectors(data ConnectorsData) {
+	@layouts.Base(data.PageData) {
+		<div class="space-y-6">
+			<div>
+				<h1 class="text-2xl font-display font-bold text-white">Recon Connectors</h1>
+				<p class="text-gray-400 mt-1">Optional API integrations. Disabled by default; require your own credentials.</p>
+			</div>
+
+			if len(data.Connectors) == 0 {
+				<div class="card p-12 text-center">
+					<i class="fas fa-plug text-4xl text-gray-500 mb-4"></i>
+					<p class="text-gray-400">No connectors registered.</p>
+				</div>
+			} else {
+				<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+					for _, c := range data.Connectors {
+						@connectorCard(c)
+					}
+				</div>
+			}
+		</div>
+	}
+}
+
+templ connectorCard(c ConnectorView) {
+	<div class="card p-5">
+		<div class="flex items-center justify-between mb-2">
+			<div class="flex items-center gap-3">
+				<i class="fas fa-plug text-primary-400"></i>
+				<h2 class="text-lg font-display font-semibold text-white">{ c.Name }</h2>
+			</div>
+			if c.Enabled {
+				<span class="px-2 py-0.5 rounded text-xs font-medium bg-green-500/10 text-green-400 border border-green-500/20">enabled</span>
+			} else {
+				<span class="px-2 py-0.5 rounded text-xs font-medium bg-dark-600 text-gray-400 border border-dark-500">disabled</span>
+			}
+		</div>
+		<p class="text-sm text-gray-400">{ c.Description }</p>
+		<form
+			class="mt-4 space-y-2"
+			hx-put={ "/api/v1/recon/connectors/" + c.Kind }
+			hx-swap="none"
+		>
+			<label class="block text-xs text-gray-400">API Key</label>
+			<input type="password" name="api_key" autocomplete="off" placeholder="paste your key" class="w-full bg-dark-700 border border-dark-500 rounded px-3 py-1.5 text-sm text-white"/>
+			<div class="flex items-center justify-between mt-3">
+				if c.DocsURL != "" {
+					<a href={ templ.SafeURL(c.DocsURL) } target="_blank" rel="noopener" class="text-xs text-primary-400 hover:underline">
+						<i class="fas fa-external-link-alt mr-1"></i>API docs
+					</a>
+				} else {
+					<span></span>
+				}
+				<button type="submit" class="btn-primary text-sm">Save</button>
+			</div>
+		</form>
+	</div>
+}

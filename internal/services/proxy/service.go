@@ -4,7 +4,7 @@
 
 // Package proxy provides the reverse proxy management service.
 // It stores configuration in PostgreSQL (source of truth) and pushes
-// the full configuration to the nginx backend on each change.
+// the full configuration to the active backend (nginx or Caddy) on each change.
 package proxy
 
 import (
@@ -16,6 +16,7 @@ import (
 
 	"github.com/fr4nsys/usulnet/internal/models"
 	"github.com/fr4nsys/usulnet/internal/pkg/logger"
+	"github.com/fr4nsys/usulnet/internal/services/proxy/caddy"
 )
 
 // Config holds service configuration.
@@ -29,24 +30,21 @@ type Config struct {
 	// DefaultHostID is the usulnet host ID used when not multi-host.
 	DefaultHostID uuid.UUID
 
+	// CaddyAdminURL is the base URL of Caddy's admin API (Caddy backend only).
+	CaddyAdminURL string
 }
 
 // Service manages reverse proxy configuration.
 type Service struct {
-	hosts        HostRepository
-	headers      HeaderRepository
-	certs        CertificateRepository
-	dns          DNSProviderRepository
-	audit        AuditLogRepository
-	redirections RedirectionRepository
-	streams      StreamRepository
-	deadHosts    DeadHostRepository
-	accessLists  AccessListRepository
-	locations    LocationRepository
-	backend      SyncBackend
-	enc          Encryptor
-	cfg          Config
-	logger       *logger.Logger
+	hosts   HostRepository
+	headers HeaderRepository
+	certs   CertificateRepository
+	dns     DNSProviderRepository
+	audit   AuditLogRepository
+	backend SyncBackend
+	enc     Encryptor
+	cfg     Config
+	logger  *logger.Logger
 
 	// Sync mutex to prevent concurrent config pushes
 	syncMu sync.Mutex
@@ -75,23 +73,6 @@ func NewService(
 		cfg:     cfg,
 		logger:  log.Named("proxy"),
 	}
-}
-
-// SetExtendedRepositories sets the optional extended repositories (redirections, streams, etc.).
-// This allows backwards-compatible initialization — callers that don't have these repos
-// can simply skip this call.
-func (s *Service) SetExtendedRepositories(
-	redirections RedirectionRepository,
-	streams StreamRepository,
-	deadHosts DeadHostRepository,
-	accessLists AccessListRepository,
-	locations LocationRepository,
-) {
-	s.redirections = redirections
-	s.streams = streams
-	s.deadHosts = deadHosts
-	s.accessLists = accessLists
-	s.locations = locations
 }
 
 // Backend returns the active sync backend.
@@ -124,11 +105,6 @@ func (s *Service) CreateHost(ctx context.Context, input *models.CreateProxyHostI
 		EnableCompression:   input.EnableCompression,
 		EnableHSTS:          input.EnableHSTS,
 		EnableHTTP2:         input.EnableHTTP2,
-		BlockExploits:       input.BlockExploits,
-		CachingEnabled:      input.CachingEnabled,
-		CustomNginxConfig:   input.CustomNginxConfig,
-		HSTSSubdomains:      input.HSTSSubdomains,
-		AccessListID:        input.AccessListID,
 		HealthCheckEnabled:  input.HealthCheckEnabled,
 		HealthCheckPath:     input.HealthCheckPath,
 		HealthCheckInterval: input.HealthCheckInterval,
@@ -155,11 +131,11 @@ func (s *Service) CreateHost(ctx context.Context, input *models.CreateProxyHostI
 	return h, nil
 }
 
-// GetHost retrieves a proxy host by ID, including custom headers and locations.
+// GetHost retrieves a proxy host by ID, including custom headers.
 func (s *Service) GetHost(ctx context.Context, id uuid.UUID) (*models.ProxyHost, error) {
 	h, err := s.hosts.GetByID(ctx, id)
 	if err != nil {
-		return nil, fmt.Errorf("get proxy host %s: %w", id, err)
+		return nil, err
 	}
 
 	headers, err := s.headers.ListByHost(ctx, id)
@@ -167,15 +143,6 @@ func (s *Service) GetHost(ctx context.Context, id uuid.UUID) (*models.ProxyHost,
 		s.logger.Error("Failed to load custom headers", "proxy_host_id", id, "error", err)
 	} else {
 		h.CustomHeaders = headers
-	}
-
-	if s.locations != nil {
-		locs, err := s.locations.ListByHost(ctx, id)
-		if err != nil {
-			s.logger.Error("Failed to load custom locations", "proxy_host_id", id, "error", err)
-		} else {
-			h.Locations = locs
-		}
 	}
 
 	return h, nil
@@ -190,7 +157,7 @@ func (s *Service) ListHosts(ctx context.Context) ([]*models.ProxyHost, error) {
 func (s *Service) UpdateHost(ctx context.Context, id uuid.UUID, input *models.UpdateProxyHostInput, userID *uuid.UUID) (*models.ProxyHost, error) {
 	h, err := s.hosts.GetByID(ctx, id)
 	if err != nil {
-		return nil, fmt.Errorf("get proxy host for update %s: %w", id, err)
+		return nil, err
 	}
 
 	// Apply partial update
@@ -239,21 +206,6 @@ func (s *Service) UpdateHost(ctx context.Context, id uuid.UUID, input *models.Up
 	if input.EnableHTTP2 != nil {
 		h.EnableHTTP2 = *input.EnableHTTP2
 	}
-	if input.BlockExploits != nil {
-		h.BlockExploits = *input.BlockExploits
-	}
-	if input.CachingEnabled != nil {
-		h.CachingEnabled = *input.CachingEnabled
-	}
-	if input.CustomNginxConfig != nil {
-		h.CustomNginxConfig = *input.CustomNginxConfig
-	}
-	if input.HSTSSubdomains != nil {
-		h.HSTSSubdomains = *input.HSTSSubdomains
-	}
-	if input.AccessListID != nil {
-		h.AccessListID = input.AccessListID
-	}
 	if input.HealthCheckEnabled != nil {
 		h.HealthCheckEnabled = *input.HealthCheckEnabled
 	}
@@ -286,7 +238,7 @@ func (s *Service) UpdateHost(ctx context.Context, id uuid.UUID, input *models.Up
 func (s *Service) DeleteHost(ctx context.Context, id uuid.UUID, userID *uuid.UUID) error {
 	h, err := s.hosts.GetByID(ctx, id)
 	if err != nil {
-		return fmt.Errorf("get proxy host for delete %s: %w", id, err)
+		return err
 	}
 
 	// Delete headers first (FK cascade should handle this, but be explicit)
@@ -310,25 +262,21 @@ func (s *Service) DeleteHost(ctx context.Context, id uuid.UUID, userID *uuid.UUI
 // EnableHost enables a proxy host.
 func (s *Service) EnableHost(ctx context.Context, id uuid.UUID, userID *uuid.UUID) error {
 	enabled := true
-	if _, err := s.UpdateHost(ctx, id, &models.UpdateProxyHostInput{Enabled: &enabled}, userID); err != nil {
-		return fmt.Errorf("enable proxy host %s: %w", id, err)
-	}
-	return nil
+	_, err := s.UpdateHost(ctx, id, &models.UpdateProxyHostInput{Enabled: &enabled}, userID)
+	return err
 }
 
 // DisableHost disables a proxy host.
 func (s *Service) DisableHost(ctx context.Context, id uuid.UUID, userID *uuid.UUID) error {
 	disabled := false
-	if _, err := s.UpdateHost(ctx, id, &models.UpdateProxyHostInput{Enabled: &disabled}, userID); err != nil {
-		return fmt.Errorf("disable proxy host %s: %w", id, err)
-	}
-	return nil
+	_, err := s.UpdateHost(ctx, id, &models.UpdateProxyHostInput{Enabled: &disabled}, userID)
+	return err
 }
 
 // SetCustomHeaders replaces all custom headers for a proxy host and syncs.
 func (s *Service) SetCustomHeaders(ctx context.Context, proxyHostID uuid.UUID, headers []models.ProxyHeader) error {
 	if err := s.headers.ReplaceForHost(ctx, proxyHostID, headers); err != nil {
-		return fmt.Errorf("replace custom headers for proxy host %s: %w", proxyHostID, err)
+		return err
 	}
 	return s.Sync(ctx)
 }
@@ -362,7 +310,7 @@ func (s *Service) UploadCertificate(ctx context.Context, name string, domains []
 	}
 
 	if err := s.certs.Create(ctx, c); err != nil {
-		return nil, fmt.Errorf("store certificate: %w", err)
+		return nil, err
 	}
 
 	s.auditLog(ctx, c.HostID, userID, "create", "certificate", c.ID, c.Name, "")
@@ -373,24 +321,23 @@ func (s *Service) UploadCertificate(ctx context.Context, name string, domains []
 func (s *Service) DeleteCertificate(ctx context.Context, id uuid.UUID, userID *uuid.UUID) error {
 	c, err := s.certs.GetByID(ctx, id)
 	if err != nil {
-		return fmt.Errorf("get certificate %s: %w", id, err)
+		return err
 	}
 	if err := s.certs.Delete(ctx, id); err != nil {
-		return fmt.Errorf("delete certificate %s: %w", id, err)
+		return err
 	}
 	s.auditLog(ctx, c.HostID, userID, "delete", "certificate", c.ID, c.Name, "")
 	return nil
 }
 
 // RequestLECertificate requests a Let's Encrypt certificate via the active backend.
-// If dnsProvider is non-nil, DNS-01 challenge is used (required for wildcards).
-func (s *Service) RequestLECertificate(ctx context.Context, domains []string, email string, dnsProvider *models.ProxyDNSProvider) (certPEM, keyPEM string, err error) {
-	return s.backend.RequestCertificate(ctx, domains, email, dnsProvider)
+func (s *Service) RequestLECertificate(ctx context.Context, domains []string, email string) (certPEM, keyPEM string, err error) {
+	return s.backend.RequestCertificate(ctx, domains, email)
 }
 
 // RenewLECertificate renews a Let's Encrypt certificate via the active backend.
-func (s *Service) RenewLECertificate(ctx context.Context, domains []string, email string, dnsProvider *models.ProxyDNSProvider) (certPEM, keyPEM string, err error) {
-	return s.backend.RenewCertificate(ctx, domains, email, dnsProvider)
+func (s *Service) RenewLECertificate(ctx context.Context, domains []string, email string) (certPEM, keyPEM string, err error) {
+	return s.backend.RenewCertificate(ctx, domains, email)
 }
 
 // ============================================================================
@@ -401,7 +348,7 @@ func (s *Service) RenewLECertificate(ctx context.Context, domains []string, emai
 func (s *Service) ListDNSProviders(ctx context.Context) ([]*models.ProxyDNSProvider, error) {
 	providers, err := s.dns.List(ctx, s.cfg.DefaultHostID)
 	if err != nil {
-		return nil, fmt.Errorf("list DNS providers: %w", err)
+		return nil, err
 	}
 	// Mask API tokens for display
 	for _, p := range providers {
@@ -435,7 +382,7 @@ func (s *Service) CreateDNSProvider(ctx context.Context, name, provider, apiToke
 	}
 
 	if err := s.dns.Create(ctx, p); err != nil {
-		return nil, fmt.Errorf("store DNS provider: %w", err)
+		return nil, err
 	}
 
 	s.auditLog(ctx, p.HostID, userID, "create", "dns_provider", p.ID, p.Name, "")
@@ -449,10 +396,10 @@ func (s *Service) CreateDNSProvider(ctx context.Context, name, provider, apiToke
 func (s *Service) DeleteDNSProvider(ctx context.Context, id uuid.UUID, userID *uuid.UUID) error {
 	p, err := s.dns.GetByID(ctx, id)
 	if err != nil {
-		return fmt.Errorf("get DNS provider %s: %w", id, err)
+		return err
 	}
 	if err := s.dns.Delete(ctx, id); err != nil {
-		return fmt.Errorf("delete DNS provider %s: %w", id, err)
+		return err
 	}
 	s.auditLog(ctx, p.HostID, userID, "delete", "dns_provider", p.ID, p.Name, "")
 	return nil
@@ -470,7 +417,7 @@ func (s *Service) loadSyncData(ctx context.Context) (*SyncData, error) {
 		return nil, fmt.Errorf("list proxy hosts: %w", err)
 	}
 
-	// 2. Load custom headers and locations for each host
+	// 2. Load custom headers for each host
 	for _, h := range hosts {
 		headers, err := s.headers.ListByHost(ctx, h.ID)
 		if err != nil {
@@ -478,15 +425,6 @@ func (s *Service) loadSyncData(ctx context.Context) (*SyncData, error) {
 			continue
 		}
 		h.CustomHeaders = headers
-
-		if s.locations != nil {
-			locs, err := s.locations.ListByHost(ctx, h.ID)
-			if err != nil {
-				s.logger.Error("Failed to load locations for host", "id", h.ID, "error", err)
-			} else {
-				h.Locations = locs
-			}
-		}
 	}
 
 	// 3. Load DNS providers (for DNS challenge hosts)
@@ -525,45 +463,8 @@ func (s *Service) loadSyncData(ctx context.Context) (*SyncData, error) {
 		}
 	}
 
-	// 5. Load redirections, streams, dead hosts, access lists
-	var redirections []*models.ProxyRedirection
-	if s.redirections != nil {
-		redirections, err = s.redirections.List(ctx, s.cfg.DefaultHostID)
-		if err != nil {
-			s.logger.Error("Failed to load redirections", "error", err)
-		}
-	}
-
-	var streams []*models.ProxyStream
-	if s.streams != nil {
-		streams, err = s.streams.List(ctx, s.cfg.DefaultHostID)
-		if err != nil {
-			s.logger.Error("Failed to load streams", "error", err)
-		}
-	}
-
-	var deadHosts []*models.ProxyDeadHost
-	if s.deadHosts != nil {
-		deadHosts, err = s.deadHosts.List(ctx, s.cfg.DefaultHostID)
-		if err != nil {
-			s.logger.Error("Failed to load dead hosts", "error", err)
-		}
-	}
-
-	var accessLists []*models.ProxyAccessList
-	if s.accessLists != nil {
-		accessLists, err = s.accessLists.List(ctx, s.cfg.DefaultHostID)
-		if err != nil {
-			s.logger.Error("Failed to load access lists", "error", err)
-		}
-	}
-
 	return &SyncData{
 		Hosts:        hosts,
-		Redirections: redirections,
-		Streams:      streams,
-		DeadHosts:    deadHosts,
-		AccessLists:  accessLists,
 		DNSProviders: dnsProviders,
 		CustomCerts:  customCerts,
 		ACMEEmail:    s.cfg.ACMEEmail,
@@ -579,7 +480,7 @@ func (s *Service) Sync(ctx context.Context) error {
 
 	data, err := s.loadSyncData(ctx)
 	if err != nil {
-		return fmt.Errorf("load proxy sync data: %w", err)
+		return err
 	}
 
 	if err := s.backend.Sync(ctx, data); err != nil {
@@ -595,12 +496,33 @@ func (s *Service) Sync(ctx context.Context) error {
 	return nil
 }
 
+// SyncToCaddy is a backwards-compatible alias for Sync.
+// Deprecated: Use Sync instead.
+func (s *Service) SyncToCaddy(ctx context.Context) error {
+	return s.Sync(ctx)
+}
+
 // BackendHealthy checks if the backend process is reachable.
 func (s *Service) BackendHealthy(ctx context.Context) (bool, error) {
 	return s.backend.Healthy(ctx)
 }
 
-// BackendMode returns the active backend mode.
+// CaddyHealthy is a backwards-compatible alias for BackendHealthy.
+// Deprecated: Use BackendHealthy instead.
+func (s *Service) CaddyHealthy(ctx context.Context) (bool, error) {
+	return s.BackendHealthy(ctx)
+}
+
+// UpstreamStatus returns the health status of configured upstreams.
+func (s *Service) UpstreamStatus(ctx context.Context) (interface{}, error) {
+	if backend, ok := s.backend.(*CaddyBackend); ok {
+		return backend.client.UpstreamStatus(ctx)
+	}
+
+	return []caddy.UpstreamStatus{}, nil
+}
+
+// BackendMode returns the active backend mode ("caddy" or "nginx").
 func (s *Service) BackendMode() string {
 	return s.backend.Mode()
 }
@@ -621,7 +543,7 @@ func (s *Service) ListAuditLogs(ctx context.Context, limit, offset int) ([]*mode
 // AutoProxyFromLabels checks if a container has proxy labels and creates/updates
 // a proxy host accordingly.
 func (s *Service) AutoProxyFromLabels(ctx context.Context, containerID, containerName string, labels map[string]string) error {
-	domain, ok := labels[models.LabelProxyDomain]
+	domain, ok := labels[models.LabelCaddyDomain]
 	if !ok || domain == "" {
 		return nil // No proxy label, skip
 	}
@@ -629,21 +551,21 @@ func (s *Service) AutoProxyFromLabels(ctx context.Context, containerID, containe
 	// Check if we already have a proxy for this container
 	existing, err := s.hosts.GetByContainerID(ctx, containerID)
 	if err != nil {
-		return fmt.Errorf("lookup proxy host by container %s: %w", containerID, err)
+		return err
 	}
 
 	port := 80
-	if p, ok := labels[models.LabelProxyPort]; ok {
+	if p, ok := labels[models.LabelCaddyPort]; ok {
 		fmt.Sscanf(p, "%d", &port)
 	}
 
 	sslMode := models.ProxySSLModeAuto
-	if v, ok := labels[models.LabelProxySSL]; ok && v == "false" {
+	if v, ok := labels[models.LabelCaddySSL]; ok && v == "false" {
 		sslMode = models.ProxySSLModeNone
 	}
 
 	websocket := false
-	if v, ok := labels[models.LabelProxyWebsocket]; ok && v == "true" {
+	if v, ok := labels[models.LabelCaddyWebsocket]; ok && v == "true" {
 		websocket = true
 	}
 
@@ -662,10 +584,7 @@ func (s *Service) AutoProxyFromLabels(ctx context.Context, containerID, containe
 			SSLMode:         &sslMode,
 			EnableWebSocket: &websocket,
 		}, nil)
-		if err != nil {
-			return fmt.Errorf("auto-proxy update for container %s: %w", containerID, err)
-		}
-		return nil
+		return err
 	}
 
 	// Create new
@@ -684,282 +603,8 @@ func (s *Service) AutoProxyFromLabels(ctx context.Context, containerID, containe
 		ContainerID:       containerID,
 		ContainerName:     containerName,
 	}, nil)
-	if err != nil {
-		return fmt.Errorf("auto-proxy create for container %s: %w", containerID, err)
-	}
 
-	return nil
-}
-
-// ============================================================================
-// Redirections
-// ============================================================================
-
-// ListRedirections returns all redirections for the default host.
-func (s *Service) ListRedirections(ctx context.Context) ([]*models.ProxyRedirection, error) {
-	if s.redirections == nil {
-		return nil, nil
-	}
-	return s.redirections.List(ctx, s.cfg.DefaultHostID)
-}
-
-// GetRedirection retrieves a redirection by ID.
-func (s *Service) GetRedirection(ctx context.Context, id uuid.UUID) (*models.ProxyRedirection, error) {
-	if s.redirections == nil {
-		return nil, fmt.Errorf("redirections not configured")
-	}
-	return s.redirections.GetByID(ctx, id)
-}
-
-// CreateRedirection creates a new redirection and syncs.
-func (s *Service) CreateRedirection(ctx context.Context, rd *models.ProxyRedirection, userID *uuid.UUID) error {
-	if s.redirections == nil {
-		return fmt.Errorf("redirections not configured")
-	}
-	rd.HostID = s.cfg.DefaultHostID
-	if err := s.redirections.Create(ctx, rd); err != nil {
-		return fmt.Errorf("create redirection: %w", err)
-	}
-	s.auditLog(ctx, rd.HostID, userID, "create", "redirection", rd.ID, rd.ForwardDomain, "")
-	if err := s.Sync(ctx); err != nil {
-		s.logger.Error("Failed to sync after redirection create", "error", err)
-	}
-	return nil
-}
-
-// UpdateRedirection updates a redirection and syncs.
-func (s *Service) UpdateRedirection(ctx context.Context, rd *models.ProxyRedirection, userID *uuid.UUID) error {
-	if s.redirections == nil {
-		return fmt.Errorf("redirections not configured")
-	}
-	if err := s.redirections.Update(ctx, rd); err != nil {
-		return fmt.Errorf("update redirection: %w", err)
-	}
-	s.auditLog(ctx, rd.HostID, userID, "update", "redirection", rd.ID, rd.ForwardDomain, "")
-	if err := s.Sync(ctx); err != nil {
-		s.logger.Error("Failed to sync after redirection update", "error", err)
-	}
-	return nil
-}
-
-// DeleteRedirection deletes a redirection and syncs.
-func (s *Service) DeleteRedirection(ctx context.Context, id uuid.UUID, userID *uuid.UUID) error {
-	if s.redirections == nil {
-		return fmt.Errorf("redirections not configured")
-	}
-	rd, err := s.redirections.GetByID(ctx, id)
-	if err != nil {
-		return fmt.Errorf("get redirection for delete: %w", err)
-	}
-	if err := s.redirections.Delete(ctx, id); err != nil {
-		return fmt.Errorf("delete redirection: %w", err)
-	}
-	s.auditLog(ctx, rd.HostID, userID, "delete", "redirection", rd.ID, rd.ForwardDomain, "")
-	if err := s.Sync(ctx); err != nil {
-		s.logger.Error("Failed to sync after redirection delete", "error", err)
-	}
-	return nil
-}
-
-// ============================================================================
-// Streams
-// ============================================================================
-
-// ListStreams returns all streams for the default host.
-func (s *Service) ListStreams(ctx context.Context) ([]*models.ProxyStream, error) {
-	if s.streams == nil {
-		return nil, nil
-	}
-	return s.streams.List(ctx, s.cfg.DefaultHostID)
-}
-
-// GetStream retrieves a stream by ID.
-func (s *Service) GetStream(ctx context.Context, id uuid.UUID) (*models.ProxyStream, error) {
-	if s.streams == nil {
-		return nil, fmt.Errorf("streams not configured")
-	}
-	return s.streams.GetByID(ctx, id)
-}
-
-// CreateStream creates a new stream and syncs.
-func (s *Service) CreateStream(ctx context.Context, st *models.ProxyStream, userID *uuid.UUID) error {
-	if s.streams == nil {
-		return fmt.Errorf("streams not configured")
-	}
-	st.HostID = s.cfg.DefaultHostID
-	if err := s.streams.Create(ctx, st); err != nil {
-		return fmt.Errorf("create stream: %w", err)
-	}
-	s.auditLog(ctx, st.HostID, userID, "create", "stream", st.ID, fmt.Sprintf(":%d", st.IncomingPort), "")
-	if err := s.Sync(ctx); err != nil {
-		s.logger.Error("Failed to sync after stream create", "error", err)
-	}
-	return nil
-}
-
-// UpdateStream updates a stream and syncs.
-func (s *Service) UpdateStream(ctx context.Context, st *models.ProxyStream, userID *uuid.UUID) error {
-	if s.streams == nil {
-		return fmt.Errorf("streams not configured")
-	}
-	if err := s.streams.Update(ctx, st); err != nil {
-		return fmt.Errorf("update stream: %w", err)
-	}
-	s.auditLog(ctx, st.HostID, userID, "update", "stream", st.ID, fmt.Sprintf(":%d", st.IncomingPort), "")
-	if err := s.Sync(ctx); err != nil {
-		s.logger.Error("Failed to sync after stream update", "error", err)
-	}
-	return nil
-}
-
-// DeleteStream deletes a stream and syncs.
-func (s *Service) DeleteStream(ctx context.Context, id uuid.UUID, userID *uuid.UUID) error {
-	if s.streams == nil {
-		return fmt.Errorf("streams not configured")
-	}
-	st, err := s.streams.GetByID(ctx, id)
-	if err != nil {
-		return fmt.Errorf("get stream for delete: %w", err)
-	}
-	if err := s.streams.Delete(ctx, id); err != nil {
-		return fmt.Errorf("delete stream: %w", err)
-	}
-	s.auditLog(ctx, st.HostID, userID, "delete", "stream", st.ID, fmt.Sprintf(":%d", st.IncomingPort), "")
-	if err := s.Sync(ctx); err != nil {
-		s.logger.Error("Failed to sync after stream delete", "error", err)
-	}
-	return nil
-}
-
-// ============================================================================
-// Dead Hosts
-// ============================================================================
-
-// ListDeadHosts returns all dead hosts for the default host.
-func (s *Service) ListDeadHosts(ctx context.Context) ([]*models.ProxyDeadHost, error) {
-	if s.deadHosts == nil {
-		return nil, nil
-	}
-	return s.deadHosts.List(ctx, s.cfg.DefaultHostID)
-}
-
-// CreateDeadHost creates a new dead host and syncs.
-func (s *Service) CreateDeadHost(ctx context.Context, d *models.ProxyDeadHost, userID *uuid.UUID) error {
-	if s.deadHosts == nil {
-		return fmt.Errorf("dead hosts not configured")
-	}
-	d.HostID = s.cfg.DefaultHostID
-	if err := s.deadHosts.Create(ctx, d); err != nil {
-		return fmt.Errorf("create dead host: %w", err)
-	}
-	name := ""
-	if len(d.Domains) > 0 {
-		name = d.Domains[0]
-	}
-	s.auditLog(ctx, d.HostID, userID, "create", "dead_host", d.ID, name, "")
-	if err := s.Sync(ctx); err != nil {
-		s.logger.Error("Failed to sync after dead host create", "error", err)
-	}
-	return nil
-}
-
-// DeleteDeadHost deletes a dead host and syncs.
-func (s *Service) DeleteDeadHost(ctx context.Context, id uuid.UUID, userID *uuid.UUID) error {
-	if s.deadHosts == nil {
-		return fmt.Errorf("dead hosts not configured")
-	}
-	d, err := s.deadHosts.GetByID(ctx, id)
-	if err != nil {
-		return fmt.Errorf("get dead host for delete: %w", err)
-	}
-	if err := s.deadHosts.Delete(ctx, id); err != nil {
-		return fmt.Errorf("delete dead host: %w", err)
-	}
-	name := ""
-	if len(d.Domains) > 0 {
-		name = d.Domains[0]
-	}
-	s.auditLog(ctx, d.HostID, userID, "delete", "dead_host", d.ID, name, "")
-	if err := s.Sync(ctx); err != nil {
-		s.logger.Error("Failed to sync after dead host delete", "error", err)
-	}
-	return nil
-}
-
-// ============================================================================
-// Access Lists
-// ============================================================================
-
-// ListAccessLists returns all access lists for the default host.
-func (s *Service) ListAccessLists(ctx context.Context) ([]*models.ProxyAccessList, error) {
-	if s.accessLists == nil {
-		return nil, nil
-	}
-	return s.accessLists.List(ctx, s.cfg.DefaultHostID)
-}
-
-// GetAccessList retrieves an access list by ID.
-func (s *Service) GetAccessList(ctx context.Context, id uuid.UUID) (*models.ProxyAccessList, error) {
-	if s.accessLists == nil {
-		return nil, fmt.Errorf("access lists not configured")
-	}
-	return s.accessLists.GetByID(ctx, id)
-}
-
-// CreateAccessList creates a new access list.
-func (s *Service) CreateAccessList(ctx context.Context, al *models.ProxyAccessList, userID *uuid.UUID) error {
-	if s.accessLists == nil {
-		return fmt.Errorf("access lists not configured")
-	}
-	al.HostID = s.cfg.DefaultHostID
-	if err := s.accessLists.Create(ctx, al); err != nil {
-		return fmt.Errorf("create access list: %w", err)
-	}
-	s.auditLog(ctx, al.HostID, userID, "create", "access_list", al.ID, al.Name, "")
-	return nil
-}
-
-// UpdateAccessList updates an access list.
-func (s *Service) UpdateAccessList(ctx context.Context, al *models.ProxyAccessList, userID *uuid.UUID) error {
-	if s.accessLists == nil {
-		return fmt.Errorf("access lists not configured")
-	}
-	if err := s.accessLists.Update(ctx, al); err != nil {
-		return fmt.Errorf("update access list: %w", err)
-	}
-	s.auditLog(ctx, al.HostID, userID, "update", "access_list", al.ID, al.Name, "")
-	return nil
-}
-
-// DeleteAccessList deletes an access list.
-func (s *Service) DeleteAccessList(ctx context.Context, id uuid.UUID, userID *uuid.UUID) error {
-	if s.accessLists == nil {
-		return fmt.Errorf("access lists not configured")
-	}
-	al, err := s.accessLists.GetByID(ctx, id)
-	if err != nil {
-		return fmt.Errorf("get access list for delete: %w", err)
-	}
-	if err := s.accessLists.Delete(ctx, id); err != nil {
-		return fmt.Errorf("delete access list: %w", err)
-	}
-	s.auditLog(ctx, al.HostID, userID, "delete", "access_list", al.ID, al.Name, "")
-	return nil
-}
-
-// ============================================================================
-// Custom Locations
-// ============================================================================
-
-// SetLocations replaces all locations for a proxy host and syncs.
-func (s *Service) SetLocations(ctx context.Context, proxyHostID uuid.UUID, locations []models.ProxyLocation) error {
-	if s.locations == nil {
-		return fmt.Errorf("locations not configured")
-	}
-	if err := s.locations.ReplaceForHost(ctx, proxyHostID, locations); err != nil {
-		return fmt.Errorf("replace locations for proxy host %s: %w", proxyHostID, err)
-	}
-	return s.Sync(ctx)
+	return err
 }
 
 // ============================================================================

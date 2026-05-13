@@ -1,0 +1,70 @@
+// Package recon contains HTMX partial templates for the v26.5.0
+// recon module. They are swapped into pages via hx-get/hx-post.
+package recon
+
+import "fmt"
+
+// FindingRow is one row in the findings table partial.
+type FindingRow struct {
+	ID         string
+	Module     string
+	Category   string
+	Severity   string
+	Value      string
+	Source     string
+	Confidence int
+	FirstSeen  string
+	LastSeen   string
+}
+
+templ FindingsTable(rows []FindingRow) {
+	if len(rows) == 0 {
+		<p class="text-sm text-gray-500 py-8 text-center">No findings match the current filters.</p>
+	} else {
+		<table class="w-full text-sm">
+			<thead class="text-xs uppercase tracking-wide text-gray-400">
+				<tr>
+					<th class="text-left py-2">Severity</th>
+					<th class="text-left py-2">Module</th>
+					<th class="text-left py-2">Category</th>
+					<th class="text-left py-2">Value</th>
+					<th class="text-left py-2">Confidence</th>
+					<th class="text-left py-2">First seen</th>
+				</tr>
+			</thead>
+			<tbody class="divide-y divide-dark-700">
+				for _, f := range rows {
+					<tr class="hover:bg-dark-700">
+						<td class="py-2">
+							<span class={ "px-2 py-0.5 rounded text-xs font-medium border " + severityClass(f.Severity) }>{ f.Severity }</span>
+						</td>
+						<td class="py-2 text-gray-300 font-mono text-xs">{ f.Module }</td>
+						<td class="py-2 text-gray-400">{ f.Category }</td>
+						<td class="py-2 text-gray-300 break-all">{ f.Value }</td>
+						<td class="py-2 text-gray-400">{ fmt.Sprintf("%d%%", f.Confidence) }</td>
+						<td class="py-2 text-gray-400">{ f.FirstSeen }</td>
+					</tr>
+				}
+			</tbody>
+		</table>
+	}
+}
+
+// severityClass mirrors the page-level palette so the partial can be
+// rendered independently of the recon page package.
+func severityClass(severity string) string {
+	switch severity {
+	case "critical":
+		return "text-red-400 bg-red-500/10 border-red-500/20"
+	case "high":
+		return "text-orange-400 bg-orange-500/10 border-orange-500/20"
+	case "medium":
+		return "text-yellow-400 bg-yellow-500/10 border-yellow-500/20"
+	case "low":
+		return "text-blue-400 bg-blue-500/10 border-blue-500/20"
+	case "info":
+		return "text-gray-400 bg-gray-500/10 border-gray-500/20"
+	default:
+		return "text-gray-400 bg-gray-500/10 border-gray-500/20"
+	}
+}

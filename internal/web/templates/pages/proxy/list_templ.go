@@ -64,7 +64,7 @@ func List(data ProxyData) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"space-y-6\"><!-- Header --><div class=\"flex items-center justify-between\"><div><h1 class=\"text-2xl font-display font-bold text-white\">Reverse Proxy</h1><p class=\"text-gray-400 mt-1\">Nginx reverse proxy management</p></div><div class=\"flex items-center gap-2\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"space-y-6\"><!-- Header --><div class=\"flex items-center justify-between\"><div><h1 class=\"text-2xl font-display font-bold text-white\">Reverse Proxy</h1><p class=\"text-gray-400 mt-1\">Nginx Proxy Manager integration</p></div><div class=\"flex items-center gap-2\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -82,7 +82,7 @@ func List(data ProxyData) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "\"> <button type=\"submit\" class=\"btn-secondary\" title=\"Sync Proxy\"><i class=\"fas fa-sync-alt\"></i></button></form><a href=\"/proxy/setup\" class=\"btn-secondary\" title=\"Connection settings\"><i class=\"fas fa-cog\"></i></a> <a href=\"/proxy/new\" class=\"btn-primary\"><i class=\"fas fa-plus mr-2\"></i>New Host</a>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "\"> <button type=\"submit\" class=\"btn-secondary\" title=\"Sync with NPM\"><i class=\"fas fa-sync-alt\"></i></button></form><a href=\"/proxy/setup\" class=\"btn-secondary\" title=\"Connection settings\"><i class=\"fas fa-cog\"></i></a> <a href=\"/proxy/new\" class=\"btn-primary\"><i class=\"fas fa-plus mr-2\"></i>New Host</a>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -101,7 +101,7 @@ func List(data ProxyData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			if !data.Connected {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<div class=\"card p-8 text-center\"><i class=\"fas fa-plug text-4xl text-gray-400 mb-4\"></i><h3 class=\"text-lg font-medium text-white mb-2\">Proxy Not Available</h3><p class=\"text-gray-400 mb-4\">The reverse proxy is not configured. Check the setup page.</p><a href=\"/proxy/setup\" class=\"btn-primary\"><i class=\"fas fa-link mr-2\"></i>Setup Connection</a></div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<div class=\"card p-8 text-center\"><i class=\"fas fa-plug text-4xl text-gray-400 mb-4\"></i><h3 class=\"text-lg font-medium text-white mb-2\">NPM Not Connected</h3><p class=\"text-gray-400 mb-4\">Connect to your Nginx Proxy Manager instance to manage reverse proxy hosts.</p><a href=\"/proxy/setup\" class=\"btn-primary\"><i class=\"fas fa-link mr-2\"></i>Setup Connection</a></div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}

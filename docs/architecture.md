@@ -30,7 +30,7 @@ usulnet is a self-hosted Docker management platform written in Go. It provides a
 - **Multi-Host:** Master-agent architecture via NATS JetStream for managing remote Docker hosts
 - **Enterprise-Ready:** RBAC, LDAP, OAuth2/OIDC, 2FA, audit logging, security scanning
 - **Single Binary:** The entire application compiles to a single statically-linked Go binary
-- **Built-in Proxy:** Nginx reverse proxy with Let's Encrypt, custom certificates, and DNS-01 wildcard support
+- **Pluggable Proxy:** Supports both Caddy and Nginx Proxy Manager as reverse proxy backends
 
 ---
 
@@ -208,7 +208,8 @@ usulnet supports managing multiple Docker hosts through a master-agent model usi
 
 | Mode | Description |
 |------|-------------|
-| `master` | Full usulnet server. All services + gateway for agent connections via NATS. |
+| `standalone` | Single host. All services run locally. No NATS required for agent communication. |
+| `master` | Multi-host control plane. Accepts agent connections via NATS. Orchestrates remote operations. |
 | `agent` | Remote host. Connects to master via NATS. Executes Docker commands locally and reports results. |
 
 ### Communication Flow
@@ -344,7 +345,7 @@ jobs ──> scheduled_jobs
 | Cache | Redis | 8-alpine | Sessions, cache, JWT blacklist |
 | Messaging | NATS (JetStream) | 2.12-alpine | Agent communication |
 | Docker API | docker/docker client | 28.5.1 | Container management |
-| RDP Gateway | Apache Guacamole (guacd) | 1.6.0 | Remote desktop web access |
+| RDP Gateway | Apache Guacamole (guacd) | 1.5.5 | Remote desktop web access |
 | Scanner | Trivy | latest | Vulnerability scanning |
 | JWT | golang-jwt/jwt/v5 | 5.2.2 | Token authentication |
 | LDAP | go-ldap/ldap/v3 | 3.4.12 | Directory authentication |
@@ -480,7 +481,7 @@ usulnet/
 |   |   +-- host/             # Host management
 |   |   +-- security/         # Security scanning (Trivy)
 |   |   +-- backup/           # Backup and restore
-|   |   +-- proxy/            # Reverse proxy (Nginx)
+|   |   +-- proxy/            # Reverse proxy (Caddy/NPM)
 |   |   +-- notification/     # Notification channels (Slack, Email, Webhook)
 |   |   +-- user/             # User management
 |   |   +-- team/             # Team management

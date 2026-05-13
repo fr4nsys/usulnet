@@ -1,0 +1,44 @@
+package recon
+
+// AckModal renders the legal notice acknowledgement modal. It is shown
+// once per session for administrators when the recon module is enabled
+// but the acknowledgement has not yet been recorded. Acknowledging
+// POSTs to /recon/ack (the web-side mirror of the JSON-API
+// /api/v1/recon/_ack) so the session-cookie + CSRF middleware applies.
+templ AckModal(notice string) {
+	<div
+		id="recon-ack-modal"
+		x-data="{ open: true }"
+		x-show="open"
+		x-cloak
+		class="fixed inset-0 z-50 flex items-center justify-center bg-black/60"
+	>
+		<div class="bg-dark-800 border border-dark-600 rounded-lg max-w-xl w-full mx-4 shadow-xl">
+			<div class="px-5 py-4 border-b border-dark-600">
+				<h2 class="text-lg font-display font-semibold text-white">
+					<i class="fas fa-balance-scale mr-2 text-primary-400"></i>Acknowledge Recon Module
+				</h2>
+			</div>
+			<div class="px-5 py-4">
+				<p class="text-sm text-gray-300 whitespace-pre-line">{ notice }</p>
+			</div>
+			<div class="px-5 py-4 border-t border-dark-600 flex items-center justify-end gap-2">
+				<button
+					type="button"
+					@click="open = false"
+					class="btn-secondary"
+				>
+					Cancel
+				</button>
+				<button
+					type="button"
+					hx-post="/recon/ack"
+					hx-swap="none"
+					class="btn-primary"
+				>
+					I acknowledge
+				</button>
+			</div>
+		</div>
+	</div>
+}

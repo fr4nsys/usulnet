@@ -51,7 +51,7 @@ type EmailConfig struct {
 	BCCAddresses []string `json:"bcc_addresses,omitempty"`
 
 	// Content settings
-	SubjectPrefix string `json:"subject_prefix,omitempty"` // e.g., "[USULNET]"
+	SubjectPrefix string `json:"subject_prefix,omitempty"` // e.g., "[usulnet]"
 	SendHTML      *bool  `json:"send_html,omitempty"`      // Send HTML emails
 
 	// Timeout in seconds
@@ -82,10 +82,10 @@ func NewEmailChannel(config EmailConfig) (*EmailChannel, error) {
 
 	// Set defaults
 	if config.FromName == "" {
-		config.FromName = "USULNET"
+		config.FromName = "usulnet"
 	}
 	if config.SubjectPrefix == "" {
-		config.SubjectPrefix = "[USULNET]"
+		config.SubjectPrefix = "[usulnet]"
 	}
 	if config.SendHTML == nil {
 		sendHTML := true
@@ -140,9 +140,9 @@ func (e *EmailChannel) Send(ctx context.Context, msg RenderedMessage) error {
 // Test sends a test email to verify configuration.
 func (e *EmailChannel) Test(ctx context.Context) error {
 	testMsg := RenderedMessage{
-		Title:     "USULNET Test Notification",
-		Body:      "This is a test notification from USULNET to verify email configuration.",
-		BodyPlain: "This is a test notification from USULNET to verify email configuration.",
+		Title:     "usulnet Test Notification",
+		Body:      "This is a test notification from usulnet to verify email configuration.",
+		BodyPlain: "This is a test notification from usulnet to verify email configuration.",
 		Priority:  PriorityNormal,
 		Timestamp: time.Now(),
 		Type:      TypeTestMessage,
@@ -215,7 +215,7 @@ func (e *EmailChannel) buildMessage(subject, body, contentType string) []byte {
 	buf.WriteString(fmt.Sprintf("Content-Type: %s\r\n", contentType))
 	buf.WriteString("Content-Transfer-Encoding: base64\r\n")
 	buf.WriteString(fmt.Sprintf("Date: %s\r\n", time.Now().Format(time.RFC1123Z)))
-	buf.WriteString("X-Mailer: USULNET\r\n")
+	buf.WriteString("X-Mailer: usulnet\r\n")
 	buf.WriteString("\r\n")
 
 	// Base64 encoded body
@@ -358,149 +358,65 @@ func needsEncoding(s string) bool {
 // initTemplates initializes the HTML email template.
 func (e *EmailChannel) initTemplates() error {
 	htmlTmpl := `<!DOCTYPE html>
-<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="color-scheme" content="light dark">
-    <meta name="supported-color-schemes" content="light dark">
-    <title>{{.Title}}</title>
-    <!--[if mso]><noscript><xml><o:OfficeDocumentSettings><o:PixelsPerInch>96</o:PixelsPerInch></o:OfficeDocumentSettings></xml></noscript><![endif]-->
     <style>
-        :root { color-scheme: light dark; supported-color-schemes: light dark; }
-        body { margin: 0; padding: 0; width: 100%; background-color: #0f1117; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
-        .outer-table { width: 100%; background-color: #0f1117; }
-        .spacer { height: 32px; }
-        .spacer-sm { height: 16px; }
-        .container { max-width: 600px; margin: 0 auto; background-color: #1a1d27; border-radius: 12px; overflow: hidden; border: 1px solid #2a2d3a; }
-        .brand-bar { background-color: #12141c; padding: 20px 28px; border-bottom: 1px solid #2a2d3a; }
-        .brand-name { font-size: 15px; font-weight: 700; color: #818cf8; letter-spacing: 0.5px; text-decoration: none; }
-        .brand-sep { color: #3f4255; margin: 0 10px; }
-        .brand-label { font-size: 12px; font-weight: 500; color: #6b7280; text-transform: uppercase; letter-spacing: 0.8px; }
-        .priority-strip { height: 4px; background: {{.Color}}; }
-        .header { padding: 28px 28px 20px; }
-        .header h1 { margin: 0 0 8px; font-size: 22px; font-weight: 700; color: #f1f5f9; line-height: 1.3; }
-        .header-meta { font-size: 13px; color: #6b7280; }
-        .header-meta .badge { display: inline-block; padding: 3px 10px; border-radius: 6px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; vertical-align: middle; }
-        .badge-critical { background-color: #991b1b; color: #fecaca; }
-        .badge-high { background-color: #92400e; color: #fde68a; }
-        .badge-normal { background-color: #1e3a5f; color: #93c5fd; }
-        .badge-low { background-color: #27272a; color: #a1a1aa; }
-        .divider { border: none; border-top: 1px solid #2a2d3a; margin: 0 28px; }
-        .content { padding: 24px 28px; color: #d1d5db; font-size: 14px; line-height: 1.7; }
-        .content p { margin: 0 0 12px; }
-        .content strong { color: #f1f5f9; font-weight: 600; }
-        .content code { background-color: #12141c; color: #a5b4fc; padding: 2px 6px; border-radius: 4px; font-size: 13px; font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace; }
-        .data-section { padding: 0 28px 24px; }
-        .data-table { width: 100%; border-collapse: separate; border-spacing: 0; border-radius: 8px; overflow: hidden; border: 1px solid #2a2d3a; }
-        .data-table th { padding: 10px 14px; text-align: left; background-color: #12141c; font-weight: 600; font-size: 11px; color: #818cf8; text-transform: uppercase; letter-spacing: 0.8px; border-bottom: 1px solid #2a2d3a; }
-        .data-table td { padding: 10px 14px; font-size: 13px; border-bottom: 1px solid #1f2233; }
-        .data-table td:first-child { color: #9ca3af; font-weight: 500; width: 40%; }
-        .data-table td:last-child { color: #e5e7eb; font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace; font-size: 12px; }
-        .data-table tr:last-child td { border-bottom: none; }
-        .data-table tr:hover td { background-color: #1f2233; }
-        .footer { padding: 20px 28px; border-top: 1px solid #2a2d3a; background-color: #12141c; text-align: center; }
-        .footer-text { font-size: 11px; color: #4b5563; line-height: 1.6; margin: 0; }
-        .footer-link { color: #818cf8; text-decoration: none; }
-        @media (prefers-color-scheme: light) {
-            body, .outer-table { background-color: #f1f5f9 !important; }
-            .container { background-color: #ffffff !important; border-color: #e2e8f0 !important; }
-            .brand-bar { background-color: #f8fafc !important; border-color: #e2e8f0 !important; }
-            .brand-name { color: #6366f1 !important; }
-            .brand-sep { color: #cbd5e1 !important; }
-            .brand-label { color: #64748b !important; }
-            .header h1 { color: #0f172a !important; }
-            .header-meta { color: #64748b !important; }
-            .badge-normal { background-color: #dbeafe !important; color: #1e40af !important; }
-            .badge-low { background-color: #f1f5f9 !important; color: #475569 !important; }
-            .divider { border-color: #e2e8f0 !important; }
-            .content { color: #334155 !important; }
-            .content strong { color: #0f172a !important; }
-            .content code { background-color: #f1f5f9 !important; color: #4f46e5 !important; }
-            .data-table { border-color: #e2e8f0 !important; }
-            .data-table th { background-color: #f8fafc !important; color: #4f46e5 !important; border-color: #e2e8f0 !important; }
-            .data-table td { border-color: #f1f5f9 !important; }
-            .data-table td:first-child { color: #64748b !important; }
-            .data-table td:last-child { color: #1e293b !important; }
-            .data-table tr:hover td { background-color: #f8fafc !important; }
-            .footer { background-color: #f8fafc !important; border-color: #e2e8f0 !important; }
-            .footer-text { color: #94a3b8 !important; }
-            .footer-link { color: #6366f1 !important; }
-        }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; margin: 0; padding: 0; background-color: #f3f4f6; }
+        .container { max-width: 600px; margin: 20px auto; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .header { background: {{.Color}}; color: white; padding: 20px; }
+        .header h1 { margin: 0; font-size: 20px; font-weight: 600; }
+        .content { padding: 20px; color: #374151; line-height: 1.6; }
+        .meta { padding: 15px 20px; background: #f9fafb; border-top: 1px solid #e5e7eb; font-size: 12px; color: #6b7280; }
+        .meta span { margin-right: 15px; }
+        .badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 500; }
+        .badge-critical { background: #fee2e2; color: #991b1b; }
+        .badge-high { background: #fef3c7; color: #92400e; }
+        .badge-normal { background: #dbeafe; color: #1e40af; }
+        .badge-low { background: #f3f4f6; color: #4b5563; }
+        .data-table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        .data-table th, .data-table td { padding: 8px 12px; text-align: left; border-bottom: 1px solid #e5e7eb; }
+        .data-table th { background: #f9fafb; font-weight: 600; font-size: 12px; color: #6b7280; text-transform: uppercase; }
+        .footer { padding: 15px 20px; text-align: center; font-size: 11px; color: #9ca3af; }
     </style>
 </head>
 <body>
-    <table role="presentation" class="outer-table" cellpadding="0" cellspacing="0">
-        <tr><td class="spacer"></td></tr>
-        <tr>
-            <td align="center" style="padding: 0 16px;">
-                <table role="presentation" class="container" cellpadding="0" cellspacing="0" width="600">
-                    <!-- Brand Bar -->
-                    <tr>
-                        <td class="brand-bar">
-                            <span class="brand-name">USULNET</span>
-                            <span class="brand-sep">&middot;</span>
-                            <span class="brand-label">{{.Category}}</span>
-                        </td>
-                    </tr>
-                    <!-- Priority Color Strip -->
-                    <tr><td class="priority-strip"></td></tr>
-                    <!-- Header -->
-                    <tr>
-                        <td class="header">
-                            <h1>{{.Title}}</h1>
-                            <div class="header-meta">
-                                <span class="badge badge-{{.Priority}}">{{.Priority}}</span>
-                                <span style="margin-left: 8px;">{{.Timestamp}}</span>
-                            </div>
-                        </td>
-                    </tr>
-                    <!-- Divider -->
-                    <tr><td><hr class="divider"></td></tr>
-                    <!-- Content -->
-                    <tr>
-                        <td class="content">
-                            {{.Body}}
-                        </td>
-                    </tr>
-                    <!-- Data Table -->
-                    {{if .Data}}
-                    <tr>
-                        <td class="data-section">
-                            <table role="presentation" class="data-table" cellpadding="0" cellspacing="0">
-                                <thead>
-                                    <tr><th>Field</th><th>Value</th></tr>
-                                </thead>
-                                <tbody>
-                                    {{range $key, $value := .Data}}
-                                    <tr><td>{{$key}}</td><td>{{$value}}</td></tr>
-                                    {{end}}
-                                </tbody>
-                            </table>
-                        </td>
-                    </tr>
+    <div class="container">
+        <div class="header">
+            <h1>{{.Title}}</h1>
+        </div>
+        <div class="content">
+            {{.Body}}
+            {{if .Data}}
+            <table class="data-table">
+                <thead>
+                    <tr><th>Field</th><th>Value</th></tr>
+                </thead>
+                <tbody>
+                    {{range $key, $value := .Data}}
+                    <tr><td>{{$key}}</td><td>{{$value}}</td></tr>
                     {{end}}
-                    <!-- Footer -->
-                    <tr>
-                        <td class="footer">
-                            <p class="footer-text">
-                                Sent by <a href="https://usulnet.com" class="footer-link">usulnet</a> Docker Management Platform<br>
-                                You received this because alerts are enabled for this event type.
-                            </p>
-                        </td>
-                    </tr>
-                </table>
-            </td>
-        </tr>
-        <tr><td class="spacer"></td></tr>
-    </table>
+                </tbody>
+            </table>
+            {{end}}
+        </div>
+        <div class="meta">
+            <span class="badge badge-{{.Priority}}">{{.Priority}}</span>
+            <span>Type: {{.Category}}</span>
+            <span>{{.Timestamp}}</span>
+        </div>
+        <div class="footer">
+            Sent by usulnet Docker Management Platform
+        </div>
+    </div>
 </body>
 </html>`
 
 	var err error
 	e.htmlTemplate, err = template.New("email").Parse(htmlTmpl)
 	if err != nil {
-		return fmt.Errorf("parse email HTML template: %w", err)
+		return err
 	}
 
 	return nil

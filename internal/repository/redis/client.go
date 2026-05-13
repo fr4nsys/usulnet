@@ -6,7 +6,6 @@ package redis
 
 import (
 	"context"
-	"crypto/tls"
 	"fmt"
 	"strings"
 	"time"
@@ -21,7 +20,6 @@ type Options struct {
 	DialTimeout  time.Duration
 	ReadTimeout  time.Duration
 	WriteTimeout time.Duration
-	TLSConfig    *tls.Config // TLS configuration (nil = no TLS override)
 }
 
 // DefaultOptions returns sensible default options
@@ -62,9 +60,6 @@ func New(ctx context.Context, url string, opts Options) (*Client, error) {
 	}
 	if opts.WriteTimeout > 0 {
 		options.WriteTimeout = opts.WriteTimeout
-	}
-	if opts.TLSConfig != nil {
-		options.TLSConfig = opts.TLSConfig
 	}
 
 	rdb := redis.NewClient(options)

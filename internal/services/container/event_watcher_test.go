@@ -181,7 +181,6 @@ func TestHostEventWatcher_ContextCancel(t *testing.T) {
 	svc := &Service{
 		logger:         logger.Nop().Named("test"),
 		config:         DefaultConfig(),
-		hostService:    newTestHostService(),
 		stopCh:         make(chan struct{}),
 		activeWatchers: make(map[uuid.UUID]context.CancelFunc),
 	}
@@ -215,7 +214,6 @@ func TestHostEventWatcher_StopChannel(t *testing.T) {
 	svc := &Service{
 		logger:         logger.Nop().Named("test"),
 		config:         DefaultConfig(),
-		hostService:    newTestHostService(),
 		stopCh:         make(chan struct{}),
 		activeWatchers: make(map[uuid.UUID]context.CancelFunc),
 	}

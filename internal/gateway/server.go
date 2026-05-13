@@ -171,8 +171,6 @@ func (s *Server) setupStreams() error {
 			Description: "Agent command queue",
 			Subjects:    []string{"usulnet.commands.>"},
 			MaxAge:      24 * time.Hour,
-			MaxBytes:    256 * 1024 * 1024, // 256 MB
-			MaxMsgs:     100_000,
 			Storage:     nats.FileStorage,
 		},
 		{
@@ -180,8 +178,6 @@ func (s *Server) setupStreams() error {
 			Description: "Agent events",
 			Subjects:    []string{"usulnet.agent.events.>"},
 			MaxAge:      24 * time.Hour,
-			MaxBytes:    512 * 1024 * 1024, // 512 MB
-			MaxMsgs:     500_000,
 			Storage:     nats.FileStorage,
 		},
 		{
@@ -189,8 +185,6 @@ func (s *Server) setupStreams() error {
 			Description: "Agent inventory snapshots",
 			Subjects:    []string{"usulnet.agent.inventory.>"},
 			MaxAge:      1 * time.Hour,
-			MaxBytes:    128 * 1024 * 1024, // 128 MB
-			MaxMsgs:     10_000,
 			Storage:     nats.FileStorage,
 		},
 	}
@@ -350,38 +344,13 @@ func (s *Server) handleHeartbeat(msg *nats.Msg) error {
 		s.log.Warn("Failed to update host status", "error", err)
 	}
 
-	// Store heartbeat metrics (CPU, memory, containers, disk)
-	if hb.Stats != nil {
-		metrics := &models.HostMetrics{
-			HostID:         conn.HostID,
-			CPUPercent:     hb.Stats.CPUPercent,
-			MemoryUsed:     hb.Stats.MemoryUsedBytes,
-			MemoryTotal:    hb.Stats.MemoryTotalBytes,
-			DiskUsed:       hb.Stats.DiskUsedBytes,
-			DiskTotal:      hb.Stats.DiskTotalBytes,
-			ContainerCount: hb.Stats.ContainersTotal,
-			RunningCount:   hb.Stats.ContainersRunning,
-			CollectedAt:    hb.Timestamp,
-		}
-		if err := s.hostRepo.InsertMetrics(s.ctx, metrics); err != nil {
-			s.log.Warn("Failed to insert heartbeat metrics",
-				"host_id", conn.HostID,
-				"error", err,
-			)
-		}
-	}
-
 	// Send response if reply subject exists
 	if msg.Reply != "" {
 		resp := protocol.HeartbeatResponse{
 			Acknowledged: true,
 			ServerTime:   time.Now().UTC(),
 		}
-		data, err := json.Marshal(resp)
-		if err != nil {
-			s.log.Error("Failed to marshal heartbeat response", "error", err)
-			return nil
-		}
+		data, _ := json.Marshal(resp)
 		msg.Respond(data)
 	}
 
@@ -438,11 +407,7 @@ func (s *Server) handleEvent(msg *nats.Msg) error {
 			EventID:      event.ID,
 			Acknowledged: true,
 		}
-		data, err := json.Marshal(ack)
-		if err != nil {
-			s.log.Error("Failed to marshal event ack", "error", err)
-			return nil
-		}
+		data, _ := json.Marshal(ack)
 		msg.Respond(data)
 	}
 
@@ -477,30 +442,6 @@ func (s *Server) handleInventory(msg *nats.Msg) error {
 			"volumes", len(inv.Volumes),
 			"networks", len(inv.Networks),
 		)
-
-		// Persist system info (Docker version, CPUs, memory) to hosts table
-		if inv.SystemInfo != nil {
-			dockerInfo := &models.HostDockerInfo{
-				ServerVersion: inv.SystemInfo.ServerVersion,
-				OSType:        inv.SystemInfo.OS,
-				Architecture:  inv.SystemInfo.Arch,
-				NCPU:          inv.SystemInfo.CPUs,
-				MemTotal:      inv.SystemInfo.MemoryTotal,
-			}
-			if err := s.hostRepo.UpdateDockerInfo(s.ctx, conn.HostID, dockerInfo); err != nil {
-				s.log.Error("Failed to persist system info from inventory",
-					"host_id", conn.HostID,
-					"error", err,
-				)
-			} else {
-				s.log.Debug("Agent system info persisted",
-					"host_id", conn.HostID,
-					"docker_version", inv.SystemInfo.ServerVersion,
-					"cpus", inv.SystemInfo.CPUs,
-					"memory", inv.SystemInfo.MemoryTotal,
-				)
-			}
-		}
 
 		// Sync containers
 		if s.containerService != nil {
@@ -586,12 +527,7 @@ func (s *Server) handleDeregistration(msg *nats.Msg) error {
 			"reason", req.Reason,
 		)
 		// Update host status
-		if err := s.hostRepo.UpdateStatus(s.ctx, conn.HostID, "offline", time.Now().UTC()); err != nil {
-			s.log.Error("Failed to update host status on deregistration",
-				"host_id", conn.HostID,
-				"error", err,
-			)
-		}
+		s.hostRepo.UpdateStatus(s.ctx, conn.HostID, "offline", time.Now().UTC())
 	}
 
 	return nil
@@ -637,17 +573,8 @@ func (s *Server) cleanupStaleAgents() {
 			"last_seen", conn.LastSeen,
 		)
 
-		// Update host status asynchronously
-		hostID := conn.HostID
-		lastSeen := conn.LastSeen
-		go func() {
-			if err := s.hostRepo.UpdateStatus(s.ctx, hostID, "offline", lastSeen); err != nil {
-				s.log.Error("Failed to update host status on stale cleanup",
-					"host_id", hostID,
-					"error", err,
-				)
-			}
-		}()
+		// Update host status (outside lock to avoid deadlock)
+		go s.hostRepo.UpdateStatus(s.ctx, conn.HostID, "offline", conn.LastSeen)
 	}
 	s.mu.Unlock()
 }
@@ -734,10 +661,7 @@ func (s *Server) GetAgentHealth(hostID uuid.UUID) (protocol.HealthStatus, error)
 		return protocol.HealthStatusUnknown, fmt.Errorf("agent not connected")
 	}
 
-	conn, exists := s.agents[agentID]
-	if !exists || conn == nil {
-		return protocol.HealthStatusUnknown, fmt.Errorf("agent connection not found")
-	}
+	conn := s.agents[agentID]
 	return conn.Health, nil
 }
 

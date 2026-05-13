@@ -6,7 +6,6 @@ package web
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/google/uuid"
 
@@ -67,10 +66,7 @@ func (a *networkAdapter) Create(ctx context.Context, name, driver string, opts m
 		Driver: driver,
 	}
 	_, err := a.svc.Create(ctx, resolveHostID(ctx, a.hostID), input)
-	if err != nil {
-		return fmt.Errorf("networkAdapter.Create: create network %q: %w", name, err)
-	}
-	return nil
+	return err
 }
 
 func (a *networkAdapter) Remove(ctx context.Context, id string) error {
@@ -100,7 +96,7 @@ func (a *networkAdapter) Prune(ctx context.Context) (int64, error) {
 	}
 	result, err := a.svc.Prune(ctx, resolveHostID(ctx, a.hostID))
 	if err != nil {
-		return 0, fmt.Errorf("prune networks: %w", err)
+		return 0, err
 	}
 	return int64(len(result.ItemsDeleted)), nil
 }

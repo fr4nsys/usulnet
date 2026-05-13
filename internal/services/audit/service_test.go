@@ -22,6 +22,10 @@ import (
 // ---------------------------------------------------------------------------
 // Mock repository
 // ---------------------------------------------------------------------------
+//
+// The mock is shared between the test goroutine and the LogAsync
+// goroutines spawned by Service. Every read and write must take the
+// mutex, otherwise -race trips on the entries slice.
 
 type mockAuditRepo struct {
 	mu         sync.Mutex
@@ -30,36 +34,37 @@ type mockAuditRepo struct {
 	createCall atomic.Int32
 }
 
+func (r *mockAuditRepo) snapshot() []*models.AuditLogEntry {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	out := make([]*models.AuditLogEntry, len(r.entries))
+	copy(out, r.entries)
+	return out
+}
+
+// seed appends a pre-built entry under the lock so test setup is
+// race-safe alongside any concurrently running LogAsync goroutines.
+func (r *mockAuditRepo) seed(e *models.AuditLogEntry) {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	r.entries = append(r.entries, e)
+}
+
 func (r *mockAuditRepo) Create(_ context.Context, input *postgres.CreateAuditLogInput) error {
 	r.createCall.Add(1)
+	r.mu.Lock()
+	defer r.mu.Unlock()
 	if r.createErr != nil {
 		return r.createErr
 	}
 	entry := &models.AuditLogEntry{
-		ID:         1,
 		Action:     input.Action,
 		EntityType: input.ResourceType,
 		UserID:     input.UserID,
 		CreatedAt:  time.Now(),
 	}
-	r.mu.Lock()
 	r.entries = append(r.entries, entry)
-	r.mu.Unlock()
 	return nil
-}
-
-func (r *mockAuditRepo) Entries() []*models.AuditLogEntry {
-	r.mu.Lock()
-	defer r.mu.Unlock()
-	cp := make([]*models.AuditLogEntry, len(r.entries))
-	copy(cp, r.entries)
-	return cp
-}
-
-func (r *mockAuditRepo) Len() int {
-	r.mu.Lock()
-	defer r.mu.Unlock()
-	return len(r.entries)
 }
 
 func (r *mockAuditRepo) List(_ context.Context, opts postgres.AuditLogListOptions) ([]*models.AuditLogEntry, int, error) {
@@ -93,7 +98,7 @@ func (r *mockAuditRepo) GetByUser(_ context.Context, userID uuid.UUID, limit int
 	return result, nil
 }
 
-func (r *mockAuditRepo) GetByResource(_ context.Context, resourceType, resourceID string, limit int) ([]*models.AuditLogEntry, error) {
+func (r *mockAuditRepo) GetByResource(_ context.Context, resourceType, _ string, limit int) ([]*models.AuditLogEntry, error) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 	var result []*models.AuditLogEntry
@@ -171,10 +176,10 @@ func TestLog_HappyPath(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Log() error: %v", err)
 	}
-	if repo.Len() != 1 {
-		t.Fatalf("repo has %d entries, want 1", repo.Len())
+	entries := repo.snapshot()
+	if len(entries) != 1 {
+		t.Fatalf("repo has %d entries, want 1", len(entries))
 	}
-	entries := repo.Entries()
 	if entries[0].Action != "login" {
 		t.Errorf("Action = %q, want %q", entries[0].Action, "login")
 	}
@@ -190,8 +195,8 @@ func TestLog_DisabledConfig_NoWrite(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Log() error: %v", err)
 	}
-	if repo.Len() != 0 {
-		t.Errorf("repo has %d entries, want 0 (disabled)", repo.Len())
+	if entries := repo.snapshot(); len(entries) != 0 {
+		t.Errorf("repo has %d entries, want 0 (disabled)", len(entries))
 	}
 }
 
@@ -287,10 +292,10 @@ func TestLogLogin(t *testing.T) {
 	userID := uuid.New()
 	svc.LogLogin(context.Background(), &userID, "admin", "127.0.0.1", "curl/7.0", true, nil)
 
-	// LogLogin uses LogAsync, give goroutine time to execute
+	// LogLogin dispatches via LogAsync; let the goroutine complete.
 	time.Sleep(50 * time.Millisecond)
 
-	entries := repo.Entries()
+	entries := repo.snapshot()
 	if len(entries) != 1 {
 		t.Fatalf("expected 1 entry, got %d", len(entries))
 	}
@@ -306,11 +311,11 @@ func TestLogResourceAction(t *testing.T) {
 	userID := uuid.New()
 	svc.LogResourceAction(context.Background(), userID, "admin", "start", ResourceTypeContainer, "abc123", "my-container", "127.0.0.1", "curl/7.0", true, nil)
 
-	// LogResourceAction uses LogAsync, give goroutine time to execute
+	// LogResourceAction dispatches via LogAsync; let the goroutine complete.
 	time.Sleep(50 * time.Millisecond)
 
-	if repo.Len() != 1 {
-		t.Fatalf("expected 1 entry, got %d", repo.Len())
+	if entries := repo.snapshot(); len(entries) != 1 {
+		t.Fatalf("expected 1 entry, got %d", len(entries))
 	}
 }
 
@@ -327,15 +332,13 @@ func TestStartCleanupWorker_DeletesOldEntries(t *testing.T) {
 	ctx := context.Background()
 
 	// Create an entry with old timestamp
-	repo.entries = append(repo.entries, &models.AuditLogEntry{
-		ID:        1,
+	repo.seed(&models.AuditLogEntry{
 		Action:    "old-action",
 		CreatedAt: time.Now().Add(-48 * time.Hour), // 2 days old
 	})
 
 	// Create a recent entry
-	repo.entries = append(repo.entries, &models.AuditLogEntry{
-		ID:        2,
+	repo.seed(&models.AuditLogEntry{
 		Action:    "recent-action",
 		CreatedAt: time.Now(),
 	})
@@ -345,7 +348,7 @@ func TestStartCleanupWorker_DeletesOldEntries(t *testing.T) {
 	time.Sleep(200 * time.Millisecond)
 	cancel()
 
-	entries := repo.Entries()
+	entries := repo.snapshot()
 	if len(entries) != 1 {
 		t.Errorf("expected 1 entry after cleanup, got %d", len(entries))
 	}

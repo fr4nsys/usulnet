@@ -6,7 +6,6 @@ package web
 
 import (
 	"bufio"
-	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
@@ -32,7 +31,7 @@ func (h *Handler) HostFilesTempl(w http.ResponseWriter, r *http.Request) {
 	}
 
 	cfg := h.hostTerminalConfig
-	cfg.User = "root"
+	cfg.User = "root" // File browser always runs as root to view all files
 
 	if !cfg.Enabled {
 		h.RenderErrorTempl(w, r, http.StatusForbidden,
@@ -80,26 +79,6 @@ func (h *Handler) HostFilesTempl(w http.ResponseWriter, r *http.Request) {
 // Host Filesystem API
 // =============================================================================
 
-// hostFilesUser extracts the host user from the X-Host-User header.
-// If a custom user is provided, it is validated (alphanumeric, underscore, hyphen, dot).
-// Defaults to "root" if no header is set.
-func hostFilesUser(r *http.Request) string {
-	user := r.Header.Get("X-Host-User")
-	if user == "" {
-		return "root"
-	}
-	// Validate username: only allow safe characters to prevent injection
-	for _, c := range user {
-		if !((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '_' || c == '-' || c == '.') {
-			return "root"
-		}
-	}
-	if len(user) > 64 {
-		return "root"
-	}
-	return user
-}
-
 // HostFileEntry represents a file or directory on the host.
 type HostFileEntry struct {
 	Name       string `json:"name"`
@@ -136,7 +115,7 @@ func (h *Handler) APIHostBrowse(w http.ResponseWriter, r *http.Request) {
 	}
 
 	cfg := h.hostTerminalConfig
-	cfg.User = hostFilesUser(r)
+	cfg.User = "root" // File browser always runs as root to view all files
 	if !cfg.Enabled {
 		h.jsonError(w, "Host file browser disabled", http.StatusForbidden)
 		return
@@ -178,10 +157,6 @@ func (h *Handler) APIHostBrowse(w http.ResponseWriter, r *http.Request) {
 
 	files := parseHostLS(output, path)
 
-	// Resolve symlink types: check which symlinks point to directories
-	// so the frontend navigates into them instead of trying to read them as files.
-	resolveHostSymlinkTypes(selfID, files, cfg)
-
 	h.jsonResponse(w, map[string]interface{}{
 		"path":  path,
 		"files": files,
@@ -198,7 +173,7 @@ func (h *Handler) APIHostReadFile(w http.ResponseWriter, r *http.Request) {
 	}
 
 	cfg := h.hostTerminalConfig
-	cfg.User = hostFilesUser(r)
+	cfg.User = "root" // File browser always runs as root to view all files
 	if !cfg.Enabled {
 		h.jsonError(w, "Host file browser disabled", http.StatusForbidden)
 		return
@@ -224,27 +199,16 @@ func (h *Handler) APIHostReadFile(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	const maxAllowedSize = 10 * 1024 * 1024 // 10MB hard limit
-	maxSize := 1024 * 1024                  // 1MB default
+	maxSize := 1024 * 1024 // 1MB default
 	if ms := r.URL.Query().Get("max_size"); ms != "" {
-		if parsed, err := strconv.Atoi(ms); err == nil && parsed > 0 {
+		if parsed, err := strconv.Atoi(ms); err == nil {
 			maxSize = parsed
 		}
-	}
-	if maxSize > maxAllowedSize {
-		maxSize = maxAllowedSize
 	}
 
 	selfID := detectSelfContainerID()
 	if selfID == "" {
 		h.jsonError(w, "Cannot detect container ID", http.StatusInternalServerError)
-		return
-	}
-
-	// Check file type — reject directories and symlinks to directories
-	fileType, _ := runNsenterCommand(selfID, []string{"stat", "-L", "-c", "%F", path}, cfg)
-	if strings.TrimSpace(fileType) == "directory" {
-		h.jsonError(w, "Path is a directory, not a file", http.StatusBadRequest)
 		return
 	}
 
@@ -291,7 +255,7 @@ func (h *Handler) APIHostDownloadFile(w http.ResponseWriter, r *http.Request) {
 	}
 
 	cfg := h.hostTerminalConfig
-	cfg.User = hostFilesUser(r)
+	cfg.User = "root" // File browser always runs as root to view all files
 	if !cfg.Enabled {
 		h.jsonError(w, "Host file browser disabled", http.StatusForbidden)
 		return
@@ -359,7 +323,7 @@ func (h *Handler) APIHostMkdir(w http.ResponseWriter, r *http.Request) {
 	}
 
 	cfg := h.hostTerminalConfig
-	cfg.User = hostFilesUser(r)
+	cfg.User = "root" // File browser always runs as root to view all files
 	if !cfg.Enabled {
 		h.jsonError(w, "Host file browser disabled", http.StatusForbidden)
 		return
@@ -411,7 +375,7 @@ func (h *Handler) APIHostDeleteFile(w http.ResponseWriter, r *http.Request) {
 	}
 
 	cfg := h.hostTerminalConfig
-	cfg.User = hostFilesUser(r)
+	cfg.User = "root" // File browser always runs as root to view all files
 	if !cfg.Enabled {
 		h.jsonError(w, "Host file browser disabled", http.StatusForbidden)
 		return
@@ -467,79 +431,6 @@ func (h *Handler) APIHostDeleteFile(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNoContent)
 }
 
-// APIHostValidateUser checks if a username exists on the host.
-// POST /api/v1/hosts/{hostID}/validate-user
-func (h *Handler) APIHostValidateUser(w http.ResponseWriter, r *http.Request) {
-	hostID := chi.URLParam(r, "hostID")
-	if hostID == "" {
-		h.jsonError(w, "Host ID required", http.StatusBadRequest)
-		return
-	}
-
-	cfg := h.hostTerminalConfig
-	if !cfg.Enabled {
-		h.jsonError(w, "Host file browser disabled", http.StatusForbidden)
-		return
-	}
-
-	if !isHostPIDNamespace() {
-		h.jsonError(w, "Host PID namespace not available", http.StatusServiceUnavailable)
-		return
-	}
-
-	var req struct {
-		Username string `json:"username"`
-	}
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		h.jsonError(w, "Invalid request body", http.StatusBadRequest)
-		return
-	}
-
-	// Validate username characters
-	user := req.Username
-	if user == "" {
-		h.jsonError(w, "Username is required", http.StatusBadRequest)
-		return
-	}
-	for _, c := range user {
-		if !((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '_' || c == '-' || c == '.') {
-			h.jsonError(w, "Invalid username characters", http.StatusBadRequest)
-			return
-		}
-	}
-	if len(user) > 64 {
-		h.jsonError(w, "Username too long", http.StatusBadRequest)
-		return
-	}
-
-	selfID := detectSelfContainerID()
-	if selfID == "" {
-		h.jsonError(w, "Cannot detect container ID", http.StatusInternalServerError)
-		return
-	}
-
-	// Check if user exists on host via getent
-	cfg.User = "root"
-	output, err := runNsenterCommand(selfID, []string{"getent", "passwd", user}, cfg)
-	if err != nil {
-		h.jsonError(w, "User not found on host: "+user, http.StatusNotFound)
-		return
-	}
-
-	// Parse the home directory from getent output (user:x:uid:gid:info:home:shell)
-	parts := strings.Split(strings.TrimSpace(output), ":")
-	home := "/"
-	if len(parts) >= 6 {
-		home = parts[5]
-	}
-
-	h.jsonResponse(w, map[string]string{
-		"username": user,
-		"home":     home,
-		"status":   "ok",
-	})
-}
-
 // =============================================================================
 // Helper Functions
 // =============================================================================
@@ -573,13 +464,12 @@ func shellQuote(s string) string {
 // then runs the command as cfg.User.
 func runNsenterCommand(selfContainerID string, cmd []string, cfg HostTerminalConfig) (string, error) {
 
-	// Build nsenter command.
-	// We use su with -s /bin/sh to force a usable shell even for system users
-	// whose login shell is /usr/sbin/nologin or /bin/false (e.g. www-data, nginx).
+	// Build nsenter command
+	// We use su to drop to the configured unprivileged user
 	args := []string{
 		"exec", "-u", "0", selfContainerID,
 		"nsenter", "--target", "1", "--mount", "--uts", "--ipc", "--net", "--pid",
-		"--", "su", "-s", "/bin/sh", "-", cfg.User, "-c",
+		"--", "su", "-", cfg.User, "-c",
 	}
 
 	// Shell-escape each argument to prevent injection via metacharacters.
@@ -615,7 +505,7 @@ func parseHostLS(output, basePath string) []HostFileEntry {
 
 		// Parse ls -l output
 		fields := strings.Fields(line)
-		if len(fields) < 7 {
+		if len(fields) < 8 {
 			continue
 		}
 
@@ -698,39 +588,6 @@ func humanizeHostSize(size int64) string {
 		exp++
 	}
 	return fmt.Sprintf("%.1f %cB", float64(size)/float64(div), "KMGTPE"[exp])
-}
-
-// resolveHostSymlinkTypes checks which symlinks point to directories and
-// updates their IsDir field so the frontend navigates into them correctly.
-// Uses stat -L -c '%F %n' (GNU coreutils) for efficient batch checking.
-func resolveHostSymlinkTypes(selfID string, files []HostFileEntry, cfg HostTerminalConfig) {
-	var symlinkPaths []string
-	idxMap := make(map[string]int) // path → index in files
-	for i, f := range files {
-		if f.IsSymlink {
-			symlinkPaths = append(symlinkPaths, f.Path)
-			idxMap[f.Path] = i
-		}
-	}
-	if len(symlinkPaths) == 0 {
-		return
-	}
-
-	// stat -L follows symlinks; %F gives file type ("directory", "regular file", etc.); %n gives path.
-	args := append([]string{"stat", "-L", "-c", "%F %n"}, symlinkPaths...)
-	output, err := runNsenterCommand(selfID, args, cfg)
-	if err != nil {
-		return // stat failed (unlikely on host with GNU coreutils), skip silently
-	}
-
-	for _, line := range strings.Split(strings.TrimSpace(output), "\n") {
-		if strings.HasPrefix(line, "directory ") {
-			symPath := strings.TrimPrefix(line, "directory ")
-			if idx, ok := idxMap[symPath]; ok {
-				files[idx].IsDir = true
-			}
-		}
-	}
 }
 
 func hostTimeAgo(t time.Time) string {

@@ -5,7 +5,6 @@
 package web
 
 import (
-	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -36,7 +35,7 @@ func (h *Handler) QuotasTempl(w http.ResponseWriter, r *http.Request) {
 
 	// Container stats
 	if containerSvc != nil {
-		if containers, _, err := containerSvc.List(ctx, nil); err == nil {
+		if containers, err := containerSvc.List(ctx, nil); err == nil {
 			usage.ContainersTotal = len(containers)
 			for _, c := range containers {
 				switch c.State {
@@ -89,20 +88,13 @@ func (h *Handler) QuotasTempl(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	// Fetch real memory/disk usage from Docker if available.
-	// Use a dedicated context with timeout to prevent the page from hanging
-	// if the Docker API is slow or unresponsive.
+	// Fetch real memory/disk usage from Docker if available
 	if cli, err := h.getDockerClient(r); err == nil {
-		dockerCtx, dockerCancel := context.WithTimeout(context.Background(), 8*time.Second)
-		defer dockerCancel()
-
 		// Memory: aggregate container memory usage
-		if runningContainers, err := cli.ContainerList(dockerCtx, container.ListOptions{All: false}); err == nil {
+		if runningContainers, err := cli.ContainerList(ctx, container.ListOptions{All: false}); err == nil {
 			var memUsed uint64
 			for _, c := range runningContainers {
-				// Per-container stats with a short timeout to avoid blocking on one container
-				statsCtx, statsCancel := context.WithTimeout(dockerCtx, 2*time.Second)
-				statsResp, err := cli.ContainerStats(statsCtx, c.ID, false)
+				statsResp, err := cli.ContainerStats(ctx, c.ID, false)
 				if err == nil {
 					var stat container.StatsResponse
 					if decErr := json.NewDecoder(statsResp.Body).Decode(&stat); decErr == nil {
@@ -110,7 +102,6 @@ func (h *Handler) QuotasTempl(w http.ResponseWriter, r *http.Request) {
 					}
 					statsResp.Body.Close()
 				}
-				statsCancel()
 			}
 			usage.MemoryUsed = formatBytes(int64(memUsed))
 			usage.MemoryUsedBytes = int64(memUsed)
@@ -120,7 +111,7 @@ func (h *Handler) QuotasTempl(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Disk: use Docker system df
-		if du, err := cli.DiskUsage(dockerCtx, dockertypes.DiskUsageOptions{}); err == nil {
+		if du, err := cli.DiskUsage(ctx, dockertypes.DiskUsageOptions{}); err == nil {
 			var diskUsed int64
 			for _, img := range du.Images {
 				diskUsed += img.Size

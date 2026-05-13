@@ -216,7 +216,7 @@ func (h *Handler) ComplianceScan(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	containers, _, err := containerSvc.List(ctx, nil)
+	containers, err := containerSvc.List(ctx, nil)
 	if err != nil {
 		h.setFlash(w, r, "error", "Failed to list containers: "+err.Error())
 		http.Redirect(w, r, "/compliance", http.StatusSeeOther)

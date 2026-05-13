@@ -18,14 +18,12 @@ import (
 // ============================================================================
 
 type NvimData struct {
-	PageData  layouts.PageData
-	RepoID    string
-	RepoName  string
-	FilePath  string
-	Ref       string
-	Language  string
-	SnippetID string
-	Content   string
+	PageData layouts.PageData
+	RepoID   string
+	RepoName string
+	FilePath string
+	Ref      string
+	Language string
 }
 
 // ============================================================================
@@ -76,7 +74,7 @@ func Nvim(data NvimData) templ.Component {
 				var templ_7745c5c3_Var3 templ.SafeURL
 				templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinURLErrs(templ.SafeURL(fmt.Sprintf("/integrations/gitea/repos/%s?ref=%s", data.RepoID, data.Ref)))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/editor/nvim.templ`, Line: 35, Col: 104}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/editor/nvim.templ`, Line: 33, Col: 104}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 				if templ_7745c5c3_Err != nil {
@@ -104,7 +102,7 @@ func Nvim(data NvimData) templ.Component {
 				var templ_7745c5c3_Var4 string
 				templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(data.FilePath)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/editor/nvim.templ`, Line: 49, Col: 76}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/editor/nvim.templ`, Line: 47, Col: 76}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 				if templ_7745c5c3_Err != nil {
@@ -128,7 +126,7 @@ func Nvim(data NvimData) templ.Component {
 				var templ_7745c5c3_Var5 string
 				templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(data.Ref)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/editor/nvim.templ`, Line: 55, Col: 57}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/editor/nvim.templ`, Line: 53, Col: 57}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 				if templ_7745c5c3_Err != nil {
@@ -151,7 +149,7 @@ func Nvim(data NvimData) templ.Component {
 				var templ_7745c5c3_Var6 templ.SafeURL
 				templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinURLErrs(templ.SafeURL(fmt.Sprintf("/editor/monaco?repo=%s&file=%s&ref=%s", data.RepoID, data.FilePath, data.Ref)))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/editor/nvim.templ`, Line: 70, Col: 121}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/editor/nvim.templ`, Line: 68, Col: 121}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 				if templ_7745c5c3_Err != nil {
@@ -174,7 +172,7 @@ func Nvim(data NvimData) templ.Component {
 			var templ_7745c5c3_Var7 string
 			templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(data.RepoID)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/editor/nvim.templ`, Line: 94, Col: 30}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/editor/nvim.templ`, Line: 92, Col: 30}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 			if templ_7745c5c3_Err != nil {
@@ -187,7 +185,7 @@ func Nvim(data NvimData) templ.Component {
 			var templ_7745c5c3_Var8 string
 			templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(data.FilePath)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/editor/nvim.templ`, Line: 95, Col: 34}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/editor/nvim.templ`, Line: 93, Col: 34}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 			if templ_7745c5c3_Err != nil {
@@ -200,26 +198,13 @@ func Nvim(data NvimData) templ.Component {
 			var templ_7745c5c3_Var9 string
 			templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(data.Ref)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/editor/nvim.templ`, Line: 96, Col: 23}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/editor/nvim.templ`, Line: 94, Col: 23}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "\" data-snippet-id=\"")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			var templ_7745c5c3_Var10 string
-			templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(data.SnippetID)
-			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/editor/nvim.templ`, Line: 97, Col: 36}
-			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "\"></div></div><!-- xterm.js (self-hosted) --> <link rel=\"stylesheet\" href=\"/static/vendor/xterm/css/xterm.css\"><script src=\"/static/vendor/xterm/lib/xterm.js\"></script> <script src=\"/static/vendor/xterm/addons/xterm-addon-fit.js\"></script> <script src=\"/static/vendor/xterm/addons/xterm-addon-web-links.js\"></script> <script src=\"/static/vendor/xterm/addons/xterm-addon-unicode11.js\"></script> <script>\n\t\t// ====================================================================\n\t\t// usulnet Neovim Terminal\n\t\t// ====================================================================\n\t\tfunction escapeHtml(str) {\n\t\t\tif (!str) return '';\n\t\t\treturn String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\"/g,'&quot;').replace(/'/g,'&#039;');\n\t\t}\n\n\t\tvar term, ws, fitAddon;\n\t\tvar container = document.getElementById('nvim-terminal');\n\t\tvar repoID = container.dataset.repoId || '';\n\t\tvar filePath = container.dataset.filePath || '';\n\t\tvar ref = container.dataset.ref || '';\n\t\tvar snippetID = container.dataset.snippetId || '';\n\n\t\tconsole.log('[Nvim] Init mode:', repoID ? 'git' : (snippetID ? 'snippet' : 'standalone'), 'file:', filePath);\n\n\t\tdocument.addEventListener('DOMContentLoaded', function() {\n\t\t\tinitNvimTerminal();\n\t\t});\n\n\t\tfunction initNvimTerminal() {\n\t\t\tterm = new Terminal({\n\t\t\t\tcursorBlink: true,\n\t\t\t\tcursorStyle: 'block',\n\t\t\t\tfontSize: 15,\n\t\t\t\tfontFamily: \"'IBM Plex Mono', 'JetBrains Mono', 'Fira Code', monospace\",\n\t\t\t\tfontWeight: 'normal',\n\t\t\t\tfontWeightBold: 'bold',\n\t\t\t\tlineHeight: 1.2,\n\t\t\t\tletterSpacing: 0,\n\t\t\t\tscrollback: 1000,\n\t\t\t\tconvertEol: true,\n\t\t\t\tallowProposedApi: true,\n\t\t\t\ttheme: {\n\t\t\t\t\tbackground: '#0d1117',\n\t\t\t\t\tforeground: '#e6edf3',\n\t\t\t\t\tcursor: '#ff6b35',\n\t\t\t\t\tcursorAccent: '#0d1117',\n\t\t\t\t\tselectionBackground: 'rgba(255, 107, 53, 0.3)',\n\t\t\t\t\tselectionForeground: '#ffffff',\n\t\t\t\t\tblack: '#0d1117',\n\t\t\t\t\tred: '#f85149',\n\t\t\t\t\tgreen: '#3fb950',\n\t\t\t\t\tyellow: '#d29922',\n\t\t\t\t\tblue: '#58a6ff',\n\t\t\t\t\tmagenta: '#bc8cff',\n\t\t\t\t\tcyan: '#76e3ea',\n\t\t\t\t\twhite: '#e6edf3',\n\t\t\t\t\tbrightBlack: '#484f58',\n\t\t\t\t\tbrightRed: '#ff7b72',\n\t\t\t\t\tbrightGreen: '#56d364',\n\t\t\t\t\tbrightYellow: '#e3b341',\n\t\t\t\t\tbrightBlue: '#79c0ff',\n\t\t\t\t\tbrightMagenta: '#d2a8ff',\n\t\t\t\t\tbrightCyan: '#a5d6ff',\n\t\t\t\t\tbrightWhite: '#ffffff',\n\t\t\t\t},\n\t\t\t});\n\n\t\t\tfitAddon = new FitAddon.FitAddon();\n\t\t\tterm.loadAddon(fitAddon);\n\t\t\tterm.loadAddon(new WebLinksAddon.WebLinksAddon());\n\n\t\t\t// Unicode 11 for proper glyph rendering (nvim icons)\n\t\t\tvar unicode11 = new Unicode11Addon.Unicode11Addon();\n\t\t\tterm.loadAddon(unicode11);\n\t\t\tterm.unicode.activeVersion = '11';\n\n\t\t\tterm.open(container);\n\t\t\tfitAddon.fit();\n\n\t\t\tconnectNvim();\n\n\t\t\t// Handle resize\n\t\t\twindow.addEventListener('resize', function() {\n\t\t\t\tfitAddon.fit();\n\t\t\t\tsendResize();\n\t\t\t});\n\n\t\t\t// Handle terminal input → WebSocket\n\t\t\tterm.onData(function(data) {\n\t\t\t\tif (ws && ws.readyState === WebSocket.OPEN) {\n\t\t\t\t\tws.send(JSON.stringify({ type: 'input', data: data }));\n\t\t\t\t}\n\t\t\t});\n\n\t\t\t// F11 fullscreen\n\t\t\tdocument.addEventListener('keydown', function(e) {\n\t\t\t\tif (e.key === 'F11') {\n\t\t\t\t\te.preventDefault();\n\t\t\t\t\ttoggleFullscreen();\n\t\t\t\t}\n\t\t\t});\n\t\t}\n\n\t\tfunction connectNvim() {\n\t\t\tvar statusEl = document.getElementById('nvim-status');\n\t\t\tstatusEl.innerHTML = '<i class=\"fas fa-circle text-yellow-400 text-[6px] mr-1\"></i>Connecting...';\n\n\t\t\tvar cols = term ? term.cols : 120;\n\t\t\tvar rows = term ? term.rows : 40;\n\t\t\tvar protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';\n\t\t\tvar url = protocol + '//' + window.location.host + '/ws/editor/nvim'\n\t\t\t\t+ '?repo=' + encodeURIComponent(repoID)\n\t\t\t\t+ '&file=' + encodeURIComponent(filePath)\n\t\t\t\t+ '&ref=' + encodeURIComponent(ref)\n\t\t\t\t+ '&snippet=' + encodeURIComponent(snippetID)\n\t\t\t\t+ '&cols=' + cols\n\t\t\t\t+ '&rows=' + rows;\n\n\t\t\tws = new WebSocket(url);\n\n\t\t\tws.onopen = function() {\n\t\t\t\tstatusEl.innerHTML = '<i class=\"fas fa-circle text-green-400 text-[6px] mr-1\"></i>Connected';\n\t\t\t\tterm.focus();\n\t\t\t};\n\n\t\t\tws.onmessage = function(event) {\n\t\t\t\tvar msg = JSON.parse(event.data);\n\t\t\t\tif (msg.type === 'output') {\n\t\t\t\t\tterm.write(msg.data);\n\t\t\t\t} else if (msg.type === 'committed') {\n\t\t\t\t\t// nvim :w triggered a commit\n\t\t\t\t\tstatusEl.innerHTML = '<i class=\"fas fa-check text-green-400 mr-1\"></i>Committed';\n\t\t\t\t\tsetTimeout(function() {\n\t\t\t\t\t\tstatusEl.innerHTML = '<i class=\"fas fa-circle text-green-400 text-[6px] mr-1\"></i>Connected';\n\t\t\t\t\t}, 2000);\n\t\t\t\t} else if (msg.type === 'error') {\n\t\t\t\t\tstatusEl.innerHTML = '<i class=\"fas fa-exclamation-triangle text-red-400 mr-1\"></i>' + escapeHtml(msg.data);\n\t\t\t\t}\n\t\t\t};\n\n\t\t\tws.onclose = function() {\n\t\t\t\tstatusEl.innerHTML = '<i class=\"fas fa-circle text-red-400 text-[6px] mr-1\"></i>Disconnected';\n\t\t\t\tterm.write('\\r\\n\\x1b[90m[nvim session ended]\\x1b[0m\\r\\n');\n\t\t\t};\n\n\t\t\tws.onerror = function() {\n\t\t\t\tstatusEl.innerHTML = '<i class=\"fas fa-circle text-red-400 text-[6px] mr-1\"></i>Error';\n\t\t\t};\n\t\t}\n\n\t\tfunction sendResize() {\n\t\t\tif (ws && ws.readyState === WebSocket.OPEN && term) {\n\t\t\t\tws.send(JSON.stringify({ type: 'resize', cols: term.cols, rows: term.rows }));\n\t\t\t}\n\t\t}\n\n\t\tfunction reconnectNvim() {\n\t\t\tif (ws) ws.close();\n\t\t\tterm.clear();\n\t\t\tterm.write('\\x1b[33mReconnecting...\\x1b[0m\\r\\n');\n\t\t\tsetTimeout(connectNvim, 300);\n\t\t}\n\n\t\tfunction toggleFullscreen() {\n\t\t\tif (document.fullscreenElement) {\n\t\t\t\tdocument.exitFullscreen();\n\t\t\t} else {\n\t\t\t\tcontainer.requestFullscreen();\n\t\t\t}\n\t\t\tsetTimeout(function() {\n\t\t\t\tfitAddon.fit();\n\t\t\t\tsendResize();\n\t\t\t}, 150);\n\t\t}\n\t\t</script> <style>\n\t\t\t/* Override xterm padding for full-bleed nvim */\n\t\t\t#nvim-terminal .xterm {\n\t\t\t\tpadding: 4px;\n\t\t\t}\n\t\t\t#nvim-terminal .xterm-viewport {\n\t\t\t\toverflow: hidden !important;\n\t\t\t}\n\t\t</style>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "\"></div></div><!-- xterm.js (self-hosted) --> <link rel=\"stylesheet\" href=\"/static/vendor/xterm/css/xterm.css\"><script src=\"/static/vendor/xterm/lib/xterm.js\"></script> <script src=\"/static/vendor/xterm/addons/xterm-addon-fit.js\"></script> <script src=\"/static/vendor/xterm/addons/xterm-addon-web-links.js\"></script> <script src=\"/static/vendor/xterm/addons/xterm-addon-unicode11.js\"></script> <script>\n\t\t// ====================================================================\n\t\t// usulnet Neovim Terminal\n\t\t// ====================================================================\n\t\tfunction escapeHtml(str) {\n\t\t\tif (!str) return '';\n\t\t\treturn String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\"/g,'&quot;').replace(/'/g,'&#039;');\n\t\t}\n\n\t\tvar term, ws, fitAddon;\n\t\tvar container = document.getElementById('nvim-terminal');\n\t\tvar repoID = container.dataset.repoId || '';\n\t\tvar filePath = container.dataset.filePath || '';\n\t\tvar ref = container.dataset.ref || '';\n\t\t\n\t\tconsole.log('[Nvim] Init mode:', repoID ? 'git' : 'standalone', 'file:', filePath);\n\n\t\tdocument.addEventListener('DOMContentLoaded', function() {\n\t\t\tinitNvimTerminal();\n\t\t});\n\n\t\tfunction initNvimTerminal() {\n\t\t\tterm = new Terminal({\n\t\t\t\tcursorBlink: true,\n\t\t\t\tcursorStyle: 'block',\n\t\t\t\tfontSize: 15,\n\t\t\t\tfontFamily: \"'IBM Plex Mono', 'JetBrains Mono', 'Fira Code', monospace\",\n\t\t\t\tfontWeight: 'normal',\n\t\t\t\tfontWeightBold: 'bold',\n\t\t\t\tlineHeight: 1.2,\n\t\t\t\tletterSpacing: 0,\n\t\t\t\tscrollback: 1000,\n\t\t\t\tconvertEol: true,\n\t\t\t\tallowProposedApi: true,\n\t\t\t\ttheme: {\n\t\t\t\t\tbackground: '#0d1117',\n\t\t\t\t\tforeground: '#e6edf3',\n\t\t\t\t\tcursor: '#ff6b35',\n\t\t\t\t\tcursorAccent: '#0d1117',\n\t\t\t\t\tselectionBackground: 'rgba(255, 107, 53, 0.3)',\n\t\t\t\t\tselectionForeground: '#ffffff',\n\t\t\t\t\tblack: '#0d1117',\n\t\t\t\t\tred: '#f85149',\n\t\t\t\t\tgreen: '#3fb950',\n\t\t\t\t\tyellow: '#d29922',\n\t\t\t\t\tblue: '#58a6ff',\n\t\t\t\t\tmagenta: '#bc8cff',\n\t\t\t\t\tcyan: '#76e3ea',\n\t\t\t\t\twhite: '#e6edf3',\n\t\t\t\t\tbrightBlack: '#484f58',\n\t\t\t\t\tbrightRed: '#ff7b72',\n\t\t\t\t\tbrightGreen: '#56d364',\n\t\t\t\t\tbrightYellow: '#e3b341',\n\t\t\t\t\tbrightBlue: '#79c0ff',\n\t\t\t\t\tbrightMagenta: '#d2a8ff',\n\t\t\t\t\tbrightCyan: '#a5d6ff',\n\t\t\t\t\tbrightWhite: '#ffffff',\n\t\t\t\t},\n\t\t\t});\n\n\t\t\tfitAddon = new FitAddon.FitAddon();\n\t\t\tterm.loadAddon(fitAddon);\n\t\t\tterm.loadAddon(new WebLinksAddon.WebLinksAddon());\n\n\t\t\t// Unicode 11 for proper glyph rendering (nvim icons)\n\t\t\tvar unicode11 = new Unicode11Addon.Unicode11Addon();\n\t\t\tterm.loadAddon(unicode11);\n\t\t\tterm.unicode.activeVersion = '11';\n\n\t\t\tterm.open(container);\n\t\t\tfitAddon.fit();\n\n\t\t\tconnectNvim();\n\n\t\t\t// Handle resize\n\t\t\twindow.addEventListener('resize', function() {\n\t\t\t\tfitAddon.fit();\n\t\t\t\tsendResize();\n\t\t\t});\n\n\t\t\t// Handle terminal input → WebSocket\n\t\t\tterm.onData(function(data) {\n\t\t\t\tif (ws && ws.readyState === WebSocket.OPEN) {\n\t\t\t\t\tws.send(JSON.stringify({ type: 'input', data: data }));\n\t\t\t\t}\n\t\t\t});\n\n\t\t\t// F11 fullscreen\n\t\t\tdocument.addEventListener('keydown', function(e) {\n\t\t\t\tif (e.key === 'F11') {\n\t\t\t\t\te.preventDefault();\n\t\t\t\t\ttoggleFullscreen();\n\t\t\t\t}\n\t\t\t});\n\t\t}\n\n\t\tfunction connectNvim() {\n\t\t\tvar statusEl = document.getElementById('nvim-status');\n\t\t\tstatusEl.innerHTML = '<i class=\"fas fa-circle text-yellow-400 text-[6px] mr-1\"></i>Connecting...';\n\n\t\t\tvar cols = term ? term.cols : 120;\n\t\t\tvar rows = term ? term.rows : 40;\n\t\t\tvar protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';\n\t\t\tvar url = protocol + '//' + window.location.host + '/ws/editor/nvim'\n\t\t\t\t+ '?repo=' + encodeURIComponent(repoID)\n\t\t\t\t+ '&file=' + encodeURIComponent(filePath)\n\t\t\t\t+ '&ref=' + encodeURIComponent(ref)\n\t\t\t\t+ '&cols=' + cols\n\t\t\t\t+ '&rows=' + rows;\n\n\t\t\tws = new WebSocket(url);\n\n\t\t\tws.onopen = function() {\n\t\t\t\tstatusEl.innerHTML = '<i class=\"fas fa-circle text-green-400 text-[6px] mr-1\"></i>Connected';\n\t\t\t\tterm.focus();\n\t\t\t};\n\n\t\t\tws.onmessage = function(event) {\n\t\t\t\tvar msg = JSON.parse(event.data);\n\t\t\t\tif (msg.type === 'output') {\n\t\t\t\t\tterm.write(msg.data);\n\t\t\t\t} else if (msg.type === 'committed') {\n\t\t\t\t\t// nvim :w triggered a commit\n\t\t\t\t\tstatusEl.innerHTML = '<i class=\"fas fa-check text-green-400 mr-1\"></i>Committed';\n\t\t\t\t\tsetTimeout(function() {\n\t\t\t\t\t\tstatusEl.innerHTML = '<i class=\"fas fa-circle text-green-400 text-[6px] mr-1\"></i>Connected';\n\t\t\t\t\t}, 2000);\n\t\t\t\t} else if (msg.type === 'error') {\n\t\t\t\t\tstatusEl.innerHTML = '<i class=\"fas fa-exclamation-triangle text-red-400 mr-1\"></i>' + escapeHtml(msg.data);\n\t\t\t\t}\n\t\t\t};\n\n\t\t\tws.onclose = function() {\n\t\t\t\tstatusEl.innerHTML = '<i class=\"fas fa-circle text-red-400 text-[6px] mr-1\"></i>Disconnected';\n\t\t\t\tterm.write('\\r\\n\\x1b[90m[nvim session ended]\\x1b[0m\\r\\n');\n\t\t\t};\n\n\t\t\tws.onerror = function() {\n\t\t\t\tstatusEl.innerHTML = '<i class=\"fas fa-circle text-red-400 text-[6px] mr-1\"></i>Error';\n\t\t\t};\n\t\t}\n\n\t\tfunction sendResize() {\n\t\t\tif (ws && ws.readyState === WebSocket.OPEN && term) {\n\t\t\t\tws.send(JSON.stringify({ type: 'resize', cols: term.cols, rows: term.rows }));\n\t\t\t}\n\t\t}\n\n\t\tfunction reconnectNvim() {\n\t\t\tif (ws) ws.close();\n\t\t\tterm.clear();\n\t\t\tterm.write('\\x1b[33mReconnecting...\\x1b[0m\\r\\n');\n\t\t\tsetTimeout(connectNvim, 300);\n\t\t}\n\n\t\tfunction toggleFullscreen() {\n\t\t\tif (document.fullscreenElement) {\n\t\t\t\tdocument.exitFullscreen();\n\t\t\t} else {\n\t\t\t\tcontainer.requestFullscreen();\n\t\t\t}\n\t\t\tsetTimeout(function() {\n\t\t\t\tfitAddon.fit();\n\t\t\t\tsendResize();\n\t\t\t}, 150);\n\t\t}\n\t\t</script> <style>\n\t\t\t/* Override xterm padding for full-bleed nvim */\n\t\t\t#nvim-terminal .xterm {\n\t\t\t\tpadding: 4px;\n\t\t\t}\n\t\t\t#nvim-terminal .xterm-viewport {\n\t\t\t\toverflow: hidden !important;\n\t\t\t}\n\t\t</style>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

@@ -6,7 +6,6 @@ package backup
 
 import (
 	"context"
-	"fmt"
 	"sort"
 	"time"
 
@@ -179,7 +178,7 @@ func (rm *RetentionManager) applyRetentionPolicy(ctx context.Context, policy *Re
 
 	backups, _, err := rm.repo.List(ctx, opts)
 	if err != nil {
-		return fmt.Errorf("list backups for retention policy: %w", err)
+		return err
 	}
 
 	// Group by target

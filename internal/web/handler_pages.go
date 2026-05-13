@@ -10,7 +10,6 @@ import (
 	"fmt"
 	"log/slog"
 	"net/http"
-	"net/url"
 	"runtime/debug"
 	"strconv"
 	"strings"
@@ -44,11 +43,9 @@ func (h *Handler) StacksTempl(w http.ResponseWriter, r *http.Request) {
 
 	stacksList, err := h.services.Stacks().List(ctx)
 	if err != nil {
-		h.logger.Error("failed to list stacks", "error", err)
 		h.renderTempl(w, r, stacks.List(stacks.StacksData{
 			PageData: pageData,
 			Stacks:   []stacks.StackItem{},
-			Error:    "Failed to load stacks: " + err.Error(),
 		}))
 		return
 	}
@@ -238,78 +235,14 @@ func (h *Handler) StackCatalogDeploySubmit(w http.ResponseWriter, r *http.Reques
 	}
 	composeContent := app.RenderCompose(values)
 
-	// Use background context so deploys continue even if browser disconnects.
-	bgCtx := context.Background()
-	if activeHost := GetActiveHostIDFromContext(r.Context()); activeHost != "" {
-		bgCtx = context.WithValue(bgCtx, ContextKeyActiveHost, activeHost)
-	}
-
-	// SSE streaming mode: browser sends X-Deploy-Stream: 1
-	if r.Header.Get("X-Deploy-Stream") == "1" {
-		flusher, ok := w.(http.Flusher)
-		if !ok {
-			http.Error(w, "streaming not supported", http.StatusInternalServerError)
-			return
-		}
-		w.Header().Set("Content-Type", "text/event-stream")
-		w.Header().Set("Cache-Control", "no-cache")
-		w.Header().Set("X-Accel-Buffering", "no")
-		w.WriteHeader(http.StatusOK)
-		flusher.Flush()
-
-		logCh := make(chan string, 64)
-		type doneResult struct {
-			stackName string
-			err       error
-		}
-		doneCh := make(chan doneResult, 1)
-		go func() {
-			sn, err := h.services.Stacks().DeployStream(bgCtx, stackName, composeContent, logCh)
-			doneCh <- doneResult{stackName: sn, err: err}
-		}()
-
-		writeSSE := func(event, data string) bool {
-			_, err := fmt.Fprintf(w, "event: %s\ndata: %s\n\n", event, data)
-			if err != nil {
-				return false
-			}
-			flusher.Flush()
-			return true
-		}
-		clientConnected := true
-		for line := range logCh {
-			if clientConnected {
-				escaped := strings.ReplaceAll(line, "\n", " ")
-				if !writeSSE("log", escaped) {
-					clientConnected = false
-				}
-			}
-		}
-		res := <-doneCh
-		if !clientConnected {
-			if res.err != nil {
-				slog.Error("catalog deploy failed (client disconnected)", "app", slug, "name", stackName, "error", res.err)
-			}
-			return
-		}
-		if res.err != nil {
-			msg, _ := json.Marshal(res.err.Error())
-			writeSSE("done", fmt.Sprintf(`{"ok":false,"error":%s}`, msg))
-		} else {
-			writeSSE("done", fmt.Sprintf(`{"ok":true,"redirect":"/stacks/%s"}`, url.PathEscape(res.stackName)))
-		}
+	ctx := r.Context()
+	if err := h.services.Stacks().Deploy(ctx, stackName, composeContent); err != nil {
+		slog.Error("catalog deploy failed", "app", slug, "stack", stackName, "error", err)
+		h.renderCatalogDeployError(w, r, app, "Error al desplegar: "+err.Error(), nil, values)
 		return
 	}
 
-	// Non-streaming fallback: deploy in background.
-	go func() {
-		if err := h.services.Stacks().Deploy(bgCtx, stackName, composeContent); err != nil {
-			slog.Error("catalog deploy failed", "app", slug, "stack", stackName, "error", err)
-		}
-	}()
-
-	h.setFlash(w, r, "success", "Stack '"+stackName+"' is being deployed. Refresh for status.")
-	h.redirect(w, r, "/stacks")
+	h.redirect(w, r, "/stacks/"+stackName)
 }
 
 // renderCatalogDeployError re-renders the catalog deploy form preserving user values.
@@ -379,13 +312,8 @@ func (h *Handler) BackupsTempl(w http.ResponseWriter, r *http.Request) {
 	if warningMsg == "" && h.services.Backups() != nil {
 		// Fetch backups with optional filtering
 		containerID := ""
-		var runningCount int
 		if bkps, err := h.services.Backups().List(ctx, containerID); err == nil {
 			for _, b := range bkps {
-				// Count running/pending across all backups (before any filter)
-				if b.Status == "running" || b.Status == "pending" {
-					runningCount++
-				}
 				// Apply client-side filters
 				if filterType != "" && b.Type != filterType {
 					continue
@@ -414,7 +342,6 @@ func (h *Handler) BackupsTempl(w http.ResponseWriter, r *http.Request) {
 				Total:     st.TotalBackups,
 				Completed: st.CompletedBackups,
 				Failed:    st.FailedBackups,
-				Running:   runningCount,
 				TotalSize: st.TotalSizeHuman,
 			}
 		}
@@ -448,7 +375,7 @@ func (h *Handler) BackupNewTempl(w http.ResponseWriter, r *http.Request) {
 
 	// Fetch containers for target selection
 	if containerSvc := h.services.Containers(); containerSvc != nil {
-		if containers, _, err := containerSvc.List(ctx, nil); err == nil {
+		if containers, err := containerSvc.List(ctx, nil); err == nil {
 			for _, c := range containers {
 				data.Containers = append(data.Containers, backups.TargetOption{
 					ID:   c.ID,
@@ -561,7 +488,7 @@ func (h *Handler) BackupSchedulesTempl(w http.ResponseWriter, r *http.Request) {
 
 	// Fetch target lists for the create modal
 	if containerSvc := h.services.Containers(); containerSvc != nil {
-		if containers, _, err := containerSvc.List(ctx, nil); err == nil {
+		if containers, err := containerSvc.List(ctx, nil); err == nil {
 			for _, c := range containers {
 				data.Containers = append(data.Containers, backups.TargetOption{ID: c.ID, Name: c.Name})
 			}
@@ -787,7 +714,6 @@ func (h *Handler) HostDetailTempl(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Fetch host resource metrics (disk, memory usage, etc.)
-	// First try database cache, then fall back to live collection.
 	if metrics, err := h.services.Hosts().GetMetrics(ctx, idStr); err == nil && metrics != nil {
 		detail.MemUsed = metrics.MemoryUsed
 		detail.MemUsedStr = metrics.MemoryUsedStr
@@ -798,20 +724,6 @@ func (h *Handler) HostDetailTempl(w http.ResponseWriter, r *http.Request) {
 		detail.CPUPercent = metrics.CPUPercent
 		detail.NetworkRxStr = metrics.NetworkRxStr
 		detail.NetworkTxStr = metrics.NetworkTxStr
-	} else if metricsSvc := h.services.Metrics(); metricsSvc != nil {
-		// No cached metrics — collect live from Docker API + /proc
-		hostUUID, _ := uuid.Parse(idStr)
-		if live, liveErr := metricsSvc.CollectHostMetrics(ctx, hostUUID); liveErr == nil && live != nil {
-			detail.MemUsed = live.MemoryUsed
-			detail.MemUsedStr = humanSize(live.MemoryUsed)
-			detail.MemPercent = live.MemoryPercent
-			detail.DiskUsed = humanSize(live.DiskUsed)
-			detail.DiskTotal = humanSize(live.DiskTotal)
-			detail.DiskPercent = live.DiskPercent
-			detail.CPUPercent = live.CPUUsagePercent
-			detail.NetworkRxStr = humanSize(live.NetworkRxBytes)
-			detail.NetworkTxStr = humanSize(live.NetworkTxBytes)
-		}
 	}
 
 	hostData := hosts.HostDetailData{
@@ -1238,7 +1150,7 @@ func (h *Handler) PortsTempl(w http.ResponseWriter, r *http.Request) {
 		hostIP   string
 	}
 	portUsage := make(map[portBindKey][]string) // (port, protocol, hostIP) -> containerNames
-	containerList, _, err := h.services.Containers().List(ctx, nil)
+	containerList, err := h.services.Containers().List(ctx, nil)
 	if err != nil {
 		h.logger.Error("ports: failed to list containers", "error", err)
 		portError = "Could not retrieve container data: " + err.Error()
@@ -1371,83 +1283,6 @@ func (h *Handler) TopologyTempl(w http.ResponseWriter, r *http.Request) {
 		Containers: containerNodes,
 	}
 	h.renderTempl(w, r, pages.Topology(data))
-}
-
-// TopologyAPITempl returns topology data as JSON for D3.js force graph.
-func (h *Handler) TopologyAPITempl(w http.ResponseWriter, r *http.Request) {
-	ctx := r.Context()
-
-	type graphNode struct {
-		ID     string `json:"id"`
-		Label  string `json:"label"`
-		Type   string `json:"type"`
-		Driver string `json:"driver,omitempty"`
-		Subnet string `json:"subnet,omitempty"`
-		State  string `json:"state,omitempty"`
-		Image  string `json:"image,omitempty"`
-	}
-	type graphEdge struct {
-		Source string `json:"source"`
-		Target string `json:"target"`
-		IP     string `json:"ip,omitempty"`
-	}
-	type graphData struct {
-		Nodes []graphNode `json:"nodes"`
-		Links []graphEdge `json:"links"`
-	}
-
-	result := graphData{
-		Nodes: make([]graphNode, 0),
-		Links: make([]graphEdge, 0),
-	}
-
-	if networks, err := h.services.Networks().List(ctx); err == nil {
-		seenContainers := make(map[string]bool)
-
-		for _, net := range networks {
-			result.Nodes = append(result.Nodes, graphNode{
-				ID:     "net-" + net.ID,
-				Label:  net.Name,
-				Type:   "network",
-				Driver: net.Driver,
-				Subnet: net.Subnet,
-			})
-
-			for _, cName := range net.Containers {
-				if !seenContainers[cName] {
-					seenContainers[cName] = true
-					result.Nodes = append(result.Nodes, graphNode{
-						ID:    "ctr-" + cName,
-						Label: cName,
-						Type:  "container",
-						State: "running",
-					})
-				}
-				result.Links = append(result.Links, graphEdge{
-					Source: "ctr-" + cName,
-					Target: "net-" + net.ID,
-				})
-			}
-		}
-
-		// Add container details if topology adapter provides state info
-		if topo, err := h.services.Networks().GetTopology(ctx); err == nil && topo != nil {
-			for _, node := range topo.Nodes {
-				if node.Type == "container" {
-					key := "ctr-" + node.Label
-					for i := range result.Nodes {
-						if result.Nodes[i].ID == key {
-							result.Nodes[i].State = node.State
-							break
-						}
-					}
-				}
-			}
-		}
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(result)
 }
 
 // ============================================================================
@@ -1820,29 +1655,23 @@ func (h *Handler) ImagePullSubmit(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Resolve registry credentials before the request context dies on redirect.
+	// Resolve registry credentials for the image reference
 	auth := h.resolveRegistryAuth(r.Context(), reference)
 
-	// Pull in background so the operation completes even if browser navigates away.
-	// Image pulls can take minutes for large images.
-	bgCtx := context.Background()
-	if activeHost := GetActiveHostIDFromContext(r.Context()); activeHost != "" {
-		bgCtx = context.WithValue(bgCtx, ContextKeyActiveHost, activeHost)
+	if auth != nil {
+		if err := h.services.Images().PullWithAuth(r.Context(), reference, auth); err != nil {
+			h.setFlash(w, r, "error", "Failed to pull image: "+err.Error())
+		} else {
+			h.setFlash(w, r, "success", "Image "+reference+" pulled successfully")
+		}
+	} else {
+		if err := h.services.Images().Pull(r.Context(), reference); err != nil {
+			h.setFlash(w, r, "error", "Failed to pull image: "+err.Error())
+		} else {
+			h.setFlash(w, r, "success", "Image "+reference+" pulled successfully")
+		}
 	}
 
-	go func() {
-		var err error
-		if auth != nil {
-			err = h.services.Images().PullWithAuth(bgCtx, reference, auth)
-		} else {
-			err = h.services.Images().Pull(bgCtx, reference)
-		}
-		if err != nil {
-			slog.Error("image pull failed", "reference", reference, "error", err)
-		}
-	}()
-
-	h.setFlash(w, r, "success", "Pulling image "+reference+". Refresh the page for progress.")
 	http.Redirect(w, r, "/images", http.StatusSeeOther)
 }
 
@@ -1889,8 +1718,8 @@ func (h *Handler) prepareTemplPageData(r *http.Request, title, active string) la
 	activeHostID := GetActiveHostIDFromContext(r.Context())
 	activeHostName := "Local"
 
-	if hostSvc := h.services.Hosts(); hostSvc != nil {
-		if hostList, err := hostSvc.List(r.Context()); err == nil {
+	if hostsSvc := h.services.Hosts(); hostsSvc != nil {
+		if hostList, err := hostsSvc.List(r.Context()); err == nil {
 			for _, ho := range hostList {
 				hostItems = append(hostItems, types.HostSelectorItem{
 					ID:           ho.ID,
@@ -1939,9 +1768,19 @@ func (h *Handler) prepareTemplPageData(r *http.Request, title, active string) la
 		}
 	}
 
+	// Recon feature flag: surface from the service registry so the
+	// sidebar can hide the section when the module is off.
+	reconEnabled := false
+	if reg, ok := h.services.(reconAware); ok {
+		if rs := reg.Recon(); rs != nil {
+			reconEnabled = rs.IsEnabled()
+		}
+	}
+
 	return layouts.PageData{
 		Title:          title,
 		Active:         active,
+		ReconEnabled:   reconEnabled,
 		User:           userData,
 		Stats:          statsData,
 		Flash:          flashData,
@@ -1965,7 +1804,6 @@ func (h *Handler) prepareTemplPageData(r *http.Request, title, active string) la
 func (h *Handler) TerminalHubTempl(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	pageData := h.prepareTemplPageData(r, "Terminal Hub", "terminal")
-	pageData.FullScreen = true
 
 	var initialTabs []components.TerminalTabConfig
 
@@ -2013,7 +1851,7 @@ func (h *Handler) TerminalHubTempl(w http.ResponseWriter, r *http.Request) {
 	// If no specific container, show a placeholder tab
 	if len(initialTabs) == 0 {
 		// Get first running container
-		containerList, _, err := h.services.Containers().List(ctx, nil)
+		containerList, err := h.services.Containers().List(ctx, nil)
 		if err == nil && len(containerList) > 0 {
 			for _, c := range containerList {
 				if c.State == "running" {
@@ -2048,7 +1886,7 @@ func (h *Handler) TerminalPickerTempl(w http.ResponseWriter, r *http.Request) {
 
 	var pickerContainers []pages.TerminalPickerContainer
 
-	containerList, _, err := h.services.Containers().List(ctx, nil)
+	containerList, err := h.services.Containers().List(ctx, nil)
 	if err == nil {
 		for _, c := range containerList {
 			if c.State == "running" {

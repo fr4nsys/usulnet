@@ -246,57 +246,13 @@ func (h *Handler) EditorMonaco(w http.ResponseWriter, r *http.Request) {
 
 // EditorNvim renders the nvim terminal page.
 // With repo param: opens file from git provider.
-// With snippet param: opens a saved snippet for editing.
 // Without repo param: opens clean nvim session.
 // GET /editor/nvim?repo={id}&file={path}&ref={branch}
-// GET /editor/nvim?snippet={id}
 // GET /editor/nvim (standalone)
 func (h *Handler) EditorNvim(w http.ResponseWriter, r *http.Request) {
 	repoIDStr := r.URL.Query().Get("repo")
 	filePath := r.URL.Query().Get("file")
 	ref := r.URL.Query().Get("ref")
-
-	// Snippet mode: load a saved snippet into nvim
-	snippetIDStr := r.URL.Query().Get("snippet")
-	if snippetIDStr != "" && h.snippetRepo != nil {
-		user := GetUserFromContext(r.Context())
-		if user == nil {
-			http.Redirect(w, r, "/login", http.StatusSeeOther)
-			return
-		}
-		userID, err := uuid.Parse(user.ID)
-		if err != nil {
-			http.Error(w, "Invalid user ID", http.StatusBadRequest)
-			return
-		}
-		snippetID, err := uuid.Parse(snippetIDStr)
-		if err != nil {
-			http.Error(w, "Invalid snippet ID", http.StatusBadRequest)
-			return
-		}
-		snippet, err := h.snippetRepo.Get(r.Context(), userID, snippetID)
-		if err != nil {
-			h.setFlash(w, r, "error", "Snippet not found")
-			http.Redirect(w, r, "/editor", http.StatusSeeOther)
-			return
-		}
-
-		displayName := snippet.Name
-		if snippet.Path != "" {
-			displayName = snippet.Path + "/" + snippet.Name
-		}
-
-		pageData := h.prepareTemplPageData(r, "nvim: "+snippet.Name, "editor")
-		pageData.FullScreen = true
-		data := editorpages.NvimData{
-			PageData:  pageData,
-			FilePath:  displayName,
-			Language:  snippet.Language,
-			SnippetID: snippetIDStr,
-		}
-		h.renderTempl(w, r, editorpages.Nvim(data))
-		return
-	}
 
 	// Standalone mode: no repo param
 	if repoIDStr == "" {

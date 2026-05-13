@@ -99,7 +99,7 @@ func (r *ChangeEventRepository) Create(ctx context.Context, e *models.ChangeEven
 	newJSON, _ := nullableJSON(e.NewState)
 	metaJSON, _ := nullableJSON(e.Metadata)
 
-	err := r.db.Pool().QueryRow(ctx, query,
+	err := r.db.QueryRow(ctx, query,
 		e.UserID, e.UserName, clientIP,
 		e.ResourceType, e.ResourceID, e.ResourceName,
 		e.Action, oldJSON, newJSON, e.DiffSummary,
@@ -114,7 +114,7 @@ func (r *ChangeEventRepository) Create(ctx context.Context, e *models.ChangeEven
 // GetByID retrieves a single change event by ID.
 func (r *ChangeEventRepository) GetByID(ctx context.Context, id uuid.UUID) (*models.ChangeEvent, error) {
 	query := fmt.Sprintf(`SELECT %s FROM change_events WHERE id = $1`, changeCols)
-	e, err := scanChangeEvent(r.db.Pool().QueryRow(ctx, query, id))
+	e, err := scanChangeEvent(r.db.QueryRow(ctx, query, id))
 	if err != nil {
 		return nil, fmt.Errorf("getting change event %s: %w", id, err)
 	}
@@ -171,7 +171,7 @@ func (r *ChangeEventRepository) List(ctx context.Context, opts models.ChangeEven
 	// Count total matching
 	countQuery := fmt.Sprintf("SELECT COUNT(*) FROM change_events %s", where)
 	var total int
-	if err := r.db.Pool().QueryRow(ctx, countQuery, args...).Scan(&total); err != nil {
+	if err := r.db.QueryRow(ctx, countQuery, args...).Scan(&total); err != nil {
 		return nil, 0, fmt.Errorf("counting change events: %w", err)
 	}
 
@@ -191,7 +191,7 @@ func (r *ChangeEventRepository) List(ctx context.Context, opts models.ChangeEven
 	)
 	args = append(args, limit, offset)
 
-	rows, err := r.db.Pool().Query(ctx, dataQuery, args...)
+	rows, err := r.db.Query(ctx, dataQuery, args...)
 	if err != nil {
 		return nil, 0, fmt.Errorf("listing change events: %w", err)
 	}
@@ -213,7 +213,7 @@ func (r *ChangeEventRepository) GetByResource(ctx context.Context, resourceType,
 		"SELECT %s FROM change_events WHERE resource_type = $1 AND resource_id = $2 ORDER BY timestamp DESC LIMIT $3",
 		changeCols,
 	)
-	rows, err := r.db.Pool().Query(ctx, query, resourceType, resourceID, limit)
+	rows, err := r.db.Query(ctx, query, resourceType, resourceID, limit)
 	if err != nil {
 		return nil, fmt.Errorf("getting change events by resource: %w", err)
 	}
@@ -230,7 +230,7 @@ func (r *ChangeEventRepository) GetByUser(ctx context.Context, userID uuid.UUID,
 		"SELECT %s FROM change_events WHERE user_id = $1 ORDER BY timestamp DESC LIMIT $2",
 		changeCols,
 	)
-	rows, err := r.db.Pool().Query(ctx, query, userID, limit)
+	rows, err := r.db.Query(ctx, query, userID, limit)
 	if err != nil {
 		return nil, fmt.Errorf("getting change events by user: %w", err)
 	}
@@ -246,7 +246,7 @@ func (r *ChangeEventRepository) GetStats(ctx context.Context, since time.Time) (
 	}
 
 	// Total count
-	err := r.db.Pool().QueryRow(ctx,
+	err := r.db.QueryRow(ctx,
 		"SELECT COUNT(*) FROM change_events WHERE timestamp >= $1", since,
 	).Scan(&stats.TotalEvents)
 	if err != nil {
@@ -255,7 +255,7 @@ func (r *ChangeEventRepository) GetStats(ctx context.Context, since time.Time) (
 
 	// Today count
 	today := time.Now().Truncate(24 * time.Hour)
-	err = r.db.Pool().QueryRow(ctx,
+	err = r.db.QueryRow(ctx,
 		"SELECT COUNT(*) FROM change_events WHERE timestamp >= $1", today,
 	).Scan(&stats.TodayEvents)
 	if err != nil {
@@ -263,7 +263,7 @@ func (r *ChangeEventRepository) GetStats(ctx context.Context, since time.Time) (
 	}
 
 	// By action
-	rows, err := r.db.Pool().Query(ctx,
+	rows, err := r.db.Query(ctx,
 		"SELECT action, COUNT(*) FROM change_events WHERE timestamp >= $1 GROUP BY action ORDER BY COUNT(*) DESC",
 		since,
 	)
@@ -281,7 +281,7 @@ func (r *ChangeEventRepository) GetStats(ctx context.Context, since time.Time) (
 	}
 
 	// By resource type
-	rows2, err := r.db.Pool().Query(ctx,
+	rows2, err := r.db.Query(ctx,
 		"SELECT resource_type, COUNT(*) FROM change_events WHERE timestamp >= $1 GROUP BY resource_type ORDER BY COUNT(*) DESC",
 		since,
 	)
@@ -299,7 +299,7 @@ func (r *ChangeEventRepository) GetStats(ctx context.Context, since time.Time) (
 	}
 
 	// Top 10 users
-	rows3, err := r.db.Pool().Query(ctx,
+	rows3, err := r.db.Query(ctx,
 		"SELECT user_name, COUNT(*) AS cnt FROM change_events WHERE timestamp >= $1 AND user_name != '' GROUP BY user_name ORDER BY cnt DESC LIMIT 10",
 		since,
 	)
@@ -320,7 +320,7 @@ func (r *ChangeEventRepository) GetStats(ctx context.Context, since time.Time) (
 
 // DeleteOlderThan removes change events older than the given time.
 func (r *ChangeEventRepository) DeleteOlderThan(ctx context.Context, before time.Time) (int64, error) {
-	tag, err := r.db.Pool().Exec(ctx,
+	tag, err := r.db.Exec(ctx,
 		"DELETE FROM change_events WHERE timestamp < $1", before,
 	)
 	if err != nil {

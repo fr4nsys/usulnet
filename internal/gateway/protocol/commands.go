@@ -113,13 +113,6 @@ const (
 	CmdExecResize CommandType = "exec.resize"
 )
 
-// Firewall commands
-const (
-	CmdFirewallDetect CommandType = "firewall.detect"
-	CmdFirewallApply  CommandType = "firewall.apply"
-	CmdFirewallSync   CommandType = "firewall.sync"
-)
-
 // Agent control commands
 const (
 	CmdAgentDisconnect CommandType = "agent.disconnect"
@@ -226,10 +219,6 @@ type CommandParams struct {
 	PruneFilters  map[string][]string `json:"prune_filters,omitempty"`
 	PruneAll      bool              `json:"prune_all,omitempty"`
 	
-	// Firewall params
-	FirewallRules   string            `json:"firewall_rules,omitempty"`   // JSON-encoded rule set for apply
-	FirewallBackend string            `json:"firewall_backend,omitempty"` // iptables or nftables
-
 	// Generic filters
 	Filters       map[string][]string `json:"filters,omitempty"`
 	All           bool              `json:"all,omitempty"`
@@ -314,10 +303,6 @@ func DefaultTimeout(cmdType CommandType) time.Duration {
 		return 15 * time.Minute
 	case CmdSystemPrune, CmdImagePrune, CmdVolumePrune, CmdNetworkPrune:
 		return 5 * time.Minute
-	case CmdFirewallApply, CmdFirewallSync:
-		return 2 * time.Minute
-	case CmdFirewallDetect:
-		return 15 * time.Second
 	default:
 		return 30 * time.Second
 	}
@@ -333,8 +318,7 @@ func IsIdempotent(cmdType CommandType) bool {
 		CmdStackList, CmdStackLogs,
 		CmdSystemInfo, CmdSystemVersion, CmdSystemDf, CmdSystemPing,
 		CmdBackupList,
-		CmdUpdateCheck,
-		CmdFirewallDetect, CmdFirewallSync:
+		CmdUpdateCheck:
 		return true
 	default:
 		return false
@@ -349,8 +333,7 @@ func IsDestructive(cmdType CommandType) bool {
 		CmdVolumeRemove, CmdVolumePrune,
 		CmdNetworkRemove, CmdNetworkPrune,
 		CmdStackRemove,
-		CmdSystemPrune,
-		CmdFirewallApply:
+		CmdSystemPrune:
 		return true
 	default:
 		return false

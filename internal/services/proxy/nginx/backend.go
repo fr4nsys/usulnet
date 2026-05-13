@@ -8,10 +8,7 @@ import (
 	"context"
 	"fmt"
 	"log/slog"
-	"path/filepath"
-	"strings"
 
-	"github.com/fr4nsys/usulnet/internal/models"
 	proxy "github.com/fr4nsys/usulnet/internal/services/proxy"
 )
 
@@ -24,7 +21,7 @@ type Backend struct {
 }
 
 // NewBackend creates an nginx SyncBackend.
-func NewBackend(cfg Config) *Backend {
+func NewBackend(cfg Config) proxy.SyncBackend {
 	client := NewClient(cfg)
 	acmeClient := NewACMEClient(cfg.ACMEAccountDir, cfg.ACMEWebRoot, false)
 
@@ -44,12 +41,6 @@ func NewBackend(cfg Config) *Backend {
 	}
 }
 
-// SetDockerExecer configures the backend to execute nginx commands (test, reload)
-// inside a Docker container via the Docker API instead of local shell execution.
-func (b *Backend) SetDockerExecer(d DockerExecer) {
-	b.client.SetDockerExecer(d)
-}
-
 func (b *Backend) Sync(ctx context.Context, data *proxy.SyncData) error {
 	// Write custom certificates to disk (nginx reads them from files)
 	for id, cert := range data.CustomCerts {
@@ -65,44 +56,20 @@ func (b *Backend) Sync(ctx context.Context, data *proxy.SyncData) error {
 		}
 	}
 
-	// Write htpasswd files for access lists
-	aclDir := filepath.Join(b.client.cfg.ConfigDir, "acl")
-	for _, al := range data.AccessLists {
-		if !al.Enabled || len(al.Items) == 0 {
-			continue
-		}
-		content := GenerateHtpasswd(al.Items)
-		if err := b.client.WriteFile(filepath.Join(aclDir, al.ID.String()+".htpasswd"), []byte(content)); err != nil {
-			slog.Error("nginx: failed to write htpasswd", "acl_id", al.ID, "error", err)
-		}
-	}
-
-	// Build nginx http{} configuration
-	config := BuildConfigFull(&BuildInput{
-		Hosts:        data.Hosts,
-		Redirections: data.Redirections,
-		DeadHosts:    data.DeadHosts,
-		AccessLists:  data.AccessLists,
-		CustomCerts:  data.CustomCerts,
-		ACMEEmail:    data.ACMEEmail,
-		ListenHTTP:   data.ListenHTTP,
-		ListenHTTPS:  data.ListenHTTPS,
-		CertDir:      b.client.cfg.CertDir,
-		ACMEWebRoot:  b.client.cfg.ACMEWebRoot,
-		ACLDir:       aclDir,
-	})
+	// Build nginx configuration
+	config := BuildConfig(
+		data.Hosts,
+		data.CustomCerts,
+		data.ACMEEmail,
+		data.ListenHTTP,
+		data.ListenHTTPS,
+		b.client.cfg.CertDir,
+		b.client.cfg.ACMEWebRoot,
+	)
 
 	// Write config, validate, and reload nginx
 	if err := b.client.WriteAndReload(ctx, config); err != nil {
 		return fmt.Errorf("nginx sync: %w", err)
-	}
-
-	// Build and write stream config if there are any streams
-	if len(data.Streams) > 0 {
-		streamConfig := BuildStreamConfig(data.Streams)
-		if err := b.client.WriteStreamConfig(streamConfig); err != nil {
-			slog.Error("nginx: failed to write stream config", "error", err)
-		}
 	}
 
 	slog.Info("nginx: proxy configuration synced", "host_count", len(data.Hosts))
@@ -117,35 +84,10 @@ func (b *Backend) Mode() string {
 	return "nginx"
 }
 
-// RequestCertificate obtains a Let's Encrypt certificate.
-// If dnsProvider is non-nil or any domain is a wildcard, DNS-01 challenge is used.
-// Otherwise HTTP-01 is used. The certificate is written to disk for nginx.
-func (b *Backend) RequestCertificate(ctx context.Context, domains []string, email string, dnsProvider *models.ProxyDNSProvider) (certPEM, keyPEM string, err error) {
-	useDNS01 := dnsProvider != nil
-	if !useDNS01 {
-		for _, d := range domains {
-			if strings.HasPrefix(d, "*.") {
-				useDNS01 = true
-				break
-			}
-		}
-	}
-
-	if useDNS01 {
-		if dnsProvider == nil {
-			return "", "", fmt.Errorf("DNS provider required for wildcard certificate")
-		}
-		dnsCfg := &DNSProviderConfig{
-			Provider:    dnsProvider.Provider,
-			APIToken:    dnsProvider.APIToken,
-			Zone:        dnsProvider.Zone,
-			Propagation: dnsProvider.Propagation,
-		}
-		certPEM, keyPEM, err = b.acme.RequestCertificateDNS01(ctx, domains, email, dnsCfg)
-	} else {
-		certPEM, keyPEM, err = b.acme.RequestCertificate(ctx, domains, email)
-	}
-
+// RequestCertificate obtains a Let's Encrypt certificate via ACME HTTP-01 challenge.
+// The certificate is written to the cert directory for nginx to use.
+func (b *Backend) RequestCertificate(ctx context.Context, domains []string, email string) (certPEM, keyPEM string, err error) {
+	certPEM, keyPEM, err = b.acme.RequestCertificate(ctx, domains, email)
 	if err != nil {
 		return "", "", err
 	}
@@ -156,11 +98,10 @@ func (b *Backend) RequestCertificate(ctx context.Context, domains []string, emai
 		return "", "", fmt.Errorf("write certificate: %w", err)
 	}
 
-	slog.Info("nginx: certificate obtained and written", "domains", domains, "dns01", useDNS01)
 	return certPEM, keyPEM, nil
 }
 
 // RenewCertificate renews a certificate — same as requesting a new one.
-func (b *Backend) RenewCertificate(ctx context.Context, domains []string, email string, dnsProvider *models.ProxyDNSProvider) (certPEM, keyPEM string, err error) {
-	return b.RequestCertificate(ctx, domains, email, dnsProvider)
+func (b *Backend) RenewCertificate(ctx context.Context, domains []string, email string) (certPEM, keyPEM string, err error) {
+	return b.RequestCertificate(ctx, domains, email)
 }
