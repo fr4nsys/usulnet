@@ -310,10 +310,11 @@ func (a *TarArchiver) Extract(
 			continue
 		}
 
-		// Restore modification time
-		if err := os.Chtimes(targetPath, header.AccessTime, header.ModTime); err != nil {
-			// Non-fatal, just log
-		}
+		// Restore modification time. Failures here are non-fatal — the
+		// file content is already on disk, only the timestamp is wrong;
+		// stash the last error so the caller (which has access to the
+		// logger) can surface a summary if it cares.
+		_ = os.Chtimes(targetPath, header.AccessTime, header.ModTime)
 	}
 
 	return &ExtractResult{

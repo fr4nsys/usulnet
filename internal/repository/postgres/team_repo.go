@@ -6,14 +6,15 @@ package postgres
 
 import (
 	"context"
+	stderrors "errors"
 	"fmt"
 	"time"
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 
-	apperrors "github.com/fr4nsys/usulnet/internal/pkg/errors"
 	"github.com/fr4nsys/usulnet/internal/models"
+	apperrors "github.com/fr4nsys/usulnet/internal/pkg/errors"
 )
 
 // TeamRepository handles team database operations.
@@ -67,7 +68,7 @@ func (r *TeamRepository) GetByID(ctx context.Context, id uuid.UUID) (*models.Tea
 		&team.MemberCount, &team.PermissionCount,
 	)
 	if err != nil {
-		if err == pgx.ErrNoRows {
+		if stderrors.Is(err, pgx.ErrNoRows) {
 			return nil, apperrors.New(apperrors.CodeNotFound, "team not found")
 		}
 		return nil, apperrors.Wrap(err, apperrors.CodeDatabaseError, "failed to get team")
@@ -91,7 +92,7 @@ func (r *TeamRepository) GetByName(ctx context.Context, name string) (*models.Te
 		&team.MemberCount, &team.PermissionCount,
 	)
 	if err != nil {
-		if err == pgx.ErrNoRows {
+		if stderrors.Is(err, pgx.ErrNoRows) {
 			return nil, apperrors.New(apperrors.CodeNotFound, "team not found")
 		}
 		return nil, apperrors.Wrap(err, apperrors.CodeDatabaseError, "failed to get team by name")

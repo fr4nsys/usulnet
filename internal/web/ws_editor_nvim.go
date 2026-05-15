@@ -381,7 +381,7 @@ vim.api.nvim_create_autocmd("BufWritePost", {
 			}
 			switch msg.Type {
 			case "input":
-				if _, err := ptmx.Write([]byte(msg.Data)); err != nil {
+				if _, err := ptmx.WriteString(msg.Data); err != nil {
 					cancel()
 					return
 				}
@@ -436,8 +436,8 @@ func buildNvimEnv(workDir string) []string {
 		"COLORTERM=truecolor",
 		"HOME=" + workDir,
 		"XDG_CONFIG_HOME=" + filepath.Join(workDir, ".config"),
-		"XDG_DATA_HOME=" + filepath.Join(workDir, ".local/share"),
-		"XDG_STATE_HOME=" + filepath.Join(workDir, ".local/state"),
+		"XDG_DATA_HOME=" + filepath.Join(workDir, ".local", "share"),
+		"XDG_STATE_HOME=" + filepath.Join(workDir, ".local", "state"),
 		"XDG_CACHE_HOME=" + filepath.Join(workDir, ".cache"),
 		"LANG=en_US.UTF-8",
 		"LC_ALL=en_US.UTF-8",

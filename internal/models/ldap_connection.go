@@ -68,21 +68,21 @@ type UpdateLDAPConnectionInput struct {
 
 // LDAPEntry represents an LDAP directory entry.
 type LDAPEntry struct {
-	DN          string            `json:"dn"`
-	RDN         string            `json:"rdn"`
-	ObjectClass []string          `json:"object_class"`
+	DN          string              `json:"dn"`
+	RDN         string              `json:"rdn"`
+	ObjectClass []string            `json:"object_class"`
 	Attributes  map[string][]string `json:"attributes"`
-	HasChildren bool              `json:"has_children"`
+	HasChildren bool                `json:"has_children"`
 }
 
 // LDAPSearchResult represents the result of an LDAP search.
 type LDAPSearchResult struct {
-	Entries     []LDAPEntry `json:"entries"`
-	TotalCount  int         `json:"total_count"`
-	SearchTime  time.Duration `json:"search_time"`
-	BaseDN      string      `json:"base_dn"`
-	Filter      string      `json:"filter"`
-	Scope       string      `json:"scope"`
+	Entries    []LDAPEntry   `json:"entries"`
+	TotalCount int           `json:"total_count"`
+	SearchTime time.Duration `json:"search_time"`
+	BaseDN     string        `json:"base_dn"`
+	Filter     string        `json:"filter"`
+	Scope      string        `json:"scope"`
 }
 
 // LDAPTestResulter interface for LDAP connection test results.

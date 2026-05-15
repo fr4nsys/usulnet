@@ -202,7 +202,7 @@ func (c *Collector) collectContainers(ctx context.Context) ([]protocol.Container
 			State:       cnt.State,
 			Status:      cnt.Status,
 			Labels:      cnt.Labels,
-			NetworkMode: string(cnt.HostConfig.NetworkMode),
+			NetworkMode: cnt.HostConfig.NetworkMode,
 		}
 
 		// Convert ports
@@ -317,7 +317,7 @@ func (c *Collector) collectNetworks(ctx context.Context) ([]protocol.NetworkInfo
 		}
 
 		// IPAM config
-		if net.IPAM.Config != nil && len(net.IPAM.Config) > 0 {
+		if len(net.IPAM.Config) > 0 {
 			info.IPAM = &protocol.IPAMConfig{
 				Driver: net.IPAM.Driver,
 			}

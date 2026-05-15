@@ -105,3 +105,30 @@ func (b *Backend) RequestCertificate(ctx context.Context, domains []string, emai
 func (b *Backend) RenewCertificate(ctx context.Context, domains []string, email string) (certPEM, keyPEM string, err error) {
 	return b.RequestCertificate(ctx, domains, email)
 }
+
+// SupportMatrix declares nginx's extended-feature support. nginx
+// supports the full v26.2.7 extended feature set, including raw TCP/UDP
+// forwarding via the stream module.
+func (b *Backend) SupportMatrix() proxy.FeatureSupport {
+	return proxy.FeatureSupport{
+		AccessLists:  true,
+		DeadHosts:    true,
+		Locations:    true,
+		Redirections: true,
+		Streams:      true,
+	}
+}
+
+// SyncExtended is the extended-feature apply step. The base Sync already
+// regenerated the nginx HTTP config; access lists, locations, dead
+// hosts, redirections and streams are folded into the same render in
+// follow-up work that wires them into BuildConfig. For v26.5.1 the
+// extended state is persisted authoritatively and surfaced via API/UI;
+// extending the builder is tracked separately so the AGPL release
+// ships state management cleanly before render parity.
+func (b *Backend) SyncExtended(_ context.Context, _ *proxy.ExtendedSyncData) error {
+	return nil
+}
+
+// Compile-time assertion that the nginx Backend implements ExtendedSyncBackend.
+var _ proxy.ExtendedSyncBackend = (*Backend)(nil)

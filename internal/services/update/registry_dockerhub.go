@@ -23,7 +23,6 @@ import (
 // DockerHubClient implements RegistryClient for Docker Hub
 type DockerHubClient struct {
 	httpClient *http.Client
-	authToken  string
 	logger     *logger.Logger
 }
 
@@ -301,18 +300,18 @@ func (c *DockerHubClient) getAuthToken(ctx context.Context, ref *models.ImageRef
 
 // DockerHubTagsResponse represents the Docker Hub tags API response
 type DockerHubTagsResponse struct {
-	Count    int             `json:"count"`
-	Next     string          `json:"next"`
-	Previous string          `json:"previous"`
-	Results  []DockerHubTag  `json:"results"`
+	Count    int            `json:"count"`
+	Next     string         `json:"next"`
+	Previous string         `json:"previous"`
+	Results  []DockerHubTag `json:"results"`
 }
 
 // DockerHubTag represents a single tag from Docker Hub
 type DockerHubTag struct {
-	Name        string             `json:"name"`
-	FullSize    int64              `json:"full_size"`
-	LastUpdated time.Time          `json:"last_updated"`
-	Images      []DockerHubImage   `json:"images"`
+	Name        string           `json:"name"`
+	FullSize    int64            `json:"full_size"`
+	LastUpdated time.Time        `json:"last_updated"`
+	Images      []DockerHubImage `json:"images"`
 }
 
 // DockerHubImage represents image details within a tag
@@ -392,4 +391,3 @@ func (c *DockerHubClient) GetLatestSemverTag(ctx context.Context, ref *models.Im
 
 	return semverTags[0], nil
 }
-

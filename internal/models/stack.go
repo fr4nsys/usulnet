@@ -31,25 +31,25 @@ const (
 
 // Stack represents a docker-compose or swarm stack
 type Stack struct {
-	ID              uuid.UUID         `json:"id" db:"id"`
-	HostID          uuid.UUID         `json:"host_id" db:"host_id"`
-	Name            string            `json:"name" db:"name"`
-	Type            StackType         `json:"type" db:"type"`
-	Status          StackStatus       `json:"status" db:"status"`
-	ProjectDir      string            `json:"project_dir" db:"project_dir"`
-	ComposeFile     string            `json:"compose_file" db:"compose_file"` // YAML content
-	EnvFile         *string           `json:"env_file,omitempty" db:"env_file"`
-	Variables       map[string]string `json:"variables,omitempty" db:"variables"` // Interpolation vars
-	Services        []StackService    `json:"services,omitempty" db:"-"`
-	ServiceCount    int               `json:"service_count" db:"service_count"`
-	RunningCount    int               `json:"running_count" db:"running_count"`
-	GitRepo         *string           `json:"git_repo,omitempty" db:"git_repo"`
-	GitBranch       *string           `json:"git_branch,omitempty" db:"git_branch"`
-	GitCommit       *string           `json:"git_commit,omitempty" db:"git_commit"`
-	LastDeployedAt  *time.Time        `json:"last_deployed_at,omitempty" db:"last_deployed_at"`
-	LastDeployedBy  *uuid.UUID        `json:"last_deployed_by,omitempty" db:"last_deployed_by"`
-	CreatedAt       time.Time         `json:"created_at" db:"created_at"`
-	UpdatedAt       time.Time         `json:"updated_at" db:"updated_at"`
+	ID             uuid.UUID         `json:"id" db:"id"`
+	HostID         uuid.UUID         `json:"host_id" db:"host_id"`
+	Name           string            `json:"name" db:"name"`
+	Type           StackType         `json:"type" db:"type"`
+	Status         StackStatus       `json:"status" db:"status"`
+	ProjectDir     string            `json:"project_dir" db:"project_dir"`
+	ComposeFile    string            `json:"compose_file" db:"compose_file"` // YAML content
+	EnvFile        *string           `json:"env_file,omitempty" db:"env_file"`
+	Variables      map[string]string `json:"variables,omitempty" db:"variables"` // Interpolation vars
+	Services       []StackService    `json:"services,omitempty" db:"-"`
+	ServiceCount   int               `json:"service_count" db:"service_count"`
+	RunningCount   int               `json:"running_count" db:"running_count"`
+	GitRepo        *string           `json:"git_repo,omitempty" db:"git_repo"`
+	GitBranch      *string           `json:"git_branch,omitempty" db:"git_branch"`
+	GitCommit      *string           `json:"git_commit,omitempty" db:"git_commit"`
+	LastDeployedAt *time.Time        `json:"last_deployed_at,omitempty" db:"last_deployed_at"`
+	LastDeployedBy *uuid.UUID        `json:"last_deployed_by,omitempty" db:"last_deployed_by"`
+	CreatedAt      time.Time         `json:"created_at" db:"created_at"`
+	UpdatedAt      time.Time         `json:"updated_at" db:"updated_at"`
 }
 
 // IsRunning returns true if all services are running
@@ -74,48 +74,48 @@ func (s *Stack) IsFromGit() bool {
 
 // StackService represents a service in a stack
 type StackService struct {
-	Name           string          `json:"name"`
-	Image          string          `json:"image"`
-	ContainerID    *string         `json:"container_id,omitempty"`
-	ContainerName  *string         `json:"container_name,omitempty"`
-	Status         string          `json:"status"`
-	State          ContainerState  `json:"state"`
-	Replicas       int             `json:"replicas"`
+	Name            string         `json:"name"`
+	Image           string         `json:"image"`
+	ContainerID     *string        `json:"container_id,omitempty"`
+	ContainerName   *string        `json:"container_name,omitempty"`
+	Status          string         `json:"status"`
+	State           ContainerState `json:"state"`
+	Replicas        int            `json:"replicas"`
 	RunningReplicas int            `json:"running_replicas"`
-	Ports          []PortMapping   `json:"ports,omitempty"`
-	Volumes        []string        `json:"volumes,omitempty"`
-	Networks       []string        `json:"networks,omitempty"`
-	DependsOn      []string        `json:"depends_on,omitempty"`
-	HealthStatus   *string         `json:"health_status,omitempty"`
+	Ports           []PortMapping  `json:"ports,omitempty"`
+	Volumes         []string       `json:"volumes,omitempty"`
+	Networks        []string       `json:"networks,omitempty"`
+	DependsOn       []string       `json:"depends_on,omitempty"`
+	HealthStatus    *string        `json:"health_status,omitempty"`
 }
 
 // CreateStackInput represents input for creating a stack
 type CreateStackInput struct {
-	Name         string            `json:"name" validate:"required,min=1,max=100"`
-	ComposeFile  string            `json:"compose_file" validate:"required"`
-	EnvFile      *string           `json:"env_file,omitempty"`
-	Variables    map[string]string `json:"variables,omitempty"`
-	ProjectDir   string            `json:"project_dir,omitempty"`
-	AutoStart    bool              `json:"auto_start,omitempty"`
+	Name        string            `json:"name" validate:"required,min=1,max=100"`
+	ComposeFile string            `json:"compose_file" validate:"required"`
+	EnvFile     *string           `json:"env_file,omitempty"`
+	Variables   map[string]string `json:"variables,omitempty"`
+	ProjectDir  string            `json:"project_dir,omitempty"`
+	AutoStart   bool              `json:"auto_start,omitempty"`
 }
 
 // CreateStackFromGitInput represents input for creating a stack from Git
 type CreateStackFromGitInput struct {
-	Name          string            `json:"name" validate:"required,min=1,max=100"`
-	GitRepo       string            `json:"git_repo" validate:"required,url"`
-	GitBranch     string            `json:"git_branch,omitempty"`
-	GitUsername   *string           `json:"git_username,omitempty"`
-	GitPassword   *string           `json:"git_password,omitempty"`
-	ComposeFile   string            `json:"compose_file,omitempty"` // Path in repo
-	Variables     map[string]string `json:"variables,omitempty"`
-	AutoStart     bool              `json:"auto_start,omitempty"`
+	Name        string            `json:"name" validate:"required,min=1,max=100"`
+	GitRepo     string            `json:"git_repo" validate:"required,url"`
+	GitBranch   string            `json:"git_branch,omitempty"`
+	GitUsername *string           `json:"git_username,omitempty"`
+	GitPassword *string           `json:"git_password,omitempty"`
+	ComposeFile string            `json:"compose_file,omitempty"` // Path in repo
+	Variables   map[string]string `json:"variables,omitempty"`
+	AutoStart   bool              `json:"auto_start,omitempty"`
 }
 
 // UpdateStackInput represents input for updating a stack
 type UpdateStackInput struct {
-	ComposeFile  *string           `json:"compose_file,omitempty"`
-	EnvFile      *string           `json:"env_file,omitempty"`
-	Variables    map[string]string `json:"variables,omitempty"`
+	ComposeFile *string           `json:"compose_file,omitempty"`
+	EnvFile     *string           `json:"env_file,omitempty"`
+	Variables   map[string]string `json:"variables,omitempty"`
 }
 
 // StackActionInput represents input for stack actions
@@ -137,27 +137,27 @@ const (
 
 // StackDeployOptions represents options for deploying a stack
 type StackDeployOptions struct {
-	Prune            bool     `json:"prune,omitempty"`
-	RemoveOrphans    bool     `json:"remove_orphans,omitempty"`
-	ForceRecreate    bool     `json:"force_recreate,omitempty"`
-	NoBuild          bool     `json:"no_build,omitempty"`
-	NoStart          bool     `json:"no_start,omitempty"`
-	QuietPull        bool     `json:"quiet_pull,omitempty"`
-	Wait             bool     `json:"wait,omitempty"`
-	WaitTimeout      *int     `json:"wait_timeout,omitempty"`
-	Services         []string `json:"services,omitempty"` // Specific services to deploy
+	Prune         bool     `json:"prune,omitempty"`
+	RemoveOrphans bool     `json:"remove_orphans,omitempty"`
+	ForceRecreate bool     `json:"force_recreate,omitempty"`
+	NoBuild       bool     `json:"no_build,omitempty"`
+	NoStart       bool     `json:"no_start,omitempty"`
+	QuietPull     bool     `json:"quiet_pull,omitempty"`
+	Wait          bool     `json:"wait,omitempty"`
+	WaitTimeout   *int     `json:"wait_timeout,omitempty"`
+	Services      []string `json:"services,omitempty"` // Specific services to deploy
 }
 
 // StackLog represents a stack operation log
 type StackLog struct {
-	ID          int64     `json:"id" db:"id"`
-	StackID     uuid.UUID `json:"stack_id" db:"stack_id"`
-	Operation   string    `json:"operation" db:"operation"`
-	Status      string    `json:"status" db:"status"` // running, success, failed
-	Output      string    `json:"output" db:"output"`
-	ErrorMsg    *string   `json:"error_msg,omitempty" db:"error_msg"`
+	ID          int64      `json:"id" db:"id"`
+	StackID     uuid.UUID  `json:"stack_id" db:"stack_id"`
+	Operation   string     `json:"operation" db:"operation"`
+	Status      string     `json:"status" db:"status"` // running, success, failed
+	Output      string     `json:"output" db:"output"`
+	ErrorMsg    *string    `json:"error_msg,omitempty" db:"error_msg"`
 	UserID      *uuid.UUID `json:"user_id,omitempty" db:"user_id"`
-	StartedAt   time.Time `json:"started_at" db:"started_at"`
+	StartedAt   time.Time  `json:"started_at" db:"started_at"`
 	CompletedAt *time.Time `json:"completed_at,omitempty" db:"completed_at"`
 }
 
@@ -173,52 +173,52 @@ type ComposeConfig struct {
 
 // ComposeService represents a service in docker-compose
 type ComposeService struct {
-	Image         string            `json:"image,omitempty"`
-	Build         *ComposeBuild     `json:"build,omitempty"`
-	Command       interface{}       `json:"command,omitempty"` // string or []string
-	Entrypoint    interface{}       `json:"entrypoint,omitempty"`
-	Environment   interface{}       `json:"environment,omitempty"` // map or []string
-	EnvFile       interface{}       `json:"env_file,omitempty"` // string or []string
-	Ports         []interface{}     `json:"ports,omitempty"`
-	Volumes       []interface{}     `json:"volumes,omitempty"`
-	Networks      interface{}       `json:"networks,omitempty"`
-	DependsOn     interface{}       `json:"depends_on,omitempty"`
-	Restart       string            `json:"restart,omitempty"`
-	Labels        interface{}       `json:"labels,omitempty"`
-	Healthcheck   *ComposeHealthcheck `json:"healthcheck,omitempty"`
-	Deploy        *ComposeDeploy    `json:"deploy,omitempty"`
-	Logging       *ComposeLogging   `json:"logging,omitempty"`
-	Hostname      string            `json:"hostname,omitempty"`
-	ContainerName string            `json:"container_name,omitempty"`
-	User          string            `json:"user,omitempty"`
-	WorkingDir    string            `json:"working_dir,omitempty"`
-	Privileged    bool              `json:"privileged,omitempty"`
-	CapAdd        []string          `json:"cap_add,omitempty"`
-	CapDrop       []string          `json:"cap_drop,omitempty"`
-	SecurityOpt   []string          `json:"security_opt,omitempty"`
-	Ulimits       interface{}       `json:"ulimits,omitempty"`
-	Sysctls       interface{}       `json:"sysctls,omitempty"`
-	ExtraHosts    []string          `json:"extra_hosts,omitempty"`
-	Dns           interface{}       `json:"dns,omitempty"`
-	DnsSearch     interface{}       `json:"dns_search,omitempty"`
-	Tmpfs         interface{}       `json:"tmpfs,omitempty"`
-	StdinOpen     bool              `json:"stdin_open,omitempty"`
-	Tty           bool              `json:"tty,omitempty"`
-	StopSignal    string            `json:"stop_signal,omitempty"`
-	StopGracePeriod string          `json:"stop_grace_period,omitempty"`
-	Secrets       []interface{}     `json:"secrets,omitempty"`
-	Configs       []interface{}     `json:"configs,omitempty"`
+	Image           string              `json:"image,omitempty"`
+	Build           *ComposeBuild       `json:"build,omitempty"`
+	Command         interface{}         `json:"command,omitempty"` // string or []string
+	Entrypoint      interface{}         `json:"entrypoint,omitempty"`
+	Environment     interface{}         `json:"environment,omitempty"` // map or []string
+	EnvFile         interface{}         `json:"env_file,omitempty"`    // string or []string
+	Ports           []interface{}       `json:"ports,omitempty"`
+	Volumes         []interface{}       `json:"volumes,omitempty"`
+	Networks        interface{}         `json:"networks,omitempty"`
+	DependsOn       interface{}         `json:"depends_on,omitempty"`
+	Restart         string              `json:"restart,omitempty"`
+	Labels          interface{}         `json:"labels,omitempty"`
+	Healthcheck     *ComposeHealthcheck `json:"healthcheck,omitempty"`
+	Deploy          *ComposeDeploy      `json:"deploy,omitempty"`
+	Logging         *ComposeLogging     `json:"logging,omitempty"`
+	Hostname        string              `json:"hostname,omitempty"`
+	ContainerName   string              `json:"container_name,omitempty"`
+	User            string              `json:"user,omitempty"`
+	WorkingDir      string              `json:"working_dir,omitempty"`
+	Privileged      bool                `json:"privileged,omitempty"`
+	CapAdd          []string            `json:"cap_add,omitempty"`
+	CapDrop         []string            `json:"cap_drop,omitempty"`
+	SecurityOpt     []string            `json:"security_opt,omitempty"`
+	Ulimits         interface{}         `json:"ulimits,omitempty"`
+	Sysctls         interface{}         `json:"sysctls,omitempty"`
+	ExtraHosts      []string            `json:"extra_hosts,omitempty"`
+	DNS             interface{}         `json:"dns,omitempty"`
+	DNSSearch       interface{}         `json:"dns_search,omitempty"`
+	Tmpfs           interface{}         `json:"tmpfs,omitempty"`
+	StdinOpen       bool                `json:"stdin_open,omitempty"`
+	Tty             bool                `json:"tty,omitempty"`
+	StopSignal      string              `json:"stop_signal,omitempty"`
+	StopGracePeriod string              `json:"stop_grace_period,omitempty"`
+	Secrets         []interface{}       `json:"secrets,omitempty"`
+	Configs         []interface{}       `json:"configs,omitempty"`
 }
 
 // ComposeBuild represents build configuration
 type ComposeBuild struct {
-	Context    string            `json:"context,omitempty"`
-	Dockerfile string            `json:"dockerfile,omitempty"`
-	Args       interface{}       `json:"args,omitempty"`
-	Target     string            `json:"target,omitempty"`
-	CacheFrom  []string          `json:"cache_from,omitempty"`
-	Labels     interface{}       `json:"labels,omitempty"`
-	Network    string            `json:"network,omitempty"`
+	Context    string      `json:"context,omitempty"`
+	Dockerfile string      `json:"dockerfile,omitempty"`
+	Args       interface{} `json:"args,omitempty"`
+	Target     string      `json:"target,omitempty"`
+	CacheFrom  []string    `json:"cache_from,omitempty"`
+	Labels     interface{} `json:"labels,omitempty"`
+	Network    string      `json:"network,omitempty"`
 }
 
 // ComposeHealthcheck represents healthcheck configuration
@@ -233,25 +233,25 @@ type ComposeHealthcheck struct {
 
 // ComposeDeploy represents deploy configuration (Swarm)
 type ComposeDeploy struct {
-	Mode           string                 `json:"mode,omitempty"`
-	Replicas       *int                   `json:"replicas,omitempty"`
-	Labels         interface{}            `json:"labels,omitempty"`
-	UpdateConfig   *ComposeUpdateConfig   `json:"update_config,omitempty"`
-	RollbackConfig *ComposeUpdateConfig   `json:"rollback_config,omitempty"`
-	Resources      *ComposeResources      `json:"resources,omitempty"`
-	RestartPolicy  *ComposeRestartPolicy  `json:"restart_policy,omitempty"`
-	Placement      *ComposePlacement      `json:"placement,omitempty"`
-	EndpointMode   string                 `json:"endpoint_mode,omitempty"`
+	Mode           string                `json:"mode,omitempty"`
+	Replicas       *int                  `json:"replicas,omitempty"`
+	Labels         interface{}           `json:"labels,omitempty"`
+	UpdateConfig   *ComposeUpdateConfig  `json:"update_config,omitempty"`
+	RollbackConfig *ComposeUpdateConfig  `json:"rollback_config,omitempty"`
+	Resources      *ComposeResources     `json:"resources,omitempty"`
+	RestartPolicy  *ComposeRestartPolicy `json:"restart_policy,omitempty"`
+	Placement      *ComposePlacement     `json:"placement,omitempty"`
+	EndpointMode   string                `json:"endpoint_mode,omitempty"`
 }
 
 // ComposeUpdateConfig represents update configuration
 type ComposeUpdateConfig struct {
-	Parallelism   *int   `json:"parallelism,omitempty"`
-	Delay         string `json:"delay,omitempty"`
-	FailureAction string `json:"failure_action,omitempty"`
-	Monitor       string `json:"monitor,omitempty"`
+	Parallelism     *int   `json:"parallelism,omitempty"`
+	Delay           string `json:"delay,omitempty"`
+	FailureAction   string `json:"failure_action,omitempty"`
+	Monitor         string `json:"monitor,omitempty"`
 	MaxFailureRatio string `json:"max_failure_ratio,omitempty"`
-	Order         string `json:"order,omitempty"`
+	Order           string `json:"order,omitempty"`
 }
 
 // ComposeResources represents resource constraints
@@ -262,9 +262,9 @@ type ComposeResources struct {
 
 // ComposeResourceLimit represents resource limits
 type ComposeResourceLimit struct {
-	Cpus    string `json:"cpus,omitempty"`
-	Memory  string `json:"memory,omitempty"`
-	Pids    int64  `json:"pids,omitempty"`
+	Cpus   string `json:"cpus,omitempty"`
+	Memory string `json:"memory,omitempty"`
+	Pids   int64  `json:"pids,omitempty"`
 }
 
 // ComposeRestartPolicy represents restart policy
@@ -328,9 +328,9 @@ type ComposeVolume struct {
 
 // ComposeSecret represents a secret in docker-compose
 type ComposeSecret struct {
-	File     string `json:"file,omitempty"`
+	File     string      `json:"file,omitempty"`
 	External interface{} `json:"external,omitempty"`
-	Name     string `json:"name,omitempty"`
+	Name     string      `json:"name,omitempty"`
 }
 
 // ComposeConfig_ represents a config in docker-compose
@@ -354,25 +354,25 @@ type StackDeployHistory struct {
 
 // StackVersion represents a historical version of a stack's compose file.
 type StackVersion struct {
-	ID           uuid.UUID  `json:"id" db:"id"`
-	StackID      uuid.UUID  `json:"stack_id" db:"stack_id"`
-	Version      int        `json:"version" db:"version"`
-	ComposeFile  string     `json:"compose_file" db:"compose_file"`
-	EnvFile      *string    `json:"env_file,omitempty" db:"env_file"`
-	Comment      string     `json:"comment" db:"comment"`
-	CreatedBy    *uuid.UUID `json:"created_by,omitempty" db:"created_by"`
-	CreatedAt    time.Time  `json:"created_at" db:"created_at"`
-	DeployedAt   *time.Time `json:"deployed_at,omitempty" db:"deployed_at"`
-	IsDeployed   bool       `json:"is_deployed" db:"is_deployed"`
+	ID          uuid.UUID  `json:"id" db:"id"`
+	StackID     uuid.UUID  `json:"stack_id" db:"stack_id"`
+	Version     int        `json:"version" db:"version"`
+	ComposeFile string     `json:"compose_file" db:"compose_file"`
+	EnvFile     *string    `json:"env_file,omitempty" db:"env_file"`
+	Comment     string     `json:"comment" db:"comment"`
+	CreatedBy   *uuid.UUID `json:"created_by,omitempty" db:"created_by"`
+	CreatedAt   time.Time  `json:"created_at" db:"created_at"`
+	DeployedAt  *time.Time `json:"deployed_at,omitempty" db:"deployed_at"`
+	IsDeployed  bool       `json:"is_deployed" db:"is_deployed"`
 }
 
 // StackVersionDiff represents a diff between two versions.
 type StackVersionDiff struct {
-	FromVersion   int               `json:"from_version"`
-	ToVersion     int               `json:"to_version"`
-	ComposeChanges []DiffLine       `json:"compose_changes"`
-	EnvChanges     []DiffLine       `json:"env_changes,omitempty"`
-	Summary       DiffSummary       `json:"summary"`
+	FromVersion    int         `json:"from_version"`
+	ToVersion      int         `json:"to_version"`
+	ComposeChanges []DiffLine  `json:"compose_changes"`
+	EnvChanges     []DiffLine  `json:"env_changes,omitempty"`
+	Summary        DiffSummary `json:"summary"`
 }
 
 // DiffLine represents a single line in a diff.
@@ -394,23 +394,23 @@ const (
 
 // DiffSummary summarizes changes in a diff.
 type DiffSummary struct {
-	LinesAdded    int      `json:"lines_added"`
-	LinesRemoved  int      `json:"lines_removed"`
-	ServicesAdded []string `json:"services_added,omitempty"`
-	ServicesRemoved []string `json:"services_removed,omitempty"`
+	LinesAdded       int      `json:"lines_added"`
+	LinesRemoved     int      `json:"lines_removed"`
+	ServicesAdded    []string `json:"services_added,omitempty"`
+	ServicesRemoved  []string `json:"services_removed,omitempty"`
 	ServicesModified []string `json:"services_modified,omitempty"`
 }
 
 // StackEnvironment represents environment variables for a stack with inheritance support.
 type StackEnvironment struct {
-	ID          uuid.UUID         `json:"id" db:"id"`
-	StackID     uuid.UUID         `json:"stack_id" db:"stack_id"`
-	Name        string            `json:"name" db:"name"` // e.g., "development", "production"
-	Variables   map[string]string `json:"variables" db:"variables"`
-	ParentID    *uuid.UUID        `json:"parent_id,omitempty" db:"parent_id"` // For inheritance
-	IsDefault   bool              `json:"is_default" db:"is_default"`
-	CreatedAt   time.Time         `json:"created_at" db:"created_at"`
-	UpdatedAt   time.Time         `json:"updated_at" db:"updated_at"`
+	ID        uuid.UUID         `json:"id" db:"id"`
+	StackID   uuid.UUID         `json:"stack_id" db:"stack_id"`
+	Name      string            `json:"name" db:"name"` // e.g., "development", "production"
+	Variables map[string]string `json:"variables" db:"variables"`
+	ParentID  *uuid.UUID        `json:"parent_id,omitempty" db:"parent_id"` // For inheritance
+	IsDefault bool              `json:"is_default" db:"is_default"`
+	CreatedAt time.Time         `json:"created_at" db:"created_at"`
+	UpdatedAt time.Time         `json:"updated_at" db:"updated_at"`
 }
 
 // ResolvedEnvironment returns variables with inheritance applied.
@@ -429,13 +429,13 @@ func (e *StackEnvironment) ResolvedEnvironment(parent *StackEnvironment) map[str
 
 // StackDependency represents a dependency between stacks.
 type StackDependency struct {
-	ID             uuid.UUID `json:"id" db:"id"`
-	StackID        uuid.UUID `json:"stack_id" db:"stack_id"`
-	DependsOnID    uuid.UUID `json:"depends_on_id" db:"depends_on_id"`
-	DependsOnName  string    `json:"depends_on_name" db:"depends_on_name"` // Denormalized for display
-	Condition      string    `json:"condition" db:"condition"` // "started", "healthy", "completed"
-	Optional       bool      `json:"optional" db:"optional"`
-	CreatedAt      time.Time `json:"created_at" db:"created_at"`
+	ID            uuid.UUID `json:"id" db:"id"`
+	StackID       uuid.UUID `json:"stack_id" db:"stack_id"`
+	DependsOnID   uuid.UUID `json:"depends_on_id" db:"depends_on_id"`
+	DependsOnName string    `json:"depends_on_name" db:"depends_on_name"` // Denormalized for display
+	Condition     string    `json:"condition" db:"condition"`             // "started", "healthy", "completed"
+	Optional      bool      `json:"optional" db:"optional"`
+	CreatedAt     time.Time `json:"created_at" db:"created_at"`
 }
 
 // StackDependencyCondition represents the condition for a dependency.

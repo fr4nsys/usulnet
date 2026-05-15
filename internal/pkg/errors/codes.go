@@ -61,21 +61,21 @@ const (
 
 // Host error codes
 const (
-	CodeHostNotFound     = "HOST_NOT_FOUND"
-	CodeHostOffline      = "HOST_OFFLINE"
-	CodeHostUnreachable  = "HOST_UNREACHABLE"
-	CodeAgentNotFound    = "AGENT_NOT_FOUND"
+	CodeHostNotFound      = "HOST_NOT_FOUND"
+	CodeHostOffline       = "HOST_OFFLINE"
+	CodeHostUnreachable   = "HOST_UNREACHABLE"
+	CodeAgentNotFound     = "AGENT_NOT_FOUND"
 	CodeAgentDisconnected = "AGENT_DISCONNECTED"
 )
 
 // Backup error codes
 const (
-	CodeBackupNotFound   = "BACKUP_NOT_FOUND"
-	CodeBackupFailed     = "BACKUP_FAILED"
-	CodeBackupCorrupted  = "BACKUP_CORRUPTED"
-	CodeRestoreFailed    = "RESTORE_FAILED"
-	CodeStorageFull      = "STORAGE_FULL"
-	CodeStorageError     = "STORAGE_ERROR"
+	CodeBackupNotFound  = "BACKUP_NOT_FOUND"
+	CodeBackupFailed    = "BACKUP_FAILED"
+	CodeBackupCorrupted = "BACKUP_CORRUPTED"
+	CodeRestoreFailed   = "RESTORE_FAILED"
+	CodeStorageFull     = "STORAGE_FULL"
+	CodeStorageError    = "STORAGE_ERROR"
 )
 
 // Update error codes
@@ -104,35 +104,35 @@ const (
 
 // Database error codes
 const (
-	CodeDatabaseError      = "DATABASE_ERROR"
-	CodeDatabaseConnection = "DATABASE_CONNECTION_ERROR"
-	CodeDatabaseTimeout    = "DATABASE_TIMEOUT"
+	CodeDatabaseError       = "DATABASE_ERROR"
+	CodeDatabaseConnection  = "DATABASE_CONNECTION_ERROR"
+	CodeDatabaseTimeout     = "DATABASE_TIMEOUT"
 	CodeConstraintViolation = "CONSTRAINT_VIOLATION"
-	CodeMigrationFailed    = "MIGRATION_FAILED"
+	CodeMigrationFailed     = "MIGRATION_FAILED"
 )
 
 // License error codes
 const (
-	CodeLicenseInvalid  = "LICENSE_INVALID"
-	CodeLicenseExpired  = "LICENSE_EXPIRED"
-	CodeLicenseNotFound = "LICENSE_NOT_FOUND"
-	CodeFeatureDisabled = "FEATURE_DISABLED"
-	CodeLimitExceeded   = "LIMIT_EXCEEDED"
+	// CodeLicenseInvalid is emitted when an operator-supplied commercial
+	// support token fails cryptographic validation. The AGPL build does
+	// not emit any other license-related error codes — feature
+	// availability and resource limits are not gated by a license.
+	CodeLicenseInvalid = "LICENSE_INVALID"
 )
 
 // NPM integration error codes
 const (
-	CodeNPMNotConfigured  = "NPM_NOT_CONFIGURED"
+	CodeNPMNotConfigured    = "NPM_NOT_CONFIGURED"
 	CodeNPMConnectionFailed = "NPM_CONNECTION_FAILED"
-	CodeNPMProxyNotFound  = "NPM_PROXY_NOT_FOUND"
-	CodeNPMSyncFailed     = "NPM_SYNC_FAILED"
+	CodeNPMProxyNotFound    = "NPM_PROXY_NOT_FOUND"
+	CodeNPMSyncFailed       = "NPM_SYNC_FAILED"
 )
 
 // Notification error codes
 const (
-	CodeNotificationFailed     = "NOTIFICATION_FAILED"
-	CodeWebhookFailed          = "WEBHOOK_FAILED"
-	CodeEmailFailed            = "EMAIL_FAILED"
+	CodeNotificationFailed      = "NOTIFICATION_FAILED"
+	CodeWebhookFailed           = "WEBHOOK_FAILED"
+	CodeEmailFailed             = "EMAIL_FAILED"
 	CodeSlackNotificationFailed = "SLACK_NOTIFICATION_FAILED"
 )
 
@@ -140,7 +140,7 @@ const (
 const (
 	CodeJobNotFound  = "JOB_NOT_FOUND"
 	CodeJobFailed    = "JOB_FAILED"
-	CodeJobCancelled = "JOB_CANCELLED"
+	CodeJobCancelled = "JOB_CANCELED"
 	CodeJobTimeout   = "JOB_TIMEOUT"
 )
 

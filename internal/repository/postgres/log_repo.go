@@ -27,9 +27,9 @@ type ContainerLogCount struct {
 
 // LogStats holds aggregated statistics about log entries.
 type LogStats struct {
-	TotalLogs     int64              `json:"total_logs"`
-	SeverityCounts map[string]int64  `json:"severity_counts"`
-	SourceCounts   map[string]int64  `json:"source_counts"`
+	TotalLogs      int64               `json:"total_logs"`
+	SeverityCounts map[string]int64    `json:"severity_counts"`
+	SourceCounts   map[string]int64    `json:"source_counts"`
 	TopContainers  []ContainerLogCount `json:"top_containers"`
 }
 

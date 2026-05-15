@@ -177,7 +177,7 @@ func (s *B2Storage) multipartUpload(ctx context.Context, key string, reader io.R
 		}
 
 		n, err := io.ReadFull(reader, buf)
-		if err != nil && err != io.EOF && err != io.ErrUnexpectedEOF {
+		if err != nil && !errors.Is(err, io.EOF) && !errors.Is(err, io.ErrUnexpectedEOF) {
 			return errors.Wrap(err, errors.CodeStorageError, "failed to read backup data")
 		}
 
@@ -205,7 +205,7 @@ func (s *B2Storage) multipartUpload(ctx context.Context, key string, reader io.R
 
 		partNumber++
 
-		if err == io.EOF || err == io.ErrUnexpectedEOF {
+		if errors.Is(err, io.EOF) || errors.Is(err, io.ErrUnexpectedEOF) {
 			break
 		}
 	}

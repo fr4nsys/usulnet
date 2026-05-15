@@ -8,14 +8,13 @@ import (
 	"context"
 	"fmt"
 	"strings"
-	"sync"
 	"time"
 
 	"github.com/google/uuid"
 
 	gitprovider "github.com/fr4nsys/usulnet/internal/integrations/git"
-	"github.com/fr4nsys/usulnet/internal/models"
 	"github.com/fr4nsys/usulnet/internal/license"
+	"github.com/fr4nsys/usulnet/internal/models"
 	"github.com/fr4nsys/usulnet/internal/pkg/crypto"
 	"github.com/fr4nsys/usulnet/internal/pkg/errors"
 	"github.com/fr4nsys/usulnet/internal/pkg/logger"
@@ -24,21 +23,16 @@ import (
 
 // Service provides unified Git integration for Gitea, GitHub, and GitLab.
 type Service struct {
-	connRepo      *postgres.GitConnectionRepository
-	repoRepo      *postgres.GitRepositoryRepository
-	encryptor     *crypto.AESEncryptor
-	logger        *logger.Logger
-	limitMu       sync.RWMutex
-	limitProvider license.LimitProvider
+	connRepo  *postgres.GitConnectionRepository
+	repoRepo  *postgres.GitRepositoryRepository
+	encryptor *crypto.AESEncryptor
+	logger    *logger.Logger
 }
 
-// SetLimitProvider sets the license limit provider for enforcing MaxGitConnections.
-// Thread-safe: may be called while goroutines read limitProvider.
-func (s *Service) SetLimitProvider(lp license.LimitProvider) {
-	s.limitMu.Lock()
-	s.limitProvider = lp
-	s.limitMu.Unlock()
-}
+// SetLimitProvider is a no-op kept for callers that still wire the
+// legacy hook; the AGPL build does not cap git connections via a
+// license token.
+func (s *Service) SetLimitProvider(_ license.LimitProvider) {}
 
 // NewService creates a new unified Git service.
 func NewService(
@@ -74,22 +68,8 @@ type CreateConnectionInput struct {
 }
 
 // CreateConnection creates a new Git connection (any provider).
+// There is no license-driven cap in the AGPL build.
 func (s *Service) CreateConnection(ctx context.Context, input *CreateConnectionInput) (*models.GitConnection, error) {
-	// Enforce MaxGitConnections license limit
-	s.limitMu.RLock()
-	lp := s.limitProvider
-	s.limitMu.RUnlock()
-	if lp != nil {
-		limit := lp.GetLimits().MaxGitConnections
-		if limit > 0 {
-			count, err := s.connRepo.CountAll(ctx)
-			if err == nil && count >= limit {
-				return nil, errors.NewWithStatus(errors.CodeLimitExceeded,
-					fmt.Sprintf("git connection limit reached (%d/%d), upgrade your license for more", count, limit), 402)
-			}
-		}
-	}
-
 	if input.Name == "" {
 		return nil, errors.New(errors.CodeBadRequest, "name is required")
 	}
@@ -222,10 +202,11 @@ func (s *Service) TestConnection(ctx context.Context, id uuid.UUID) (*TestResult
 	// Get provider
 	provider, err := s.GetProvider(conn)
 	if err != nil {
+		// result envelope: error surfaces via TestResult.Error + persisted status
 		result.Success = false
 		result.Error = err.Error()
 		s.connRepo.UpdateStatus(ctx, id, models.GitStatusError, strPtr(result.Error))
-		return result, nil
+		return result, nil //nolint:nilerr
 	}
 
 	// Test connection

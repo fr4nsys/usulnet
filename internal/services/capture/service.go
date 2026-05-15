@@ -39,11 +39,9 @@ type CaptureRepository interface {
 
 // activeCapture tracks a running tcpdump process.
 type activeCapture struct {
-	ID          uuid.UUID
-	cmd         *exec.Cmd
-	cancel      context.CancelFunc
-	packetCount int64
-	mu          sync.Mutex
+	ID     uuid.UUID
+	cmd    *exec.Cmd
+	cancel context.CancelFunc
 }
 
 // Service manages packet capture operations.
@@ -52,9 +50,9 @@ type Service struct {
 	logger     *logger.Logger
 	captureDir string
 
-	mu       sync.RWMutex
-	active   map[uuid.UUID]*activeCapture
-	tcpdump  string // path to tcpdump binary
+	mu      sync.RWMutex
+	active  map[uuid.UUID]*activeCapture
+	tcpdump string // path to tcpdump binary
 }
 
 // NewService creates a new capture service.

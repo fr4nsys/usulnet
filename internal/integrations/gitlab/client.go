@@ -34,10 +34,10 @@ func NewClient(baseURL, token string) *Client {
 		baseURL = "https://gitlab.com"
 	}
 	baseURL = strings.TrimSuffix(baseURL, "/")
-	
+
 	// Ensure we use the API endpoint
 	if !strings.Contains(baseURL, "/api/v4") {
-		baseURL = baseURL + "/api/v4"
+		baseURL += "/api/v4"
 	}
 
 	return &Client{

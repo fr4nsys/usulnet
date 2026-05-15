@@ -116,11 +116,11 @@ func (j *JetStream) CreateStream(ctx context.Context, cfg StreamConfig) (*nats.S
 		streamCfg.Replicas = 1
 	}
 
-	// Try to get existing stream
-	info, err := j.js.StreamInfo(cfg.Name)
-	if err == nil {
+	// Try to get existing stream — only the error matters; we always
+	// overwrite info below with either UpdateStream or AddStream.
+	if _, err := j.js.StreamInfo(cfg.Name); err == nil {
 		// Stream exists, update it
-		info, err = j.js.UpdateStream(streamCfg)
+		info, err := j.js.UpdateStream(streamCfg)
 		if err != nil {
 			return nil, fmt.Errorf("failed to update stream %s: %w", cfg.Name, err)
 		}
@@ -129,7 +129,7 @@ func (j *JetStream) CreateStream(ctx context.Context, cfg StreamConfig) (*nats.S
 	}
 
 	// Create new stream
-	info, err = j.js.AddStream(streamCfg)
+	info, err := j.js.AddStream(streamCfg)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create stream %s: %w", cfg.Name, err)
 	}

@@ -21,8 +21,8 @@ type fakeConnector struct {
 	hcCalls int
 }
 
-func (f *fakeConnector) Kind() string    { return f.kind }
-func (f *fakeConnector) Enabled() bool   { return f.enabled }
+func (f *fakeConnector) Kind() string  { return f.kind }
+func (f *fakeConnector) Enabled() bool { return f.enabled }
 func (f *fakeConnector) HealthCheck(_ context.Context) error {
 	f.hcCalls++
 	return f.hcErr

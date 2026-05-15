@@ -349,7 +349,7 @@ func (r *NotificationLogRepository) GetNotificationByID(ctx context.Context, id 
 		&log.CreatedAt,
 	)
 
-	if err == pgx.ErrNoRows {
+	if errors.Is(err, pgx.ErrNoRows) {
 		return nil, errors.NotFound("notification log")
 	}
 	if err != nil {
@@ -360,11 +360,15 @@ func (r *NotificationLogRepository) GetNotificationByID(ctx context.Context, id 
 	log.Priority = channels.Priority(priorityInt)
 
 	if len(channelsJSON) > 0 {
-		json.Unmarshal(channelsJSON, &log.Channels)
+		if err := json.Unmarshal(channelsJSON, &log.Channels); err != nil {
+			return nil, errors.Wrap(err, errors.CodeDatabaseError, "unmarshal channels")
+		}
 	}
 
 	if len(resultsJSON) > 0 {
-		json.Unmarshal(resultsJSON, &log.Results)
+		if err := json.Unmarshal(resultsJSON, &log.Results); err != nil {
+			return nil, errors.Wrap(err, errors.CodeDatabaseError, "unmarshal results")
+		}
 	}
 
 	return &log, nil

@@ -82,20 +82,20 @@ func DefaultConfig() Config {
 
 // CreateSyncInput holds the input for creating a new sync configuration.
 type CreateSyncInput struct {
-	ConnectionID          uuid.UUID                `json:"connection_id"`
-	RepositoryID          uuid.UUID                `json:"repository_id"`
-	RepoFullName          string                   `json:"repo_full_name"`
-	Name                  string                   `json:"name"`
-	SyncDirection         models.SyncDirection     `json:"sync_direction"`
-	TargetPath            string                   `json:"target_path"`
-	StackName             string                   `json:"stack_name"`
-	FilePattern           string                   `json:"file_pattern"`
-	Branch                string                   `json:"branch"`
-	AutoCommit            bool                     `json:"auto_commit"`
-	AutoDeploy            bool                     `json:"auto_deploy"`
-	CommitMessageTemplate string                   `json:"commit_message_template"`
-	ConflictStrategy      models.ConflictStrategy  `json:"conflict_strategy"`
-	CreatedBy             *uuid.UUID               `json:"created_by,omitempty"`
+	ConnectionID          uuid.UUID               `json:"connection_id"`
+	RepositoryID          uuid.UUID               `json:"repository_id"`
+	RepoFullName          string                  `json:"repo_full_name"`
+	Name                  string                  `json:"name"`
+	SyncDirection         models.SyncDirection    `json:"sync_direction"`
+	TargetPath            string                  `json:"target_path"`
+	StackName             string                  `json:"stack_name"`
+	FilePattern           string                  `json:"file_pattern"`
+	Branch                string                  `json:"branch"`
+	AutoCommit            bool                    `json:"auto_commit"`
+	AutoDeploy            bool                    `json:"auto_deploy"`
+	CommitMessageTemplate string                  `json:"commit_message_template"`
+	ConflictStrategy      models.ConflictStrategy `json:"conflict_strategy"`
+	CreatedBy             *uuid.UUID              `json:"created_by,omitempty"`
 }
 
 // UpdateSyncInput holds editable fields for updating a sync configuration.

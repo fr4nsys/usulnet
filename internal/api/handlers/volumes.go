@@ -90,17 +90,17 @@ type CreateVolumeRequest struct {
 
 // VolumeResponse represents a volume in API responses.
 type VolumeResponse struct {
-	Name       string              `json:"name"`
-	HostID     string              `json:"host_id"`
-	Driver     string              `json:"driver"`
-	Mountpoint string              `json:"mountpoint"`
-	Scope      string              `json:"scope"`
-	Labels     map[string]string   `json:"labels,omitempty"`
-	Options    map[string]string   `json:"options,omitempty"`
-	Status     map[string]any      `json:"status,omitempty"`
+	Name       string               `json:"name"`
+	HostID     string               `json:"host_id"`
+	Driver     string               `json:"driver"`
+	Mountpoint string               `json:"mountpoint"`
+	Scope      string               `json:"scope"`
+	Labels     map[string]string    `json:"labels,omitempty"`
+	Options    map[string]string    `json:"options,omitempty"`
+	Status     map[string]any       `json:"status,omitempty"`
 	UsageData  *VolumeUsageResponse `json:"usage_data,omitempty"`
-	CreatedAt  string              `json:"created_at"`
-	SyncedAt   string              `json:"synced_at"`
+	CreatedAt  string               `json:"created_at"`
+	SyncedAt   string               `json:"synced_at"`
 }
 
 // VolumeUsageResponse represents volume usage data.

@@ -6,6 +6,7 @@ package postgres
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"time"
 
@@ -308,7 +309,8 @@ func pgEscapeLiteral(v interface{}) string {
 
 // IsDuplicateKeyError checks if an error is a duplicate key violation
 func IsDuplicateKeyError(err error) bool {
-	if pgErr, ok := err.(*pgconn.PgError); ok {
+	pgErr := &pgconn.PgError{}
+	if errors.As(err, &pgErr) {
 		return pgErr.Code == "23505" // unique_violation
 	}
 	return false
@@ -316,7 +318,8 @@ func IsDuplicateKeyError(err error) bool {
 
 // IsForeignKeyError checks if an error is a foreign key violation
 func IsForeignKeyError(err error) bool {
-	if pgErr, ok := err.(*pgconn.PgError); ok {
+	pgErr := &pgconn.PgError{}
+	if errors.As(err, &pgErr) {
 		return pgErr.Code == "23503" // foreign_key_violation
 	}
 	return false
@@ -324,7 +327,8 @@ func IsForeignKeyError(err error) bool {
 
 // IsNotNullError checks if an error is a not null violation
 func IsNotNullError(err error) bool {
-	if pgErr, ok := err.(*pgconn.PgError); ok {
+	pgErr := &pgconn.PgError{}
+	if errors.As(err, &pgErr) {
 		return pgErr.Code == "23502" // not_null_violation
 	}
 	return false
@@ -332,7 +336,8 @@ func IsNotNullError(err error) bool {
 
 // IsCheckConstraintError checks if an error is a check constraint violation
 func IsCheckConstraintError(err error) bool {
-	if pgErr, ok := err.(*pgconn.PgError); ok {
+	pgErr := &pgconn.PgError{}
+	if errors.As(err, &pgErr) {
 		return pgErr.Code == "23514" // check_violation
 	}
 	return false
@@ -340,7 +345,8 @@ func IsCheckConstraintError(err error) bool {
 
 // IsConnectionError checks if an error is a connection-related error
 func IsConnectionError(err error) bool {
-	if pgErr, ok := err.(*pgconn.PgError); ok {
+	pgErr := &pgconn.PgError{}
+	if errors.As(err, &pgErr) {
 		// Connection exception class
 		return pgErr.Code[:2] == "08"
 	}

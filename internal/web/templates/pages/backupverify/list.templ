@@ -1,0 +1,230 @@
+// SPDX-License-Identifier: AGPL-3.0-or-later
+// Copyright (c) 2024-2026 usulnet contributors
+// https://github.com/fr4nsys/usulnet
+
+package backupverify
+
+import (
+	"fmt"
+	"github.com/fr4nsys/usulnet/internal/web/templates/layouts"
+)
+
+type ListData struct {
+	PageData      layouts.PageData
+	Verifications []VerificationView
+	Stats         StatsView
+	Total         int
+	Page          int
+	PageSize      int
+}
+
+type VerificationView struct {
+	ID            string
+	BackupID      string
+	BackupName    string
+	Status        string
+	Method        string
+	ChecksumValid *bool
+	FilesReadable *bool
+	ContainerTest *bool
+	DataValid     *bool
+	FileCount     int
+	SizeBytes     string
+	DurationMs    int
+	ErrorMessage  string
+	VerifiedBy    string
+	CompletedAt   string
+	CreatedAt     string
+}
+
+type StatsView struct {
+	TotalVerified int
+	PassRate      string
+	Passed        int
+	Failed        int
+	LastVerified  string
+}
+
+templ List(data ListData) {
+	@layouts.Base(data.PageData) {
+		<div class="space-y-6">
+			<div class="flex items-center justify-between">
+				<div>
+					<h1 class="text-2xl font-display font-bold text-white">Backup Verification</h1>
+					<p class="text-gray-400 mt-1">Sandboxed restore tests for existing backups</p>
+				</div>
+			</div>
+
+			@Nav("verifications")
+
+			<div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+				<div class="card p-4">
+					<div class="flex items-center justify-between">
+						<div>
+							<p class="text-sm text-gray-400">Total Verified</p>
+							<p class="text-2xl font-bold text-white">{ fmt.Sprintf("%d", data.Stats.TotalVerified) }</p>
+						</div>
+						<div class="text-primary-400">
+							<i class="fas fa-check-double text-2xl"></i>
+						</div>
+					</div>
+				</div>
+				<div class="card p-4">
+					<div class="flex items-center justify-between">
+						<div>
+							<p class="text-sm text-gray-400">Passed</p>
+							<p class="text-2xl font-bold text-green-400">{ fmt.Sprintf("%d", data.Stats.Passed) }</p>
+						</div>
+						<div class="text-green-400">
+							<i class="fas fa-check-circle text-2xl"></i>
+						</div>
+					</div>
+				</div>
+				<div class="card p-4">
+					<div class="flex items-center justify-between">
+						<div>
+							<p class="text-sm text-gray-400">Failed</p>
+							<p class="text-2xl font-bold text-red-400">{ fmt.Sprintf("%d", data.Stats.Failed) }</p>
+						</div>
+						<div class="text-red-400">
+							<i class="fas fa-times-circle text-2xl"></i>
+						</div>
+					</div>
+				</div>
+				<div class="card p-4">
+					<div class="flex items-center justify-between">
+						<div>
+							<p class="text-sm text-gray-400">Pass Rate</p>
+							<p class="text-2xl font-bold text-white">{ data.Stats.PassRate }</p>
+						</div>
+						<div class="text-blue-400">
+							<i class="fas fa-percentage text-2xl"></i>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			if len(data.Verifications) > 0 {
+				<div class="card">
+					<div class="overflow-x-auto">
+						<table class="table">
+							<thead>
+								<tr>
+									<th>Backup</th>
+									<th>Status</th>
+									<th>Method</th>
+									<th>Checks</th>
+									<th>Files</th>
+									<th>Duration</th>
+									<th>Completed</th>
+									<th>Actions</th>
+								</tr>
+							</thead>
+							<tbody>
+								for _, v := range data.Verifications {
+									<tr>
+										<td>
+											<span class="text-white text-sm">{ v.BackupName }</span>
+										</td>
+										<td>
+											@statusBadge(v.Status)
+										</td>
+										<td>
+											@methodBadge(v.Method)
+										</td>
+										<td>
+											<div class="flex items-center gap-2">
+												@checkIcon("Checksum", v.ChecksumValid)
+												@checkIcon("Files", v.FilesReadable)
+												@checkIcon("Container", v.ContainerTest)
+												@checkIcon("Data", v.DataValid)
+											</div>
+										</td>
+										<td class="text-sm text-gray-300">{ fmt.Sprintf("%d", v.FileCount) }</td>
+										<td class="text-sm text-gray-300">{ fmt.Sprintf("%dms", v.DurationMs) }</td>
+										<td class="text-sm text-gray-400">{ v.CompletedAt }</td>
+										<td>
+											<a href={ templ.SafeURL(fmt.Sprintf("/backup-verify/%s", v.ID)) } class="text-primary-400 hover:text-primary-300 text-sm">
+												Details
+											</a>
+										</td>
+									</tr>
+								}
+							</tbody>
+						</table>
+					</div>
+				</div>
+
+				if data.Total > data.PageSize {
+					<div class="flex justify-center gap-2">
+						if data.Page > 1 {
+							<a href={ templ.SafeURL(fmt.Sprintf("/backup-verify?page=%d", data.Page-1)) } class="btn btn-secondary text-sm">Previous</a>
+						}
+						<span class="text-sm text-gray-400 py-2">
+							Page { fmt.Sprintf("%d", data.Page) } of { fmt.Sprintf("%d", (data.Total+data.PageSize-1)/data.PageSize) }
+						</span>
+						if data.Page*data.PageSize < data.Total {
+							<a href={ templ.SafeURL(fmt.Sprintf("/backup-verify?page=%d", data.Page+1)) } class="btn btn-secondary text-sm">Next</a>
+						}
+					</div>
+				}
+			}
+
+			if len(data.Verifications) == 0 {
+				<div class="card p-8 text-center">
+					<i class="fas fa-check-double text-4xl text-gray-400 mb-4"></i>
+					<h3 class="text-lg font-medium text-white mb-2">No verifications yet</h3>
+					<p class="text-gray-400">Run a verification from the Backups page to confirm a backup actually restores</p>
+				</div>
+			}
+		</div>
+	}
+}
+
+templ statusBadge(status string) {
+	if status == "passed" {
+		<span class="inline-flex items-center gap-1 text-xs bg-green-500/10 text-green-400 px-2 py-0.5 rounded font-medium">
+			<i class="fas fa-check-circle"></i>Passed
+		</span>
+	} else if status == "failed" {
+		<span class="inline-flex items-center gap-1 text-xs bg-red-500/10 text-red-400 px-2 py-0.5 rounded font-medium">
+			<i class="fas fa-times-circle"></i>Failed
+		</span>
+	} else if status == "running" {
+		<span class="inline-flex items-center gap-1 text-xs bg-blue-500/10 text-blue-400 px-2 py-0.5 rounded font-medium">
+			<i class="fas fa-spinner fa-spin"></i>Running
+		</span>
+	} else {
+		<span class="inline-flex items-center gap-1 text-xs bg-gray-500/10 text-gray-400 px-2 py-0.5 rounded font-medium">
+			<i class="fas fa-clock"></i>Pending
+		</span>
+	}
+}
+
+templ methodBadge(method string) {
+	if method == "extract" {
+		<span class="inline-flex items-center text-xs bg-blue-500/10 text-blue-400 px-2 py-0.5 rounded">Extract</span>
+	} else if method == "container" {
+		<span class="inline-flex items-center text-xs bg-purple-500/10 text-purple-400 px-2 py-0.5 rounded">Container</span>
+	} else if method == "database" {
+		<span class="inline-flex items-center text-xs bg-yellow-500/10 text-yellow-400 px-2 py-0.5 rounded">Database</span>
+	} else {
+		<span class="inline-flex items-center text-xs bg-gray-500/10 text-gray-400 px-2 py-0.5 rounded">{ method }</span>
+	}
+}
+
+templ checkIcon(label string, valid *bool) {
+	if valid != nil && *valid {
+		<span class="text-green-400" title={ label + ": OK" }>
+			<i class="fas fa-check text-xs"></i>
+		</span>
+	} else if valid != nil && !*valid {
+		<span class="text-red-400" title={ label + ": Failed" }>
+			<i class="fas fa-times text-xs"></i>
+		</span>
+	} else {
+		<span class="text-gray-600" title={ label + ": N/A" }>
+			<i class="fas fa-minus text-xs"></i>
+		</span>
+	}
+}

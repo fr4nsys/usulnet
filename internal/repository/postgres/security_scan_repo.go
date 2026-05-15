@@ -154,7 +154,7 @@ func (r *SecurityScanRepository) GetByID(ctx context.Context, id uuid.UUID) (*mo
 
 	scan, err := scanScanRow(r.db.QueryRow(ctx, query, id))
 	if err != nil {
-		if err == pgx.ErrNoRows {
+		if errors.Is(err, pgx.ErrNoRows) {
 			return nil, errors.NotFound("security scan")
 		}
 		return nil, errors.Wrap(err, errors.CodeDatabaseError, "failed to get security scan")
@@ -223,7 +223,7 @@ func (r *SecurityScanRepository) GetLatestByContainer(ctx context.Context, conta
 
 	scan, err := scanScanRow(r.db.QueryRow(ctx, query, containerID))
 	if err != nil {
-		if err == pgx.ErrNoRows {
+		if errors.Is(err, pgx.ErrNoRows) {
 			return nil, nil // No scan found is not an error
 		}
 		return nil, errors.Wrap(err, errors.CodeDatabaseError, "failed to get latest security scan")

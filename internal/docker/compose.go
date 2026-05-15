@@ -33,40 +33,40 @@ type ComposeFile struct {
 
 // ComposeService represents a service in docker-compose
 type ComposeService struct {
-	Image         string            `yaml:"image,omitempty"`
-	Build         *ComposeBuild     `yaml:"build,omitempty"`
-	ContainerName string            `yaml:"container_name,omitempty"`
-	Command       interface{}       `yaml:"command,omitempty"`       // string or []string
-	Entrypoint    interface{}       `yaml:"entrypoint,omitempty"`    // string or []string
-	Environment   interface{}       `yaml:"environment,omitempty"`   // map or list
-	EnvFile       interface{}       `yaml:"env_file,omitempty"`      // string or []string
-	Ports         []string          `yaml:"ports,omitempty"`
-	Volumes       []string          `yaml:"volumes,omitempty"`
-	Networks      interface{}       `yaml:"networks,omitempty"`      // []string or map
-	DependsOn     interface{}       `yaml:"depends_on,omitempty"`    // []string or map
-	Labels        map[string]string `yaml:"labels,omitempty"`
-	Restart       string            `yaml:"restart,omitempty"`
-	HealthCheck   *ComposeHealth    `yaml:"healthcheck,omitempty"`
-	Deploy        *ComposeDeploy    `yaml:"deploy,omitempty"`
-	User          string            `yaml:"user,omitempty"`
-	WorkingDir    string            `yaml:"working_dir,omitempty"`
-	Hostname      string            `yaml:"hostname,omitempty"`
-	Domainname    string            `yaml:"domainname,omitempty"`
-	Privileged    bool              `yaml:"privileged,omitempty"`
-	StdinOpen     bool              `yaml:"stdin_open,omitempty"`
-	Tty           bool              `yaml:"tty,omitempty"`
-	DNS           interface{}       `yaml:"dns,omitempty"`           // string or []string
-	DNSSearch     interface{}       `yaml:"dns_search,omitempty"`    // string or []string
-	ExtraHosts    []string          `yaml:"extra_hosts,omitempty"`
-	CapAdd        []string          `yaml:"cap_add,omitempty"`
-	CapDrop       []string          `yaml:"cap_drop,omitempty"`
-	Devices       []string          `yaml:"devices,omitempty"`
-	SecurityOpt   []string          `yaml:"security_opt,omitempty"`
-	Sysctls       map[string]string `yaml:"sysctls,omitempty"`
-	Ulimits       map[string]interface{} `yaml:"ulimits,omitempty"`
-	Logging       *ComposeLogging   `yaml:"logging,omitempty"`
-	StopSignal    string            `yaml:"stop_signal,omitempty"`
-	StopGracePeriod string          `yaml:"stop_grace_period,omitempty"`
+	Image           string                 `yaml:"image,omitempty"`
+	Build           *ComposeBuild          `yaml:"build,omitempty"`
+	ContainerName   string                 `yaml:"container_name,omitempty"`
+	Command         interface{}            `yaml:"command,omitempty"`     // string or []string
+	Entrypoint      interface{}            `yaml:"entrypoint,omitempty"`  // string or []string
+	Environment     interface{}            `yaml:"environment,omitempty"` // map or list
+	EnvFile         interface{}            `yaml:"env_file,omitempty"`    // string or []string
+	Ports           []string               `yaml:"ports,omitempty"`
+	Volumes         []string               `yaml:"volumes,omitempty"`
+	Networks        interface{}            `yaml:"networks,omitempty"`   // []string or map
+	DependsOn       interface{}            `yaml:"depends_on,omitempty"` // []string or map
+	Labels          map[string]string      `yaml:"labels,omitempty"`
+	Restart         string                 `yaml:"restart,omitempty"`
+	HealthCheck     *ComposeHealth         `yaml:"healthcheck,omitempty"`
+	Deploy          *ComposeDeploy         `yaml:"deploy,omitempty"`
+	User            string                 `yaml:"user,omitempty"`
+	WorkingDir      string                 `yaml:"working_dir,omitempty"`
+	Hostname        string                 `yaml:"hostname,omitempty"`
+	Domainname      string                 `yaml:"domainname,omitempty"`
+	Privileged      bool                   `yaml:"privileged,omitempty"`
+	StdinOpen       bool                   `yaml:"stdin_open,omitempty"`
+	Tty             bool                   `yaml:"tty,omitempty"`
+	DNS             interface{}            `yaml:"dns,omitempty"`        // string or []string
+	DNSSearch       interface{}            `yaml:"dns_search,omitempty"` // string or []string
+	ExtraHosts      []string               `yaml:"extra_hosts,omitempty"`
+	CapAdd          []string               `yaml:"cap_add,omitempty"`
+	CapDrop         []string               `yaml:"cap_drop,omitempty"`
+	Devices         []string               `yaml:"devices,omitempty"`
+	SecurityOpt     []string               `yaml:"security_opt,omitempty"`
+	Sysctls         map[string]string      `yaml:"sysctls,omitempty"`
+	Ulimits         map[string]interface{} `yaml:"ulimits,omitempty"`
+	Logging         *ComposeLogging        `yaml:"logging,omitempty"`
+	StopSignal      string                 `yaml:"stop_signal,omitempty"`
+	StopGracePeriod string                 `yaml:"stop_grace_period,omitempty"`
 }
 
 // ComposeBuild represents build configuration
@@ -92,11 +92,11 @@ type ComposeHealth struct {
 
 // ComposeDeploy represents deploy configuration
 type ComposeDeploy struct {
-	Replicas      int                `yaml:"replicas,omitempty"`
-	Resources     *ComposeResources  `yaml:"resources,omitempty"`
-	RestartPolicy *ComposeRestart    `yaml:"restart_policy,omitempty"`
-	Labels        map[string]string  `yaml:"labels,omitempty"`
-	Mode          string             `yaml:"mode,omitempty"`
+	Replicas      int               `yaml:"replicas,omitempty"`
+	Resources     *ComposeResources `yaml:"resources,omitempty"`
+	RestartPolicy *ComposeRestart   `yaml:"restart_policy,omitempty"`
+	Labels        map[string]string `yaml:"labels,omitempty"`
+	Mode          string            `yaml:"mode,omitempty"`
 }
 
 // ComposeResources represents resource limits
@@ -194,12 +194,12 @@ type StackStatus struct {
 
 // ServiceStatus represents the status of a service within a stack
 type ServiceStatus struct {
-	Name       string
-	Replicas   int
-	Running    int
-	Image      string
-	Ports      []string
-	Status     string
+	Name     string
+	Replicas int
+	Running  int
+	Image    string
+	Ports    []string
+	Status   string
 }
 
 // ParseComposeFile parses a docker-compose.yml file
@@ -302,9 +302,9 @@ type ComposeDeployOptions struct {
 
 // ComposeManager handles docker-compose operations
 type ComposeManager struct {
-	client          *Client
-	composeBinary   string
-	defaultTimeout  time.Duration
+	client         *Client
+	composeBinary  string
+	defaultTimeout time.Duration
 }
 
 // NewComposeManager creates a new compose manager

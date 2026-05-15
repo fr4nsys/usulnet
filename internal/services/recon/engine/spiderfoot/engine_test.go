@@ -82,12 +82,6 @@ func (f *fakeServer) set(path string, body []byte) {
 	f.responses[path] = body
 }
 
-func (f *fakeServer) setStatus(path string, code int) {
-	f.mu.Lock()
-	defer f.mu.Unlock()
-	f.statuses[path] = code
-}
-
 func (f *fakeServer) setStatusSequence(bodies [][]byte) {
 	f.mu.Lock()
 	defer f.mu.Unlock()

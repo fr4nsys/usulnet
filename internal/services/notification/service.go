@@ -21,54 +21,49 @@ import (
 // Service is the main notification service that coordinates
 // message rendering, throttling, and multi-channel delivery.
 type Service struct {
-	dispatcher    *Dispatcher
-	throttler     *Throttler
-	templates     *TemplateEngine
-	repository    Repository
-	limitMu       sync.RWMutex
-	limitProvider license.LimitProvider
+	dispatcher *Dispatcher
+	throttler  *Throttler
+	templates  *TemplateEngine
+	repository Repository
 
-	mu       sync.RWMutex
-	running  bool
-	queue    chan queuedMessage
-	wg       sync.WaitGroup
+	mu      sync.RWMutex
+	running bool
+	queue   chan queuedMessage
+	wg      sync.WaitGroup
 }
 
-// SetLimitProvider sets the license limit provider for resource cap enforcement.
-// Thread-safe: may be called while goroutines read limitProvider.
-func (s *Service) SetLimitProvider(lp license.LimitProvider) {
-	s.limitMu.Lock()
-	s.limitProvider = lp
-	s.limitMu.Unlock()
-}
+// SetLimitProvider is a no-op kept for callers that still wire the
+// legacy hook; the AGPL build does not cap notification channels via a
+// license token.
+func (s *Service) SetLimitProvider(_ license.LimitProvider) {}
 
 // Repository interface for notification persistence.
 // Implementation should be in internal/repository/postgres/notification_log_repo.go
 type Repository interface {
 	// LogNotification stores a notification record.
 	LogNotification(ctx context.Context, log *NotificationLog) error
-	
+
 	// GetNotificationLogs retrieves notification history with total count.
 	GetNotificationLogs(ctx context.Context, filter LogFilter) ([]*NotificationLog, int64, error)
-	
+
 	// GetNotificationStats returns aggregated statistics.
 	GetNotificationStats(ctx context.Context, since time.Time) (*NotificationStats, error)
-	
+
 	// SaveChannelConfig persists channel configuration.
 	SaveChannelConfig(ctx context.Context, config *channels.ChannelConfig) error
-	
+
 	// GetChannelConfigs loads all channel configurations.
 	GetChannelConfigs(ctx context.Context) ([]*channels.ChannelConfig, error)
 
 	// GetChannelConfig loads a single channel configuration.
 	GetChannelConfig(ctx context.Context, name string) (*channels.ChannelConfig, error)
-	
+
 	// DeleteChannelConfig removes a channel configuration.
 	DeleteChannelConfig(ctx context.Context, name string) error
-	
+
 	// SaveRoutingRules persists routing rules.
 	SaveRoutingRules(ctx context.Context, rules []*RoutingRule) error
-	
+
 	// GetRoutingRules loads routing rules.
 	GetRoutingRules(ctx context.Context) ([]*RoutingRule, error)
 }
@@ -234,13 +229,26 @@ func (s *Service) Stop() {
 	s.wg.Wait()
 }
 
-// Send sends a notification synchronously.
+// Send sends a notification synchronously. When msg.Priority is the
+// zero value (PriorityLow), it is rewritten to msg.Type.DefaultPriority()
+// so external callers that omit priority get a sensible default.
+//
+// Internal helpers that want to preserve an explicitly chosen PriorityLow
+// (e.g. SendBackupCompleted) bypass this by calling dispatchMessage directly.
 func (s *Service) Send(ctx context.Context, msg Message) error {
-	// Set default priority if not specified
+	// Set default priority if not specified. PriorityLow shares the zero
+	// value with the unset state, so callers that want PriorityLow
+	// explicitly must use dispatchMessage instead.
 	if msg.Priority == 0 {
 		msg.Priority = msg.Type.DefaultPriority()
 	}
+	return s.dispatchMessage(ctx, msg)
+}
 
+// dispatchMessage performs the throttle / render / dispatch / log pipeline
+// without touching msg.Priority. Internal helpers use this to deliver a
+// message at an explicitly chosen priority (including PriorityLow).
+func (s *Service) dispatchMessage(ctx context.Context, msg Message) error {
 	// Check throttling
 	if !s.throttler.Allow(msg.Type, msg.Priority) {
 		s.logThrottled(ctx, msg)
@@ -311,19 +319,9 @@ func (s *Service) processQueue(ctx context.Context) {
 	}
 }
 
-// RegisterChannel adds a notification channel.
+// RegisterChannel adds a notification channel. There is no license-
+// driven cap in the AGPL build.
 func (s *Service) RegisterChannel(name string, config *channels.ChannelConfig) error {
-	// Enforce license notification channel limit
-	if s.limitProvider != nil {
-		limit := s.limitProvider.GetLimits().MaxNotificationChannels
-		if limit > 0 {
-			current := len(s.ListChannels())
-			if current >= limit {
-				return fmt.Errorf("notification channel limit reached (%d/%d), upgrade your license for more", current, limit)
-			}
-		}
-	}
-
 	if err := s.dispatcher.RegisterChannel(name, config); err != nil {
 		return err
 	}
@@ -519,8 +517,12 @@ func (s *Service) SendUpdateAvailable(ctx context.Context, container, currentVer
 }
 
 // SendBackupCompleted sends a backup completion notification.
+//
+// PriorityLow shares the zero value with the unset state in Send, which
+// would rewrite it to TypeBackupCompleted.DefaultPriority() (PriorityNormal).
+// Call dispatchMessage directly to preserve the explicit PriorityLow.
 func (s *Service) SendBackupCompleted(ctx context.Context, container, path string, sizeBytes int64, duration time.Duration) error {
-	return s.Send(ctx, Message{
+	return s.dispatchMessage(ctx, Message{
 		Type:     channels.TypeBackupCompleted,
 		Priority: channels.PriorityLow,
 		Data: map[string]interface{}{

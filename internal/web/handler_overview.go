@@ -79,10 +79,7 @@ func (h *Handler) OverviewTempl(w http.ResponseWriter, r *http.Request) {
 			// Sort nodes: online first, then by containers descending
 			sort.Slice(data.Nodes, func(i, j int) bool {
 				if data.Nodes[i].Status != data.Nodes[j].Status {
-					if data.Nodes[i].Status == "online" {
-						return true
-					}
-					return false
+					return data.Nodes[i].Status == "online"
 				}
 				return data.Nodes[i].Containers > data.Nodes[j].Containers
 			})

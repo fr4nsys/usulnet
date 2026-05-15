@@ -14,10 +14,10 @@ import (
 	"github.com/fr4nsys/usulnet/internal/models"
 	"github.com/fr4nsys/usulnet/internal/repository/postgres"
 	redisrepo "github.com/fr4nsys/usulnet/internal/repository/redis"
+	"github.com/fr4nsys/usulnet/internal/scheduler/workers"
 	metricssvc "github.com/fr4nsys/usulnet/internal/services/metrics"
 	"github.com/fr4nsys/usulnet/internal/services/notification"
 	"github.com/fr4nsys/usulnet/internal/services/notification/channels"
-	"github.com/fr4nsys/usulnet/internal/scheduler/workers"
 	"github.com/fr4nsys/usulnet/internal/web"
 	"github.com/fr4nsys/usulnet/internal/web/templates/pages/profile"
 )
@@ -386,14 +386,14 @@ func (a *alertNotificationSenderAdapter) SendAlert(ctx context.Context, rule *mo
 		Body:     fmt.Sprintf("Alert rule %q triggered: %s %s %.2f (current: %.2f)", rule.Name, rule.Metric, rule.Operator, rule.Threshold, event.Value),
 		Priority: channels.PriorityCritical,
 		Data: map[string]interface{}{
-			"rule_id":    rule.ID.String(),
-			"rule_name":  rule.Name,
-			"metric":     string(rule.Metric),
-			"operator":   string(rule.Operator),
-			"threshold":  rule.Threshold,
-			"value":      event.Value,
-			"event_id":   event.ID.String(),
-			"severity":   string(rule.Severity),
+			"rule_id":   rule.ID.String(),
+			"rule_name": rule.Name,
+			"metric":    string(rule.Metric),
+			"operator":  string(rule.Operator),
+			"threshold": rule.Threshold,
+			"value":     event.Value,
+			"event_id":  event.ID.String(),
+			"severity":  string(rule.Severity),
 		},
 	})
 }
@@ -423,4 +423,49 @@ func (a *runbookNotificationAdapter) SendRunbookNotification(ctx context.Context
 		msg.Channels = []string{channel}
 	}
 	return a.svc.Send(ctx, msg)
+}
+
+// ============================================================================
+// SSL Observatory Notifier Adapter
+// Bridges the notification service to the SSL observatory's cert-expiry
+// alert hook. Each threshold crossing surfaces one notification.
+// ============================================================================
+
+type sslExpiryNotifierAdapter struct {
+	svc *notification.Service
+}
+
+func (a *sslExpiryNotifierAdapter) NotifyCertExpiring(ctx context.Context, target *models.SSLTarget, scan *models.SSLScanResult, daysLeft, threshold int) error {
+	if a.svc == nil {
+		return nil
+	}
+	severity := channels.PriorityNormal
+	switch {
+	case daysLeft <= 3:
+		severity = channels.PriorityCritical
+	case daysLeft <= 7:
+		severity = channels.PriorityHigh
+	}
+
+	hostname := scan.ScanHostname
+	if hostname == "" {
+		hostname = target.Hostname
+	}
+
+	return a.svc.Send(ctx, notification.Message{
+		Type:     channels.TypeSecurityAlert,
+		Title:    fmt.Sprintf("ssl certificate expiring in %d days: %s", daysLeft, hostname),
+		Body:     fmt.Sprintf("the tls certificate for %q (target %q) expires in %d days, below the configured %d-day threshold.", hostname, target.Name, daysLeft, threshold),
+		Priority: severity,
+		Data: map[string]interface{}{
+			"target_id":   target.ID.String(),
+			"target_name": target.Name,
+			"hostname":    hostname,
+			"port":        target.Port,
+			"days_left":   daysLeft,
+			"threshold":   threshold,
+			"grade":       scan.Grade,
+			"source":      "ssl_observatory",
+		},
+	})
 }

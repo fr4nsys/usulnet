@@ -129,19 +129,6 @@ func (r *GiteaWebhookRepository) DeleteOlderThan(ctx context.Context, before tim
 // Row scanners
 // ============================================================================
 
-func scanGiteaWebhookRow(row pgx.Row) (*models.GiteaWebhookEvent, error) {
-	var e models.GiteaWebhookEvent
-	err := row.Scan(
-		&e.ID, &e.ConnectionID, &e.RepositoryID, &e.EventType,
-		&e.DeliveryID, &e.Payload, &e.Processed, &e.ProcessedAt,
-		&e.ProcessResult, &e.ProcessError, &e.ReceivedAt,
-	)
-	if err != nil {
-		return nil, err
-	}
-	return &e, nil
-}
-
 func scanGiteaWebhookRows(rows pgx.Rows) ([]*models.GiteaWebhookEvent, error) {
 	var result []*models.GiteaWebhookEvent
 	for rows.Next() {

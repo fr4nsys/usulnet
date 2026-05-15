@@ -102,7 +102,7 @@ func (r *GiteaRepositoryRepository) GetByID(ctx context.Context, id uuid.UUID) (
 	row := r.db.QueryRow(ctx, query, id)
 	repo, err := scanGiteaRepoRow(row)
 	if err != nil {
-		if err == pgx.ErrNoRows {
+		if errors.Is(err, pgx.ErrNoRows) {
 			return nil, errors.New(errors.CodeNotFound, "gitea repository not found")
 		}
 		return nil, errors.Wrap(err, errors.CodeDatabaseError, "failed to get gitea repository")
@@ -116,7 +116,7 @@ func (r *GiteaRepositoryRepository) GetByGiteaID(ctx context.Context, connection
 	row := r.db.QueryRow(ctx, query, connectionID, giteaID)
 	repo, err := scanGiteaRepoRow(row)
 	if err != nil {
-		if err == pgx.ErrNoRows {
+		if errors.Is(err, pgx.ErrNoRows) {
 			return nil, nil
 		}
 		return nil, errors.Wrap(err, errors.CodeDatabaseError, "failed to get gitea repository by gitea_id")

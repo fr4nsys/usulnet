@@ -8,8 +8,9 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/fr4nsys/usulnet/internal/models"
 	"github.com/google/uuid"
+
+	"github.com/fr4nsys/usulnet/internal/models"
 )
 
 // RegistryRepository handles CRUD operations for container registries.

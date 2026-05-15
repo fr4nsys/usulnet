@@ -1,0 +1,179 @@
+// SPDX-License-Identifier: AGPL-3.0-or-later
+// Copyright (c) 2024-2026 usulnet contributors
+// https://github.com/fr4nsys/usulnet
+
+package marketplace
+
+import (
+	"fmt"
+
+	"github.com/fr4nsys/usulnet/internal/web/templates/layouts"
+)
+
+// ListData is the view model for the marketplace browse page.
+type ListData struct {
+	PageData   layouts.PageData
+	Featured   []AppView
+	Apps       []AppView
+	Categories []string
+	Query      string
+	Category   string
+	Total      int
+}
+
+// AppView is the card-level view of a marketplace app.
+type AppView struct {
+	ID           string
+	Slug         string
+	Name         string
+	Description  string
+	Icon         string
+	IconColor    string
+	IconSVG      string
+	Category     string
+	Version      string
+	Author       string
+	IsOfficial   bool
+	IsVerified   bool
+	BuiltIn      bool
+	InstallCount int
+	AvgRating    float64
+	RatingCount  int
+}
+
+templ List(data ListData) {
+	@layouts.Base(data.PageData) {
+		<div class="space-y-6">
+			@Nav("browse")
+
+			<div class="flex items-start gap-3 mb-2 text-xs text-gray-500">
+				<i class="fas fa-info-circle mt-0.5"></i>
+				<p>
+					Offline-first catalogue baked into usulnet. Templates and reviews are
+					local to this instance &mdash; no data leaves the host.
+				</p>
+			</div>
+
+			<div class="mb-6">
+				<form method="GET" action="/marketplace" class="flex gap-3">
+					<div class="flex-1 relative">
+						<i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-500"></i>
+						<input type="text" name="q" value={ data.Query } placeholder="Search apps..."
+							class="w-full pl-10 pr-4 py-2 bg-dark-600 border border-dark-500 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-primary-500"/>
+					</div>
+					<select name="category" class="px-3 py-2 bg-dark-600 border border-dark-500 rounded-lg text-gray-300 focus:outline-none focus:border-primary-500">
+						<option value="">All Categories</option>
+						for _, cat := range data.Categories {
+							<option value={ cat } selected?={ cat == data.Category }>{ cat }</option>
+						}
+					</select>
+					<button type="submit" class="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-black font-medium rounded-lg transition-colors text-sm">
+						Search
+					</button>
+				</form>
+			</div>
+
+			if len(data.Featured) > 0 && data.Query == "" && data.Category == "" {
+				<div class="mb-8">
+					<h2 class="text-lg font-semibold text-white mb-4">
+						<i class="fas fa-star text-yellow-400 mr-2"></i>Featured
+					</h2>
+					<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+						for _, app := range data.Featured {
+							@appCard(app, true)
+						}
+					</div>
+				</div>
+			}
+
+			<div>
+				<h2 class="text-lg font-semibold text-white mb-4">
+					if data.Query != "" || data.Category != "" {
+						Results ({ fmt.Sprintf("%d", data.Total) })
+					} else {
+						All Apps ({ fmt.Sprintf("%d", data.Total) })
+					}
+				</h2>
+				<div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
+					for _, app := range data.Apps {
+						@appCard(app, false)
+					}
+				</div>
+				if len(data.Apps) == 0 {
+					<div class="text-center py-12 text-gray-500">
+						<i class="fas fa-search text-4xl mb-3"></i>
+						<p>No apps found matching your criteria.</p>
+					</div>
+				}
+			</div>
+		</div>
+	}
+}
+
+templ appCard(app AppView, featured bool) {
+	<a href={ templ.SafeURL("/marketplace/" + app.Slug) }
+		class={ "bg-dark-700 rounded-lg border border-dark-600 p-4 hover:border-primary-500/50 transition-colors group",
+			templ.KV("ring-1 ring-yellow-500/20", featured) }>
+		<div class="flex items-start gap-3 mb-3">
+			<div class="w-10 h-10 rounded-lg flex items-center justify-center text-lg" style={ fmt.Sprintf("background-color: %s20; color: %s", app.IconColor, app.IconColor) }>
+				<i class={ "fas " + app.Icon }></i>
+			</div>
+			<div class="flex-1 min-w-0">
+				<h3 class="text-sm font-semibold text-white group-hover:text-primary-400 transition-colors truncate">
+					{ app.Name }
+					if app.IsOfficial {
+						<i class="fas fa-check-circle text-primary-400 text-xs ml-1" title="Official"></i>
+					}
+					if app.IsVerified {
+						<i class="fas fa-shield-alt text-green-400 text-xs ml-1" title="Verified"></i>
+					}
+					if app.BuiltIn {
+						<i class="fas fa-microchip text-gray-500 text-xs ml-1" title="Shipped with usulnet"></i>
+					}
+				</h3>
+				if app.Author != "" {
+					<p class="text-xs text-gray-500">by { app.Author }</p>
+				}
+			</div>
+		</div>
+		<p class="text-xs text-gray-400 line-clamp-2 mb-3">{ app.Description }</p>
+		<div class="flex items-center justify-between text-xs text-gray-500">
+			@categoryBadge(app.Category)
+			<div class="flex items-center gap-3">
+				if app.AvgRating > 0 {
+					<span>
+						<i class="fas fa-star text-yellow-400"></i>
+						{ fmt.Sprintf("%.1f", app.AvgRating) }
+					</span>
+				}
+				<span>
+					<i class="fas fa-download"></i>
+					{ fmt.Sprintf("%d", app.InstallCount) }
+				</span>
+			</div>
+		</div>
+	</a>
+}
+
+templ categoryBadge(category string) {
+	switch category {
+		case "networking":
+			<span class="px-2 py-0.5 text-[10px] font-medium rounded-full bg-blue-500/10 text-blue-400">Networking</span>
+		case "storage":
+			<span class="px-2 py-0.5 text-[10px] font-medium rounded-full bg-purple-500/10 text-purple-400">Storage</span>
+		case "development":
+			<span class="px-2 py-0.5 text-[10px] font-medium rounded-full bg-green-500/10 text-green-400">Development</span>
+		case "monitoring":
+			<span class="px-2 py-0.5 text-[10px] font-medium rounded-full bg-yellow-500/10 text-yellow-400">Monitoring</span>
+		case "security":
+			<span class="px-2 py-0.5 text-[10px] font-medium rounded-full bg-red-500/10 text-red-400">Security</span>
+		case "database":
+			<span class="px-2 py-0.5 text-[10px] font-medium rounded-full bg-cyan-500/10 text-cyan-400">Database</span>
+		case "communication":
+			<span class="px-2 py-0.5 text-[10px] font-medium rounded-full bg-pink-500/10 text-pink-400">Communication</span>
+		case "productivity":
+			<span class="px-2 py-0.5 text-[10px] font-medium rounded-full bg-orange-500/10 text-orange-400">Productivity</span>
+		default:
+			<span class="px-2 py-0.5 text-[10px] font-medium rounded-full bg-gray-500/10 text-gray-400">{ category }</span>
+	}
+}

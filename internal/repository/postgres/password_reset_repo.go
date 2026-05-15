@@ -108,7 +108,7 @@ func (r *PasswordResetRepository) ValidateToken(ctx context.Context, token strin
 	)
 
 	if err != nil {
-		if err == pgx.ErrNoRows {
+		if errors.Is(err, pgx.ErrNoRows) {
 			return uuid.Nil, errors.New(errors.CodeUnauthorized, "invalid or expired reset token")
 		}
 		return uuid.Nil, errors.Wrap(err, errors.CodeDatabaseError, "failed to validate token")

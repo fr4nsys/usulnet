@@ -71,7 +71,7 @@ func (r *ComplianceFrameworkRepository) GetFramework(ctx context.Context, id uui
 		&f.IsEnabled, &f.Config, &f.CreatedAt, &f.UpdatedAt,
 	)
 	if err != nil {
-		if err == pgx.ErrNoRows {
+		if errors.Is(err, pgx.ErrNoRows) {
 			return nil, errors.NotFound("compliance framework")
 		}
 		return nil, errors.Wrap(err, errors.CodeDatabaseError, "failed to get compliance framework")
@@ -90,7 +90,7 @@ func (r *ComplianceFrameworkRepository) GetFrameworkByName(ctx context.Context, 
 		&f.IsEnabled, &f.Config, &f.CreatedAt, &f.UpdatedAt,
 	)
 	if err != nil {
-		if err == pgx.ErrNoRows {
+		if errors.Is(err, pgx.ErrNoRows) {
 			return nil, errors.NotFound("compliance framework")
 		}
 		return nil, errors.Wrap(err, errors.CodeDatabaseError, "failed to get compliance framework by name")
@@ -285,7 +285,7 @@ func (r *ComplianceFrameworkRepository) GetAssessment(ctx context.Context, id uu
 		&a.Results, &a.StartedAt, &a.CompletedAt, &a.CreatedBy, &a.CreatedAt,
 	)
 	if err != nil {
-		if err == pgx.ErrNoRows {
+		if errors.Is(err, pgx.ErrNoRows) {
 			return nil, errors.NotFound("compliance assessment")
 		}
 		return nil, errors.Wrap(err, errors.CodeDatabaseError, "failed to get compliance assessment")

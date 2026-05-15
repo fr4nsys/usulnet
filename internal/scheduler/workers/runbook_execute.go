@@ -67,11 +67,11 @@ func NewRunbookExecuteWorker(repo RunbookRepo, containerSvc ContainerActionServi
 
 // RunbookExecuteResult holds the result of a runbook execution.
 type RunbookExecuteResult struct {
-	RunbookID   uuid.UUID `json:"runbook_id"`
-	ExecutionID uuid.UUID `json:"execution_id"`
-	Status      string    `json:"status"`
-	StepsRun    int       `json:"steps_run"`
-	StepsTotal  int       `json:"steps_total"`
+	RunbookID   uuid.UUID     `json:"runbook_id"`
+	ExecutionID uuid.UUID     `json:"execution_id"`
+	Status      string        `json:"status"`
+	StepsRun    int           `json:"steps_run"`
+	StepsTotal  int           `json:"steps_total"`
 	Duration    time.Duration `json:"duration"`
 }
 
@@ -124,12 +124,12 @@ func (w *RunbookExecuteWorker) Execute(ctx context.Context, job *models.Job) (in
 	for i, step := range steps {
 		select {
 		case <-ctx.Done():
-			execStatus = "cancelled"
+			execStatus = "canceled"
 			break
 		default:
 		}
 
-		if execStatus == "cancelled" {
+		if execStatus == "canceled" {
 			break
 		}
 
@@ -323,7 +323,7 @@ func (w *RunbookExecuteWorker) executeWaitStep(ctx context.Context, step models.
 
 	select {
 	case <-ctx.Done():
-		result["status"] = "cancelled"
+		result["status"] = "canceled"
 	case <-time.After(time.Duration(seconds) * time.Second):
 		result["waited_seconds"] = seconds
 	}

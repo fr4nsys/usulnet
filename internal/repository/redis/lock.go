@@ -145,7 +145,7 @@ func (l *Lock) Extend(ctx context.Context, ttl time.Duration) error {
 func (l *Lock) IsHeld(ctx context.Context) (bool, error) {
 	val, err := l.client.rdb.Get(ctx, l.key).Result()
 	if err != nil {
-		if err == goredis.Nil {
+		if errors.Is(err, goredis.Nil) {
 			return false, nil
 		}
 		return false, err

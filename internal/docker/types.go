@@ -99,10 +99,10 @@ type ContainerDetails struct {
 
 // ContainerConfig represents container configuration
 type ContainerConfig struct {
-	Hostname    string
-	Domainname  string
-	User        string
-	AttachStdin bool
+	Hostname     string
+	Domainname   string
+	User         string
+	AttachStdin  bool
 	AttachStdout bool
 	AttachStderr bool
 	Tty          bool
@@ -392,11 +392,11 @@ type ExecResult struct {
 
 // CommitOptions represents options for committing a container to an image
 type CommitOptions struct {
-	Reference string            // image:tag
+	Reference string // image:tag
 	Comment   string
 	Author    string
 	Pause     bool
-	Changes   []string          // Dockerfile instructions to apply
+	Changes   []string // Dockerfile instructions to apply
 	Config    *ContainerConfig
 }
 
@@ -424,7 +424,7 @@ func ContainerFromSummary(c types.Container) Container {
 		ImageID:    c.ImageID,
 		Command:    c.Command,
 		Status:     c.Status,
-		State:      string(c.State),
+		State:      c.State,
 		Created:    time.Unix(c.Created, 0),
 		Labels:     c.Labels,
 		SizeRw:     c.SizeRw,
@@ -492,8 +492,8 @@ func ContainerFromInspect(c types.ContainerJSON) ContainerDetails {
 			ID:      c.ID,
 			Image:   c.Config.Image,
 			ImageID: c.Image,
-			Status:  string(c.State.Status),
-			State:   string(c.State.Status),
+			Status:  c.State.Status,
+			State:   c.State.Status,
 			Labels:  c.Config.Labels,
 		},
 		Driver:       c.Driver,
@@ -530,7 +530,7 @@ func ContainerFromInspect(c types.ContainerJSON) ContainerDetails {
 			}
 		}
 		if c.State.Health != nil {
-			details.Health = string(c.State.Health.Status)
+			details.Health = c.State.Health.Status
 		}
 	}
 
@@ -626,18 +626,18 @@ func ContainerFromInspect(c types.ContainerJSON) ContainerDetails {
 				MaximumRetryCount: c.HostConfig.RestartPolicy.MaximumRetryCount,
 			},
 			Resources: Resources{
-				CPUShares:          c.HostConfig.Resources.CPUShares,
-				Memory:             c.HostConfig.Resources.Memory,
-				NanoCPUs:           c.HostConfig.Resources.NanoCPUs,
-				CPUPeriod:          c.HostConfig.Resources.CPUPeriod,
-				CPUQuota:           c.HostConfig.Resources.CPUQuota,
-				CpusetCpus:         c.HostConfig.Resources.CpusetCpus,
-				CpusetMems:         c.HostConfig.Resources.CpusetMems,
-				MemoryReservation:  c.HostConfig.Resources.MemoryReservation,
-				MemorySwap:         c.HostConfig.Resources.MemorySwap,
-				MemorySwappiness:   c.HostConfig.Resources.MemorySwappiness,
-				OomKillDisable:     c.HostConfig.Resources.OomKillDisable,
-				PidsLimit:          c.HostConfig.Resources.PidsLimit,
+				CPUShares:         c.HostConfig.CPUShares,
+				Memory:            c.HostConfig.Memory,
+				NanoCPUs:          c.HostConfig.NanoCPUs,
+				CPUPeriod:         c.HostConfig.CPUPeriod,
+				CPUQuota:          c.HostConfig.CPUQuota,
+				CpusetCpus:        c.HostConfig.CpusetCpus,
+				CpusetMems:        c.HostConfig.CpusetMems,
+				MemoryReservation: c.HostConfig.MemoryReservation,
+				MemorySwap:        c.HostConfig.MemorySwap,
+				MemorySwappiness:  c.HostConfig.MemorySwappiness,
+				OomKillDisable:    c.HostConfig.OomKillDisable,
+				PidsLimit:         c.HostConfig.PidsLimit,
 			},
 		}
 
@@ -656,7 +656,7 @@ func ContainerFromInspect(c types.ContainerJSON) ContainerDetails {
 		}
 
 		// Convert devices
-		for _, d := range c.HostConfig.Resources.Devices {
+		for _, d := range c.HostConfig.Devices {
 			hc.Devices = append(hc.Devices, DeviceMapping{
 				PathOnHost:        d.PathOnHost,
 				PathInContainer:   d.PathInContainer,
@@ -933,24 +933,24 @@ func StatsFromResponse(containerID string, stats *container.StatsResponse) Conta
 
 // SwarmClusterState represents the current state of the Swarm cluster
 type SwarmClusterState struct {
-	Active           bool   `json:"active"`
-	ClusterID        string `json:"cluster_id,omitempty"`
-	NodeID           string `json:"node_id"`
-	NodeAddr         string `json:"node_addr"`
-	IsManager        bool   `json:"is_manager"`
-	Managers         int    `json:"managers"`
-	Nodes            int    `json:"nodes"`
-	LocalNodeState   string `json:"local_node_state"`   // inactive, pending, active, error, locked
-	Error            string `json:"error,omitempty"`
+	Active         bool   `json:"active"`
+	ClusterID      string `json:"cluster_id,omitempty"`
+	NodeID         string `json:"node_id"`
+	NodeAddr       string `json:"node_addr"`
+	IsManager      bool   `json:"is_manager"`
+	Managers       int    `json:"managers"`
+	Nodes          int    `json:"nodes"`
+	LocalNodeState string `json:"local_node_state"` // inactive, pending, active, error, locked
+	Error          string `json:"error,omitempty"`
 }
 
 // SwarmNodeInfo represents a Swarm cluster node
 type SwarmNodeInfo struct {
 	ID            string `json:"id"`
 	Hostname      string `json:"hostname"`
-	Role          string `json:"role"`          // manager, worker
-	Status        string `json:"status"`        // ready, down, disconnected, unknown
-	Availability  string `json:"availability"`  // active, pause, drain
+	Role          string `json:"role"`         // manager, worker
+	Status        string `json:"status"`       // ready, down, disconnected, unknown
+	Availability  string `json:"availability"` // active, pause, drain
 	EngineVersion string `json:"engine_version"`
 	Address       string `json:"address"`
 	IsLeader      bool   `json:"is_leader"`
@@ -988,7 +988,7 @@ type SwarmServiceInfo struct {
 	ID              string            `json:"id"`
 	Name            string            `json:"name"`
 	Image           string            `json:"image"`
-	Mode            string            `json:"mode"`             // replicated, global
+	Mode            string            `json:"mode"` // replicated, global
 	ReplicasDesired uint64            `json:"replicas_desired"`
 	ReplicasRunning uint64            `json:"replicas_running"`
 	Ports           []SwarmPortConfig `json:"ports,omitempty"`
@@ -1014,15 +1014,15 @@ type SwarmTaskInfo struct {
 
 // SwarmPortConfig represents a published port configuration
 type SwarmPortConfig struct {
-	Protocol      string `json:"protocol"`       // tcp, udp
+	Protocol      string `json:"protocol"` // tcp, udp
 	TargetPort    uint32 `json:"target_port"`
 	PublishedPort uint32 `json:"published_port"`
-	PublishMode   string `json:"publish_mode"`   // ingress, host
+	PublishMode   string `json:"publish_mode"` // ingress, host
 }
 
 // SwarmMount represents a volume mount for a Swarm service
 type SwarmMount struct {
-	Type     string `json:"type"`     // bind, volume, tmpfs
+	Type     string `json:"type"` // bind, volume, tmpfs
 	Source   string `json:"source"`
 	Target   string `json:"target"`
 	ReadOnly bool   `json:"read_only"`

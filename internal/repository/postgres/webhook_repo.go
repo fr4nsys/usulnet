@@ -9,8 +9,9 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/fr4nsys/usulnet/internal/models"
 	"github.com/google/uuid"
+
+	"github.com/fr4nsys/usulnet/internal/models"
 )
 
 // OutgoingWebhookRepository handles CRUD for outgoing webhooks.
@@ -271,8 +272,8 @@ type JobEnqueuer interface {
 
 // WebhookDispatcher dispatches events to outgoing webhooks.
 type WebhookDispatcher struct {
-	repo      *OutgoingWebhookRepository
-	enqueuer  JobEnqueuer
+	repo     *OutgoingWebhookRepository
+	enqueuer JobEnqueuer
 }
 
 // NewWebhookDispatcher creates a new webhook dispatcher.
@@ -317,9 +318,9 @@ func (d *WebhookDispatcher) Dispatch(ctx context.Context, event string, payload 
 			deliveryIDStr := delivery.ID.String()
 			whName := wh.Name
 			jobInput := models.CreateJobInput{
-				Type:        models.JobTypeWebhookDispatch,
-				TargetID:    &deliveryIDStr,
-				TargetName:  &whName,
+				Type:       models.JobTypeWebhookDispatch,
+				TargetID:   &deliveryIDStr,
+				TargetName: &whName,
 				Payload: models.WebhookDispatchPayload{
 					DeliveryID: delivery.ID,
 					WebhookID:  wh.ID,

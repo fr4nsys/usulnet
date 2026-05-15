@@ -325,7 +325,7 @@ func (c *Client) ListCommitsFiltered(ctx context.Context, owner, repo string, op
 	if opts.Page < 1 {
 		opts.Page = 1
 	}
-	
+
 	path := fmt.Sprintf("/api/v1/repos/%s/%s/commits?page=%d&limit=%d", owner, repo, opts.Page, opts.Limit)
 	if opts.SHA != "" {
 		path += "&sha=" + opts.SHA
@@ -342,7 +342,7 @@ func (c *Client) ListCommitsFiltered(ctx context.Context, owner, repo string, op
 	if opts.Until != "" {
 		path += "&until=" + opts.Until
 	}
-	
+
 	var commits []APICommitListItem
 	if err := c.get(ctx, path, &commits); err != nil {
 		return nil, fmt.Errorf("list commits filtered %s/%s: %w", owner, repo, err)
@@ -407,7 +407,7 @@ func (c *Client) ListPullRequests(ctx context.Context, owner, repo string, opts 
 	if opts.Page < 1 {
 		opts.Page = 1
 	}
-	
+
 	path := fmt.Sprintf("/api/v1/repos/%s/%s/pulls?page=%d&limit=%d", owner, repo, opts.Page, opts.Limit)
 	if opts.State != "" {
 		path += "&state=" + opts.State
@@ -418,7 +418,7 @@ func (c *Client) ListPullRequests(ctx context.Context, owner, repo string, opts 
 	if opts.Labels != "" {
 		path += "&labels=" + opts.Labels
 	}
-	
+
 	var prs []APIPullRequest
 	if err := c.get(ctx, path, &prs); err != nil {
 		return nil, fmt.Errorf("list pull requests %s/%s: %w", owner, repo, err)
@@ -517,7 +517,7 @@ func (c *Client) ListIssues(ctx context.Context, owner, repo string, opts IssueL
 	if opts.Page < 1 {
 		opts.Page = 1
 	}
-	
+
 	path := fmt.Sprintf("/api/v1/repos/%s/%s/issues?page=%d&limit=%d", owner, repo, opts.Page, opts.Limit)
 	if opts.State != "" {
 		path += "&state=" + opts.State
@@ -540,7 +540,7 @@ func (c *Client) ListIssues(ctx context.Context, owner, repo string, opts IssueL
 	if opts.Before != "" {
 		path += "&before=" + opts.Before
 	}
-	
+
 	var issues []APIIssue
 	if err := c.get(ctx, path, &issues); err != nil {
 		return nil, fmt.Errorf("list issues %s/%s: %w", owner, repo, err)
@@ -662,13 +662,13 @@ func (c *Client) IsCollaborator(ctx context.Context, owner, repo, user string) (
 		return false, err
 	}
 	req.Header.Set("Authorization", "token "+c.token)
-	
+
 	resp, err := c.httpClient.Do(req)
 	if err != nil {
 		return false, fmt.Errorf("check collaborator: %w", err)
 	}
 	defer resp.Body.Close()
-	
+
 	return resp.StatusCode == http.StatusNoContent, nil
 }
 
@@ -693,15 +693,15 @@ func (c *Client) RemoveCollaborator(ctx context.Context, owner, repo, user strin
 // GetCollaboratorPermission returns the permission level for a collaborator.
 func (c *Client) GetCollaboratorPermission(ctx context.Context, owner, repo, user string) (*APIPermissions, error) {
 	var result struct {
-		Permission  string         `json:"permission"`
-		RoleName    string         `json:"role_name"`
-		User        *APIUser       `json:"user"`
+		Permission string   `json:"permission"`
+		RoleName   string   `json:"role_name"`
+		User       *APIUser `json:"user"`
 	}
 	path := fmt.Sprintf("/api/v1/repos/%s/%s/collaborators/%s/permission", owner, repo, user)
 	if err := c.get(ctx, path, &result); err != nil {
 		return nil, fmt.Errorf("get collaborator permission %s/%s/%s: %w", owner, repo, user, err)
 	}
-	
+
 	perms := &APIPermissions{}
 	switch result.Permission {
 	case "admin", "owner":

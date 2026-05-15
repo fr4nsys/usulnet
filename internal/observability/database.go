@@ -23,7 +23,7 @@ type DBSpanOptions struct {
 	Operation string
 	// Table is the target database table name.
 	Table string
-	// Statement is a sanitised version of the SQL statement (no parameter values).
+	// Statement is a sanitized version of the SQL statement (no parameter values).
 	Statement string
 }
 

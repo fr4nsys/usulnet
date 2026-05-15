@@ -88,9 +88,9 @@ func (r *NotificationConfigRepository) GetChannelConfigs(ctx context.Context) ([
 	var configs []*channels.ChannelConfig
 	for rows.Next() {
 		var (
-			cfg           channels.ChannelConfig
-			settingsJSON  []byte
-			typesJSON     []byte
+			cfg            channels.ChannelConfig
+			settingsJSON   []byte
+			typesJSON      []byte
 			minPriorityInt int
 		)
 
@@ -135,9 +135,9 @@ func (r *NotificationConfigRepository) GetChannelConfig(ctx context.Context, nam
 	`
 
 	var (
-		cfg           channels.ChannelConfig
-		settingsJSON  []byte
-		typesJSON     []byte
+		cfg            channels.ChannelConfig
+		settingsJSON   []byte
+		typesJSON      []byte
 		minPriorityInt int
 	)
 
@@ -150,7 +150,7 @@ func (r *NotificationConfigRepository) GetChannelConfig(ctx context.Context, nam
 		&minPriorityInt,
 	)
 
-	if err == pgx.ErrNoRows {
+	if errors.Is(err, pgx.ErrNoRows) {
 		return nil, errors.NotFound("channel config")
 	}
 	if err != nil {
@@ -213,7 +213,7 @@ func (r *NotificationConfigRepository) SaveRoutingRules(ctx context.Context, rul
 		categoriesJSON, _ := json.Marshal(rule.Categories)
 		channelsJSON, _ := json.Marshal(rule.Channels)
 		excludeJSON, _ := json.Marshal(rule.ExcludeChannels)
-		
+
 		var timeWindowJSON []byte
 		if rule.TimeWindow != nil {
 			timeWindowJSON, _ = json.Marshal(rule.TimeWindow)
@@ -285,20 +285,30 @@ func (r *NotificationConfigRepository) GetRoutingRules(ctx context.Context) ([]*
 		}
 
 		if len(typesJSON) > 0 {
-			json.Unmarshal(typesJSON, &rule.NotificationTypes)
+			if err := json.Unmarshal(typesJSON, &rule.NotificationTypes); err != nil {
+				return nil, errors.Wrap(err, errors.CodeDatabaseError, "unmarshal notification types")
+			}
 		}
 		if len(categoriesJSON) > 0 {
-			json.Unmarshal(categoriesJSON, &rule.Categories)
+			if err := json.Unmarshal(categoriesJSON, &rule.Categories); err != nil {
+				return nil, errors.Wrap(err, errors.CodeDatabaseError, "unmarshal categories")
+			}
 		}
 		if len(channelsJSON) > 0 {
-			json.Unmarshal(channelsJSON, &rule.Channels)
+			if err := json.Unmarshal(channelsJSON, &rule.Channels); err != nil {
+				return nil, errors.Wrap(err, errors.CodeDatabaseError, "unmarshal channels")
+			}
 		}
 		if len(excludeJSON) > 0 {
-			json.Unmarshal(excludeJSON, &rule.ExcludeChannels)
+			if err := json.Unmarshal(excludeJSON, &rule.ExcludeChannels); err != nil {
+				return nil, errors.Wrap(err, errors.CodeDatabaseError, "unmarshal exclude channels")
+			}
 		}
 		if len(timeWindowJSON) > 0 {
 			rule.TimeWindow = &notification.TimeWindow{}
-			json.Unmarshal(timeWindowJSON, rule.TimeWindow)
+			if err := json.Unmarshal(timeWindowJSON, rule.TimeWindow); err != nil {
+				return nil, errors.Wrap(err, errors.CodeDatabaseError, "unmarshal time window")
+			}
 		}
 
 		rule.MinPriority = channels.Priority(minPriorityInt)

@@ -197,19 +197,6 @@ func (r *OPARepository) IncrementEvaluation(ctx context.Context, policyID uuid.U
 const opaResultColumns = `id, policy_id, target_type, target_id, target_name,
 	decision, violations, input_hash, evaluated_at`
 
-// scanOPAResult scans a pgx.Row into a models.OPAEvaluationResult.
-func scanOPAResult(row pgx.Row) (*models.OPAEvaluationResult, error) {
-	r := &models.OPAEvaluationResult{}
-	err := row.Scan(
-		&r.ID, &r.PolicyID, &r.TargetType, &r.TargetID, &r.TargetName,
-		&r.Decision, &r.Violations, &r.InputHash, &r.EvaluatedAt,
-	)
-	if err != nil {
-		return nil, err
-	}
-	return r, nil
-}
-
 // scanOPAResultRows scans multiple pgx.Rows into a slice of models.OPAEvaluationResult.
 func scanOPAResultRows(rows pgx.Rows) ([]*models.OPAEvaluationResult, error) {
 	var results []*models.OPAEvaluationResult

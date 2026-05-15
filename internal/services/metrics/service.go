@@ -27,8 +27,8 @@ type Service struct {
 	logger    *logger.Logger
 
 	// Cache of latest snapshot per host to avoid DB reads for Prometheus.
-	mu            sync.RWMutex
-	latestHost    map[uuid.UUID]*workers.HostMetrics
+	mu               sync.RWMutex
+	latestHost       map[uuid.UUID]*workers.HostMetrics
 	latestContainers map[uuid.UUID][]*workers.ContainerMetrics
 }
 

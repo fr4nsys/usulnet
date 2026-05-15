@@ -57,20 +57,6 @@ const signatureColumns = `id, image_ref, image_digest, signature_type, signature
 	certificate, signer_identity, issuer, transparency_log_id,
 	verified, verified_at, verification_error, created_at`
 
-// scanSignatureRow scans a single row into an ImageSignature.
-func scanSignatureRow(row pgx.Row) (*models.ImageSignature, error) {
-	var s models.ImageSignature
-	err := row.Scan(
-		&s.ID, &s.ImageRef, &s.ImageDigest, &s.SignatureType, &s.SignatureData,
-		&s.Certificate, &s.SignerIdentity, &s.Issuer, &s.TransparencyLogID,
-		&s.Verified, &s.VerifiedAt, &s.VerificationError, &s.CreatedAt,
-	)
-	if err != nil {
-		return nil, err
-	}
-	return &s, nil
-}
-
 // scanSignatureRows scans multiple rows into a slice of ImageSignature pointers.
 func scanSignatureRows(rows pgx.Rows) ([]*models.ImageSignature, error) {
 	defer rows.Close()

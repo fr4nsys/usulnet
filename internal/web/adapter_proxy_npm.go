@@ -12,6 +12,7 @@ import (
 
 	"github.com/fr4nsys/usulnet/internal/integrations/npm"
 	"github.com/fr4nsys/usulnet/internal/models"
+	"github.com/fr4nsys/usulnet/internal/pkg/errors"
 )
 
 type proxyAdapter struct {
@@ -260,7 +261,13 @@ func (a *proxyAdapter) GetConnection(ctx context.Context) (*models.NPMConnection
 	}
 	conn, err := a.npmSvc.GetConnection(ctx, resolveHostID(ctx, a.hostID).String())
 	if err != nil {
-		return nil, nil // Not found is normal
+		// "NPM not configured for this host" is the expected miss path;
+		// every other error is propagated so the caller can react to
+		// real database or network problems instead of seeing nil.
+		if appErr, ok := errors.GetAppError(err); ok && appErr.Code == errors.CodeNPMNotConfigured {
+			return nil, nil
+		}
+		return nil, err
 	}
 	return conn, nil
 }
@@ -311,6 +318,19 @@ func (a *proxyAdapter) IsConnected(ctx context.Context) bool {
 
 func (a *proxyAdapter) Mode() string {
 	return "npm"
+}
+
+// BackendSupport reports NPM's extended-feature support. NPM applies
+// all of v26.2.7's extended features natively, so the matrix is full.
+func (a *proxyAdapter) BackendSupport() ProxyBackendSupport {
+	return ProxyBackendSupport{
+		Mode:         "npm",
+		AccessLists:  true,
+		DeadHosts:    true,
+		Locations:    true,
+		Redirections: true,
+		Streams:      true,
+	}
 }
 
 // --- Redirections ---

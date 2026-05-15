@@ -65,8 +65,8 @@ func TestNewProvider_DefaultsCE(t *testing.T) {
 	if !info.Valid {
 		t.Error("default info.Valid = false, want true")
 	}
-	if info.Limits != CELimits() {
-		t.Errorf("default limits = %+v, want %+v", info.Limits, CELimits())
+	if info.Limits != OpenLimits() {
+		t.Errorf("default limits = %+v, want %+v", info.Limits, OpenLimits())
 	}
 }
 
@@ -143,7 +143,7 @@ func TestProvider_GetLicense(t *testing.T) {
 // HasFeature
 // ============================================================================
 
-func TestProvider_HasFeature_CE(t *testing.T) {
+func TestProvider_HasFeature_OpenEdition(t *testing.T) {
 	dir := t.TempDir()
 	logger := &testLogger{}
 
@@ -155,10 +155,10 @@ func TestProvider_HasFeature_CE(t *testing.T) {
 
 	ctx := context.Background()
 
-	// CE should have no features
-	for _, f := range AllEnterpriseFeatures() {
-		if p.HasFeature(ctx, f) {
-			t.Errorf("CE HasFeature(%q) = true, want false", f)
+	// The AGPL build unlocks every implemented feature unconditionally.
+	for _, f := range AllFeatures() {
+		if !p.HasFeature(ctx, f) {
+			t.Errorf("open edition HasFeature(%q) = false, want true", f)
 		}
 	}
 }
@@ -187,7 +187,7 @@ func TestProvider_IsValid_CE(t *testing.T) {
 // GetLimits
 // ============================================================================
 
-func TestProvider_GetLimits_CE(t *testing.T) {
+func TestProvider_GetLimits_OpenEdition(t *testing.T) {
 	dir := t.TempDir()
 	logger := &testLogger{}
 
@@ -197,11 +197,8 @@ func TestProvider_GetLimits_CE(t *testing.T) {
 	}
 	defer p.Stop()
 
-	limits := p.GetLimits()
-	ceLimits := CELimits()
-
-	if limits != ceLimits {
-		t.Errorf("CE GetLimits() = %+v, want %+v", limits, ceLimits)
+	if got := p.GetLimits(); got != OpenLimits() {
+		t.Errorf("open GetLimits() = %+v, want %+v", got, OpenLimits())
 	}
 }
 
@@ -489,8 +486,8 @@ func TestProvider_SatisfiesLimitProvider(t *testing.T) {
 	// Provider should satisfy LimitProvider interface
 	var lp LimitProvider = p
 	limits := lp.GetLimits()
-	if limits != CELimits() {
-		t.Errorf("GetLimits() via LimitProvider = %+v, want %+v", limits, CELimits())
+	if limits != OpenLimits() {
+		t.Errorf("GetLimits() via LimitProvider = %+v, want %+v", limits, OpenLimits())
 	}
 }
 

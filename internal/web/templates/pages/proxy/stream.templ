@@ -9,6 +9,7 @@ type StreamListData struct {
 	PageData  layouts.PageData
 	Connected bool
 	Streams   []StreamView
+	Support   BackendSupport
 }
 
 type StreamView struct {
@@ -54,6 +55,8 @@ templ StreamList(data StreamListData) {
 			</div>
 
 			@Nav("streams", data.Connected)
+
+			@SupportMatrixBanner(data.Support)
 
 			if data.Connected {
 				if len(data.Streams) > 0 {

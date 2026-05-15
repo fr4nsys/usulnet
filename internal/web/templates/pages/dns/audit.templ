@@ -1,0 +1,45 @@
+package dns
+
+import "github.com/fr4nsys/usulnet/internal/web/templates/layouts"
+
+templ Audit(data AuditPageData) {
+	@layouts.Base(data.PageData) {
+		<div class="space-y-6">
+			<div>
+				<h1 class="text-2xl font-display font-bold text-white">Audit Log</h1>
+				<p class="text-gray-400 mt-1">Provider CRUD, record changes, and ACME state transitions.</p>
+			</div>
+			@Nav("audit")
+
+			<div class="card">
+				<div class="overflow-x-auto">
+					<table class="table">
+						<thead>
+							<tr>
+								<th>When</th>
+								<th>Action</th>
+								<th>Resource</th>
+								<th>Name</th>
+								<th>Details</th>
+							</tr>
+						</thead>
+						<tbody>
+							for _, e := range data.Entries {
+								<tr>
+									<td class="text-sm text-gray-400 whitespace-nowrap">{ e.When }</td>
+									<td><span class="text-sm text-gray-300">{ e.Action }</span></td>
+									<td><span class="text-sm text-gray-400">{ e.ResourceType }</span></td>
+									<td class="font-mono text-sm">{ e.ResourceName }</td>
+									<td class="text-sm text-gray-300">{ e.Details }</td>
+								</tr>
+							}
+							if len(data.Entries) == 0 {
+								<tr><td colspan="5" class="text-center text-gray-500 py-6">No audit entries</td></tr>
+							}
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	}
+}

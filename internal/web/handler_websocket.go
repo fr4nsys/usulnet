@@ -34,30 +34,6 @@ var wsUpgrader = websocket.Upgrader{
 	HandshakeTimeout: 10 * time.Second,
 }
 
-// safeWSConn wraps a WebSocket connection with a write mutex to prevent
-// concurrent write panics (gorilla/websocket requires serial writes).
-type safeWSConn struct {
-	conn *websocket.Conn
-	mu   sync.Mutex
-}
-
-func newSafeWSConn(conn *websocket.Conn) *safeWSConn {
-	return &safeWSConn{conn: conn}
-}
-
-func (s *safeWSConn) WriteJSON(v interface{}) error {
-	s.mu.Lock()
-	defer s.mu.Unlock()
-	s.conn.SetWriteDeadline(time.Now().Add(10 * time.Second))
-	return s.conn.WriteJSON(v)
-}
-
-func (s *safeWSConn) WriteControl(messageType int, data []byte, deadline time.Time) error {
-	s.mu.Lock()
-	defer s.mu.Unlock()
-	return s.conn.WriteControl(messageType, data, deadline)
-}
-
 // ============================================================================
 // WebSocket Message Types
 // ============================================================================
@@ -781,7 +757,7 @@ func (h *Handler) WSJobProgress(w http.ResponseWriter, r *http.Request) {
 				}
 
 				// If job is finished, send final update and close
-				if status == "completed" || status == "failed" || status == "cancelled" {
+				if status == "completed" || status == "failed" || status == "canceled" {
 					return
 				}
 			}
@@ -916,11 +892,4 @@ func (h *Handler) sendWSError(conn *websocket.Conn, message string) {
 		"type":    "error",
 		"message": message,
 	})
-}
-
-func minInt(a, b int) int {
-	if a < b {
-		return a
-	}
-	return b
 }

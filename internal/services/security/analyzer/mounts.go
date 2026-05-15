@@ -66,22 +66,22 @@ func (a *MountsAnalyzer) checkDangerousMounts(data *security.ContainerData) []se
 
 	// Dangerous paths to check
 	dangerousPaths := map[string]dangerousPathInfo{
-		"/":         {severity: models.IssueSeverityCritical, description: "Root filesystem mounted - complete host access"},
-		"/etc":      {severity: models.IssueSeverityCritical, description: "System configuration directory mounted"},
-		"/root":     {severity: models.IssueSeverityHigh, description: "Root user home directory mounted"},
-		"/home":     {severity: models.IssueSeverityMedium, description: "User home directories mounted"},
+		"/":                    {severity: models.IssueSeverityCritical, description: "Root filesystem mounted - complete host access"},
+		"/etc":                 {severity: models.IssueSeverityCritical, description: "System configuration directory mounted"},
+		"/root":                {severity: models.IssueSeverityHigh, description: "Root user home directory mounted"},
+		"/home":                {severity: models.IssueSeverityMedium, description: "User home directories mounted"},
 		"/var/run/docker.sock": {severity: models.IssueSeverityCritical, description: "Docker socket mounted - container escape possible"},
 		"/run/docker.sock":     {severity: models.IssueSeverityCritical, description: "Docker socket mounted - container escape possible"},
-		"/var/lib/docker": {severity: models.IssueSeverityCritical, description: "Docker data directory mounted"},
-		"/proc":    {severity: models.IssueSeverityCritical, description: "Process filesystem mounted"},
-		"/sys":     {severity: models.IssueSeverityHigh, description: "System filesystem mounted"},
-		"/dev":     {severity: models.IssueSeverityCritical, description: "Device directory mounted - full device access"},
-		"/boot":    {severity: models.IssueSeverityCritical, description: "Boot directory mounted - could modify kernel"},
-		"/lib/modules": {severity: models.IssueSeverityCritical, description: "Kernel modules directory mounted"},
-		"/etc/shadow":  {severity: models.IssueSeverityCritical, description: "Password shadow file mounted"},
-		"/etc/passwd":  {severity: models.IssueSeverityHigh, description: "Password file mounted"},
-		"/etc/sudoers": {severity: models.IssueSeverityCritical, description: "Sudoers file mounted"},
-		"/etc/ssh":     {severity: models.IssueSeverityHigh, description: "SSH configuration mounted"},
+		"/var/lib/docker":      {severity: models.IssueSeverityCritical, description: "Docker data directory mounted"},
+		"/proc":                {severity: models.IssueSeverityCritical, description: "Process filesystem mounted"},
+		"/sys":                 {severity: models.IssueSeverityHigh, description: "System filesystem mounted"},
+		"/dev":                 {severity: models.IssueSeverityCritical, description: "Device directory mounted - full device access"},
+		"/boot":                {severity: models.IssueSeverityCritical, description: "Boot directory mounted - could modify kernel"},
+		"/lib/modules":         {severity: models.IssueSeverityCritical, description: "Kernel modules directory mounted"},
+		"/etc/shadow":          {severity: models.IssueSeverityCritical, description: "Password shadow file mounted"},
+		"/etc/passwd":          {severity: models.IssueSeverityHigh, description: "Password file mounted"},
+		"/etc/sudoers":         {severity: models.IssueSeverityCritical, description: "Sudoers file mounted"},
+		"/etc/ssh":             {severity: models.IssueSeverityHigh, description: "SSH configuration mounted"},
 	}
 
 	// Check each mount
@@ -99,13 +99,13 @@ func (a *MountsAnalyzer) checkDangerousMounts(data *security.ContainerData) []se
 			// Exact match or parent directory match
 			if source == dangerousPath || strings.HasPrefix(dangerousPath+"/", source+"/") {
 				issue := security.Issue{
-					CheckID:     "MOUNT_001",
-					Severity:    info.severity,
-					Category:    models.IssueCategorySecurity,
-					Title:       "Dangerous Host Path Mounted",
-					Description: info.description,
+					CheckID:        "MOUNT_001",
+					Severity:       info.severity,
+					Category:       models.IssueCategorySecurity,
+					Title:          "Dangerous Host Path Mounted",
+					Description:    info.description,
 					Recommendation: "Avoid mounting sensitive host paths. Use named volumes or specific subdirectories instead.",
-					Penalty:     a.penaltyForSeverity(info.severity),
+					Penalty:        a.penaltyForSeverity(info.severity),
 				}.WithDetail("container", data.Name).
 					WithDetail("source", mount.Source).
 					WithDetail("destination", mount.Destination).
@@ -128,13 +128,13 @@ func (a *MountsAnalyzer) checkDangerousMounts(data *security.ContainerData) []se
 		for _, keyword := range sensitiveKeywords {
 			if strings.Contains(sourceLower, keyword) && mount.RW {
 				issues = append(issues, security.Issue{
-					CheckID:     "MOUNT_002",
-					Severity:    models.IssueSeverityMedium,
-					Category:    models.IssueCategorySecurity,
-					Title:       "Sensitive Path Mounted Read-Write",
-					Description: "A path containing sensitive keywords is mounted with write access.",
+					CheckID:        "MOUNT_002",
+					Severity:       models.IssueSeverityMedium,
+					Category:       models.IssueCategorySecurity,
+					Title:          "Sensitive Path Mounted Read-Write",
+					Description:    "A path containing sensitive keywords is mounted with write access.",
 					Recommendation: "Mount sensitive paths read-only if the container doesn't need to modify them.",
-					Penalty:     8,
+					Penalty:        8,
 				}.WithDetail("container", data.Name).
 					WithDetail("source", mount.Source).
 					WithDetail("keyword", keyword))

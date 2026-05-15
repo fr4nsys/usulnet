@@ -169,15 +169,15 @@ type AgentConfig struct {
 
 // Heartbeat is sent periodically by agent to indicate liveness.
 type Heartbeat struct {
-	AgentID       string         `json:"agent_id"`
-	Timestamp     time.Time      `json:"timestamp"`
-	Uptime        time.Duration  `json:"uptime"`
-	Stats         *QuickStats    `json:"stats,omitempty"`
-	ActiveJobs    int            `json:"active_jobs"`
-	LastError     string         `json:"last_error,omitempty"`
-	LastErrorTime *time.Time     `json:"last_error_time,omitempty"`
-	Health        HealthStatus   `json:"health"`
-	Metrics       *AgentMetrics  `json:"metrics,omitempty"`
+	AgentID       string        `json:"agent_id"`
+	Timestamp     time.Time     `json:"timestamp"`
+	Uptime        time.Duration `json:"uptime"`
+	Stats         *QuickStats   `json:"stats,omitempty"`
+	ActiveJobs    int           `json:"active_jobs"`
+	LastError     string        `json:"last_error,omitempty"`
+	LastErrorTime *time.Time    `json:"last_error_time,omitempty"`
+	Health        HealthStatus  `json:"health"`
+	Metrics       *AgentMetrics `json:"metrics,omitempty"`
 }
 
 // HealthStatus represents agent health state.
@@ -192,12 +192,12 @@ const (
 
 // QuickStats contains lightweight stats sent with heartbeat.
 type QuickStats struct {
-	ContainersRunning int   `json:"containers_running"`
-	ContainersStopped int   `json:"containers_stopped"`
-	ContainersTotal   int   `json:"containers_total"`
-	ImagesCount       int   `json:"images_count"`
-	VolumesCount      int   `json:"volumes_count"`
-	NetworksCount     int   `json:"networks_count"`
+	ContainersRunning int     `json:"containers_running"`
+	ContainersStopped int     `json:"containers_stopped"`
+	ContainersTotal   int     `json:"containers_total"`
+	ImagesCount       int     `json:"images_count"`
+	VolumesCount      int     `json:"volumes_count"`
+	NetworksCount     int     `json:"networks_count"`
 	CPUPercent        float64 `json:"cpu_percent"`
 	MemoryUsedBytes   int64   `json:"memory_used_bytes"`
 	MemoryTotalBytes  int64   `json:"memory_total_bytes"`

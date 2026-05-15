@@ -1,0 +1,310 @@
+// SPDX-License-Identifier: AGPL-3.0-or-later
+// Copyright (c) 2024-2026 usulnet contributors
+// https://github.com/fr4nsys/usulnet
+
+package crontab
+
+import (
+	"fmt"
+	"github.com/fr4nsys/usulnet/internal/web/templates/layouts"
+)
+
+type DetailData struct {
+	PageData       layouts.PageData
+	Entry          EntryView
+	Executions     []ExecutionView
+	ExecutionsPage int
+	ExecutionsTotal int
+	ExecutionsLimit int
+}
+
+func formatDuration(ms int64) string {
+	if ms < 1000 {
+		return fmt.Sprintf("%dms", ms)
+	}
+	if ms < 60000 {
+		return fmt.Sprintf("%.1fs", float64(ms)/1000)
+	}
+	return fmt.Sprintf("%dm %ds", ms/60000, (ms%60000)/1000)
+}
+
+templ Detail(data DetailData) {
+	@layouts.Base(data.PageData) {
+		<div class="space-y-6">
+			@Nav("entries")
+
+			<div class="flex items-center justify-between">
+				<div class="flex items-center gap-3">
+					<a href="/crontab" class="text-gray-400 hover:text-white">
+						<i class="fas fa-arrow-left"></i>
+					</a>
+					<div>
+						<h1 class="text-2xl font-display font-bold text-white">{ data.Entry.Name }</h1>
+						if data.Entry.Description != "" {
+							<p class="text-gray-400 mt-1">{ data.Entry.Description }</p>
+						}
+					</div>
+				</div>
+				<div class="flex items-center gap-2">
+					if data.Entry.Enabled {
+						<span class="badge badge-success">
+							<i class="fas fa-check-circle mr-1"></i>Enabled
+						</span>
+					} else {
+						<span class="badge badge-danger">
+							<i class="fas fa-pause-circle mr-1"></i>Disabled
+						</span>
+					}
+					<form method="POST" action={ templ.SafeURL(fmt.Sprintf("/crontab/%s/run", data.Entry.ID)) } style="display:inline">
+						<input type="hidden" name="csrf_token" value={ data.PageData.CSRFToken }/>
+						<button type="submit" class="btn btn-sm bg-blue-500/10 text-blue-400 hover:bg-blue-500/20 border border-blue-500/20">
+							<i class="fas fa-play mr-1"></i>Run Now
+						</button>
+					</form>
+					<a href={ templ.SafeURL(fmt.Sprintf("/crontab/%s/edit", data.Entry.ID)) } class="btn btn-sm btn-secondary">
+						<i class="fas fa-edit mr-1"></i>Edit
+					</a>
+					<button
+						hx-delete={ fmt.Sprintf("/crontab/%s", data.Entry.ID) }
+						hx-confirm="Delete this cron job and all its execution history?"
+						class="btn btn-sm bg-red-500/10 text-red-400 hover:bg-red-500/20 border border-red-500/20"
+					>
+						<i class="fas fa-trash mr-1"></i>Delete
+					</button>
+				</div>
+			</div>
+
+			<div class="card p-6">
+				<h3 class="text-lg font-display font-bold text-white mb-4">
+					<i class="fas fa-info-circle mr-2"></i>Job Details
+				</h3>
+				<div class="bg-dark-800 border border-dark-700 rounded-lg divide-y divide-dark-700">
+					<div class="p-4 flex justify-between">
+						<span class="text-gray-400">Schedule</span>
+						<span class="text-white font-mono">{ data.Entry.Schedule }</span>
+					</div>
+					<div class="p-4 flex justify-between">
+						<span class="text-gray-400">Command Type</span>
+						@commandTypeBadge(data.Entry.CommandType)
+					</div>
+					<div class="p-4 flex justify-between items-start">
+						<span class="text-gray-400">Command</span>
+						<pre class="text-white font-mono text-sm bg-dark-900 rounded px-3 py-1 max-w-lg overflow-x-auto">{ data.Entry.Command }</pre>
+					</div>
+					if data.Entry.WorkingDir != nil && *data.Entry.WorkingDir != "" {
+						<div class="p-4 flex justify-between">
+							<span class="text-gray-400">Working Directory</span>
+							<span class="text-white font-mono">{ *data.Entry.WorkingDir }</span>
+						</div>
+					}
+					if data.Entry.ContainerID != nil && *data.Entry.ContainerID != "" {
+						<div class="p-4 flex justify-between">
+							<span class="text-gray-400">Container</span>
+							<span class="text-white font-mono">{ *data.Entry.ContainerID }</span>
+						</div>
+					}
+					if data.Entry.HTTPMethod != nil && *data.Entry.HTTPMethod != "" {
+						<div class="p-4 flex justify-between">
+							<span class="text-gray-400">HTTP Method</span>
+							<span class="text-white">{ *data.Entry.HTTPMethod }</span>
+						</div>
+					}
+					if data.Entry.HTTPURL != nil && *data.Entry.HTTPURL != "" {
+						<div class="p-4 flex justify-between">
+							<span class="text-gray-400">URL</span>
+							<span class="text-white font-mono">{ *data.Entry.HTTPURL }</span>
+						</div>
+					}
+					<div class="p-4 flex justify-between">
+						<span class="text-gray-400">Total Runs</span>
+						<span class="text-white">{ fmt.Sprintf("%d", data.Entry.RunCount) }</span>
+					</div>
+					<div class="p-4 flex justify-between">
+						<span class="text-gray-400">Failed Runs</span>
+						if data.Entry.FailCount > 0 {
+							<span class="text-red-400">{ fmt.Sprintf("%d", data.Entry.FailCount) }</span>
+						} else {
+							<span class="text-green-400">0</span>
+						}
+					</div>
+					<div class="p-4 flex justify-between">
+						<span class="text-gray-400">Last Run</span>
+						if data.Entry.LastRunAt != nil {
+							<div class="flex items-center gap-2">
+								<span class="text-white">{ *data.Entry.LastRunAt }</span>
+								if data.Entry.LastRunStatus != nil {
+									if *data.Entry.LastRunStatus == "success" {
+										<span class="badge badge-success">Success</span>
+									} else {
+										<span class="badge badge-danger">Failed</span>
+									}
+								}
+							</div>
+						} else {
+							<span class="text-gray-500">Never executed</span>
+						}
+					</div>
+					<div class="p-4 flex justify-between">
+						<span class="text-gray-400">Next Run</span>
+						if data.Entry.NextRunAt != nil {
+							<span class="text-white">{ *data.Entry.NextRunAt }</span>
+						} else {
+							<span class="text-gray-500">Not scheduled</span>
+						}
+					</div>
+					<div class="p-4 flex justify-between">
+						<span class="text-gray-400">Created</span>
+						<span class="text-white">{ data.Entry.CreatedAt }</span>
+					</div>
+				</div>
+			</div>
+
+			<div class="card p-6">
+				<div class="flex items-center justify-between">
+					<div>
+						<h3 class="text-lg font-display font-bold text-white">
+							<i class="fas fa-toggle-on mr-2"></i>Quick Actions
+						</h3>
+						<p class="text-sm text-gray-400 mt-1">Enable or disable this cron job</p>
+					</div>
+					<form method="POST" action={ templ.SafeURL(fmt.Sprintf("/crontab/%s/toggle", data.Entry.ID)) }>
+						<input type="hidden" name="csrf_token" value={ data.PageData.CSRFToken }/>
+						if data.Entry.Enabled {
+							<input type="hidden" name="enabled" value="false"/>
+							<button type="submit" class="btn btn-sm bg-red-500/10 text-red-400 hover:bg-red-500/20 border border-red-500/20">
+								<i class="fas fa-pause mr-1"></i>Disable
+							</button>
+						} else {
+							<input type="hidden" name="enabled" value="true"/>
+							<button type="submit" class="btn btn-sm bg-green-500/10 text-green-400 hover:bg-green-500/20 border border-green-500/20">
+								<i class="fas fa-play mr-1"></i>Enable
+							</button>
+						}
+					</form>
+				</div>
+			</div>
+
+			<div class="card p-6">
+				<div class="flex items-center justify-between mb-4">
+					<h3 class="text-lg font-display font-bold text-white">
+						<i class="fas fa-history mr-2"></i>Execution History
+						if data.ExecutionsTotal > 0 {
+							<span class="text-gray-400 text-sm font-normal">({ fmt.Sprintf("%d total, page %d", data.ExecutionsTotal, data.ExecutionsPage+1) })</span>
+						} else {
+							<span class="text-gray-400 text-sm font-normal">(0)</span>
+						}
+					</h3>
+				</div>
+				if len(data.Executions) > 0 {
+					<div class="overflow-x-auto">
+						<table class="table">
+							<thead>
+								<tr>
+									<th>Status</th>
+									<th>Started</th>
+									<th>Duration</th>
+									<th>Exit Code</th>
+									<th>Output</th>
+								</tr>
+							</thead>
+							<tbody>
+								for _, exec := range data.Executions {
+									<tr>
+										<td>
+											if exec.Status == "success" {
+												<span class="badge badge-success">Success</span>
+											} else if exec.Status == "failed" {
+												<span class="badge badge-danger">Failed</span>
+											} else if exec.Status == "running" {
+												<span class="badge badge-warning">Running</span>
+											} else {
+												<span class="badge">{ exec.Status }</span>
+											}
+										</td>
+										<td>
+											<span class="text-sm text-gray-300">{ exec.StartedAt }</span>
+										</td>
+										<td>
+											<span class="text-sm text-gray-300">{ formatDuration(exec.DurationMs) }</span>
+										</td>
+										<td>
+											if exec.ExitCode != nil {
+												if *exec.ExitCode == 0 {
+													<span class="text-sm text-green-400">{ fmt.Sprintf("%d", *exec.ExitCode) }</span>
+												} else {
+													<span class="text-sm text-red-400">{ fmt.Sprintf("%d", *exec.ExitCode) }</span>
+												}
+											} else {
+												<span class="text-sm text-gray-500">-</span>
+											}
+										</td>
+										<td>
+											if exec.Output != "" {
+												<details class="text-sm">
+													<summary class="text-primary-400 cursor-pointer hover:text-primary-300">View output</summary>
+													<pre class="mt-2 bg-dark-900 rounded p-2 text-xs text-gray-300 max-h-32 overflow-auto font-mono">{ exec.Output }</pre>
+												</details>
+											} else if exec.Error != "" {
+												<details class="text-sm">
+													<summary class="text-red-400 cursor-pointer hover:text-red-300">View error</summary>
+													<pre class="mt-2 bg-dark-900 rounded p-2 text-xs text-red-300 max-h-32 overflow-auto font-mono">{ exec.Error }</pre>
+												</details>
+											} else {
+												<span class="text-sm text-gray-500">No output</span>
+											}
+										</td>
+									</tr>
+								}
+							</tbody>
+						</table>
+					</div>
+
+					if data.ExecutionsTotal > data.ExecutionsLimit {
+						<div class="flex justify-between items-center mt-4 text-sm">
+							if data.ExecutionsPage > 0 {
+								<a href={ templ.SafeURL(fmt.Sprintf("/crontab/%s?page=%d", data.Entry.ID, data.ExecutionsPage-1)) } class="text-primary-400 hover:text-primary-300">
+									<i class="fas fa-arrow-left mr-1"></i>Previous
+								</a>
+							} else {
+								<span class="text-gray-500">
+									<i class="fas fa-arrow-left mr-1"></i>Previous
+								</span>
+							}
+							<span class="text-gray-400">
+								Page { fmt.Sprintf("%d", data.ExecutionsPage+1) } of { fmt.Sprintf("%d", pagesCount(data.ExecutionsTotal, data.ExecutionsLimit)) }
+							</span>
+							if (data.ExecutionsPage+1)*data.ExecutionsLimit < data.ExecutionsTotal {
+								<a href={ templ.SafeURL(fmt.Sprintf("/crontab/%s?page=%d", data.Entry.ID, data.ExecutionsPage+1)) } class="text-primary-400 hover:text-primary-300">
+									Next<i class="fas fa-arrow-right ml-1"></i>
+								</a>
+							} else {
+								<span class="text-gray-500">
+									Next<i class="fas fa-arrow-right ml-1"></i>
+								</span>
+							}
+						</div>
+					}
+				} else {
+					<div class="text-center py-8">
+						<i class="fas fa-history text-3xl text-gray-400 mb-3"></i>
+						<p class="text-gray-400">No executions yet</p>
+					</div>
+				}
+			</div>
+		</div>
+	}
+}
+
+func pagesCount(total, perPage int) int {
+	if perPage <= 0 {
+		return 1
+	}
+	pages := total / perPage
+	if total%perPage != 0 {
+		pages++
+	}
+	if pages == 0 {
+		return 1
+	}
+	return pages
+}

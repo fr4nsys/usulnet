@@ -9,7 +9,6 @@ import (
 	"context"
 	"fmt"
 	"strings"
-	"sync"
 	"time"
 
 	"github.com/google/uuid"
@@ -97,8 +96,6 @@ type Service struct {
 	apiKeyRepo APIKeyRepository
 	config     ServiceConfig
 	logger     *logger.Logger
-	limitMu    sync.RWMutex
-	limitProvider license.LimitProvider
 }
 
 // UserRepository defines the persistence interface for user operations.
@@ -131,12 +128,10 @@ type APIKeyRepository interface {
 	ExistsByName(ctx context.Context, userID uuid.UUID, name string) (bool, error)
 }
 
-// SetLimitProvider sets the license limit provider for resource cap enforcement.
-func (s *Service) SetLimitProvider(lp license.LimitProvider) {
-	s.limitMu.Lock()
-	s.limitProvider = lp
-	s.limitMu.Unlock()
-}
+// SetLimitProvider is a no-op kept for callers that still wire the
+// legacy hook; the AGPL build does not cap users or API keys via a
+// license token.
+func (s *Service) SetLimitProvider(_ license.LimitProvider) {}
 
 // NewService creates a new user service.
 func NewService(
@@ -169,26 +164,9 @@ type CreateInput struct {
 	Role     models.UserRole
 }
 
-// Create creates a new user.
+// Create creates a new user. The AGPL build imposes no license-driven
+// user cap; operator-controlled limits remain in s.config (if any).
 func (s *Service) Create(ctx context.Context, input CreateInput) (*models.User, error) {
-	// Enforce license user limit (fail-closed: error on stats failure)
-	s.limitMu.RLock()
-	lp := s.limitProvider
-	s.limitMu.RUnlock()
-	if lp != nil {
-		limit := lp.GetLimits().MaxUsers
-		if limit > 0 {
-			stats, err := s.GetStats(ctx)
-			if err != nil {
-				return nil, fmt.Errorf("check user limit: %w", err)
-			}
-			current := int(stats.Total)
-			if current >= limit {
-				return nil, apperrors.LimitExceeded("users", current, limit)
-			}
-		}
-	}
-
 	// Validate input
 	if err := s.validateCreateInput(input); err != nil {
 		return nil, err
@@ -677,25 +655,8 @@ func (s *Service) CreateAPIKey(ctx context.Context, userID uuid.UUID, name strin
 		return nil, err
 	}
 
-	// Check global API keys limit (license)
-	s.limitMu.RLock()
-	lp := s.limitProvider
-	s.limitMu.RUnlock()
-	if lp != nil {
-		limit := lp.GetLimits().MaxAPIKeys
-		if limit > 0 {
-			globalCount, err := s.apiKeyRepo.CountAll(ctx)
-			if err != nil {
-				return nil, fmt.Errorf("count API keys: %w", err)
-			}
-			if int(globalCount) >= limit {
-				return nil, apperrors.NewWithStatus(apperrors.CodeLimitExceeded,
-					fmt.Sprintf("global API key limit reached (%d/%d), upgrade your license for more", globalCount, limit), 402)
-			}
-		}
-	}
-
-	// Check max API keys per-user limit
+	// Check max API keys per-user limit (operator-controlled, not a
+	// license cap)
 	if s.config.MaxAPIKeysPerUser > 0 {
 		count, err := s.apiKeyRepo.CountByUserID(ctx, userID)
 		if err != nil {

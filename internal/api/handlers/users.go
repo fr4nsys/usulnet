@@ -12,7 +12,6 @@ import (
 	"github.com/go-chi/chi/v5"
 
 	"github.com/fr4nsys/usulnet/internal/api/middleware"
-	"github.com/fr4nsys/usulnet/internal/license"
 	"github.com/fr4nsys/usulnet/internal/models"
 	"github.com/fr4nsys/usulnet/internal/pkg/logger"
 	"github.com/fr4nsys/usulnet/internal/services/user"
@@ -21,8 +20,7 @@ import (
 // UserHandler handles user management endpoints.
 type UserHandler struct {
 	BaseHandler
-	userService     *user.Service
-	licenseProvider middleware.LicenseProvider
+	userService *user.Service
 }
 
 // NewUserHandler creates a new user handler.
@@ -33,37 +31,18 @@ func NewUserHandler(userService *user.Service, log *logger.Logger) *UserHandler 
 	}
 }
 
-// SetLicenseProvider sets the license provider for feature gating.
-func (h *UserHandler) SetLicenseProvider(provider middleware.LicenseProvider) {
-	h.licenseProvider = provider
-}
+// SetLicenseProvider is retained as a no-op for callers that still wire
+// the legacy hook; the AGPL build performs no feature- or limit-based
+// gating on user routes.
+func (h *UserHandler) SetLicenseProvider(_ middleware.LicenseProvider) {}
 
 // Routes returns the user routes.
 func (h *UserHandler) Routes() chi.Router {
 	r := chi.NewRouter()
 
-	// User management (admin only)
 	r.Get("/", h.List)
 	r.Get("/stats", h.GetStats)
-
-	// User creation enforces MaxUsers limit
-	r.Group(func(r chi.Router) {
-		if h.licenseProvider != nil {
-			r.Use(middleware.RequireLimit(
-				h.licenseProvider,
-				"users",
-				func(r *http.Request) int {
-					stats, err := h.userService.GetStats(r.Context())
-					if err != nil {
-						return 0
-					}
-					return int(stats.Total)
-				},
-				func(l license.Limits) int { return l.MaxUsers },
-			))
-		}
-		r.Post("/", h.Create)
-	})
+	r.Post("/", h.Create)
 	r.Get("/{userID}", h.Get)
 	r.Put("/{userID}", h.Update)
 	r.Delete("/{userID}", h.Delete)
@@ -71,24 +50,17 @@ func (h *UserHandler) Routes() chi.Router {
 	r.Post("/{userID}/deactivate", h.Deactivate)
 	r.Post("/{userID}/unlock", h.Unlock)
 
-	// API keys (listing/deleting allowed for all, creation requires api_keys feature)
+	// API keys
 	r.Get("/{userID}/api-keys", h.ListAPIKeys)
 	r.Delete("/{userID}/api-keys/{keyID}", h.DeleteAPIKey)
+	r.Post("/{userID}/api-keys", h.CreateAPIKey)
 
 	// Profile (self-service)
 	r.Get("/profile", h.GetProfile)
 	r.Put("/profile", h.UpdateProfile)
 	r.Get("/profile/api-keys", h.ListMyAPIKeys)
 	r.Delete("/profile/api-keys/{keyID}", h.DeleteMyAPIKey)
-
-	// API key creation requires FeatureAPIKeys (Business+)
-	r.Group(func(r chi.Router) {
-		if h.licenseProvider != nil {
-			r.Use(middleware.RequireFeature(h.licenseProvider, license.FeatureAPIKeys))
-		}
-		r.Post("/{userID}/api-keys", h.CreateAPIKey)
-		r.Post("/profile/api-keys", h.CreateMyAPIKey)
-	})
+	r.Post("/profile/api-keys", h.CreateMyAPIKey)
 
 	return r
 }

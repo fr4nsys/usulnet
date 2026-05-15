@@ -73,15 +73,15 @@ func NewRetentionManager(
 
 // CleanupResult contains the results of a cleanup operation.
 type CleanupResult struct {
-	DeletedCount    int
-	DeletedSize     int64
-	FailedCount     int
-	SkippedCount    int
-	ProcessedCount  int
-	Duration        time.Duration
-	DeletedBackups  []uuid.UUID
-	FailedBackups   []uuid.UUID
-	Errors          []error
+	DeletedCount   int
+	DeletedSize    int64
+	FailedCount    int
+	SkippedCount   int
+	ProcessedCount int
+	Duration       time.Duration
+	DeletedBackups []uuid.UUID
+	FailedBackups  []uuid.UUID
+	Errors         []error
 }
 
 // Cleanup removes expired backups based on retention policy.
@@ -480,12 +480,4 @@ func (rm *RetentionManager) PruneTarget(ctx context.Context, hostID uuid.UUID, t
 	)
 
 	return result, nil
-}
-
-// min returns the minimum of two integers.
-func min(a, b int) int {
-	if a < b {
-		return a
-	}
-	return b
 }

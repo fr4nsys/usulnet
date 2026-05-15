@@ -8,8 +8,9 @@ import (
 	"context"
 	"time"
 
-	"github.com/fr4nsys/usulnet/internal/models"
 	"github.com/google/uuid"
+
+	"github.com/fr4nsys/usulnet/internal/models"
 )
 
 // RegistryRepo defines the interface for registry persistence.
@@ -178,4 +179,3 @@ type TrackedVulnRepo interface {
 }
 
 type TrackedVulnRecord = models.TrackedVulnRecord
-

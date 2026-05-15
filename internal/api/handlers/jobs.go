@@ -127,49 +127,49 @@ type UpdateScheduledJobRequest struct {
 
 // JobResponse represents a job in API responses.
 type JobResponse struct {
-	ID              string  `json:"id"`
-	Type            string  `json:"type"`
-	Status          string  `json:"status"`
-	Priority        string  `json:"priority"`
-	HostID          *string `json:"host_id,omitempty"`
-	TargetID        *string `json:"target_id,omitempty"`
-	TargetName      *string `json:"target_name,omitempty"`
+	ID              string      `json:"id"`
+	Type            string      `json:"type"`
+	Status          string      `json:"status"`
+	Priority        string      `json:"priority"`
+	HostID          *string     `json:"host_id,omitempty"`
+	TargetID        *string     `json:"target_id,omitempty"`
+	TargetName      *string     `json:"target_name,omitempty"`
 	Payload         interface{} `json:"payload,omitempty"`
 	Result          interface{} `json:"result,omitempty"`
-	ErrorMessage    *string `json:"error_message,omitempty"`
-	Progress        int     `json:"progress"`
-	ProgressMessage *string `json:"progress_message,omitempty"`
-	Attempts        int     `json:"attempts"`
-	MaxAttempts     int     `json:"max_attempts"`
-	ScheduledAt     *string `json:"scheduled_at,omitempty"`
-	StartedAt       *string `json:"started_at,omitempty"`
-	CompletedAt     *string `json:"completed_at,omitempty"`
-	CreatedBy       *string `json:"created_by,omitempty"`
-	CreatedAt       string  `json:"created_at"`
-	UpdatedAt       string  `json:"updated_at"`
+	ErrorMessage    *string     `json:"error_message,omitempty"`
+	Progress        int         `json:"progress"`
+	ProgressMessage *string     `json:"progress_message,omitempty"`
+	Attempts        int         `json:"attempts"`
+	MaxAttempts     int         `json:"max_attempts"`
+	ScheduledAt     *string     `json:"scheduled_at,omitempty"`
+	StartedAt       *string     `json:"started_at,omitempty"`
+	CompletedAt     *string     `json:"completed_at,omitempty"`
+	CreatedBy       *string     `json:"created_by,omitempty"`
+	CreatedAt       string      `json:"created_at"`
+	UpdatedAt       string      `json:"updated_at"`
 }
 
 // ScheduledJobResponse represents a scheduled job in API responses.
 type ScheduledJobResponse struct {
-	ID            string  `json:"id"`
-	Name          string  `json:"name"`
-	Type          string  `json:"type"`
-	Schedule      string  `json:"schedule"`
-	HostID        *string `json:"host_id,omitempty"`
-	TargetID      *string `json:"target_id,omitempty"`
-	TargetName    *string `json:"target_name,omitempty"`
+	ID            string      `json:"id"`
+	Name          string      `json:"name"`
+	Type          string      `json:"type"`
+	Schedule      string      `json:"schedule"`
+	HostID        *string     `json:"host_id,omitempty"`
+	TargetID      *string     `json:"target_id,omitempty"`
+	TargetName    *string     `json:"target_name,omitempty"`
 	Payload       interface{} `json:"payload,omitempty"`
-	Priority      string  `json:"priority"`
-	MaxAttempts   int     `json:"max_attempts"`
-	IsEnabled     bool    `json:"is_enabled"`
-	LastRunAt     *string `json:"last_run_at,omitempty"`
-	LastRunStatus *string `json:"last_run_status,omitempty"`
-	NextRunAt     *string `json:"next_run_at,omitempty"`
-	RunCount      int64   `json:"run_count"`
-	FailCount     int64   `json:"fail_count"`
-	CreatedBy     *string `json:"created_by,omitempty"`
-	CreatedAt     string  `json:"created_at"`
-	UpdatedAt     string  `json:"updated_at"`
+	Priority      string      `json:"priority"`
+	MaxAttempts   int         `json:"max_attempts"`
+	IsEnabled     bool        `json:"is_enabled"`
+	LastRunAt     *string     `json:"last_run_at,omitempty"`
+	LastRunStatus *string     `json:"last_run_status,omitempty"`
+	NextRunAt     *string     `json:"next_run_at,omitempty"`
+	RunCount      int64       `json:"run_count"`
+	FailCount     int64       `json:"fail_count"`
+	CreatedBy     *string     `json:"created_by,omitempty"`
+	CreatedAt     string      `json:"created_at"`
+	UpdatedAt     string      `json:"updated_at"`
 }
 
 // JobStatsResponse represents job statistics.

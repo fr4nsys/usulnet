@@ -1,0 +1,84 @@
+package dns
+
+import (
+	"fmt"
+
+	"github.com/fr4nsys/usulnet/internal/web/templates/layouts"
+)
+
+templ ProviderList(data ProviderListData) {
+	@layouts.Base(data.PageData) {
+		<div class="space-y-6">
+			<div class="flex items-center justify-between">
+				<div>
+					<h1 class="text-2xl font-display font-bold text-white">DNS Providers</h1>
+					<p class="text-gray-400 mt-1">Configure provider plugins for ACME DNS-01 and proxy record management.</p>
+				</div>
+				<a href="/dns/new" class="btn-primary">
+					<i class="fas fa-plus mr-2"></i>Add provider
+				</a>
+			</div>
+
+			@Nav("providers")
+
+			if len(data.Providers) > 0 {
+				<div class="card">
+					<div class="overflow-x-auto">
+						<table class="table">
+							<thead>
+								<tr>
+									<th>Name</th>
+									<th>Kind</th>
+									<th>Records</th>
+									<th>State</th>
+									<th>Created</th>
+									<th class="text-right">Actions</th>
+								</tr>
+							</thead>
+							<tbody>
+								for _, p := range data.Providers {
+									<tr>
+										<td>
+											<a href={ templ.SafeURL(fmt.Sprintf("/dns/%s", p.ID)) } class="text-white hover:text-primary-400">{ p.Name }</a>
+											if p.Description != "" {
+												<div class="text-xs text-gray-500 mt-1">{ p.Description }</div>
+											}
+										</td>
+										<td><span class="text-sm text-gray-300">{ p.KindLabel }</span></td>
+										<td><span class="text-sm text-gray-300">{ fmt.Sprintf("%d", p.RecordCount) }</span></td>
+										<td>
+											if p.Enabled {
+												<span class="badge badge-success">Enabled</span>
+											} else {
+												<span class="badge badge-danger">Disabled</span>
+											}
+										</td>
+										<td><span class="text-sm text-gray-400">{ p.CreatedAt }</span></td>
+										<td class="text-right">
+											<div class="inline-flex items-center gap-2">
+												<a href={ templ.SafeURL(fmt.Sprintf("/dns/%s/edit", p.ID)) } class="text-primary-400 hover:text-primary-300 text-sm">Edit</a>
+												<form method="POST" action={ templ.SafeURL(fmt.Sprintf("/dns/%s/delete", p.ID)) } onsubmit="return confirm('Delete this provider? Records and ACME orders will also be removed.')" style="display:inline">
+													<input type="hidden" name="csrf_token" value={ data.PageData.CSRFToken }/>
+													<button type="submit" class="text-red-400 hover:text-red-300 text-sm">Delete</button>
+												</form>
+											</div>
+										</td>
+									</tr>
+								}
+							</tbody>
+						</table>
+					</div>
+				</div>
+			} else {
+				<div class="card p-8 text-center">
+					<i class="fas fa-cloud text-4xl text-gray-400 mb-4"></i>
+					<h3 class="text-lg font-medium text-white mb-2">No DNS providers configured</h3>
+					<p class="text-gray-400 mb-4">Attach a Cloudflare, Route 53, DigitalOcean, or RFC 2136 provider to enable ACME DNS-01 challenges and record automation.</p>
+					<a href="/dns/new" class="btn-primary">
+						<i class="fas fa-plus mr-2"></i>Add provider
+					</a>
+				</div>
+			}
+		</div>
+	}
+}

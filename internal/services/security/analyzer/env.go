@@ -168,13 +168,13 @@ func (a *EnvAnalyzer) Analyze(ctx context.Context, data *security.ContainerData)
 		// Report medium severity issues separately with lower penalty
 		if len(mediumSeverity) > 0 && len(highSeverity) == 0 {
 			issues = append(issues, security.Issue{
-				CheckID:     models.CheckSecretsInEnv,
-				Severity:    models.IssueSeverityMedium,
-				Category:    models.IssueCategorySecurity,
-				Title:       "Possible Secrets in Environment",
-				Description: "Container has environment variables that may contain sensitive data. Review to ensure no secrets are exposed.",
+				CheckID:        models.CheckSecretsInEnv,
+				Severity:       models.IssueSeverityMedium,
+				Category:       models.IssueCategorySecurity,
+				Title:          "Possible Secrets in Environment",
+				Description:    "Container has environment variables that may contain sensitive data. Review to ensure no secrets are exposed.",
 				Recommendation: "If these contain secrets, use Docker secrets or mounted secret files instead.",
-				Penalty:     10,
+				Penalty:        10,
 			}.WithDetail("container", data.Name).
 				WithDetail("variables_to_review", mediumSeverity))
 		}

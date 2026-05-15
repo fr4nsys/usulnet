@@ -20,7 +20,7 @@ const (
 	JobStatusRunning   JobStatus = "running"
 	JobStatusCompleted JobStatus = "completed"
 	JobStatusFailed    JobStatus = "failed"
-	JobStatusCancelled JobStatus = "cancelled"
+	JobStatusCancelled JobStatus = "canceled"
 	JobStatusRetrying  JobStatus = "retrying"
 )
 
@@ -51,6 +51,8 @@ const (
 	JobTypeReconScan         JobType = "recon_scan"
 	JobTypeMetadataJob       JobType = "metadata_job"
 	JobTypeReconRetention    JobType = "recon_retention"
+	JobTypeBackupVerify      JobType = "backup_verify"
+	JobTypeSSLScan           JobType = "ssl_scan"
 )
 
 // JobPriority represents job priority
@@ -65,26 +67,26 @@ const (
 
 // Job represents a background job
 type Job struct {
-	ID            uuid.UUID       `json:"id" db:"id"`
-	Type          JobType         `json:"type" db:"type"`
-	Status        JobStatus       `json:"status" db:"status"`
-	Priority      JobPriority     `json:"priority" db:"priority"`
-	HostID        *uuid.UUID      `json:"host_id,omitempty" db:"host_id"`
-	TargetID      *string         `json:"target_id,omitempty" db:"target_id"`
-	TargetName    *string         `json:"target_name,omitempty" db:"target_name"`
-	Payload       json.RawMessage `json:"payload,omitempty" db:"payload"`
-	Result        json.RawMessage `json:"result,omitempty" db:"result"`
-	ErrorMessage  *string         `json:"error_message,omitempty" db:"error_message"`
-	Progress      int             `json:"progress" db:"progress"` // 0-100
-	ProgressMessage *string       `json:"progress_message,omitempty" db:"progress_message"`
-	Attempts      int             `json:"attempts" db:"attempts"`
-	MaxAttempts   int             `json:"max_attempts" db:"max_attempts"`
-	ScheduledAt   *time.Time      `json:"scheduled_at,omitempty" db:"scheduled_at"`
-	StartedAt     *time.Time      `json:"started_at,omitempty" db:"started_at"`
-	CompletedAt   *time.Time      `json:"completed_at,omitempty" db:"completed_at"`
-	CreatedBy     *uuid.UUID      `json:"created_by,omitempty" db:"created_by"`
-	CreatedAt     time.Time       `json:"created_at" db:"created_at"`
-	UpdatedAt     time.Time       `json:"updated_at" db:"updated_at"`
+	ID              uuid.UUID       `json:"id" db:"id"`
+	Type            JobType         `json:"type" db:"type"`
+	Status          JobStatus       `json:"status" db:"status"`
+	Priority        JobPriority     `json:"priority" db:"priority"`
+	HostID          *uuid.UUID      `json:"host_id,omitempty" db:"host_id"`
+	TargetID        *string         `json:"target_id,omitempty" db:"target_id"`
+	TargetName      *string         `json:"target_name,omitempty" db:"target_name"`
+	Payload         json.RawMessage `json:"payload,omitempty" db:"payload"`
+	Result          json.RawMessage `json:"result,omitempty" db:"result"`
+	ErrorMessage    *string         `json:"error_message,omitempty" db:"error_message"`
+	Progress        int             `json:"progress" db:"progress"` // 0-100
+	ProgressMessage *string         `json:"progress_message,omitempty" db:"progress_message"`
+	Attempts        int             `json:"attempts" db:"attempts"`
+	MaxAttempts     int             `json:"max_attempts" db:"max_attempts"`
+	ScheduledAt     *time.Time      `json:"scheduled_at,omitempty" db:"scheduled_at"`
+	StartedAt       *time.Time      `json:"started_at,omitempty" db:"started_at"`
+	CompletedAt     *time.Time      `json:"completed_at,omitempty" db:"completed_at"`
+	CreatedBy       *uuid.UUID      `json:"created_by,omitempty" db:"created_by"`
+	CreatedAt       time.Time       `json:"created_at" db:"created_at"`
+	UpdatedAt       time.Time       `json:"updated_at" db:"updated_at"`
 }
 
 // IsFinished returns true if job is in a terminal state
@@ -172,25 +174,25 @@ type JobListOptions struct {
 
 // ScheduledJob represents a scheduled/recurring job
 type ScheduledJob struct {
-	ID          uuid.UUID   `json:"id" db:"id"`
-	Name        string      `json:"name" db:"name"`
-	Type        JobType     `json:"type" db:"type"`
-	Schedule    string      `json:"schedule" db:"schedule"` // Cron expression
-	HostID      *uuid.UUID  `json:"host_id,omitempty" db:"host_id"`
-	TargetID    *string     `json:"target_id,omitempty" db:"target_id"`
-	TargetName  *string     `json:"target_name,omitempty" db:"target_name"`
-	Payload     json.RawMessage `json:"payload,omitempty" db:"payload"`
-	Priority    JobPriority `json:"priority" db:"priority"`
-	MaxAttempts int         `json:"max_attempts" db:"max_attempts"`
-	IsEnabled   bool        `json:"is_enabled" db:"is_enabled"`
-	LastRunAt   *time.Time  `json:"last_run_at,omitempty" db:"last_run_at"`
-	LastRunStatus *JobStatus `json:"last_run_status,omitempty" db:"last_run_status"`
-	NextRunAt   *time.Time  `json:"next_run_at,omitempty" db:"next_run_at"`
-	RunCount    int64       `json:"run_count" db:"run_count"`
-	FailCount   int64       `json:"fail_count" db:"fail_count"`
-	CreatedBy   *uuid.UUID  `json:"created_by,omitempty" db:"created_by"`
-	CreatedAt   time.Time   `json:"created_at" db:"created_at"`
-	UpdatedAt   time.Time   `json:"updated_at" db:"updated_at"`
+	ID            uuid.UUID       `json:"id" db:"id"`
+	Name          string          `json:"name" db:"name"`
+	Type          JobType         `json:"type" db:"type"`
+	Schedule      string          `json:"schedule" db:"schedule"` // Cron expression
+	HostID        *uuid.UUID      `json:"host_id,omitempty" db:"host_id"`
+	TargetID      *string         `json:"target_id,omitempty" db:"target_id"`
+	TargetName    *string         `json:"target_name,omitempty" db:"target_name"`
+	Payload       json.RawMessage `json:"payload,omitempty" db:"payload"`
+	Priority      JobPriority     `json:"priority" db:"priority"`
+	MaxAttempts   int             `json:"max_attempts" db:"max_attempts"`
+	IsEnabled     bool            `json:"is_enabled" db:"is_enabled"`
+	LastRunAt     *time.Time      `json:"last_run_at,omitempty" db:"last_run_at"`
+	LastRunStatus *JobStatus      `json:"last_run_status,omitempty" db:"last_run_status"`
+	NextRunAt     *time.Time      `json:"next_run_at,omitempty" db:"next_run_at"`
+	RunCount      int64           `json:"run_count" db:"run_count"`
+	FailCount     int64           `json:"fail_count" db:"fail_count"`
+	CreatedBy     *uuid.UUID      `json:"created_by,omitempty" db:"created_by"`
+	CreatedAt     time.Time       `json:"created_at" db:"created_at"`
+	UpdatedAt     time.Time       `json:"updated_at" db:"updated_at"`
 }
 
 // CreateScheduledJobInput represents input for creating a scheduled job
@@ -219,32 +221,32 @@ type UpdateScheduledJobInput struct {
 
 // JobProgress represents job progress update
 type JobProgress struct {
-	JobID   uuid.UUID `json:"job_id"`
-	Progress int      `json:"progress"` // 0-100
-	Message string   `json:"message,omitempty"`
+	JobID    uuid.UUID `json:"job_id"`
+	Progress int       `json:"progress"` // 0-100
+	Message  string    `json:"message,omitempty"`
 }
 
 // JobEvent represents a job event for real-time updates
 type JobEvent struct {
-	JobID     uuid.UUID   `json:"job_id"`
-	Type      string      `json:"type"` // created, started, progress, completed, failed, cancelled
-	Status    JobStatus   `json:"status"`
-	Progress  int         `json:"progress,omitempty"`
-	Message   string      `json:"message,omitempty"`
-	Error     string      `json:"error,omitempty"`
-	Timestamp time.Time   `json:"timestamp"`
+	JobID     uuid.UUID `json:"job_id"`
+	Type      string    `json:"type"` // created, started, progress, completed, failed, canceled
+	Status    JobStatus `json:"status"`
+	Progress  int       `json:"progress,omitempty"`
+	Message   string    `json:"message,omitempty"`
+	Error     string    `json:"error,omitempty"`
+	Timestamp time.Time `json:"timestamp"`
 }
 
 // JobStats represents job statistics
 type JobStats struct {
-	TotalJobs     int64          `json:"total_jobs"`
-	PendingJobs   int64          `json:"pending_jobs"`
-	RunningJobs   int64          `json:"running_jobs"`
-	CompletedJobs int64          `json:"completed_jobs"`
-	FailedJobs    int64          `json:"failed_jobs"`
+	TotalJobs     int64            `json:"total_jobs"`
+	PendingJobs   int64            `json:"pending_jobs"`
+	RunningJobs   int64            `json:"running_jobs"`
+	CompletedJobs int64            `json:"completed_jobs"`
+	FailedJobs    int64            `json:"failed_jobs"`
 	ByType        map[string]int64 `json:"by_type"`
-	AvgDuration   time.Duration  `json:"avg_duration"`
-	SuccessRate   float64        `json:"success_rate"`
+	AvgDuration   time.Duration    `json:"avg_duration"`
+	SuccessRate   float64          `json:"success_rate"`
 }
 
 // Payloads for specific job types
@@ -277,6 +279,17 @@ type BackupPayload struct {
 	Compression   string `json:"compression"`
 	Encrypted     bool   `json:"encrypted"`
 	RetentionDays int    `json:"retention_days,omitempty"`
+}
+
+// BackupVerifyPayload is the payload for backup_verify jobs. ScheduleID is
+// non-zero when the job was triggered by a scheduled verification policy;
+// BackupID is non-zero when the job is a single ad-hoc verification (used
+// by RunNow paths). Method defaults to extract when empty.
+type BackupVerifyPayload struct {
+	ScheduleID uuid.UUID `json:"schedule_id,omitempty"`
+	BackupID   uuid.UUID `json:"backup_id,omitempty"`
+	Method     string    `json:"method,omitempty"`
+	MaxBackups int       `json:"max_backups,omitempty"`
 }
 
 // ImagePullPayload represents payload for image pull job

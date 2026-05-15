@@ -391,10 +391,8 @@ func extractHealthStatus(status string) string {
 }
 
 func shortID(id string) string {
-	// Remove sha256: prefix if present
-	if strings.HasPrefix(id, "sha256:") {
-		id = id[7:]
-	}
+	// Remove sha256: prefix if present.
+	id = strings.TrimPrefix(id, "sha256:")
 	if len(id) > 12 {
 		return id[:12]
 	}
@@ -482,21 +480,6 @@ func humanSize(bytes int64) string {
 		return fmt.Sprintf("%.2f KB", float64(bytes)/KB)
 	default:
 		return fmt.Sprintf("%d B", bytes)
-	}
-}
-
-func scoreToGrade(score int) string {
-	switch {
-	case score >= 90:
-		return "A"
-	case score >= 80:
-		return "B"
-	case score >= 70:
-		return "C"
-	case score >= 60:
-		return "D"
-	default:
-		return "F"
 	}
 }
 

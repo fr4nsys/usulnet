@@ -94,17 +94,17 @@ type VersionResponse struct {
 
 // SystemInfoResponse represents system information.
 type SystemInfoResponse struct {
-	Version     string         `json:"version"`
-	Commit      string         `json:"commit,omitempty"`
-	BuildTime   string         `json:"build_time,omitempty"`
-	GoVersion   string         `json:"go_version"`
-	OS          string         `json:"os"`
-	Arch        string         `json:"arch"`
-	NumCPU      int            `json:"num_cpu"`
-	NumGoroutine int           `json:"num_goroutine"`
-	Uptime      int64          `json:"uptime_seconds"`
-	StartedAt   string         `json:"started_at"`
-	Memory      *MemoryInfo    `json:"memory"`
+	Version      string      `json:"version"`
+	Commit       string      `json:"commit,omitempty"`
+	BuildTime    string      `json:"build_time,omitempty"`
+	GoVersion    string      `json:"go_version"`
+	OS           string      `json:"os"`
+	Arch         string      `json:"arch"`
+	NumCPU       int         `json:"num_cpu"`
+	NumGoroutine int         `json:"num_goroutine"`
+	Uptime       int64       `json:"uptime_seconds"`
+	StartedAt    string      `json:"started_at"`
+	Memory       *MemoryInfo `json:"memory"`
 }
 
 // MemoryInfo represents memory statistics.
@@ -117,12 +117,12 @@ type MemoryInfo struct {
 
 // MetricsResponse represents basic metrics.
 type MetricsResponse struct {
-	Uptime        int64  `json:"uptime_seconds"`
-	NumGoroutine  int    `json:"num_goroutine"`
-	MemoryAlloc   uint64 `json:"memory_alloc_bytes"`
-	MemorySys     uint64 `json:"memory_sys_bytes"`
-	NumGC         uint32 `json:"num_gc"`
-	NumCPU        int    `json:"num_cpu"`
+	Uptime       int64  `json:"uptime_seconds"`
+	NumGoroutine int    `json:"num_goroutine"`
+	MemoryAlloc  uint64 `json:"memory_alloc_bytes"`
+	MemorySys    uint64 `json:"memory_sys_bytes"`
+	NumGC        uint32 `json:"num_gc"`
+	NumCPU       int    `json:"num_cpu"`
 }
 
 // ============================================================================
@@ -192,9 +192,10 @@ func (h *SystemHandler) Health(w http.ResponseWriter, r *http.Request) {
 
 	// Set appropriate status code
 	statusCode := http.StatusOK
-	if health.Status == "unhealthy" {
+	switch health.Status {
+	case "unhealthy":
 		statusCode = http.StatusServiceUnavailable
-	} else if health.Status == "degraded" {
+	case "degraded":
 		statusCode = http.StatusOK // Still return 200 for degraded
 	}
 
@@ -207,7 +208,7 @@ func (h *SystemHandler) Health(w http.ResponseWriter, r *http.Request) {
 // avoids the per-request map allocation, json.NewEncoder allocation
 // and Marshal overhead the generic h.OK helper incurs. Includes the
 // trailing newline json.Encoder appends so the wire shape matches the
-// previous behaviour byte-for-byte.
+// previous behavior byte-for-byte.
 var livenessResponseBody = []byte("{\"status\":\"alive\"}\n")
 
 // Liveness handles GET /api/v1/system/health/live

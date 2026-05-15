@@ -6,10 +6,12 @@ package app
 
 import (
 	"context"
+	stderrors "errors"
 	"fmt"
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5/pgconn"
 
 	dockerpkg "github.com/fr4nsys/usulnet/internal/docker"
 	"github.com/fr4nsys/usulnet/internal/models"
@@ -266,7 +268,8 @@ func (a *schedulerUpdateAdapter) Rollback(ctx context.Context, opts *workers.Rol
 		RestoreBackup: opts.RestoreData,
 	})
 	if err != nil {
-		return &workers.RollbackServiceResult{
+		// result envelope: error surfaces via RollbackServiceResult.Error
+		return &workers.RollbackServiceResult{ //nolint:nilerr
 			Success:     false,
 			Error:       err.Error(),
 			CompletedAt: time.Now(),
@@ -295,7 +298,9 @@ type schedulerCleanupAdapter struct {
 }
 
 func (a *schedulerCleanupAdapter) PruneImages(ctx context.Context, hostID uuid.UUID, all bool) (*workers.PruneResult, error) {
-	result, err := a.imageService.Prune(ctx, hostID, !all) // dangling = !all
+	// Pass dangling=!all so callers can choose "prune dangling images only"
+	// (all=false) or "prune everything" (all=true).
+	result, err := a.imageService.Prune(ctx, hostID, !all)
 	if err != nil {
 		return nil, err
 	}
@@ -346,7 +351,8 @@ func (a *schedulerCleanupAdapter) PruneBuildCache(ctx context.Context, hostID uu
 
 	spaceFreed, err := client.BuildCachePrune(ctx, true)
 	if err != nil {
-		return &workers.PruneResult{
+		// result envelope: error surfaces via PruneResult.Errors
+		return &workers.PruneResult{ //nolint:nilerr
 			Errors: []string{"build cache prune: " + err.Error()},
 		}, nil
 	}
@@ -381,8 +387,16 @@ func (a *schedulerJobCleanupAdapter) DeleteOldEvents(ctx context.Context, olderT
 	query := `DELETE FROM job_events WHERE created_at < $1`
 	result, err := a.db.Pool().Exec(ctx, query, cutoff)
 	if err != nil {
-		// Table may not exist, ignore
-		return 0, nil
+		// PostgreSQL SQLSTATE 42P01 = undefined_table. The job_events
+		// table is created lazily by the scheduler and a cleanup run
+		// before that point is harmless; every other error is a real
+		// failure (lost connection, permission denied, etc.) and must
+		// surface to the caller.
+		var pgErr *pgconn.PgError
+		if stderrors.As(err, &pgErr) && pgErr.Code == "42P01" {
+			return 0, nil
+		}
+		return 0, err
 	}
 	return result.RowsAffected(), nil
 }
@@ -661,4 +675,28 @@ func (a *schedulerInventoryAdapter) StoreInventory(ctx context.Context, inventor
 	// Additional detailed persistence (per-container/image tracking) can be added
 	// through the event system when change detection is needed.
 	return nil
+}
+
+// ============================================================================
+// Backup verification bridge
+// ============================================================================
+
+// backupVerifyBackupBridge implements backupverify.BackupGetter by adapting
+// the existing *backupsvc.Service. Defined here rather than inside the
+// backupverify package so the service does not import the concrete backup
+// service; the dependency direction stays one-way.
+type backupVerifyBackupBridge struct {
+	svc *backupsvc.Service
+}
+
+func (b *backupVerifyBackupBridge) Get(ctx context.Context, id uuid.UUID) (*models.Backup, error) {
+	return b.svc.Get(ctx, id)
+}
+
+func (b *backupVerifyBackupBridge) List(ctx context.Context, opts models.BackupListOptions) ([]*models.Backup, int64, error) {
+	return b.svc.List(ctx, opts)
+}
+
+func (b *backupVerifyBackupBridge) Verify(ctx context.Context, backupID uuid.UUID, opts backupsvc.VerifyOptions) (*models.BackupVerificationResult, error) {
+	return b.svc.Verify(ctx, backupID, opts)
 }

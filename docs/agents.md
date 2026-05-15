@@ -24,6 +24,8 @@
 
 The usulnet agent is a lightweight binary that runs on remote Docker hosts and connects to a usulnet master instance via NATS JetStream. The agent enables centralized management of Docker containers, images, volumes, and networks across multiple hosts from a single web interface.
 
+![Multi-node topology — master + 2 agents](screenshots/multi-node.png)
+
 ### Architecture
 
 ```

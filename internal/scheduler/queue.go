@@ -361,7 +361,7 @@ func (q *Queue) Cancel(ctx context.Context, jobID uuid.UUID) error {
 	// Remove from all queues
 	q.removeFromAllQueues(ctx, jobID)
 
-	q.logger.Debug("job cancelled", "job_id", jobID)
+	q.logger.Debug("job canceled", "job_id", jobID)
 
 	return nil
 }
@@ -396,7 +396,7 @@ func (q *Queue) GetJob(ctx context.Context, jobID uuid.UUID) (*models.Job, error
 
 	data, err := q.client.Redis().Get(ctx, dataKey).Bytes()
 	if err != nil {
-		if err == redis.Nil {
+		if errors.Is(err, redis.Nil) {
 			return nil, errors.New(errors.CodeNotFound, "job not found")
 		}
 		return nil, errors.Wrap(err, errors.CodeInternal, "failed to get job data")

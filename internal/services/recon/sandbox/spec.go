@@ -49,10 +49,10 @@ const (
 	// the result back to the host via ContainerCopyFileStream before
 	// removing the container.  Keeping it separate from /tmp lets
 	// callers reason about output paths without ambiguity and lets the
-	// stripper enforce a smaller cap on artefact size.
+	// stripper enforce a smaller cap on artifact size.
 	WorkOutTmpfsTarget = "/work/out"
 
-	// WorkOutTmpfsOptions sizes the artefact tmpfs.  noexec is
+	// WorkOutTmpfsOptions sizes the artifact tmpfs.  noexec is
 	// purposeful: nothing in /work/out should ever be executed; mat2
 	// writes its cleaned copy and exits.
 	WorkOutTmpfsOptions = "size=64m,noexec"
@@ -67,7 +67,7 @@ const (
 	LabelModuleValue = "recon"
 
 	// LabelSpecHash is a derived identity label used by EnsureRunning
-	// to recognise an already-running container that matches a spec.
+	// to recognize an already-running container that matches a spec.
 	LabelSpecHash = "usulnet.recon.spec_hash"
 )
 
@@ -111,7 +111,7 @@ func hardenSpec(spec recon.ContainerSpec, networkName string) docker.ContainerCr
 
 	binds := make([]string, 0, len(spec.Mounts))
 	for _, m := range spec.Mounts {
-		// :ro is mandatory; we never honour ReadOnly=false from the
+		// :ro is mandatory; we never honor ReadOnly=false from the
 		// caller.  bind syntax: <host>:<container>:ro
 		binds = append(binds, m.Source+":"+m.Target+":ro")
 	}

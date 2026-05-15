@@ -90,8 +90,8 @@ type Service struct {
 	sessionSvc  *SessionService
 	config      AuthConfig
 	logger      *logger.Logger
-	auditMu  sync.RWMutex
-	auditSvc AuditLogger
+	auditMu     sync.RWMutex
+	auditSvc    AuditLogger
 
 	// Optional: JWT blacklist for immediate token revocation
 	blacklistMu  sync.RWMutex

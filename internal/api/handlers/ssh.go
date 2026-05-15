@@ -90,14 +90,14 @@ func (h *SSHHandler) ListKeys(w http.ResponseWriter, r *http.Request) {
 
 	// Sanitize output - don't expose private keys
 	type KeyResponse struct {
-		ID          uuid.UUID           `json:"id"`
-		Name        string              `json:"name"`
-		KeyType     models.SSHKeyType   `json:"key_type"`
-		PublicKey   string              `json:"public_key"`
-		Fingerprint string              `json:"fingerprint"`
-		Comment     string              `json:"comment,omitempty"`
-		CreatedAt   string              `json:"created_at"`
-		LastUsed    *string             `json:"last_used,omitempty"`
+		ID          uuid.UUID         `json:"id"`
+		Name        string            `json:"name"`
+		KeyType     models.SSHKeyType `json:"key_type"`
+		PublicKey   string            `json:"public_key"`
+		Fingerprint string            `json:"fingerprint"`
+		Comment     string            `json:"comment,omitempty"`
+		CreatedAt   string            `json:"created_at"`
+		LastUsed    *string           `json:"last_used,omitempty"`
 	}
 
 	response := make([]KeyResponse, 0, len(keys))
@@ -298,14 +298,14 @@ func (h *SSHHandler) CreateConnection(w http.ResponseWriter, r *http.Request) {
 	}
 
 	response := map[string]any{
-		"id":          conn.ID,
-		"name":        conn.Name,
-		"host":        conn.Host,
-		"port":        conn.Port,
-		"username":    conn.Username,
-		"auth_type":   conn.AuthType,
-		"status":      conn.Status,
-		"created_at":  conn.CreatedAt.Format("2006-01-02T15:04:05Z"),
+		"id":         conn.ID,
+		"name":       conn.Name,
+		"host":       conn.Host,
+		"port":       conn.Port,
+		"username":   conn.Username,
+		"auth_type":  conn.AuthType,
+		"status":     conn.Status,
+		"created_at": conn.CreatedAt.Format("2006-01-02T15:04:05Z"),
 	}
 
 	h.Created(w, response)

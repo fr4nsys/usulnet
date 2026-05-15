@@ -1,0 +1,79 @@
+// SPDX-License-Identifier: AGPL-3.0-or-later
+// Copyright (c) 2024-2026 usulnet contributors
+// https://github.com/fr4nsys/usulnet
+
+package rollback
+
+import "github.com/fr4nsys/usulnet/internal/web/templates/layouts"
+
+type ListData struct {
+	PageData layouts.PageData
+	Policies []PolicyView
+	Stats    StatsView
+	Error    string
+}
+
+type StatsView struct {
+	Total    int
+	Enabled  int
+	DryRun   int
+}
+
+type StackOption struct {
+	ID   string
+	Name string
+}
+
+templ List(data ListData) {
+	@layouts.Base(data.PageData) {
+		<div class="space-y-6">
+			<div class="flex items-center justify-between">
+				<div>
+					<h1 class="text-2xl font-display font-bold text-white">Automated Rollback</h1>
+					<p class="text-gray-400 mt-1">Policies that detect failed deploys and revert to the last known-good version</p>
+				</div>
+				<a href="/rollback/new" class="btn-primary">
+					<i class="fas fa-plus mr-2"></i>New Policy
+				</a>
+			</div>
+
+			@Nav("policies")
+
+			if data.Error != "" {
+				<div class="card p-4 border border-red-500/40 bg-red-500/10 text-red-200 text-sm">
+					<i class="fas fa-triangle-exclamation mr-2"></i>{ data.Error }
+				</div>
+			}
+
+			<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+				<div class="card p-4">
+					<div class="text-xs uppercase tracking-wide text-gray-500">Total policies</div>
+					<div class="text-2xl font-bold text-white mt-1">{ itoaPad(data.Stats.Total) }</div>
+				</div>
+				<div class="card p-4">
+					<div class="text-xs uppercase tracking-wide text-gray-500">Enabled</div>
+					<div class="text-2xl font-bold text-green-400 mt-1">{ itoaPad(data.Stats.Enabled) }</div>
+				</div>
+				<div class="card p-4">
+					<div class="text-xs uppercase tracking-wide text-gray-500">Dry-run</div>
+					<div class="text-2xl font-bold text-blue-400 mt-1">{ itoaPad(data.Stats.DryRun) }</div>
+				</div>
+			</div>
+
+			if len(data.Policies) == 0 {
+				@EmptyState(
+					"No rollback policies yet",
+					"Define a policy to auto-revert a stack when a deploy fails or its healthcheck never goes green.",
+					"Create your first policy",
+					"/rollback/new",
+				)
+			} else {
+				<div class="space-y-3">
+					for _, p := range data.Policies {
+						@PolicyCard(p)
+					}
+				</div>
+			}
+		</div>
+	}
+}

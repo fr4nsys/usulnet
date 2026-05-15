@@ -79,31 +79,31 @@ type CreateRepoOptions struct {
 	Description   string `json:"description,omitempty"`
 	Private       bool   `json:"private"`
 	AutoInit      bool   `json:"auto_init"`
-	Gitignores    string `json:"gitignores,omitempty"`    // e.g., "Go", "Python"
-	License       string `json:"license,omitempty"`       // e.g., "MIT", "Apache-2.0"
-	Readme        string `json:"readme,omitempty"`        // e.g., "Default"
+	Gitignores    string `json:"gitignores,omitempty"` // e.g., "Go", "Python"
+	License       string `json:"license,omitempty"`    // e.g., "MIT", "Apache-2.0"
+	Readme        string `json:"readme,omitempty"`     // e.g., "Default"
 	DefaultBranch string `json:"default_branch,omitempty"`
-	TrustModel    string `json:"trust_model,omitempty"`   // default, collaborator, committer, collaboratorcommitter
+	TrustModel    string `json:"trust_model,omitempty"` // default, collaborator, committer, collaboratorcommitter
 }
 
 // EditRepoOptions holds parameters for editing a repository
 type EditRepoOptions struct {
-	Name                      *string `json:"name,omitempty"`
-	Description               *string `json:"description,omitempty"`
-	Website                   *string `json:"website,omitempty"`
-	Private                   *bool   `json:"private,omitempty"`
-	Archived                  *bool   `json:"archived,omitempty"`
-	DefaultBranch             *string `json:"default_branch,omitempty"`
-	HasIssues                 *bool   `json:"has_issues,omitempty"`
-	HasWiki                   *bool   `json:"has_wiki,omitempty"`
-	HasPullRequests           *bool   `json:"has_pull_requests,omitempty"`
-	HasProjects               *bool   `json:"has_projects,omitempty"`
-	AllowMergeCommits         *bool   `json:"allow_merge_commits,omitempty"`
-	AllowRebase               *bool   `json:"allow_rebase,omitempty"`
-	AllowRebaseMerge          *bool   `json:"allow_rebase_explicit,omitempty"`
-	AllowSquashMerge          *bool   `json:"allow_squash_merge,omitempty"`
-	DefaultMergeStyle         *string `json:"default_merge_style,omitempty"` // merge, rebase, rebase-merge, squash
-	DefaultDeleteBranchAfterMerge *bool `json:"default_delete_branch_after_merge,omitempty"`
+	Name                          *string `json:"name,omitempty"`
+	Description                   *string `json:"description,omitempty"`
+	Website                       *string `json:"website,omitempty"`
+	Private                       *bool   `json:"private,omitempty"`
+	Archived                      *bool   `json:"archived,omitempty"`
+	DefaultBranch                 *string `json:"default_branch,omitempty"`
+	HasIssues                     *bool   `json:"has_issues,omitempty"`
+	HasWiki                       *bool   `json:"has_wiki,omitempty"`
+	HasPullRequests               *bool   `json:"has_pull_requests,omitempty"`
+	HasProjects                   *bool   `json:"has_projects,omitempty"`
+	AllowMergeCommits             *bool   `json:"allow_merge_commits,omitempty"`
+	AllowRebase                   *bool   `json:"allow_rebase,omitempty"`
+	AllowRebaseMerge              *bool   `json:"allow_rebase_explicit,omitempty"`
+	AllowSquashMerge              *bool   `json:"allow_squash_merge,omitempty"`
+	DefaultMergeStyle             *string `json:"default_merge_style,omitempty"` // merge, rebase, rebase-merge, squash
+	DefaultDeleteBranchAfterMerge *bool   `json:"default_delete_branch_after_merge,omitempty"`
 }
 
 // ============================================================================
@@ -124,8 +124,8 @@ type CreateBranchOptions struct {
 // APITag represents a tag from /api/v1/repos/{owner}/{repo}/tags
 type APITag struct {
 	Name       string     `json:"name"`
-	ID         string     `json:"id"`          // commit SHA
-	Message    string     `json:"message"`     // annotated tag message
+	ID         string     `json:"id"`      // commit SHA
+	Message    string     `json:"message"` // annotated tag message
 	Commit     *APICommit `json:"commit"`
 	ZipballURL string     `json:"zipball_url"`
 	TarballURL string     `json:"tarball_url"`
@@ -134,7 +134,7 @@ type APITag struct {
 // CreateTagOptions holds parameters for creating a tag
 type CreateTagOptions struct {
 	TagName string `json:"tag_name"`
-	Target  string `json:"target,omitempty"` // branch name or commit SHA, defaults to default branch
+	Target  string `json:"target,omitempty"`  // branch name or commit SHA, defaults to default branch
 	Message string `json:"message,omitempty"` // for annotated tags
 }
 
@@ -155,14 +155,14 @@ type CommitListOptions struct {
 
 // APICompare represents the result of comparing two refs
 type APICompare struct {
-	URL         string            `json:"url"`
-	HTMLURL     string            `json:"html_url"`
-	DiffURL     string            `json:"diff_url"`
-	PatchURL    string            `json:"patch_url"`
-	BaseCommit  APICommitListItem `json:"base_commit"`
-	MergeBase   string            `json:"merge_base_commit"`
-	Commits     []APICommitListItem `json:"commits"`
-	TotalCommits int              `json:"total_commits"`
+	URL          string              `json:"url"`
+	HTMLURL      string              `json:"html_url"`
+	DiffURL      string              `json:"diff_url"`
+	PatchURL     string              `json:"patch_url"`
+	BaseCommit   APICommitListItem   `json:"base_commit"`
+	MergeBase    string              `json:"merge_base_commit"`
+	Commits      []APICommitListItem `json:"commits"`
+	TotalCommits int                 `json:"total_commits"`
 }
 
 // APIDiffFile represents a changed file in a diff
@@ -185,28 +185,28 @@ type APIDiffFile struct {
 
 // WebhookPushPayload represents a push webhook event payload
 type WebhookPushPayload struct {
-	Ref        string         `json:"ref"`
-	Before     string         `json:"before"`
-	After      string         `json:"after"`
-	CompareURL string         `json:"compare_url"`
+	Ref        string          `json:"ref"`
+	Before     string          `json:"before"`
+	After      string          `json:"after"`
+	CompareURL string          `json:"compare_url"`
 	Commits    []WebhookCommit `json:"commits"`
-	HeadCommit *WebhookCommit `json:"head_commit"`
-	Repository APIRepository  `json:"repository"`
-	Pusher     APIUser        `json:"pusher"`
-	Sender     APIUser        `json:"sender"`
+	HeadCommit *WebhookCommit  `json:"head_commit"`
+	Repository APIRepository   `json:"repository"`
+	Pusher     APIUser         `json:"pusher"`
+	Sender     APIUser         `json:"sender"`
 }
 
 // WebhookCommit represents a commit in a webhook payload
 type WebhookCommit struct {
-	ID        string    `json:"id"`
-	Message   string    `json:"message"`
-	URL       string    `json:"url"`
+	ID        string      `json:"id"`
+	Message   string      `json:"message"`
+	URL       string      `json:"url"`
 	Author    APIIdentity `json:"author"`
 	Committer APIIdentity `json:"committer"`
-	Timestamp time.Time `json:"timestamp"`
-	Added     []string  `json:"added"`
-	Removed   []string  `json:"removed"`
-	Modified  []string  `json:"modified"`
+	Timestamp time.Time   `json:"timestamp"`
+	Added     []string    `json:"added"`
+	Removed   []string    `json:"removed"`
+	Modified  []string    `json:"modified"`
 }
 
 // WebhookReleasePayload represents a release webhook payload
@@ -219,11 +219,11 @@ type WebhookReleasePayload struct {
 
 // CreateWebhookOptions holds parameters for creating a webhook in Gitea
 type CreateWebhookOptions struct {
-	Type         string            `json:"type"` // "gitea"
-	Config       WebhookConfig     `json:"config"`
-	Events       []string          `json:"events"`
-	Active       bool              `json:"active"`
-	BranchFilter string            `json:"branch_filter,omitempty"`
+	Type         string        `json:"type"` // "gitea"
+	Config       WebhookConfig `json:"config"`
+	Events       []string      `json:"events"`
+	Active       bool          `json:"active"`
+	BranchFilter string        `json:"branch_filter,omitempty"`
 }
 
 // WebhookConfig holds webhook configuration
@@ -250,11 +250,11 @@ type APIContentEntry struct {
 
 // UpdateFileOptions holds parameters for creating/updating a file via Gitea API
 type UpdateFileOptions struct {
-	Content string                `json:"content"` // base64 encoded
-	Message string                `json:"message"`
-	Branch  string                `json:"branch,omitempty"`
-	SHA     string                `json:"sha,omitempty"` // required for updates
-	Author  *UpdateFileIdentity   `json:"author,omitempty"`
+	Content   string              `json:"content"` // base64 encoded
+	Message   string              `json:"message"`
+	Branch    string              `json:"branch,omitempty"`
+	SHA       string              `json:"sha,omitempty"` // required for updates
+	Author    *UpdateFileIdentity `json:"author,omitempty"`
 	NewBranch string              `json:"new_branch,omitempty"`
 }
 
@@ -266,15 +266,15 @@ type UpdateFileIdentity struct {
 
 // APICommitListItem represents a commit in the list endpoint (different shape from branch commit)
 type APICommitListItem struct {
-	SHA         string             `json:"sha"`
-	URL         string             `json:"url"`
-	HTMLURL     string             `json:"html_url"`
-	Commit      APICommitDetail    `json:"commit"`
-	Author      *APIUser           `json:"author"`
-	Committer   *APIUser           `json:"committer"`
-	Parents     []APICommitParent  `json:"parents"`
-	Files       []APIDiffFile      `json:"files,omitempty"` // only in single commit endpoint
-	Stats       *APICommitStats    `json:"stats,omitempty"` // only in single commit endpoint
+	SHA       string            `json:"sha"`
+	URL       string            `json:"url"`
+	HTMLURL   string            `json:"html_url"`
+	Commit    APICommitDetail   `json:"commit"`
+	Author    *APIUser          `json:"author"`
+	Committer *APIUser          `json:"committer"`
+	Parents   []APICommitParent `json:"parents"`
+	Files     []APIDiffFile     `json:"files,omitempty"` // only in single commit endpoint
+	Stats     *APICommitStats   `json:"stats,omitempty"` // only in single commit endpoint
 }
 
 // APICommitDetail is the inner commit object in list response
@@ -321,36 +321,36 @@ type APILicenseTemplate struct {
 
 // APIPullRequest represents a pull request
 type APIPullRequest struct {
-	ID          int64         `json:"id"`
-	Number      int64         `json:"number"`
-	Title       string        `json:"title"`
-	Body        string        `json:"body"`
-	State       string        `json:"state"` // "open", "closed"
-	HTMLURL     string        `json:"html_url"`
-	DiffURL     string        `json:"diff_url"`
-	PatchURL    string        `json:"patch_url"`
-	Mergeable   bool          `json:"mergeable"`
-	Merged      bool          `json:"merged"`
-	MergedAt    *time.Time    `json:"merged_at"`
-	MergeBase   string        `json:"merge_base"`
-	Head        APIPRBranch   `json:"head"`
-	Base        APIPRBranch   `json:"base"`
-	User        APIUser       `json:"user"`
-	Assignee    *APIUser      `json:"assignee"`
-	Assignees   []APIUser     `json:"assignees"`
-	Labels      []APILabel    `json:"labels"`
-	Milestone   *APIMilestone `json:"milestone"`
-	Comments    int           `json:"comments"`
-	CreatedAt   time.Time     `json:"created_at"`
-	UpdatedAt   time.Time     `json:"updated_at"`
-	ClosedAt    *time.Time    `json:"closed_at"`
+	ID        int64         `json:"id"`
+	Number    int64         `json:"number"`
+	Title     string        `json:"title"`
+	Body      string        `json:"body"`
+	State     string        `json:"state"` // "open", "closed"
+	HTMLURL   string        `json:"html_url"`
+	DiffURL   string        `json:"diff_url"`
+	PatchURL  string        `json:"patch_url"`
+	Mergeable bool          `json:"mergeable"`
+	Merged    bool          `json:"merged"`
+	MergedAt  *time.Time    `json:"merged_at"`
+	MergeBase string        `json:"merge_base"`
+	Head      APIPRBranch   `json:"head"`
+	Base      APIPRBranch   `json:"base"`
+	User      APIUser       `json:"user"`
+	Assignee  *APIUser      `json:"assignee"`
+	Assignees []APIUser     `json:"assignees"`
+	Labels    []APILabel    `json:"labels"`
+	Milestone *APIMilestone `json:"milestone"`
+	Comments  int           `json:"comments"`
+	CreatedAt time.Time     `json:"created_at"`
+	UpdatedAt time.Time     `json:"updated_at"`
+	ClosedAt  *time.Time    `json:"closed_at"`
 }
 
 // APIPRBranch represents head/base branch in a PR
 type APIPRBranch struct {
-	Label string        `json:"label"`
-	Ref   string        `json:"ref"`
-	SHA   string        `json:"sha"`
+	Label string         `json:"label"`
+	Ref   string         `json:"ref"`
+	SHA   string         `json:"sha"`
 	Repo  *APIRepository `json:"repo"`
 }
 
@@ -358,8 +358,8 @@ type APIPRBranch struct {
 type CreatePullRequestOptions struct {
 	Title     string   `json:"title"`
 	Body      string   `json:"body,omitempty"`
-	Head      string   `json:"head"`      // source branch
-	Base      string   `json:"base"`      // target branch
+	Head      string   `json:"head"` // source branch
+	Base      string   `json:"base"` // target branch
 	Assignees []string `json:"assignees,omitempty"`
 	Labels    []int64  `json:"labels,omitempty"`
 	Milestone int64    `json:"milestone,omitempty"`
@@ -378,7 +378,7 @@ type EditPullRequestOptions struct {
 
 // MergePullRequestOptions holds parameters for merging a PR
 type MergePullRequestOptions struct {
-	MergeStyle        string `json:"Do"`                           // "merge", "rebase", "rebase-merge", "squash"
+	MergeStyle        string `json:"Do"` // "merge", "rebase", "rebase-merge", "squash"
 	MergeCommitID     string `json:"MergeCommitID,omitempty"`
 	MergeMessageField string `json:"MergeMessageField,omitempty"`
 	MergeTitleField   string `json:"MergeTitleField,omitempty"`
@@ -403,10 +403,10 @@ type APIPRReview struct {
 
 // CreatePRReviewOptions holds parameters for creating a review
 type CreatePRReviewOptions struct {
-	Body     string              `json:"body"`
-	Event    string              `json:"event"` // "APPROVE", "REQUEST_CHANGES", "COMMENT"
-	CommitID string              `json:"commit_id,omitempty"`
-	Comments []PRReviewComment   `json:"comments,omitempty"`
+	Body     string            `json:"body"`
+	Event    string            `json:"event"` // "APPROVE", "REQUEST_CHANGES", "COMMENT"
+	CommitID string            `json:"commit_id,omitempty"`
+	Comments []PRReviewComment `json:"comments,omitempty"`
 }
 
 // PRReviewComment is a comment on a specific line in a review
@@ -423,23 +423,23 @@ type PRReviewComment struct {
 
 // APIIssue represents an issue
 type APIIssue struct {
-	ID          int64         `json:"id"`
-	Number      int64         `json:"number"`
-	Title       string        `json:"title"`
-	Body        string        `json:"body"`
-	State       string        `json:"state"` // "open", "closed"
-	HTMLURL     string        `json:"html_url"`
-	User        APIUser       `json:"user"`
-	Assignee    *APIUser      `json:"assignee"`
-	Assignees   []APIUser     `json:"assignees"`
-	Labels      []APILabel    `json:"labels"`
-	Milestone   *APIMilestone `json:"milestone"`
-	Comments    int           `json:"comments"`
-	IsLocked    bool          `json:"is_locked"`
-	CreatedAt   time.Time     `json:"created_at"`
-	UpdatedAt   time.Time     `json:"updated_at"`
-	ClosedAt    *time.Time    `json:"closed_at"`
-	DueDate     *time.Time    `json:"due_date"`
+	ID          int64           `json:"id"`
+	Number      int64           `json:"number"`
+	Title       string          `json:"title"`
+	Body        string          `json:"body"`
+	State       string          `json:"state"` // "open", "closed"
+	HTMLURL     string          `json:"html_url"`
+	User        APIUser         `json:"user"`
+	Assignee    *APIUser        `json:"assignee"`
+	Assignees   []APIUser       `json:"assignees"`
+	Labels      []APILabel      `json:"labels"`
+	Milestone   *APIMilestone   `json:"milestone"`
+	Comments    int             `json:"comments"`
+	IsLocked    bool            `json:"is_locked"`
+	CreatedAt   time.Time       `json:"created_at"`
+	UpdatedAt   time.Time       `json:"updated_at"`
+	ClosedAt    *time.Time      `json:"closed_at"`
+	DueDate     *time.Time      `json:"due_date"`
 	PullRequest *APIPullRequest `json:"pull_request,omitempty"` // if issue is a PR
 }
 
@@ -531,12 +531,12 @@ type PRListOptions struct {
 
 // APICollaborator represents a repository collaborator
 type APICollaborator struct {
-	ID          int64             `json:"id"`
-	Login       string            `json:"login"`
-	FullName    string            `json:"full_name"`
-	Email       string            `json:"email"`
-	AvatarURL   string            `json:"avatar_url"`
-	Permissions APIPermissions    `json:"permissions"`
+	ID          int64          `json:"id"`
+	Login       string         `json:"login"`
+	FullName    string         `json:"full_name"`
+	Email       string         `json:"email"`
+	AvatarURL   string         `json:"avatar_url"`
+	Permissions APIPermissions `json:"permissions"`
 }
 
 // APIPermissions represents permission levels
@@ -553,14 +553,14 @@ type AddCollaboratorOptions struct {
 
 // APITeam represents a team (for org repos)
 type APITeam struct {
-	ID                      int64  `json:"id"`
-	Name                    string `json:"name"`
-	Description             string `json:"description"`
+	ID                      int64    `json:"id"`
+	Name                    string   `json:"name"`
+	Description             string   `json:"description"`
 	Organization            *APIUser `json:"organization"`
-	Permission              string `json:"permission"` // "none", "read", "write", "admin", "owner"
+	Permission              string   `json:"permission"` // "none", "read", "write", "admin", "owner"
 	Units                   []string `json:"units"`
-	IncludesAllRepositories bool   `json:"includes_all_repositories"`
-	CanCreateOrgRepo        bool   `json:"can_create_org_repo"`
+	IncludesAllRepositories bool     `json:"includes_all_repositories"`
+	CanCreateOrgRepo        bool     `json:"can_create_org_repo"`
 }
 
 // ============================================================================
@@ -569,19 +569,19 @@ type APITeam struct {
 
 // APIHook represents a webhook
 type APIHook struct {
-	ID          int64             `json:"id"`
-	Type        string            `json:"type"` // "gitea", "slack", "discord", etc.
-	URL         string            `json:"url,omitempty"`
-	Config      map[string]string `json:"config"`
-	Events      []string          `json:"events"`
-	Active      bool              `json:"active"`
-	CreatedAt   time.Time         `json:"created_at"`
-	UpdatedAt   time.Time         `json:"updated_at"`
+	ID        int64             `json:"id"`
+	Type      string            `json:"type"` // "gitea", "slack", "discord", etc.
+	URL       string            `json:"url,omitempty"`
+	Config    map[string]string `json:"config"`
+	Events    []string          `json:"events"`
+	Active    bool              `json:"active"`
+	CreatedAt time.Time         `json:"created_at"`
+	UpdatedAt time.Time         `json:"updated_at"`
 }
 
 // CreateHookOptions holds parameters for creating a webhook
 type CreateHookOptions struct {
-	Type                string            `json:"type"` // "gitea", "slack", "discord", "dingtalk", "telegram", "msteams", "feishu", "matrix", "wechatwork", "packagist"
+	Type                string            `json:"type"`   // "gitea", "slack", "discord", "dingtalk", "telegram", "msteams", "feishu", "matrix", "wechatwork", "packagist"
 	Config              map[string]string `json:"config"` // url, content_type, secret
 	Events              []string          `json:"events"` // push, pull_request, issues, etc.
 	BranchFilter        string            `json:"branch_filter,omitempty"`
@@ -629,21 +629,21 @@ var HookEventTypes = []string{
 
 // APIDeployKey represents a deploy key (SSH key for CI/CD)
 type APIDeployKey struct {
-	ID          int64     `json:"id"`
-	KeyID       int64     `json:"key_id"`
-	Key         string    `json:"key"`
-	URL         string    `json:"url"`
-	Title       string    `json:"title"`
-	Fingerprint string    `json:"fingerprint"`
-	ReadOnly    bool      `json:"read_only"`
-	CreatedAt   time.Time `json:"created_at"`
+	ID          int64          `json:"id"`
+	KeyID       int64          `json:"key_id"`
+	Key         string         `json:"key"`
+	URL         string         `json:"url"`
+	Title       string         `json:"title"`
+	Fingerprint string         `json:"fingerprint"`
+	ReadOnly    bool           `json:"read_only"`
+	CreatedAt   time.Time      `json:"created_at"`
 	Repository  *APIRepository `json:"repository,omitempty"`
 }
 
 // CreateDeployKeyOptions holds parameters for creating a deploy key
 type CreateDeployKeyOptions struct {
 	Title    string `json:"title"`
-	Key      string `json:"key"`      // SSH public key
+	Key      string `json:"key"`       // SSH public key
 	ReadOnly bool   `json:"read_only"` // true = read-only, false = read-write
 }
 
@@ -653,21 +653,21 @@ type CreateDeployKeyOptions struct {
 
 // APIRelease represents a release
 type APIRelease struct {
-	ID              int64            `json:"id"`
-	TagName         string           `json:"tag_name"`
-	Target          string           `json:"target_commitish"`
-	Name            string           `json:"name"`
-	Body            string           `json:"body"`
-	URL             string           `json:"url"`
-	HTMLURL         string           `json:"html_url"`
-	TarballURL      string           `json:"tarball_url"`
-	ZipballURL      string           `json:"zipball_url"`
-	IsDraft         bool             `json:"draft"`
-	IsPrerelease    bool             `json:"prerelease"`
-	CreatedAt       time.Time        `json:"created_at"`
-	PublishedAt     time.Time        `json:"published_at"`
-	Author          APIUser          `json:"author"`
-	Assets          []APIReleaseAsset `json:"assets"`
+	ID           int64             `json:"id"`
+	TagName      string            `json:"tag_name"`
+	Target       string            `json:"target_commitish"`
+	Name         string            `json:"name"`
+	Body         string            `json:"body"`
+	URL          string            `json:"url"`
+	HTMLURL      string            `json:"html_url"`
+	TarballURL   string            `json:"tarball_url"`
+	ZipballURL   string            `json:"zipball_url"`
+	IsDraft      bool              `json:"draft"`
+	IsPrerelease bool              `json:"prerelease"`
+	CreatedAt    time.Time         `json:"created_at"`
+	PublishedAt  time.Time         `json:"published_at"`
+	Author       APIUser           `json:"author"`
+	Assets       []APIReleaseAsset `json:"assets"`
 }
 
 // APIReleaseAsset represents an asset attached to a release
@@ -711,8 +711,8 @@ type APIActionRun struct {
 	Title        string    `json:"title"`
 	WorkflowID   string    `json:"workflow_id"`
 	WorkflowName string    `json:"workflow_name,omitempty"`
-	Event        string    `json:"event"` // push, pull_request, etc.
-	Status       string    `json:"status"` // waiting, running, success, failure, cancelled, skipped
+	Event        string    `json:"event"`  // push, pull_request, etc.
+	Status       string    `json:"status"` // waiting, running, success, failure, canceled, skipped
 	Conclusion   string    `json:"conclusion,omitempty"`
 	HeadBranch   string    `json:"head_branch"`
 	HeadSHA      string    `json:"head_sha"`
@@ -761,12 +761,12 @@ type APIWorkflow struct {
 
 // ActionRunListOptions holds filtering options for listing runs
 type ActionRunListOptions struct {
-	Branch     string `url:"branch,omitempty"`
-	Event      string `url:"event,omitempty"`
-	Status     string `url:"status,omitempty"` // waiting, running, success, failure
-	Actor      string `url:"actor,omitempty"`
-	Page       int    `url:"page,omitempty"`
-	Limit      int    `url:"limit,omitempty"`
+	Branch string `url:"branch,omitempty"`
+	Event  string `url:"event,omitempty"`
+	Status string `url:"status,omitempty"` // waiting, running, success, failure
+	Actor  string `url:"actor,omitempty"`
+	Page   int    `url:"page,omitempty"`
+	Limit  int    `url:"limit,omitempty"`
 }
 
 // APICommitStatus represents a commit status (traditional status API)

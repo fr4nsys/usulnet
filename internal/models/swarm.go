@@ -38,34 +38,34 @@ const (
 
 // SwarmClusterInfo represents the overall Swarm cluster state
 type SwarmClusterInfo struct {
-	Active        bool          `json:"active"`
-	ClusterID     string        `json:"cluster_id,omitempty"`
-	ManagerNodes  int           `json:"manager_nodes"`
-	WorkerNodes   int           `json:"worker_nodes"`
-	TotalNodes    int           `json:"total_nodes"`
-	ServiceCount  int           `json:"service_count"`
-	TaskCount     int           `json:"task_count"`
-	JoinTokenWorker  string     `json:"join_token_worker,omitempty"`
-	JoinTokenManager string     `json:"join_token_manager,omitempty"`
-	ManagerAddr   string        `json:"manager_addr,omitempty"`
-	Nodes         []SwarmNode   `json:"nodes,omitempty"`
+	Active           bool        `json:"active"`
+	ClusterID        string      `json:"cluster_id,omitempty"`
+	ManagerNodes     int         `json:"manager_nodes"`
+	WorkerNodes      int         `json:"worker_nodes"`
+	TotalNodes       int         `json:"total_nodes"`
+	ServiceCount     int         `json:"service_count"`
+	TaskCount        int         `json:"task_count"`
+	JoinTokenWorker  string      `json:"join_token_worker,omitempty"`
+	JoinTokenManager string      `json:"join_token_manager,omitempty"`
+	ManagerAddr      string      `json:"manager_addr,omitempty"`
+	Nodes            []SwarmNode `json:"nodes,omitempty"`
 }
 
 // SwarmNode represents a node in the Swarm cluster
 type SwarmNode struct {
-	ID           string `json:"id"`
-	Hostname     string `json:"hostname"`
-	Role         string `json:"role"`          // manager, worker
-	Status       string `json:"status"`        // ready, down, disconnected
-	Availability string `json:"availability"`  // active, pause, drain
+	ID            string `json:"id"`
+	Hostname      string `json:"hostname"`
+	Role          string `json:"role"`         // manager, worker
+	Status        string `json:"status"`       // ready, down, disconnected
+	Availability  string `json:"availability"` // active, pause, drain
 	EngineVersion string `json:"engine_version"`
-	Address      string `json:"address"`
-	ManagerAddr  string `json:"manager_addr,omitempty"`
-	IsLeader     bool   `json:"is_leader"`
-	NCPU         int64  `json:"ncpu"`
-	MemoryBytes  int64  `json:"memory_bytes"`
-	OS           string `json:"os"`
-	Architecture string `json:"architecture"`
+	Address       string `json:"address"`
+	ManagerAddr   string `json:"manager_addr,omitempty"`
+	IsLeader      bool   `json:"is_leader"`
+	NCPU          int64  `json:"ncpu"`
+	MemoryBytes   int64  `json:"memory_bytes"`
+	OS            string `json:"os"`
+	Architecture  string `json:"architecture"`
 }
 
 // SwarmService represents a Docker Swarm service tracked by usulnet
@@ -92,25 +92,25 @@ type SwarmService struct {
 
 // SwarmPort represents a published port for a Swarm service
 type SwarmPort struct {
-	Protocol      string `json:"protocol"`       // tcp, udp
+	Protocol      string `json:"protocol"` // tcp, udp
 	TargetPort    uint32 `json:"target_port"`
 	PublishedPort uint32 `json:"published_port"`
-	PublishMode   string `json:"publish_mode"`   // ingress, host
+	PublishMode   string `json:"publish_mode"` // ingress, host
 }
 
 // SwarmTask represents a running instance of a Swarm service
 type SwarmTask struct {
-	ID          string    `json:"id"`
-	ServiceID   string    `json:"service_id"`
-	NodeID      string    `json:"node_id"`
-	NodeHostname string   `json:"node_hostname,omitempty"`
-	Status      string    `json:"status"`        // running, shutdown, failed, pending, etc.
-	DesiredState string   `json:"desired_state"` // running, shutdown
-	ContainerID string    `json:"container_id,omitempty"`
-	Image       string    `json:"image"`
-	Error       string    `json:"error,omitempty"`
-	CreatedAt   time.Time `json:"created_at"`
-	UpdatedAt   time.Time `json:"updated_at"`
+	ID           string    `json:"id"`
+	ServiceID    string    `json:"service_id"`
+	NodeID       string    `json:"node_id"`
+	NodeHostname string    `json:"node_hostname,omitempty"`
+	Status       string    `json:"status"`        // running, shutdown, failed, pending, etc.
+	DesiredState string    `json:"desired_state"` // running, shutdown
+	ContainerID  string    `json:"container_id,omitempty"`
+	Image        string    `json:"image"`
+	Error        string    `json:"error,omitempty"`
+	CreatedAt    time.Time `json:"created_at"`
+	UpdatedAt    time.Time `json:"updated_at"`
 }
 
 // CreateSwarmServiceInput represents input for creating a Swarm service
@@ -132,9 +132,9 @@ type ScaleSwarmServiceInput struct {
 
 // SwarmInitInput represents input for initializing Swarm
 type SwarmInitInput struct {
-	AdvertiseAddr string `json:"advertise_addr"` // e.g., "192.168.1.10:2377"
-	ListenAddr    string `json:"listen_addr"`    // e.g., "0.0.0.0:2377"
-	ForceNewCluster bool `json:"force_new_cluster"`
+	AdvertiseAddr   string `json:"advertise_addr"` // e.g., "192.168.1.10:2377"
+	ListenAddr      string `json:"listen_addr"`    // e.g., "0.0.0.0:2377"
+	ForceNewCluster bool   `json:"force_new_cluster"`
 }
 
 // SwarmJoinInput represents input for joining a Swarm

@@ -106,7 +106,7 @@ type moduleRunner interface {
 }
 
 // runState tracks one in-flight Start invocation. Cancel atomically
-// flips the cancelled flag, which the dispatch loop checks between
+// flips the canceled flag, which the dispatch loop checks between
 // modules; the loop emits a final empty events batch and exits.
 type runState struct {
 	cancel context.CancelFunc
@@ -170,7 +170,7 @@ func (e *Engine) Name() string { return EngineName }
 // ctx (or Cancel) tears down whatever container the current wrapper
 // has running.
 //
-// Start returns once dispatch has finished (or been cancelled); the
+// Start returns once dispatch has finished (or been canceled); the
 // resulting EngineEvents wait in an internal queue until Events is
 // called.
 func (e *Engine) Start(ctx context.Context, req recon.EngineStartRequest) (string, error) {
@@ -222,7 +222,7 @@ func (e *Engine) dispatch(ctx context.Context, runID string, target recon.Target
 	out := make([]recon.EngineEvent, 0, 16)
 	for _, m := range mods {
 		if err := ctx.Err(); err != nil {
-			e.log.Info("toolkit: dispatch cancelled mid-run", "run_id", runID, "next_module", m)
+			e.log.Info("toolkit: dispatch canceled mid-run", "run_id", runID, "next_module", m)
 			return out, recon.ScanCancelled
 		}
 		runner := e.runners[m]
@@ -366,7 +366,8 @@ func asErrorReport(b []byte) error {
 	b = decodeJSON(b)
 	var r errorJSON
 	if err := json.Unmarshal(b, &r); err != nil {
-		return nil
+		// probe: non-errorJSON payload simply means "no toolkit-level error"
+		return nil //nolint:nilerr
 	}
 	if r.Error == "" {
 		return nil
@@ -377,7 +378,7 @@ func asErrorReport(b []byte) error {
 // runToolkitJSON is the shared invocation helper: build a network-
 // enabled spec, RunOnce, parse stdout into the wrapper-supplied
 // destination struct. The OSINT wrappers all share this body; the
-// per-tool runner only customises the command and the destination.
+// per-tool runner only customizes the command and the destination.
 func runToolkitJSON(
 	ctx context.Context,
 	launcher recon.ContainerLauncher,

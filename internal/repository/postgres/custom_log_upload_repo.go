@@ -68,7 +68,7 @@ func (r *CustomLogUploadRepository) GetByID(ctx context.Context, id uuid.UUID) (
 		&u.LineCount, &u.ErrorCount, &u.Description, &u.FilePath, &u.UploadedAt,
 	)
 	if err != nil {
-		if err == pgx.ErrNoRows {
+		if errors.Is(err, pgx.ErrNoRows) {
 			return nil, errors.NotFound("log upload")
 		}
 		return nil, errors.Wrap(err, errors.CodeInternal, "failed to get log upload")

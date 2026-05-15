@@ -78,17 +78,17 @@ type WebhookDeliveryListOptions struct {
 
 // AutoDeployRule represents a rule for automatic deployment from webhooks.
 type AutoDeployRule struct {
-	ID             uuid.UUID `json:"id" db:"id"`
-	Name           string    `json:"name" db:"name"`
-	SourceType     string    `json:"source_type" db:"source_type"` // gitea, github, dockerhub
-	SourceRepo     string    `json:"source_repo" db:"source_repo"`
-	SourceBranch   *string   `json:"source_branch,omitempty" db:"source_branch"`
-	TargetStackID  *string   `json:"target_stack_id,omitempty" db:"target_stack_id"`
-	TargetService  *string   `json:"target_service,omitempty" db:"target_service"`
-	Action         string    `json:"action" db:"action"` // redeploy, pull_and_redeploy, update_image
-	IsEnabled      bool      `json:"is_enabled" db:"is_enabled"`
+	ID              uuid.UUID  `json:"id" db:"id"`
+	Name            string     `json:"name" db:"name"`
+	SourceType      string     `json:"source_type" db:"source_type"` // gitea, github, dockerhub
+	SourceRepo      string     `json:"source_repo" db:"source_repo"`
+	SourceBranch    *string    `json:"source_branch,omitempty" db:"source_branch"`
+	TargetStackID   *string    `json:"target_stack_id,omitempty" db:"target_stack_id"`
+	TargetService   *string    `json:"target_service,omitempty" db:"target_service"`
+	Action          string     `json:"action" db:"action"` // redeploy, pull_and_redeploy, update_image
+	IsEnabled       bool       `json:"is_enabled" db:"is_enabled"`
 	LastTriggeredAt *time.Time `json:"last_triggered_at,omitempty" db:"last_triggered_at"`
-	CreatedBy      *uuid.UUID `json:"created_by,omitempty" db:"created_by"`
-	CreatedAt      time.Time  `json:"created_at" db:"created_at"`
-	UpdatedAt      time.Time  `json:"updated_at" db:"updated_at"`
+	CreatedBy       *uuid.UUID `json:"created_by,omitempty" db:"created_by"`
+	CreatedAt       time.Time  `json:"created_at" db:"created_at"`
+	UpdatedAt       time.Time  `json:"updated_at" db:"updated_at"`
 }

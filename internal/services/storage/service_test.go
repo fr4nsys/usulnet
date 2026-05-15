@@ -7,10 +7,7 @@ package storage
 import (
 	"context"
 	"errors"
-	"io"
-	"strings"
 	"testing"
-	"time"
 
 	"github.com/google/uuid"
 
@@ -171,53 +168,6 @@ func (e *mockEncryptor) DecryptString(ciphertext string) (string, error) {
 		return ciphertext[4:], nil
 	}
 	return ciphertext, nil
-}
-
-type mockS3Client struct {
-	healthy       bool
-	buckets       []BucketInfo
-	createErr     error
-	deleteErr     error
-	listObjResult *ListObjectsResult
-}
-
-func (c *mockS3Client) Healthy(_ context.Context) bool { return c.healthy }
-func (c *mockS3Client) ListBuckets(_ context.Context) ([]BucketInfo, error) {
-	return c.buckets, nil
-}
-func (c *mockS3Client) CreateBucket(_ context.Context, name, _ string) error {
-	if c.createErr != nil {
-		return c.createErr
-	}
-	c.buckets = append(c.buckets, BucketInfo{Name: name, CreatedAt: time.Now()})
-	return nil
-}
-func (c *mockS3Client) DeleteBucket(_ context.Context, _ string) error  { return c.deleteErr }
-func (c *mockS3Client) BucketExists(_ context.Context, _ string) (bool, error) { return true, nil }
-func (c *mockS3Client) GetBucketVersioning(_ context.Context, _ string) (bool, error) {
-	return false, nil
-}
-func (c *mockS3Client) SetBucketVersioning(_ context.Context, _ string, _ bool) error { return nil }
-func (c *mockS3Client) ListObjects(_ context.Context, _, _, _ string, _ int) (*ListObjectsResult, error) {
-	if c.listObjResult != nil {
-		return c.listObjResult, nil
-	}
-	return &ListObjectsResult{}, nil
-}
-func (c *mockS3Client) GetObject(_ context.Context, _, _ string) (io.ReadCloser, *ObjectMeta, error) {
-	return io.NopCloser(strings.NewReader("test-data")), &ObjectMeta{Key: "test.txt", ContentLength: 9}, nil
-}
-func (c *mockS3Client) PutObject(_ context.Context, _, _ string, _ io.Reader, _ int64, _ string) error {
-	return nil
-}
-func (c *mockS3Client) DeleteObject(_ context.Context, _, _ string) error        { return nil }
-func (c *mockS3Client) DeleteObjects(_ context.Context, _ string, _ []string) error { return nil }
-func (c *mockS3Client) CopyObject(_ context.Context, _, _, _, _ string) error { return nil }
-func (c *mockS3Client) PresignGetObject(_ context.Context, _, _ string, _ time.Duration) (string, error) {
-	return "https://presigned-get", nil
-}
-func (c *mockS3Client) PresignPutObject(_ context.Context, _, _ string, _ time.Duration) (string, error) {
-	return "https://presigned-put", nil
 }
 
 // ---------------------------------------------------------------------------

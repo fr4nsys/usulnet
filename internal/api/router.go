@@ -82,33 +82,45 @@ func DefaultRouterConfig(jwtSecret string) RouterConfig {
 // Handlers contains all API handlers.
 // All fields are optional - if nil, the corresponding routes won't be mounted.
 type Handlers struct {
-	System        *handlers.SystemHandler
-	WebSocket     *handlers.WebSocketHandler
-	Auth          *handlers.AuthHandler
-	Container     *handlers.ContainerHandler
-	Image         *handlers.ImageHandler
-	Volume        *handlers.VolumeHandler
-	Network       *handlers.NetworkHandler
-	Stack         *handlers.StackHandler
-	Host          *handlers.HostHandler
-	User          *handlers.UserHandler
-	Backup        *handlers.BackupHandler
-	Security      *handlers.SecurityHandler
-	Config        *handlers.ConfigHandler
-	Update        *handlers.UpdateHandler
-	Job           *handlers.JobsHandler
-	Notification  *handlers.NotificationHandler
-	Audit         *handlers.AuditHandler
-	PasswordReset *handlers.PasswordResetHandler
-	Proxy         *handlers.ProxyHandler
-	NPM           *handlers.NPMHandler
-	SSH           *handlers.SSHHandler
-	OpenAPI       *handlers.OpenAPIHandler
-	Settings      *handlers.SettingsHandler
-	License       *handlers.LicenseHandler
-	Registry      *handlers.RegistryHandler
-	Recon         *handlers.ReconHandler
-	Metadata      *handlers.MetadataHandler
+	System         *handlers.SystemHandler
+	WebSocket      *handlers.WebSocketHandler
+	Auth           *handlers.AuthHandler
+	Container      *handlers.ContainerHandler
+	Image          *handlers.ImageHandler
+	Volume         *handlers.VolumeHandler
+	Network        *handlers.NetworkHandler
+	Stack          *handlers.StackHandler
+	Host           *handlers.HostHandler
+	User           *handlers.UserHandler
+	Backup         *handlers.BackupHandler
+	Security       *handlers.SecurityHandler
+	Config         *handlers.ConfigHandler
+	Update         *handlers.UpdateHandler
+	Job            *handlers.JobsHandler
+	Notification   *handlers.NotificationHandler
+	Audit          *handlers.AuditHandler
+	PasswordReset  *handlers.PasswordResetHandler
+	Proxy          *handlers.ProxyHandler
+	ProxyExtended  *handlers.ExtendedProxyHandler
+	NPM            *handlers.NPMHandler
+	SSH            *handlers.SSHHandler
+	OpenAPI        *handlers.OpenAPIHandler
+	Settings       *handlers.SettingsHandler
+	License        *handlers.LicenseHandler
+	Registry       *handlers.RegistryHandler
+	Recon          *handlers.ReconHandler
+	Metadata       *handlers.MetadataHandler
+	Firewall       *handlers.FirewallHandler
+	Crontab        *handlers.CrontabHandler
+	BackupVerify   *handlers.BackupVerifyHandler
+	Rollback       *handlers.RollbackHandler
+	SSLObservatory *handlers.SSLObservatoryHandler
+	DockerEngine   *handlers.DockerEngineHandler
+	WireGuard      *handlers.WireGuardHandler
+	ImageBuilder   *handlers.ImageBuilderHandler
+	DNS            *handlers.DNSHandler
+	Calendar       *handlers.CalendarHandler
+	Marketplace    *handlers.MarketplaceHandler
 }
 
 // NewRouter creates a new chi router with all routes configured.
@@ -203,6 +215,12 @@ func NewRouter(config RouterConfig, h *Handlers) chi.Router {
 			if h.Update != nil {
 				r.Post("/webhooks/update/{token}", h.Update.TriggerWebhook)
 			}
+
+			// Public version endpoint (no auth) — standard discovery surface,
+			// matches /health/healthz and the public OpenAPI spec.
+			if h.System != nil {
+				r.Get("/system/version", h.System.Version)
+			}
 		})
 
 		// -----------------------------------------------------------------
@@ -226,7 +244,6 @@ func NewRouter(config RouterConfig, h *Handlers) chi.Router {
 			if h.System != nil {
 				r.Route("/system", func(r chi.Router) {
 					r.Use(middleware.RequireViewer)
-					r.Get("/version", h.System.Version)
 					r.Get("/info", h.System.Info)
 					r.Get("/health", h.System.Health)
 					r.Get("/metrics", h.System.Metrics)
@@ -341,6 +358,69 @@ func NewRouter(config RouterConfig, h *Handlers) chi.Router {
 						r.Post("/sync", h.Proxy.SyncToCaddy)
 						r.Get("/audit-logs", h.Proxy.ListAuditLogs)
 					})
+
+					// =========================================================
+					// Extended proxy routes (v26.5.1 — ported from v26.2.7).
+					// Access lists, dead hosts, locations, redirections,
+					// streams. Streams against Caddy return 422 with a
+					// clear "feature not supported" payload.
+					// =========================================================
+					if h.ProxyExtended != nil {
+						r.Get("/support", h.ProxyExtended.GetSupportMatrix)
+
+						// Access lists
+						r.Route("/access-lists", func(r chi.Router) {
+							r.Get("/", h.ProxyExtended.ListAccessLists)
+							r.Get("/{id}", h.ProxyExtended.GetAccessList)
+							r.Group(func(r chi.Router) {
+								r.Use(middleware.RequireOperator)
+								r.Post("/", h.ProxyExtended.CreateAccessList)
+								r.Put("/{id}", h.ProxyExtended.UpdateAccessList)
+								r.Delete("/{id}", h.ProxyExtended.DeleteAccessList)
+							})
+						})
+
+						// Dead hosts (404 catch-alls)
+						r.Route("/dead-hosts", func(r chi.Router) {
+							r.Get("/", h.ProxyExtended.ListDeadHosts)
+							r.Group(func(r chi.Router) {
+								r.Use(middleware.RequireOperator)
+								r.Post("/", h.ProxyExtended.CreateDeadHost)
+								r.Delete("/{id}", h.ProxyExtended.DeleteDeadHost)
+							})
+						})
+
+						// Locations (per-host path routes)
+						r.Route("/hosts/{id}/locations", func(r chi.Router) {
+							r.Get("/", h.ProxyExtended.ListLocations)
+							r.Group(func(r chi.Router) {
+								r.Use(middleware.RequireOperator)
+								r.Put("/", h.ProxyExtended.SetLocations)
+							})
+						})
+
+						// Redirections
+						r.Route("/redirections", func(r chi.Router) {
+							r.Get("/", h.ProxyExtended.ListRedirections)
+							r.Group(func(r chi.Router) {
+								r.Use(middleware.RequireOperator)
+								r.Post("/", h.ProxyExtended.CreateRedirection)
+								r.Put("/{id}", h.ProxyExtended.UpdateRedirection)
+								r.Delete("/{id}", h.ProxyExtended.DeleteRedirection)
+							})
+						})
+
+						// Streams (TCP/UDP — 422 against Caddy)
+						r.Route("/streams", func(r chi.Router) {
+							r.Get("/", h.ProxyExtended.ListStreams)
+							r.Group(func(r chi.Router) {
+								r.Use(middleware.RequireOperator)
+								r.Post("/", h.ProxyExtended.CreateStream)
+								r.Put("/{id}", h.ProxyExtended.UpdateStream)
+								r.Delete("/{id}", h.ProxyExtended.DeleteStream)
+							})
+						})
+					}
 				})
 			}
 
@@ -404,6 +484,146 @@ func NewRouter(config RouterConfig, h *Handlers) chi.Router {
 						r.Get("/audit-logs", h.NPM.ListAuditLogs)
 					})
 				})
+			}
+
+			// =============================================================
+			// Firewall (v26.5.1 — ported from v26.2.7 as AGPL feature)
+			//
+			// The handler's Routes() enforces per-method RBAC: read
+			// endpoints viewer+, mutations operator+, apply/sync admin.
+			// Mounted at the top level (authenticated, no recon gate).
+			// =============================================================
+			if h.Firewall != nil {
+				r.Mount("/firewall", h.Firewall.Routes())
+			}
+
+			// =============================================================
+			// Crontab (v26.5.1 — ported from v26.2.7 as AGPL feature)
+			//
+			// REST CRUD for entries, paginated /executions, and a
+			// WebSocket tail at /executions/tail. Per-method RBAC is
+			// enforced inside the handler's Routes(): read viewer+,
+			// mutations and run-now operator+.
+			// =============================================================
+			if h.Crontab != nil {
+				r.Mount("/crontab", h.Crontab.Routes())
+			}
+
+			// =============================================================
+			// Backup verification (v26.5.1 — ported from v26.2.7 as AGPL)
+			//
+			// REST: GET /runs, GET /runs/{id}, POST /run/{backup_id},
+			// GET /backups/{backup_id}/runs, GET /stats, schedule CRUD.
+			// Per-method RBAC inside Routes(): read viewer+, mutations
+			// operator+.
+			// =============================================================
+			if h.BackupVerify != nil {
+				r.Mount("/backup-verify", h.BackupVerify.Routes())
+			}
+
+			// =============================================================
+			// Rollback (v26.5.1 — ported from v26.2.7 as AGPL feature)
+			//
+			// REST CRUD for policies, paginated /executions and /audit,
+			// and a POST /policies/{id}/dry-run endpoint that previews
+			// a fire without touching the live stack. Per-method RBAC
+			// is enforced inside the handler's Routes(): read viewer+,
+			// mutations and dry-run operator+.
+			// =============================================================
+			if h.Rollback != nil {
+				r.Mount("/rollback", h.Rollback.Routes())
+			}
+
+			// =============================================================
+			// SSL Observatory (v26.5.1 — ported from v26.2.7 as AGPL)
+			//
+			// REST CRUD for targets, paginated /scans, manual scan
+			// trigger, and aggregate /stats + /expiring queries. The
+			// handler's Routes() enforces per-method RBAC: read endpoints
+			// viewer+, mutations operator+.
+			// =============================================================
+			if h.SSLObservatory != nil {
+				r.Mount("/ssl", h.SSLObservatory.Routes())
+			}
+
+			// =============================================================
+			// Docker engine config (v26.5.1 — ported from v26.2.7 as AGPL)
+			//
+			// REST: GET /config, PUT /config (validates → snapshots →
+			// atomic write → SIGHUP → verify → rollback on failure),
+			// GET /config/history, POST /config/restore/{snapshot_id}.
+			// Per-method RBAC inside Routes(): read viewer+, mutations
+			// admin (touches host daemon).
+			// =============================================================
+			if h.DockerEngine != nil {
+				r.Mount("/docker-engine", h.DockerEngine.Routes())
+			}
+
+			// =============================================================
+			// WireGuard mesh (v26.5.1 — ported from v26.2.7 as AGPL)
+			//
+			// REST: GET/POST/DELETE interfaces, GET/POST/DELETE peers,
+			// one-time GET /peers/{id}/qr?token=… (5 min TTL), and a
+			// mesh-link status feed at /mesh. Per-method RBAC inside
+			// Routes(): read viewer+, mutations operator+, mesh push
+			// admin (touches remote agents).
+			// =============================================================
+			if h.WireGuard != nil {
+				r.Mount("/wireguard", h.WireGuard.Routes())
+			}
+
+			// =============================================================
+			// Image Builder (v26.5.1 — ported from v26.2.7 as AGPL feature)
+			//
+			// REST: GET /builds, POST /builds, GET /builds/{id}, GET
+			// /builds/{id}/log (WebSocket OR SSE), GET/POST/DELETE
+			// /build-templates. Per-method RBAC inside Routes(): read
+			// viewer+, mutations operator+. Live build logs come through
+			// the redis pub/sub channel — see imagebuilder.LogChannel.
+			// =============================================================
+			if h.ImageBuilder != nil {
+				r.Mount("/builds", h.ImageBuilder.Routes())
+				r.Mount("/build-templates", h.ImageBuilder.TemplateRoutes())
+			}
+
+			// =============================================================
+			// DNS provider plugins (v26.5.1 — session-10).
+			//
+			// Replaces the proxy module's ad-hoc DNS surface with a
+			// dedicated subtree that hosts provider CRUD, record
+			// management, ACME DNS-01 orders, and the capability
+			// matrix. Same nil-safe pattern: when the encryptor is
+			// unavailable, h.DNS is nil and the subtree is skipped;
+			// every endpoint inside the handler also short-circuits
+			// to 503 so the route mounting code stays simple.
+			// =============================================================
+			if h.DNS != nil {
+				r.Mount("/dns", h.DNS.Routes())
+			}
+
+			// =============================================================
+			// Calendar (v26.5.1 — ported from v26.2.7 as AGPL feature,
+			// session-11)
+			//
+			// REST: GET /events?from=…&to=…, POST /events (manual entry),
+			// GET/PUT/DELETE /events/{id}, GET /stats, GET /sources,
+			// and GET /export.ics (RFC 5545). Read endpoints are
+			// viewer+, mutations operator+.
+			// =============================================================
+			if h.Calendar != nil {
+				r.Mount("/calendar", h.Calendar.Routes())
+			}
+
+			// =============================================================
+			// Marketplace (v26.5.1 — ported from v26.2.7 as AGPL feature,
+			// session-12). REST: GET /apps, GET /featured, GET /apps/{slug},
+			// POST /apps/{slug}/install, GET /apps/{slug}/reviews,
+			// GET /installations, GET/POST /installations/{id}/uninstall,
+			// POST /reviews. Read endpoints viewer+, installs + reviews
+			// operator+. Offline-first: zero outbound calls at runtime.
+			// =============================================================
+			if h.Marketplace != nil {
+				r.Mount("/marketplace", h.Marketplace.Routes())
 			}
 
 			// =============================================================

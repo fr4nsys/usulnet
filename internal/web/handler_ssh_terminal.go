@@ -454,12 +454,6 @@ func (h *Handler) connectSSHWithCredentials(ctx context.Context, conn *models.SS
 	return client, session, nil
 }
 
-// sendSSHMessage sends a message over the WebSocket (use writeSSH closure in WSSSHExec instead).
-func (h *Handler) sendSSHMessage(ws *websocket.Conn, msg SSHTerminalMessage) error {
-	ws.SetWriteDeadline(time.Now().Add(10 * time.Second))
-	return ws.WriteJSON(msg)
-}
-
 // SSHTerminalTempl renders the SSH terminal page.
 func (h *Handler) SSHTerminalTempl(w http.ResponseWriter, r *http.Request) {
 	connIDStr := chi.URLParam(r, "id")

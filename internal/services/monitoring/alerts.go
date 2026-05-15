@@ -89,11 +89,11 @@ func DefaultAlertConfig() AlertServiceConfig {
 
 // AlertService manages monitoring alerts.
 type AlertService struct {
-	repo         AlertRepository
-	metrics      MetricsProvider
-	notifier     NotificationSender
-	config       AlertServiceConfig
-	logger       *logger.Logger
+	repo     AlertRepository
+	metrics  MetricsProvider
+	notifier NotificationSender
+	config   AlertServiceConfig
+	logger   *logger.Logger
 
 	// State tracking
 	ruleStates   map[uuid.UUID]*ruleState
@@ -365,17 +365,17 @@ func (s *AlertService) fireAlert(
 
 	// Create event
 	event := &models.AlertEvent{
-		ID:        uuid.New(),
-		AlertID:   rule.ID,
-		HostID:    s.getHostIDForRule(rule),
+		ID:          uuid.New(),
+		AlertID:     rule.ID,
+		HostID:      s.getHostIDForRule(rule),
 		ContainerID: rule.ContainerID,
-		State:     models.AlertStateFiring,
-		Value:     value,
-		Threshold: rule.Threshold,
-		Message:   s.formatAlertMessage(rule, value),
-		Labels:    rule.Labels,
-		FiredAt:   now,
-		CreatedAt: now,
+		State:       models.AlertStateFiring,
+		Value:       value,
+		Threshold:   rule.Threshold,
+		Message:     s.formatAlertMessage(rule, value),
+		Labels:      rule.Labels,
+		FiredAt:     now,
+		CreatedAt:   now,
 	}
 
 	if err := s.repo.CreateEvent(ctx, event); err != nil {
@@ -474,25 +474,25 @@ func (s *AlertService) formatAlertMessage(rule *models.AlertRule, value float64)
 // CreateRule creates a new alert rule.
 func (s *AlertService) CreateRule(ctx context.Context, input models.CreateAlertRuleInput, createdBy *uuid.UUID) (*models.AlertRule, error) {
 	rule := &models.AlertRule{
-		ID:           uuid.New(),
-		HostID:       input.HostID,
-		ContainerID:  input.ContainerID,
-		Name:         input.Name,
-		Description:  input.Description,
-		Metric:       input.Metric,
-		Operator:     input.Operator,
-		Threshold:    input.Threshold,
-		Severity:     input.Severity,
-		Duration:     input.DurationSeconds,
-		Cooldown:     input.CooldownSeconds,
-		EvalInterval: input.EvalInterval,
-		State:        models.AlertStateOK,
+		ID:             uuid.New(),
+		HostID:         input.HostID,
+		ContainerID:    input.ContainerID,
+		Name:           input.Name,
+		Description:    input.Description,
+		Metric:         input.Metric,
+		Operator:       input.Operator,
+		Threshold:      input.Threshold,
+		Severity:       input.Severity,
+		Duration:       input.DurationSeconds,
+		Cooldown:       input.CooldownSeconds,
+		EvalInterval:   input.EvalInterval,
+		State:          models.AlertStateOK,
 		NotifyChannels: input.NotifyChannels,
-		Labels:       input.Labels,
-		IsEnabled:    input.IsEnabled,
-		CreatedBy:    createdBy,
-		CreatedAt:    time.Now(),
-		UpdatedAt:    time.Now(),
+		Labels:         input.Labels,
+		IsEnabled:      input.IsEnabled,
+		CreatedBy:      createdBy,
+		CreatedAt:      time.Now(),
+		UpdatedAt:      time.Now(),
 	}
 
 	// Apply defaults

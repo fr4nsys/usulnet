@@ -56,23 +56,23 @@ type SlackConfig struct {
 
 // SlackMessage represents a Slack webhook payload.
 type SlackMessage struct {
-	Channel     string        `json:"channel,omitempty"`
-	Username    string        `json:"username,omitempty"`
-	IconEmoji   string        `json:"icon_emoji,omitempty"`
-	IconURL     string        `json:"icon_url,omitempty"`
-	Text        string        `json:"text"`
+	Channel     string            `json:"channel,omitempty"`
+	Username    string            `json:"username,omitempty"`
+	IconEmoji   string            `json:"icon_emoji,omitempty"`
+	IconURL     string            `json:"icon_url,omitempty"`
+	Text        string            `json:"text"`
 	Attachments []SlackAttachment `json:"attachments,omitempty"`
-	Blocks      []SlackBlock  `json:"blocks,omitempty"`
+	Blocks      []SlackBlock      `json:"blocks,omitempty"`
 }
 
 // SlackAttachment is a legacy attachment format.
 type SlackAttachment struct {
-	Color      string   `json:"color,omitempty"`
-	Title      string   `json:"title,omitempty"`
-	Text       string   `json:"text,omitempty"`
-	Footer     string   `json:"footer,omitempty"`
-	FooterIcon string   `json:"footer_icon,omitempty"`
-	Timestamp  int64    `json:"ts,omitempty"`
+	Color      string       `json:"color,omitempty"`
+	Title      string       `json:"title,omitempty"`
+	Text       string       `json:"text,omitempty"`
+	Footer     string       `json:"footer,omitempty"`
+	FooterIcon string       `json:"footer_icon,omitempty"`
+	Timestamp  int64        `json:"ts,omitempty"`
 	Fields     []SlackField `json:"fields,omitempty"`
 }
 

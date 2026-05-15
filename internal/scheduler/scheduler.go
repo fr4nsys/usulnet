@@ -72,15 +72,15 @@ type Scheduler struct {
 	eventMu       sync.RWMutex
 
 	// State
-	running      bool
-	mu           sync.RWMutex
-	stopCh       chan struct{}
-	wg           sync.WaitGroup
-	cronEntries  map[string]cron.EntryID
-	cronMu       sync.RWMutex
+	running     bool
+	mu          sync.RWMutex
+	stopCh      chan struct{}
+	wg          sync.WaitGroup
+	cronEntries map[string]cron.EntryID
+	cronMu      sync.RWMutex
 
 	// lifecycleCtx is the context passed to Start(). Callbacks derive timeouts
-	// from it so they are cancelled during scheduler shutdown instead of using
+	// from it so they are canceled during scheduler shutdown instead of using
 	// orphaned context.Background() instances.
 	lifecycleCtx context.Context
 }
@@ -128,7 +128,7 @@ const (
 	EventJobProgress  EventType = "job_progress"
 	EventJobCompleted EventType = "job_completed"
 	EventJobFailed    EventType = "job_failed"
-	EventJobCancelled EventType = "job_cancelled"
+	EventJobCancelled EventType = "job_canceled"
 	EventJobRetrying  EventType = "job_retrying"
 )
 
@@ -360,7 +360,7 @@ func (s *Scheduler) EnqueueJob(ctx context.Context, input models.CreateJobInput)
 func (s *Scheduler) CancelJob(ctx context.Context, jobID uuid.UUID) error {
 	// Try to cancel in pool first (for running jobs)
 	if s.pool.CancelJob(jobID) {
-		s.logger.Debug("cancelled running job", "job_id", jobID)
+		s.logger.Debug("canceled running job", "job_id", jobID)
 	}
 
 	// Cancel in queue
@@ -544,7 +544,7 @@ func (s *Scheduler) UpdateScheduledJob(ctx context.Context, id uuid.UUID, input 
 	return job, nil
 }
 
-// DeleteJob deletes a completed/failed/cancelled job record from the database.
+// DeleteJob deletes a completed/failed/canceled job record from the database.
 func (s *Scheduler) DeleteJob(ctx context.Context, id uuid.UUID) error {
 	if s.repo == nil {
 		return errors.New(errors.CodeInternal, "no repository configured")
@@ -694,8 +694,8 @@ func (s *Scheduler) processQueue(ctx context.Context) {
 const callbackTimeout = 30 * time.Second
 
 // callbackCtx derives a timeout context from the scheduler lifecycle context.
-// If the scheduler is shutting down (lifecycle cancelled), callbacks are
-// cancelled too — preventing orphaned context.Background() operations.
+// If the scheduler is shutting down (lifecycle canceled), callbacks are
+// canceled too — preventing orphaned context.Background() operations.
 func (s *Scheduler) callbackCtx() (context.Context, context.CancelFunc) {
 	parent := s.lifecycleCtx
 	if parent == nil {
@@ -973,5 +973,3 @@ func (s *Scheduler) calculateNextRun(schedule string) *time.Time {
 	next := sched.Next(time.Now())
 	return &next
 }
-
-

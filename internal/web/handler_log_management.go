@@ -15,10 +15,11 @@ import (
 	"strings"
 	"time"
 
-	"github.com/fr4nsys/usulnet/internal/models"
-	logspages "github.com/fr4nsys/usulnet/internal/web/templates/pages/logs"
 	"github.com/go-chi/chi/v5"
 	"github.com/google/uuid"
+
+	"github.com/fr4nsys/usulnet/internal/models"
+	logspages "github.com/fr4nsys/usulnet/internal/web/templates/pages/logs"
 )
 
 // CustomLogUploadRepository defines the interface for log upload persistence.
@@ -630,49 +631,20 @@ func (h *Handler) LogUploadAnalyze(w http.ResponseWriter, r *http.Request) {
 
 // LogSearchAPI handles log search requests.
 // GET /api/logs/search
+//
+// TODO(session 16): wire this through a real search backend
+// (logagg.Service.Search with models.LogSearchOptions). The current
+// implementation fetches container logs directly and filters them in
+// memory, ignoring time_range entirely. The time-range parsing block
+// was previously here but unused; restore it together with the
+// repository-backed search.
 func (h *Handler) LogSearchAPI(w http.ResponseWriter, r *http.Request) {
 	query := r.URL.Query().Get("query")
-	timeRange := r.URL.Query().Get("time_range")
 	severity := r.URL.Query().Get("severity")
 	source := r.URL.Query().Get("source")
 	formatFilter := r.URL.Query().Get("format")
 
 	ctx := r.Context()
-
-	// Build search options
-	opts := models.LogSearchOptions{
-		Query:    query,
-		Limit:    100,
-		SortDesc: true,
-	}
-
-	if severity != "" {
-		opts.Severities = []models.LogSeverity{models.LogSeverity(severity)}
-	}
-
-	if source != "" {
-		opts.Sources = []string{source}
-	}
-
-	// Parse time range
-	now := time.Now()
-	switch timeRange {
-	case "1h":
-		t := now.Add(-1 * time.Hour)
-		opts.StartTime = &t
-	case "6h":
-		t := now.Add(-6 * time.Hour)
-		opts.StartTime = &t
-	case "24h":
-		t := now.Add(-24 * time.Hour)
-		opts.StartTime = &t
-	case "7d":
-		t := now.Add(-7 * 24 * time.Hour)
-		opts.StartTime = &t
-	case "30d":
-		t := now.Add(-30 * 24 * time.Hour)
-		opts.StartTime = &t
-	}
 
 	// Search logs
 	var logs []map[string]interface{}
@@ -774,13 +746,4 @@ func formatSizeHuman(bytes int64) string {
 		exp++
 	}
 	return fmt.Sprintf("%.1f %cB", float64(bytes)/float64(div), "KMGTPE"[exp])
-}
-
-// getFileExtension returns the file extension without the dot
-func getFileExtension(filename string) string {
-	ext := filepath.Ext(filename)
-	if ext != "" {
-		return strings.ToLower(ext[1:])
-	}
-	return ""
 }

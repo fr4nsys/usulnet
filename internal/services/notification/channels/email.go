@@ -24,7 +24,6 @@ import (
 type EmailChannel struct {
 	config       EmailConfig
 	htmlTemplate *template.Template
-	textTemplate *template.Template
 }
 
 // EmailConfig holds email channel configuration.
@@ -36,10 +35,10 @@ type EmailConfig struct {
 	Password string `json:"password,omitempty"`
 
 	// TLS configuration
-	UseTLS      bool `json:"use_tls"`       // Use STARTTLS
-	UseSSL      bool `json:"use_ssl"`       // Use implicit TLS (port 465)
-	SkipVerify  bool `json:"skip_verify"`   // Skip certificate verification
-	
+	UseTLS     bool `json:"use_tls"`     // Use STARTTLS
+	UseSSL     bool `json:"use_ssl"`     // Use implicit TLS (port 465)
+	SkipVerify bool `json:"skip_verify"` // Skip certificate verification
+
 	// Sender settings
 	FromAddress string `json:"from_address"`
 	FromName    string `json:"from_name,omitempty"`
@@ -198,11 +197,11 @@ func (e *EmailChannel) buildMessage(subject, body, contentType string) []byte {
 	from := e.formatAddress(e.config.FromName, e.config.FromAddress)
 	buf.WriteString(fmt.Sprintf("From: %s\r\n", from))
 	buf.WriteString(fmt.Sprintf("To: %s\r\n", strings.Join(e.config.ToAddresses, ", ")))
-	
+
 	if len(e.config.CCAddresses) > 0 {
 		buf.WriteString(fmt.Sprintf("Cc: %s\r\n", strings.Join(e.config.CCAddresses, ", ")))
 	}
-	
+
 	if e.config.ReplyTo != "" {
 		buf.WriteString(fmt.Sprintf("Reply-To: %s\r\n", e.config.ReplyTo))
 	}
@@ -210,7 +209,7 @@ func (e *EmailChannel) buildMessage(subject, body, contentType string) []byte {
 	// Encode subject for UTF-8
 	encodedSubject := e.encodeSubject(subject)
 	buf.WriteString(fmt.Sprintf("Subject: %s\r\n", encodedSubject))
-	
+
 	buf.WriteString("MIME-Version: 1.0\r\n")
 	buf.WriteString(fmt.Sprintf("Content-Type: %s\r\n", contentType))
 	buf.WriteString("Content-Transfer-Encoding: base64\r\n")

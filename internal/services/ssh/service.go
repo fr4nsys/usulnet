@@ -5,6 +5,7 @@
 package ssh
 
 import (
+	"bytes"
 	"context"
 	"crypto/rand"
 	"crypto/rsa"
@@ -88,8 +89,8 @@ type Service struct {
 	clients map[uuid.UUID]*ssh.Client
 
 	// Active tunnels (in-memory for managing running tunnels)
-	tunnelMu       sync.RWMutex
-	activeTunnels  map[uuid.UUID]chan struct{} // tunnel ID -> stop channel
+	tunnelMu      sync.RWMutex
+	activeTunnels map[uuid.UUID]chan struct{} // tunnel ID -> stop channel
 }
 
 // NewService creates a new SSH service.
@@ -778,7 +779,7 @@ func (s *Service) validateKeyPair(publicKey, privateKey, passphrase string) erro
 		return err
 	}
 
-	if string(pubKey.Marshal()) != string(signer.PublicKey().Marshal()) {
+	if !bytes.Equal(pubKey.Marshal(), signer.PublicKey().Marshal()) {
 		return errors.New(errors.CodeValidationFailed, "public key does not match private key")
 	}
 

@@ -36,20 +36,6 @@ const recommendationCols = `id, container_id, container_name, type, severity, st
 	current_value, recommended_value, estimated_savings, reason,
 	created_at, resolved_at, resolved_by`
 
-// scanRecommendation scans a row into a ResourceRecommendation.
-func scanRecommendation(row pgx.Row) (*models.ResourceRecommendation, error) {
-	var r models.ResourceRecommendation
-	err := row.Scan(
-		&r.ID, &r.ContainerID, &r.ContainerName, &r.Type, &r.Severity, &r.Status,
-		&r.CurrentValue, &r.RecommendedValue, &r.EstimatedSavings, &r.Reason,
-		&r.CreatedAt, &r.ResolvedAt, &r.ResolvedBy,
-	)
-	if err != nil {
-		return nil, err
-	}
-	return &r, nil
-}
-
 // scanRecommendations scans multiple rows into a slice of ResourceRecommendation.
 func scanRecommendations(rows pgx.Rows) ([]*models.ResourceRecommendation, error) {
 	var recs []*models.ResourceRecommendation

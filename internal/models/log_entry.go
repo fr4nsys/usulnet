@@ -29,22 +29,22 @@ const (
 type LogSource string
 
 const (
-	LogSourceContainer  LogSource = "container"
-	LogSourceHost       LogSource = "host"
+	LogSourceContainer   LogSource = "container"
+	LogSourceHost        LogSource = "host"
 	LogSourceApplication LogSource = "application"
-	LogSourceCustom     LogSource = "custom"
+	LogSourceCustom      LogSource = "custom"
 )
 
 // LogFormat represents detected log format
 type LogFormat string
 
 const (
-	LogFormatJSON     LogFormat = "json"
-	LogFormatSyslog   LogFormat = "syslog"
-	LogFormatApache   LogFormat = "apache"
-	LogFormatNginx    LogFormat = "nginx"
-	LogFormatDocker   LogFormat = "docker"
-	LogFormatPlain    LogFormat = "plain"
+	LogFormatJSON   LogFormat = "json"
+	LogFormatSyslog LogFormat = "syslog"
+	LogFormatApache LogFormat = "apache"
+	LogFormatNginx  LogFormat = "nginx"
+	LogFormatDocker LogFormat = "docker"
+	LogFormatPlain  LogFormat = "plain"
 )
 
 // LogEntry represents a parsed log entry
@@ -52,8 +52,8 @@ type LogEntry struct {
 	ID           uuid.UUID         `json:"id"`
 	Timestamp    time.Time         `json:"timestamp"`
 	Source       LogSource         `json:"source"`
-	SourceID     string            `json:"source_id"`     // container ID, host ID, etc.
-	SourceName   string            `json:"source_name"`   // container name, hostname, etc.
+	SourceID     string            `json:"source_id"`   // container ID, host ID, etc.
+	SourceName   string            `json:"source_name"` // container name, hostname, etc.
 	Severity     LogSeverity       `json:"severity"`
 	Message      string            `json:"message"`
 	RawLine      string            `json:"raw_line"`
@@ -65,58 +65,58 @@ type LogEntry struct {
 
 // ErrorPattern represents a detected error pattern
 type ErrorPattern struct {
-	Type        string `json:"type"`        // "exception", "stack_trace", "timeout", etc.
-	Name        string `json:"name"`        // Specific error name
-	File        string `json:"file,omitempty"`
-	Line        int    `json:"line,omitempty"`
-	Stacktrace  string `json:"stacktrace,omitempty"`
+	Type       string `json:"type"` // "exception", "stack_trace", "timeout", etc.
+	Name       string `json:"name"` // Specific error name
+	File       string `json:"file,omitempty"`
+	Line       int    `json:"line,omitempty"`
+	Stacktrace string `json:"stacktrace,omitempty"`
 }
 
 // CustomLogUpload represents an uploaded log file
 type CustomLogUpload struct {
-	ID          uuid.UUID   `json:"id" db:"id"`
-	UserID      uuid.UUID   `json:"user_id" db:"user_id"`
-	Filename    string      `json:"filename" db:"filename"`
-	Size        int64       `json:"size" db:"size"`
-	Format      LogFormat   `json:"format" db:"format"`
-	LineCount   int         `json:"line_count" db:"line_count"`
-	ErrorCount  int         `json:"error_count" db:"error_count"`
-	UploadedAt  time.Time   `json:"uploaded_at" db:"uploaded_at"`
-	Description string      `json:"description,omitempty" db:"description"`
-	FilePath    string      `json:"file_path,omitempty" db:"file_path"`
+	ID          uuid.UUID `json:"id" db:"id"`
+	UserID      uuid.UUID `json:"user_id" db:"user_id"`
+	Filename    string    `json:"filename" db:"filename"`
+	Size        int64     `json:"size" db:"size"`
+	Format      LogFormat `json:"format" db:"format"`
+	LineCount   int       `json:"line_count" db:"line_count"`
+	ErrorCount  int       `json:"error_count" db:"error_count"`
+	UploadedAt  time.Time `json:"uploaded_at" db:"uploaded_at"`
+	Description string    `json:"description,omitempty" db:"description"`
+	FilePath    string    `json:"file_path,omitempty" db:"file_path"`
 }
 
 // LogAggregation represents aggregated log statistics
 type LogAggregation struct {
-	Timeframe      string            `json:"timeframe"` // "1h", "24h", "7d"
-	TotalCount     int64             `json:"total_count"`
-	BySeverity     map[LogSeverity]int64 `json:"by_severity"`
-	BySource       map[string]int64  `json:"by_source"`
-	TopErrors      []ErrorSummary    `json:"top_errors"`
-	ErrorRate      float64           `json:"error_rate"` // errors per minute
-	PeakTime       *time.Time        `json:"peak_time,omitempty"`
+	Timeframe  string                `json:"timeframe"` // "1h", "24h", "7d"
+	TotalCount int64                 `json:"total_count"`
+	BySeverity map[LogSeverity]int64 `json:"by_severity"`
+	BySource   map[string]int64      `json:"by_source"`
+	TopErrors  []ErrorSummary        `json:"top_errors"`
+	ErrorRate  float64               `json:"error_rate"` // errors per minute
+	PeakTime   *time.Time            `json:"peak_time,omitempty"`
 }
 
 // ErrorSummary represents aggregated error information
 type ErrorSummary struct {
-	Pattern    string    `json:"pattern"`
-	Count      int64     `json:"count"`
-	FirstSeen  time.Time `json:"first_seen"`
-	LastSeen   time.Time `json:"last_seen"`
-	Sources    []string  `json:"sources"`
-	Severity   LogSeverity `json:"severity"`
+	Pattern   string      `json:"pattern"`
+	Count     int64       `json:"count"`
+	FirstSeen time.Time   `json:"first_seen"`
+	LastSeen  time.Time   `json:"last_seen"`
+	Sources   []string    `json:"sources"`
+	Severity  LogSeverity `json:"severity"`
 }
 
 // LogSearchOptions represents search/filter options
 type LogSearchOptions struct {
-	Query       string        `json:"query,omitempty"`
-	Sources     []string      `json:"sources,omitempty"`
-	Severities  []LogSeverity `json:"severities,omitempty"`
-	StartTime   *time.Time    `json:"start_time,omitempty"`
-	EndTime     *time.Time    `json:"end_time,omitempty"`
-	Limit       int           `json:"limit"`
-	Offset      int           `json:"offset"`
-	SortDesc    bool          `json:"sort_desc"`
+	Query      string        `json:"query,omitempty"`
+	Sources    []string      `json:"sources,omitempty"`
+	Severities []LogSeverity `json:"severities,omitempty"`
+	StartTime  *time.Time    `json:"start_time,omitempty"`
+	EndTime    *time.Time    `json:"end_time,omitempty"`
+	Limit      int           `json:"limit"`
+	Offset     int           `json:"offset"`
+	SortDesc   bool          `json:"sort_desc"`
 }
 
 // LogParseResult contains the result of parsing a log line
@@ -277,7 +277,7 @@ func parseJSONLog(entry *LogEntry, data map[string]interface{}) {
 			entry.Fields[k] = val
 		case float64:
 			entry.Fields[k] = strings.TrimRight(strings.TrimRight(
-				strings.Replace(string(rune(int(val))), ",", "", -1), "0"), ".")
+				strings.ReplaceAll(string(rune(int(val))), ",", ""), "0"), ".")
 		case bool:
 			if val {
 				entry.Fields[k] = "true"

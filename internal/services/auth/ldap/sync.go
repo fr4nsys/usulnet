@@ -63,10 +63,10 @@ type SyncResult struct {
 
 // SyncService handles LDAP user synchronization.
 type SyncService struct {
-	clients    []*Client
-	userRepo   *postgres.UserRepository
-	config     SyncConfig
-	logger     *logger.Logger
+	clients  []*Client
+	userRepo *postgres.UserRepository
+	config   SyncConfig
+	logger   *logger.Logger
 
 	mu         sync.Mutex
 	running    bool

@@ -185,19 +185,6 @@ func Internal(message string) *AppError {
 	return NewWithStatus(CodeInternal, message, http.StatusInternalServerError)
 }
 
-// LimitExceeded creates a license limit exceeded error (HTTP 402 Payment Required).
-func LimitExceeded(resource string, current, limit int) *AppError {
-	return NewWithStatus(
-		CodeLimitExceeded,
-		fmt.Sprintf("%s limit reached (%d/%d). Upgrade your license for more.", resource, current, limit),
-		http.StatusPaymentRequired,
-	).WithDetails(map[string]interface{}{
-		"resource": resource,
-		"current":  current,
-		"limit":    limit,
-	})
-}
-
 // ValidationFailed creates a validation error with field details
 func ValidationFailed(fields map[string]string) *AppError {
 	details := make(map[string]interface{})

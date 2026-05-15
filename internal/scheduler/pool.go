@@ -148,7 +148,7 @@ func (p *Pool) Stop() error {
 			"failed", p.failed.Load(),
 		)
 	case <-time.After(p.config.ShutdownTimeout):
-		p.logger.Warn("worker pool shutdown timeout, cancelling remaining jobs")
+		p.logger.Warn("worker pool shutdown timeout, canceling remaining jobs")
 		p.cancelAllJobs()
 	}
 
@@ -249,7 +249,7 @@ func (p *Pool) worker(ctx context.Context, id int) {
 	for {
 		select {
 		case <-ctx.Done():
-			log.Debug("worker stopped (context cancelled)")
+			log.Debug("worker stopped (context canceled)")
 			return
 
 		case <-p.stopCh:
@@ -360,7 +360,7 @@ func (p *Pool) cancelAllJobs() {
 	defer p.cancelMu.Unlock()
 
 	for jobID, cancel := range p.cancelFns {
-		p.logger.Debug("cancelling job", "job_id", jobID)
+		p.logger.Debug("canceling job", "job_id", jobID)
 		cancel()
 	}
 }

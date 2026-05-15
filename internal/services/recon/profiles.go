@@ -60,7 +60,7 @@ func isKnownTargetType(t TargetType) bool {
 // the v26.5.0 builtin profile seed (migration 044) plus the engine
 // stub used in tests. Custom profiles whose module list contains an
 // identifier outside this set are rejected with ErrProfileInvalid so
-// engines never receive instructions they cannot honour.
+// engines never receive instructions they cannot honor.
 //
 // The set is intentionally hard-coded rather than introspected at
 // runtime from `recon_profiles` because: (a) builtin rows can be
@@ -72,16 +72,16 @@ func isKnownTargetType(t TargetType) bool {
 var KnownModules = map[string]struct{}{
 	// SpiderFoot modules — match the names emitted by upstream
 	// SpiderFoot so the adapter does not have to translate.
-	"sfp_haveibeen":       {},
-	"sfp_hunter":          {},
-	"sfp_emailrep":        {},
-	"sfp_gravatar":        {},
-	"sfp_dnsresolve":      {},
-	"sfp_crt":             {},
-	"sfp_subdomain_enum":  {},
-	"sfp_dnsbrute":        {},
-	"sfp_sherlock":        {},
-	"sfp_socialprofiles":  {},
+	"sfp_haveibeen":      {},
+	"sfp_hunter":         {},
+	"sfp_emailrep":       {},
+	"sfp_gravatar":       {},
+	"sfp_dnsresolve":     {},
+	"sfp_crt":            {},
+	"sfp_subdomain_enum": {},
+	"sfp_dnsbrute":       {},
+	"sfp_sherlock":       {},
+	"sfp_socialprofiles": {},
 
 	// Toolkit modules — toolkit: prefix is what the toolkit container
 	// adapter dispatches on internally.

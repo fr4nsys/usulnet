@@ -42,17 +42,17 @@ type RetentionWorker struct {
 // RetentionPayload represents payload for retention job
 type RetentionPayload struct {
 	// Override default retention days per table (0 = use SQL function default)
-	MetricsDays                 int `json:"metrics_days,omitempty"`
-	ContainerStatsDays          int `json:"container_stats_days,omitempty"`
-	HostMetricsDays             int `json:"host_metrics_days,omitempty"`
-	AuditLogDays                int `json:"audit_log_days,omitempty"`
-	JobEventsDays               int `json:"job_events_days,omitempty"`
-	NotificationLogsDays        int `json:"notification_logs_days,omitempty"`
-	RuntimeSecurityEventsDays   int `json:"runtime_security_events_days,omitempty"`
-	AlertEventsDays             int `json:"alert_events_days,omitempty"`
-	SecurityScansDays           int `json:"security_scans_days,omitempty"`
-	CompletedJobsDays           int `json:"completed_jobs_days,omitempty"`
-	ContainerLogsDays           int `json:"container_logs_days,omitempty"`
+	MetricsDays               int `json:"metrics_days,omitempty"`
+	ContainerStatsDays        int `json:"container_stats_days,omitempty"`
+	HostMetricsDays           int `json:"host_metrics_days,omitempty"`
+	AuditLogDays              int `json:"audit_log_days,omitempty"`
+	JobEventsDays             int `json:"job_events_days,omitempty"`
+	NotificationLogsDays      int `json:"notification_logs_days,omitempty"`
+	RuntimeSecurityEventsDays int `json:"runtime_security_events_days,omitempty"`
+	AlertEventsDays           int `json:"alert_events_days,omitempty"`
+	SecurityScansDays         int `json:"security_scans_days,omitempty"`
+	CompletedJobsDays         int `json:"completed_jobs_days,omitempty"`
+	ContainerLogsDays         int `json:"container_logs_days,omitempty"`
 }
 
 // RetentionResult holds the result of a retention cleanup
@@ -125,7 +125,7 @@ func (w *RetentionWorker) Execute(ctx context.Context, job *models.Job) (interfa
 
 	for i, task := range tasks {
 		if ctx.Err() != nil {
-			return nil, errors.Wrap(ctx.Err(), errors.CodeInternal, "retention cancelled")
+			return nil, errors.Wrap(ctx.Err(), errors.CodeInternal, "retention canceled")
 		}
 
 		days := task.defaultDays

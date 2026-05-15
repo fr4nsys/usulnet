@@ -27,20 +27,20 @@ import (
 	totppkg "github.com/fr4nsys/usulnet/internal/pkg/totp"
 	"github.com/fr4nsys/usulnet/internal/scheduler"
 	"github.com/fr4nsys/usulnet/internal/scheduler/workers"
+	changessvc "github.com/fr4nsys/usulnet/internal/services/changes"
 	compliancesvc "github.com/fr4nsys/usulnet/internal/services/compliance"
+	costoptsvc "github.com/fr4nsys/usulnet/internal/services/costopt"
+	dashboardsvc "github.com/fr4nsys/usulnet/internal/services/dashboard"
+	driftsvc "github.com/fr4nsys/usulnet/internal/services/drift"
 	ephemeralsvc "github.com/fr4nsys/usulnet/internal/services/ephemeral"
 	gitsvc "github.com/fr4nsys/usulnet/internal/services/git"
 	gitsyncsvc "github.com/fr4nsys/usulnet/internal/services/gitsync"
-	manifestsvc "github.com/fr4nsys/usulnet/internal/services/manifest"
 	imagesignsvc "github.com/fr4nsys/usulnet/internal/services/imagesign"
 	logaggsvc "github.com/fr4nsys/usulnet/internal/services/logagg"
+	manifestsvc "github.com/fr4nsys/usulnet/internal/services/manifest"
 	opasvc "github.com/fr4nsys/usulnet/internal/services/opa"
-	changessvc "github.com/fr4nsys/usulnet/internal/services/changes"
-	costoptsvc "github.com/fr4nsys/usulnet/internal/services/costopt"
-	driftsvc "github.com/fr4nsys/usulnet/internal/services/drift"
-	dashboardsvc "github.com/fr4nsys/usulnet/internal/services/dashboard"
-	registrysvc "github.com/fr4nsys/usulnet/internal/services/registry"
 	recordingsvc "github.com/fr4nsys/usulnet/internal/services/recording"
+	registrysvc "github.com/fr4nsys/usulnet/internal/services/registry"
 	runtimesvc "github.com/fr4nsys/usulnet/internal/services/runtime"
 	swarmsvc "github.com/fr4nsys/usulnet/internal/services/swarm"
 	"github.com/fr4nsys/usulnet/internal/web/templates/pages"
@@ -266,15 +266,15 @@ type HostService interface {
 
 // HostMetricsView contains host resource metrics for templates.
 type HostMetricsView struct {
-	CPUPercent     float64
-	MemoryUsed     int64
-	MemoryPercent  float64
-	MemoryUsedStr  string
-	DiskPercent    float64
-	DiskUsedStr    string
-	DiskTotalStr   string
-	NetworkRxStr   string
-	NetworkTxStr   string
+	CPUPercent    float64
+	MemoryUsed    int64
+	MemoryPercent float64
+	MemoryUsedStr string
+	DiskPercent   float64
+	DiskUsedStr   string
+	DiskTotalStr  string
+	NetworkRxStr  string
+	NetworkTxStr  string
 }
 
 // DockerInfoView contains Docker daemon information for templates.
@@ -360,6 +360,21 @@ type ProxyService interface {
 	IsConnected(ctx context.Context) bool
 	// Mode returns the proxy backend type: "caddy" or "npm"
 	Mode() string
+	// BackendSupport returns the active backend's extended-feature
+	// support matrix. The UI renders this so the operator can see
+	// which features the active backend can actually apply.
+	BackendSupport() ProxyBackendSupport
+}
+
+// ProxyBackendSupport mirrors proxysvc.FeatureSupport at the web layer
+// so the adapter interface does not import the service package.
+type ProxyBackendSupport struct {
+	Mode         string
+	AccessLists  bool
+	DeadHosts    bool
+	Locations    bool
+	Redirections bool
+	Streams      bool
 }
 
 // StorageService provides S3-compatible storage operations for the web layer.
@@ -641,10 +656,10 @@ type Handler struct {
 	imageSignSvc           *imagesignsvc.Service
 	runtimeSecSvc          *runtimesvc.Service
 	// Phase 3: Market Expansion - GitOps
-	gitSvcFull    *gitsvc.Service
-	gitSyncSvc    *gitsyncsvc.Service
-	ephemeralSvc  *ephemeralsvc.Service
-	manifestSvc   *manifestsvc.Service
+	gitSvcFull   *gitsvc.Service
+	gitSyncSvc   *gitsyncsvc.Service
+	ephemeralSvc *ephemeralsvc.Service
+	manifestSvc  *manifestsvc.Service
 	// Phase 3 Enterprise: Change Management Audit Trail
 	changesSvc *changessvc.Service
 	// Phase 3 Enterprise: Drift Detection
@@ -834,37 +849,6 @@ func NewTemplHandler(deps HandlerDeps) *Handler {
 		redisURL:        deps.RedisURL,
 		dbSSLMode:       deps.DBSSLMode,
 		backupEncryptor: deps.BackupEncryptor,
-	}
-}
-
-// requireFeature returns Chi middleware that blocks requests when the current
-// edition does not include the given feature flag. Returns HTTP 402 for web
-// requests and an HTMX-compatible response for HTMX requests.
-// This is the web-layer equivalent of api/middleware.RequireFeature.
-func (h *Handler) requireFeature(feature license.Feature) func(http.Handler) http.Handler {
-	return func(next http.Handler) http.Handler {
-		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			allowed := false
-			if h.licenseProvider != nil {
-				info := h.licenseProvider.GetInfo()
-				if info != nil && info.HasFeature(feature) {
-					allowed = true
-				}
-			}
-			if !allowed {
-				if r.Header.Get("HX-Request") == "true" {
-					w.Header().Set("Content-Type", "text/html; charset=utf-8")
-					w.WriteHeader(http.StatusPaymentRequired)
-					_, _ = w.Write([]byte(`<div class="alert alert-warning">This feature requires a Business or Enterprise license.</div>`))
-					return
-				}
-				// Redirect with flash instead of rendering a sidebar-less error page
-				h.setFlash(w, r, "warning", "This feature requires a Business or Enterprise license. Visit usulnet.com/#pricing to upgrade.")
-				h.redirect(w, r, "/")
-				return
-			}
-			next.ServeHTTP(w, r)
-		})
 	}
 }
 

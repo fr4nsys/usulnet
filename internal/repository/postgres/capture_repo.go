@@ -72,7 +72,7 @@ func (r *CaptureRepository) GetByID(ctx context.Context, id uuid.UUID) (*models.
 		&c.StartedAt, &c.StoppedAt, &c.CreatedAt, &c.UpdatedAt,
 	)
 	if err != nil {
-		if err == pgx.ErrNoRows {
+		if errors.Is(err, pgx.ErrNoRows) {
 			return nil, errors.NotFound("capture")
 		}
 		return nil, errors.Wrap(err, errors.CodeInternal, "failed to get capture")

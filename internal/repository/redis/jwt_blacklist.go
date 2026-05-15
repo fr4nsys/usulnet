@@ -6,6 +6,7 @@ package redis
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"time"
 
@@ -75,7 +76,7 @@ func (b *JWTBlacklist) GetBlacklistReason(ctx context.Context, jti string) (stri
 	key := b.blacklistKey(jti)
 
 	reason, err := b.client.rdb.Get(ctx, key).Result()
-	if err == redis.Nil {
+	if errors.Is(err, redis.Nil) {
 		return "", nil
 	}
 	if err != nil {
@@ -118,7 +119,7 @@ func (b *JWTBlacklist) IsUserTokenBlacklisted(ctx context.Context, userID string
 	key := b.userBlacklistKey(userID)
 
 	timestampStr, err := b.client.rdb.Get(ctx, key).Result()
-	if err == redis.Nil {
+	if errors.Is(err, redis.Nil) {
 		// No user blacklist entry, token is valid
 		return false, nil
 	}

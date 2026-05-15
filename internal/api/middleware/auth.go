@@ -6,6 +6,7 @@ package middleware
 
 import (
 	"context"
+	"errors"
 	"net/http"
 	"strings"
 	"sync"
@@ -314,7 +315,8 @@ func cookieExtractor(name string) tokenExtractor {
 
 func defaultAuthErrorHandler(w http.ResponseWriter, r *http.Request, err error) {
 	requestID := GetRequestID(r.Context())
-	if apiErr, ok := err.(*apierrors.APIError); ok {
+	apiErr := &apierrors.APIError{}
+	if errors.As(err, &apiErr) {
 		apierrors.WriteErrorWithRequestID(w, apiErr, requestID)
 	} else {
 		apierrors.WriteErrorWithRequestID(w, apierrors.Unauthorized(err.Error()), requestID)

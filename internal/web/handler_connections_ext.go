@@ -14,11 +14,12 @@ import (
 	"strings"
 	"time"
 
+	"github.com/go-chi/chi/v5"
+	"github.com/google/uuid"
+
 	"github.com/fr4nsys/usulnet/internal/models"
 	"github.com/fr4nsys/usulnet/internal/web/templates/layouts"
 	"github.com/fr4nsys/usulnet/internal/web/templates/pages/connections"
-	"github.com/go-chi/chi/v5"
-	"github.com/google/uuid"
 )
 
 // ============================================================================
@@ -1283,9 +1284,10 @@ func (h *Handler) RDPConnectionDownload(w http.ResponseWriter, r *http.Request) 
 	}
 
 	// Map security mode to RDP security layer value
-	// 0=negotiate, 1=TLS, 2=RDP, 3=NLA
-	securityLayer := "0"
-	enableCredSSP := "1"
+	// 0=negotiate, 1=TLS, 2=RDP, 3=NLA — the switch's default branch
+	// covers the "any" / unrecognized mode, so both values are always
+	// assigned before use.
+	var securityLayer, enableCredSSP string
 	switch conn.Security {
 	case models.RDPSecurityNLA:
 		securityLayer = "0"

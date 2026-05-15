@@ -25,10 +25,10 @@ type MessageHandler func(ctx context.Context, msg *Message)
 
 // PubSub manages Redis pub/sub operations
 type PubSub struct {
-	client       *Client
-	prefix       string
+	client        *Client
+	prefix        string
 	subscriptions map[string]*subscription
-	mu           sync.RWMutex
+	mu            sync.RWMutex
 }
 
 type subscription struct {
@@ -40,8 +40,8 @@ type subscription struct {
 // NewPubSub creates a new PubSub manager
 func NewPubSub(client *Client, prefix string) *PubSub {
 	return &PubSub{
-		client:       client,
-		prefix:       prefix,
+		client:        client,
+		prefix:        prefix,
 		subscriptions: make(map[string]*subscription),
 	}
 }
@@ -284,24 +284,24 @@ const (
 type EventType string
 
 const (
-	EventCreated  EventType = "created"
-	EventUpdated  EventType = "updated"
-	EventDeleted  EventType = "deleted"
-	EventStarted  EventType = "started"
-	EventStopped  EventType = "stopped"
-	EventError    EventType = "error"
-	EventWarning  EventType = "warning"
-	EventInfo     EventType = "info"
+	EventCreated EventType = "created"
+	EventUpdated EventType = "updated"
+	EventDeleted EventType = "deleted"
+	EventStarted EventType = "started"
+	EventStopped EventType = "stopped"
+	EventError   EventType = "error"
+	EventWarning EventType = "warning"
+	EventInfo    EventType = "info"
 )
 
 // Event represents a generic event
 type Event struct {
-	Type      EventType              `json:"type"`
-	EntityID  string                 `json:"entity_id"`
-	EntityType string                `json:"entity_type"`
-	Timestamp int64                  `json:"timestamp"`
-	UserID    string                 `json:"user_id,omitempty"`
-	Data      map[string]interface{} `json:"data,omitempty"`
+	Type       EventType              `json:"type"`
+	EntityID   string                 `json:"entity_id"`
+	EntityType string                 `json:"entity_type"`
+	Timestamp  int64                  `json:"timestamp"`
+	UserID     string                 `json:"user_id,omitempty"`
+	Data       map[string]interface{} `json:"data,omitempty"`
 }
 
 // PublishEvent publishes a typed event

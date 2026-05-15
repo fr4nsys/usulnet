@@ -29,9 +29,9 @@ import (
 // so an operator can grep for retention activity without reading the
 // audit row. PII is never logged — only counters.
 type ReconRetentionRepository struct {
-	db            *DB
-	artifactRoot  string
-	log           *logger.Logger
+	db           *DB
+	artifactRoot string
+	log          *logger.Logger
 }
 
 // NewReconRetentionRepository constructs a repository. artifactRoot
@@ -194,7 +194,8 @@ func (r *ReconRetentionRepository) deleteArtifactFile(ref string) error {
 		return err
 	}
 	// Best-effort: remove now-empty parent directories so the on-disk
-	// tree stays tidy. Failures are non-fatal.
+	// tree stays tidy. Failures are non-fatal — the artifact itself was
+	// removed above, which is the only outcome the caller depends on.
 	dir := full
 	for i := 0; i < 4; i++ {
 		dir = filepathDir(dir)
@@ -202,14 +203,15 @@ func (r *ReconRetentionRepository) deleteArtifactFile(ref string) error {
 			break
 		}
 		if err := os.Remove(dir); err != nil {
+			// best-effort parent cleanup, never propagated
 			break
 		}
 	}
-	return nil
+	return nil //nolint:nilerr // see best-effort loop above
 }
 
 // AppendRetentionAudit writes a single `retention.delete` row to
-// recon_audit_log summarising the run. The details JSON carries the
+// recon_audit_log summarizing the run. The details JSON carries the
 // full counters so an operator can grep historical runs.
 func (r *ReconRetentionRepository) AppendRetentionAudit(ctx context.Context, summary workers.ReconRetentionSummary) error {
 	details, err := marshalJSONString(map[string]any{

@@ -172,7 +172,7 @@ func (t *TelegramChannel) formatMessage(msg RenderedMessage) string {
 
 	// Priority emoji and title
 	emoji := t.getPriorityEmoji(msg.Priority)
-	
+
 	switch t.config.ParseMode {
 	case "HTML":
 		sb.WriteString(fmt.Sprintf("%s <b>%s</b>\n\n", emoji, escapeHTML(msg.Title)))

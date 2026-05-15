@@ -71,7 +71,7 @@ func (r *GitConnectionRepository) GetByID(ctx context.Context, id uuid.UUID) (*m
 	row := r.db.QueryRow(ctx, query, id)
 	conn, err := scanGitConnRow(row)
 	if err != nil {
-		if err == pgx.ErrNoRows {
+		if errors.Is(err, pgx.ErrNoRows) {
 			return nil, errors.New(errors.CodeNotFound, "git connection not found")
 		}
 		return nil, errors.Wrap(err, errors.CodeDatabaseError, "failed to get git connection")

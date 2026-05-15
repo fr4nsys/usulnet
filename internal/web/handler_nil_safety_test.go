@@ -23,27 +23,27 @@ import (
 
 type nilServices struct{}
 
-func (n *nilServices) Containers() ContainerService   { return nil }
-func (n *nilServices) Images() ImageService           { return nil }
-func (n *nilServices) Volumes() VolumeService         { return nil }
-func (n *nilServices) Networks() NetworkService       { return nil }
-func (n *nilServices) Stacks() StackService           { return nil }
-func (n *nilServices) Backups() BackupService         { return nil }
-func (n *nilServices) Config() ConfigService          { return nil }
-func (n *nilServices) Security() SecurityService      { return nil }
-func (n *nilServices) Updates() UpdateService         { return nil }
-func (n *nilServices) Hosts() HostService             { return nil }
-func (n *nilServices) Events() EventService           { return nil }
-func (n *nilServices) Proxy() ProxyService            { return nil }
-func (n *nilServices) Storage() StorageService        { return nil }
-func (n *nilServices) Auth() AuthService              { return nil }
-func (n *nilServices) Stats() StatsService            { return nil }
-func (n *nilServices) Users() UserService             { return nil }
-func (n *nilServices) Teams() TeamService             { return nil }
-func (n *nilServices) Gitea() GiteaService            { return nil }
-func (n *nilServices) Git() GitService                { return nil }
-func (n *nilServices) Metrics() MetricsServiceFull    { return nil }
-func (n *nilServices) Alerts() AlertsService          { return nil }
+func (n *nilServices) Containers() ContainerService    { return nil }
+func (n *nilServices) Images() ImageService            { return nil }
+func (n *nilServices) Volumes() VolumeService          { return nil }
+func (n *nilServices) Networks() NetworkService        { return nil }
+func (n *nilServices) Stacks() StackService            { return nil }
+func (n *nilServices) Backups() BackupService          { return nil }
+func (n *nilServices) Config() ConfigService           { return nil }
+func (n *nilServices) Security() SecurityService       { return nil }
+func (n *nilServices) Updates() UpdateService          { return nil }
+func (n *nilServices) Hosts() HostService              { return nil }
+func (n *nilServices) Events() EventService            { return nil }
+func (n *nilServices) Proxy() ProxyService             { return nil }
+func (n *nilServices) Storage() StorageService         { return nil }
+func (n *nilServices) Auth() AuthService               { return nil }
+func (n *nilServices) Stats() StatsService             { return nil }
+func (n *nilServices) Users() UserService              { return nil }
+func (n *nilServices) Teams() TeamService              { return nil }
+func (n *nilServices) Gitea() GiteaService             { return nil }
+func (n *nilServices) Git() GitService                 { return nil }
+func (n *nilServices) Metrics() MetricsServiceFull     { return nil }
+func (n *nilServices) Alerts() AlertsService           { return nil }
 func (n *nilServices) Scheduler() *scheduler.Scheduler { return nil }
 
 // ============================================================================
@@ -74,10 +74,8 @@ func newTestHandler() *Handler {
 func requestWithChi(method, path string, params map[string]string) *http.Request {
 	req := httptest.NewRequest(method, path, nil)
 	rctx := chi.NewRouteContext()
-	if params != nil {
-		for k, v := range params {
-			rctx.URLParams.Add(k, v)
-		}
+	for k, v := range params {
+		rctx.URLParams.Add(k, v)
 	}
 	return req.WithContext(context.WithValue(req.Context(), chi.RouteCtxKey, rctx))
 }
@@ -87,10 +85,8 @@ func requestWithForm(path string, formData string, params map[string]string) *ht
 	req := httptest.NewRequest(http.MethodPost, path, strings.NewReader(formData))
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	rctx := chi.NewRouteContext()
-	if params != nil {
-		for k, v := range params {
-			rctx.URLParams.Add(k, v)
-		}
+	for k, v := range params {
+		rctx.URLParams.Add(k, v)
 	}
 	return req.WithContext(context.WithValue(req.Context(), chi.RouteCtxKey, rctx))
 }

@@ -163,14 +163,14 @@ type GitBranch struct {
 
 // GitCommit represents a commit
 type GitCommit struct {
-	SHA       string     `json:"sha"`
-	Message   string     `json:"message"`
-	Author    string     `json:"author"`
-	Email     string     `json:"email"`
-	Date      time.Time  `json:"date"`
-	HTMLURL   string     `json:"html_url"`
-	Additions int        `json:"additions"`
-	Deletions int        `json:"deletions"`
+	SHA       string    `json:"sha"`
+	Message   string    `json:"message"`
+	Author    string    `json:"author"`
+	Email     string    `json:"email"`
+	Date      time.Time `json:"date"`
+	HTMLURL   string    `json:"html_url"`
+	Additions int       `json:"additions"`
+	Deletions int       `json:"deletions"`
 }
 
 // GitTag represents a tag
@@ -184,40 +184,40 @@ type GitTag struct {
 
 // GitPullRequest represents a pull/merge request
 type GitPullRequest struct {
-	ID          int64      `json:"id"`
-	Number      int64      `json:"number"`
-	Title       string     `json:"title"`
-	Body        string     `json:"body"`
-	State       string     `json:"state"` // open, closed, merged
-	HeadBranch  string     `json:"head_branch"`
-	HeadSHA     string     `json:"head_sha"`
-	BaseBranch  string     `json:"base_branch"`
-	AuthorName  string     `json:"author_name"`
-	AuthorLogin string     `json:"author_login"`
-	AvatarURL   string     `json:"avatar_url"`
-	Mergeable   bool       `json:"mergeable"`
-	Merged      bool       `json:"merged"`
-	Comments    int        `json:"comments"`
-	HTMLURL     string     `json:"html_url"`
-	CreatedAt   time.Time  `json:"created_at"`
-	UpdatedAt   time.Time  `json:"updated_at"`
+	ID          int64     `json:"id"`
+	Number      int64     `json:"number"`
+	Title       string    `json:"title"`
+	Body        string    `json:"body"`
+	State       string    `json:"state"` // open, closed, merged
+	HeadBranch  string    `json:"head_branch"`
+	HeadSHA     string    `json:"head_sha"`
+	BaseBranch  string    `json:"base_branch"`
+	AuthorName  string    `json:"author_name"`
+	AuthorLogin string    `json:"author_login"`
+	AvatarURL   string    `json:"avatar_url"`
+	Mergeable   bool      `json:"mergeable"`
+	Merged      bool      `json:"merged"`
+	Comments    int       `json:"comments"`
+	HTMLURL     string    `json:"html_url"`
+	CreatedAt   time.Time `json:"created_at"`
+	UpdatedAt   time.Time `json:"updated_at"`
 }
 
 // GitIssue represents an issue
 type GitIssue struct {
-	ID          int64      `json:"id"`
-	Number      int64      `json:"number"`
-	Title       string     `json:"title"`
-	Body        string     `json:"body"`
-	State       string     `json:"state"` // open, closed
-	AuthorName  string     `json:"author_name"`
-	AuthorLogin string     `json:"author_login"`
-	AvatarURL   string     `json:"avatar_url"`
-	Labels      []string   `json:"labels"`
-	Comments    int        `json:"comments"`
-	HTMLURL     string     `json:"html_url"`
-	CreatedAt   time.Time  `json:"created_at"`
-	UpdatedAt   time.Time  `json:"updated_at"`
+	ID          int64     `json:"id"`
+	Number      int64     `json:"number"`
+	Title       string    `json:"title"`
+	Body        string    `json:"body"`
+	State       string    `json:"state"` // open, closed
+	AuthorName  string    `json:"author_name"`
+	AuthorLogin string    `json:"author_login"`
+	AvatarURL   string    `json:"avatar_url"`
+	Labels      []string  `json:"labels"`
+	Comments    int       `json:"comments"`
+	HTMLURL     string    `json:"html_url"`
+	CreatedAt   time.Time `json:"created_at"`
+	UpdatedAt   time.Time `json:"updated_at"`
 }
 
 // GitFileContent represents file content from a repository

@@ -70,7 +70,7 @@ func Contains(slice []string, item string) bool {
 func ContainsIgnoreCase(slice []string, item string) bool {
 	item = strings.ToLower(item)
 	for _, s := range slice {
-		if strings.ToLower(s) == item {
+		if strings.EqualFold(s, item) {
 			return true
 		}
 	}

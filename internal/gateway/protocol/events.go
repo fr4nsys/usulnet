@@ -87,13 +87,13 @@ const (
 
 // Backup events
 const (
-	EventBackupStarted   EventType = "backup.started"
-	EventBackupCompleted EventType = "backup.completed"
-	EventBackupFailed    EventType = "backup.failed"
-	EventBackupProgress  EventType = "backup.progress"
-	EventRestoreStarted  EventType = "restore.started"
+	EventBackupStarted    EventType = "backup.started"
+	EventBackupCompleted  EventType = "backup.completed"
+	EventBackupFailed     EventType = "backup.failed"
+	EventBackupProgress   EventType = "backup.progress"
+	EventRestoreStarted   EventType = "restore.started"
 	EventRestoreCompleted EventType = "restore.completed"
-	EventRestoreFailed   EventType = "restore.failed"
+	EventRestoreFailed    EventType = "restore.failed"
 )
 
 // Update events
@@ -107,8 +107,8 @@ const (
 
 // Resource events
 const (
-	EventResourceLow      EventType = "resource.low"
-	EventResourceCritical EventType = "resource.critical"
+	EventResourceLow       EventType = "resource.low"
+	EventResourceCritical  EventType = "resource.critical"
 	EventResourceRecovered EventType = "resource.recovered"
 )
 
@@ -125,16 +125,16 @@ const (
 
 // Event represents an event from an agent.
 type Event struct {
-	ID          string            `json:"id"`
-	Type        EventType         `json:"type"`
-	AgentID     string            `json:"agent_id"`
-	HostID      string            `json:"host_id"`
-	Timestamp   time.Time         `json:"timestamp"`
-	Severity    EventSeverity     `json:"severity"`
-	Message     string            `json:"message,omitempty"`
-	Actor       *EventActor       `json:"actor,omitempty"`
-	Attributes  map[string]string `json:"attributes,omitempty"`
-	Data        interface{}       `json:"data,omitempty"`
+	ID         string            `json:"id"`
+	Type       EventType         `json:"type"`
+	AgentID    string            `json:"agent_id"`
+	HostID     string            `json:"host_id"`
+	Timestamp  time.Time         `json:"timestamp"`
+	Severity   EventSeverity     `json:"severity"`
+	Message    string            `json:"message,omitempty"`
+	Actor      *EventActor       `json:"actor,omitempty"`
+	Attributes map[string]string `json:"attributes,omitempty"`
+	Data       interface{}       `json:"data,omitempty"`
 }
 
 // EventActor represents the entity that generated the event.
@@ -188,28 +188,28 @@ type NetworkEventData struct {
 
 // Job event data
 type JobEventData struct {
-	JobID       string   `json:"job_id"`
-	JobType     string   `json:"job_type"`
-	Progress    int      `json:"progress,omitempty"` // 0-100
-	CurrentStep string   `json:"current_step,omitempty"`
-	TotalSteps  int      `json:"total_steps,omitempty"`
-	Error       string   `json:"error,omitempty"`
+	JobID       string      `json:"job_id"`
+	JobType     string      `json:"job_type"`
+	Progress    int         `json:"progress,omitempty"` // 0-100
+	CurrentStep string      `json:"current_step,omitempty"`
+	TotalSteps  int         `json:"total_steps,omitempty"`
+	Error       string      `json:"error,omitempty"`
 	Result      interface{} `json:"result,omitempty"`
 }
 
 // Security event data
 type SecurityEventData struct {
-	ContainerID    string `json:"container_id,omitempty"`
-	ContainerName  string `json:"container_name,omitempty"`
-	ImageID        string `json:"image_id,omitempty"`
-	OldScore       int    `json:"old_score,omitempty"`
-	NewScore       int    `json:"new_score,omitempty"`
-	VulnID         string `json:"vuln_id,omitempty"`
-	VulnSeverity   string `json:"vuln_severity,omitempty"`
-	VulnPackage    string `json:"vuln_package,omitempty"`
-	TotalVulns     int    `json:"total_vulns,omitempty"`
-	CriticalVulns  int    `json:"critical_vulns,omitempty"`
-	HighVulns      int    `json:"high_vulns,omitempty"`
+	ContainerID   string `json:"container_id,omitempty"`
+	ContainerName string `json:"container_name,omitempty"`
+	ImageID       string `json:"image_id,omitempty"`
+	OldScore      int    `json:"old_score,omitempty"`
+	NewScore      int    `json:"new_score,omitempty"`
+	VulnID        string `json:"vuln_id,omitempty"`
+	VulnSeverity  string `json:"vuln_severity,omitempty"`
+	VulnPackage   string `json:"vuln_package,omitempty"`
+	TotalVulns    int    `json:"total_vulns,omitempty"`
+	CriticalVulns int    `json:"critical_vulns,omitempty"`
+	HighVulns     int    `json:"high_vulns,omitempty"`
 }
 
 // Backup event data
@@ -238,11 +238,11 @@ type UpdateEventData struct {
 
 // Resource event data
 type ResourceEventData struct {
-	ResourceType  string  `json:"resource_type"` // cpu, memory, disk
-	CurrentValue  float64 `json:"current_value"`
+	ResourceType   string  `json:"resource_type"` // cpu, memory, disk
+	CurrentValue   float64 `json:"current_value"`
 	ThresholdValue float64 `json:"threshold_value"`
-	Unit          string  `json:"unit"`
-	Message       string  `json:"message,omitempty"`
+	Unit           string  `json:"unit"`
+	Message        string  `json:"message,omitempty"`
 }
 
 // GetSeverity returns the default severity for an event type.
@@ -342,30 +342,30 @@ type EventListOptions struct {
 
 // Inventory types for periodic inventory sync
 type Inventory struct {
-	AgentID      string            `json:"agent_id"`
-	HostID       string            `json:"host_id"`
-	CollectedAt  time.Time         `json:"collected_at"`
-	Containers   []ContainerInfo   `json:"containers,omitempty"`
-	Images       []ImageInfo       `json:"images,omitempty"`
-	Volumes      []VolumeInfo      `json:"volumes,omitempty"`
-	Networks     []NetworkInfo     `json:"networks,omitempty"`
-	SystemInfo   *SystemInfo       `json:"system_info,omitempty"`
+	AgentID     string          `json:"agent_id"`
+	HostID      string          `json:"host_id"`
+	CollectedAt time.Time       `json:"collected_at"`
+	Containers  []ContainerInfo `json:"containers,omitempty"`
+	Images      []ImageInfo     `json:"images,omitempty"`
+	Volumes     []VolumeInfo    `json:"volumes,omitempty"`
+	Networks    []NetworkInfo   `json:"networks,omitempty"`
+	SystemInfo  *SystemInfo     `json:"system_info,omitempty"`
 }
 
 // ContainerInfo for inventory
 type ContainerInfo struct {
-	ID         string            `json:"id"`
-	Names      []string          `json:"names"`
-	Image      string            `json:"image"`
-	ImageID    string            `json:"image_id"`
-	Command    string            `json:"command"`
-	Created    int64             `json:"created"`
-	State      string            `json:"state"`
-	Status     string            `json:"status"`
-	Ports      []PortBinding     `json:"ports,omitempty"`
-	Labels     map[string]string `json:"labels,omitempty"`
-	NetworkMode string           `json:"network_mode,omitempty"`
-	Mounts     []MountInfo       `json:"mounts,omitempty"`
+	ID          string            `json:"id"`
+	Names       []string          `json:"names"`
+	Image       string            `json:"image"`
+	ImageID     string            `json:"image_id"`
+	Command     string            `json:"command"`
+	Created     int64             `json:"created"`
+	State       string            `json:"state"`
+	Status      string            `json:"status"`
+	Ports       []PortBinding     `json:"ports,omitempty"`
+	Labels      map[string]string `json:"labels,omitempty"`
+	NetworkMode string            `json:"network_mode,omitempty"`
+	Mounts      []MountInfo       `json:"mounts,omitempty"`
 }
 
 // PortBinding for container ports
@@ -388,12 +388,12 @@ type MountInfo struct {
 
 // ImageInfo for inventory
 type ImageInfo struct {
-	ID          string   `json:"id"`
-	RepoTags    []string `json:"repo_tags"`
-	RepoDigests []string `json:"repo_digests,omitempty"`
-	Created     int64    `json:"created"`
-	Size        int64    `json:"size"`
-	VirtualSize int64    `json:"virtual_size"`
+	ID          string            `json:"id"`
+	RepoTags    []string          `json:"repo_tags"`
+	RepoDigests []string          `json:"repo_digests,omitempty"`
+	Created     int64             `json:"created"`
+	Size        int64             `json:"size"`
+	VirtualSize int64             `json:"virtual_size"`
 	Labels      map[string]string `json:"labels,omitempty"`
 }
 
@@ -410,8 +410,8 @@ type VolumeInfo struct {
 
 // VolumeUsageData for volume size info
 type VolumeUsageData struct {
-	Size      int64 `json:"size"`
-	RefCount  int64 `json:"ref_count"`
+	Size     int64 `json:"size"`
+	RefCount int64 `json:"ref_count"`
 }
 
 // NetworkInfo for inventory
@@ -431,8 +431,8 @@ type NetworkInfo struct {
 
 // IPAMConfig for network IPAM
 type IPAMConfig struct {
-	Driver  string       `json:"driver,omitempty"`
-	Config  []IPAMPool   `json:"config,omitempty"`
+	Driver string     `json:"driver,omitempty"`
+	Config []IPAMPool `json:"config,omitempty"`
 }
 
 // IPAMPool for network subnet config
@@ -443,18 +443,18 @@ type IPAMPool struct {
 
 // SystemInfo for inventory
 type SystemInfo struct {
-	ID              string `json:"id"`
-	Name            string `json:"name"`
-	ServerVersion   string `json:"server_version"`
-	APIVersion      string `json:"api_version"`
-	OS              string `json:"os"`
-	Arch            string `json:"arch"`
-	KernelVersion   string `json:"kernel_version"`
-	ContainersTotal int    `json:"containers_total"`
-	ContainersRunning int  `json:"containers_running"`
-	ContainersPaused int   `json:"containers_paused"`
-	ContainersStopped int  `json:"containers_stopped"`
-	Images          int    `json:"images"`
-	MemoryTotal     int64  `json:"memory_total"`
-	CPUs            int    `json:"cpus"`
+	ID                string `json:"id"`
+	Name              string `json:"name"`
+	ServerVersion     string `json:"server_version"`
+	APIVersion        string `json:"api_version"`
+	OS                string `json:"os"`
+	Arch              string `json:"arch"`
+	KernelVersion     string `json:"kernel_version"`
+	ContainersTotal   int    `json:"containers_total"`
+	ContainersRunning int    `json:"containers_running"`
+	ContainersPaused  int    `json:"containers_paused"`
+	ContainersStopped int    `json:"containers_stopped"`
+	Images            int    `json:"images"`
+	MemoryTotal       int64  `json:"memory_total"`
+	CPUs              int    `json:"cpus"`
 }

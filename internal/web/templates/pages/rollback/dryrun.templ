@@ -1,0 +1,134 @@
+// SPDX-License-Identifier: AGPL-3.0-or-later
+// Copyright (c) 2024-2026 usulnet contributors
+// https://github.com/fr4nsys/usulnet
+
+package rollback
+
+import "github.com/fr4nsys/usulnet/internal/web/templates/layouts"
+
+type DryRunResultView struct {
+	Matched       bool
+	StackID       string
+	StackName     string
+	FromVersion   string
+	ToVersion     string
+	Strategy      string
+	WouldExecute  bool
+	SkipReason    string
+	PolicyEnabled bool
+	PolicyDryRun  bool
+	Reason        string
+	NextStatus    string
+}
+
+type DryRunData struct {
+	PageData  layouts.PageData
+	Policy    PolicyView
+	Stacks    []StackOption
+	StackID   string // selected stack for the preview
+	Result    *DryRunResultView
+	CSRFToken string
+	Error     string
+}
+
+templ DryRun(data DryRunData) {
+	@layouts.Base(data.PageData) {
+		<div class="space-y-6">
+			<div>
+				<a href={ templ.SafeURL("/rollback/" + data.Policy.ID) } class="text-sm text-gray-400 hover:text-white">
+					<i class="fas fa-chevron-left mr-1"></i>back to policy
+				</a>
+				<h1 class="text-2xl font-display font-bold text-white mt-1">Dry-run: { data.Policy.Name }</h1>
+				<p class="text-gray-400 mt-1">Simulate the policy against a specific stack. Nothing is restored; only an audit row is appended.</p>
+			</div>
+
+			<form method="POST" action={ templ.SafeURL("/rollback/" + data.Policy.ID + "/dry-run") } class="card p-6 space-y-4">
+				<input type="hidden" name="csrf_token" value={ data.CSRFToken }/>
+				<div>
+					<label class="block text-sm font-medium text-gray-300 mb-1">Stack</label>
+					<select name="stack_id" required class="form-select w-full">
+						<option value="">— pick a stack —</option>
+						for _, s := range data.Stacks {
+							if s.ID == data.StackID {
+								<option value={ s.ID } selected>{ s.Name }</option>
+							} else {
+								<option value={ s.ID }>{ s.Name }</option>
+							}
+						}
+					</select>
+				</div>
+				<div class="flex items-center justify-end">
+					<button type="submit" class="btn-primary">
+						<i class="fas fa-vial mr-2"></i>Run preview
+					</button>
+				</div>
+			</form>
+
+			if data.Error != "" {
+				<div class="card p-4 border border-red-500/40 bg-red-500/10 text-red-200 text-sm">
+					<i class="fas fa-triangle-exclamation mr-2"></i>{ data.Error }
+				</div>
+			}
+
+			if data.Result != nil {
+				<div class="card p-6 space-y-3">
+					<h3 class="text-base font-semibold text-white">Result</h3>
+					<dl class="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+						<div>
+							<dt class="text-gray-500">Matched</dt>
+							<dd>
+								if data.Result.Matched {
+									<span class="text-green-300">yes — policy would fire</span>
+								} else {
+									<span class="text-yellow-300">no — policy would not fire on this stack</span>
+								}
+							</dd>
+						</div>
+						<div>
+							<dt class="text-gray-500">Would execute</dt>
+							<dd>
+								if data.Result.WouldExecute {
+									<span class="text-green-300">yes (policy is not in dry-run mode)</span>
+								} else {
+									<span class="text-blue-300">no (policy is in dry-run mode — audit only)</span>
+								}
+							</dd>
+						</div>
+						if data.Result.FromVersion != "" {
+							<div>
+								<dt class="text-gray-500">From version</dt>
+								<dd class="text-gray-200">v{ data.Result.FromVersion }</dd>
+							</div>
+						}
+						if data.Result.ToVersion != "" {
+							<div>
+								<dt class="text-gray-500">To version</dt>
+								<dd class="text-gray-200">v{ data.Result.ToVersion }</dd>
+							</div>
+						}
+						<div>
+							<dt class="text-gray-500">Strategy</dt>
+							<dd class="text-gray-200">{ data.Result.Strategy }</dd>
+						</div>
+						<div>
+							<dt class="text-gray-500">Next status</dt>
+							<dd class="text-gray-200">{ data.Result.NextStatus }</dd>
+						</div>
+					</dl>
+					if data.Result.Reason != "" {
+						<div>
+							<dt class="text-gray-500 text-sm">Reason</dt>
+							<dd class="text-gray-200 text-sm whitespace-pre-wrap">{ data.Result.Reason }</dd>
+						</div>
+					}
+					if data.Result.SkipReason != "" && !data.Result.Matched {
+						<div>
+							<dt class="text-gray-500 text-sm">Skip reason</dt>
+							<dd class="text-yellow-300 text-sm whitespace-pre-wrap">{ data.Result.SkipReason }</dd>
+						</div>
+					}
+				</div>
+			}
+		</div>
+	}
+}

@@ -6,11 +6,13 @@ package web
 
 import (
 	"net/http"
+	"strings"
+
+	"github.com/go-chi/chi/v5"
+	"github.com/google/uuid"
 
 	"github.com/fr4nsys/usulnet/internal/models"
 	toolspages "github.com/fr4nsys/usulnet/internal/web/templates/pages/tools"
-	"github.com/go-chi/chi/v5"
-	"github.com/google/uuid"
 )
 
 // ============================================================================
@@ -40,10 +42,11 @@ func (h *Handler) CheatSheet(w http.ResponseWriter, r *http.Request) {
 			}
 			snippets, err := h.snippetRepo.List(ctx, userID, opts)
 			if err == nil {
+				const cheatsheetPrefix = "cheatsheet/"
 				for _, s := range snippets {
-					category := ""
-					if len(s.Path) > 11 { // len("cheatsheet/") = 11
-						category = s.Path[11:]
+					category := strings.TrimPrefix(s.Path, cheatsheetPrefix)
+					if category == s.Path {
+						category = ""
 					}
 					// Fetch full snippet to get Content (List returns lightweight items without it)
 					command := ""

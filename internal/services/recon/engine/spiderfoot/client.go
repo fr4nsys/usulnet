@@ -301,8 +301,9 @@ func (c *Client) DeleteScan(ctx context.Context, scanID string) error {
 	}
 	var resp []string
 	if err := json.Unmarshal(body, &resp); err != nil {
-		// Tolerate non-JSON 200 responses.
-		return nil
+		// SpiderFoot occasionally returns non-JSON on 200; treated as a
+		// successful no-op rather than a hard failure.
+		return nil //nolint:nilerr
 	}
 	if len(resp) > 0 && resp[0] != "SUCCESS" {
 		msg := ""

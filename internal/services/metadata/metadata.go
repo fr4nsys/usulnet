@@ -47,7 +47,7 @@ const (
 	JobRunning   JobStatus = "running"
 	JobCompleted JobStatus = "completed"
 	JobFailed    JobStatus = "failed"
-	JobCancelled JobStatus = "cancelled"
+	JobCancelled JobStatus = "canceled"
 )
 
 // Job is a single metadata operation (one or more files).

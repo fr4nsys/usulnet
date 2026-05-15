@@ -60,12 +60,6 @@ type opsgenieAlert struct {
 	Details     map[string]string   `json:"details,omitempty"`
 }
 
-type opsgenieResponse struct {
-	Result    string  `json:"result"`
-	RequestID string  `json:"requestId"`
-	Took      float64 `json:"took"`
-}
-
 // NewOpsgenieChannel creates a new Opsgenie notification channel.
 func NewOpsgenieChannel(config OpsgenieConfig) (*OpsgenieChannel, error) {
 	if config.APIKey == "" {
@@ -115,7 +109,7 @@ func (o *OpsgenieChannel) Send(ctx context.Context, msg RenderedMessage) error {
 	}
 
 	tags := append([]string{}, o.config.Tags...)
-	tags = append(tags, string(msg.Type.Category()), string(msg.Type))
+	tags = append(tags, msg.Type.Category(), string(msg.Type))
 
 	details := make(map[string]string)
 	details["category"] = msg.Type.Category()

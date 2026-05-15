@@ -15,8 +15,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/fr4nsys/usulnet/internal/web/templates/pages/hosts"
 	"github.com/go-chi/chi/v5"
+
+	"github.com/fr4nsys/usulnet/internal/web/templates/pages/hosts"
 )
 
 // =============================================================================
@@ -30,10 +31,10 @@ func (h *Handler) HostFilesTempl(w http.ResponseWriter, r *http.Request) {
 		id = getIDParam(r)
 	}
 
-	cfg := h.hostTerminalConfig
-	cfg.User = "root" // File browser always runs as root to view all files
-
-	if !cfg.Enabled {
+	// The page handler only renders the UI shell; the AJAX endpoints
+	// below this point are the ones that actually shell out via
+	// runNsenterCommand with cfg.User="root".
+	if !h.hostTerminalConfig.Enabled {
 		h.RenderErrorTempl(w, r, http.StatusForbidden,
 			"Host Files Browser Disabled",
 			"Set HOST_TERMINAL_ENABLED=true in usulnet environment to enable this feature.",
@@ -463,7 +464,6 @@ func shellQuote(s string) string {
 // It uses docker exec -u 0 to run nsenter with root privileges,
 // then runs the command as cfg.User.
 func runNsenterCommand(selfContainerID string, cmd []string, cfg HostTerminalConfig) (string, error) {
-
 	// Build nsenter command
 	// We use su to drop to the configured unprivileged user
 	args := []string{

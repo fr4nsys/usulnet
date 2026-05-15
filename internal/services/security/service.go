@@ -7,7 +7,6 @@ package security
 import (
 	"context"
 	"fmt"
-	"sync"
 	"time"
 
 	"github.com/docker/docker/api/types"
@@ -102,17 +101,14 @@ func DefaultServiceConfig() *ServiceConfig {
 
 // Service provides security scanning functionality
 type Service struct {
-	config     *ServiceConfig
-	scanner    *Scanner
-	scanRepo   ScanRepository
-	issueRepo  IssueRepository
-	logger     *logger.Logger
+	config    *ServiceConfig
+	scanner   *Scanner
+	scanRepo  ScanRepository
+	issueRepo IssueRepository
+	logger    *logger.Logger
 
 	// For auto-scan background job
 	stopChan chan struct{}
-	wg       sync.WaitGroup
-	mu       sync.RWMutex
-	running  bool
 }
 
 // NewService creates a new security service
@@ -531,12 +527,12 @@ func (s *Service) GetSecuritySummary(ctx context.Context, hostID *uuid.UUID) (*S
 
 // SecuritySummary holds aggregated security statistics
 type SecuritySummary struct {
-	GeneratedAt       time.Time                     `json:"generated_at"`
-	TotalContainers   int                           `json:"total_containers"`
-	TotalIssues       int                           `json:"total_issues"`
-	AverageScore      float64                       `json:"average_score"`
-	GradeDistribution map[models.SecurityGrade]int  `json:"grade_distribution"`
-	SeverityCounts    map[models.IssueSeverity]int  `json:"severity_counts"`
+	GeneratedAt       time.Time                    `json:"generated_at"`
+	TotalContainers   int                          `json:"total_containers"`
+	TotalIssues       int                          `json:"total_issues"`
+	AverageScore      float64                      `json:"average_score"`
+	GradeDistribution map[models.SecurityGrade]int `json:"grade_distribution"`
+	SeverityCounts    map[models.IssueSeverity]int `json:"severity_counts"`
 }
 
 // SaveScanResult persists a scan result to the database

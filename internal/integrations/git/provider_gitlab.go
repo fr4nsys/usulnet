@@ -7,7 +7,6 @@ package git
 import (
 	"context"
 	"encoding/base64"
-	"strconv"
 	"strings"
 
 	"github.com/fr4nsys/usulnet/internal/integrations/gitlab"
@@ -787,10 +786,4 @@ func containsEvent(events []string, matches ...string) bool {
 // boolPtr returns a pointer to a bool
 func boolPtr(b bool) *bool {
 	return &b
-}
-
-// strconvAtoi64 converts string to int64 safely
-func strconvAtoi64(s string) int64 {
-	i, _ := strconv.ParseInt(s, 10, 64)
-	return i
 }

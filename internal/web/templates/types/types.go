@@ -17,13 +17,16 @@ type PageData struct {
 	Version            string
 	NotificationsCount int
 	Flash              *FlashData
-	FullScreen         bool   // For editors - removes main padding wrapper
-	Edition            string // "ce", "biz", "ee" — from license provider
-	EditionName        string // "Community Edition", "Business", "Enterprise"
-	Hosts              []HostSelectorItem
-	ActiveHostID       string
-	ActiveHostName     string
-	SidebarPrefs       *SidebarPreferences
+	FullScreen         bool // For editors - removes main padding wrapper
+	// Edition / EditionName tag the support tier carried on an optional
+	// commercial license token. They are display-only and the AGPL build
+	// never branches on them (principle 2 in docs/0526/x/principles.md).
+	Edition        string
+	EditionName    string
+	Hosts          []HostSelectorItem
+	ActiveHostID   string
+	ActiveHostName string
+	SidebarPrefs   *SidebarPreferences
 	// ReconEnabled controls visibility of the v26.5.0 Privacy & Recon
 	// sidebar section. The flag mirrors cfg.Recon.Enabled — see
 	// docs/v26.5/technical-notes.md "Feature flag".

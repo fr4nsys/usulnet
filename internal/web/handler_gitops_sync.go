@@ -812,7 +812,7 @@ func (h *Handler) ManifestSessionCreate(w http.ResponseWriter, r *http.Request) 
 	}
 
 	var body struct {
-		Name   string              `json:"name"`
+		Name   string                `json:"name"`
 		Format models.ManifestFormat `json:"format"`
 	}
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
@@ -875,10 +875,10 @@ func (h *Handler) ManifestSessionUpdate(w http.ResponseWriter, r *http.Request) 
 	}
 
 	var body struct {
-		CanvasState json.RawMessage            `json:"canvas_state"`
+		CanvasState json.RawMessage               `json:"canvas_state"`
 		Services    []models.ManifestServiceBlock `json:"services"`
-		Networks    json.RawMessage            `json:"networks"`
-		Volumes     json.RawMessage            `json:"volumes"`
+		Networks    json.RawMessage               `json:"networks"`
+		Volumes     json.RawMessage               `json:"volumes"`
 	}
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
 		h.jsonError(w, "invalid request body: "+err.Error(), http.StatusBadRequest)
@@ -944,9 +944,9 @@ func (h *Handler) ManifestGenerateJSON(w http.ResponseWriter, r *http.Request) {
 
 	var body struct {
 		Services []models.ManifestServiceBlock `json:"services"`
-		Networks json.RawMessage              `json:"networks"`
-		Volumes  json.RawMessage              `json:"volumes"`
-		Version  string                       `json:"version"`
+		Networks json.RawMessage               `json:"networks"`
+		Volumes  json.RawMessage               `json:"volumes"`
+		Version  string                        `json:"version"`
 	}
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
 		h.jsonError(w, "invalid request body: "+err.Error(), http.StatusBadRequest)
@@ -974,7 +974,7 @@ func (h *Handler) ManifestValidateJSON(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var body struct {
-		Content string              `json:"content"`
+		Content string                `json:"content"`
 		Format  models.ManifestFormat `json:"format"`
 	}
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
@@ -1036,4 +1036,3 @@ func (h *Handler) ManifestSeedJSON(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(map[string]string{"status": "seeded"}) //nolint:errcheck
 }
-

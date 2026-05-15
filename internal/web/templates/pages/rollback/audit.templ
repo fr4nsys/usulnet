@@ -1,0 +1,94 @@
+// SPDX-License-Identifier: AGPL-3.0-or-later
+// Copyright (c) 2024-2026 usulnet contributors
+// https://github.com/fr4nsys/usulnet
+
+package rollback
+
+import "github.com/fr4nsys/usulnet/internal/web/templates/layouts"
+
+type AuditView struct {
+	ID        string
+	Policy    string
+	Stack     string
+	Actor     string
+	Action    string
+	Details   string
+	CreatedAt string
+}
+
+type AuditData struct {
+	PageData layouts.PageData
+	Entries  []AuditView
+	Total    int
+	Limit    int
+	Offset   int
+}
+
+templ Audit(data AuditData) {
+	@layouts.Base(data.PageData) {
+		<div class="space-y-6">
+			<div>
+				<h1 class="text-2xl font-display font-bold text-white">Rollback audit log</h1>
+				<p class="text-gray-400 mt-1">Append-only record of every policy change and execution decision. Enforced by the Postgres trigger <code class="text-xs">rollback_audit_log_append_only_trigger</code>.</p>
+			</div>
+
+			@Nav("audit")
+
+			if len(data.Entries) == 0 {
+				<div class="card p-12 text-center">
+					<i class="fas fa-clipboard-list text-5xl text-gray-600 mb-4"></i>
+					<h3 class="text-lg font-semibold text-white mb-2">Audit log is empty</h3>
+					<p class="text-gray-400">Create a policy to start recording entries.</p>
+				</div>
+			} else {
+				<div class="card overflow-hidden">
+					<table class="min-w-full divide-y divide-dark-700 text-sm">
+						<thead class="bg-dark-800 text-xs uppercase text-gray-400">
+							<tr>
+								<th class="px-4 py-2 text-left">When</th>
+								<th class="px-4 py-2 text-left">Action</th>
+								<th class="px-4 py-2 text-left">Policy</th>
+								<th class="px-4 py-2 text-left">Stack</th>
+								<th class="px-4 py-2 text-left">Actor</th>
+								<th class="px-4 py-2 text-left">Details</th>
+							</tr>
+						</thead>
+						<tbody class="divide-y divide-dark-700">
+							for _, e := range data.Entries {
+								<tr class="hover:bg-dark-700/40">
+									<td class="px-4 py-2 text-xs text-gray-400 whitespace-nowrap">{ e.CreatedAt }</td>
+									<td class="px-4 py-2 text-gray-200">{ e.Action }</td>
+									<td class="px-4 py-2 text-gray-300">
+										if e.Policy != "" {
+											{ e.Policy }
+										} else {
+											<span class="text-gray-600">—</span>
+										}
+									</td>
+									<td class="px-4 py-2 text-gray-300">
+										if e.Stack != "" {
+											{ e.Stack }
+										} else {
+											<span class="text-gray-600">—</span>
+										}
+									</td>
+									<td class="px-4 py-2 text-gray-400 text-xs">
+										if e.Actor != "" {
+											{ e.Actor }
+										} else {
+											<span class="text-gray-600">system</span>
+										}
+									</td>
+									<td class="px-4 py-2 text-gray-400 text-xs">{ e.Details }</td>
+								</tr>
+							}
+						</tbody>
+					</table>
+				</div>
+				<div class="text-xs text-gray-500 text-center">
+					Showing { itoaPad(len(data.Entries)) } of { itoaPad(data.Total) } audit rows
+				</div>
+			}
+		</div>
+	}
+}

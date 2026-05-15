@@ -51,7 +51,7 @@ func TestFlattenExtracted(t *testing.T) {
 			t.Errorf("field[%d] = %q, want %q", i, f.Key, wantKeys[i])
 		}
 	}
-	// GPS is a nested map; expect JSON-marshalled value.
+	// GPS is a nested map; expect JSON-marshaled value.
 	gps := out[2].Value
 	if !strings.Contains(gps, "\"lat\"") {
 		t.Errorf("GPS value should be JSON, got %q", gps)

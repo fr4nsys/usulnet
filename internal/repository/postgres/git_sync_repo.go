@@ -120,7 +120,7 @@ func (r *GitSyncRepository) GetConfig(ctx context.Context, id uuid.UUID) (*model
 	query := fmt.Sprintf(`SELECT %s FROM git_sync_configs WHERE id = $1`, gitSyncConfigColumns)
 	c, err := scanGitSyncConfig(r.db.QueryRow(ctx, query, id))
 	if err != nil {
-		if err == pgx.ErrNoRows {
+		if errors.Is(err, pgx.ErrNoRows) {
 			return nil, errors.NotFound("git sync config")
 		}
 		return nil, errors.Wrap(err, errors.CodeDatabaseError, "failed to get git sync config")
@@ -220,7 +220,7 @@ func (r *GitSyncRepository) ToggleConfig(ctx context.Context, id uuid.UUID) (boo
 		UPDATE git_sync_configs SET is_enabled = NOT is_enabled WHERE id = $1
 		RETURNING is_enabled`, id).Scan(&newState)
 	if err != nil {
-		if err == pgx.ErrNoRows {
+		if errors.Is(err, pgx.ErrNoRows) {
 			return false, errors.NotFound("git sync config")
 		}
 		return false, errors.Wrap(err, errors.CodeDatabaseError, "failed to toggle git sync config")
@@ -392,7 +392,7 @@ func (r *GitSyncRepository) GetConflict(ctx context.Context, id uuid.UUID) (*mod
 		&c.ResolvedBy, &c.ResolvedAt, &c.MergedContent, &c.CreatedAt,
 	)
 	if err != nil {
-		if err == pgx.ErrNoRows {
+		if errors.Is(err, pgx.ErrNoRows) {
 			return nil, errors.NotFound("git sync conflict")
 		}
 		return nil, errors.Wrap(err, errors.CodeDatabaseError, "failed to get git sync conflict")
@@ -498,7 +498,7 @@ func (r *EphemeralEnvironmentRepository) GetByID(ctx context.Context, id uuid.UU
 	query := fmt.Sprintf(`SELECT %s FROM ephemeral_environments WHERE id = $1`, ephemeralEnvColumns)
 	e, err := scanEphemeralEnv(r.db.QueryRow(ctx, query, id))
 	if err != nil {
-		if err == pgx.ErrNoRows {
+		if errors.Is(err, pgx.ErrNoRows) {
 			return nil, errors.NotFound("ephemeral environment")
 		}
 		return nil, errors.Wrap(err, errors.CodeDatabaseError, "failed to get ephemeral environment")
@@ -824,7 +824,7 @@ func (r *ManifestBuilderRepository) GetTemplate(ctx context.Context, id uuid.UUI
 	query := fmt.Sprintf(`SELECT %s FROM manifest_templates WHERE id = $1`, manifestTemplateColumns)
 	t, err := scanManifestTemplate(r.db.QueryRow(ctx, query, id))
 	if err != nil {
-		if err == pgx.ErrNoRows {
+		if errors.Is(err, pgx.ErrNoRows) {
 			return nil, errors.NotFound("manifest template")
 		}
 		return nil, errors.Wrap(err, errors.CodeDatabaseError, "failed to get manifest template")
@@ -846,7 +846,6 @@ func (r *ManifestBuilderRepository) ListTemplates(ctx context.Context, format st
 	if category != "" {
 		conditions = append(conditions, fmt.Sprintf("category = $%d", argNum))
 		args = append(args, category)
-		argNum++
 	}
 
 	whereClause := ""
@@ -992,7 +991,7 @@ func (r *ManifestBuilderRepository) GetSession(ctx context.Context, id uuid.UUID
 	query := fmt.Sprintf(`SELECT %s FROM manifest_builder_sessions WHERE id = $1`, manifestSessionColumns)
 	s, err := scanManifestSession(r.db.QueryRow(ctx, query, id))
 	if err != nil {
-		if err == pgx.ErrNoRows {
+		if errors.Is(err, pgx.ErrNoRows) {
 			return nil, errors.NotFound("manifest builder session")
 		}
 		return nil, errors.Wrap(err, errors.CodeDatabaseError, "failed to get manifest builder session")
@@ -1139,7 +1138,7 @@ func (r *ManifestBuilderRepository) GetComponent(ctx context.Context, id uuid.UU
 	query := fmt.Sprintf(`SELECT %s FROM manifest_builder_components WHERE id = $1`, manifestComponentColumns)
 	c, err := scanManifestComponent(r.db.QueryRow(ctx, query, id))
 	if err != nil {
-		if err == pgx.ErrNoRows {
+		if errors.Is(err, pgx.ErrNoRows) {
 			return nil, errors.NotFound("manifest builder component")
 		}
 		return nil, errors.Wrap(err, errors.CodeDatabaseError, "failed to get manifest builder component")

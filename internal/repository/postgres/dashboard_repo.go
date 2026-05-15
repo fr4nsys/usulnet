@@ -92,7 +92,7 @@ func (r *DashboardRepository) GetLayout(ctx context.Context, id uuid.UUID) (*mod
 		&layout.CreatedAt,
 		&layout.UpdatedAt,
 	)
-	if err == pgx.ErrNoRows {
+	if errors.Is(err, pgx.ErrNoRows) {
 		return nil, errors.NotFound("dashboard layout")
 	}
 	if err != nil {
@@ -205,7 +205,7 @@ func (r *DashboardRepository) GetDefaultLayout(ctx context.Context, userID uuid.
 		&layout.CreatedAt,
 		&layout.UpdatedAt,
 	)
-	if err == pgx.ErrNoRows {
+	if errors.Is(err, pgx.ErrNoRows) {
 		return nil, nil // No default set — not an error
 	}
 	if err != nil {
@@ -296,7 +296,7 @@ func (r *DashboardRepository) GetWidget(ctx context.Context, id uuid.UUID) (*mod
 		&w.CreatedAt,
 		&w.UpdatedAt,
 	)
-	if err == pgx.ErrNoRows {
+	if errors.Is(err, pgx.ErrNoRows) {
 		return nil, errors.NotFound("dashboard widget")
 	}
 	if err != nil {

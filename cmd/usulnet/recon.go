@@ -218,7 +218,7 @@ func (c *apiClient) do(ctx context.Context, method, path string, body, out any) 
 }
 
 // stream issues a GET that consumes a text/event-stream response, invoking
-// onEvent for each parsed SSE event until the context is cancelled or the
+// onEvent for each parsed SSE event until the context is canceled or the
 // stream closes.
 func (c *apiClient) stream(ctx context.Context, path string, onEvent func(event, data string)) error {
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, c.baseURL+path, nil)
@@ -586,7 +586,7 @@ var reconScanCancelCmd = &cobra.Command{
 		if err := client.do(cmd.Context(), http.MethodDelete, path, nil, nil); err != nil {
 			return err
 		}
-		_, _ = fmt.Fprintf(cmd.OutOrStdout(), "cancelled %s\n", args[0])
+		_, _ = fmt.Fprintf(cmd.OutOrStdout(), "canceled %s\n", args[0])
 		return nil
 	},
 }

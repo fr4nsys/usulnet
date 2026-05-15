@@ -18,7 +18,7 @@ import (
 // Stub is a deterministic Extractor for tests. Each invocation returns
 // a fresh map so callers cannot accidentally mutate shared state.
 //
-// The zero value is usable; the default behaviour is to return a
+// The zero value is usable; the default behavior is to return a
 // minimal map describing the input.
 type Stub struct {
 	// Fixed is the map to return verbatim from Extract. If nil, Stub

@@ -1,0 +1,26 @@
+// SPDX-License-Identifier: AGPL-3.0-or-later
+// Copyright (c) 2024-2026 usulnet contributors
+// https://github.com/fr4nsys/usulnet
+
+package rollback
+
+import "github.com/fr4nsys/usulnet/internal/web/templates/layouts"
+
+type EditData struct {
+	PageData layouts.PageData
+	Form     FormData
+}
+
+templ Edit(data EditData) {
+	@layouts.Base(data.PageData) {
+		<div class="space-y-6">
+			<div>
+				<a href={ templ.SafeURL("/rollback/" + data.Form.Policy.ID) } class="text-sm text-gray-400 hover:text-white">
+					<i class="fas fa-chevron-left mr-1"></i>back to policy
+				</a>
+				<h1 class="text-2xl font-display font-bold text-white mt-1">Edit { data.Form.Policy.Name }</h1>
+			</div>
+			@PolicyForm(data.Form)
+		</div>
+	}
+}

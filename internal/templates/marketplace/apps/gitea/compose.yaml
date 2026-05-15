@@ -1,0 +1,15 @@
+services:
+  gitea:
+    image: gitea/gitea:1.22
+    restart: unless-stopped
+    environment:
+      USER_UID: "1000"
+      USER_GID: "1000"
+    volumes:
+      - gitea-data:/data
+    ports:
+      - "{{HTTP_PORT}}:3000"
+      - "{{SSH_PORT}}:22"
+
+volumes:
+  gitea-data: {}

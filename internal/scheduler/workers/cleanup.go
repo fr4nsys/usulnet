@@ -35,8 +35,8 @@ type CleanupService interface {
 
 // PruneResult holds the result of a prune operation
 type PruneResult struct {
-	ItemsDeleted int64  `json:"items_deleted"`
-	SpaceFreed   int64  `json:"space_freed"` // bytes
+	ItemsDeleted int64    `json:"items_deleted"`
+	SpaceFreed   int64    `json:"space_freed"` // bytes
 	Errors       []string `json:"errors,omitempty"`
 }
 
@@ -59,9 +59,9 @@ type CleanupWorker struct {
 
 // CleanupPayload represents payload for cleanup job
 type CleanupPayload struct {
-	Type           string `json:"type"` // images, volumes, networks, containers, build_cache, all, jobs
-	All            bool   `json:"all"`  // For images: remove all unused, not just dangling
-	OlderThanDays  int    `json:"older_than_days,omitempty"` // For jobs cleanup
+	Type          string `json:"type"`                      // images, volumes, networks, containers, build_cache, all, jobs
+	All           bool   `json:"all"`                       // For images: remove all unused, not just dangling
+	OlderThanDays int    `json:"older_than_days,omitempty"` // For jobs cleanup
 }
 
 // NewCleanupWorker creates a new cleanup worker
@@ -293,14 +293,14 @@ func (w *CleanupWorker) Execute(ctx context.Context, job *models.Job) (interface
 
 // CleanupJobResult holds the result of a cleanup job
 type CleanupJobResult struct {
-	Type              string                   `json:"type"`
-	StartedAt         time.Time                `json:"started_at"`
-	CompletedAt       time.Time                `json:"completed_at"`
-	Duration          time.Duration            `json:"duration"`
-	TotalItemsDeleted int64                    `json:"total_items_deleted"`
-	TotalSpaceFreed   int64                    `json:"total_space_freed"`
-	Results           map[string]*PruneResult  `json:"results"`
-	Errors            []string                 `json:"errors,omitempty"`
+	Type              string                  `json:"type"`
+	StartedAt         time.Time               `json:"started_at"`
+	CompletedAt       time.Time               `json:"completed_at"`
+	Duration          time.Duration           `json:"duration"`
+	TotalItemsDeleted int64                   `json:"total_items_deleted"`
+	TotalSpaceFreed   int64                   `json:"total_space_freed"`
+	Results           map[string]*PruneResult `json:"results"`
+	Errors            []string                `json:"errors,omitempty"`
 }
 
 // ============================================================================

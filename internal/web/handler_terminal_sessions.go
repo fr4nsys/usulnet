@@ -18,23 +18,23 @@ import (
 
 // TerminalSession represents a terminal session for the web layer.
 type TerminalSession struct {
-	ID           uuid.UUID  `json:"id"`
-	UserID       uuid.UUID  `json:"user_id"`
-	Username     string     `json:"username"`
-	TargetType   string     `json:"target_type"`
-	TargetID     string     `json:"target_id"`
-	TargetName   string     `json:"target_name"`
-	HostID       *uuid.UUID `json:"host_id,omitempty"`
-	Shell        string     `json:"shell"`
-	TermCols     int        `json:"term_cols"`
-	TermRows     int        `json:"term_rows"`
-	ClientIP     string     `json:"client_ip"`
-	StartedAt    time.Time  `json:"started_at"`
-	EndedAt      *time.Time `json:"ended_at,omitempty"`
-	DurationMs   *int64     `json:"duration_ms,omitempty"`
-	DurationHuman string    `json:"duration_human,omitempty"`
-	Status       string     `json:"status"`
-	ErrorMessage string     `json:"error_message,omitempty"`
+	ID            uuid.UUID  `json:"id"`
+	UserID        uuid.UUID  `json:"user_id"`
+	Username      string     `json:"username"`
+	TargetType    string     `json:"target_type"`
+	TargetID      string     `json:"target_id"`
+	TargetName    string     `json:"target_name"`
+	HostID        *uuid.UUID `json:"host_id,omitempty"`
+	Shell         string     `json:"shell"`
+	TermCols      int        `json:"term_cols"`
+	TermRows      int        `json:"term_rows"`
+	ClientIP      string     `json:"client_ip"`
+	StartedAt     time.Time  `json:"started_at"`
+	EndedAt       *time.Time `json:"ended_at,omitempty"`
+	DurationMs    *int64     `json:"duration_ms,omitempty"`
+	DurationHuman string     `json:"duration_human,omitempty"`
+	Status        string     `json:"status"`
+	ErrorMessage  string     `json:"error_message,omitempty"`
 }
 
 // CreateTerminalSessionInput is the input for creating a terminal session.

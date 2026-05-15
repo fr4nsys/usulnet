@@ -30,13 +30,13 @@ import (
 type DeployStatus string
 
 const (
-	StatusPending      DeployStatus = "pending"
-	StatusConnecting   DeployStatus = "connecting"
-	StatusChecking     DeployStatus = "checking"
-	StatusDeploying    DeployStatus = "deploying"
-	StatusWaiting      DeployStatus = "waiting"
-	StatusComplete     DeployStatus = "complete"
-	StatusFailed       DeployStatus = "failed"
+	StatusPending    DeployStatus = "pending"
+	StatusConnecting DeployStatus = "connecting"
+	StatusChecking   DeployStatus = "checking"
+	StatusDeploying  DeployStatus = "deploying"
+	StatusWaiting    DeployStatus = "waiting"
+	StatusComplete   DeployStatus = "complete"
+	StatusFailed     DeployStatus = "failed"
 )
 
 // DeployRequest contains the information needed to deploy an agent.
@@ -125,8 +125,8 @@ const maxDeploymentHistory = 100
 // A future improvement should persist deployments to PostgreSQL for audit
 // and recovery purposes.
 type Service struct {
-	pkiManager  *crypto.PKIManager
-	logger      *logger.Logger
+	pkiManager *crypto.PKIManager
+	logger     *logger.Logger
 
 	// Track active deployments (in-memory only — lost on restart)
 	mu          sync.RWMutex
@@ -232,7 +232,7 @@ func (s *Service) runDeploy(ctx context.Context, req DeployRequest, result *Depl
 
 	dockerVersion, err := s.sshExec(client, "docker --version")
 	if err != nil {
-		result.setError(fmt.Errorf("Docker not found on remote host: %w", err))
+		result.setError(fmt.Errorf("docker not found on remote host: %w", err))
 		result.addLog("ERROR: Docker is not installed. Please install Docker first.")
 		return
 	}

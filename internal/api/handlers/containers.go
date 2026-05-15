@@ -108,29 +108,29 @@ func (h *ContainerHandler) Routes() chi.Router {
 
 // ContainerResponse represents a container in API responses.
 type ContainerResponse struct {
-	ID              string                     `json:"id"`
-	HostID          string                     `json:"host_id"`
-	Name            string                     `json:"name"`
-	Image           string                     `json:"image"`
-	ImageID         string                     `json:"image_id,omitempty"`
-	Status          string                     `json:"status"`
-	State           string                     `json:"state"`
-	CreatedAt       string                     `json:"created_at,omitempty"`
-	StartedAt       string                     `json:"started_at,omitempty"`
-	FinishedAt      string                     `json:"finished_at,omitempty"`
-	Ports           []PortMappingResponse      `json:"ports,omitempty"`
-	Labels          map[string]string          `json:"labels,omitempty"`
-	EnvVars         []string                   `json:"env_vars,omitempty"`
-	Mounts          []MountResponse            `json:"mounts,omitempty"`
+	ID              string                      `json:"id"`
+	HostID          string                      `json:"host_id"`
+	Name            string                      `json:"name"`
+	Image           string                      `json:"image"`
+	ImageID         string                      `json:"image_id,omitempty"`
+	Status          string                      `json:"status"`
+	State           string                      `json:"state"`
+	CreatedAt       string                      `json:"created_at,omitempty"`
+	StartedAt       string                      `json:"started_at,omitempty"`
+	FinishedAt      string                      `json:"finished_at,omitempty"`
+	Ports           []PortMappingResponse       `json:"ports,omitempty"`
+	Labels          map[string]string           `json:"labels,omitempty"`
+	EnvVars         []string                    `json:"env_vars,omitempty"`
+	Mounts          []MountResponse             `json:"mounts,omitempty"`
 	Networks        []NetworkAttachmentResponse `json:"networks,omitempty"`
-	RestartPolicy   string                     `json:"restart_policy,omitempty"`
-	SecurityScore   *int                       `json:"security_score,omitempty"`
-	SecurityGrade   string                     `json:"security_grade,omitempty"`
-	CurrentVersion  string                     `json:"current_version,omitempty"`
-	LatestVersion   string                     `json:"latest_version,omitempty"`
-	UpdateAvailable bool                       `json:"update_available"`
-	LastScannedAt   string                     `json:"last_scanned_at,omitempty"`
-	SyncedAt        string                     `json:"synced_at"`
+	RestartPolicy   string                      `json:"restart_policy,omitempty"`
+	SecurityScore   *int                        `json:"security_score,omitempty"`
+	SecurityGrade   string                      `json:"security_grade,omitempty"`
+	CurrentVersion  string                      `json:"current_version,omitempty"`
+	LatestVersion   string                      `json:"latest_version,omitempty"`
+	UpdateAvailable bool                        `json:"update_available"`
+	LastScannedAt   string                      `json:"last_scanned_at,omitempty"`
+	SyncedAt        string                      `json:"synced_at"`
 }
 
 // PortMappingResponse represents a port mapping.
@@ -1092,7 +1092,7 @@ func (h *ContainerHandler) CopyFromContainer(w http.ResponseWriter, r *http.Requ
 	if filename == "" {
 		filename = "download.tar"
 	} else if len(filename) > 0 && filename[len(filename)-1] != '/' {
-		filename = filename + ".tar"
+		filename += ".tar"
 	}
 
 	w.Header().Set("Content-Type", "application/x-tar")
@@ -1148,9 +1148,9 @@ func (h *ContainerHandler) CopyToContainer(w http.ResponseWriter, r *http.Reques
 	}
 
 	h.JSON(w, http.StatusOK, map[string]interface{}{
-		"message":    "files copied successfully",
-		"dst_path":   dstPath,
-		"container":  containerID,
+		"message":   "files copied successfully",
+		"dst_path":  dstPath,
+		"container": containerID,
 	})
 }
 

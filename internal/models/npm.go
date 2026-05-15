@@ -8,19 +8,19 @@ import "time"
 
 // NPMConnection represents the connection configuration to an NPM instance.
 type NPMConnection struct {
-	ID                    string    `json:"id" db:"id"`
-	HostID                string    `json:"host_id" db:"host_id"`
-	BaseURL               string    `json:"base_url" db:"base_url"`
-	AdminEmail            string    `json:"admin_email" db:"admin_email"`
-	AdminPasswordEncrypted string   `json:"-" db:"admin_password_encrypted"` // Never expose
-	IsEnabled             bool      `json:"is_enabled" db:"is_enabled"`
-	LastHealthCheck       *time.Time `json:"last_health_check,omitempty" db:"last_health_check"`
-	HealthStatus          string    `json:"health_status" db:"health_status"`
-	HealthMessage         string    `json:"health_message,omitempty" db:"health_message"`
-	CreatedAt             time.Time `json:"created_at" db:"created_at"`
-	UpdatedAt             time.Time `json:"updated_at" db:"updated_at"`
-	CreatedBy             *string   `json:"created_by,omitempty" db:"created_by"`
-	UpdatedBy             *string   `json:"updated_by,omitempty" db:"updated_by"`
+	ID                     string     `json:"id" db:"id"`
+	HostID                 string     `json:"host_id" db:"host_id"`
+	BaseURL                string     `json:"base_url" db:"base_url"`
+	AdminEmail             string     `json:"admin_email" db:"admin_email"`
+	AdminPasswordEncrypted string     `json:"-" db:"admin_password_encrypted"` // Never expose
+	IsEnabled              bool       `json:"is_enabled" db:"is_enabled"`
+	LastHealthCheck        *time.Time `json:"last_health_check,omitempty" db:"last_health_check"`
+	HealthStatus           string     `json:"health_status" db:"health_status"`
+	HealthMessage          string     `json:"health_message,omitempty" db:"health_message"`
+	CreatedAt              time.Time  `json:"created_at" db:"created_at"`
+	UpdatedAt              time.Time  `json:"updated_at" db:"updated_at"`
+	CreatedBy              *string    `json:"created_by,omitempty" db:"created_by"`
+	UpdatedBy              *string    `json:"updated_by,omitempty" db:"updated_by"`
 }
 
 // NPMConnectionCreate represents data to create a new NPM connection.
@@ -94,12 +94,12 @@ const (
 // AutoProxyLabels defines the Docker labels for auto-proxy feature.
 // Example: com.usulnet.proxy.domain=example.com
 const (
-	LabelProxyDomain      = "com.usulnet.proxy.domain"       // Domain name
-	LabelProxyPort        = "com.usulnet.proxy.port"         // Backend port (default: first exposed)
-	LabelProxyScheme      = "com.usulnet.proxy.scheme"       // http/https (default: http)
-	LabelProxySSL         = "com.usulnet.proxy.ssl"          // Enable SSL (default: true if domain set)
-	LabelProxySSLForced   = "com.usulnet.proxy.ssl_forced"   // Force HTTPS (default: true)
-	LabelProxyWebsocket   = "com.usulnet.proxy.websocket"    // Enable WebSocket (default: false)
+	LabelProxyDomain       = "com.usulnet.proxy.domain"         // Domain name
+	LabelProxyPort         = "com.usulnet.proxy.port"           // Backend port (default: first exposed)
+	LabelProxyScheme       = "com.usulnet.proxy.scheme"         // http/https (default: http)
+	LabelProxySSL          = "com.usulnet.proxy.ssl"            // Enable SSL (default: true if domain set)
+	LabelProxySSLForced    = "com.usulnet.proxy.ssl_forced"     // Force HTTPS (default: true)
+	LabelProxyWebsocket    = "com.usulnet.proxy.websocket"      // Enable WebSocket (default: false)
 	LabelProxyBlockExploit = "com.usulnet.proxy.block_exploits" // Block exploits (default: true)
 )
 

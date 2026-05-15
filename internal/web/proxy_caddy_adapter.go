@@ -102,14 +102,14 @@ func (a *caddyProxyAdapter) UpdateHost(ctx context.Context, v *ProxyHostView) er
 	}
 
 	input := &models.UpdateProxyHostInput{
-		Name:            &v.Domain,
-		Domains:         []string{v.Domain},
-		UpstreamScheme:  &scheme,
-		UpstreamHost:    &v.ForwardHost,
-		UpstreamPort:    &v.ForwardPort,
-		SSLMode:         &sslMode,
-		SSLForceHTTPS:   &v.SSLEnabled,
-		Enabled:         &v.Enabled,
+		Name:           &v.Domain,
+		Domains:        []string{v.Domain},
+		UpstreamScheme: &scheme,
+		UpstreamHost:   &v.ForwardHost,
+		UpstreamPort:   &v.ForwardPort,
+		SSLMode:        &sslMode,
+		SSLForceHTTPS:  &v.SSLEnabled,
+		Enabled:        &v.Enabled,
 	}
 
 	_, err = a.svc.UpdateHost(ctx, uid, input, nil)
@@ -144,52 +144,143 @@ func (a *caddyProxyAdapter) Sync(ctx context.Context) error {
 	return a.svc.Sync(ctx)
 }
 
-// ---- Redirections (not implemented in Caddy Phase 1) ----
+// ---- Redirections (v26.5.1 — local state, backend-applied on sync) ----
 
 func (a *caddyProxyAdapter) ListRedirections(ctx context.Context) ([]RedirectionHostView, error) {
-	return []RedirectionHostView{}, nil
-}
-func (a *caddyProxyAdapter) CreateRedirection(ctx context.Context, r *RedirectionHostView) error {
-	return fmt.Errorf("redirections not yet supported in Caddy mode")
-}
-func (a *caddyProxyAdapter) UpdateRedirection(ctx context.Context, r *RedirectionHostView) error {
-	return fmt.Errorf("redirections not yet supported in Caddy mode")
-}
-func (a *caddyProxyAdapter) DeleteRedirection(ctx context.Context, id int) error {
-	return fmt.Errorf("redirections not yet supported in Caddy mode")
-}
-func (a *caddyProxyAdapter) GetRedirection(ctx context.Context, id int) (*RedirectionHostView, error) {
-	return nil, fmt.Errorf("redirections not yet supported in Caddy mode")
+	rds, err := a.svc.ListRedirections(ctx)
+	if err != nil {
+		return nil, err
+	}
+	views := make([]RedirectionHostView, 0, len(rds))
+	for _, rd := range rds {
+		views = append(views, redirectionToView(rd))
+	}
+	return views, nil
 }
 
-// ---- Streams (not implemented in Caddy Phase 1) ----
+func (a *caddyProxyAdapter) GetRedirection(ctx context.Context, id int) (*RedirectionHostView, error) {
+	uid, err := a.resolveRedirectionID(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+	rd, err := a.svc.GetRedirection(ctx, uid)
+	if err != nil {
+		return nil, err
+	}
+	v := redirectionToView(rd)
+	return &v, nil
+}
+
+func (a *caddyProxyAdapter) CreateRedirection(ctx context.Context, r *RedirectionHostView) error {
+	rd := viewToRedirection(r)
+	if err := a.svc.CreateRedirection(ctx, rd, nil); err != nil {
+		return err
+	}
+	r.ID = hashUUIDToInt(rd.ID)
+	return nil
+}
+
+func (a *caddyProxyAdapter) UpdateRedirection(ctx context.Context, r *RedirectionHostView) error {
+	uid, err := a.resolveRedirectionID(ctx, r.ID)
+	if err != nil {
+		return err
+	}
+	rd := viewToRedirection(r)
+	rd.ID = uid
+	return a.svc.UpdateRedirection(ctx, rd, nil)
+}
+
+func (a *caddyProxyAdapter) DeleteRedirection(ctx context.Context, id int) error {
+	uid, err := a.resolveRedirectionID(ctx, id)
+	if err != nil {
+		return err
+	}
+	return a.svc.DeleteRedirection(ctx, uid, nil)
+}
+
+// ---- Streams (Caddy: ErrFeatureNotSupported on apply) ----
 
 func (a *caddyProxyAdapter) ListStreams(ctx context.Context) ([]StreamView, error) {
-	return []StreamView{}, nil
-}
-func (a *caddyProxyAdapter) CreateStream(ctx context.Context, s *StreamView) error {
-	return fmt.Errorf("streams not yet supported in Caddy mode")
-}
-func (a *caddyProxyAdapter) UpdateStream(ctx context.Context, s *StreamView) error {
-	return fmt.Errorf("streams not yet supported in Caddy mode")
-}
-func (a *caddyProxyAdapter) DeleteStream(ctx context.Context, id int) error {
-	return fmt.Errorf("streams not yet supported in Caddy mode")
-}
-func (a *caddyProxyAdapter) GetStream(ctx context.Context, id int) (*StreamView, error) {
-	return nil, fmt.Errorf("streams not yet supported in Caddy mode")
+	streams, err := a.svc.ListStreams(ctx)
+	if err != nil {
+		return nil, err
+	}
+	views := make([]StreamView, 0, len(streams))
+	for _, s := range streams {
+		views = append(views, streamToView(s))
+	}
+	return views, nil
 }
 
-// ---- Dead Hosts (not applicable in Caddy) ----
+func (a *caddyProxyAdapter) GetStream(ctx context.Context, id int) (*StreamView, error) {
+	uid, err := a.resolveStreamID(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+	s, err := a.svc.GetStream(ctx, uid)
+	if err != nil {
+		return nil, err
+	}
+	v := streamToView(s)
+	return &v, nil
+}
+
+func (a *caddyProxyAdapter) CreateStream(ctx context.Context, s *StreamView) error {
+	st := viewToStream(s)
+	if err := a.svc.CreateStream(ctx, st, nil); err != nil {
+		return err
+	}
+	s.ID = hashUUIDToInt(st.ID)
+	return nil
+}
+
+func (a *caddyProxyAdapter) UpdateStream(ctx context.Context, s *StreamView) error {
+	uid, err := a.resolveStreamID(ctx, s.ID)
+	if err != nil {
+		return err
+	}
+	st := viewToStream(s)
+	st.ID = uid
+	return a.svc.UpdateStream(ctx, st, nil)
+}
+
+func (a *caddyProxyAdapter) DeleteStream(ctx context.Context, id int) error {
+	uid, err := a.resolveStreamID(ctx, id)
+	if err != nil {
+		return err
+	}
+	return a.svc.DeleteStream(ctx, uid, nil)
+}
+
+// ---- Dead Hosts (v26.5.1 — local state) ----
 
 func (a *caddyProxyAdapter) ListDeadHosts(ctx context.Context) ([]DeadHostView, error) {
-	return []DeadHostView{}, nil
+	dead, err := a.svc.ListDeadHosts(ctx)
+	if err != nil {
+		return nil, err
+	}
+	views := make([]DeadHostView, 0, len(dead))
+	for _, d := range dead {
+		views = append(views, deadHostToView(d))
+	}
+	return views, nil
 }
+
 func (a *caddyProxyAdapter) CreateDeadHost(ctx context.Context, d *DeadHostView) error {
-	return fmt.Errorf("dead hosts not applicable in Caddy mode")
+	dh := viewToDeadHost(d)
+	if err := a.svc.CreateDeadHost(ctx, dh, nil); err != nil {
+		return err
+	}
+	d.ID = hashUUIDToInt(dh.ID)
+	return nil
 }
+
 func (a *caddyProxyAdapter) DeleteDeadHost(ctx context.Context, id int) error {
-	return fmt.Errorf("dead hosts not applicable in Caddy mode")
+	uid, err := a.resolveDeadHostID(ctx, id)
+	if err != nil {
+		return err
+	}
+	return a.svc.DeleteDeadHost(ctx, uid, nil)
 }
 
 // ---- Certificates ----
@@ -295,22 +386,64 @@ func (a *caddyProxyAdapter) DeleteCertificate(ctx context.Context, id int) error
 	return a.svc.DeleteCertificate(ctx, certs[idx].ID, nil)
 }
 
-// ---- Access Lists (not implemented in Caddy Phase 1) ----
+// ---- Access Lists (v26.5.1 — local state, backend-applied on sync) ----
 
 func (a *caddyProxyAdapter) ListAccessLists(ctx context.Context) ([]AccessListView, error) {
-	return []AccessListView{}, nil
+	lists, err := a.svc.ListAccessLists(ctx)
+	if err != nil {
+		return nil, err
+	}
+	views := make([]AccessListView, 0, len(lists))
+	for _, al := range lists {
+		views = append(views, AccessListView{
+			ID:          hashUUIDToInt(al.ID),
+			Name:        al.Name,
+			SatisfyAny:  al.SatisfyAny,
+			PassAuth:    al.PassAuth,
+			ItemCount:   len(al.Items),
+			ClientCount: len(al.Clients),
+		})
+	}
+	return views, nil
 }
+
 func (a *caddyProxyAdapter) GetAccessList(ctx context.Context, id int) (*AccessListDetailView, error) {
-	return nil, fmt.Errorf("access lists not yet supported in Caddy mode")
+	uid, err := a.resolveAccessListID(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+	al, err := a.svc.GetAccessList(ctx, uid)
+	if err != nil {
+		return nil, err
+	}
+	return accessListToDetailView(al), nil
 }
-func (a *caddyProxyAdapter) CreateAccessList(ctx context.Context, al *AccessListDetailView) error {
-	return fmt.Errorf("access lists not yet supported in Caddy mode")
+
+func (a *caddyProxyAdapter) CreateAccessList(ctx context.Context, av *AccessListDetailView) error {
+	al := viewToAccessList(av)
+	if err := a.svc.CreateAccessList(ctx, al, nil); err != nil {
+		return err
+	}
+	av.ID = hashUUIDToInt(al.ID)
+	return nil
 }
-func (a *caddyProxyAdapter) UpdateAccessList(ctx context.Context, al *AccessListDetailView) error {
-	return fmt.Errorf("access lists not yet supported in Caddy mode")
+
+func (a *caddyProxyAdapter) UpdateAccessList(ctx context.Context, av *AccessListDetailView) error {
+	uid, err := a.resolveAccessListID(ctx, av.ID)
+	if err != nil {
+		return err
+	}
+	al := viewToAccessList(av)
+	al.ID = uid
+	return a.svc.UpdateAccessList(ctx, al, nil)
 }
+
 func (a *caddyProxyAdapter) DeleteAccessList(ctx context.Context, id int) error {
-	return fmt.Errorf("access lists not yet supported in Caddy mode")
+	uid, err := a.resolveAccessListID(ctx, id)
+	if err != nil {
+		return err
+	}
+	return a.svc.DeleteAccessList(ctx, uid, nil)
 }
 
 // ---- Audit ----
@@ -381,6 +514,18 @@ func (a *caddyProxyAdapter) Mode() string {
 	return a.svc.BackendMode()
 }
 
+func (a *caddyProxyAdapter) BackendSupport() ProxyBackendSupport {
+	m := a.svc.SupportMatrix()
+	return ProxyBackendSupport{
+		Mode:         a.svc.BackendMode(),
+		AccessLists:  m.AccessLists,
+		DeadHosts:    m.DeadHosts,
+		Locations:    m.Locations,
+		Redirections: m.Redirections,
+		Streams:      m.Streams,
+	}
+}
+
 // ---- UUID resolution ----
 
 // resolveHostID maps a legacy int ID to a UUID.
@@ -434,4 +579,214 @@ func hashUUIDToInt(id uuid.UUID) int {
 		n = 1
 	}
 	return n
+}
+
+// ============================================================================
+// v26.5.1 extended-feature ID resolvers + view <-> model converters.
+//
+// Until the web layer carries UUIDs end-to-end, we identify rows via
+// hashUUIDToInt(uuid) and resolve back by scanning the current list.
+// ============================================================================
+
+func (a *caddyProxyAdapter) resolveRedirectionID(ctx context.Context, hashID int) (uuid.UUID, error) {
+	rds, err := a.svc.ListRedirections(ctx)
+	if err != nil {
+		return uuid.Nil, err
+	}
+	for _, rd := range rds {
+		if hashUUIDToInt(rd.ID) == hashID {
+			return rd.ID, nil
+		}
+	}
+	return uuid.Nil, fmt.Errorf("redirection not found: id %d", hashID)
+}
+
+func (a *caddyProxyAdapter) resolveStreamID(ctx context.Context, hashID int) (uuid.UUID, error) {
+	streams, err := a.svc.ListStreams(ctx)
+	if err != nil {
+		return uuid.Nil, err
+	}
+	for _, s := range streams {
+		if hashUUIDToInt(s.ID) == hashID {
+			return s.ID, nil
+		}
+	}
+	return uuid.Nil, fmt.Errorf("stream not found: id %d", hashID)
+}
+
+func (a *caddyProxyAdapter) resolveDeadHostID(ctx context.Context, hashID int) (uuid.UUID, error) {
+	dead, err := a.svc.ListDeadHosts(ctx)
+	if err != nil {
+		return uuid.Nil, err
+	}
+	for _, d := range dead {
+		if hashUUIDToInt(d.ID) == hashID {
+			return d.ID, nil
+		}
+	}
+	return uuid.Nil, fmt.Errorf("dead host not found: id %d", hashID)
+}
+
+func (a *caddyProxyAdapter) resolveAccessListID(ctx context.Context, hashID int) (uuid.UUID, error) {
+	lists, err := a.svc.ListAccessLists(ctx)
+	if err != nil {
+		return uuid.Nil, err
+	}
+	for _, al := range lists {
+		if hashUUIDToInt(al.ID) == hashID {
+			return al.ID, nil
+		}
+	}
+	return uuid.Nil, fmt.Errorf("access list not found: id %d", hashID)
+}
+
+func redirectionToView(rd *models.ProxyRedirection) RedirectionHostView {
+	domain := ""
+	if len(rd.Domains) > 0 {
+		domain = rd.Domains[0]
+	}
+	certID := 0
+	if rd.CertificateID != nil {
+		certID = hashUUIDToInt(*rd.CertificateID)
+	}
+	return RedirectionHostView{
+		ID:              hashUUIDToInt(rd.ID),
+		DomainNames:     rd.Domains,
+		Domain:          domain,
+		ForwardScheme:   rd.ForwardScheme,
+		ForwardDomain:   rd.ForwardDomain,
+		ForwardHTTPCode: rd.ForwardHTTPCode,
+		PreservePath:    rd.PreservePath,
+		SSLForced:       rd.SSLForceHTTPS,
+		CertificateID:   certID,
+		Enabled:         rd.Enabled,
+	}
+}
+
+func viewToRedirection(v *RedirectionHostView) *models.ProxyRedirection {
+	domains := v.DomainNames
+	if len(domains) == 0 && v.Domain != "" {
+		domains = []string{v.Domain}
+	}
+	scheme := v.ForwardScheme
+	if scheme == "" {
+		scheme = "https"
+	}
+	code := v.ForwardHTTPCode
+	if code == 0 {
+		code = 301
+	}
+	return &models.ProxyRedirection{
+		Domains:         domains,
+		ForwardScheme:   scheme,
+		ForwardDomain:   v.ForwardDomain,
+		ForwardHTTPCode: code,
+		PreservePath:    v.PreservePath,
+		SSLMode:         models.ProxySSLModeNone,
+		SSLForceHTTPS:   v.SSLForced,
+		Enabled:         v.Enabled,
+	}
+}
+
+func streamToView(s *models.ProxyStream) StreamView {
+	return StreamView{
+		ID:             hashUUIDToInt(s.ID),
+		IncomingPort:   s.IncomingPort,
+		ForwardingHost: s.ForwardingHost,
+		ForwardingPort: s.ForwardingPort,
+		TCPForwarding:  s.TCPForwarding,
+		UDPForwarding:  s.UDPForwarding,
+		Enabled:        s.Enabled,
+	}
+}
+
+func viewToStream(v *StreamView) *models.ProxyStream {
+	return &models.ProxyStream{
+		IncomingPort:   v.IncomingPort,
+		ForwardingHost: v.ForwardingHost,
+		ForwardingPort: v.ForwardingPort,
+		TCPForwarding:  v.TCPForwarding,
+		UDPForwarding:  v.UDPForwarding,
+		Enabled:        v.Enabled,
+	}
+}
+
+func deadHostToView(d *models.ProxyDeadHost) DeadHostView {
+	domain := ""
+	if len(d.Domains) > 0 {
+		domain = d.Domains[0]
+	}
+	certID := 0
+	if d.CertificateID != nil {
+		certID = hashUUIDToInt(*d.CertificateID)
+	}
+	return DeadHostView{
+		ID:          hashUUIDToInt(d.ID),
+		DomainNames: d.Domains,
+		Domain:      domain,
+		SSLForced:   d.SSLForceHTTPS,
+		CertID:      certID,
+		Enabled:     d.Enabled,
+	}
+}
+
+func viewToDeadHost(v *DeadHostView) *models.ProxyDeadHost {
+	domains := v.DomainNames
+	if len(domains) == 0 && v.Domain != "" {
+		domains = []string{v.Domain}
+	}
+	return &models.ProxyDeadHost{
+		Domains:       domains,
+		SSLMode:       models.ProxySSLModeNone,
+		SSLForceHTTPS: v.SSLForced,
+		Enabled:       v.Enabled,
+	}
+}
+
+func accessListToDetailView(al *models.ProxyAccessList) *AccessListDetailView {
+	items := make([]AccessListItemView, 0, len(al.Items))
+	for _, item := range al.Items {
+		items = append(items, AccessListItemView{Username: item.Username})
+	}
+	clients := make([]AccessListClientView, 0, len(al.Clients))
+	for _, c := range al.Clients {
+		clients = append(clients, AccessListClientView{Address: c.Address, Directive: c.Directive})
+	}
+	return &AccessListDetailView{
+		ID:         hashUUIDToInt(al.ID),
+		Name:       al.Name,
+		SatisfyAny: al.SatisfyAny,
+		PassAuth:   al.PassAuth,
+		Items:      items,
+		Clients:    clients,
+	}
+}
+
+func viewToAccessList(v *AccessListDetailView) *models.ProxyAccessList {
+	items := make([]models.ProxyAccessListAuth, 0, len(v.Items))
+	for _, it := range v.Items {
+		items = append(items, models.ProxyAccessListAuth{
+			Username:     it.Username,
+			PasswordHash: it.Password, // hashed by the backend at sync time
+		})
+	}
+	clients := make([]models.ProxyAccessListClient, 0, len(v.Clients))
+	for _, c := range v.Clients {
+		directive := c.Directive
+		if directive == "" {
+			directive = models.AccessDirectiveAllow
+		}
+		clients = append(clients, models.ProxyAccessListClient{
+			Address:   c.Address,
+			Directive: directive,
+		})
+	}
+	return &models.ProxyAccessList{
+		Name:       v.Name,
+		SatisfyAny: v.SatisfyAny,
+		PassAuth:   v.PassAuth,
+		Enabled:    true,
+		Items:      items,
+		Clients:    clients,
+	}
 }

@@ -250,7 +250,7 @@ func (r *AgentEventRepository) scanEvent(row pgx.Row) (*protocol.Event, error) {
 		&dataJSON,
 		&evt.Timestamp,
 	)
-	if err == pgx.ErrNoRows {
+	if errors.Is(err, pgx.ErrNoRows) {
 		return nil, errors.NotFound("agent event")
 	}
 	if err != nil {

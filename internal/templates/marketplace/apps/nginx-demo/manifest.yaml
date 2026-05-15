@@ -1,0 +1,35 @@
+slug: nginx-demo
+name: nginx Demo
+description: Lightweight nginx server serving a static welcome page.
+long_description: |
+  A minimal nginx deployment that serves the default welcome page on
+  the configured host port. Useful as a smoke test for the marketplace
+  install flow, or as a starting point for a custom static-site stack.
+
+  Image: docker.io/library/nginx (BSD-2-Clause).
+category: networking
+icon: fa-server
+icon_color: "#009639"
+version: "1.27"
+manifest_version: 1
+website: https://nginx.org/
+source: https://github.com/nginx/nginx
+author: usulnet contributors
+license: BSD-2-Clause
+tags:
+  - web
+  - http
+  - static
+min_memory_mb: 32
+min_cpu_cores: 0.1
+is_official: true
+is_verified: true
+featured: true
+fields:
+  - key: PORT
+    label: Host port
+    description: Host port to expose the welcome page on.
+    type: text
+    default: "8081"
+    required: true
+    placeholder: "8081"

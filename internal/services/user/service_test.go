@@ -23,12 +23,12 @@ import (
 // ---------------------------------------------------------------------------
 
 type mockUserRepo struct {
-	users          map[uuid.UUID]*models.User
-	usernameIndex  map[string]uuid.UUID
-	emailIndex     map[string]uuid.UUID
-	pwHistory      map[uuid.UUID][]string
-	createErr      error
-	deleteErr      error
+	users         map[uuid.UUID]*models.User
+	usernameIndex map[string]uuid.UUID
+	emailIndex    map[string]uuid.UUID
+	pwHistory     map[uuid.UUID][]string
+	createErr     error
+	deleteErr     error
 }
 
 func newMockUserRepo() *mockUserRepo {
@@ -419,22 +419,23 @@ func TestCreate_PasswordMaxLength(t *testing.T) {
 // Tests: License limits
 // ---------------------------------------------------------------------------
 
-func TestCreate_LicenseLimitEnforced(t *testing.T) {
+func TestCreate_NoLicenseLimit(t *testing.T) {
+	// The AGPL build never caps users from a license token. A
+	// SetLimitProvider call with MaxUsers=1 must NOT block additional
+	// user creations.
 	svc, _, _ := newTestService()
 	svc.SetLimitProvider(&mockLimitProvider{limits: license.Limits{MaxUsers: 1}})
 	ctx := context.Background()
 
-	_, err := svc.Create(ctx, validCreateInput())
-	if err != nil {
+	if _, err := svc.Create(ctx, validCreateInput()); err != nil {
 		t.Fatalf("first Create() error: %v", err)
 	}
 
 	input := validCreateInput()
 	input.Username = "seconduser"
 	input.Email = "second@example.com"
-	_, err = svc.Create(ctx, input)
-	if err == nil {
-		t.Fatal("second Create() should fail due to license limit")
+	if _, err := svc.Create(ctx, input); err != nil {
+		t.Fatalf("second Create() rejected after SetLimitProvider: %v", err)
 	}
 }
 
@@ -540,21 +541,21 @@ func TestCreateAPIKey_HappyPath(t *testing.T) {
 	}
 }
 
-func TestCreateAPIKey_LicenseLimitEnforced(t *testing.T) {
+func TestCreateAPIKey_NoLicenseLimit(t *testing.T) {
+	// The AGPL build never caps global API key count from a license
+	// token. A SetLimitProvider call with MaxAPIKeys=1 must NOT block
+	// additional creations (per-user caps via Config still apply).
 	svc, _, _ := newTestService()
 	svc.SetLimitProvider(&mockLimitProvider{limits: license.Limits{MaxAPIKeys: 1}})
 	ctx := context.Background()
 
 	user, _ := svc.Create(ctx, validCreateInput())
 
-	_, err := svc.CreateAPIKey(ctx, user.ID, "key1", nil)
-	if err != nil {
+	if _, err := svc.CreateAPIKey(ctx, user.ID, "key1", nil); err != nil {
 		t.Fatalf("first CreateAPIKey() error: %v", err)
 	}
-
-	_, err = svc.CreateAPIKey(ctx, user.ID, "key2", nil)
-	if err == nil {
-		t.Fatal("second CreateAPIKey() should fail due to global license limit")
+	if _, err := svc.CreateAPIKey(ctx, user.ID, "key2", nil); err != nil {
+		t.Fatalf("second CreateAPIKey() rejected after SetLimitProvider: %v", err)
 	}
 }
 

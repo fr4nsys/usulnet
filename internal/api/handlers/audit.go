@@ -15,7 +15,6 @@ import (
 	"github.com/google/uuid"
 
 	"github.com/fr4nsys/usulnet/internal/api/middleware"
-	"github.com/fr4nsys/usulnet/internal/license"
 	"github.com/fr4nsys/usulnet/internal/models"
 	"github.com/fr4nsys/usulnet/internal/pkg/logger"
 	"github.com/fr4nsys/usulnet/internal/repository/postgres"
@@ -25,8 +24,7 @@ import (
 // AuditHandler handles audit log API requests
 type AuditHandler struct {
 	BaseHandler
-	auditSvc        *audit.Service
-	licenseProvider middleware.LicenseProvider
+	auditSvc *audit.Service
 }
 
 // NewAuditHandler creates a new audit handler
@@ -37,10 +35,9 @@ func NewAuditHandler(auditSvc *audit.Service, log *logger.Logger) *AuditHandler 
 	}
 }
 
-// SetLicenseProvider sets the license provider for feature gating.
-func (h *AuditHandler) SetLicenseProvider(provider middleware.LicenseProvider) {
-	h.licenseProvider = provider
-}
+// SetLicenseProvider is a no-op kept for callers that still wire the
+// legacy hook; audit export is unconditional in the AGPL build.
+func (h *AuditHandler) SetLicenseProvider(_ middleware.LicenseProvider) {}
 
 // Routes returns the audit routes
 func (h *AuditHandler) Routes() chi.Router {
@@ -54,15 +51,8 @@ func (h *AuditHandler) Routes() chi.Router {
 	r.Get("/stats", h.GetStats)
 	r.Get("/user/{userID}", h.GetByUser)
 	r.Get("/resource/{resourceType}/{resourceID}", h.GetByResource)
-
-	// Export endpoints (require FeatureAuditExport — Business+)
-	r.Route("/export", func(r chi.Router) {
-		if h.licenseProvider != nil {
-			r.Use(middleware.RequireFeature(h.licenseProvider, license.FeatureAuditExport))
-		}
-		r.Get("/csv", h.ExportCSV)
-		r.Get("/pdf", h.ExportPDF)
-	})
+	r.Get("/export/csv", h.ExportCSV)
+	r.Get("/export/pdf", h.ExportPDF)
 
 	return r
 }
@@ -296,14 +286,14 @@ func (h *AuditHandler) ExportPDF(w http.ResponseWriter, r *http.Request) {
 	buf.WriteString("================================================================================\n")
 	buf.WriteString("                           AUDIT LOG REPORT\n")
 	buf.WriteString("================================================================================\n\n")
-	buf.WriteString(fmt.Sprintf("Generated: %s\n", time.Now().Format("2006-01-02 15:04:05 MST")))
-	buf.WriteString(fmt.Sprintf("Total Records: %d\n", len(logs)))
+	fmt.Fprintf(buf, "Generated: %s\n", time.Now().Format("2006-01-02 15:04:05 MST"))
+	fmt.Fprintf(buf, "Total Records: %d\n", len(logs))
 
 	// Date range
 	if len(logs) > 0 {
-		buf.WriteString(fmt.Sprintf("Date Range: %s to %s\n",
+		fmt.Fprintf(buf, "Date Range: %s to %s\n",
 			logs[len(logs)-1].CreatedAt.Format("2006-01-02 15:04"),
-			logs[0].CreatedAt.Format("2006-01-02 15:04")))
+			logs[0].CreatedAt.Format("2006-01-02 15:04"))
 	}
 	buf.WriteString("\n")
 
@@ -329,17 +319,17 @@ func (h *AuditHandler) ExportPDF(w http.ResponseWriter, r *http.Request) {
 
 	buf.WriteString("Actions:\n")
 	for action, count := range actionCounts {
-		buf.WriteString(fmt.Sprintf("  %-20s: %d\n", action, count))
+		fmt.Fprintf(buf, "  %-20s: %d\n", action, count)
 	}
 	buf.WriteString("\n")
 
 	buf.WriteString("Resource Types:\n")
 	for resource, count := range resourceCounts {
-		buf.WriteString(fmt.Sprintf("  %-20s: %d\n", resource, count))
+		fmt.Fprintf(buf, "  %-20s: %d\n", resource, count)
 	}
 	buf.WriteString("\n")
 
-	buf.WriteString(fmt.Sprintf("Success/Failure: %d / %d\n\n", successCount, failureCount))
+	fmt.Fprintf(buf, "Success/Failure: %d / %d\n\n", successCount, failureCount)
 
 	// Detailed logs
 	buf.WriteString("--------------------------------------------------------------------------------\n")
@@ -347,23 +337,23 @@ func (h *AuditHandler) ExportPDF(w http.ResponseWriter, r *http.Request) {
 	buf.WriteString("--------------------------------------------------------------------------------\n\n")
 
 	for i, log := range logs {
-		buf.WriteString(fmt.Sprintf("Entry #%d\n", i+1))
-		buf.WriteString(fmt.Sprintf("  Timestamp:     %s\n", log.CreatedAt.Format("2006-01-02 15:04:05")))
-		buf.WriteString(fmt.Sprintf("  User:          %s\n", safeString(log.Username)))
-		buf.WriteString(fmt.Sprintf("  Action:        %s\n", log.Action))
-		buf.WriteString(fmt.Sprintf("  Resource Type: %s\n", log.EntityType))
+		fmt.Fprintf(buf, "Entry #%d\n", i+1)
+		fmt.Fprintf(buf, "  Timestamp:     %s\n", log.CreatedAt.Format("2006-01-02 15:04:05"))
+		fmt.Fprintf(buf, "  User:          %s\n", safeString(log.Username))
+		fmt.Fprintf(buf, "  Action:        %s\n", log.Action)
+		fmt.Fprintf(buf, "  Resource Type: %s\n", log.EntityType)
 		if log.EntityID != nil && *log.EntityID != "" {
-			buf.WriteString(fmt.Sprintf("  Resource ID:   %s\n", *log.EntityID))
+			fmt.Fprintf(buf, "  Resource ID:   %s\n", *log.EntityID)
 		}
 		if log.IPAddress != nil && *log.IPAddress != "" {
-			buf.WriteString(fmt.Sprintf("  IP Address:    %s\n", *log.IPAddress))
+			fmt.Fprintf(buf, "  IP Address:    %s\n", *log.IPAddress)
 		}
-		buf.WriteString(fmt.Sprintf("  Success:       %v\n", log.Success))
+		fmt.Fprintf(buf, "  Success:       %v\n", log.Success)
 		if log.ErrorMsg != nil && *log.ErrorMsg != "" {
-			buf.WriteString(fmt.Sprintf("  Error:         %s\n", *log.ErrorMsg))
+			fmt.Fprintf(buf, "  Error:         %s\n", *log.ErrorMsg)
 		}
 		if log.Details != nil && len(*log.Details) > 0 {
-			buf.WriteString(fmt.Sprintf("  Details:       %s\n", formatDetails(log.Details)))
+			fmt.Fprintf(buf, "  Details:       %s\n", formatDetails(log.Details))
 		}
 		buf.WriteString("\n")
 	}

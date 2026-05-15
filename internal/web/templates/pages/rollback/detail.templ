@@ -1,0 +1,122 @@
+// SPDX-License-Identifier: AGPL-3.0-or-later
+// Copyright (c) 2024-2026 usulnet contributors
+// https://github.com/fr4nsys/usulnet
+
+package rollback
+
+import "github.com/fr4nsys/usulnet/internal/web/templates/layouts"
+
+type DetailData struct {
+	PageData         layouts.PageData
+	Policy           PolicyView
+	RecentExecutions []ExecutionView
+	CSRFToken        string
+}
+
+templ Detail(data DetailData) {
+	@layouts.Base(data.PageData) {
+		<div class="space-y-6">
+			<div>
+				<a href="/rollback" class="text-sm text-gray-400 hover:text-white">
+					<i class="fas fa-chevron-left mr-1"></i>back to policies
+				</a>
+				<div class="flex items-center gap-3 mt-1">
+					<h1 class="text-2xl font-display font-bold text-white">{ data.Policy.Name }</h1>
+					if data.Policy.Enabled {
+						<span class="text-xs px-2 py-0.5 rounded bg-green-500/20 text-green-300">enabled</span>
+					} else {
+						<span class="text-xs px-2 py-0.5 rounded bg-gray-500/20 text-gray-300">disabled</span>
+					}
+					if data.Policy.DryRun {
+						<span class="text-xs px-2 py-0.5 rounded bg-blue-500/20 text-blue-300">dry-run</span>
+					}
+				</div>
+				if data.Policy.Description != "" {
+					<p class="text-gray-400 mt-2 max-w-3xl">{ data.Policy.Description }</p>
+				}
+			</div>
+
+			<div class="flex items-center gap-2">
+				<a href={ templ.SafeURL("/rollback/" + data.Policy.ID + "/edit") } class="btn-secondary text-sm">
+					<i class="fas fa-pen mr-2"></i>Edit
+				</a>
+				<a href={ templ.SafeURL("/rollback/" + data.Policy.ID + "/dry-run") } class="btn-secondary text-sm">
+					<i class="fas fa-vial mr-2"></i>Dry-run
+				</a>
+				<form method="POST" action={ templ.SafeURL("/rollback/" + data.Policy.ID + "/delete") } style="display:inline" onsubmit="return confirm('Delete this policy? Executions will be cascade-deleted; the audit log is preserved.')">
+					<input type="hidden" name="csrf_token" value={ data.CSRFToken }/>
+					<button type="submit" class="btn-danger text-sm">
+						<i class="fas fa-trash mr-2"></i>Delete
+					</button>
+				</form>
+			</div>
+
+			<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+				<div class="card p-4">
+					<h3 class="text-sm font-semibold text-white mb-3">Detection</h3>
+					<dl class="space-y-2 text-sm">
+						<div class="flex items-baseline justify-between">
+							<dt class="text-gray-500">Scope</dt>
+							<dd class="text-gray-200">{ data.Policy.Scope }</dd>
+						</div>
+						if data.Policy.Scope == "stack" {
+							<div class="flex items-baseline justify-between">
+								<dt class="text-gray-500">Stack</dt>
+								<dd class="text-gray-200">
+									if data.Policy.ScopeStackName != "" {
+										{ data.Policy.ScopeStackName }
+									} else {
+										<span class="font-mono text-xs">{ data.Policy.ScopeStackID }</span>
+									}
+								</dd>
+							</div>
+						}
+						if data.Policy.Scope == "tag" {
+							<div class="flex items-baseline justify-between">
+								<dt class="text-gray-500">Tag</dt>
+								<dd class="text-gray-200">{ data.Policy.ScopeValue }</dd>
+							</div>
+						}
+						<div class="flex items-baseline justify-between">
+							<dt class="text-gray-500">Trigger</dt>
+							<dd class="text-gray-200">{ data.Policy.TriggerKind }</dd>
+						</div>
+					</dl>
+				</div>
+
+				<div class="card p-4">
+					<h3 class="text-sm font-semibold text-white mb-3">Remediation</h3>
+					<dl class="space-y-2 text-sm">
+						<div class="flex items-baseline justify-between">
+							<dt class="text-gray-500">Strategy</dt>
+							<dd class="text-gray-200">{ data.Policy.LastGoodStrategy }</dd>
+						</div>
+						<div class="flex items-baseline justify-between">
+							<dt class="text-gray-500">Cooldown</dt>
+							<dd class="text-gray-200">{ itoaPad(data.Policy.CooldownSeconds) }s</dd>
+						</div>
+						<div class="flex items-baseline justify-between">
+							<dt class="text-gray-500">Created</dt>
+							<dd class="text-gray-200 text-xs">{ data.Policy.CreatedAt }</dd>
+						</div>
+					</dl>
+				</div>
+			</div>
+
+			<div>
+				<h3 class="text-base font-semibold text-white mb-3">Recent executions</h3>
+				if len(data.RecentExecutions) == 0 {
+					<div class="card p-6 text-center text-sm text-gray-400">
+						No executions recorded for this policy yet.
+					</div>
+				} else {
+					<div class="space-y-2">
+						for _, e := range data.RecentExecutions {
+							@ExecutionRow(e)
+						}
+					</div>
+				}
+			</div>
+		</div>
+	}
+}

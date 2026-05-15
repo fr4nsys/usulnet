@@ -94,7 +94,7 @@ type CreateEnvInput struct {
 	ConnectionID   *uuid.UUID        `json:"connection_id,omitempty"`
 	RepositoryID   *uuid.UUID        `json:"repository_id,omitempty"`
 	Branch         string            `json:"branch"`
-	ComposeContent string            `json:"compose_file"` // optional: provide compose directly
+	ComposeContent string            `json:"compose_file"`   // optional: provide compose directly
 	RepoFullName   string            `json:"repo_full_name"` // used when fetching from git
 	Environment    map[string]string `json:"environment,omitempty"`
 	TTLMinutes     int               `json:"ttl_minutes"`

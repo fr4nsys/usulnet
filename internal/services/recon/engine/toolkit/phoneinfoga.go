@@ -27,12 +27,12 @@ const CategoryPhoneInfo = "phone_info"
 // the mapping decisions need; unknown fields stay in the raw
 // payload so the audit row preserves them.
 type phoneinfogaJSON struct {
-	Number       string `json:"Number"`
-	Country      string `json:"Country"`
-	CountryCode  string `json:"CountryCode"`
-	Carrier      string `json:"Carrier"`
-	LineType     string `json:"LineType"`
-	Local        string `json:"LocalFormat"`
+	Number        string `json:"Number"`
+	Country       string `json:"Country"`
+	CountryCode   string `json:"CountryCode"`
+	Carrier       string `json:"Carrier"`
+	LineType      string `json:"LineType"`
+	Local         string `json:"LocalFormat"`
 	International string `json:"InternationalFormat"`
 }
 

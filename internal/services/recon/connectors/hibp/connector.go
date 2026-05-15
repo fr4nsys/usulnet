@@ -3,7 +3,8 @@
 // https://github.com/fr4nsys/usulnet
 
 // Package hibp implements the Have-I-Been-Pwned recon connector. HIBP is
-// the only optional external-API connector that ships in usulnet v26.5.0.
+// the only optional external-API connector that ships in usulnet's
+// recon module.
 //
 // Two responsibilities:
 //
@@ -47,8 +48,9 @@ const DefaultBaseURL = "https://haveibeenpwned.com/api/v3"
 
 // DefaultUserAgent is sent verbatim on every request. HIBP requires a
 // non-empty, descriptive User-Agent header — opaque generic strings
-// like "Go-http-client/1.1" are rejected with 403.
-const DefaultUserAgent = "usulnet-recon/26.5.0 (+https://usulnet.com)"
+// like "Go-http-client/1.1" are rejected with 403. Callers that want a
+// version-stamped UA can override via Config.UserAgent.
+const DefaultUserAgent = "usulnet-recon (+https://usulnet.com)"
 
 // DefaultTimeout caps every HIBP HTTP roundtrip. HIBP enforces 1.5s
 // between requests for the same key; 10 seconds is conservative.

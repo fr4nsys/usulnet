@@ -134,7 +134,7 @@ func (s *Service) Log(ctx context.Context, entry LogEntry) error {
 // LogAsync logs an entry asynchronously (fire-and-forget)
 func (s *Service) LogAsync(ctx context.Context, entry LogEntry) {
 	go func() {
-		// Create a new context since the original might be cancelled
+		// Create a new context since the original might be canceled
 		bgCtx := context.Background()
 		_ = s.Log(bgCtx, entry)
 	}()

@@ -1,0 +1,120 @@
+// SPDX-License-Identifier: AGPL-3.0-or-later
+// Copyright (c) 2024-2026 usulnet contributors
+// https://github.com/fr4nsys/usulnet
+
+package rollback
+
+import "github.com/fr4nsys/usulnet/internal/web/templates/layouts"
+
+type ExecutionView struct {
+	ID            string
+	PolicyID      string
+	PolicyName    string
+	StackID       string
+	StackName     string
+	TriggerKind   string
+	FromVersion   string
+	ToVersion     string
+	Status        string
+	Reason        string
+	Error         string
+	StartedAt     string
+	FinishedAt    string
+	CreatedAt     string
+}
+
+type ExecutionsListData struct {
+	PageData   layouts.PageData
+	Executions []ExecutionView
+	Total      int
+	Limit      int
+	Offset     int
+}
+
+templ ExecutionsList(data ExecutionsListData) {
+	@layouts.Base(data.PageData) {
+		<div class="space-y-6">
+			<div>
+				<h1 class="text-2xl font-display font-bold text-white">Rollback execution log</h1>
+				<p class="text-gray-400 mt-1">Every fired policy and its outcome. Order: most recent first.</p>
+			</div>
+
+			@Nav("executions")
+
+			if len(data.Executions) == 0 {
+				@EmptyState(
+					"No executions yet",
+					"Policies fire when a deploy fails. Configure a policy to see entries here.",
+					"View policies",
+					"/rollback",
+				)
+			} else {
+				<div class="space-y-2">
+					for _, e := range data.Executions {
+						@ExecutionRow(e)
+					}
+				</div>
+
+				<div class="text-xs text-gray-500 text-center">
+					Showing { itoaPad(len(data.Executions)) } of { itoaPad(data.Total) } executions
+				</div>
+			}
+		</div>
+	}
+}
+
+templ ExecutionRow(e ExecutionView) {
+	<a href={ templ.SafeURL("/rollback/executions/" + e.ID) } class="card p-4 block hover:bg-dark-700/40 transition-colors">
+		<div class="flex items-start justify-between gap-4">
+			<div class="flex-1 min-w-0">
+				<div class="flex items-center gap-2 mb-1">
+					@statusBadge(e.Status)
+					<span class="text-sm font-medium text-white truncate">
+						if e.StackName != "" {
+							{ e.StackName }
+						} else {
+							{ e.StackID }
+						}
+					</span>
+					<span class="text-xs text-gray-500">·</span>
+					<span class="text-xs text-gray-400">{ e.TriggerKind }</span>
+				</div>
+				if e.Reason != "" {
+					<div class="text-sm text-gray-300 truncate">{ e.Reason }</div>
+				}
+				if e.Error != "" {
+					<div class="text-sm text-red-300 truncate"><i class="fas fa-triangle-exclamation mr-1"></i>{ e.Error }</div>
+				}
+				<div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-gray-500 mt-1">
+					if e.PolicyName != "" {
+						<span><i class="fas fa-shield-alt mr-1"></i>{ e.PolicyName }</span>
+					}
+					if e.FromVersion != "" {
+						<span><i class="fas fa-arrow-up mr-1"></i>from v{ e.FromVersion }</span>
+					}
+					if e.ToVersion != "" {
+						<span><i class="fas fa-arrow-down mr-1"></i>to v{ e.ToVersion }</span>
+					}
+					<span><i class="fas fa-clock mr-1"></i>{ e.CreatedAt }</span>
+				</div>
+			</div>
+		</div>
+	</a>
+}
+
+templ statusBadge(status string) {
+	switch status {
+		case "succeeded":
+			<span class="text-xs px-2 py-0.5 rounded bg-green-500/20 text-green-300">succeeded</span>
+		case "failed":
+			<span class="text-xs px-2 py-0.5 rounded bg-red-500/20 text-red-300">failed</span>
+		case "skipped":
+			<span class="text-xs px-2 py-0.5 rounded bg-gray-500/20 text-gray-300">skipped</span>
+		case "dry_run":
+			<span class="text-xs px-2 py-0.5 rounded bg-blue-500/20 text-blue-300">dry-run</span>
+		case "running":
+			<span class="text-xs px-2 py-0.5 rounded bg-yellow-500/20 text-yellow-300">running</span>
+		default:
+			<span class="text-xs px-2 py-0.5 rounded bg-gray-500/20 text-gray-300">{ status }</span>
+	}
+}

@@ -14,8 +14,8 @@ import (
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 
-	apperrors "github.com/fr4nsys/usulnet/internal/pkg/errors"
 	"github.com/fr4nsys/usulnet/internal/models"
+	apperrors "github.com/fr4nsys/usulnet/internal/pkg/errors"
 )
 
 // SessionRepository handles session database operations.

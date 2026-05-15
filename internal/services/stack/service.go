@@ -550,17 +550,21 @@ func (s *Service) GetStatus(ctx context.Context, id uuid.UUID) (*models.StackSta
 		RunningCount: stack.RunningCount,
 	}
 
-	// Get ps output
+	// Get ps output. compose ps can fail on hosts where the project
+	// hasn't been brought up yet — return the basic status counts we
+	// already have rather than propagating a transient failure.
 	args := s.buildComposeArgs(stack, "ps", "--format", "json")
 	output, err := s.execCompose(ctx, stack, args...)
 	if err != nil {
-		return status, nil // Return basic status
+		// graceful fallback: enriched ps is optional, basic status is the baseline
+		return status, nil //nolint:nilerr
 	}
 
-	// Parse services from compose file
+	// Parse services from compose file. Same fallback contract.
 	services, err := s.parseServices(stack.ComposeFile)
 	if err != nil {
-		return status, nil
+		// graceful fallback: invalid compose file still returns baseline counts
+		return status, nil //nolint:nilerr
 	}
 
 	// Get container status for each service
@@ -852,14 +856,14 @@ func (s *Service) syncStackContainers(ctx context.Context, stack *models.Stack) 
 
 // DiscoveredStack represents a Docker Compose project discovered from running containers
 type DiscoveredStack struct {
-	Name          string
-	ServiceCount  int
-	RunningCount  int
-	StoppedCount  int
-	Services      []DiscoveredService
-	WorkingDir    string
-	ConfigFiles   string
-	IsManaged     bool // true if managed by usulnet
+	Name           string
+	ServiceCount   int
+	RunningCount   int
+	StoppedCount   int
+	Services       []DiscoveredService
+	WorkingDir     string
+	ConfigFiles    string
+	IsManaged      bool       // true if managed by usulnet
 	ManagedStackID *uuid.UUID // if managed, the usulnet stack ID
 }
 
@@ -904,10 +908,10 @@ func (s *Service) DiscoverComposeProjects(ctx context.Context, hostID uuid.UUID)
 		project, ok := projectMap[projectName]
 		if !ok {
 			project = &DiscoveredStack{
-				Name:         projectName,
-				WorkingDir:   c.Labels["com.docker.compose.project.working_dir"],
-				ConfigFiles:  c.Labels["com.docker.compose.project.config_files"],
-				Services:     []DiscoveredService{},
+				Name:        projectName,
+				WorkingDir:  c.Labels["com.docker.compose.project.working_dir"],
+				ConfigFiles: c.Labels["com.docker.compose.project.config_files"],
+				Services:    []DiscoveredService{},
 			}
 			projectMap[projectName] = project
 		}

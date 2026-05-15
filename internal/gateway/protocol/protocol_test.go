@@ -67,13 +67,13 @@ func TestRegistrationRequest_RoundTrip(t *testing.T) {
 	req := RegistrationRequest{
 		Token: "test-token-abc",
 		Info: AgentInfo{
-			AgentID:    "agent-123",
-			Version:    "1.0.0",
-			Hostname:   "docker-host-1",
-			OS:         "linux",
-			Arch:       "amd64",
-			DockerHost: "unix:///var/run/docker.sock",
-			Labels:     map[string]string{"env": "production", "region": "eu-west"},
+			AgentID:      "agent-123",
+			Version:      "1.0.0",
+			Hostname:     "docker-host-1",
+			OS:           "linux",
+			Arch:         "amd64",
+			DockerHost:   "unix:///var/run/docker.sock",
+			Labels:       map[string]string{"env": "production", "region": "eu-west"},
 			Capabilities: []string{"docker", "compose", "backup"},
 		},
 	}
@@ -201,12 +201,12 @@ func TestHeartbeat_RoundTrip(t *testing.T) {
 
 func TestCommand_RoundTrip(t *testing.T) {
 	cmd := Command{
-		ID:       uuid.New().String(),
-		Type:     CmdContainerList,
-		HostID:   uuid.New().String(),
-		Priority: PriorityHigh,
-		Timeout:  30 * time.Second,
-		ReplyTo:  "usulnet.reply.xyz",
+		ID:        uuid.New().String(),
+		Type:      CmdContainerList,
+		HostID:    uuid.New().String(),
+		Priority:  PriorityHigh,
+		Timeout:   30 * time.Second,
+		ReplyTo:   "usulnet.reply.xyz",
 		CreatedAt: time.Now().UTC(),
 		CreatedBy: "admin",
 		Params: CommandParams{
@@ -310,13 +310,13 @@ func TestCommandResultError_RoundTrip(t *testing.T) {
 
 func TestEvent_RoundTrip(t *testing.T) {
 	event := Event{
-		ID:       uuid.New().String(),
-		Type:     EventContainerStart,
-		AgentID:  "agent-1",
-		HostID:   uuid.New().String(),
+		ID:        uuid.New().String(),
+		Type:      EventContainerStart,
+		AgentID:   "agent-1",
+		HostID:    uuid.New().String(),
 		Timestamp: time.Now().UTC(),
-		Severity: SeverityInfo,
-		Message:  "Container started",
+		Severity:  SeverityInfo,
+		Message:   "Container started",
 		Actor: &EventActor{
 			Type: "container",
 			ID:   "abc123",

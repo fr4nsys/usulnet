@@ -45,33 +45,33 @@ type ContainerData struct {
 	Image string
 
 	// Container configuration
-	User         string            // User running in container
-	Env          []string          // Environment variables
-	Labels       map[string]string // Container labels
-	Cmd          []string          // Command
-	Entrypoint   []string          // Entrypoint
-	WorkingDir   string            // Working directory
-	Healthcheck  *HealthcheckData  // Healthcheck configuration
+	User        string            // User running in container
+	Env         []string          // Environment variables
+	Labels      map[string]string // Container labels
+	Cmd         []string          // Command
+	Entrypoint  []string          // Entrypoint
+	WorkingDir  string            // Working directory
+	Healthcheck *HealthcheckData  // Healthcheck configuration
 
 	// Host configuration
-	Privileged     bool              // Privileged mode
-	ReadonlyRootfs bool              // Read-only filesystem
-	NetworkMode    string            // Network mode (bridge, host, etc.)
-	PidMode        string            // PID namespace mode
-	IpcMode        string            // IPC namespace mode
-	CapAdd         []string          // Added capabilities
-	CapDrop        []string          // Dropped capabilities
-	SecurityOpt    []string          // Security options
-	RestartPolicy  string            // Restart policy name
+	Privileged     bool     // Privileged mode
+	ReadonlyRootfs bool     // Read-only filesystem
+	NetworkMode    string   // Network mode (bridge, host, etc.)
+	PidMode        string   // PID namespace mode
+	IpcMode        string   // IPC namespace mode
+	CapAdd         []string // Added capabilities
+	CapDrop        []string // Dropped capabilities
+	SecurityOpt    []string // Security options
+	RestartPolicy  string   // Restart policy name
 
 	// Resource limits
-	MemoryLimit   int64 // Memory limit in bytes
-	MemorySwap    int64 // Memory+Swap limit
-	CPUShares     int64 // CPU shares
-	CPUQuota      int64 // CPU quota
-	CPUPeriod     int64 // CPU period
-	NanoCPUs      int64 // CPU limit in nano CPUs
-	PidsLimit     int64 // PIDs limit
+	MemoryLimit int64 // Memory limit in bytes
+	MemorySwap  int64 // Memory+Swap limit
+	CPUShares   int64 // CPU shares
+	CPUQuota    int64 // CPU quota
+	CPUPeriod   int64 // CPU period
+	NanoCPUs    int64 // CPU limit in nano CPUs
+	PidsLimit   int64 // PIDs limit
 
 	// Networking
 	Ports    []PortData    // Port mappings
@@ -123,15 +123,15 @@ type MountData struct {
 
 // Issue represents a security issue found during analysis
 type Issue struct {
-	CheckID        string              // Unique check identifier (e.g., "USER_001")
+	CheckID        string // Unique check identifier (e.g., "USER_001")
 	Severity       models.IssueSeverity
 	Category       models.IssueCategory
 	Title          string
 	Description    string
 	Recommendation string
-	FixCommand     string // Command to fix the issue
-	DocURL         string // Documentation URL
-	Penalty        int    // Score penalty
+	FixCommand     string                 // Command to fix the issue
+	DocURL         string                 // Documentation URL
+	Penalty        int                    // Score penalty
 	Details        map[string]interface{} // Additional context
 }
 

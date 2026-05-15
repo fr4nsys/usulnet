@@ -1,0 +1,71 @@
+package dns
+
+import (
+	"fmt"
+
+	"github.com/fr4nsys/usulnet/internal/web/templates/layouts"
+)
+
+templ Orders(data OrderListData) {
+	@layouts.Base(data.PageData) {
+		<div class="space-y-6">
+			<div>
+				<h1 class="text-2xl font-display font-bold text-white">ACME Orders</h1>
+				<p class="text-gray-400 mt-1">The DNS-01 state machine drops a TXT record, waits for propagation, hands off to the proxy backend, then cleans up.</p>
+			</div>
+			@Nav("acme")
+
+			if len(data.Orders) > 0 {
+				<div class="card">
+					<div class="overflow-x-auto">
+						<table class="table">
+							<thead>
+								<tr>
+									<th>Domain</th>
+									<th>Provider</th>
+									<th>State</th>
+									<th>Prop checks</th>
+									<th>Created</th>
+									<th>Completed</th>
+									<th></th>
+								</tr>
+							</thead>
+							<tbody>
+								for _, o := range data.Orders {
+									<tr>
+										<td>
+											<a href={ templ.SafeURL(fmt.Sprintf("/dns/acme/%s", o.ID)) } class="text-white hover:text-primary-400">{ o.Domain }</a>
+											if o.ErrorMsg != "" {
+												<div class="text-xs text-red-400 mt-1">{ o.ErrorMsg }</div>
+											}
+										</td>
+										<td><span class="text-sm text-gray-300">{ o.ProviderName }</span></td>
+										<td><span class={ stateBadgeClass(o.State) }>{ o.StateLabel }</span></td>
+										<td class="text-sm text-gray-400">{ fmt.Sprintf("%d", o.PropChecks) }</td>
+										<td class="text-sm text-gray-400">{ o.CreatedAt }</td>
+										<td class="text-sm text-gray-400">
+											if o.CompletedAt != "" {
+												{ o.CompletedAt }
+											} else {
+												—
+											}
+										</td>
+										<td class="text-right">
+											<a href={ templ.SafeURL(fmt.Sprintf("/dns/acme/%s", o.ID)) } class="text-primary-400 hover:text-primary-300 text-sm">View</a>
+										</td>
+									</tr>
+								}
+							</tbody>
+						</table>
+					</div>
+				</div>
+			} else {
+				<div class="card p-8 text-center">
+					<i class="fas fa-certificate text-4xl text-gray-400 mb-4"></i>
+					<h3 class="text-lg font-medium text-white mb-2">No ACME orders yet</h3>
+					<p class="text-gray-400">The proxy module triggers DNS-01 orders when a host is configured to use one of the registered DNS providers for ACME challenges.</p>
+				</div>
+			}
+		</div>
+	}
+}

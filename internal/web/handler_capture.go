@@ -10,11 +10,12 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/go-chi/chi/v5"
+	"github.com/google/uuid"
+
 	"github.com/fr4nsys/usulnet/internal/models"
 	capturesvc "github.com/fr4nsys/usulnet/internal/services/capture"
 	toolspages "github.com/fr4nsys/usulnet/internal/web/templates/pages/tools"
-	"github.com/go-chi/chi/v5"
-	"github.com/google/uuid"
 )
 
 // CaptureService defines the interface for packet capture operations.

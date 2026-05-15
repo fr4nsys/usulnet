@@ -954,7 +954,7 @@ func (p *AgentProxyClient) AllContainerStats(ctx context.Context) (map[string]*C
 //
 // ============================================================================
 
-var errSwarmNotProxied = fmt.Errorf("Swarm operations are not proxied to agents; use the master node directly")
+var errSwarmNotProxied = fmt.Errorf("swarm operations are not proxied to agents; use the master node directly")
 
 func (p *AgentProxyClient) SwarmInit(_ context.Context, _, _ string, _ bool) (string, error) {
 	return "", errSwarmNotProxied

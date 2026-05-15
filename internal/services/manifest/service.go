@@ -602,23 +602,23 @@ func (s *Service) GenerateCompose(
 
 // writeComposeService writes a single service definition in YAML format.
 func writeComposeService(b *strings.Builder, svc models.ManifestServiceBlock) {
-	b.WriteString(fmt.Sprintf("  %s:\n", svc.Name))
+	fmt.Fprintf(b, "  %s:\n", svc.Name)
 
 	// Image with optional tag.
 	image := strings.TrimSpace(svc.Image)
 	if tag := strings.TrimSpace(svc.Tag); tag != "" {
 		image = image + ":" + tag
 	}
-	b.WriteString(fmt.Sprintf("    image: %s\n", image))
+	fmt.Fprintf(b, "    image: %s\n", image)
 
 	// Command.
 	if cmd := strings.TrimSpace(svc.Command); cmd != "" {
-		b.WriteString(fmt.Sprintf("    command: %s\n", cmd))
+		fmt.Fprintf(b, "    command: %s\n", cmd)
 	}
 
 	// Restart policy.
 	if restart := strings.TrimSpace(svc.Restart); restart != "" {
-		b.WriteString(fmt.Sprintf("    restart: %s\n", restart))
+		fmt.Fprintf(b, "    restart: %s\n", restart)
 	}
 
 	// Ports.
@@ -627,9 +627,9 @@ func writeComposeService(b *strings.Builder, svc models.ManifestServiceBlock) {
 		for _, p := range svc.Ports {
 			proto := strings.TrimSpace(p.Protocol)
 			if proto != "" && proto != "tcp" {
-				b.WriteString(fmt.Sprintf("      - \"%d:%d/%s\"\n", p.Host, p.Container, proto))
+				fmt.Fprintf(b, "      - \"%d:%d/%s\"\n", p.Host, p.Container, proto)
 			} else {
-				b.WriteString(fmt.Sprintf("      - \"%d:%d\"\n", p.Host, p.Container))
+				fmt.Fprintf(b, "      - \"%d:%d\"\n", p.Host, p.Container)
 			}
 		}
 	}
@@ -642,7 +642,7 @@ func writeComposeService(b *strings.Builder, svc models.ManifestServiceBlock) {
 			if v.ReadOnly {
 				mount += ":ro"
 			}
-			b.WriteString(fmt.Sprintf("      - %s\n", mount))
+			fmt.Fprintf(b, "      - %s\n", mount)
 		}
 	}
 
@@ -650,7 +650,7 @@ func writeComposeService(b *strings.Builder, svc models.ManifestServiceBlock) {
 	if len(svc.Environment) > 0 {
 		b.WriteString("    environment:\n")
 		for key, val := range svc.Environment {
-			b.WriteString(fmt.Sprintf("      %s: \"%s\"\n", key, escapeYAMLString(val)))
+			fmt.Fprintf(b, "      %s: \"%s\"\n", key, escapeYAMLString(val))
 		}
 	}
 
@@ -658,7 +658,7 @@ func writeComposeService(b *strings.Builder, svc models.ManifestServiceBlock) {
 	if len(svc.DependsOn) > 0 {
 		b.WriteString("    depends_on:\n")
 		for _, dep := range svc.DependsOn {
-			b.WriteString(fmt.Sprintf("      - %s\n", dep))
+			fmt.Fprintf(b, "      - %s\n", dep)
 		}
 	}
 
@@ -666,7 +666,7 @@ func writeComposeService(b *strings.Builder, svc models.ManifestServiceBlock) {
 	if len(svc.Networks) > 0 {
 		b.WriteString("    networks:\n")
 		for _, net := range svc.Networks {
-			b.WriteString(fmt.Sprintf("      - %s\n", net))
+			fmt.Fprintf(b, "      - %s\n", net)
 		}
 	}
 
@@ -674,7 +674,7 @@ func writeComposeService(b *strings.Builder, svc models.ManifestServiceBlock) {
 	if len(svc.Labels) > 0 {
 		b.WriteString("    labels:\n")
 		for key, val := range svc.Labels {
-			b.WriteString(fmt.Sprintf("      %s: \"%s\"\n", key, escapeYAMLString(val)))
+			fmt.Fprintf(b, "      %s: \"%s\"\n", key, escapeYAMLString(val))
 		}
 	}
 
@@ -682,19 +682,19 @@ func writeComposeService(b *strings.Builder, svc models.ManifestServiceBlock) {
 	if svc.HealthCheck != nil {
 		b.WriteString("    healthcheck:\n")
 		if svc.HealthCheck.Test != "" {
-			b.WriteString(fmt.Sprintf("      test: [\"CMD-SHELL\", \"%s\"]\n", escapeYAMLString(svc.HealthCheck.Test)))
+			fmt.Fprintf(b, "      test: [\"CMD-SHELL\", \"%s\"]\n", escapeYAMLString(svc.HealthCheck.Test))
 		}
 		if svc.HealthCheck.Interval != "" {
-			b.WriteString(fmt.Sprintf("      interval: %s\n", svc.HealthCheck.Interval))
+			fmt.Fprintf(b, "      interval: %s\n", svc.HealthCheck.Interval)
 		}
 		if svc.HealthCheck.Timeout != "" {
-			b.WriteString(fmt.Sprintf("      timeout: %s\n", svc.HealthCheck.Timeout))
+			fmt.Fprintf(b, "      timeout: %s\n", svc.HealthCheck.Timeout)
 		}
 		if svc.HealthCheck.Retries > 0 {
-			b.WriteString(fmt.Sprintf("      retries: %d\n", svc.HealthCheck.Retries))
+			fmt.Fprintf(b, "      retries: %d\n", svc.HealthCheck.Retries)
 		}
 		if svc.HealthCheck.StartPeriod != "" {
-			b.WriteString(fmt.Sprintf("      start_period: %s\n", svc.HealthCheck.StartPeriod))
+			fmt.Fprintf(b, "      start_period: %s\n", svc.HealthCheck.StartPeriod)
 		}
 	}
 
@@ -707,7 +707,7 @@ func writeComposeService(b *strings.Builder, svc models.ManifestServiceBlock) {
 		if hasDeploy {
 			b.WriteString("    deploy:\n")
 			if svc.Deploy.Replicas > 0 {
-				b.WriteString(fmt.Sprintf("      replicas: %d\n", svc.Deploy.Replicas))
+				fmt.Fprintf(b, "      replicas: %d\n", svc.Deploy.Replicas)
 			}
 
 			hasLimits := svc.Deploy.CPULimit != "" || svc.Deploy.MemLimit != ""
@@ -719,20 +719,20 @@ func writeComposeService(b *strings.Builder, svc models.ManifestServiceBlock) {
 				if hasLimits {
 					b.WriteString("        limits:\n")
 					if svc.Deploy.CPULimit != "" {
-						b.WriteString(fmt.Sprintf("          cpus: \"%s\"\n", svc.Deploy.CPULimit))
+						fmt.Fprintf(b, "          cpus: \"%s\"\n", svc.Deploy.CPULimit)
 					}
 					if svc.Deploy.MemLimit != "" {
-						b.WriteString(fmt.Sprintf("          memory: %s\n", svc.Deploy.MemLimit))
+						fmt.Fprintf(b, "          memory: %s\n", svc.Deploy.MemLimit)
 					}
 				}
 
 				if hasReservations {
 					b.WriteString("        reservations:\n")
 					if svc.Deploy.CPUReservation != "" {
-						b.WriteString(fmt.Sprintf("          cpus: \"%s\"\n", svc.Deploy.CPUReservation))
+						fmt.Fprintf(b, "          cpus: \"%s\"\n", svc.Deploy.CPUReservation)
 					}
 					if svc.Deploy.MemReservation != "" {
-						b.WriteString(fmt.Sprintf("          memory: %s\n", svc.Deploy.MemReservation))
+						fmt.Fprintf(b, "          memory: %s\n", svc.Deploy.MemReservation)
 					}
 				}
 			}
@@ -1405,9 +1405,10 @@ func detectCircularDeps(services []models.ManifestServiceBlock) []string {
 				return true
 			}
 			if state[dep] == 0 {
-				if dfs(dep) {
-					// Continue to find all cycles but don't propagate.
-				}
+				// dfs(dep) may detect additional cycles; we still want to
+				// finish visiting every unvisited dependency from this node,
+				// so the return value is intentionally ignored here.
+				_ = dfs(dep)
 			}
 		}
 
@@ -1451,8 +1452,8 @@ func checkPortConflicts(services []models.ManifestServiceBlock) []models.Manifes
 	for key, users := range portUsers {
 		if len(users) > 1 {
 			errors = append(errors, models.ManifestValidationError{
-				Field:   "ports",
-				Message: fmt.Sprintf("host port %d/%s is used by multiple services: %s", key.port, key.protocol, strings.Join(users, ", ")),
+				Field:    "ports",
+				Message:  fmt.Sprintf("host port %d/%s is used by multiple services: %s", key.port, key.protocol, strings.Join(users, ", ")),
 				Severity: "error",
 			})
 		}

@@ -18,8 +18,8 @@ import (
 
 // HeartbeatMonitor monitors agent heartbeats and tracks health status.
 type HeartbeatMonitor struct {
-	server    *Server
-	log       *logger.Logger
+	server *Server
+	log    *logger.Logger
 
 	// Thresholds
 	warningThreshold  time.Duration // Time before warning
@@ -31,8 +31,8 @@ type HeartbeatMonitor struct {
 	onAgentLost    func(hostID uuid.UUID, lastSeen time.Time)
 
 	// Stats tracking
-	stats     map[string]*agentStats
-	statsMu   sync.RWMutex
+	stats   map[string]*agentStats
+	statsMu sync.RWMutex
 }
 
 // agentStats tracks per-agent statistics.
@@ -318,12 +318,12 @@ func (m *HeartbeatMonitor) GetAllStats() []AgentHeartbeatStats {
 
 // Summary returns a summary of all agent health.
 type HeartbeatSummary struct {
-	TotalAgents     int     `json:"total_agents"`
-	HealthyAgents   int     `json:"healthy_agents"`
-	DegradedAgents  int     `json:"degraded_agents"`
-	UnhealthyAgents int     `json:"unhealthy_agents"`
-	AverageLatency  time.Duration `json:"average_latency"`
-	OverallSuccessRate float64 `json:"overall_success_rate"`
+	TotalAgents        int           `json:"total_agents"`
+	HealthyAgents      int           `json:"healthy_agents"`
+	DegradedAgents     int           `json:"degraded_agents"`
+	UnhealthyAgents    int           `json:"unhealthy_agents"`
+	AverageLatency     time.Duration `json:"average_latency"`
+	OverallSuccessRate float64       `json:"overall_success_rate"`
 }
 
 // GetSummary returns a summary of all agent health.

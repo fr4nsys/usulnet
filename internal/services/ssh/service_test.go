@@ -738,9 +738,9 @@ func TestGetActiveSessions(t *testing.T) {
 
 	now := time.Now()
 	sessionRepo.sessions = []*models.SSHSession{
-		{ID: uuid.New()},             // active (no EndedAt)
+		{ID: uuid.New()},                // active (no EndedAt)
 		{ID: uuid.New(), EndedAt: &now}, // ended
-		{ID: uuid.New()},             // active
+		{ID: uuid.New()},                // active
 	}
 
 	active, err := svc.GetActiveSessions(ctx)
@@ -874,7 +874,7 @@ func TestDetectKeyType(t *testing.T) {
 		{"ssh-rsa AAAAB3Nz...", models.SSHKeyTypeRSA},
 		{"ecdsa-sha2-nistp256 AAAA...", models.SSHKeyTypeECDSA},
 		{"something-unknown", models.SSHKeyTypeRSA}, // fallback
-		{"short", models.SSHKeyTypeRSA},              // too short
+		{"short", models.SSHKeyTypeRSA},             // too short
 	}
 	for _, tt := range tests {
 		got := svc.detectKeyType(tt.pubKey)

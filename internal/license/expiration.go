@@ -40,9 +40,9 @@ type ExpirationChecker struct {
 
 	// notifiedThresholds tracks which thresholds have already fired
 	// to avoid repeated notifications. Keyed by threshold day value.
-	mu                  sync.Mutex
-	notifiedThresholds  map[int]time.Time
-	expiredNotifiedAt   *time.Time
+	mu                 sync.Mutex
+	notifiedThresholds map[int]time.Time
+	expiredNotifiedAt  *time.Time
 
 	// checkInterval controls how often the checker runs.
 	checkInterval time.Duration
@@ -113,7 +113,8 @@ func (ec *ExpirationChecker) Stop() {
 func (ec *ExpirationChecker) Check(ctx context.Context) {
 	info := ec.provider.GetInfo()
 
-	// Only check paid licenses (CE never expires)
+	// Only commercial support tokens carry an expiration; the
+	// default open-edition state has none.
 	if info.Edition == CE {
 		return
 	}
@@ -235,21 +236,25 @@ func DaysUntilExpiration(info *Info) int {
 	return int(math.Ceil(remaining.Hours() / 24))
 }
 
-// GracefulDegradation describes the behavior when a license expires.
-// Instead of crashing, the system downgrades to Community Edition limits
-// while preserving data and basic functionality.
+// GracefulDegradation describes the in-product banner shown when a
+// commercial support token has expired. In the AGPL build the runtime
+// itself never downgrades — every feature and every limit is open
+// regardless of license state — so the struct is purely informational
+// and DisabledFeatures is always empty.
 type GracefulDegradation struct {
 	// IsExpired indicates the license has passed its expiration date.
 	IsExpired bool
 
-	// PreviousEdition is the edition before expiration.
+	// PreviousEdition is the edition tag carried on the expired token.
 	PreviousEdition Edition
 
-	// ActiveLimits are the limits currently enforced.
-	// When expired, these are CE limits.
+	// ActiveLimits are the limits currently in effect. Always the
+	// open (unlimited) set in the AGPL build.
 	ActiveLimits Limits
 
-	// DisabledFeatures lists features that were disabled due to expiration.
+	// DisabledFeatures lists features that were disabled due to
+	// expiration. Always empty in the AGPL build — kept for API
+	// backward compatibility.
 	DisabledFeatures []Feature
 
 	// Message is a human-readable explanation of the current state.
@@ -257,17 +262,16 @@ type GracefulDegradation struct {
 }
 
 // GetDegradationState evaluates the current license and returns
-// a description of any degradation in effect.
+// a description of any in-product banner that should be shown.
 func GetDegradationState(info *Info) *GracefulDegradation {
 	if info == nil {
 		return &GracefulDegradation{
 			IsExpired:    false,
-			ActiveLimits: CELimits(),
+			ActiveLimits: OpenLimits(),
 			Message:      "Running as Community Edition",
 		}
 	}
 
-	// Valid license - no degradation
 	if info.Valid && !info.IsExpired() {
 		return &GracefulDegradation{
 			IsExpired:       false,
@@ -277,20 +281,18 @@ func GetDegradationState(info *Info) *GracefulDegradation {
 		}
 	}
 
-	// Expired license - graceful degradation
 	if info.IsExpired() || !info.Valid {
-		degraded := &GracefulDegradation{
-			IsExpired:        true,
-			PreviousEdition:  info.Edition,
-			ActiveLimits:     CELimits(),
-			DisabledFeatures: info.Features, // All features from the expired license
+		return &GracefulDegradation{
+			IsExpired:       true,
+			PreviousEdition: info.Edition,
+			ActiveLimits:    OpenLimits(),
 			Message: fmt.Sprintf(
-				"License expired. System operating in Community Edition mode. "+
-					"Previous edition: %s. Renew your license to restore full functionality.",
+				"Support token expired (previous tier: %s). Every feature "+
+					"remains available — renew the token only to restore the "+
+					"associated support contract.",
 				info.EditionName(),
 			),
 		}
-		return degraded
 	}
 
 	return &GracefulDegradation{

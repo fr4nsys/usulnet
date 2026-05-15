@@ -8,8 +8,6 @@ import (
 	"context"
 	"time"
 
-	"github.com/google/uuid"
-
 	"github.com/fr4nsys/usulnet/internal/models"
 	"github.com/fr4nsys/usulnet/internal/pkg/errors"
 	"github.com/fr4nsys/usulnet/internal/pkg/logger"
@@ -71,17 +69,17 @@ const DefaultGracePeriodDays = 7
 // so a downstream operator can grep `details->>'findings_deleted'`
 // for trending without parsing nested JSON.
 type ReconRetentionSummary struct {
-	StartedAt          time.Time     `json:"started_at"`
-	CompletedAt        time.Time     `json:"completed_at"`
-	Duration           time.Duration `json:"duration"`
-	RetentionDays      int           `json:"retention_days"`
-	GracePeriodDays    int           `json:"grace_period_days"`
-	FindingsDeleted    int64         `json:"findings_deleted"`
-	ScansDeleted       int64         `json:"scans_deleted"`
-	AuditDeleted       int64         `json:"audit_deleted"`
-	ArtifactsMarked    int64         `json:"artifacts_marked"`
-	ArtifactsSwept     int64         `json:"artifacts_swept"`
-	Errors             []string      `json:"errors,omitempty"`
+	StartedAt       time.Time     `json:"started_at"`
+	CompletedAt     time.Time     `json:"completed_at"`
+	Duration        time.Duration `json:"duration"`
+	RetentionDays   int           `json:"retention_days"`
+	GracePeriodDays int           `json:"grace_period_days"`
+	FindingsDeleted int64         `json:"findings_deleted"`
+	ScansDeleted    int64         `json:"scans_deleted"`
+	AuditDeleted    int64         `json:"audit_deleted"`
+	ArtifactsMarked int64         `json:"artifacts_marked"`
+	ArtifactsSwept  int64         `json:"artifacts_swept"`
+	Errors          []string      `json:"errors,omitempty"`
 }
 
 // ReconRetentionWorker prunes recon data according to the configured
@@ -90,10 +88,10 @@ type ReconRetentionSummary struct {
 // internal/app/app.go).
 type ReconRetentionWorker struct {
 	BaseWorker
-	svc           ReconRetentionService
-	defaultCfg    ReconRetentionConfig
-	clock         func() time.Time
-	logger        *logger.Logger
+	svc        ReconRetentionService
+	defaultCfg ReconRetentionConfig
+	clock      func() time.Time
+	logger     *logger.Logger
 }
 
 // NewReconRetentionWorker constructs a worker. Pass defaultCfg with
@@ -136,7 +134,7 @@ func (w *ReconRetentionWorker) withDefaults(c ReconRetentionConfig) ReconRetenti
 
 // Execute is the scheduler-facing entry point. It parses the optional
 // payload, runs the three phases sequentially, and writes one audit
-// row summarising the outcome. The audit write is best-effort: if the
+// row summarizing the outcome. The audit write is best-effort: if the
 // audit insert fails the worker logs the error but still reports
 // success on its actual deletions, which is what got persisted.
 func (w *ReconRetentionWorker) Execute(ctx context.Context, job *models.Job) (interface{}, error) {
@@ -225,7 +223,7 @@ func (w *ReconRetentionWorker) Execute(ctx context.Context, job *models.Job) (in
 	summary.CompletedAt = w.clock().UTC()
 	summary.Duration = summary.CompletedAt.Sub(summary.StartedAt)
 
-	// Append a single audit row summarising the run. Failures here
+	// Append a single audit row summarizing the run. Failures here
 	// are non-fatal; the deletions already happened.
 	if err := w.svc.AppendRetentionAudit(ctx, summary); err != nil {
 		log.Warn("audit append failed", "error", err)
@@ -259,12 +257,3 @@ func (w *ReconRetentionWorker) SetClock(clock func() time.Time) {
 
 // Compile-time guarantee: the worker satisfies Worker.
 var _ Worker = (*ReconRetentionWorker)(nil)
-
-// jobIDOrNew returns job.ID or a fresh uuid; only used by the audit
-// summary stamp when the scheduler passes a nil-id job.
-func jobIDOrNew(id uuid.UUID) uuid.UUID {
-	if id == uuid.Nil {
-		return uuid.New()
-	}
-	return id
-}

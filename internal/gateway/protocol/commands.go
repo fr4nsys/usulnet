@@ -14,23 +14,23 @@ type CommandType string
 
 // Container commands
 const (
-	CmdContainerList       CommandType = "container.list"
-	CmdContainerInspect    CommandType = "container.inspect"
-	CmdContainerStart      CommandType = "container.start"
-	CmdContainerStop       CommandType = "container.stop"
-	CmdContainerRestart    CommandType = "container.restart"
-	CmdContainerKill       CommandType = "container.kill"
-	CmdContainerPause      CommandType = "container.pause"
-	CmdContainerUnpause    CommandType = "container.unpause"
-	CmdContainerRemove     CommandType = "container.remove"
-	CmdContainerCreate     CommandType = "container.create"
-	CmdContainerRename     CommandType = "container.rename"
-	CmdContainerLogs       CommandType = "container.logs"
-	CmdContainerStats      CommandType = "container.stats"
-	CmdContainerExec       CommandType = "container.exec"
-	CmdContainerTop        CommandType = "container.top"
-	CmdContainerRecreate   CommandType = "container.recreate"
-	CmdContainerUpdate     CommandType = "container.update"
+	CmdContainerList     CommandType = "container.list"
+	CmdContainerInspect  CommandType = "container.inspect"
+	CmdContainerStart    CommandType = "container.start"
+	CmdContainerStop     CommandType = "container.stop"
+	CmdContainerRestart  CommandType = "container.restart"
+	CmdContainerKill     CommandType = "container.kill"
+	CmdContainerPause    CommandType = "container.pause"
+	CmdContainerUnpause  CommandType = "container.unpause"
+	CmdContainerRemove   CommandType = "container.remove"
+	CmdContainerCreate   CommandType = "container.create"
+	CmdContainerRename   CommandType = "container.rename"
+	CmdContainerLogs     CommandType = "container.logs"
+	CmdContainerStats    CommandType = "container.stats"
+	CmdContainerExec     CommandType = "container.exec"
+	CmdContainerTop      CommandType = "container.top"
+	CmdContainerRecreate CommandType = "container.recreate"
+	CmdContainerUpdate   CommandType = "container.update"
 )
 
 // Image commands
@@ -78,12 +78,12 @@ const (
 
 // System commands
 const (
-	CmdSystemInfo      CommandType = "system.info"
-	CmdSystemVersion   CommandType = "system.version"
-	CmdSystemDf        CommandType = "system.df"
-	CmdSystemPing      CommandType = "system.ping"
-	CmdSystemEvents    CommandType = "system.events"
-	CmdSystemPrune     CommandType = "system.prune"
+	CmdSystemInfo    CommandType = "system.info"
+	CmdSystemVersion CommandType = "system.version"
+	CmdSystemDf      CommandType = "system.df"
+	CmdSystemPing    CommandType = "system.ping"
+	CmdSystemEvents  CommandType = "system.events"
+	CmdSystemPrune   CommandType = "system.prune"
 )
 
 // Backup commands
@@ -102,8 +102,8 @@ const (
 
 // Update commands
 const (
-	CmdUpdateCheck   CommandType = "update.check"
-	CmdUpdateApply   CommandType = "update.apply"
+	CmdUpdateCheck    CommandType = "update.check"
+	CmdUpdateApply    CommandType = "update.apply"
 	CmdUpdateRollback CommandType = "update.rollback"
 )
 
@@ -111,6 +111,24 @@ const (
 const (
 	CmdExecRun    CommandType = "exec.run"
 	CmdExecResize CommandType = "exec.resize"
+)
+
+// Firewall commands
+const (
+	CmdFirewallDetect CommandType = "firewall.detect"
+	CmdFirewallApply  CommandType = "firewall.apply"
+	CmdFirewallSync   CommandType = "firewall.sync"
+)
+
+// WireGuard commands (v26.5.1 — mesh propagation of peer entries from
+// master to agents). The agent shells out to `wg`/`wg-quick` with a
+// hard timeout; the master never builds or runs the shell command
+// itself.
+const (
+	CmdWireGuardApplyPeer  CommandType = "wireguard.apply_peer"
+	CmdWireGuardRemovePeer CommandType = "wireguard.remove_peer"
+	CmdWireGuardStatus     CommandType = "wireguard.status"
+	CmdWireGuardProbe      CommandType = "wireguard.probe"
 )
 
 // Agent control commands
@@ -134,95 +152,103 @@ const (
 
 // Command represents a command to be executed by an agent.
 type Command struct {
-	ID          string          `json:"id"`
-	Type        CommandType     `json:"type"`
-	HostID      string          `json:"host_id"`
-	Priority    CommandPriority `json:"priority"`
-	Timeout     time.Duration   `json:"timeout"`
-	ReplyTo     string          `json:"reply_to"`
-	CreatedAt   time.Time       `json:"created_at"`
-	CreatedBy   string          `json:"created_by,omitempty"`
-	Params      CommandParams   `json:"params"`
-	Retries     int             `json:"retries,omitempty"`
-	MaxRetries  int             `json:"max_retries,omitempty"`
-	Idempotent  bool            `json:"idempotent,omitempty"`
+	ID         string          `json:"id"`
+	Type       CommandType     `json:"type"`
+	HostID     string          `json:"host_id"`
+	Priority   CommandPriority `json:"priority"`
+	Timeout    time.Duration   `json:"timeout"`
+	ReplyTo    string          `json:"reply_to"`
+	CreatedAt  time.Time       `json:"created_at"`
+	CreatedBy  string          `json:"created_by,omitempty"`
+	Params     CommandParams   `json:"params"`
+	Retries    int             `json:"retries,omitempty"`
+	MaxRetries int             `json:"max_retries,omitempty"`
+	Idempotent bool            `json:"idempotent,omitempty"`
 }
 
 // CommandParams contains command-specific parameters.
 type CommandParams struct {
 	// Container params
-	ContainerID   string            `json:"container_id,omitempty"`
-	ContainerName string            `json:"container_name,omitempty"`
-	Signal        string            `json:"signal,omitempty"`
-	Force         bool              `json:"force,omitempty"`
-	RemoveVolumes bool              `json:"remove_volumes,omitempty"`
-	StopTimeout   *int              `json:"stop_timeout,omitempty"`
-	
+	ContainerID   string `json:"container_id,omitempty"`
+	ContainerName string `json:"container_name,omitempty"`
+	Signal        string `json:"signal,omitempty"`
+	Force         bool   `json:"force,omitempty"`
+	RemoveVolumes bool   `json:"remove_volumes,omitempty"`
+	StopTimeout   *int   `json:"stop_timeout,omitempty"`
+
 	// Image params
-	ImageRef      string            `json:"image_ref,omitempty"`
-	Tag           string            `json:"tag,omitempty"`
-	Platform      string            `json:"platform,omitempty"`
-	RegistryAuth  string            `json:"registry_auth,omitempty"` // Base64-encoded JSON credentials for private registries
-	
+	ImageRef     string `json:"image_ref,omitempty"`
+	Tag          string `json:"tag,omitempty"`
+	Platform     string `json:"platform,omitempty"`
+	RegistryAuth string `json:"registry_auth,omitempty"` // Base64-encoded JSON credentials for private registries
+
 	// Volume params
-	VolumeID      string            `json:"volume_id,omitempty"`
-	VolumeName    string            `json:"volume_name,omitempty"`
-	Driver        string            `json:"driver,omitempty"`
-	DriverOpts    map[string]string `json:"driver_opts,omitempty"`
-	
+	VolumeID   string            `json:"volume_id,omitempty"`
+	VolumeName string            `json:"volume_name,omitempty"`
+	Driver     string            `json:"driver,omitempty"`
+	DriverOpts map[string]string `json:"driver_opts,omitempty"`
+
 	// Network params
-	NetworkID     string            `json:"network_id,omitempty"`
-	NetworkName   string            `json:"network_name,omitempty"`
-	Subnet        string            `json:"subnet,omitempty"`
-	Gateway       string            `json:"gateway,omitempty"`
-	Internal      bool              `json:"internal,omitempty"`
-	Attachable    bool              `json:"attachable,omitempty"`
-	EndpointID    string            `json:"endpoint_id,omitempty"`
-	IPAddress     string            `json:"ip_address,omitempty"`
-	Aliases       []string          `json:"aliases,omitempty"`
-	
+	NetworkID   string   `json:"network_id,omitempty"`
+	NetworkName string   `json:"network_name,omitempty"`
+	Subnet      string   `json:"subnet,omitempty"`
+	Gateway     string   `json:"gateway,omitempty"`
+	Internal    bool     `json:"internal,omitempty"`
+	Attachable  bool     `json:"attachable,omitempty"`
+	EndpointID  string   `json:"endpoint_id,omitempty"`
+	IPAddress   string   `json:"ip_address,omitempty"`
+	Aliases     []string `json:"aliases,omitempty"`
+
 	// Stack params
-	StackName     string            `json:"stack_name,omitempty"`
-	ComposeFile   string            `json:"compose_file,omitempty"`
-	EnvVars       map[string]string `json:"env_vars,omitempty"`
-	
+	StackName   string            `json:"stack_name,omitempty"`
+	ComposeFile string            `json:"compose_file,omitempty"`
+	EnvVars     map[string]string `json:"env_vars,omitempty"`
+
 	// Logs params
-	Follow        bool              `json:"follow,omitempty"`
-	Tail          string            `json:"tail,omitempty"`
-	Since         string            `json:"since,omitempty"`
-	Until         string            `json:"until,omitempty"`
-	Timestamps    bool              `json:"timestamps,omitempty"`
-	Details       bool              `json:"details,omitempty"`
-	
+	Follow     bool   `json:"follow,omitempty"`
+	Tail       string `json:"tail,omitempty"`
+	Since      string `json:"since,omitempty"`
+	Until      string `json:"until,omitempty"`
+	Timestamps bool   `json:"timestamps,omitempty"`
+	Details    bool   `json:"details,omitempty"`
+
 	// Exec params
-	Cmd           []string          `json:"cmd,omitempty"`
-	WorkingDir    string            `json:"working_dir,omitempty"`
-	Env           []string          `json:"env,omitempty"`
-	User          string            `json:"user,omitempty"`
-	Tty           bool              `json:"tty,omitempty"`
-	AttachStdin   bool              `json:"attach_stdin,omitempty"`
-	AttachStdout  bool              `json:"attach_stdout,omitempty"`
-	AttachStderr  bool              `json:"attach_stderr,omitempty"`
-	Privileged    bool              `json:"privileged,omitempty"`
-	
+	Cmd          []string `json:"cmd,omitempty"`
+	WorkingDir   string   `json:"working_dir,omitempty"`
+	Env          []string `json:"env,omitempty"`
+	User         string   `json:"user,omitempty"`
+	Tty          bool     `json:"tty,omitempty"`
+	AttachStdin  bool     `json:"attach_stdin,omitempty"`
+	AttachStdout bool     `json:"attach_stdout,omitempty"`
+	AttachStderr bool     `json:"attach_stderr,omitempty"`
+	Privileged   bool     `json:"privileged,omitempty"`
+
 	// Create/Update params
-	Config        interface{}       `json:"config,omitempty"`
-	HostConfig    interface{}       `json:"host_config,omitempty"`
-	NetworkConfig interface{}       `json:"network_config,omitempty"`
-	
+	Config        interface{} `json:"config,omitempty"`
+	HostConfig    interface{} `json:"host_config,omitempty"`
+	NetworkConfig interface{} `json:"network_config,omitempty"`
+
 	// Backup params
-	BackupPath    string            `json:"backup_path,omitempty"`
-	BackupID      string            `json:"backup_id,omitempty"`
-	Compress      bool              `json:"compress,omitempty"`
-	
+	BackupPath string `json:"backup_path,omitempty"`
+	BackupID   string `json:"backup_id,omitempty"`
+	Compress   bool   `json:"compress,omitempty"`
+
 	// Prune params
-	PruneFilters  map[string][]string `json:"prune_filters,omitempty"`
-	PruneAll      bool              `json:"prune_all,omitempty"`
-	
+	PruneFilters map[string][]string `json:"prune_filters,omitempty"`
+	PruneAll     bool                `json:"prune_all,omitempty"`
+
+	// Firewall params
+	FirewallRules   string `json:"firewall_rules,omitempty"`   // JSON-encoded rule set for apply
+	FirewallBackend string `json:"firewall_backend,omitempty"` // iptables, nftables, or ufw
+
+	// WireGuard params (v26.5.1 — mesh propagation)
+	WireGuardInterface string `json:"wireguard_interface,omitempty"` // e.g. "wg0"
+	WireGuardPeer      string `json:"wireguard_peer,omitempty"`      // JSON-encoded peer payload (public_key, allowed_ips, endpoint, persistent_keepalive, preshared_key)
+
 	// Generic filters
-	Filters       map[string][]string `json:"filters,omitempty"`
-	All           bool              `json:"all,omitempty"`
-	Limit         int               `json:"limit,omitempty"`
+	Filters map[string][]string `json:"filters,omitempty"`
+	All     bool                `json:"all,omitempty"`
+	Limit   int                 `json:"limit,omitempty"`
 }
 
 // CommandStatus represents the status of a command execution.
@@ -234,7 +260,7 @@ const (
 	CommandStatusCompleted CommandStatus = "completed"
 	CommandStatusFailed    CommandStatus = "failed"
 	CommandStatusTimeout   CommandStatus = "timeout"
-	CommandStatusCancelled CommandStatus = "cancelled"
+	CommandStatusCancelled CommandStatus = "canceled"
 )
 
 // CommandResult contains the result of a command execution.
@@ -303,6 +329,16 @@ func DefaultTimeout(cmdType CommandType) time.Duration {
 		return 15 * time.Minute
 	case CmdSystemPrune, CmdImagePrune, CmdVolumePrune, CmdNetworkPrune:
 		return 5 * time.Minute
+	case CmdFirewallApply, CmdFirewallSync:
+		return 2 * time.Minute
+	case CmdFirewallDetect:
+		return 15 * time.Second
+	case CmdWireGuardApplyPeer, CmdWireGuardRemovePeer:
+		return 30 * time.Second
+	case CmdWireGuardStatus:
+		return 15 * time.Second
+	case CmdWireGuardProbe:
+		return 5 * time.Second
 	default:
 		return 30 * time.Second
 	}
@@ -318,7 +354,9 @@ func IsIdempotent(cmdType CommandType) bool {
 		CmdStackList, CmdStackLogs,
 		CmdSystemInfo, CmdSystemVersion, CmdSystemDf, CmdSystemPing,
 		CmdBackupList,
-		CmdUpdateCheck:
+		CmdUpdateCheck,
+		CmdFirewallDetect, CmdFirewallSync,
+		CmdWireGuardStatus, CmdWireGuardProbe:
 		return true
 	default:
 		return false
@@ -333,7 +371,8 @@ func IsDestructive(cmdType CommandType) bool {
 		CmdVolumeRemove, CmdVolumePrune,
 		CmdNetworkRemove, CmdNetworkPrune,
 		CmdStackRemove,
-		CmdSystemPrune:
+		CmdSystemPrune,
+		CmdFirewallApply:
 		return true
 	default:
 		return false

@@ -21,10 +21,10 @@ import (
 
 // CommandDispatcher sends commands to agents and tracks responses.
 type CommandDispatcher struct {
-	server     *Server
-	pending    map[string]*pendingCommand
-	mu         sync.RWMutex
-	log        *logger.Logger
+	server  *Server
+	pending map[string]*pendingCommand
+	mu      sync.RWMutex
+	log     *logger.Logger
 }
 
 // pendingCommand tracks a command awaiting response.

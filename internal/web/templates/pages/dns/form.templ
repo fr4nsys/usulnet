@@ -1,0 +1,106 @@
+package dns
+
+import "fmt"
+
+templ providerForm(data ProviderFormData) {
+	<form method="POST" action={ formAction(data) } class="card p-6 space-y-4">
+		<input type="hidden" name="csrf_token" value={ data.PageData.CSRFToken }/>
+
+		if data.Error != "" {
+			<div class="rounded-lg bg-red-500/10 border border-red-500/30 text-red-300 p-3 text-sm">{ data.Error }</div>
+		}
+
+		<div>
+			<label class="block text-sm font-medium text-gray-300 mb-1" for="name">Name</label>
+			<input id="name" name="name" type="text" required class="input w-full" value={ data.Provider.Name }/>
+		</div>
+
+		<div>
+			<label class="block text-sm font-medium text-gray-300 mb-1" for="description">Description</label>
+			<input id="description" name="description" type="text" class="input w-full" value={ data.Provider.Description }/>
+		</div>
+
+		<div>
+			<label class="block text-sm font-medium text-gray-300 mb-1" for="provider_kind">Provider</label>
+			<select id="provider_kind" name="provider_kind" class="input w-full" required disabled?={ data.IsEdit }>
+				for _, c := range data.Capabilities {
+					<option value={ c.Kind } selected?={ c.Kind == data.Provider.ProviderKind }>{ c.DisplayName }</option>
+				}
+			</select>
+			if data.IsEdit {
+				<input type="hidden" name="provider_kind" value={ data.Provider.ProviderKind }/>
+				<p class="text-xs text-gray-500 mt-1">Provider kind is immutable. Delete and recreate to change.</p>
+			}
+		</div>
+
+		if len(data.Selected.CredentialFields) > 0 {
+			<div class="space-y-3 border border-dark-600 rounded-lg p-4">
+				<p class="text-sm font-semibold text-white">Credentials</p>
+				<p class="text-xs text-gray-500">Stored encrypted with AES-256-GCM. The platform never returns them.</p>
+				for _, f := range data.Selected.CredentialFields {
+					<div>
+						<label class="block text-sm font-medium text-gray-300 mb-1" for={ "cred_" + f.Key }>
+							{ f.Label }
+							if f.Required && !data.IsEdit {
+								<span class="text-red-400">*</span>
+							}
+						</label>
+						if f.Secret {
+							<input id={ "cred_" + f.Key } name={ "cred_" + f.Key } type="password" class="input w-full" autocomplete="off" placeholder={ placeholderFor(data.IsEdit) }/>
+						} else {
+							<input id={ "cred_" + f.Key } name={ "cred_" + f.Key } type="text" class="input w-full" autocomplete="off" placeholder={ placeholderFor(data.IsEdit) }/>
+						}
+						if f.Description != "" {
+							<p class="text-xs text-gray-500 mt-1">{ f.Description }</p>
+						}
+					</div>
+				}
+			</div>
+		}
+
+		if len(data.Selected.ConfigFields) > 0 {
+			<div class="space-y-3 border border-dark-600 rounded-lg p-4">
+				<p class="text-sm font-semibold text-white">Configuration</p>
+				for _, f := range data.Selected.ConfigFields {
+					<div>
+						<label class="block text-sm font-medium text-gray-300 mb-1" for={ "cfg_" + f.Key }>{ f.Label }</label>
+						<input id={ "cfg_" + f.Key } name={ "cfg_" + f.Key } type="text" class="input w-full" value={ initialConfigValue(data, f.Key, f.Default) }/>
+						if f.Description != "" {
+							<p class="text-xs text-gray-500 mt-1">{ f.Description }</p>
+						}
+					</div>
+				}
+			</div>
+		}
+
+		<label class="inline-flex items-center gap-2 text-sm text-gray-300">
+			<input type="checkbox" name="enabled" value="true" checked?={ data.Provider.Enabled || !data.IsEdit } class="form-checkbox"/>
+			Enabled
+		</label>
+
+		<div class="flex items-center justify-end gap-2 pt-2">
+			<a href="/dns" class="btn-secondary">Cancel</a>
+			<button type="submit" class="btn-primary">
+				if data.IsEdit {
+					Save
+				} else {
+					Create
+				}
+			</button>
+		</div>
+	</form>
+}
+
+func formAction(data ProviderFormData) string {
+	if data.IsEdit {
+		return fmt.Sprintf("/dns/%s", data.Provider.ID)
+	}
+	return "/dns"
+}
+
+func placeholderFor(isEdit bool) string {
+	if isEdit {
+		return "Leave blank to keep current value"
+	}
+	return ""
+}

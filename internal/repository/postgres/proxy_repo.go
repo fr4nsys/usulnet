@@ -90,7 +90,7 @@ func (r *ProxyHostRepository) GetByID(ctx context.Context, id uuid.UUID) (*model
 
 	h, err := pgx.CollectOneRow(row, pgx.RowToAddrOfStructByName[models.ProxyHost])
 	if err != nil {
-		if err == pgx.ErrNoRows {
+		if errors.Is(err, pgx.ErrNoRows) {
 			return nil, errors.NotFound("proxy_host").WithDetail("id", id.String())
 		}
 		return nil, errors.Wrap(err, errors.CodeDatabaseError, "failed to scan proxy host")
@@ -199,7 +199,7 @@ func (r *ProxyHostRepository) GetByContainerID(ctx context.Context, containerID 
 
 	h, err := pgx.CollectOneRow(rows, pgx.RowToAddrOfStructByName[models.ProxyHost])
 	if err != nil {
-		if err == pgx.ErrNoRows {
+		if errors.Is(err, pgx.ErrNoRows) {
 			return nil, nil // Not found is OK for container lookup
 		}
 		return nil, err
@@ -312,7 +312,7 @@ func (r *ProxyCertificateRepository) GetByID(ctx context.Context, id uuid.UUID) 
 
 	c, err := pgx.CollectOneRow(rows, pgx.RowToAddrOfStructByName[models.ProxyCertificate])
 	if err != nil {
-		if err == pgx.ErrNoRows {
+		if errors.Is(err, pgx.ErrNoRows) {
 			return nil, errors.NotFound("proxy_certificate")
 		}
 		return nil, err
@@ -401,7 +401,7 @@ func (r *ProxyDNSProviderRepository) GetByID(ctx context.Context, id uuid.UUID) 
 
 	p, err := pgx.CollectOneRow(rows, pgx.RowToAddrOfStructByName[models.ProxyDNSProvider])
 	if err != nil {
-		if err == pgx.ErrNoRows {
+		if errors.Is(err, pgx.ErrNoRows) {
 			return nil, errors.NotFound("proxy_dns_provider")
 		}
 		return nil, err
@@ -434,7 +434,7 @@ func (r *ProxyDNSProviderRepository) GetDefault(ctx context.Context, hostID uuid
 
 	p, err := pgx.CollectOneRow(rows, pgx.RowToAddrOfStructByName[models.ProxyDNSProvider])
 	if err != nil {
-		if err == pgx.ErrNoRows {
+		if errors.Is(err, pgx.ErrNoRows) {
 			return nil, nil
 		}
 		return nil, err

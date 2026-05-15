@@ -89,6 +89,9 @@ func (e *Executor) registerHandlers() {
 
 	// Security commands
 	e.registerSecurityHandlers()
+
+	// WireGuard commands (v26.5.1)
+	e.registerWireGuardHandlers()
 }
 
 // Execute executes a command and returns the result.
@@ -319,7 +322,7 @@ func (e *Executor) handleContainerLogs(ctx context.Context, cmd *protocol.Comman
 	// Stream logs in chunks for large outputs.
 	// Each chunk is up to chunkSize bytes. The result includes metadata so the
 	// consumer can detect truncation and reassemble if needed.
-	const chunkSize = 64 * 1024 // 64KB per chunk
+	const chunkSize = 64 * 1024      // 64KB per chunk
 	const maxSize = 10 * 1024 * 1024 // 10MB max total
 
 	var logs []byte
@@ -503,8 +506,8 @@ func (e *Executor) handleImagePrune(ctx context.Context, cmd *protocol.Command) 
 	}
 
 	return e.successResult(map[string]interface{}{
-		"action":         "pruned",
-		"images_deleted": report.ImagesDeleted,
+		"action":          "pruned",
+		"images_deleted":  report.ImagesDeleted,
 		"space_reclaimed": report.SpaceReclaimed,
 	})
 }

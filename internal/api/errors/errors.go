@@ -59,14 +59,20 @@ const (
 	ErrCodeHostNotFound      ErrorCode = "HOST_NOT_FOUND"
 	ErrCodeHostUnreachable   ErrorCode = "HOST_UNREACHABLE"
 
-	// License errors
-	ErrCodeLicenseRequired ErrorCode = "LICENSE_REQUIRED"
-	ErrCodeLicenseExpired  ErrorCode = "LICENSE_EXPIRED"
-	ErrCodeLicenseInvalid  ErrorCode = "LICENSE_INVALID"
-	ErrCodeFeatureDisabled ErrorCode = "FEATURE_DISABLED"
+	// License errors. Only LicenseInvalid is emitted in the AGPL build —
+	// it covers the JWT activation path. There is no LICENSE_REQUIRED /
+	// LICENSE_EXPIRED / FEATURE_DISABLED case anymore: every feature is
+	// available unconditionally (principle 2 in
+	// docs/0526/x/principles.md).
+	ErrCodeLicenseInvalid ErrorCode = "LICENSE_INVALID"
 
 	// Not implemented
 	ErrCodeNotImplemented ErrorCode = "NOT_IMPLEMENTED"
+
+	// Feature not supported by the active backend (e.g. proxy streams
+	// against Caddy). HTTP 422 so clients can distinguish a translatable
+	// request from server-side failure.
+	ErrCodeFeatureNotSupported ErrorCode = "FEATURE_NOT_SUPPORTED"
 
 	// Recon / privacy module (v26.5.0). See docs/v26.5/technical-notes.md
 	// ("Error response shape"). These codes are documented in lower_snake
@@ -134,7 +140,17 @@ func UnsupportedTargetType(typ string) *APIError {
 }
 
 // APIError represents a standardized API error response.
+//
+// The JSON shape is documented in OpenAPI as containing a top-level
+// "success" boolean (always false for errors) alongside status/code/
+// message. The Success field is serialized explicitly (no omitempty)
+// so error responses are unambiguous to clients that distinguish
+// success/failure envelopes.
 type APIError struct {
+	// Success is always false on error responses. Present so clients
+	// can use a uniform success/error envelope check.
+	Success bool `json:"success"`
+
 	// HTTP status code
 	Status int `json:"status"`
 
@@ -202,6 +218,17 @@ func NewErrorWithDetails(status int, code ErrorCode, message string, details any
 // ============================================================================
 // Common error constructors
 // ============================================================================
+
+// FeatureNotSupported returns a 422 when the requested feature cannot
+// be applied by the active backend (e.g. raw TCP/UDP streams against
+// the Caddy proxy backend). The body includes a human-readable message
+// explaining which backend rejected the feature.
+func FeatureNotSupported(message string) *APIError {
+	if message == "" {
+		message = "Feature not supported by active backend"
+	}
+	return NewError(http.StatusUnprocessableEntity, ErrCodeFeatureNotSupported, message)
+}
 
 // Unauthorized returns a 401 Unauthorized error.
 func Unauthorized(message string) *APIError {
@@ -375,31 +402,6 @@ func HostUnreachable(hostID string) *APIError {
 	)
 }
 
-// LicenseRequired returns a 402 Payment Required error.
-func LicenseRequired(feature string) *APIError {
-	return NewErrorWithDetails(
-		http.StatusPaymentRequired,
-		ErrCodeLicenseRequired,
-		"This feature requires a valid license",
-		map[string]string{"feature": feature},
-	)
-}
-
-// LicenseExpired returns a 402 error for expired licenses.
-func LicenseExpired() *APIError {
-	return NewError(http.StatusPaymentRequired, ErrCodeLicenseExpired, "License has expired")
-}
-
-// FeatureDisabled returns a 403 error for disabled features.
-func FeatureDisabled(feature string) *APIError {
-	return NewErrorWithDetails(
-		http.StatusForbidden,
-		ErrCodeFeatureDisabled,
-		"Feature is disabled",
-		map[string]string{"feature": feature},
-	)
-}
-
 // Timeout returns a 504 Gateway Timeout error.
 func Timeout(message string) *APIError {
 	if message == "" {
@@ -503,7 +505,8 @@ func FromError(err error) *APIError {
 	}
 
 	// Check if it's already an APIError
-	if apiErr, ok := err.(*APIError); ok {
+	apiErr := &APIError{}
+	if errors.As(err, &apiErr) {
 		return apiErr
 	}
 

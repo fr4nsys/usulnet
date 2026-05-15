@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/google/uuid"
@@ -33,6 +34,13 @@ type Repository interface {
 type Service struct {
 	repo   Repository
 	logger *logger.Logger
+
+	// In-process pub-sub for downstream consumers (rollback worker, the
+	// future drift correlator, etc.). The slice is guarded by subMu;
+	// fan-out is non-blocking — a slow subscriber whose channel is full
+	// drops the event and logs a warning.
+	subMu       sync.RWMutex
+	subscribers []*Subscription
 }
 
 // NewService creates a new change tracking service.
@@ -46,6 +54,115 @@ func NewService(repo Repository, log *logger.Logger) *Service {
 	}
 }
 
+// SubscriptionFilter narrows the events delivered to a subscriber. Empty
+// fields match everything.
+type SubscriptionFilter struct {
+	// ResourceType — e.g. "stack", "container".
+	ResourceType string
+	// Actions — if non-empty, only events whose Action is in the set
+	// are delivered.
+	Actions []string
+}
+
+// Subscription is a live pull-side handle returned by Subscribe.
+// Consume Events; call Close when done. Close is idempotent.
+type Subscription struct {
+	ch     chan *models.ChangeEvent
+	filter SubscriptionFilter
+	svc    *Service
+
+	closeOnce sync.Once
+	closed    chan struct{}
+}
+
+// Events is the channel of incoming change events. Closed when the
+// subscription is Close()d.
+func (s *Subscription) Events() <-chan *models.ChangeEvent {
+	return s.ch
+}
+
+// Close unregisters the subscription. Safe to call from any goroutine;
+// idempotent.
+func (s *Subscription) Close() {
+	s.closeOnce.Do(func() {
+		s.svc.unsubscribe(s)
+		close(s.closed)
+		close(s.ch)
+	})
+}
+
+// Subscribe registers a new subscriber to live change events. The
+// returned Subscription's Events channel buffers up to bufSize events
+// (bufSize<=0 becomes 32). Records arriving while the buffer is full
+// are dropped; a slow consumer cannot block the Record path.
+//
+// Callers MUST eventually invoke Subscription.Close() to release
+// resources — typically with a `defer sub.Close()` in the consuming
+// goroutine.
+func (s *Service) Subscribe(filter SubscriptionFilter, bufSize int) *Subscription {
+	if bufSize <= 0 {
+		bufSize = 32
+	}
+	sub := &Subscription{
+		ch:     make(chan *models.ChangeEvent, bufSize),
+		filter: filter,
+		svc:    s,
+		closed: make(chan struct{}),
+	}
+	s.subMu.Lock()
+	s.subscribers = append(s.subscribers, sub)
+	s.subMu.Unlock()
+	return sub
+}
+
+// unsubscribe removes the given subscription. Called from
+// Subscription.Close — do not call directly.
+func (s *Service) unsubscribe(target *Subscription) {
+	s.subMu.Lock()
+	defer s.subMu.Unlock()
+	for i, sub := range s.subscribers {
+		if sub == target {
+			s.subscribers = append(s.subscribers[:i], s.subscribers[i+1:]...)
+			return
+		}
+	}
+}
+
+// fanOut delivers e to every matching subscriber. Non-blocking — drops
+// when a subscriber's buffer is full.
+func (s *Service) fanOut(e *models.ChangeEvent) {
+	s.subMu.RLock()
+	defer s.subMu.RUnlock()
+	for _, sub := range s.subscribers {
+		if !subscriptionMatches(sub.filter, e) {
+			continue
+		}
+		select {
+		case sub.ch <- e:
+		default:
+			s.logger.Warn("change event dropped: subscriber buffer full",
+				"resource_type", e.ResourceType,
+				"action", e.Action,
+			)
+		}
+	}
+}
+
+func subscriptionMatches(f SubscriptionFilter, e *models.ChangeEvent) bool {
+	if f.ResourceType != "" && f.ResourceType != e.ResourceType {
+		return false
+	}
+	if len(f.Actions) == 0 {
+		return true
+	}
+	for _, a := range f.Actions {
+		if a == e.Action {
+			return true
+		}
+	}
+	return false
+}
+
 // RecordInput is the input for recording a new change event.
 type RecordInput struct {
 	UserID        *uuid.UUID
@@ -55,8 +172,8 @@ type RecordInput struct {
 	ResourceID    string
 	ResourceName  string
 	Action        string
-	OldState      any // will be JSON-marshalled
-	NewState      any // will be JSON-marshalled
+	OldState      any // will be JSON-marshaled
+	NewState      any // will be JSON-marshaled
 	DiffSummary   string
 	RelatedTicket string
 	Metadata      map[string]any
@@ -120,6 +237,9 @@ func (s *Service) Record(ctx context.Context, input RecordInput) error {
 		"action", input.Action,
 		"user", input.UserName,
 	)
+
+	s.fanOut(e)
+
 	return nil
 }
 

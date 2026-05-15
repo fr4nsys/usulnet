@@ -61,13 +61,13 @@ func (a *RestartPolicyAnalyzer) Analyze(ctx context.Context, data *security.Cont
 	// Check for 'always' policy (might restart crashed containers endlessly)
 	if policy == "always" {
 		issues = append(issues, security.Issue{
-			CheckID:     models.CheckRestartPolicy,
-			Severity:    models.IssueSeverityInfo,
-			Category:    models.IssueCategoryReliability,
-			Title:       "Restart Policy 'always'",
-			Description: "Container uses 'always' restart policy. This will restart even after manual stops.",
+			CheckID:        models.CheckRestartPolicy,
+			Severity:       models.IssueSeverityInfo,
+			Category:       models.IssueCategoryReliability,
+			Title:          "Restart Policy 'always'",
+			Description:    "Container uses 'always' restart policy. This will restart even after manual stops.",
 			Recommendation: "Consider using 'unless-stopped' to respect manual stop commands.",
-			Penalty:     1,
+			Penalty:        1,
 		}.WithDetail("container", data.Name))
 	}
 

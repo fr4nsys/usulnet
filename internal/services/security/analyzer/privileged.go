@@ -73,52 +73,52 @@ func (a *PrivilegedAnalyzer) checkDangerousSecurityOpts(data *security.Container
 		// Check for disabled AppArmor
 		if strings.HasPrefix(opt, "apparmor=unconfined") {
 			issues = append(issues, security.Issue{
-				CheckID:     models.CheckPrivileged,
-				Severity:    models.IssueSeverityHigh,
-				Category:    models.IssueCategorySecurity,
-				Title:       "AppArmor Disabled",
-				Description: "AppArmor is set to unconfined, disabling mandatory access control protection.",
+				CheckID:        models.CheckPrivileged,
+				Severity:       models.IssueSeverityHigh,
+				Category:       models.IssueCategorySecurity,
+				Title:          "AppArmor Disabled",
+				Description:    "AppArmor is set to unconfined, disabling mandatory access control protection.",
 				Recommendation: "Remove apparmor:unconfined unless absolutely required for the workload.",
-				Penalty:     15,
+				Penalty:        15,
 			}.WithDetail("security_opt", opt))
 		}
 
 		// Check for disabled seccomp
 		if strings.Contains(opt, "seccomp=unconfined") || strings.Contains(opt, "seccomp:unconfined") {
 			issues = append(issues, security.Issue{
-				CheckID:     models.CheckPrivileged,
-				Severity:    models.IssueSeverityHigh,
-				Category:    models.IssueCategorySecurity,
-				Title:       "Seccomp Disabled",
-				Description: "Seccomp profile is set to unconfined, allowing all system calls.",
+				CheckID:        models.CheckPrivileged,
+				Severity:       models.IssueSeverityHigh,
+				Category:       models.IssueCategorySecurity,
+				Title:          "Seccomp Disabled",
+				Description:    "Seccomp profile is set to unconfined, allowing all system calls.",
 				Recommendation: "Use default seccomp profile or a custom restricted profile.",
-				Penalty:     15,
+				Penalty:        15,
 			}.WithDetail("security_opt", opt))
 		}
 
 		// Check for no-new-privileges disabled
 		if strings.Contains(opt, "no-new-privileges=false") || strings.Contains(opt, "no-new-privileges:false") {
 			issues = append(issues, security.Issue{
-				CheckID:     models.CheckPrivileged,
-				Severity:    models.IssueSeverityMedium,
-				Category:    models.IssueCategorySecurity,
-				Title:       "No-New-Privileges Disabled",
-				Description: "no-new-privileges is disabled, allowing processes to gain additional privileges.",
+				CheckID:        models.CheckPrivileged,
+				Severity:       models.IssueSeverityMedium,
+				Category:       models.IssueCategorySecurity,
+				Title:          "No-New-Privileges Disabled",
+				Description:    "no-new-privileges is disabled, allowing processes to gain additional privileges.",
 				Recommendation: "Enable no-new-privileges to prevent privilege escalation.",
-				Penalty:     10,
+				Penalty:        10,
 			}.WithDetail("security_opt", opt))
 		}
 
 		// Check for label:disable (SELinux)
 		if strings.HasPrefix(opt, "label=disable") || strings.HasPrefix(opt, "label:disable") {
 			issues = append(issues, security.Issue{
-				CheckID:     models.CheckPrivileged,
-				Severity:    models.IssueSeverityMedium,
-				Category:    models.IssueCategorySecurity,
-				Title:       "SELinux Labeling Disabled",
-				Description: "SELinux labeling is disabled for this container.",
+				CheckID:        models.CheckPrivileged,
+				Severity:       models.IssueSeverityMedium,
+				Category:       models.IssueCategorySecurity,
+				Title:          "SELinux Labeling Disabled",
+				Description:    "SELinux labeling is disabled for this container.",
 				Recommendation: "Enable SELinux labeling for additional security isolation.",
-				Penalty:     8,
+				Penalty:        8,
 			}.WithDetail("security_opt", opt))
 		}
 	}

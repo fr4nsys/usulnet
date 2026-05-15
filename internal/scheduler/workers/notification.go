@@ -29,30 +29,30 @@ type NotificationService interface {
 
 // Notification represents a notification to be sent
 type Notification struct {
-	ID          uuid.UUID              `json:"id"`
-	Channel     string                 `json:"channel"` // email, slack, discord, telegram, webhook
-	Recipient   string                 `json:"recipient"`
-	Subject     string                 `json:"subject,omitempty"`
-	Message     string                 `json:"message"`
-	Priority    string                 `json:"priority,omitempty"` // low, normal, high, critical
-	Data        map[string]interface{} `json:"data,omitempty"`
-	TemplateID  string                 `json:"template_id,omitempty"`
-	CreatedAt   time.Time              `json:"created_at"`
+	ID         uuid.UUID              `json:"id"`
+	Channel    string                 `json:"channel"` // email, slack, discord, telegram, webhook
+	Recipient  string                 `json:"recipient"`
+	Subject    string                 `json:"subject,omitempty"`
+	Message    string                 `json:"message"`
+	Priority   string                 `json:"priority,omitempty"` // low, normal, high, critical
+	Data       map[string]interface{} `json:"data,omitempty"`
+	TemplateID string                 `json:"template_id,omitempty"`
+	CreatedAt  time.Time              `json:"created_at"`
 }
 
 // ChannelConfig holds configuration for a notification channel
 type ChannelConfig struct {
-	Type      string                 `json:"type"`
-	Enabled   bool                   `json:"enabled"`
-	Settings  map[string]interface{} `json:"settings"`
+	Type     string                 `json:"type"`
+	Enabled  bool                   `json:"enabled"`
+	Settings map[string]interface{} `json:"settings"`
 }
 
 // BatchSendResult holds the result of sending multiple notifications
 type BatchSendResult struct {
-	Total     int      `json:"total"`
-	Sent      int      `json:"sent"`
-	Failed    int      `json:"failed"`
-	Errors    []string `json:"errors,omitempty"`
+	Total  int      `json:"total"`
+	Sent   int      `json:"sent"`
+	Failed int      `json:"failed"`
+	Errors []string `json:"errors,omitempty"`
 }
 
 // NotificationWorker handles notification sending jobs
@@ -72,7 +72,7 @@ type NotificationPayload struct {
 	Data       map[string]interface{} `json:"data,omitempty"`
 	TemplateID string                 `json:"template_id,omitempty"`
 	// For batch sending
-	Batch      []*NotificationPayload `json:"batch,omitempty"`
+	Batch []*NotificationPayload `json:"batch,omitempty"`
 }
 
 // NewNotificationWorker creates a new notification worker
@@ -140,7 +140,8 @@ func (w *NotificationWorker) sendSingle(ctx context.Context, job *models.Job, pa
 	// Send
 	startTime := time.Now()
 	if err := w.notificationService.Send(ctx, notification); err != nil {
-		return &NotificationResult{
+		// result envelope: error surfaces via NotificationResult.Error
+		return &NotificationResult{ //nolint:nilerr
 			Success:   false,
 			Channel:   payload.Channel,
 			Recipient: payload.Recipient,

@@ -26,11 +26,11 @@ const (
 type DateFormat string
 
 const (
-	DateFormatISO    DateFormat = "2006-01-02"          // ISO 8601
-	DateFormatEU     DateFormat = "02/01/2006"          // DD/MM/YYYY
-	DateFormatUS     DateFormat = "01/02/2006"          // MM/DD/YYYY
-	DateFormatHuman  DateFormat = "02 Jan 2006"         // 02 Jan 2006
-	DateFormatFull   DateFormat = "Monday, 02 Jan 2006" // Full
+	DateFormatISO   DateFormat = "2006-01-02"          // ISO 8601
+	DateFormatEU    DateFormat = "02/01/2006"          // DD/MM/YYYY
+	DateFormatUS    DateFormat = "01/02/2006"          // MM/DD/YYYY
+	DateFormatHuman DateFormat = "02 Jan 2006"         // 02 Jan 2006
+	DateFormatFull  DateFormat = "Monday, 02 Jan 2006" // Full
 )
 
 // TimeFormat represents 12h vs 24h clock.
@@ -83,16 +83,16 @@ type UserPreferences struct {
 	TimeFormat TimeFormat `json:"time_format"` // 12h/24h
 
 	// Dashboard & UI
-	ContainerView   ViewMode        `json:"container_view"`   // table or grid
-	DefaultLogLines LogLineCount    `json:"default_log_lines"`
-	RefreshInterval RefreshInterval `json:"refresh_interval"` // seconds, 0=off
-	ShowStoppedContainers bool      `json:"show_stopped_containers"`
+	ContainerView         ViewMode        `json:"container_view"` // table or grid
+	DefaultLogLines       LogLineCount    `json:"default_log_lines"`
+	RefreshInterval       RefreshInterval `json:"refresh_interval"` // seconds, 0=off
+	ShowStoppedContainers bool            `json:"show_stopped_containers"`
 
 	// Notifications (in-app)
-	NotifyUpdates   bool `json:"notify_updates"`    // Update available alerts
-	NotifySecurity  bool `json:"notify_security"`   // Security score changes
-	NotifyBackups   bool `json:"notify_backups"`    // Backup completion/failure
-	NotifyContainer bool `json:"notify_container"`  // Container state changes
+	NotifyUpdates   bool `json:"notify_updates"`   // Update available alerts
+	NotifySecurity  bool `json:"notify_security"`  // Security score changes
+	NotifyBackups   bool `json:"notify_backups"`   // Backup completion/failure
+	NotifyContainer bool `json:"notify_container"` // Container state changes
 
 	// Editor
 	EditorMode     string `json:"editor_mode"`      // monaco or nvim

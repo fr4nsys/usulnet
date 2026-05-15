@@ -18,16 +18,16 @@ import (
 	"github.com/fr4nsys/usulnet/internal/repository/postgres"
 )
 
-// FrameworkStatus summarises the current compliance posture for a framework.
+// FrameworkStatus summarizes the current compliance posture for a framework.
 type FrameworkStatus struct {
-	FrameworkName  string     `json:"framework_name"`
-	TotalControls  int        `json:"total_controls"`
-	Implemented    int        `json:"implemented"`
-	InProgress     int        `json:"in_progress"`
-	NotStarted     int        `json:"not_started"`
-	NotApplicable  int        `json:"not_applicable"`
-	ComplianceScore float64   `json:"compliance_score"`
-	LastAssessment *time.Time `json:"last_assessment,omitempty"`
+	FrameworkName   string     `json:"framework_name"`
+	TotalControls   int        `json:"total_controls"`
+	Implemented     int        `json:"implemented"`
+	InProgress      int        `json:"in_progress"`
+	NotStarted      int        `json:"not_started"`
+	NotApplicable   int        `json:"not_applicable"`
+	ComplianceScore float64    `json:"compliance_score"`
+	LastAssessment  *time.Time `json:"last_assessment,omitempty"`
 }
 
 // ControlResult holds the per-control outcome recorded inside an assessment.
@@ -305,13 +305,13 @@ func (s *Service) GetFrameworkStatus(ctx context.Context, frameworkID uuid.UUID)
 // GenerateReport
 // ---------------------------------------------------------------------------
 
-// reportPayload is the top-level structure serialised when generating
+// reportPayload is the top-level structure serialized when generating
 // compliance reports.
 type reportPayload struct {
-	Framework  *models.ComplianceFramework  `json:"framework"`
-	Assessment *models.ComplianceAssessment `json:"assessment"`
-	Results    []ControlResult              `json:"results"`
-	GeneratedAt time.Time                   `json:"generated_at"`
+	Framework   *models.ComplianceFramework  `json:"framework"`
+	Assessment  *models.ComplianceAssessment `json:"assessment"`
+	Results     []ControlResult              `json:"results"`
+	GeneratedAt time.Time                    `json:"generated_at"`
 }
 
 // GenerateReport produces a compliance report for the given assessment in
@@ -523,7 +523,7 @@ func (s *Service) soc2Framework() frameworkDef {
 			Description: "The entity demonstrates a commitment to integrity and ethical values through enforced access controls and audit logging for all container management operations.",
 			Category:    "Control Environment", Severity: "high",
 			ImplementationStatus: models.ControlStatusNotStarted,
-			EvidenceType: "policy", CheckQuery: chk("audit_logging_enabled"),
+			EvidenceType:         "policy", CheckQuery: chk("audit_logging_enabled"),
 			Remediation: "Enable comprehensive audit logging for all container lifecycle events. Configure log retention to meet SOC 2 requirements (minimum 90 days).",
 		},
 		{
@@ -532,7 +532,7 @@ func (s *Service) soc2Framework() frameworkDef {
 			Description: "Management establishes oversight responsibilities through role-based access control (RBAC) and separation of duties for container deployments.",
 			Category:    "Control Environment", Severity: "high",
 			ImplementationStatus: models.ControlStatusNotStarted,
-			EvidenceType: "policy", CheckQuery: nil,
+			EvidenceType:         "policy", CheckQuery: nil,
 			Remediation: "Implement RBAC with distinct roles for development, deployment, and administration. Require approval workflows for production container changes.",
 		},
 		{
@@ -541,8 +541,8 @@ func (s *Service) soc2Framework() frameworkDef {
 			Description: "Management establishes structures and reporting lines through team-based access controls and resource permissions.",
 			Category:    "Control Environment", Severity: "medium",
 			ImplementationStatus: models.ControlStatusNotStarted,
-			EvidenceType: "policy", CheckQuery: chk("rbac_teams_configured"),
-			Remediation: "Configure team-based access with clearly defined resource permissions. Document the organisational structure and assign container management responsibilities.",
+			EvidenceType:         "policy", CheckQuery: chk("rbac_teams_configured"),
+			Remediation: "Configure team-based access with clearly defined resource permissions. Document the organizational structure and assign container management responsibilities.",
 		},
 		// CC2: Communication and Information (2 controls)
 		{
@@ -551,7 +551,7 @@ func (s *Service) soc2Framework() frameworkDef {
 			Description: "The entity internally communicates container security policies including image scanning requirements and deployment standards.",
 			Category:    "Communication and Information", Severity: "medium",
 			ImplementationStatus: models.ControlStatusNotStarted,
-			EvidenceType: "policy", CheckQuery: nil,
+			EvidenceType:         "policy", CheckQuery: nil,
 			Remediation: "Document and distribute container security policies to all relevant personnel. Maintain acknowledgement records.",
 		},
 		{
@@ -560,7 +560,7 @@ func (s *Service) soc2Framework() frameworkDef {
 			Description: "The entity communicates security commitments and system requirements to external parties through documented SLAs and security reporting.",
 			Category:    "Communication and Information", Severity: "medium",
 			ImplementationStatus: models.ControlStatusNotStarted,
-			EvidenceType: "documentation", CheckQuery: nil,
+			EvidenceType:         "documentation", CheckQuery: nil,
 			Remediation: "Maintain up-to-date system descriptions and communicate security commitments through SLAs. Provide regular security posture reports.",
 		},
 		// CC3: Risk Assessment (2 controls)
@@ -570,16 +570,16 @@ func (s *Service) soc2Framework() frameworkDef {
 			Description: "The entity identifies and assesses risks related to container infrastructure including image vulnerabilities, misconfigurations, and runtime threats.",
 			Category:    "Risk Assessment", Severity: "high",
 			ImplementationStatus: models.ControlStatusNotStarted,
-			EvidenceType: "automated_scan", CheckQuery: chk("vulnerability_scanning_enabled"),
+			EvidenceType:         "automated_scan", CheckQuery: chk("vulnerability_scanning_enabled"),
 			Remediation: "Enable automated vulnerability scanning for all container images. Schedule regular security assessments and maintain a risk register.",
 		},
 		{
 			ID: uuid.New(), FrameworkID: fwID, ControlID: "CC3.2",
 			Title:       "Fraud Risk Assessment in Container Operations",
-			Description: "The entity considers the potential for fraud in container operations including unauthorised image deployment and privilege escalation.",
+			Description: "The entity considers the potential for fraud in container operations including unauthorized image deployment and privilege escalation.",
 			Category:    "Risk Assessment", Severity: "medium",
 			ImplementationStatus: models.ControlStatusNotStarted,
-			EvidenceType: "policy", CheckQuery: chk("image_trust_policy_enforced"),
+			EvidenceType:         "policy", CheckQuery: chk("image_trust_policy_enforced"),
 			Remediation: "Implement image signing and verification. Restrict container registries to trusted sources and enforce admission policies.",
 		},
 		// CC5: Control Activities (3 controls)
@@ -589,7 +589,7 @@ func (s *Service) soc2Framework() frameworkDef {
 			Description: "The entity selects and develops automated control activities to mitigate container security risks including runtime policies and network segmentation.",
 			Category:    "Control Activities", Severity: "high",
 			ImplementationStatus: models.ControlStatusNotStarted,
-			EvidenceType: "automated_scan", CheckQuery: chk("runtime_security_policies_active"),
+			EvidenceType:         "automated_scan", CheckQuery: chk("runtime_security_policies_active"),
 			Remediation: "Deploy runtime security policies for container workloads. Implement network policies to segment container traffic.",
 		},
 		{
@@ -598,7 +598,7 @@ func (s *Service) soc2Framework() frameworkDef {
 			Description: "The entity implements technology controls over container infrastructure including resource limits, health checks, and restart policies.",
 			Category:    "Control Activities", Severity: "medium",
 			ImplementationStatus: models.ControlStatusNotStarted,
-			EvidenceType: "automated_scan", CheckQuery: chk("containers_have_resource_limits"),
+			EvidenceType:         "automated_scan", CheckQuery: chk("containers_have_resource_limits"),
 			Remediation: "Configure CPU and memory limits for all containers. Implement health checks and appropriate restart policies.",
 		},
 		{
@@ -607,7 +607,7 @@ func (s *Service) soc2Framework() frameworkDef {
 			Description: "The entity deploys control activities through automated policy enforcement for container configurations and deployments.",
 			Category:    "Control Activities", Severity: "medium",
 			ImplementationStatus: models.ControlStatusNotStarted,
-			EvidenceType: "automated_scan", CheckQuery: chk("opa_policies_enforcing"),
+			EvidenceType:         "automated_scan", CheckQuery: chk("opa_policies_enforcing"),
 			Remediation: "Configure OPA policies in enforcing mode for critical container security requirements. Review and update policies regularly.",
 		},
 		// CC6: Logical and Physical Access Controls (8 controls)
@@ -617,7 +617,7 @@ func (s *Service) soc2Framework() frameworkDef {
 			Description: "Containers must not run as root to enforce the principle of least privilege and reduce the attack surface in case of container escape.",
 			Category:    "Logical and Physical Access Controls", Severity: "critical",
 			ImplementationStatus: models.ControlStatusNotStarted,
-			EvidenceType: "automated_scan", CheckQuery: chk("containers_not_running_as_root"),
+			EvidenceType:         "automated_scan", CheckQuery: chk("containers_not_running_as_root"),
 			Remediation: "Configure all containers to run as a non-root user. Set 'user' in Dockerfile or container configuration. Use 'runAsNonRoot: true' in security contexts.",
 		},
 		{
@@ -626,7 +626,7 @@ func (s *Service) soc2Framework() frameworkDef {
 			Description: "Container root filesystems should be mounted read-only to prevent runtime modification of application binaries and configuration.",
 			Category:    "Logical and Physical Access Controls", Severity: "high",
 			ImplementationStatus: models.ControlStatusNotStarted,
-			EvidenceType: "automated_scan", CheckQuery: chk("containers_readonly_rootfs"),
+			EvidenceType:         "automated_scan", CheckQuery: chk("containers_readonly_rootfs"),
 			Remediation: "Mount container root filesystems as read-only using '--read-only' flag. Use tmpfs or named volumes for directories that require write access.",
 		},
 		{
@@ -635,7 +635,7 @@ func (s *Service) soc2Framework() frameworkDef {
 			Description: "Containers must have privilege escalation disabled to prevent processes from gaining additional privileges beyond those initially granted.",
 			Category:    "Logical and Physical Access Controls", Severity: "critical",
 			ImplementationStatus: models.ControlStatusNotStarted,
-			EvidenceType: "automated_scan", CheckQuery: chk("containers_no_new_privileges"),
+			EvidenceType:         "automated_scan", CheckQuery: chk("containers_no_new_privileges"),
 			Remediation: "Set '--security-opt=no-new-privileges' for all containers. Drop all capabilities and add only required ones explicitly.",
 		},
 		{
@@ -644,7 +644,7 @@ func (s *Service) soc2Framework() frameworkDef {
 			Description: "All Linux capabilities should be dropped from containers and only the minimum required capabilities added back explicitly.",
 			Category:    "Logical and Physical Access Controls", Severity: "high",
 			ImplementationStatus: models.ControlStatusNotStarted,
-			EvidenceType: "automated_scan", CheckQuery: chk("containers_capabilities_dropped"),
+			EvidenceType:         "automated_scan", CheckQuery: chk("containers_capabilities_dropped"),
 			Remediation: "Configure containers with '--cap-drop ALL' and selectively add back only required capabilities using '--cap-add'.",
 		},
 		{
@@ -653,7 +653,7 @@ func (s *Service) soc2Framework() frameworkDef {
 			Description: "Containers must not run in privileged mode, which grants full access to host devices and effectively disables all security isolation.",
 			Category:    "Logical and Physical Access Controls", Severity: "critical",
 			ImplementationStatus: models.ControlStatusNotStarted,
-			EvidenceType: "automated_scan", CheckQuery: chk("containers_not_privileged"),
+			EvidenceType:         "automated_scan", CheckQuery: chk("containers_not_privileged"),
 			Remediation: "Remove '--privileged' flag from all container configurations. Use specific capabilities and device mappings instead of privileged mode.",
 		},
 		{
@@ -662,7 +662,7 @@ func (s *Service) soc2Framework() frameworkDef {
 			Description: "Container networks must be properly segmented to limit blast radius and prevent lateral movement between services.",
 			Category:    "Logical and Physical Access Controls", Severity: "high",
 			ImplementationStatus: models.ControlStatusNotStarted,
-			EvidenceType: "automated_scan", CheckQuery: chk("containers_network_segmented"),
+			EvidenceType:         "automated_scan", CheckQuery: chk("containers_network_segmented"),
 			Remediation: "Create dedicated Docker networks for each application stack. Avoid using the default bridge network. Restrict inter-container communication to required paths.",
 		},
 		{
@@ -671,7 +671,7 @@ func (s *Service) soc2Framework() frameworkDef {
 			Description: "Multi-factor authentication and strong password policies must be enforced for all users accessing the container management platform.",
 			Category:    "Logical and Physical Access Controls", Severity: "high",
 			ImplementationStatus: models.ControlStatusNotStarted,
-			EvidenceType: "policy", CheckQuery: chk("mfa_enabled_for_users"),
+			EvidenceType:         "policy", CheckQuery: chk("mfa_enabled_for_users"),
 			Remediation: "Enable TOTP-based two-factor authentication for all administrative users. Enforce strong password policies and session timeout configurations.",
 		},
 		{
@@ -680,7 +680,7 @@ func (s *Service) soc2Framework() frameworkDef {
 			Description: "Containers must not share host namespaces (PID, network, IPC) to maintain proper process and network isolation from the host system.",
 			Category:    "Logical and Physical Access Controls", Severity: "high",
 			ImplementationStatus: models.ControlStatusNotStarted,
-			EvidenceType: "automated_scan", CheckQuery: chk("containers_no_host_namespaces"),
+			EvidenceType:         "automated_scan", CheckQuery: chk("containers_no_host_namespaces"),
 			Remediation: "Do not use '--pid=host', '--network=host', or '--ipc=host' flags unless absolutely required and documented with compensating controls.",
 		},
 		// CC7: System Operations (4 controls)
@@ -690,17 +690,17 @@ func (s *Service) soc2Framework() frameworkDef {
 			Description: "The entity monitors container environments for security events, anomalies, and policy violations in real time.",
 			Category:    "System Operations", Severity: "high",
 			ImplementationStatus: models.ControlStatusNotStarted,
-			EvidenceType: "automated_scan", CheckQuery: chk("runtime_monitoring_active"),
+			EvidenceType:         "automated_scan", CheckQuery: chk("runtime_monitoring_active"),
 			Remediation: "Enable runtime threat detection and anomaly monitoring. Configure alerts for security events. Review security dashboards regularly.",
 		},
 		{
 			ID: uuid.New(), FrameworkID: fwID, ControlID: "CC7.2",
 			Title:       "Anomaly Detection and Response",
-			Description: "The entity detects and responds to anomalous container behaviour including unexpected process execution, file access, and network connections.",
+			Description: "The entity detects and responds to anomalous container behavior including unexpected process execution, file access, and network connections.",
 			Category:    "System Operations", Severity: "high",
 			ImplementationStatus: models.ControlStatusNotStarted,
-			EvidenceType: "automated_scan", CheckQuery: chk("anomaly_detection_baselines_active"),
-			Remediation: "Enable runtime baseline learning for container behaviour. Configure automatic alerting on deviations from established baselines.",
+			EvidenceType:         "automated_scan", CheckQuery: chk("anomaly_detection_baselines_active"),
+			Remediation: "Enable runtime baseline learning for container behavior. Configure automatic alerting on deviations from established baselines.",
 		},
 		{
 			ID: uuid.New(), FrameworkID: fwID, ControlID: "CC7.3",
@@ -708,7 +708,7 @@ func (s *Service) soc2Framework() frameworkDef {
 			Description: "The entity has documented and tested incident response procedures for container security events including container isolation and forensic capture.",
 			Category:    "System Operations", Severity: "medium",
 			ImplementationStatus: models.ControlStatusNotStarted,
-			EvidenceType: "policy", CheckQuery: nil,
+			EvidenceType:         "policy", CheckQuery: nil,
 			Remediation: "Document incident response procedures specific to container environments. Test procedures quarterly. Maintain forensic capture capabilities.",
 		},
 		{
@@ -717,7 +717,7 @@ func (s *Service) soc2Framework() frameworkDef {
 			Description: "The entity implements backup and recovery procedures for persistent container data including volumes and configuration.",
 			Category:    "System Operations", Severity: "high",
 			ImplementationStatus: models.ControlStatusNotStarted,
-			EvidenceType: "automated_scan", CheckQuery: chk("backup_schedules_configured"),
+			EvidenceType:         "automated_scan", CheckQuery: chk("backup_schedules_configured"),
 			Remediation: "Configure automated backups for all persistent volumes and container configurations. Test recovery procedures regularly and document RTO/RPO targets.",
 		},
 		// CC8: Change Management (3 controls)
@@ -727,7 +727,7 @@ func (s *Service) soc2Framework() frameworkDef {
 			Description: "Changes to container images are controlled through image signing, version pinning, and approval workflows before deployment to production.",
 			Category:    "Change Management", Severity: "high",
 			ImplementationStatus: models.ControlStatusNotStarted,
-			EvidenceType: "automated_scan", CheckQuery: chk("images_use_specific_tags"),
+			EvidenceType:         "automated_scan", CheckQuery: chk("images_use_specific_tags"),
 			Remediation: "Pin container images to specific digests or version tags. Prohibit use of 'latest' tag in production. Implement image signing with cosign or notary.",
 		},
 		{
@@ -736,7 +736,7 @@ func (s *Service) soc2Framework() frameworkDef {
 			Description: "Container deployments are managed through version-controlled compose files and stack definitions with change tracking.",
 			Category:    "Change Management", Severity: "medium",
 			ImplementationStatus: models.ControlStatusNotStarted,
-			EvidenceType: "documentation", CheckQuery: chk("stacks_version_controlled"),
+			EvidenceType:         "documentation", CheckQuery: chk("stacks_version_controlled"),
 			Remediation: "Store all Docker Compose files and stack definitions in version control. Enable GitOps workflows for production deployments.",
 		},
 		{
@@ -745,7 +745,7 @@ func (s *Service) soc2Framework() frameworkDef {
 			Description: "Identified vulnerabilities in container images are tracked through remediation with defined SLAs based on severity.",
 			Category:    "Change Management", Severity: "high",
 			ImplementationStatus: models.ControlStatusNotStarted,
-			EvidenceType: "automated_scan", CheckQuery: chk("vulnerability_tracking_enabled"),
+			EvidenceType:         "automated_scan", CheckQuery: chk("vulnerability_tracking_enabled"),
 			Remediation: "Enable vulnerability tracking with defined remediation SLAs: Critical < 24h, High < 7d, Medium < 30d, Low < 90d. Configure notifications for SLA breaches.",
 		},
 	}
@@ -779,7 +779,7 @@ func (s *Service) hipaaFramework() frameworkDef {
 			Description: "Assign a unique name and/or number for identifying and tracking user identity across container management operations involving ePHI.",
 			Category:    "Access Control", Severity: "critical",
 			ImplementationStatus: models.ControlStatusNotStarted,
-			EvidenceType: "automated_scan", CheckQuery: chk("unique_user_ids_enforced"),
+			EvidenceType:         "automated_scan", CheckQuery: chk("unique_user_ids_enforced"),
 			Remediation: "Ensure all users have unique accounts. Prohibit shared credentials. Enable audit logging that captures user identity for every action.",
 		},
 		{
@@ -788,7 +788,7 @@ func (s *Service) hipaaFramework() frameworkDef {
 			Description: "Establish procedures for obtaining necessary ePHI during an emergency when normal container access controls may be bypassed.",
 			Category:    "Access Control", Severity: "high",
 			ImplementationStatus: models.ControlStatusNotStarted,
-			EvidenceType: "policy", CheckQuery: nil,
+			EvidenceType:         "policy", CheckQuery: nil,
 			Remediation: "Document emergency access procedures including break-glass accounts. Test procedures semi-annually and review access logs after each emergency access event.",
 		},
 		{
@@ -797,7 +797,7 @@ func (s *Service) hipaaFramework() frameworkDef {
 			Description: "Implement electronic procedures that terminate an electronic session after a predetermined time of inactivity on the container management platform.",
 			Category:    "Access Control", Severity: "medium",
 			ImplementationStatus: models.ControlStatusNotStarted,
-			EvidenceType: "automated_scan", CheckQuery: chk("session_timeout_configured"),
+			EvidenceType:         "automated_scan", CheckQuery: chk("session_timeout_configured"),
 			Remediation: "Configure session timeout to 15 minutes of inactivity. Implement automatic session termination and require re-authentication.",
 		},
 		{
@@ -806,7 +806,7 @@ func (s *Service) hipaaFramework() frameworkDef {
 			Description: "Implement encryption mechanisms to encrypt and decrypt ePHI stored in container volumes and persistent storage.",
 			Category:    "Access Control", Severity: "critical",
 			ImplementationStatus: models.ControlStatusNotStarted,
-			EvidenceType: "automated_scan", CheckQuery: chk("volumes_encryption_enabled"),
+			EvidenceType:         "automated_scan", CheckQuery: chk("volumes_encryption_enabled"),
 			Remediation: "Enable encryption at rest for all volumes containing ePHI. Use encrypted storage drivers or filesystem-level encryption (LUKS/dm-crypt).",
 		},
 		// 164.312(b): Audit Controls (3 controls)
@@ -816,7 +816,7 @@ func (s *Service) hipaaFramework() frameworkDef {
 			Description: "Implement hardware, software, and/or procedural mechanisms that record and examine activity in containers that contain or use ePHI.",
 			Category:    "Audit Controls", Severity: "critical",
 			ImplementationStatus: models.ControlStatusNotStarted,
-			EvidenceType: "automated_scan", CheckQuery: chk("comprehensive_audit_logging"),
+			EvidenceType:         "automated_scan", CheckQuery: chk("comprehensive_audit_logging"),
 			Remediation: "Enable comprehensive audit logging for all container operations. Capture create, start, stop, exec, and configuration change events with user attribution.",
 		},
 		{
@@ -825,35 +825,35 @@ func (s *Service) hipaaFramework() frameworkDef {
 			Description: "Audit logs for container operations must be protected against modification or deletion to ensure integrity of the audit trail.",
 			Category:    "Audit Controls", Severity: "high",
 			ImplementationStatus: models.ControlStatusNotStarted,
-			EvidenceType: "automated_scan", CheckQuery: chk("audit_log_integrity_protected"),
+			EvidenceType:         "automated_scan", CheckQuery: chk("audit_log_integrity_protected"),
 			Remediation: "Store audit logs in append-only storage. Implement log forwarding to a separate, access-restricted SIEM. Configure log retention of at least 6 years for HIPAA.",
 		},
 		{
 			ID: uuid.New(), FrameworkID: fwID, ControlID: "164.312(b)-3",
 			Title:       "Regular Audit Log Review",
-			Description: "Audit logs are reviewed regularly to detect unauthorised access or anomalous activity in containerised ePHI systems.",
+			Description: "Audit logs are reviewed regularly to detect unauthorized access or anomalous activity in containerised ePHI systems.",
 			Category:    "Audit Controls", Severity: "high",
 			ImplementationStatus: models.ControlStatusNotStarted,
-			EvidenceType: "policy", CheckQuery: nil,
+			EvidenceType:         "policy", CheckQuery: nil,
 			Remediation: "Establish weekly audit log review procedures. Configure automated alerting for suspicious activities. Document review findings and follow-up actions.",
 		},
 		// 164.312(c)(1): Integrity (2 controls)
 		{
 			ID: uuid.New(), FrameworkID: fwID, ControlID: "164.312(c)(1)-1",
 			Title:       "Container Image Integrity Verification",
-			Description: "Implement security measures to ensure that ePHI-processing container images have not been altered or destroyed in an unauthorised manner.",
+			Description: "Implement security measures to ensure that ePHI-processing container images have not been altered or destroyed in an unauthorized manner.",
 			Category:    "Integrity", Severity: "critical",
 			ImplementationStatus: models.ControlStatusNotStarted,
-			EvidenceType: "automated_scan", CheckQuery: chk("image_signatures_verified"),
+			EvidenceType:         "automated_scan", CheckQuery: chk("image_signatures_verified"),
 			Remediation: "Enable image signature verification for all containers processing ePHI. Use cosign or notary to sign images in the CI/CD pipeline.",
 		},
 		{
 			ID: uuid.New(), FrameworkID: fwID, ControlID: "164.312(c)(1)-2",
 			Title:       "Data Integrity Mechanisms for Container Volumes",
-			Description: "Electronic mechanisms are in place to corroborate that ePHI in container volumes has not been altered or destroyed in an unauthorised manner.",
+			Description: "Electronic mechanisms are in place to corroborate that ePHI in container volumes has not been altered or destroyed in an unauthorized manner.",
 			Category:    "Integrity", Severity: "high",
 			ImplementationStatus: models.ControlStatusNotStarted,
-			EvidenceType: "automated_scan", CheckQuery: chk("volume_integrity_checks"),
+			EvidenceType:         "automated_scan", CheckQuery: chk("volume_integrity_checks"),
 			Remediation: "Implement filesystem integrity monitoring for volumes containing ePHI. Configure checksums for backup verification and regular integrity audits.",
 		},
 		// 164.312(d): Person or Entity Authentication (2 controls)
@@ -863,7 +863,7 @@ func (s *Service) hipaaFramework() frameworkDef {
 			Description: "Implement procedures to verify that a person or entity seeking access to ePHI containers is the one claimed through multi-factor authentication.",
 			Category:    "Person/Entity Authentication", Severity: "critical",
 			ImplementationStatus: models.ControlStatusNotStarted,
-			EvidenceType: "automated_scan", CheckQuery: chk("mfa_required_for_ephi_access"),
+			EvidenceType:         "automated_scan", CheckQuery: chk("mfa_required_for_ephi_access"),
 			Remediation: "Require multi-factor authentication (TOTP, WebAuthn) for all users with access to ePHI containers. Integrate with enterprise IdP via OIDC/SAML.",
 		},
 		{
@@ -872,17 +872,17 @@ func (s *Service) hipaaFramework() frameworkDef {
 			Description: "Container services processing ePHI authenticate to each other using mutual TLS or equivalent cryptographic mechanisms.",
 			Category:    "Person/Entity Authentication", Severity: "high",
 			ImplementationStatus: models.ControlStatusNotStarted,
-			EvidenceType: "automated_scan", CheckQuery: chk("containers_mtls_enabled"),
+			EvidenceType:         "automated_scan", CheckQuery: chk("containers_mtls_enabled"),
 			Remediation: "Implement mutual TLS between containers processing ePHI. Use service mesh or certificate-based authentication for inter-service communication.",
 		},
 		// 164.312(e)(1): Transmission Security (2 controls)
 		{
 			ID: uuid.New(), FrameworkID: fwID, ControlID: "164.312(e)(1)-1",
 			Title:       "Encryption of ePHI in Transit",
-			Description: "Implement a mechanism to encrypt ePHI whenever it is transmitted over container networks to guard against unauthorised access.",
+			Description: "Implement a mechanism to encrypt ePHI whenever it is transmitted over container networks to guard against unauthorized access.",
 			Category:    "Transmission Security", Severity: "critical",
 			ImplementationStatus: models.ControlStatusNotStarted,
-			EvidenceType: "automated_scan", CheckQuery: chk("tls_enforced_for_ephi_traffic"),
+			EvidenceType:         "automated_scan", CheckQuery: chk("tls_enforced_for_ephi_traffic"),
 			Remediation: "Enforce TLS 1.2+ for all network communication involving ePHI. Configure reverse proxy to terminate TLS. Use encrypted overlay networks for Docker Swarm.",
 		},
 		{
@@ -891,7 +891,7 @@ func (s *Service) hipaaFramework() frameworkDef {
 			Description: "Implement security measures to ensure that electronically transmitted ePHI is not improperly modified without detection.",
 			Category:    "Transmission Security", Severity: "high",
 			ImplementationStatus: models.ControlStatusNotStarted,
-			EvidenceType: "automated_scan", CheckQuery: chk("network_integrity_verification"),
+			EvidenceType:         "automated_scan", CheckQuery: chk("network_integrity_verification"),
 			Remediation: "Use TLS with authenticated encryption (AES-GCM). Enable certificate pinning where feasible. Monitor for TLS downgrade attacks.",
 		},
 	}
@@ -925,25 +925,25 @@ func (s *Service) pciDSSFramework() frameworkDef {
 			Description: "Network security controls restrict traffic between container networks in the CDE and untrusted networks. Docker networks must isolate CDE containers.",
 			Category:    "Network Security", Severity: "critical",
 			ImplementationStatus: models.ControlStatusNotStarted,
-			EvidenceType: "automated_scan", CheckQuery: chk("cde_containers_network_isolated"),
+			EvidenceType:         "automated_scan", CheckQuery: chk("cde_containers_network_isolated"),
 			Remediation: "Create dedicated Docker networks for CDE containers. Block all ingress/egress except explicitly required flows. Do not use the default bridge network for CDE workloads.",
 		},
 		{
 			ID: uuid.New(), FrameworkID: fwID, ControlID: "PCI-1.3.1",
 			Title:       "Inbound Traffic Restriction to CDE Containers",
-			Description: "Inbound traffic to containers in the CDE is restricted to only necessary and authorised communications.",
+			Description: "Inbound traffic to containers in the CDE is restricted to only necessary and authorized communications.",
 			Category:    "Network Security", Severity: "critical",
 			ImplementationStatus: models.ControlStatusNotStarted,
-			EvidenceType: "automated_scan", CheckQuery: chk("cde_inbound_traffic_restricted"),
-			Remediation: "Minimise published ports on CDE containers. Use reverse proxy for controlled ingress. Implement Docker network policies to restrict container-to-container traffic.",
+			EvidenceType:         "automated_scan", CheckQuery: chk("cde_inbound_traffic_restricted"),
+			Remediation: "Minimize published ports on CDE containers. Use reverse proxy for controlled ingress. Implement Docker network policies to restrict container-to-container traffic.",
 		},
 		{
 			ID: uuid.New(), FrameworkID: fwID, ControlID: "PCI-1.4.1",
 			Title:       "Outbound Traffic Restriction from CDE Containers",
-			Description: "Outbound traffic from CDE containers is controlled and limited to authorised destinations only.",
+			Description: "Outbound traffic from CDE containers is controlled and limited to authorized destinations only.",
 			Category:    "Network Security", Severity: "high",
 			ImplementationStatus: models.ControlStatusNotStarted,
-			EvidenceType: "automated_scan", CheckQuery: chk("cde_outbound_traffic_restricted"),
+			EvidenceType:         "automated_scan", CheckQuery: chk("cde_outbound_traffic_restricted"),
 			Remediation: "Restrict outbound network access from CDE containers to explicitly allowed destinations. Use DNS-based or IP-based egress rules.",
 		},
 		// Req 2: Secure Configuration (3 controls)
@@ -953,7 +953,7 @@ func (s *Service) pciDSSFramework() frameworkDef {
 			Description: "Configuration standards are developed and applied to all container images and runtime configurations in the CDE.",
 			Category:    "Secure Configuration", Severity: "high",
 			ImplementationStatus: models.ControlStatusNotStarted,
-			EvidenceType: "automated_scan", CheckQuery: chk("secure_config_standards_applied"),
+			EvidenceType:         "automated_scan", CheckQuery: chk("secure_config_standards_applied"),
 			Remediation: "Define and enforce container hardening standards: non-root user, read-only filesystem, dropped capabilities, no privileged mode, resource limits.",
 		},
 		{
@@ -962,7 +962,7 @@ func (s *Service) pciDSSFramework() frameworkDef {
 			Description: "Container images include only necessary services, protocols, and functionality required for the intended purpose.",
 			Category:    "Secure Configuration", Severity: "medium",
 			ImplementationStatus: models.ControlStatusNotStarted,
-			EvidenceType: "automated_scan", CheckQuery: chk("containers_minimal_images"),
+			EvidenceType:         "automated_scan", CheckQuery: chk("containers_minimal_images"),
 			Remediation: "Use minimal base images (distroless, Alpine, scratch). Remove unnecessary tools, shells, and package managers from production images.",
 		},
 		{
@@ -971,7 +971,7 @@ func (s *Service) pciDSSFramework() frameworkDef {
 			Description: "All management access to container infrastructure and the Docker daemon is encrypted using strong cryptography.",
 			Category:    "Secure Configuration", Severity: "high",
 			ImplementationStatus: models.ControlStatusNotStarted,
-			EvidenceType: "automated_scan", CheckQuery: chk("management_access_encrypted"),
+			EvidenceType:         "automated_scan", CheckQuery: chk("management_access_encrypted"),
 			Remediation: "Enable TLS for Docker daemon communication. Require HTTPS for the management UI. Use SSH tunnels or VPN for remote Docker host management.",
 		},
 		// Req 3: Protect Stored Data (2 controls)
@@ -981,7 +981,7 @@ func (s *Service) pciDSSFramework() frameworkDef {
 			Description: "Cardholder data stored in container volumes is rendered unreadable through strong cryptography with associated key management.",
 			Category:    "Protect Stored Data", Severity: "critical",
 			ImplementationStatus: models.ControlStatusNotStarted,
-			EvidenceType: "automated_scan", CheckQuery: chk("cardholder_data_encrypted_at_rest"),
+			EvidenceType:         "automated_scan", CheckQuery: chk("cardholder_data_encrypted_at_rest"),
 			Remediation: "Enable volume-level encryption for all volumes storing cardholder data. Implement proper key management with key rotation schedules.",
 		},
 		{
@@ -990,7 +990,7 @@ func (s *Service) pciDSSFramework() frameworkDef {
 			Description: "Cryptographic keys used to protect stored cardholder data in containers are managed through a defined key management process.",
 			Category:    "Protect Stored Data", Severity: "critical",
 			ImplementationStatus: models.ControlStatusNotStarted,
-			EvidenceType: "policy", CheckQuery: nil,
+			EvidenceType:         "policy", CheckQuery: nil,
 			Remediation: "Implement key management procedures: generation with approved algorithms, secure distribution, rotation schedules, revocation procedures, and split knowledge/dual control.",
 		},
 		// Req 5: Malware Protection (2 controls)
@@ -1000,7 +1000,7 @@ func (s *Service) pciDSSFramework() frameworkDef {
 			Description: "An automated mechanism detects and addresses malicious software (vulnerabilities) in container images used in the CDE.",
 			Category:    "Malware Protection", Severity: "critical",
 			ImplementationStatus: models.ControlStatusNotStarted,
-			EvidenceType: "automated_scan", CheckQuery: chk("image_vulnerability_scanning_active"),
+			EvidenceType:         "automated_scan", CheckQuery: chk("image_vulnerability_scanning_active"),
 			Remediation: "Enable automated vulnerability scanning (Trivy) for all container images. Block deployment of images with critical or high vulnerabilities. Scan on push and on schedule.",
 		},
 		{
@@ -1009,7 +1009,7 @@ func (s *Service) pciDSSFramework() frameworkDef {
 			Description: "Container runtime is monitored for malicious activity including cryptominer deployment, reverse shells, and known malware signatures.",
 			Category:    "Malware Protection", Severity: "high",
 			ImplementationStatus: models.ControlStatusNotStarted,
-			EvidenceType: "automated_scan", CheckQuery: chk("runtime_malware_detection_active"),
+			EvidenceType:         "automated_scan", CheckQuery: chk("runtime_malware_detection_active"),
 			Remediation: "Enable runtime security monitoring for cryptominer processes, reverse shell connections, and known malware indicators. Configure automated container quarantine.",
 		},
 		// Req 6: Secure Development (3 controls)
@@ -1019,7 +1019,7 @@ func (s *Service) pciDSSFramework() frameworkDef {
 			Description: "Container images are built following a defined secure development lifecycle with security requirements and review processes.",
 			Category:    "Secure Development", Severity: "high",
 			ImplementationStatus: models.ControlStatusNotStarted,
-			EvidenceType: "policy", CheckQuery: nil,
+			EvidenceType:         "policy", CheckQuery: nil,
 			Remediation: "Implement secure Dockerfile best practices: multi-stage builds, non-root users, minimal base images, no secrets in layers. Integrate security scanning in CI/CD.",
 		},
 		{
@@ -1028,7 +1028,7 @@ func (s *Service) pciDSSFramework() frameworkDef {
 			Description: "Security vulnerabilities in container images are identified and managed through a defined vulnerability management process.",
 			Category:    "Secure Development", Severity: "critical",
 			ImplementationStatus: models.ControlStatusNotStarted,
-			EvidenceType: "automated_scan", CheckQuery: chk("vulnerability_management_process"),
+			EvidenceType:         "automated_scan", CheckQuery: chk("vulnerability_management_process"),
 			Remediation: "Maintain an inventory of all container images. Scan for vulnerabilities regularly. Patch critical vulnerabilities within 30 days of identification.",
 		},
 		{
@@ -1037,7 +1037,7 @@ func (s *Service) pciDSSFramework() frameworkDef {
 			Description: "Changes to container configurations and deployments in the CDE follow a documented change control process.",
 			Category:    "Secure Development", Severity: "medium",
 			ImplementationStatus: models.ControlStatusNotStarted,
-			EvidenceType: "documentation", CheckQuery: chk("deployment_change_control"),
+			EvidenceType:         "documentation", CheckQuery: chk("deployment_change_control"),
 			Remediation: "Use GitOps workflows for CDE container deployments. Require peer review for compose/stack changes. Maintain deployment audit trail.",
 		},
 		// Req 7: Restrict Access (2 controls)
@@ -1047,7 +1047,7 @@ func (s *Service) pciDSSFramework() frameworkDef {
 			Description: "Access to CDE container management operations is restricted based on a user's need-to-know and assigned role.",
 			Category:    "Restrict Access", Severity: "critical",
 			ImplementationStatus: models.ControlStatusNotStarted,
-			EvidenceType: "automated_scan", CheckQuery: chk("rbac_cde_access_restricted"),
+			EvidenceType:         "automated_scan", CheckQuery: chk("rbac_cde_access_restricted"),
 			Remediation: "Configure RBAC with least-privilege access for CDE containers. Separate development and production access. Review access rights quarterly.",
 		},
 		{
@@ -1056,7 +1056,7 @@ func (s *Service) pciDSSFramework() frameworkDef {
 			Description: "Access to CDE containers is enforced through automated access control systems that cannot be overridden by individual users.",
 			Category:    "Restrict Access", Severity: "high",
 			ImplementationStatus: models.ControlStatusNotStarted,
-			EvidenceType: "automated_scan", CheckQuery: chk("automated_access_enforcement"),
+			EvidenceType:         "automated_scan", CheckQuery: chk("automated_access_enforcement"),
 			Remediation: "Implement automated RBAC enforcement. Use OPA policies to prevent privilege escalation. Log and alert on access control override attempts.",
 		},
 		// Req 8: Authentication (2 controls)
@@ -1066,7 +1066,7 @@ func (s *Service) pciDSSFramework() frameworkDef {
 			Description: "Multi-factor authentication is implemented for all access into the container management platform for CDE environments.",
 			Category:    "Authentication", Severity: "critical",
 			ImplementationStatus: models.ControlStatusNotStarted,
-			EvidenceType: "automated_scan", CheckQuery: chk("mfa_required_cde_access"),
+			EvidenceType:         "automated_scan", CheckQuery: chk("mfa_required_cde_access"),
 			Remediation: "Require MFA for all users with CDE container management access. Support TOTP, WebAuthn/FIDO2. Integrate with enterprise SSO.",
 		},
 		{
@@ -1075,7 +1075,7 @@ func (s *Service) pciDSSFramework() frameworkDef {
 			Description: "Service accounts and credentials used by container services in the CDE are managed securely with rotation and access controls.",
 			Category:    "Authentication", Severity: "high",
 			ImplementationStatus: models.ControlStatusNotStarted,
-			EvidenceType: "automated_scan", CheckQuery: chk("service_accounts_managed"),
+			EvidenceType:         "automated_scan", CheckQuery: chk("service_accounts_managed"),
 			Remediation: "Use managed secrets for container service credentials. Implement automatic rotation. Monitor for leaked credentials in container configurations.",
 		},
 		// Req 10: Logging and Monitoring (3 controls)
@@ -1085,16 +1085,16 @@ func (s *Service) pciDSSFramework() frameworkDef {
 			Description: "Audit logs are generated for all access to CDE containers, capturing user identification, event type, date/time, success/failure, and affected resources.",
 			Category:    "Logging and Monitoring", Severity: "critical",
 			ImplementationStatus: models.ControlStatusNotStarted,
-			EvidenceType: "automated_scan", CheckQuery: chk("cde_audit_logs_generated"),
-			Remediation: "Enable comprehensive audit logging for CDE containers. Capture all PCI-DSS required log fields. Forward logs to centralised SIEM.",
+			EvidenceType:         "automated_scan", CheckQuery: chk("cde_audit_logs_generated"),
+			Remediation: "Enable comprehensive audit logging for CDE containers. Capture all PCI-DSS required log fields. Forward logs to centralized SIEM.",
 		},
 		{
 			ID: uuid.New(), FrameworkID: fwID, ControlID: "PCI-10.3.1",
 			Title:       "Audit Log Protection",
-			Description: "Audit logs for CDE container operations are protected against unauthorised modification and are available for at least 12 months.",
+			Description: "Audit logs for CDE container operations are protected against unauthorized modification and are available for at least 12 months.",
 			Category:    "Logging and Monitoring", Severity: "high",
 			ImplementationStatus: models.ControlStatusNotStarted,
-			EvidenceType: "automated_scan", CheckQuery: chk("audit_log_retention_12m"),
+			EvidenceType:         "automated_scan", CheckQuery: chk("audit_log_retention_12m"),
 			Remediation: "Configure audit log retention for at least 12 months (3 months immediately available). Implement write-once storage for audit logs. Restrict log deletion permissions.",
 		},
 		{
@@ -1103,7 +1103,7 @@ func (s *Service) pciDSSFramework() frameworkDef {
 			Description: "Automated mechanisms are used to review audit logs and alert personnel of suspected or confirmed security incidents in CDE containers.",
 			Category:    "Logging and Monitoring", Severity: "high",
 			ImplementationStatus: models.ControlStatusNotStarted,
-			EvidenceType: "automated_scan", CheckQuery: chk("security_alerting_configured"),
+			EvidenceType:         "automated_scan", CheckQuery: chk("security_alerting_configured"),
 			Remediation: "Configure automated alerting rules for CDE security events. Set up notification channels (email, webhook, Slack). Define escalation procedures.",
 		},
 		// Req 11: Security Testing (2 controls)
@@ -1113,16 +1113,16 @@ func (s *Service) pciDSSFramework() frameworkDef {
 			Description: "Internal and external vulnerability assessments are performed on CDE container infrastructure at least quarterly and after significant changes.",
 			Category:    "Security Testing", Severity: "high",
 			ImplementationStatus: models.ControlStatusNotStarted,
-			EvidenceType: "automated_scan", CheckQuery: chk("quarterly_vulnerability_assessments"),
+			EvidenceType:         "automated_scan", CheckQuery: chk("quarterly_vulnerability_assessments"),
 			Remediation: "Schedule quarterly vulnerability assessments for CDE containers. Run assessments after any significant infrastructure changes. Track remediation to completion.",
 		},
 		{
 			ID: uuid.New(), FrameworkID: fwID, ControlID: "PCI-11.5.1",
 			Title:       "Change Detection on CDE Containers",
-			Description: "A change detection mechanism monitors CDE container configurations and alerts on unauthorised modifications.",
+			Description: "A change detection mechanism monitors CDE container configurations and alerts on unauthorized modifications.",
 			Category:    "Security Testing", Severity: "high",
 			ImplementationStatus: models.ControlStatusNotStarted,
-			EvidenceType: "automated_scan", CheckQuery: chk("configuration_change_detection"),
+			EvidenceType:         "automated_scan", CheckQuery: chk("configuration_change_detection"),
 			Remediation: "Enable configuration drift detection for CDE containers. Alert on unexpected container restarts, image changes, or configuration modifications. Review alerts within 24 hours.",
 		},
 	}

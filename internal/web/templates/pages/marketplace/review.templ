@@ -1,0 +1,74 @@
+// SPDX-License-Identifier: AGPL-3.0-or-later
+// Copyright (c) 2024-2026 usulnet contributors
+// https://github.com/fr4nsys/usulnet
+
+package marketplace
+
+import "github.com/fr4nsys/usulnet/internal/web/templates/layouts"
+
+// ReviewFormData is the view model for the leave-a-review page.
+type ReviewFormData struct {
+	PageData layouts.PageData
+	App      AppView
+	Existing *ReviewView
+	Error    string
+}
+
+templ Review(data ReviewFormData) {
+	@layouts.Base(data.PageData) {
+		<div class="space-y-6">
+			@Nav("browse")
+
+			<div class="max-w-xl">
+				<h2 class="text-lg font-semibold text-white mb-1">
+					if data.Existing != nil {
+						Update your review of { data.App.Name }
+					} else {
+						Review { data.App.Name }
+					}
+				</h2>
+				<p class="text-xs text-gray-500 mb-4">
+					Reviews are kept locally on this usulnet instance &mdash; nothing
+					is sent to any external service. One review per app per user; submitting
+					again replaces your previous review.
+				</p>
+
+				if data.Error != "" {
+					<div class="mb-4 px-3 py-2 bg-red-500/10 border border-red-500/20 rounded-lg text-sm text-red-400">
+						<i class="fas fa-exclamation-triangle mr-2"></i>{ data.Error }
+					</div>
+				}
+
+				<form method="POST" action={ templ.SafeURL("/marketplace/" + data.App.Slug + "/review") } class="space-y-4">
+					<div>
+						<label class="block text-sm font-medium text-gray-300 mb-1">Rating</label>
+						<select name="rating" required class="w-32 px-3 py-2 bg-dark-600 border border-dark-500 rounded-lg text-gray-300 focus:outline-none focus:border-primary-500">
+							for i := 1; i <= 5; i++ {
+								<option value={ ratingStr(i) } selected?={ reviewMatch(data.Existing, i) }>{ ratingStr(i) }</option>
+							}
+						</select>
+					</div>
+					<div>
+						<label class="block text-sm font-medium text-gray-300 mb-1">Title</label>
+						<input type="text" name="title" maxlength="255"
+							value={ reviewExistingTitle(data.Existing) }
+							class="w-full px-3 py-2 bg-dark-600 border border-dark-500 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-primary-500"/>
+					</div>
+					<div>
+						<label class="block text-sm font-medium text-gray-300 mb-1">Comment</label>
+						<textarea name="comment" rows="4" maxlength="4096"
+							class="w-full px-3 py-2 bg-dark-600 border border-dark-500 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-primary-500">{ reviewExistingComment(data.Existing) }</textarea>
+					</div>
+					<div class="flex gap-3 pt-2">
+						<button type="submit" class="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-black font-medium rounded-lg transition-colors text-sm">
+							Submit review
+						</button>
+						<a href={ templ.SafeURL("/marketplace/" + data.App.Slug) } class="px-4 py-2 bg-dark-600 hover:bg-dark-500 text-gray-300 rounded-lg transition-colors text-sm">
+							Cancel
+						</a>
+					</div>
+				</form>
+			</div>
+		</div>
+	}
+}

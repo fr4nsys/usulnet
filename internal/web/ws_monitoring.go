@@ -180,7 +180,6 @@ func collectAllStats(ctx context.Context, cli *dockerClient.Client) (*wsStatsPay
 	// Collect stats concurrently with a bounded pool
 	type result struct {
 		stat wsContainerStats
-		err  error
 	}
 
 	sem := make(chan struct{}, 10) // max 10 concurrent stat calls

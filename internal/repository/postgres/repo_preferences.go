@@ -10,6 +10,8 @@ import (
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
+
+	"github.com/fr4nsys/usulnet/internal/pkg/errors"
 )
 
 // PreferencesRepo implements PreferencesRepository using PostgreSQL.
@@ -30,7 +32,7 @@ func (r *PreferencesRepo) GetUserPreferences(ctx context.Context, userID string)
 		userID,
 	).Scan(&prefs)
 
-	if err == pgx.ErrNoRows {
+	if errors.Is(err, pgx.ErrNoRows) {
 		return "", nil
 	}
 	if err != nil {
@@ -74,7 +76,7 @@ func (r *PreferencesRepo) GetSidebarPrefs(ctx context.Context, userID string) (s
 		userID,
 	).Scan(&prefs)
 
-	if err == pgx.ErrNoRows {
+	if errors.Is(err, pgx.ErrNoRows) {
 		return "", nil
 	}
 	if err != nil {

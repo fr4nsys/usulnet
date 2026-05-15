@@ -130,102 +130,22 @@ func TestLimitProximityChecker_InvalidThresholdDefaults(t *testing.T) {
 }
 
 // ============================================================================
-// MaxNodes enforcement scenarios
+// Open-edition limits (the AGPL build runs unlimited)
 // ============================================================================
 
-func TestMaxNodes_CELimitedToOne(t *testing.T) {
-	limits := CELimits()
-	if limits.MaxNodes != 1 {
-		t.Errorf("CE MaxNodes = %d, want 1", limits.MaxNodes)
+func TestOpenEditionLimits_AllUnlimited(t *testing.T) {
+	limits := OpenLimits()
+	zero := Limits{}
+	if limits != zero {
+		t.Errorf("OpenLimits() = %+v, want zero value (unlimited)", limits)
 	}
 }
 
-func TestMaxNodes_BusinessFromJWT(t *testing.T) {
-	// Business with 5 purchased nodes = 5 + 1(CE base) = 6 total
-	limits := BusinessDefaultLimits()
-	limits.MaxNodes = 5 + CEBaseNodes
-	if limits.MaxNodes != 6 {
-		t.Errorf("Business MaxNodes = %d, want 6 (5 purchased + 1 base)", limits.MaxNodes)
-	}
-}
-
-func TestMaxNodes_EnterpriseUnlimited(t *testing.T) {
-	limits := EnterpriseLimits()
-	if limits.MaxNodes != 0 {
-		t.Errorf("Enterprise MaxNodes = %d, want 0 (unlimited)", limits.MaxNodes)
-	}
-}
-
-// ============================================================================
-// MaxUsers enforcement scenarios
-// ============================================================================
-
-func TestMaxUsers_CELimitedToThree(t *testing.T) {
-	limits := CELimits()
-	if limits.MaxUsers != 3 {
-		t.Errorf("CE MaxUsers = %d, want 3", limits.MaxUsers)
-	}
-}
-
-func TestMaxUsers_BusinessFromJWT(t *testing.T) {
-	limits := BusinessDefaultLimits()
-	// Business defaults show 0 because they come from JWT
-	if limits.MaxUsers != 0 {
-		t.Errorf("Business default MaxUsers = %d, want 0 (from JWT)", limits.MaxUsers)
-	}
-}
-
-func TestMaxUsers_EnterpriseUnlimited(t *testing.T) {
-	limits := EnterpriseLimits()
-	if limits.MaxUsers != 0 {
-		t.Errorf("Enterprise MaxUsers = %d, want 0 (unlimited)", limits.MaxUsers)
-	}
-}
-
-// ============================================================================
-// Limit enforcement integration: verify limit checks in context
-// ============================================================================
-
-func TestLimits_LimitProviderReturnsCorrectValues(t *testing.T) {
-	tests := []struct {
-		name      string
-		provider  LimitProvider
-		wantNodes int
-		wantUsers int
-	}{
-		{
-			name:      "CE provider",
-			provider:  &testLimitProvider{limits: CELimits()},
-			wantNodes: 1,
-			wantUsers: 3,
-		},
-		{
-			name: "Business provider with 10 nodes, 25 users",
-			provider: &testLimitProvider{limits: Limits{
-				MaxNodes: 10 + CEBaseNodes,
-				MaxUsers: 25,
-			}},
-			wantNodes: 11,
-			wantUsers: 25,
-		},
-		{
-			name:      "Enterprise provider (unlimited)",
-			provider:  &testLimitProvider{limits: EnterpriseLimits()},
-			wantNodes: 0,
-			wantUsers: 0,
-		},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			limits := tt.provider.GetLimits()
-			if limits.MaxNodes != tt.wantNodes {
-				t.Errorf("MaxNodes = %d, want %d", limits.MaxNodes, tt.wantNodes)
-			}
-			if limits.MaxUsers != tt.wantUsers {
-				t.Errorf("MaxUsers = %d, want %d", limits.MaxUsers, tt.wantUsers)
-			}
-		})
+func TestLimits_LimitProviderReturnsOpenValues(t *testing.T) {
+	provider := &testLimitProvider{limits: OpenLimits()}
+	got := provider.GetLimits()
+	if got != OpenLimits() {
+		t.Errorf("GetLimits() = %+v, want OpenLimits", got)
 	}
 }
 

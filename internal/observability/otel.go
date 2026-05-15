@@ -88,14 +88,14 @@ type Provider struct {
 	meter          metric.Meter
 	propagator     propagation.TextMapPropagator
 
-	// Pre-created metric instruments (initialised once, reused per request).
+	// Pre-created metric instruments (initialized once, reused per request).
 	requestDuration  metric.Float64Histogram
 	activeRequests   metric.Int64UpDownCounter
 	requestBodySize  metric.Int64Histogram
 	responseBodySize metric.Int64Histogram
 }
 
-// NewProvider initialises the OpenTelemetry SDK with an OTLP/HTTP trace
+// NewProvider initializes the OpenTelemetry SDK with an OTLP/HTTP trace
 // exporter and returns a ready-to-use Provider. If cfg.Enabled is false the
 // returned Provider is valid but all middleware functions are no-ops.
 //

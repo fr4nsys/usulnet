@@ -5,6 +5,7 @@
 package validator
 
 import (
+	"errors"
 	"reflect"
 	"regexp"
 	"strings"
@@ -60,7 +61,8 @@ func (v *Validator) ValidationErrors(err error) map[string]string {
 		return nil
 	}
 
-	errs, ok := err.(validator.ValidationErrors)
+	var errs validator.ValidationErrors
+	ok := errors.As(err, &errs)
 	if !ok {
 		return map[string]string{"_error": err.Error()}
 	}

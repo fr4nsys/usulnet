@@ -185,9 +185,10 @@ func findAllVariables(value string) []varMatch {
 		if match[1] != "" {
 			// ${VAR} or ${VAR:-default} or ${VAR:?error}
 			vm.Name = match[1]
-			if match[2] == ":-" {
+			switch match[2] {
+			case ":-":
 				vm.Default = match[3]
-			} else if match[2] == ":?" {
+			case ":?":
 				vm.Required = true
 				vm.ErrorMsg = match[3]
 			}

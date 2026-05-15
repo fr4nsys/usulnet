@@ -76,10 +76,10 @@ type APICommit struct {
 
 // APICommitDetail contains the commit message and author info
 type APICommitDetail struct {
-	Message   string           `json:"message"`
-	Author    APICommitAuthor  `json:"author"`
-	Committer APICommitAuthor  `json:"committer"`
-	Tree      APICommitTree    `json:"tree"`
+	Message   string          `json:"message"`
+	Author    APICommitAuthor `json:"author"`
+	Committer APICommitAuthor `json:"committer"`
+	Tree      APICommitTree   `json:"tree"`
 }
 
 // APICommitAuthor is the author/committer info
@@ -104,11 +104,11 @@ type APICommitStats struct {
 
 // APITag represents a GitHub tag
 type APITag struct {
-	Name       string     `json:"name"`
-	ZipballURL string     `json:"zipball_url"`
-	TarballURL string     `json:"tarball_url"`
-	Commit     APITagRef  `json:"commit"`
-	NodeID     string     `json:"node_id"`
+	Name       string    `json:"name"`
+	ZipballURL string    `json:"zipball_url"`
+	TarballURL string    `json:"tarball_url"`
+	Commit     APITagRef `json:"commit"`
+	NodeID     string    `json:"node_id"`
 }
 
 // APITagRef is the commit reference in a tag
@@ -132,64 +132,64 @@ type APIContent struct {
 
 // APIPullRequest represents a GitHub pull request
 type APIPullRequest struct {
-	ID                int64        `json:"id"`
-	Number            int          `json:"number"`
-	State             string       `json:"state"` // open, closed
-	Title             string       `json:"title"`
-	Body              string       `json:"body"`
-	User              APIUser      `json:"user"`
-	Head              APIPRBranch  `json:"head"`
-	Base              APIPRBranch  `json:"base"`
-	HTMLURL           string       `json:"html_url"`
-	DiffURL           string       `json:"diff_url"`
-	Mergeable         *bool        `json:"mergeable"`
-	MergeableState    string       `json:"mergeable_state"`
-	Merged            bool         `json:"merged"`
-	MergedBy          *APIUser     `json:"merged_by"`
-	MergedAt          *time.Time   `json:"merged_at"`
-	Comments          int          `json:"comments"`
-	ReviewComments    int          `json:"review_comments"`
-	Commits           int          `json:"commits"`
-	Additions         int          `json:"additions"`
-	Deletions         int          `json:"deletions"`
-	ChangedFiles      int          `json:"changed_files"`
-	Draft             bool         `json:"draft"`
-	Labels            []APILabel   `json:"labels"`
-	Milestone         *APIMilestone `json:"milestone"`
-	Assignees         []APIUser    `json:"assignees"`
-	RequestedReviewers []APIUser   `json:"requested_reviewers"`
-	CreatedAt         time.Time    `json:"created_at"`
-	UpdatedAt         time.Time    `json:"updated_at"`
-	ClosedAt          *time.Time   `json:"closed_at"`
+	ID                 int64         `json:"id"`
+	Number             int           `json:"number"`
+	State              string        `json:"state"` // open, closed
+	Title              string        `json:"title"`
+	Body               string        `json:"body"`
+	User               APIUser       `json:"user"`
+	Head               APIPRBranch   `json:"head"`
+	Base               APIPRBranch   `json:"base"`
+	HTMLURL            string        `json:"html_url"`
+	DiffURL            string        `json:"diff_url"`
+	Mergeable          *bool         `json:"mergeable"`
+	MergeableState     string        `json:"mergeable_state"`
+	Merged             bool          `json:"merged"`
+	MergedBy           *APIUser      `json:"merged_by"`
+	MergedAt           *time.Time    `json:"merged_at"`
+	Comments           int           `json:"comments"`
+	ReviewComments     int           `json:"review_comments"`
+	Commits            int           `json:"commits"`
+	Additions          int           `json:"additions"`
+	Deletions          int           `json:"deletions"`
+	ChangedFiles       int           `json:"changed_files"`
+	Draft              bool          `json:"draft"`
+	Labels             []APILabel    `json:"labels"`
+	Milestone          *APIMilestone `json:"milestone"`
+	Assignees          []APIUser     `json:"assignees"`
+	RequestedReviewers []APIUser     `json:"requested_reviewers"`
+	CreatedAt          time.Time     `json:"created_at"`
+	UpdatedAt          time.Time     `json:"updated_at"`
+	ClosedAt           *time.Time    `json:"closed_at"`
 }
 
 // APIPRBranch is branch info in a PR
 type APIPRBranch struct {
-	Label string        `json:"label"`
-	Ref   string        `json:"ref"`
-	SHA   string        `json:"sha"`
-	User  APIUser       `json:"user"`
+	Label string         `json:"label"`
+	Ref   string         `json:"ref"`
+	SHA   string         `json:"sha"`
+	User  APIUser        `json:"user"`
 	Repo  *APIRepository `json:"repo"`
 }
 
 // APIIssue represents a GitHub issue
 type APIIssue struct {
-	ID          int64         `json:"id"`
-	Number      int           `json:"number"`
-	State       string        `json:"state"` // open, closed
-	Title       string        `json:"title"`
-	Body        string        `json:"body"`
-	User        APIUser       `json:"user"`
-	Labels      []APILabel    `json:"labels"`
-	Assignees   []APIUser     `json:"assignees"`
-	Milestone   *APIMilestone `json:"milestone"`
-	Comments    int           `json:"comments"`
-	HTMLURL     string        `json:"html_url"`
-	Locked      bool          `json:"locked"`
-	ClosedBy    *APIUser      `json:"closed_by"`
-	CreatedAt   time.Time     `json:"created_at"`
-	UpdatedAt   time.Time     `json:"updated_at"`
-	ClosedAt    *time.Time    `json:"closed_at"`
+	ID        int64         `json:"id"`
+	Number    int           `json:"number"`
+	State     string        `json:"state"` // open, closed
+	Title     string        `json:"title"`
+	Body      string        `json:"body"`
+	User      APIUser       `json:"user"`
+	Labels    []APILabel    `json:"labels"`
+	Assignees []APIUser     `json:"assignees"`
+	Milestone *APIMilestone `json:"milestone"`
+	Comments  int           `json:"comments"`
+	HTMLURL   string        `json:"html_url"`
+	Locked    bool          `json:"locked"`
+	ClosedBy  *APIUser      `json:"closed_by"`
+	CreatedAt time.Time     `json:"created_at"`
+	UpdatedAt time.Time     `json:"updated_at"`
+	ClosedAt  *time.Time    `json:"closed_at"`
 	// GitHub includes PRs in issues endpoint, this field distinguishes them
 	PullRequest *APIPRLink `json:"pull_request,omitempty"`
 }
@@ -253,13 +253,13 @@ type APIReleaseAsset struct {
 
 // APIHook represents a webhook
 type APIHook struct {
-	ID        int64             `json:"id"`
-	Name      string            `json:"name"` // always "web"
-	Active    bool              `json:"active"`
-	Events    []string          `json:"events"`
-	Config    APIHookConfig     `json:"config"`
-	CreatedAt time.Time         `json:"created_at"`
-	UpdatedAt time.Time         `json:"updated_at"`
+	ID        int64         `json:"id"`
+	Name      string        `json:"name"` // always "web"
+	Active    bool          `json:"active"`
+	Events    []string      `json:"events"`
+	Config    APIHookConfig `json:"config"`
+	CreatedAt time.Time     `json:"created_at"`
+	UpdatedAt time.Time     `json:"updated_at"`
 }
 
 // APIHookConfig is the webhook configuration
@@ -282,11 +282,11 @@ type APIDeployKey struct {
 
 // APICollaborator represents a repository collaborator
 type APICollaborator struct {
-	ID          int64             `json:"id"`
-	Login       string            `json:"login"`
-	AvatarURL   string            `json:"avatar_url"`
-	Permissions APIPermissions    `json:"permissions"`
-	RoleName    string            `json:"role_name"`
+	ID          int64          `json:"id"`
+	Login       string         `json:"login"`
+	AvatarURL   string         `json:"avatar_url"`
+	Permissions APIPermissions `json:"permissions"`
+	RoleName    string         `json:"role_name"`
 }
 
 // APIPermissions represents permission levels
@@ -315,8 +315,8 @@ type APIRefObject struct {
 
 // APIError represents a GitHub API error response
 type APIError struct {
-	Message          string      `json:"message"`
-	DocumentationURL string      `json:"documentation_url"`
+	Message          string           `json:"message"`
+	DocumentationURL string           `json:"documentation_url"`
 	Errors           []APIErrorDetail `json:"errors,omitempty"`
 }
 
@@ -334,10 +334,10 @@ type APIErrorDetail struct {
 
 // CreateRepoOptions for creating a new repository
 type CreateRepoOptions struct {
-	Name          string `json:"name"`
-	Description   string `json:"description,omitempty"`
-	Private       bool   `json:"private"`
-	AutoInit      bool   `json:"auto_init"`
+	Name              string `json:"name"`
+	Description       string `json:"description,omitempty"`
+	Private           bool   `json:"private"`
+	AutoInit          bool   `json:"auto_init"`
 	GitignoreTemplate string `json:"gitignore_template,omitempty"`
 	LicenseTemplate   string `json:"license_template,omitempty"`
 }
@@ -382,10 +382,10 @@ type CreateIssueOptions struct {
 
 // CreateHookOptions for creating a webhook
 type CreateHookOptions struct {
-	Name   string          `json:"name"` // always "web"
-	Active bool            `json:"active"`
-	Events []string        `json:"events"`
-	Config APIHookConfig   `json:"config"`
+	Name   string        `json:"name"` // always "web"
+	Active bool          `json:"active"`
+	Events []string      `json:"events"`
+	Config APIHookConfig `json:"config"`
 }
 
 // CreateReleaseOptions for creating a release

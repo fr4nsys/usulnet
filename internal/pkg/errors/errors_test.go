@@ -48,7 +48,7 @@ func TestAppError_Unwrap(t *testing.T) {
 	inner := fmt.Errorf("original error")
 	ae := Wrap(inner, CodeInternal, "wrapped")
 
-	if ae.Unwrap() != inner {
+	if !errors.Is(ae.Unwrap(), inner) {
 		t.Error("Unwrap() did not return the wrapped error")
 	}
 }
@@ -101,7 +101,7 @@ func TestWrap(t *testing.T) {
 	inner := fmt.Errorf("timeout")
 	ae := Wrap(inner, CodeTimeout, "upstream failed")
 
-	if ae.Err != inner {
+	if !errors.Is(ae.Err, inner) {
 		t.Error("Wrap() did not preserve inner error")
 	}
 	if ae.HTTPStatus != http.StatusInternalServerError {
@@ -113,7 +113,7 @@ func TestWrapWithStatus(t *testing.T) {
 	inner := fmt.Errorf("timeout")
 	ae := WrapWithStatus(inner, CodeTimeout, "upstream failed", http.StatusGatewayTimeout)
 
-	if ae.Err != inner {
+	if !errors.Is(ae.Err, inner) {
 		t.Error("WrapWithStatus() did not preserve inner error")
 	}
 	if ae.HTTPStatus != http.StatusGatewayTimeout {
@@ -229,55 +229,6 @@ func TestInternal(t *testing.T) {
 }
 
 // ============================================================================
-// LimitExceeded - critical for license enforcement (HTTP 402)
-// ============================================================================
-
-func TestLimitExceeded_HTTP402(t *testing.T) {
-	ae := LimitExceeded("nodes", 3, 3)
-	if ae.HTTPStatus != http.StatusPaymentRequired {
-		t.Errorf("LimitExceeded HTTPStatus = %d, want %d (402 Payment Required)", ae.HTTPStatus, http.StatusPaymentRequired)
-	}
-}
-
-func TestLimitExceeded_Code(t *testing.T) {
-	ae := LimitExceeded("users", 5, 3)
-	if ae.Code != CodeLimitExceeded {
-		t.Errorf("LimitExceeded Code = %q, want %q", ae.Code, CodeLimitExceeded)
-	}
-}
-
-func TestLimitExceeded_DetailsContainResourceInfo(t *testing.T) {
-	ae := LimitExceeded("teams", 2, 1)
-
-	if ae.Details == nil {
-		t.Fatal("LimitExceeded Details should not be nil")
-	}
-	if ae.Details["resource"] != "teams" {
-		t.Errorf("Details[resource] = %v, want teams", ae.Details["resource"])
-	}
-	if ae.Details["current"] != 2 {
-		t.Errorf("Details[current] = %v, want 2", ae.Details["current"])
-	}
-	if ae.Details["limit"] != 1 {
-		t.Errorf("Details[limit] = %v, want 1", ae.Details["limit"])
-	}
-}
-
-func TestLimitExceeded_MessageContainsUpgrade(t *testing.T) {
-	ae := LimitExceeded("nodes", 1, 1)
-	if !strings.Contains(ae.Message, "Upgrade") {
-		t.Errorf("LimitExceeded message should mention upgrade, got: %s", ae.Message)
-	}
-}
-
-func TestLimitExceeded_MessageContainsCounts(t *testing.T) {
-	ae := LimitExceeded("api_keys", 4, 3)
-	if !strings.Contains(ae.Message, "4/3") {
-		t.Errorf("LimitExceeded message should contain current/limit counts, got: %s", ae.Message)
-	}
-}
-
-// ============================================================================
 // ValidationFailed
 // ============================================================================
 
@@ -350,8 +301,8 @@ func TestHTTPStatusCode_FromAppError(t *testing.T) {
 
 func TestHTTPStatusCode_FromSentinelErrors(t *testing.T) {
 	tests := []struct {
-		err    error
-		want   int
+		err  error
+		want int
 	}{
 		{ErrNotFound, http.StatusNotFound},
 		{ErrAlreadyExists, http.StatusConflict},
@@ -393,59 +344,59 @@ func TestHTTPStatusCode_WrappedSentinel(t *testing.T) {
 
 func TestNewNotFoundError(t *testing.T) {
 	e := NewNotFoundError("user")
-	if e.AppError.Code != CodeNotFound {
-		t.Errorf("Code = %q, want %q", e.AppError.Code, CodeNotFound)
+	if e.Code != CodeNotFound {
+		t.Errorf("Code = %q, want %q", e.Code, CodeNotFound)
 	}
-	if e.AppError.HTTPStatus != http.StatusNotFound {
-		t.Errorf("HTTPStatus = %d, want %d", e.AppError.HTTPStatus, http.StatusNotFound)
+	if e.HTTPStatus != http.StatusNotFound {
+		t.Errorf("HTTPStatus = %d, want %d", e.HTTPStatus, http.StatusNotFound)
 	}
 }
 
 func TestNewAlreadyExistsError(t *testing.T) {
 	e := NewAlreadyExistsError("email")
-	if e.AppError.Code != CodeConflict {
-		t.Errorf("Code = %q, want %q", e.AppError.Code, CodeConflict)
+	if e.Code != CodeConflict {
+		t.Errorf("Code = %q, want %q", e.Code, CodeConflict)
 	}
-	if e.AppError.HTTPStatus != http.StatusConflict {
-		t.Errorf("HTTPStatus = %d, want %d", e.AppError.HTTPStatus, http.StatusConflict)
+	if e.HTTPStatus != http.StatusConflict {
+		t.Errorf("HTTPStatus = %d, want %d", e.HTTPStatus, http.StatusConflict)
 	}
 }
 
 func TestNewValidationError(t *testing.T) {
 	e := NewValidationError("field invalid")
-	if e.AppError.Code != CodeValidationFailed {
-		t.Errorf("Code = %q, want %q", e.AppError.Code, CodeValidationFailed)
+	if e.Code != CodeValidationFailed {
+		t.Errorf("Code = %q, want %q", e.Code, CodeValidationFailed)
 	}
-	if e.AppError.HTTPStatus != http.StatusBadRequest {
-		t.Errorf("HTTPStatus = %d, want %d", e.AppError.HTTPStatus, http.StatusBadRequest)
+	if e.HTTPStatus != http.StatusBadRequest {
+		t.Errorf("HTTPStatus = %d, want %d", e.HTTPStatus, http.StatusBadRequest)
 	}
 }
 
 func TestNewUnauthorizedError(t *testing.T) {
 	e := NewUnauthorizedError("no token")
-	if e.AppError.HTTPStatus != http.StatusUnauthorized {
-		t.Errorf("HTTPStatus = %d, want %d", e.AppError.HTTPStatus, http.StatusUnauthorized)
+	if e.HTTPStatus != http.StatusUnauthorized {
+		t.Errorf("HTTPStatus = %d, want %d", e.HTTPStatus, http.StatusUnauthorized)
 	}
 }
 
 func TestNewForbiddenError(t *testing.T) {
 	e := NewForbiddenError("no access")
-	if e.AppError.HTTPStatus != http.StatusForbidden {
-		t.Errorf("HTTPStatus = %d, want %d", e.AppError.HTTPStatus, http.StatusForbidden)
+	if e.HTTPStatus != http.StatusForbidden {
+		t.Errorf("HTTPStatus = %d, want %d", e.HTTPStatus, http.StatusForbidden)
 	}
 }
 
 func TestNewConflictError(t *testing.T) {
 	e := NewConflictError("duplicate")
-	if e.AppError.Code != CodeConflict {
-		t.Errorf("Code = %q, want %q", e.AppError.Code, CodeConflict)
+	if e.Code != CodeConflict {
+		t.Errorf("Code = %q, want %q", e.Code, CodeConflict)
 	}
 }
 
 func TestNewInternalError(t *testing.T) {
 	e := NewInternalError("crash")
-	if e.AppError.HTTPStatus != http.StatusInternalServerError {
-		t.Errorf("HTTPStatus = %d, want %d", e.AppError.HTTPStatus, http.StatusInternalServerError)
+	if e.HTTPStatus != http.StatusInternalServerError {
+		t.Errorf("HTTPStatus = %d, want %d", e.HTTPStatus, http.StatusInternalServerError)
 	}
 }
 

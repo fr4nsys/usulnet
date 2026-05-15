@@ -52,13 +52,12 @@ func DefaultConfig() Config {
 
 // Service manages Docker hosts.
 type Service struct {
-	repo          *postgres.HostRepository
-	clientPool    *docker.ClientPool
-	cmdSender     docker.CommandSender // for agent proxy clients via NATS gateway
-	encryptor     *crypto.AESEncryptor
-	config        Config
-	logger        *logger.Logger
-	limitProvider license.LimitProvider
+	repo       *postgres.HostRepository
+	clientPool *docker.ClientPool
+	cmdSender  docker.CommandSender // for agent proxy clients via NATS gateway
+	encryptor  *crypto.AESEncryptor
+	config     Config
+	logger     *logger.Logger
 
 	proxyClients map[string]*docker.AgentProxyClient
 	mu           sync.RWMutex
@@ -66,13 +65,10 @@ type Service struct {
 	running      bool
 }
 
-// SetLimitProvider sets the license limit provider for resource cap enforcement.
-// Thread-safe: may be called while background goroutines are reading limitProvider.
-func (s *Service) SetLimitProvider(lp license.LimitProvider) {
-	s.mu.Lock()
-	s.limitProvider = lp
-	s.mu.Unlock()
-}
+// SetLimitProvider is a no-op kept for callers that still wire the
+// legacy hook; the AGPL build does not cap host count via a license
+// token.
+func (s *Service) SetLimitProvider(_ license.LimitProvider) {}
 
 // NewService creates a new host service.
 func NewService(
@@ -294,18 +290,8 @@ func (s *Service) metricsCleanupWorker(ctx context.Context) {
 // ============================================================================
 
 // Create creates a new host and establishes connection.
+// There is no license-driven node cap in the AGPL build.
 func (s *Service) Create(ctx context.Context, input *models.CreateHostInput) (*models.Host, error) {
-	// Enforce license node limit
-	if s.limitProvider != nil {
-		limit := s.limitProvider.GetLimits().MaxNodes
-		if limit > 0 {
-			stats, err := s.GetStats(ctx)
-			if err == nil && stats.Total >= limit {
-				return nil, apperrors.LimitExceeded("nodes", stats.Total, limit)
-			}
-		}
-	}
-
 	// Validate unique name
 	exists, err := s.repo.ExistsByName(ctx, input.Name)
 	if err != nil {
@@ -650,18 +636,18 @@ func (s *Service) ListSummaries(ctx context.Context) ([]*models.HostSummary, err
 		// Enrich with Docker info
 		if info, err := client.Info(ctx); err == nil {
 			now := time.Now()
-			summary.Host.DockerVersion = &info.ServerVersion
-			summary.Host.OSType = &info.OSType
-			summary.Host.Architecture = &info.Architecture
-			summary.Host.TotalMemory = &info.MemTotal
-			summary.Host.TotalCPUs = &info.NCPU
-			summary.Host.LastSeenAt = &now
+			summary.DockerVersion = &info.ServerVersion
+			summary.OSType = &info.OSType
+			summary.Architecture = &info.Architecture
+			summary.TotalMemory = &info.MemTotal
+			summary.TotalCPUs = &info.NCPU
+			summary.LastSeenAt = &now
 			summary.ContainerCount = info.Containers
 			summary.RunningCount = info.ContainersRunning
 			if info.Name != "" {
-				summary.Host.Name = info.Name
+				summary.Name = info.Name
 				displayName := info.Name
-				summary.Host.DisplayName = &displayName
+				summary.DisplayName = &displayName
 			}
 		}
 
@@ -855,10 +841,11 @@ func (s *Service) Reconnect(ctx context.Context, id uuid.UUID) error {
 
 // TestConnection tests connectivity to a host without saving.
 func (s *Service) TestConnection(ctx context.Context, input *models.CreateHostInput) (*models.HostDockerInfo, error) {
-	// Build temporary host for connection
+	// Build temporary host for connection. We only need the routing
+	// fields below; ID/Name are stamped when the host is actually
+	// persisted via Create — leaving them as zero values here keeps the
+	// test path obviously distinct from a "real" host record.
 	host := &models.Host{
-		ID:           uuid.New(),
-		Name:         "test-" + uuid.New().String()[:8],
 		EndpointType: input.EndpointType,
 		EndpointURL:  input.EndpointURL,
 		TLSEnabled:   input.TLSEnabled,
@@ -1099,18 +1086,7 @@ func (s *Service) RegisterAgent(ctx context.Context, reg *models.AgentRegistrati
 		return existingHost, nil
 	}
 
-	// Enforce license node limit (same check as Create)
-	if s.limitProvider != nil {
-		limit := s.limitProvider.GetLimits().MaxNodes
-		if limit > 0 {
-			stats, err := s.GetStats(ctx)
-			if err == nil && stats.Total >= limit {
-				return nil, apperrors.LimitExceeded("nodes", stats.Total, limit)
-			}
-		}
-	}
-
-	// New agent registration
+	// New agent registration (no license-driven node cap in the AGPL build)
 	tokenHash := crypto.HashToken(token)
 	host := &models.Host{
 		ID:             uuid.New(),

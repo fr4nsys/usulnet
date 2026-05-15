@@ -111,7 +111,7 @@ func (r *JobRepository) Get(ctx context.Context, id uuid.UUID) (*models.Job, err
 	)
 
 	if err != nil {
-		if err == pgx.ErrNoRows {
+		if errors.Is(err, pgx.ErrNoRows) {
 			return nil, errors.New(errors.CodeNotFound, "job not found")
 		}
 		return nil, errors.Wrap(err, errors.CodeInternal, "failed to get job")
@@ -447,7 +447,7 @@ func (r *JobRepository) GetScheduledJob(ctx context.Context, id uuid.UUID) (*mod
 	)
 
 	if err != nil {
-		if err == pgx.ErrNoRows {
+		if errors.Is(err, pgx.ErrNoRows) {
 			return nil, errors.New(errors.CodeNotFound, "scheduled job not found")
 		}
 		return nil, errors.Wrap(err, errors.CodeInternal, "failed to get scheduled job")

@@ -41,9 +41,9 @@ func TestNewService(t *testing.T) {
 		t.Errorf("expected Retention=%v, got %v", cfg.Retention, svc.config.Retention)
 	}
 
-	// Verify that the buffer was initialised.
+	// Verify that the buffer was initialized.
 	if svc.buffer == nil {
-		t.Fatal("expected buffer to be initialised, got nil")
+		t.Fatal("expected buffer to be initialized, got nil")
 	}
 }
 
@@ -87,22 +87,13 @@ func TestDefaultConfig(t *testing.T) {
 }
 
 func TestSearch_Delegates(t *testing.T) {
-	// Search requires a non-nil repo to delegate to, so calling it with a nil
-	// repo will panic. This test verifies the contract: the method exists and
-	// is callable. We test it by simply ensuring NewService accepts the
-	// parameters and that the Search method signature compiles correctly.
-	// A full integration test with a live repo belongs elsewhere.
-
+	// Search requires a non-nil repo to delegate to. This test only
+	// asserts that NewService accepts the documented constructor
+	// signature (so a future refactor cannot silently change it). A
+	// full delegation test with a live repo belongs in the integration
+	// suite.
 	svc := NewService(nil, nil, DefaultConfig(), logger.Nop())
 	if svc == nil {
 		t.Fatal("NewService returned nil")
-	}
-
-	// We cannot call svc.Search with a nil repo without a panic, so instead
-	// we verify the method is wired up by checking we can take its address.
-	// This confirms the method exists on the Service type.
-	searchFn := svc.Search
-	if searchFn == nil {
-		t.Fatal("Search method should not be nil")
 	}
 }

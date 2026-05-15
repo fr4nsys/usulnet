@@ -875,10 +875,7 @@ func (s *Service) GetHostPortMap(ctx context.Context, hostID uuid.UUID) (*models
 	}
 
 	for _, c := range containers {
-		containerName := c.Name
-		if strings.HasPrefix(containerName, "/") {
-			containerName = containerName[1:]
-		}
+		containerName := strings.TrimPrefix(c.Name, "/")
 
 		for _, port := range c.Ports {
 			if port.PublicPort == 0 {
@@ -938,9 +935,11 @@ func (s *Service) SuggestAlternativePorts(ctx context.Context, hostID uuid.UUID,
 
 	// Strategy 1: Try ports around the requested port
 	for offset := uint16(1); offset <= 100 && len(alternatives) < 5; offset++ {
-		// Try above
+		// Try above. uint16 cannot exceed 65535 by construction, so the
+		// upper-bound check the linter flagged would be tautological;
+		// what we actually guard against is an overflow wrap-around.
 		candidate := requestedPort + offset
-		if candidate <= 65535 && !isReservedPort(candidate) {
+		if candidate > requestedPort && !isReservedPort(candidate) {
 			if _, used := usedPorts[candidate]; !used {
 				alternatives = append(alternatives, candidate)
 			}
@@ -995,10 +994,7 @@ func (s *Service) findAvailableRange(usedPorts map[uint16]string, near uint16) s
 	end := near
 
 	// Expand upward
-	for {
-		if end >= 65535 {
-			break
-		}
+	for end < 65535 {
 		if _, used := usedPorts[end+1]; used {
 			break
 		}
@@ -1009,10 +1005,7 @@ func (s *Service) findAvailableRange(usedPorts map[uint16]string, near uint16) s
 	}
 
 	// Expand downward
-	for {
-		if start <= 1024 {
-			break
-		}
+	for start > 1024 {
 		if _, used := usedPorts[start-1]; used {
 			break
 		}
@@ -1342,10 +1335,7 @@ func (s *Service) dockerToModel(n *docker.Network, hostID uuid.UUID) *models.Net
 	if len(n.Containers) > 0 {
 		net.Containers = make(map[string]models.NetworkContainerInfo)
 		for id, c := range n.Containers {
-			name := c.Name
-			if strings.HasPrefix(name, "/") {
-				name = name[1:]
-			}
+			name := strings.TrimPrefix(c.Name, "/")
 			net.Containers[id] = models.NetworkContainerInfo{
 				Name:        name,
 				EndpointID:  c.EndpointID,

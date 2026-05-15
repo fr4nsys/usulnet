@@ -98,11 +98,11 @@ func parseSourceURL(sourceURL string) *SourceInfo {
 
 // ChangelogFetcher fetches changelogs from various sources
 type ChangelogFetcher struct {
-	httpClient   *http.Client
-	githubToken  string
-	gitlabToken  string
-	cacheRepo    ChangelogCacheRepository
-	logger       *logger.Logger
+	httpClient  *http.Client
+	githubToken string
+	gitlabToken string
+	cacheRepo   ChangelogCacheRepository
+	logger      *logger.Logger
 }
 
 // ChangelogFetcherConfig holds configuration for the changelog fetcher

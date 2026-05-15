@@ -86,58 +86,58 @@ func (h *SecurityHandler) Routes() chi.Router {
 
 // SecurityScanResponse represents a security scan in API responses.
 type SecurityScanResponse struct {
-	ID            string                   `json:"id"`
-	HostID        string                   `json:"host_id"`
-	ContainerID   string                   `json:"container_id"`
-	ContainerName string                   `json:"container_name"`
-	Image         string                   `json:"image"`
-	Score         int                      `json:"score"`
-	Grade         string                   `json:"grade"`
-	IssueCount    int                      `json:"issue_count"`
-	CriticalCount int                      `json:"critical_count"`
-	HighCount     int                      `json:"high_count"`
-	MediumCount   int                      `json:"medium_count"`
-	LowCount      int                      `json:"low_count"`
-	CVECount      int                      `json:"cve_count"`
-	IncludeCVE    bool                     `json:"include_cve"`
-	ScanDuration  string                   `json:"scan_duration"`
-	CompletedAt   string                   `json:"completed_at"`
-	CreatedAt     string                   `json:"created_at"`
-	Issues        []SecurityIssueResponse  `json:"issues,omitempty"`
+	ID            string                  `json:"id"`
+	HostID        string                  `json:"host_id"`
+	ContainerID   string                  `json:"container_id"`
+	ContainerName string                  `json:"container_name"`
+	Image         string                  `json:"image"`
+	Score         int                     `json:"score"`
+	Grade         string                  `json:"grade"`
+	IssueCount    int                     `json:"issue_count"`
+	CriticalCount int                     `json:"critical_count"`
+	HighCount     int                     `json:"high_count"`
+	MediumCount   int                     `json:"medium_count"`
+	LowCount      int                     `json:"low_count"`
+	CVECount      int                     `json:"cve_count"`
+	IncludeCVE    bool                    `json:"include_cve"`
+	ScanDuration  string                  `json:"scan_duration"`
+	CompletedAt   string                  `json:"completed_at"`
+	CreatedAt     string                  `json:"created_at"`
+	Issues        []SecurityIssueResponse `json:"issues,omitempty"`
 }
 
 // SecurityIssueResponse represents a security issue in API responses.
 type SecurityIssueResponse struct {
-	ID             int64   `json:"id"`
-	ScanID         string  `json:"scan_id"`
-	ContainerID    string  `json:"container_id"`
-	HostID         string  `json:"host_id"`
-	Severity       string  `json:"severity"`
-	Category       string  `json:"category"`
-	CheckID        string  `json:"check_id"`
-	Title          string  `json:"title"`
-	Description    string  `json:"description"`
-	Recommendation string  `json:"recommendation"`
-	FixCommand     *string `json:"fix_command,omitempty"`
-	DocumentationURL *string `json:"documentation_url,omitempty"`
-	CVEID          *string `json:"cve_id,omitempty"`
-	CVSSScore      *float64 `json:"cvss_score,omitempty"`
-	Status         string  `json:"status"`
-	AcknowledgedBy *string `json:"acknowledged_by,omitempty"`
-	AcknowledgedAt *string `json:"acknowledged_at,omitempty"`
-	ResolvedBy     *string `json:"resolved_by,omitempty"`
-	ResolvedAt     *string `json:"resolved_at,omitempty"`
-	DetectedAt     string  `json:"detected_at"`
+	ID               int64    `json:"id"`
+	ScanID           string   `json:"scan_id"`
+	ContainerID      string   `json:"container_id"`
+	HostID           string   `json:"host_id"`
+	Severity         string   `json:"severity"`
+	Category         string   `json:"category"`
+	CheckID          string   `json:"check_id"`
+	Title            string   `json:"title"`
+	Description      string   `json:"description"`
+	Recommendation   string   `json:"recommendation"`
+	FixCommand       *string  `json:"fix_command,omitempty"`
+	DocumentationURL *string  `json:"documentation_url,omitempty"`
+	CVEID            *string  `json:"cve_id,omitempty"`
+	CVSSScore        *float64 `json:"cvss_score,omitempty"`
+	Status           string   `json:"status"`
+	AcknowledgedBy   *string  `json:"acknowledged_by,omitempty"`
+	AcknowledgedAt   *string  `json:"acknowledged_at,omitempty"`
+	ResolvedBy       *string  `json:"resolved_by,omitempty"`
+	ResolvedAt       *string  `json:"resolved_at,omitempty"`
+	DetectedAt       string   `json:"detected_at"`
 }
 
 // SecuritySummaryResponse represents a security summary.
 type SecuritySummaryResponse struct {
-	GeneratedAt       string              `json:"generated_at"`
-	TotalContainers   int                 `json:"total_containers"`
-	TotalIssues       int                 `json:"total_issues"`
-	AverageScore      float64             `json:"average_score"`
-	GradeDistribution map[string]int      `json:"grade_distribution"`
-	SeverityCounts    map[string]int      `json:"severity_counts"`
+	GeneratedAt       string         `json:"generated_at"`
+	TotalContainers   int            `json:"total_containers"`
+	TotalIssues       int            `json:"total_issues"`
+	AverageScore      float64        `json:"average_score"`
+	GradeDistribution map[string]int `json:"grade_distribution"`
+	SeverityCounts    map[string]int `json:"severity_counts"`
 }
 
 // UpdateIssueStatusRequest represents a request to update issue status.
@@ -501,22 +501,22 @@ func toSecurityScanResponse(scan *models.SecurityScan) SecurityScanResponse {
 
 func toSecurityIssueResponse(issue *models.SecurityIssue) SecurityIssueResponse {
 	resp := SecurityIssueResponse{
-		ID:             issue.ID,
-		ScanID:         issue.ScanID.String(),
-		ContainerID:    issue.ContainerID,
-		HostID:         issue.HostID.String(),
-		Severity:       string(issue.Severity),
-		Category:       string(issue.Category),
-		CheckID:        issue.CheckID,
-		Title:          issue.Title,
-		Description:    issue.Description,
-		Recommendation: issue.Recommendation,
-		FixCommand:     issue.FixCommand,
+		ID:               issue.ID,
+		ScanID:           issue.ScanID.String(),
+		ContainerID:      issue.ContainerID,
+		HostID:           issue.HostID.String(),
+		Severity:         string(issue.Severity),
+		Category:         string(issue.Category),
+		CheckID:          issue.CheckID,
+		Title:            issue.Title,
+		Description:      issue.Description,
+		Recommendation:   issue.Recommendation,
+		FixCommand:       issue.FixCommand,
 		DocumentationURL: issue.DocumentationURL,
-		CVEID:          issue.CVEID,
-		CVSSScore:      issue.CVSSScore,
-		Status:         string(issue.Status),
-		DetectedAt:     issue.DetectedAt.Format(time.RFC3339),
+		CVEID:            issue.CVEID,
+		CVSSScore:        issue.CVSSScore,
+		Status:           string(issue.Status),
+		DetectedAt:       issue.DetectedAt.Format(time.RFC3339),
 	}
 
 	if issue.AcknowledgedBy != nil {

@@ -12,7 +12,6 @@ import (
 	"github.com/go-chi/chi/v5"
 
 	"github.com/fr4nsys/usulnet/internal/api/middleware"
-	"github.com/fr4nsys/usulnet/internal/license"
 	"github.com/fr4nsys/usulnet/internal/pkg/logger"
 	"github.com/fr4nsys/usulnet/internal/services/notification"
 	"github.com/fr4nsys/usulnet/internal/services/notification/channels"
@@ -22,7 +21,6 @@ import (
 type NotificationHandler struct {
 	BaseHandler
 	notificationService *notification.Service
-	licenseProvider     middleware.LicenseProvider
 }
 
 // NewNotificationHandler creates a new notification handler.
@@ -33,10 +31,10 @@ func NewNotificationHandler(notificationService *notification.Service, log *logg
 	}
 }
 
-// SetLicenseProvider sets the license provider for feature gating.
-func (h *NotificationHandler) SetLicenseProvider(provider middleware.LicenseProvider) {
-	h.licenseProvider = provider
-}
+// SetLicenseProvider is a no-op kept for callers that still wire the
+// legacy hook; notification channels are unconditional in the AGPL
+// build.
+func (h *NotificationHandler) SetLicenseProvider(_ middleware.LicenseProvider) {}
 
 // Routes returns the router for notification endpoints.
 func (h *NotificationHandler) Routes() chi.Router {
@@ -60,21 +58,7 @@ func (h *NotificationHandler) Routes() chi.Router {
 	r.Group(func(r chi.Router) {
 		r.Use(middleware.RequireAdmin)
 		r.Delete("/channels/{channelName}", h.RemoveChannel)
-
-		// Channel registration enforces MaxNotificationChannels limit
-		r.Group(func(r chi.Router) {
-			if h.licenseProvider != nil {
-				r.Use(middleware.RequireLimit(
-					h.licenseProvider,
-					"notification channels",
-					func(r *http.Request) int {
-						return len(h.notificationService.ListChannels())
-					},
-					func(l license.Limits) int { return l.MaxNotificationChannels },
-				))
-			}
-			r.Post("/channels", h.RegisterChannel)
-		})
+		r.Post("/channels", h.RegisterChannel)
 	})
 
 	return r
@@ -116,17 +100,17 @@ type NotificationStatsResponse struct {
 
 // NotificationLogResponse represents a notification log entry.
 type NotificationLogResponse struct {
-	ID           string                  `json:"id"`
-	Type         string                  `json:"type"`
-	Priority     string                  `json:"priority"`
-	Title        string                  `json:"title"`
-	Body         string                  `json:"body"`
-	Channels     []string                `json:"channels"`
+	ID           string                   `json:"id"`
+	Type         string                   `json:"type"`
+	Priority     string                   `json:"priority"`
+	Title        string                   `json:"title"`
+	Body         string                   `json:"body"`
+	Channels     []string                 `json:"channels"`
 	Results      []DeliveryResultResponse `json:"results"`
-	Throttled    bool                    `json:"throttled"`
-	SuccessCount int                     `json:"success_count"`
-	FailedCount  int                     `json:"failed_count"`
-	CreatedAt    string                  `json:"created_at"`
+	Throttled    bool                     `json:"throttled"`
+	SuccessCount int                      `json:"success_count"`
+	FailedCount  int                      `json:"failed_count"`
+	CreatedAt    string                   `json:"created_at"`
 }
 
 // DeliveryResultResponse represents a delivery result.
@@ -139,8 +123,8 @@ type DeliveryResultResponse struct {
 
 // ThrottleStatsResponse represents throttle statistics.
 type ThrottleStatsResponse struct {
-	GlobalCount int                           `json:"global_count"`
-	GlobalLimit int                           `json:"global_limit"`
+	GlobalCount int                             `json:"global_count"`
+	GlobalLimit int                             `json:"global_limit"`
 	TypeCounts  map[string]TypeThrottleResponse `json:"type_counts"`
 }
 

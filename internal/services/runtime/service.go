@@ -4,7 +4,7 @@
 
 // Package runtime provides a runtime threat detection service for Docker
 // containers. It monitors running processes inside containers, evaluates
-// them against configurable security rules, learns behavioural baselines,
+// them against configurable security rules, learns behavioral baselines,
 // and generates security events when anomalies or policy violations are
 // detected.
 package runtime
@@ -72,7 +72,7 @@ type Config struct {
 	MonitorInterval time.Duration
 
 	// BaselineLearningPeriod is how long the service collects process
-	// samples before finalising a baseline.
+	// samples before finalizing a baseline.
 	BaselineLearningPeriod time.Duration
 
 	// BaselineMinSamples is the minimum number of process observations
@@ -124,7 +124,7 @@ type RuleDefinition struct {
 	FilePatterns []string `json:"file_patterns,omitempty"`
 }
 
-// baselineData is serialised into RuntimeBaseline.BaselineData.
+// baselineData is serialized into RuntimeBaseline.BaselineData.
 type baselineData struct {
 	Processes map[string]int `json:"processes"` // process name -> seen count
 }
@@ -134,7 +134,7 @@ type baselineData struct {
 // ============================================================================
 
 // Service is the runtime threat detection service. It monitors container
-// processes, evaluates security rules, and manages behavioural baselines.
+// processes, evaluates security rules, and manages behavioral baselines.
 type Service struct {
 	repo        Repository
 	hostService *host.Service
@@ -432,13 +432,13 @@ func (s *Service) checkAnomaly(ctx context.Context, containerID, containerName, 
 		return s.updateBaselineLearning(ctx, baseline, &data, proc)
 	}
 
-	// Finalise baseline if not yet marked complete.
+	// Finalize baseline if not yet marked complete.
 	if baseline.LearningCompletedAt == nil {
 		now := time.Now()
 		baseline.LearningCompletedAt = &now
 		baseline.Confidence = calculateConfidence(data, baseline.SampleCount, s.config.BaselineMinSamples)
 		if updateErr := s.repo.UpdateBaseline(ctx, baseline); updateErr != nil {
-			s.logger.Warn("Failed to finalise baseline", "error", updateErr)
+			s.logger.Warn("Failed to finalize baseline", "error", updateErr)
 		}
 	}
 
@@ -515,7 +515,7 @@ func (s *Service) startBaseline(ctx context.Context, containerID, containerName,
 
 // updateBaselineLearning records a process sample during the learning window.
 func (s *Service) updateBaselineLearning(ctx context.Context, baseline *models.RuntimeBaseline, data *baselineData, proc *ProcessInfo) (*models.RuntimeSecurityEvent, error) {
-	data.Processes[proc.Name] = data.Processes[proc.Name] + 1
+	data.Processes[proc.Name]++
 	baseline.SampleCount++
 
 	dataJSON, err := json.Marshal(data)
@@ -741,7 +741,7 @@ func defaultRules() []*models.RuntimeSecurityRule {
 		},
 		{
 			Name:        "detect-unexpected-network",
-			Description: "Detect unexpected outbound network connections via common download or tunnelling tools",
+			Description: "Detect unexpected outbound network connections via common download or tunneling tools",
 			Category:    "network",
 			RuleType:    "network",
 			Severity:    "medium",

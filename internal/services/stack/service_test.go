@@ -24,14 +24,14 @@ import (
 // ---------------------------------------------------------------------------
 
 type testStackRepo struct {
-	stacks     map[uuid.UUID]*models.Stack
-	byName     map[string]*models.Stack
-	createErr  error
-	updateErr  error
-	deleteErr  error
-	deleted    []uuid.UUID
-	statuses   map[uuid.UUID]models.StackStatus
-	counts     map[uuid.UUID][2]int // [serviceCount, runningCount]
+	stacks    map[uuid.UUID]*models.Stack
+	byName    map[string]*models.Stack
+	createErr error
+	updateErr error
+	deleteErr error
+	deleted   []uuid.UUID
+	statuses  map[uuid.UUID]models.StackStatus
+	counts    map[uuid.UUID][2]int // [serviceCount, runningCount]
 }
 
 func newTestStackRepo() *testStackRepo {

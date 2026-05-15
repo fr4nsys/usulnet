@@ -7,7 +7,10 @@ package postgres
 import (
 	"context"
 	"encoding/json"
+	stderrors "errors"
 	"time"
+
+	"github.com/jackc/pgx/v5"
 
 	"github.com/fr4nsys/usulnet/internal/models"
 	"github.com/fr4nsys/usulnet/internal/pkg/errors"
@@ -75,7 +78,10 @@ func (r *NPMConnectionRepository) GetByHostID(ctx context.Context, hostID string
 		&conn.CreatedAt, &conn.UpdatedAt, &conn.CreatedBy, &conn.UpdatedBy,
 	)
 	if err != nil {
-		return nil, errors.Wrap(err, errors.CodeNPMNotConfigured, "NPM not configured for this host")
+		if stderrors.Is(err, pgx.ErrNoRows) {
+			return nil, errors.New(errors.CodeNPMNotConfigured, "NPM not configured for this host")
+		}
+		return nil, errors.Wrap(err, errors.CodeDatabaseError, "failed to load NPM connection")
 	}
 	return conn, nil
 }
@@ -189,7 +195,11 @@ func (r *ContainerProxyMappingRepository) GetByContainerID(ctx context.Context, 
 		&m.AutoCreated, &m.DomainSource, &m.CreatedAt, &m.UpdatedAt,
 	)
 	if err != nil {
-		return nil, nil // Not found is normal
+		if stderrors.Is(err, pgx.ErrNoRows) {
+			// Not found is normal — no mapping configured for this container.
+			return nil, nil
+		}
+		return nil, errors.Wrap(err, errors.CodeDatabaseError, "failed to get container proxy mapping")
 	}
 	return m, nil
 }

@@ -29,12 +29,12 @@ type ConnectionUpdate = models.NPMConnectionUpdate
 
 // Service provides NPM integration functionality.
 type Service struct {
-	npmConnRepo    *postgres.NPMConnectionRepository
-	mappingRepo    *postgres.ContainerProxyMappingRepository
-	auditRepo      *postgres.NPMAuditLogRepository
-	encryptor      *crypto.AESEncryptor
-	logger         *zap.Logger
-	clients        map[string]*Client // hostID -> NPM client
+	npmConnRepo *postgres.NPMConnectionRepository
+	mappingRepo *postgres.ContainerProxyMappingRepository
+	auditRepo   *postgres.NPMAuditLogRepository
+	encryptor   *crypto.AESEncryptor
+	logger      *zap.Logger
+	clients     map[string]*Client // hostID -> NPM client
 }
 
 // NewService creates a new NPM integration service.
@@ -267,7 +267,7 @@ func (s *Service) createClient(conn *models.NPMConnection) (*Client, error) {
 // ExtractProxyConfig extracts auto-proxy configuration from container labels.
 func (s *Service) ExtractProxyConfig(containerInfo *container.InspectResponse) *models.AutoProxyConfig {
 	labels := containerInfo.Config.Labels
-	
+
 	domain, ok := labels[models.LabelProxyDomain]
 	if !ok || domain == "" {
 		return nil // No auto-proxy configured
@@ -346,14 +346,14 @@ func (s *Service) CreateAutoProxy(ctx context.Context, hostID string, config *mo
 	forwardHost := config.ContainerName // Using container name as hostname (requires same Docker network)
 
 	proxyHost := &ProxyHost{
-		DomainNames:          []string{config.Domain},
-		ForwardScheme:        config.Scheme,
-		ForwardHost:          forwardHost,
-		ForwardPort:          config.Port,
-		SSLForced:            config.SSLForced,
-		BlockExploits:        config.BlockExploits,
+		DomainNames:           []string{config.Domain},
+		ForwardScheme:         config.Scheme,
+		ForwardHost:           forwardHost,
+		ForwardPort:           config.Port,
+		SSLForced:             config.SSLForced,
+		BlockExploits:         config.BlockExploits,
 		AllowWebsocketUpgrade: config.Websocket,
-		Enabled:              true,
+		Enabled:               true,
 		Meta: map[string]interface{}{
 			"usulnet_auto_proxy": true,
 			"container_id":       config.ContainerID,
@@ -389,9 +389,9 @@ func (s *Service) CreateAutoProxy(ctx context.Context, hostID string, config *mo
 
 	// Audit log
 	s.logAudit(ctx, hostID, userID, models.NPMOperationCreate, models.NPMResourceProxyHost, created.ID, config.Domain, map[string]interface{}{
-		"auto_proxy":      true,
-		"container_id":    config.ContainerID,
-		"container_name":  config.ContainerName,
+		"auto_proxy":     true,
+		"container_id":   config.ContainerID,
+		"container_name": config.ContainerName,
 	})
 
 	s.logger.Info("auto-proxy created",
@@ -420,14 +420,14 @@ func (s *Service) UpdateAutoProxy(ctx context.Context, hostID string, config *mo
 	forwardHost := config.ContainerName
 
 	proxyHost := &ProxyHost{
-		DomainNames:          []string{config.Domain},
-		ForwardScheme:        config.Scheme,
-		ForwardHost:          forwardHost,
-		ForwardPort:          config.Port,
-		SSLForced:            config.SSLForced,
-		BlockExploits:        config.BlockExploits,
+		DomainNames:           []string{config.Domain},
+		ForwardScheme:         config.Scheme,
+		ForwardHost:           forwardHost,
+		ForwardPort:           config.Port,
+		SSLForced:             config.SSLForced,
+		BlockExploits:         config.BlockExploits,
 		AllowWebsocketUpgrade: config.Websocket,
-		Enabled:              true,
+		Enabled:               true,
 		Meta: map[string]interface{}{
 			"usulnet_auto_proxy": true,
 			"container_id":       config.ContainerID,

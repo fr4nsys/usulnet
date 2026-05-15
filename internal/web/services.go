@@ -19,23 +19,34 @@ import (
 	"github.com/fr4nsys/usulnet/internal/scheduler"
 	authsvc "github.com/fr4nsys/usulnet/internal/services/auth"
 	backupsvc "github.com/fr4nsys/usulnet/internal/services/backup"
+	backupverifysvc "github.com/fr4nsys/usulnet/internal/services/backupverify"
+	calendarsvc "github.com/fr4nsys/usulnet/internal/services/calendar"
 	configsvc "github.com/fr4nsys/usulnet/internal/services/config"
 	containersvc "github.com/fr4nsys/usulnet/internal/services/container"
+	crontabsvc "github.com/fr4nsys/usulnet/internal/services/crontab"
+	dnssvc "github.com/fr4nsys/usulnet/internal/services/dns"
+	dockerconfigsvc "github.com/fr4nsys/usulnet/internal/services/dockerconfig"
+	firewallsvc "github.com/fr4nsys/usulnet/internal/services/firewall"
 	gitsvc "github.com/fr4nsys/usulnet/internal/services/git"
 	hostsvc "github.com/fr4nsys/usulnet/internal/services/host"
 	imagesvc "github.com/fr4nsys/usulnet/internal/services/image"
+	imagebuildersvc "github.com/fr4nsys/usulnet/internal/services/imagebuilder"
+	marketplacesvc "github.com/fr4nsys/usulnet/internal/services/marketplace"
 	metadatasvc "github.com/fr4nsys/usulnet/internal/services/metadata"
 	"github.com/fr4nsys/usulnet/internal/services/monitoring"
 	networksvc "github.com/fr4nsys/usulnet/internal/services/network"
 	proxysvc "github.com/fr4nsys/usulnet/internal/services/proxy"
 	reconsvc "github.com/fr4nsys/usulnet/internal/services/recon"
+	rollbacksvc "github.com/fr4nsys/usulnet/internal/services/rollback"
 	securitysvc "github.com/fr4nsys/usulnet/internal/services/security"
 	sshsvc "github.com/fr4nsys/usulnet/internal/services/ssh"
+	sslobssvc "github.com/fr4nsys/usulnet/internal/services/sslobservatory"
 	stacksvc "github.com/fr4nsys/usulnet/internal/services/stack"
 	storagesvc "github.com/fr4nsys/usulnet/internal/services/storage"
 	teamsvc "github.com/fr4nsys/usulnet/internal/services/team"
 	updatesvc "github.com/fr4nsys/usulnet/internal/services/update"
 	volumesvc "github.com/fr4nsys/usulnet/internal/services/volume"
+	wireguardsvc "github.com/fr4nsys/usulnet/internal/services/wireguard"
 )
 
 // ErrServiceNotConfigured is returned when an operation is attempted on a service that is not configured.
@@ -44,34 +55,46 @@ var ErrServiceNotConfigured = errors.New("service not configured")
 // ServiceRegistry holds all backend services and provides adapted interfaces for the web layer.
 type ServiceRegistry struct {
 	// Backend services
-	containerSvc *containersvc.Service
-	imageSvc     *imagesvc.Service
-	volumeSvc    *volumesvc.Service
-	networkSvc   *networksvc.Service
-	stackSvc     *stacksvc.Service
-	backupSvc    *backupsvc.Service
-	configSvc    *configsvc.Service
-	securitySvc  *securitysvc.Service
-	updateSvc    *updatesvc.Service
-	hostSvc      *hostsvc.Service
-	authSvc      *authsvc.Service
-	npmSvc       *npm.Service
-	proxySvc     *proxysvc.Service
-	storageSvc   *storagesvc.Service
-	teamSvc      *teamsvc.Service
-	giteaSvc     *giteapkg.Service
-	gitSvc       *gitsvc.Service
-	sshSvc       *sshsvc.Service
-	metricsSvc   MetricsServiceFull
-	alertSvc     *monitoring.AlertService
-	schedulerSvc *scheduler.Scheduler
+	containerSvc    *containersvc.Service
+	imageSvc        *imagesvc.Service
+	volumeSvc       *volumesvc.Service
+	networkSvc      *networksvc.Service
+	stackSvc        *stacksvc.Service
+	backupSvc       *backupsvc.Service
+	configSvc       *configsvc.Service
+	securitySvc     *securitysvc.Service
+	updateSvc       *updatesvc.Service
+	hostSvc         *hostsvc.Service
+	authSvc         *authsvc.Service
+	npmSvc          *npm.Service
+	proxySvc        *proxysvc.Service
+	storageSvc      *storagesvc.Service
+	teamSvc         *teamsvc.Service
+	giteaSvc        *giteapkg.Service
+	gitSvc          *gitsvc.Service
+	sshSvc          *sshsvc.Service
+	metricsSvc      MetricsServiceFull
+	alertSvc        *monitoring.AlertService
+	schedulerSvc    *scheduler.Scheduler
+	firewallSvc     *firewallsvc.Service
+	crontabSvc      *crontabsvc.Service
+	backupVerifySvc *backupverifysvc.Service
+	rollbackSvc     *rollbacksvc.Service
+	sslObsSvc       *sslobssvc.Service
+	dockerEngineSvc *dockerconfigsvc.Service
+	wireguardSvc    *wireguardsvc.Service
+	wgProbe         wireguardsvc.ProbeResult
+	imageBuilderSvc *imagebuildersvc.Service
+	dnsSvc          *dnssvc.Service
+	calendarSvc     *calendarsvc.Service
+	marketplaceSvc  *marketplacesvc.Service
 
 	// Recon / privacy module (v26.5.0). All three are optional and nil
 	// when the recon feature flag is off — see docs/v26.5/technical-notes.md.
-	reconSvc      reconsvc.Service
-	metadataSvc   metadatasvc.Service
-	reconAck      AckRecorder
-	reconEnabled  bool
+	reconSvc     reconsvc.Service
+	metadataSvc  metadatasvc.Service
+	reconAck     AckRecorder
+	reconEnabled bool
 
 	// User repository for user management
 	userRepo *postgres.UserRepository
@@ -95,33 +118,45 @@ type ServiceRegistry struct {
 // ServiceRegistryDeps holds all dependencies for ServiceRegistry constructor injection.
 // Optional fields (nil-safe) can be left nil if the corresponding feature is disabled.
 type ServiceRegistryDeps struct {
-	DefaultHostID    uuid.UUID
-	ContainerService *containersvc.Service
-	ImageService     *imagesvc.Service
-	VolumeService    *volumesvc.Service
-	NetworkService   *networksvc.Service
-	StackService     *stacksvc.Service
-	BackupService    *backupsvc.Service
-	ConfigService    *configsvc.Service
-	SecurityService  *securitysvc.Service
-	UpdateService    *updatesvc.Service
-	HostService      *hostsvc.Service
-	AuthService      *authsvc.Service
-	NPMService       *npm.Service        // Optional: requires npm.enabled
-	ProxyService     *proxysvc.Service    // Optional: requires nginx.enabled or caddy.enabled
-	StorageService   *storagesvc.Service  // Optional: requires minio.enabled
-	TeamService      *teamsvc.Service
-	GiteaService     *giteapkg.Service    // Optional: requires Gitea integration
-	GitService       *gitsvc.Service      // Optional: requires Git integration
-	SSHService       *sshsvc.Service      // Optional: requires SSH service
-	MetricsService   MetricsServiceFull
-	AlertService     *monitoring.AlertService
-	SchedulerService *scheduler.Scheduler // Optional: set after scheduler init
-	UserRepository   *postgres.UserRepository
-	AuditLogRepo     *postgres.AuditLogRepository // Optional: for recent events feed
-	Encryptor        *crypto.AESEncryptor          // Optional: requires encryption key
-	SessionStore     *WebSessionStore     // Optional: requires Redis
-	DockerClient     docker.ClientAPI     // Optional: set after Docker init
+	DefaultHostID         uuid.UUID
+	ContainerService      *containersvc.Service
+	ImageService          *imagesvc.Service
+	VolumeService         *volumesvc.Service
+	NetworkService        *networksvc.Service
+	StackService          *stacksvc.Service
+	BackupService         *backupsvc.Service
+	ConfigService         *configsvc.Service
+	SecurityService       *securitysvc.Service
+	UpdateService         *updatesvc.Service
+	HostService           *hostsvc.Service
+	AuthService           *authsvc.Service
+	NPMService            *npm.Service        // Optional: requires npm.enabled
+	ProxyService          *proxysvc.Service   // Optional: requires nginx.enabled or caddy.enabled
+	StorageService        *storagesvc.Service // Optional: requires minio.enabled
+	TeamService           *teamsvc.Service
+	GiteaService          *giteapkg.Service // Optional: requires Gitea integration
+	GitService            *gitsvc.Service   // Optional: requires Git integration
+	SSHService            *sshsvc.Service   // Optional: requires SSH service
+	MetricsService        MetricsServiceFull
+	AlertService          *monitoring.AlertService
+	SchedulerService      *scheduler.Scheduler     // Optional: set after scheduler init
+	FirewallService       *firewallsvc.Service     // Optional: firewall rule management (v26.5.1)
+	CrontabService        *crontabsvc.Service      // Optional: managed cron jobs (v26.5.1)
+	BackupVerifyService   *backupverifysvc.Service // Optional: backup verification (v26.5.1)
+	RollbackService       *rollbacksvc.Service     // Optional: automated rollback (v26.5.1)
+	SSLObservatoryService *sslobssvc.Service       // Optional: SSL observatory (v26.5.1)
+	DockerEngineService   *dockerconfigsvc.Service // Optional: docker engine config (v26.5.1)
+	WireGuardService      *wireguardsvc.Service    // Optional: WireGuard mesh (v26.5.1)
+	WireGuardProbe        wireguardsvc.ProbeResult // Optional: local wg/wg-quick availability
+	ImageBuilderService   *imagebuildersvc.Service // Optional: image builder (v26.5.1)
+	DNSService            *dnssvc.Service          // Optional: DNS provider plugins (v26.5.1)
+	CalendarService       *calendarsvc.Service     // Optional: operations calendar (v26.5.1)
+	MarketplaceService    *marketplacesvc.Service  // Optional: curated app marketplace (v26.5.1)
+	UserRepository        *postgres.UserRepository
+	AuditLogRepo          *postgres.AuditLogRepository // Optional: for recent events feed
+	Encryptor             *crypto.AESEncryptor         // Optional: requires encryption key
+	SessionStore          *WebSessionStore             // Optional: requires Redis
+	DockerClient          docker.ClientAPI             // Optional: set after Docker init
 
 	// Recon module (v26.5.0). Pass the service implementations and the
 	// in-memory or Postgres-backed acknowledgement recorder. Leave nil
@@ -135,37 +170,49 @@ type ServiceRegistryDeps struct {
 // NewServiceRegistry creates a new service registry with all dependencies injected.
 func NewServiceRegistry(deps ServiceRegistryDeps) *ServiceRegistry {
 	return &ServiceRegistry{
-		defaultHostID: deps.DefaultHostID,
-		containerSvc:  deps.ContainerService,
-		imageSvc:      deps.ImageService,
-		volumeSvc:     deps.VolumeService,
-		networkSvc:    deps.NetworkService,
-		stackSvc:      deps.StackService,
-		backupSvc:     deps.BackupService,
-		configSvc:     deps.ConfigService,
-		securitySvc:   deps.SecurityService,
-		updateSvc:     deps.UpdateService,
-		hostSvc:       deps.HostService,
-		authSvc:       deps.AuthService,
-		npmSvc:        deps.NPMService,
-		proxySvc:      deps.ProxyService,
-		storageSvc:    deps.StorageService,
-		teamSvc:       deps.TeamService,
-		giteaSvc:      deps.GiteaService,
-		gitSvc:        deps.GitService,
-		sshSvc:        deps.SSHService,
-		metricsSvc:    deps.MetricsService,
-		alertSvc:      deps.AlertService,
-		schedulerSvc:  deps.SchedulerService,
-		userRepo:      deps.UserRepository,
-		auditLogRepo:  deps.AuditLogRepo,
-		encryptor:     deps.Encryptor,
-		sessionStore:  deps.SessionStore,
-		dockerClient:  deps.DockerClient,
-		reconSvc:      deps.ReconService,
-		metadataSvc:   deps.MetadataService,
-		reconAck:      deps.ReconAck,
-		reconEnabled:  deps.ReconEnabled,
+		defaultHostID:   deps.DefaultHostID,
+		containerSvc:    deps.ContainerService,
+		imageSvc:        deps.ImageService,
+		volumeSvc:       deps.VolumeService,
+		networkSvc:      deps.NetworkService,
+		stackSvc:        deps.StackService,
+		backupSvc:       deps.BackupService,
+		configSvc:       deps.ConfigService,
+		securitySvc:     deps.SecurityService,
+		updateSvc:       deps.UpdateService,
+		hostSvc:         deps.HostService,
+		authSvc:         deps.AuthService,
+		npmSvc:          deps.NPMService,
+		proxySvc:        deps.ProxyService,
+		storageSvc:      deps.StorageService,
+		teamSvc:         deps.TeamService,
+		giteaSvc:        deps.GiteaService,
+		gitSvc:          deps.GitService,
+		sshSvc:          deps.SSHService,
+		metricsSvc:      deps.MetricsService,
+		alertSvc:        deps.AlertService,
+		schedulerSvc:    deps.SchedulerService,
+		firewallSvc:     deps.FirewallService,
+		crontabSvc:      deps.CrontabService,
+		backupVerifySvc: deps.BackupVerifyService,
+		rollbackSvc:     deps.RollbackService,
+		sslObsSvc:       deps.SSLObservatoryService,
+		dockerEngineSvc: deps.DockerEngineService,
+		wireguardSvc:    deps.WireGuardService,
+		wgProbe:         deps.WireGuardProbe,
+		imageBuilderSvc: deps.ImageBuilderService,
+		dnsSvc:          deps.DNSService,
+		calendarSvc:     deps.CalendarService,
+		marketplaceSvc:  deps.MarketplaceService,
+		userRepo:        deps.UserRepository,
+		auditLogRepo:    deps.AuditLogRepo,
+		encryptor:       deps.Encryptor,
+		sessionStore:    deps.SessionStore,
+		dockerClient:    deps.DockerClient,
+		reconSvc:        deps.ReconService,
+		metadataSvc:     deps.MetadataService,
+		reconAck:        deps.ReconAck,
+		reconEnabled:    deps.ReconEnabled,
 	}
 }
 
@@ -307,6 +354,73 @@ func (r *ServiceRegistry) Alerts() AlertsService {
 // Scheduler returns the scheduler service, or nil if not configured.
 func (r *ServiceRegistry) Scheduler() *scheduler.Scheduler {
 	return r.schedulerSvc
+}
+
+// Firewall returns the firewall service, or nil if not configured.
+// Web handlers must check for nil before use; the standalone-mode app
+// wires this in every install (no edition gate), but installs that
+// disable migration 050_firewall would observe a nil here.
+func (r *ServiceRegistry) Firewall() *firewallsvc.Service {
+	return r.firewallSvc
+}
+
+// Crontab returns the crontab service, or nil if not configured.
+// Web handlers must check for nil before use; the standalone-mode app
+// wires this in every install (no edition gate).
+func (r *ServiceRegistry) Crontab() *crontabsvc.Service {
+	return r.crontabSvc
+}
+
+// BackupVerify returns the backup verification service, or nil if not
+// configured. Web handlers must check for nil before use; the
+// standalone-mode app wires this in every install (no edition gate).
+func (r *ServiceRegistry) BackupVerify() *backupverifysvc.Service {
+	return r.backupVerifySvc
+}
+
+// Rollback returns the automated rollback service, or nil if not
+// configured. v26.5.1 wires this in every install — no biz gate.
+func (r *ServiceRegistry) Rollback() *rollbacksvc.Service {
+	return r.rollbackSvc
+}
+
+// SSLObservatory returns the SSL observatory service, or nil if not
+// configured. v26.5.1 wires this in every install — no biz gate.
+func (r *ServiceRegistry) SSLObservatory() *sslobssvc.Service {
+	return r.sslObsSvc
+}
+
+// DockerEngine returns the docker engine config service, or nil if
+// not configured. The web handler renders an "unavailable" page when
+// nil — typically because the operator did not mount /etc/docker into
+// the container.
+func (r *ServiceRegistry) DockerEngine() *dockerconfigsvc.Service {
+	return r.dockerEngineSvc
+}
+
+// WireGuard returns the wireguard service, or nil if not configured
+// (typically because the data encryption key is unset). v26.5.1 wires
+// this in every install — no biz gate.
+func (r *ServiceRegistry) WireGuard() *wireguardsvc.Service {
+	return r.wireguardSvc
+}
+
+// ImageBuilder returns the image builder service, or nil if not
+// configured. v26.5.1 wires this in every install — no biz gate.
+func (r *ServiceRegistry) ImageBuilder() *imagebuildersvc.Service {
+	return r.imageBuilderSvc
+}
+
+// Calendar returns the operations calendar service, or nil if not
+// configured. v26.5.1 wires this in every install — no biz gate.
+func (r *ServiceRegistry) Calendar() *calendarsvc.Service {
+	return r.calendarSvc
+}
+
+// Marketplace returns the curated app marketplace service, or nil if
+// not configured. v26.5.1 wires this in every install — no biz gate.
+func (r *ServiceRegistry) Marketplace() *marketplacesvc.Service {
+	return r.marketplaceSvc
 }
 
 // Recon returns the recon module adapter. It always returns a non-nil

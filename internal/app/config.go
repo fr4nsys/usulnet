@@ -5,6 +5,7 @@
 package app
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 	"strings"
@@ -35,6 +36,35 @@ type Config struct {
 	Terminal      TerminalConfig      `mapstructure:"terminal"`
 	Guacd         GuacdConfig         `mapstructure:"guacd"`
 	Recon         ReconConfig         `mapstructure:"recon"`
+	ImageBuilder  ImageBuilderConfig  `mapstructure:"image_builder"`
+	ImageSign     ImageSignConfig     `mapstructure:"image_sign"`
+}
+
+// ImageBuilderConfig holds runtime knobs for the image builder module.
+// All fields default to sensible values via DefaultConfig() — operators
+// only override when they need a larger context cap or a different log
+// channel prefix.
+type ImageBuilderConfig struct {
+	// MaxContextBytes caps a single build-context upload. Defaults to
+	// 256 MiB when zero or unset. Sized at the application layer so
+	// the cap is enforced before the payload reaches Docker.
+	MaxContextBytes int64 `mapstructure:"max_context_bytes"`
+
+	// LogTailBytes is the trailing window of build log bytes that is
+	// persisted to the row after a build completes. Defaults to 64 KiB.
+	LogTailBytes int `mapstructure:"log_tail_bytes"`
+
+	// LogChannelPrefix is the Redis pub/sub channel prefix used by
+	// the build streamer. Defaults to "imagebuilder:logs".
+	LogChannelPrefix string `mapstructure:"log_channel_prefix"`
+}
+
+// ImageSignConfig toggles the optional cosign hook on successful
+// builds. When Enabled is false the image builder skips the signing
+// step. The actual cosign binary path / Sigstore endpoints live on the
+// imagesign service config — this flag only controls the hook wiring.
+type ImageSignConfig struct {
+	Enabled bool `mapstructure:"enabled"`
 }
 
 // ReconConfig holds runtime knobs for the recon / privacy module.
@@ -54,7 +84,7 @@ type ReconConfig struct {
 	// run in parallel. Default: 2.
 	MaxConcurrentScans int `mapstructure:"max_concurrent_scans"`
 
-	// InstallationOrg is the organisation name the RDAP-match ownership
+	// InstallationOrg is the organization name the RDAP-match ownership
 	// strategy compares against. Blank means "RDAP-based verification
 	// fails closed"; operators must set this explicitly to use the
 	// rdap_match method.
@@ -152,6 +182,13 @@ type ServerTLSConfig struct {
 	AutoTLS bool `mapstructure:"auto_tls"`
 	// DataDir is where auto-generated CA and certs are stored (default: <storage.path>/pki)
 	DataDir string `mapstructure:"data_dir"`
+	// LocalServices opts in to TLS for the in-cluster Postgres / Redis / NATS
+	// links. Defaults to false (plain TCP on the private docker network).
+	// When true, the compose entrypoints generate self-signed ECDSA P-256
+	// certs and the application rewrites the connection URLs to
+	// postgres ssl=require (skip-verify), rediss://, and nats with TLS.
+	// Operators can mount their own CA to flip skip-verify off.
+	LocalServices bool `mapstructure:"local_services"`
 }
 
 // DatabaseConfig holds PostgreSQL configuration
@@ -394,13 +431,18 @@ func LoadConfig(cfgFile string) (*Config, error) {
 	_ = v.BindEnv("guacd.port", "USULNET_GUACD_PORT", "GUACD_PORT")
 	// Docker socket path (for rootless Docker or custom socket locations)
 	_ = v.BindEnv("docker.socket", "USULNET_DOCKER_SOCKET", "DOCKER_SOCKET")
+	// Opt-in TLS for the in-cluster Postgres / Redis / NATS links.
+	// Off by default; flipping to true makes the compose entrypoints
+	// generate self-signed certs and rewires the application URL scheme.
+	_ = v.BindEnv("server.tls.local_services", "USULNET_TLS_LOCAL_SERVICES")
 
 	// Set defaults
 	setDefaults(v)
 
 	// Read config file
 	if err := v.ReadInConfig(); err != nil {
-		if _, ok := err.(viper.ConfigFileNotFoundError); !ok {
+		var configFileNotFoundError viper.ConfigFileNotFoundError
+		if !errors.As(err, &configFileNotFoundError) {
 			return nil, fmt.Errorf("error reading config file: %w", err)
 		}
 		// Config file not found, proceed with env vars and defaults
@@ -433,6 +475,7 @@ func setDefaults(v *viper.Viper) {
 	v.SetDefault("server.https_port", 7443)
 	v.SetDefault("server.tls.enabled", false)
 	v.SetDefault("server.tls.auto_tls", true)
+	v.SetDefault("server.tls.local_services", false)
 	v.SetDefault("server.redirect_https", true)
 
 	// Database (tuned to reduce connection churn under moderate load)
@@ -543,6 +586,18 @@ func setDefaults(v *viper.Viper) {
 	v.SetDefault("recon.egress.allowlist", []string{})
 	v.SetDefault("recon.connectors.hibp.enabled", false)
 	v.SetDefault("recon.connectors.shodan.enabled", false)
+
+	// Image Builder (v26.5.1 — port from v26.2.7). Defaults match
+	// imagebuilder.DefaultConfig: 256 MiB context cap, 64 KiB log tail
+	// persisted to the row. Live logs stream through Redis pub/sub on
+	// the imagebuilder:logs channel prefix.
+	v.SetDefault("image_builder.max_context_bytes", int64(256*1024*1024))
+	v.SetDefault("image_builder.log_tail_bytes", 64*1024)
+	v.SetDefault("image_builder.log_channel_prefix", "imagebuilder:logs")
+
+	// Optional image signing hook on successful builds. Off by default;
+	// turn on with `image_sign.enabled=true` (and have cosign on PATH).
+	v.SetDefault("image_sign.enabled", false)
 }
 
 // Validate validates the configuration.
@@ -802,6 +857,24 @@ func (c *Config) PrintMasked() {
 	if c.Caddy.Enabled {
 		fmt.Printf("Caddy Admin URL: %s\n", c.Caddy.AdminURL)
 	}
+}
+
+// EffectiveDatabaseURL returns Database.URL with sslmode appended from
+// Database.SSLMode when the URL does not already carry an sslmode= query
+// parameter. The original URL is returned untouched when SSLMode is
+// empty or the URL already specifies one. Used by the application Run
+// path and the standalone migrate / admin commands so both observe the
+// same effective DSN.
+func (c *Config) EffectiveDatabaseURL() string {
+	u := c.Database.URL
+	if c.Database.SSLMode == "" || strings.Contains(u, "sslmode=") {
+		return u
+	}
+	sep := "?"
+	if strings.Contains(u, "?") {
+		sep = "&"
+	}
+	return u + sep + "sslmode=" + c.Database.SSLMode
 }
 
 // parseSameSite converts a config string ("strict", "lax", "none") to http.SameSite.

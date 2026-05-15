@@ -732,6 +732,7 @@ func hasLegacyPermission(role, permission string) bool {
 		"container:stop": true, "container:restart": true, "container:remove": true,
 		"container:exec": true, "container:logs": true,
 		"image:view": true, "image:pull": true, "image:remove": true,
+		"image:create": true, "image:build": true,
 		"volume:view": true, "volume:create": true, "volume:remove": true,
 		"network:view": true, "network:create": true, "network:remove": true,
 		"stack:view": true, "stack:deploy": true, "stack:update": true, "stack:remove": true,
@@ -739,18 +740,26 @@ func hasLegacyPermission(role, permission string) bool {
 		"backup:view": true, "backup:create": true,
 		"security:view": true, "security:scan": true,
 		"config:view": true, "config:create": true, "config:update": true, "config:remove": true,
+		"crontab:view": true, "crontab:execute": true,
+		"dns:view": true, "dns:write": true,
+		"calendar:view": true, "calendar:write": true,
+		"marketplace:view": true, "marketplace:write": true,
 	}
 
 	viewerPerms := map[string]bool{
 		"container:view": true, "container:logs": true,
-		"image:view":    true,
-		"volume:view":   true,
-		"network:view":  true,
-		"stack:view":    true,
-		"host:view":     true,
-		"backup:view":   true,
-		"security:view": true,
-		"config:view":   true,
+		"image:view":       true,
+		"volume:view":      true,
+		"network:view":     true,
+		"stack:view":       true,
+		"host:view":        true,
+		"backup:view":      true,
+		"security:view":    true,
+		"config:view":      true,
+		"crontab:view":     true,
+		"dns:view":         true,
+		"calendar:view":    true,
+		"marketplace:view": true,
 	}
 
 	switch role {

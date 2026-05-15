@@ -7,7 +7,6 @@ package web
 import (
 	"fmt"
 	"net/http"
-	"strings"
 
 	depstmpl "github.com/fr4nsys/usulnet/internal/web/templates/pages/dependencies"
 )
@@ -232,9 +231,4 @@ func truncateStr(s string, maxLen int) string {
 		return s[:maxLen-3] + "..."
 	}
 	return s
-}
-
-// cleanContainerName removes leading "/" from container names.
-func cleanContainerName(name string) string {
-	return strings.TrimPrefix(name, "/")
 }

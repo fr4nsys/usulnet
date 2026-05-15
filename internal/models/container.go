@@ -25,31 +25,31 @@ const (
 
 // Container represents a Docker container (cached state)
 type Container struct {
-	ID              string           `json:"id" db:"id"`
-	HostID          uuid.UUID        `json:"host_id" db:"host_id"`
-	Name            string           `json:"name" db:"name"`
-	Image           string           `json:"image" db:"image"`
-	ImageID         *string          `json:"image_id,omitempty" db:"image_id"`
-	Status          string           `json:"status" db:"status"` // Human readable status
-	State           ContainerState   `json:"state" db:"state"`
-	CreatedAtDocker *time.Time       `json:"created_at_docker,omitempty" db:"created_at_docker"`
-	StartedAt       *time.Time       `json:"started_at,omitempty" db:"started_at"`
-	FinishedAt      *time.Time       `json:"finished_at,omitempty" db:"finished_at"`
-	Ports           []PortMapping    `json:"ports,omitempty" db:"ports"`
-	Labels          map[string]string `json:"labels,omitempty" db:"labels"`
-	EnvVars         []string         `json:"env_vars,omitempty" db:"env_vars"` // Variable names only, not values
-	Mounts          []MountPoint     `json:"mounts,omitempty" db:"mounts"`
+	ID              string              `json:"id" db:"id"`
+	HostID          uuid.UUID           `json:"host_id" db:"host_id"`
+	Name            string              `json:"name" db:"name"`
+	Image           string              `json:"image" db:"image"`
+	ImageID         *string             `json:"image_id,omitempty" db:"image_id"`
+	Status          string              `json:"status" db:"status"` // Human readable status
+	State           ContainerState      `json:"state" db:"state"`
+	CreatedAtDocker *time.Time          `json:"created_at_docker,omitempty" db:"created_at_docker"`
+	StartedAt       *time.Time          `json:"started_at,omitempty" db:"started_at"`
+	FinishedAt      *time.Time          `json:"finished_at,omitempty" db:"finished_at"`
+	Ports           []PortMapping       `json:"ports,omitempty" db:"ports"`
+	Labels          map[string]string   `json:"labels,omitempty" db:"labels"`
+	EnvVars         []string            `json:"env_vars,omitempty" db:"env_vars"` // Variable names only, not values
+	Mounts          []MountPoint        `json:"mounts,omitempty" db:"mounts"`
 	Networks        []NetworkAttachment `json:"networks,omitempty" db:"networks"`
-	RestartPolicy   *string          `json:"restart_policy,omitempty" db:"restart_policy"`
-	CurrentVersion  *string          `json:"current_version,omitempty" db:"current_version"`
-	LatestVersion   *string          `json:"latest_version,omitempty" db:"latest_version"`
-	UpdateAvailable bool             `json:"update_available" db:"update_available"`
-	SecurityScore   int              `json:"security_score" db:"security_score"`
-	SecurityGrade   string           `json:"security_grade" db:"security_grade"`
-	LastScannedAt   *time.Time       `json:"last_scanned_at,omitempty" db:"last_scanned_at"`
-	SyncedAt        time.Time        `json:"synced_at" db:"synced_at"`
-	CreatedAt       time.Time        `json:"created_at" db:"created_at"`
-	UpdatedAt       time.Time        `json:"updated_at" db:"updated_at"`
+	RestartPolicy   *string             `json:"restart_policy,omitempty" db:"restart_policy"`
+	CurrentVersion  *string             `json:"current_version,omitempty" db:"current_version"`
+	LatestVersion   *string             `json:"latest_version,omitempty" db:"latest_version"`
+	UpdateAvailable bool                `json:"update_available" db:"update_available"`
+	SecurityScore   int                 `json:"security_score" db:"security_score"`
+	SecurityGrade   string              `json:"security_grade" db:"security_grade"`
+	LastScannedAt   *time.Time          `json:"last_scanned_at,omitempty" db:"last_scanned_at"`
+	SyncedAt        time.Time           `json:"synced_at" db:"synced_at"`
+	CreatedAt       time.Time           `json:"created_at" db:"created_at"`
+	UpdatedAt       time.Time           `json:"updated_at" db:"updated_at"`
 }
 
 // IsRunning returns true if container is running
@@ -136,9 +136,9 @@ const (
 // ContainerActionInput represents input for container action
 type ContainerActionInput struct {
 	Action  ContainerAction `json:"action" validate:"required,oneof=start stop restart pause unpause kill remove"`
-	Signal  *string         `json:"signal,omitempty"` // For kill action
+	Signal  *string         `json:"signal,omitempty"`  // For kill action
 	Timeout *int            `json:"timeout,omitempty"` // For stop action
-	Force   bool            `json:"force,omitempty"` // For remove action
+	Force   bool            `json:"force,omitempty"`   // For remove action
 }
 
 // CreateContainerInput represents input for creating a container
@@ -185,10 +185,10 @@ type VolumeBinding struct {
 // ContainerInspect represents detailed container information
 type ContainerInspect struct {
 	Container
-	Config       ContainerConfig       `json:"config"`
-	HostConfig   ContainerHostConfig   `json:"host_config"`
-	NetworkSettings NetworkSettings    `json:"network_settings"`
-	GraphDriver  GraphDriverData       `json:"graph_driver"`
+	Config          ContainerConfig     `json:"config"`
+	HostConfig      ContainerHostConfig `json:"host_config"`
+	NetworkSettings NetworkSettings     `json:"network_settings"`
+	GraphDriver     GraphDriverData     `json:"graph_driver"`
 }
 
 // ContainerConfig represents container configuration
@@ -222,24 +222,24 @@ type HealthConfig struct {
 
 // ContainerHostConfig represents container host configuration
 type ContainerHostConfig struct {
-	Binds           []string               `json:"binds"`
-	NetworkMode     string                 `json:"network_mode"`
-	PortBindings    map[string][]PortBinding `json:"port_bindings"`
-	RestartPolicy   RestartPolicyConfig    `json:"restart_policy"`
-	AutoRemove      bool                   `json:"auto_remove"`
-	Privileged      bool                   `json:"privileged"`
-	ReadonlyRootfs  bool                   `json:"readonly_rootfs"`
-	CapAdd          []string               `json:"cap_add"`
-	CapDrop         []string               `json:"cap_drop"`
-	Memory          int64                  `json:"memory"`
-	MemorySwap      int64                  `json:"memory_swap"`
-	CPUShares       int64                  `json:"cpu_shares"`
-	CPUQuota        int64                  `json:"cpu_quota"`
-	CPUPeriod       int64                  `json:"cpu_period"`
-	PidMode         string                 `json:"pid_mode"`
-	IpcMode         string                 `json:"ipc_mode"`
-	UTSMode         string                 `json:"uts_mode"`
-	SecurityOpt     []string               `json:"security_opt"`
+	Binds          []string                 `json:"binds"`
+	NetworkMode    string                   `json:"network_mode"`
+	PortBindings   map[string][]PortBinding `json:"port_bindings"`
+	RestartPolicy  RestartPolicyConfig      `json:"restart_policy"`
+	AutoRemove     bool                     `json:"auto_remove"`
+	Privileged     bool                     `json:"privileged"`
+	ReadonlyRootfs bool                     `json:"readonly_rootfs"`
+	CapAdd         []string                 `json:"cap_add"`
+	CapDrop        []string                 `json:"cap_drop"`
+	Memory         int64                    `json:"memory"`
+	MemorySwap     int64                    `json:"memory_swap"`
+	CPUShares      int64                    `json:"cpu_shares"`
+	CPUQuota       int64                    `json:"cpu_quota"`
+	CPUPeriod      int64                    `json:"cpu_period"`
+	PidMode        string                   `json:"pid_mode"`
+	IpcMode        string                   `json:"ipc_mode"`
+	UTSMode        string                   `json:"uts_mode"`
+	SecurityOpt    []string                 `json:"security_opt"`
 }
 
 // RestartPolicyConfig represents restart policy
@@ -250,14 +250,14 @@ type RestartPolicyConfig struct {
 
 // NetworkSettings represents container network settings
 type NetworkSettings struct {
-	Bridge                 string                        `json:"bridge"`
-	SandboxID              string                        `json:"sandbox_id"`
-	HairpinMode            bool                          `json:"hairpin_mode"`
-	LinkLocalIPv6Address   string                        `json:"link_local_ipv6_address"`
-	LinkLocalIPv6PrefixLen int                           `json:"link_local_ipv6_prefix_len"`
-	Ports                  map[string][]PortBinding      `json:"ports"`
-	SandboxKey             string                        `json:"sandbox_key"`
-	Networks               map[string]EndpointSettings   `json:"networks"`
+	Bridge                 string                      `json:"bridge"`
+	SandboxID              string                      `json:"sandbox_id"`
+	HairpinMode            bool                        `json:"hairpin_mode"`
+	LinkLocalIPv6Address   string                      `json:"link_local_ipv6_address"`
+	LinkLocalIPv6PrefixLen int                         `json:"link_local_ipv6_prefix_len"`
+	Ports                  map[string][]PortBinding    `json:"ports"`
+	SandboxKey             string                      `json:"sandbox_key"`
+	Networks               map[string]EndpointSettings `json:"networks"`
 }
 
 // EndpointSettings represents network endpoint settings
@@ -282,8 +282,8 @@ type GraphDriverData struct {
 
 // ContainerListOptions represents options for listing containers
 type ContainerListOptions struct {
-	All     bool              `json:"all"`
-	Limit   int               `json:"limit"`
+	All     bool                `json:"all"`
+	Limit   int                 `json:"limit"`
 	Filters map[string][]string `json:"filters"`
 }
 

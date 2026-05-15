@@ -35,7 +35,7 @@ type PacketCapture struct {
 	FilePath    string        `json:"file_path" db:"file_path"`
 	MaxPackets  int           `json:"max_packets" db:"max_packets"`
 	MaxDuration int           `json:"max_duration" db:"max_duration"` // seconds
-	PID         int           `json:"pid" db:"pid"`                  // tcpdump process ID
+	PID         int           `json:"pid" db:"pid"`                   // tcpdump process ID
 	StartedAt   time.Time     `json:"started_at" db:"started_at"`
 	StoppedAt   *time.Time    `json:"stopped_at,omitempty" db:"stopped_at"`
 	CreatedAt   time.Time     `json:"created_at" db:"created_at"`

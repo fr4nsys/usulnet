@@ -115,9 +115,10 @@ func (h *Handler) AlertsTempl(w http.ResponseWriter, r *http.Request) {
 			if rule.State == models.AlertStateFiring {
 				stats.FiringRules++
 			}
-			if rule.Severity == models.AlertSeverityCritical {
+			switch rule.Severity {
+			case models.AlertSeverityCritical:
 				stats.Critical++
-			} else if rule.Severity == models.AlertSeverityWarning {
+			case models.AlertSeverityWarning:
 				stats.Warning++
 			}
 
@@ -636,14 +637,14 @@ func (h *Handler) getAlertService() AlertsService {
 
 func alertMetricLabel(metric models.AlertMetric) string {
 	labels := map[models.AlertMetric]string{
-		"cpu_percent":       "CPU %",
-		"memory_percent":    "Memory %",
-		"disk_percent":      "Disk %",
-		"network_rx_rate":   "Network RX",
-		"network_tx_rate":   "Network TX",
-		"container_count":   "Container Count",
-		"container_cpu":     "Container CPU %",
-		"container_memory":  "Container Memory %",
+		"cpu_percent":      "CPU %",
+		"memory_percent":   "Memory %",
+		"disk_percent":     "Disk %",
+		"network_rx_rate":  "Network RX",
+		"network_tx_rate":  "Network TX",
+		"container_count":  "Container Count",
+		"container_cpu":    "Container CPU %",
+		"container_memory": "Container Memory %",
 	}
 	if label, ok := labels[metric]; ok {
 		return label

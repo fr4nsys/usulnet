@@ -265,13 +265,13 @@ type OrphanVolume struct {
 
 // OrphanVolumeResult contains orphan detection results.
 type OrphanVolumeResult struct {
-	Orphans           []*OrphanVolume `json:"orphans"`
-	TotalVolumes      int             `json:"total_volumes"`
-	OrphanCount       int             `json:"orphan_count"`
-	TotalOrphanSize   int64           `json:"total_orphan_size"`
-	OrphanSizeHuman   string          `json:"orphan_size_human"`
-	ScanTime          time.Time       `json:"scan_time"`
-	ScanDurationMs    int64           `json:"scan_duration_ms"`
+	Orphans         []*OrphanVolume `json:"orphans"`
+	TotalVolumes    int             `json:"total_volumes"`
+	OrphanCount     int             `json:"orphan_count"`
+	TotalOrphanSize int64           `json:"total_orphan_size"`
+	OrphanSizeHuman string          `json:"orphan_size_human"`
+	ScanTime        time.Time       `json:"scan_time"`
+	ScanDurationMs  int64           `json:"scan_duration_ms"`
 }
 
 // DetectOrphanVolumes finds volumes that are not currently used by any container.
@@ -438,18 +438,18 @@ func (s *Service) CleanupOrphanVolumes(ctx context.Context, hostID uuid.UUID, vo
 
 // VolumeFile represents a file or directory in a volume.
 type VolumeFile struct {
-	Name        string    `json:"name"`
-	Path        string    `json:"path"`
-	IsDir       bool      `json:"is_dir"`
-	Size        int64     `json:"size"`
-	SizeHuman   string    `json:"size_human"`
-	Mode        string    `json:"mode"`
-	ModTime     time.Time `json:"mod_time"`
-	ModTimeAgo  string    `json:"mod_time_ago"`
-	Owner       string    `json:"owner"`
-	Group       string    `json:"group"`
-	LinkTarget  string    `json:"link_target,omitempty"`
-	IsSymlink   bool      `json:"is_symlink"`
+	Name       string    `json:"name"`
+	Path       string    `json:"path"`
+	IsDir      bool      `json:"is_dir"`
+	Size       int64     `json:"size"`
+	SizeHuman  string    `json:"size_human"`
+	Mode       string    `json:"mode"`
+	ModTime    time.Time `json:"mod_time"`
+	ModTimeAgo string    `json:"mod_time_ago"`
+	Owner      string    `json:"owner"`
+	Group      string    `json:"group"`
+	LinkTarget string    `json:"link_target,omitempty"`
+	IsSymlink  bool      `json:"is_symlink"`
 }
 
 // VolumeFileContent represents the content of a file in a volume.
@@ -697,8 +697,8 @@ func (s *Service) DownloadVolumeFile(ctx context.Context, hostID uuid.UUID, volu
 
 	// Wrap reader to cleanup container when done
 	return &cleanupReader{
-		ReadCloser:  reader,
-		cleanup:     func() { s.cleanupContainer(ctx, client, containerID) },
+		ReadCloser: reader,
+		cleanup:    func() { s.cleanupContainer(ctx, client, containerID) },
 	}, size, nil
 }
 
@@ -850,18 +850,18 @@ func parseLSLine(line, basePath string) *VolumeFile {
 	path += name
 
 	return &VolumeFile{
-		Name:        name,
-		Path:        path,
-		IsDir:       mode[0] == 'd',
-		Size:        size,
-		SizeHuman:   humanSize(size),
-		Mode:        mode,
-		ModTime:     modTime,
-		ModTimeAgo:  timeAgo(modTime),
-		Owner:       owner,
-		Group:       group,
-		LinkTarget:  linkTarget,
-		IsSymlink:   isSymlink,
+		Name:       name,
+		Path:       path,
+		IsDir:      mode[0] == 'd',
+		Size:       size,
+		SizeHuman:  humanSize(size),
+		Mode:       mode,
+		ModTime:    modTime,
+		ModTimeAgo: timeAgo(modTime),
+		Owner:      owner,
+		Group:      group,
+		LinkTarget: linkTarget,
+		IsSymlink:  isSymlink,
 	}
 }
 

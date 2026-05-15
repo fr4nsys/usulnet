@@ -399,14 +399,15 @@ func TestBuildClientOptions_TLS_NoEncryptor(t *testing.T) {
 		TLSCACert:    strPtr("encrypted-ca"),
 	}
 
-	// With nil encryptor, should panic or error
-	defer func() {
-		if r := recover(); r == nil {
-			// If it didn't panic, it should have returned an error
-			// (depends on implementation)
-		}
-	}()
-	_, _ = svc.buildClientOptions(host)
+	// With nil encryptor we accept either outcome: a panic (caught by
+	// the recover below) or an error from the return path. The one
+	// thing the test guards against is a silent (nil, nil) success on
+	// a TLS host whose secrets we have no way to decrypt.
+	defer func() { _ = recover() }()
+	_, err := svc.buildClientOptions(host)
+	if err == nil {
+		t.Fatal("expected error or panic when TLSCACert is encrypted but encryptor is nil")
+	}
 }
 
 // ---------------------------------------------------------------------------

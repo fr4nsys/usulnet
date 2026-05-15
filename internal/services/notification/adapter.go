@@ -101,7 +101,7 @@ func (a *ServiceAdapter) SendBatch(ctx context.Context, notifications []*WorkerN
 func (a *ServiceAdapter) GetChannelConfig(ctx context.Context, channelType string) (*WorkerChannelConfig, error) {
 	// Check if channel exists
 	channelNames := a.service.ListChannels()
-	
+
 	for _, name := range channelNames {
 		// Match by channel type
 		if name == channelType {

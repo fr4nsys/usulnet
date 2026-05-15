@@ -1,0 +1,11 @@
+services:
+  uptime-kuma:
+    image: louislam/uptime-kuma:1.23.13-alpine
+    restart: unless-stopped
+    volumes:
+      - uptime-kuma-data:/app/data
+    ports:
+      - "{{PORT}}:3001"
+
+volumes:
+  uptime-kuma-data: {}

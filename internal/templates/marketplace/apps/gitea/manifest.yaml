@@ -1,0 +1,44 @@
+slug: gitea
+name: Gitea
+description: Self-hosted Git service with web UI, issues, and pull requests.
+long_description: |
+  Gitea is a community-managed lightweight code hosting service. It
+  provides a familiar GitHub-like web UI, issue tracking, pull requests,
+  and an SSH endpoint for git operations.
+
+  Image: docker.io/gitea/gitea (MIT). usulnet ships this entry under
+  the same MIT terms the upstream image is published under; the
+  per-installation database is SQLite, kept in a named volume.
+category: development
+icon: fa-code-branch
+icon_color: "#609926"
+version: "1.22"
+manifest_version: 1
+website: https://about.gitea.com/
+source: https://github.com/go-gitea/gitea
+author: usulnet contributors
+license: MIT
+tags:
+  - git
+  - vcs
+  - code-hosting
+min_memory_mb: 256
+min_cpu_cores: 0.5
+is_official: true
+is_verified: true
+featured: true
+fields:
+  - key: HTTP_PORT
+    label: HTTP port
+    description: Host port for the Gitea web UI.
+    type: text
+    default: "3000"
+    required: true
+    placeholder: "3000"
+  - key: SSH_PORT
+    label: SSH port
+    description: Host port for Git over SSH (push/pull).
+    type: text
+    default: "2222"
+    required: true
+    placeholder: "2222"

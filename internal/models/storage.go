@@ -14,10 +14,10 @@ import (
 type StorageConnectionStatus string
 
 const (
-	StorageConnectionActive       StorageConnectionStatus = "active"
-	StorageConnectionInactive     StorageConnectionStatus = "inactive"
-	StorageConnectionError        StorageConnectionStatus = "error"
-	StorageConnectionPending      StorageConnectionStatus = "pending"
+	StorageConnectionActive   StorageConnectionStatus = "active"
+	StorageConnectionInactive StorageConnectionStatus = "inactive"
+	StorageConnectionError    StorageConnectionStatus = "error"
+	StorageConnectionPending  StorageConnectionStatus = "pending"
 )
 
 // StorageConnection represents a connection to an S3-compatible storage service.
@@ -42,17 +42,17 @@ type StorageConnection struct {
 
 // StorageBucket represents a tracked S3 bucket.
 type StorageBucket struct {
-	ID           uuid.UUID `db:"id" json:"id"`
-	ConnectionID uuid.UUID `db:"connection_id" json:"connection_id"`
-	Name         string    `db:"name" json:"name"`
-	Region       string    `db:"region" json:"region"`
-	SizeBytes    int64     `db:"size_bytes" json:"size_bytes"`
-	ObjectCount  int64     `db:"object_count" json:"object_count"`
-	IsPublic     bool      `db:"is_public" json:"is_public"`
-	Versioning   bool      `db:"versioning" json:"versioning"`
-	Tags         string    `db:"tags" json:"tags,omitempty"` // JSON
-	CreatedAt    time.Time `db:"created_at" json:"created_at"`
-	UpdatedAt    time.Time `db:"updated_at" json:"updated_at"`
+	ID           uuid.UUID  `db:"id" json:"id"`
+	ConnectionID uuid.UUID  `db:"connection_id" json:"connection_id"`
+	Name         string     `db:"name" json:"name"`
+	Region       string     `db:"region" json:"region"`
+	SizeBytes    int64      `db:"size_bytes" json:"size_bytes"`
+	ObjectCount  int64      `db:"object_count" json:"object_count"`
+	IsPublic     bool       `db:"is_public" json:"is_public"`
+	Versioning   bool       `db:"versioning" json:"versioning"`
+	Tags         string     `db:"tags" json:"tags,omitempty"` // JSON
+	CreatedAt    time.Time  `db:"created_at" json:"created_at"`
+	UpdatedAt    time.Time  `db:"updated_at" json:"updated_at"`
 	LastSynced   *time.Time `db:"last_synced" json:"last_synced,omitempty"`
 }
 
@@ -71,7 +71,7 @@ type StorageObject struct {
 type StorageAuditLog struct {
 	ID           uuid.UUID `db:"id" json:"id"`
 	ConnectionID uuid.UUID `db:"connection_id" json:"connection_id"`
-	Action       string    `db:"action" json:"action"` // create_bucket, delete_bucket, upload, delete, etc.
+	Action       string    `db:"action" json:"action"`               // create_bucket, delete_bucket, upload, delete, etc.
 	ResourceType string    `db:"resource_type" json:"resource_type"` // connection, bucket, object
 	ResourceName string    `db:"resource_name" json:"resource_name"`
 	Details      string    `db:"details" json:"details,omitempty"` // JSON
@@ -115,7 +115,7 @@ type CreateBucketInput struct {
 type PresignedURLRequest struct {
 	BucketName string        `json:"bucket_name" validate:"required"`
 	ObjectKey  string        `json:"object_key" validate:"required"`
-	Expiry     time.Duration `json:"expiry"` // defaults to 1h
+	Expiry     time.Duration `json:"expiry"`    // defaults to 1h
 	Operation  string        `json:"operation"` // "get" or "put"
 }
 

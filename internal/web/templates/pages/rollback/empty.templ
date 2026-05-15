@@ -1,0 +1,18 @@
+// SPDX-License-Identifier: AGPL-3.0-or-later
+// Copyright (c) 2024-2026 usulnet contributors
+// https://github.com/fr4nsys/usulnet
+
+package rollback
+
+templ EmptyState(title, message, ctaLabel, ctaHref string) {
+	<div class="card p-12 text-center">
+		<i class="fas fa-shield-alt text-5xl text-gray-600 mb-4"></i>
+		<h3 class="text-lg font-semibold text-white mb-2">{ title }</h3>
+		<p class="text-gray-400 mb-6">{ message }</p>
+		if ctaLabel != "" && ctaHref != "" {
+			<a href={ templ.SafeURL(ctaHref) } class="btn-primary inline-block">
+				<i class="fas fa-plus mr-2"></i>{ ctaLabel }
+			</a>
+		}
+	</div>
+}

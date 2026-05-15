@@ -101,9 +101,9 @@ func (h *Handler) ScheduledJobCreate(w http.ResponseWriter, r *http.Request) {
 		input.TargetName = &targetName
 	}
 
-	if user := GetUserFromContext(r.Context()); user != nil {
-		// CreatedBy is not in input, will be set by scheduler
-	}
+	// CreatedBy is not part of the public input struct: the scheduler
+	// stamps it from the authenticated session before persisting.
+	_ = GetUserFromContext(r.Context())
 
 	if _, err := sched.CreateScheduledJob(r.Context(), input); err != nil {
 		slog.Error("Failed to create scheduled job", "name", name, "error", err)

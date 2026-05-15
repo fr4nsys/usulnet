@@ -1,0 +1,152 @@
+// SPDX-License-Identifier: AGPL-3.0-or-later
+// Copyright (c) 2024-2026 usulnet contributors
+// https://github.com/fr4nsys/usulnet
+
+package imagebuilder
+
+import (
+	"github.com/fr4nsys/usulnet/internal/web/templates/layouts"
+)
+
+// NewBuildData carries the inputs the new-build form renders. The
+// templates list lets the operator pre-populate the Dockerfile field
+// from a saved snippet.
+type NewBuildData struct {
+	PageData    layouts.PageData
+	Templates   []TemplateView
+	Error       string
+	Prefill     string
+	PrefillName string
+}
+
+templ NewBuild(data NewBuildData) {
+	@layouts.Base(data.PageData) {
+		<div class="space-y-6">
+			@Nav("builds")
+
+			<div class="max-w-3xl">
+				<div class="flex items-center gap-3 mb-6">
+					<a href="/image-builder" class="text-gray-400 hover:text-white">
+						<i class="fas fa-arrow-left"></i>
+					</a>
+					<h2 class="text-xl font-display font-bold text-white">New Image Build</h2>
+				</div>
+
+				if data.Error != "" {
+					<div class="bg-red-500/10 border border-red-500/20 rounded-lg p-4 mb-4">
+						<p class="text-red-400 text-sm">{ data.Error }</p>
+					</div>
+				}
+
+				if len(data.Templates) > 0 {
+					<div class="card p-4 mb-4">
+						<p class="text-sm text-gray-400 mb-2">Start from a template</p>
+						<div class="flex flex-wrap gap-2">
+							for _, t := range data.Templates {
+								<a
+									href={ templ.SafeURL("/image-builder/new?template=" + t.ID) }
+									class="text-xs px-2 py-1 bg-dark-700 text-gray-200 rounded hover:bg-dark-600"
+									title={ t.Description }
+								>
+									{ t.Name }
+								</a>
+							}
+						</div>
+					</div>
+				}
+
+				<form method="POST" action="/image-builder" class="space-y-4">
+					<input type="hidden" name="csrf_token" value={ data.PageData.CSRFToken }/>
+
+					<div>
+						<label class="block text-sm font-medium text-gray-300 mb-1">Build Name</label>
+						<input
+							type="text"
+							name="name"
+							value={ data.PrefillName }
+							placeholder="my-app"
+							class="w-full bg-dark-800 border border-dark-600 text-white rounded-lg px-3 py-2 focus:ring-2 focus:ring-accent-500 focus:border-transparent"
+						/>
+						<p class="text-xs text-gray-500 mt-1">Optional friendly name for the build</p>
+					</div>
+
+					<div>
+						<label class="block text-sm font-medium text-gray-300 mb-1">Image Tag</label>
+						<input
+							type="text"
+							name="tag"
+							placeholder="myapp:latest"
+							required
+							class="w-full bg-dark-800 border border-dark-600 text-white font-mono rounded-lg px-3 py-2 focus:ring-2 focus:ring-accent-500 focus:border-transparent"
+						/>
+						<p class="text-xs text-gray-500 mt-1">Tag for the resulting image (e.g., myapp:latest)</p>
+					</div>
+
+					<div>
+						<label class="block text-sm font-medium text-gray-300 mb-1">Dockerfile</label>
+						<textarea
+							name="dockerfile"
+							rows="14"
+							required
+							placeholder="FROM alpine:3.21&#10;CMD [&quot;sh&quot;]"
+							class="w-full bg-dark-800 border border-dark-600 text-white font-mono text-sm rounded-lg px-3 py-2 focus:ring-2 focus:ring-accent-500 focus:border-transparent"
+						>{ data.Prefill }</textarea>
+					</div>
+
+					<div>
+						<label class="block text-sm font-medium text-gray-300 mb-1">Build Context Path</label>
+						<input
+							type="text"
+							name="context_path"
+							value="."
+							class="w-full bg-dark-800 border border-dark-600 text-white font-mono rounded-lg px-3 py-2 focus:ring-2 focus:ring-accent-500 focus:border-transparent"
+						/>
+						<p class="text-xs text-gray-500 mt-1">Build context directory (default: current directory)</p>
+					</div>
+
+					<div>
+						<label class="block text-sm font-medium text-gray-300 mb-1">Platform</label>
+						<select
+							name="platform"
+							class="w-full bg-dark-800 border border-dark-600 text-white rounded-lg px-3 py-2 focus:ring-2 focus:ring-accent-500 focus:border-transparent"
+						>
+							<option value="">Auto-detect</option>
+							<option value="linux/amd64">linux/amd64</option>
+							<option value="linux/arm64">linux/arm64</option>
+							<option value="linux/arm/v7">linux/arm/v7</option>
+						</select>
+					</div>
+
+					<div>
+						<label class="block text-sm font-medium text-gray-300 mb-1">Target Stage</label>
+						<input
+							type="text"
+							name="target"
+							placeholder=""
+							class="w-full bg-dark-800 border border-dark-600 text-white font-mono rounded-lg px-3 py-2 focus:ring-2 focus:ring-accent-500 focus:border-transparent"
+						/>
+						<p class="text-xs text-gray-500 mt-1">For multi-stage builds: target stage name (optional)</p>
+					</div>
+
+					<div class="flex gap-4">
+						<label class="flex items-center gap-2 text-sm text-gray-300">
+							<input type="checkbox" name="no_cache" value="true" class="rounded"/>
+							<span>No Cache</span>
+						</label>
+						<label class="flex items-center gap-2 text-sm text-gray-300">
+							<input type="checkbox" name="pull" value="true" class="rounded"/>
+							<span>Always Pull</span>
+						</label>
+					</div>
+
+					<div class="flex gap-2 pt-4">
+						<button type="submit" class="btn btn-primary">
+							<i class="fas fa-hammer mr-1"></i> Start Build
+						</button>
+						<a href="/image-builder" class="btn btn-secondary">Cancel</a>
+					</div>
+				</form>
+			</div>
+		</div>
+	}
+}

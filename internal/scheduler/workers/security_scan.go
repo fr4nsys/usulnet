@@ -157,13 +157,11 @@ func (w *SecurityScanWorker) scanAllContainers(
 
 	result.TotalContainers = len(containers)
 
-	// Report progress
+	// Report progress. The progress callback is owned by the pool — we
+	// just refresh the job's progress fields so the watcher can render
+	// the latest state.
 	reportProgress := func(current int, containerName string) {
-		progress := (current * 100) / len(containers)
-		if job.ProgressMessage != nil {
-			// Progress callback is handled by pool
-		}
-		job.Progress = progress
+		job.Progress = (current * 100) / len(containers)
 		msg := fmt.Sprintf("Scanning %s (%d/%d)", containerName, current, len(containers))
 		job.ProgressMessage = &msg
 	}
@@ -307,22 +305,22 @@ func (w *SecurityScanWorker) calculateSummary(result *SecurityScanResult) {
 
 // SecurityScanResult holds the result of a security scan job
 type SecurityScanResult struct {
-	HostID          uuid.UUID                    `json:"host_id"`
-	StartedAt       time.Time                    `json:"started_at"`
-	CompletedAt     time.Time                    `json:"completed_at"`
-	Duration        time.Duration                `json:"duration"`
-	TotalContainers int                          `json:"total_containers"`
-	TotalScanned    int                          `json:"total_scanned"`
-	Passed          int                          `json:"passed"`
-	Failed          int                          `json:"failed"`
-	AverageScore    float64                      `json:"average_score"`
-	TotalIssues     int                          `json:"total_issues"`
-	CriticalIssues  int                          `json:"critical_issues"`
-	HighIssues      int                          `json:"high_issues"`
-	MediumIssues    int                          `json:"medium_issues"`
-	LowIssues       int                          `json:"low_issues"`
+	HostID            uuid.UUID                    `json:"host_id"`
+	StartedAt         time.Time                    `json:"started_at"`
+	CompletedAt       time.Time                    `json:"completed_at"`
+	Duration          time.Duration                `json:"duration"`
+	TotalContainers   int                          `json:"total_containers"`
+	TotalScanned      int                          `json:"total_scanned"`
+	Passed            int                          `json:"passed"`
+	Failed            int                          `json:"failed"`
+	AverageScore      float64                      `json:"average_score"`
+	TotalIssues       int                          `json:"total_issues"`
+	CriticalIssues    int                          `json:"critical_issues"`
+	HighIssues        int                          `json:"high_issues"`
+	MediumIssues      int                          `json:"medium_issues"`
+	LowIssues         int                          `json:"low_issues"`
 	GradeDistribution map[models.SecurityGrade]int `json:"grade_distribution"`
-	Scans           []*ScanResultItem            `json:"scans"`
+	Scans             []*ScanResultItem            `json:"scans"`
 }
 
 // ScanResultItem holds the result of scanning a single container

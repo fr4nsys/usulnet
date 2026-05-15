@@ -194,7 +194,9 @@ func (r *RDPConnectionRepository) scanConnection(row pgx.Row) (*models.RDPConnec
 		return nil, errors.Wrap(err, errors.CodeDatabaseError, "failed to scan RDP connection")
 	}
 	if len(tagsJSON) > 0 {
-		json.Unmarshal(tagsJSON, &conn.Tags)
+		if err := json.Unmarshal(tagsJSON, &conn.Tags); err != nil {
+			return nil, errors.Wrap(err, errors.CodeDatabaseError, "unmarshal tags")
+		}
 	}
 	return &conn, nil
 }
@@ -214,7 +216,9 @@ func (r *RDPConnectionRepository) scanConnectionRow(rows pgx.Rows) (*models.RDPC
 		return nil, errors.Wrap(err, errors.CodeDatabaseError, "failed to scan RDP connection")
 	}
 	if len(tagsJSON) > 0 {
-		json.Unmarshal(tagsJSON, &conn.Tags)
+		if err := json.Unmarshal(tagsJSON, &conn.Tags); err != nil {
+			return nil, errors.Wrap(err, errors.CodeDatabaseError, "unmarshal tags")
+		}
 	}
 	return &conn, nil
 }

@@ -601,12 +601,12 @@ func (p *GiteaProvider) CreateRelease(ctx context.Context, repoID string, opts C
 	}
 
 	apiOpts := gitea.CreateReleaseOptions{
-		TagName:    opts.TagName,
-		Name:       opts.Name,
-		Body:       opts.Body,
-		IsDraft:    opts.Draft,
+		TagName:      opts.TagName,
+		Name:         opts.Name,
+		Body:         opts.Body,
+		IsDraft:      opts.Draft,
 		IsPrerelease: opts.Prerelease,
-		Target:     opts.Target,
+		Target:       opts.Target,
 	}
 
 	r, err := p.client.CreateRelease(ctx, owner, name, apiOpts)
@@ -809,7 +809,7 @@ func giteaRepoToModel(r gitea.APIRepository) models.GitRepository {
 		StarsCount:    r.Stars,
 		ForksCount:    r.Forks,
 		OpenIssues:    r.OpenIssues,
-		SizeKB:        int64(r.Size),
+		SizeKB:        r.Size,
 	}
 }
 

@@ -27,26 +27,26 @@ type Runbook struct {
 
 // RunbookStep represents a single step in a runbook.
 type RunbookStep struct {
-	Order       int               `json:"order"`
-	Name        string            `json:"name"`
-	Type        string            `json:"type"` // command, api_call, docker_exec, notify, wait, condition
-	Config      map[string]string `json:"config"`
-	OnFailure   string            `json:"on_failure,omitempty"` // continue, stop, skip_to
-	Timeout     int               `json:"timeout,omitempty"`    // seconds
+	Order     int               `json:"order"`
+	Name      string            `json:"name"`
+	Type      string            `json:"type"` // command, api_call, docker_exec, notify, wait, condition
+	Config    map[string]string `json:"config"`
+	OnFailure string            `json:"on_failure,omitempty"` // continue, stop, skip_to
+	Timeout   int               `json:"timeout,omitempty"`    // seconds
 }
 
 // RunbookExecution represents a single execution of a runbook.
 type RunbookExecution struct {
-	ID         uuid.UUID       `json:"id" db:"id"`
-	RunbookID  uuid.UUID       `json:"runbook_id" db:"runbook_id"`
-	Status     string          `json:"status" db:"status"` // running, completed, failed, cancelled
-	Trigger    string          `json:"trigger" db:"trigger"` // manual, alert, schedule, event
-	TriggerRef *string         `json:"trigger_ref,omitempty" db:"trigger_ref"`
+	ID          uuid.UUID       `json:"id" db:"id"`
+	RunbookID   uuid.UUID       `json:"runbook_id" db:"runbook_id"`
+	Status      string          `json:"status" db:"status"`   // running, completed, failed, canceled
+	Trigger     string          `json:"trigger" db:"trigger"` // manual, alert, schedule, event
+	TriggerRef  *string         `json:"trigger_ref,omitempty" db:"trigger_ref"`
 	StepResults json.RawMessage `json:"step_results,omitempty" db:"step_results"`
-	StartedAt  time.Time       `json:"started_at" db:"started_at"`
-	FinishedAt *time.Time      `json:"finished_at,omitempty" db:"finished_at"`
-	ExecutedBy *uuid.UUID      `json:"executed_by,omitempty" db:"executed_by"`
-	CreatedAt  time.Time       `json:"created_at" db:"created_at"`
+	StartedAt   time.Time       `json:"started_at" db:"started_at"`
+	FinishedAt  *time.Time      `json:"finished_at,omitempty" db:"finished_at"`
+	ExecutedBy  *uuid.UUID      `json:"executed_by,omitempty" db:"executed_by"`
+	CreatedAt   time.Time       `json:"created_at" db:"created_at"`
 }
 
 // CreateRunbookInput represents input for creating a runbook.

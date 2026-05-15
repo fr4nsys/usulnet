@@ -526,4 +526,3 @@ func (c *Client) SwarmTaskList(ctx context.Context, serviceID string) ([]SwarmTa
 
 	return result, nil
 }
-

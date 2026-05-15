@@ -1,0 +1,6 @@
+services:
+  nginx:
+    image: nginx:1.27-alpine
+    restart: unless-stopped
+    ports:
+      - "{{PORT}}:80"

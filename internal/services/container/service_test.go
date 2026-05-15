@@ -24,18 +24,18 @@ import (
 // ---------------------------------------------------------------------------
 
 type testContainerRepo struct {
-	containers     map[string]*models.Container
-	byHost         map[uuid.UUID][]*models.Container
-	stateUpdates   map[string]models.ContainerState
-	batchUpserted  []*models.Container
-	deleted        []string
-	stats          *postgres.ContainerStats
-	statsHistory   []*models.ContainerStats
-	deletedStats   int64
-	deletedLogs    int64
-	containerIDs   []string
-	securityInfos  map[string]int
-	listErr        error
+	containers    map[string]*models.Container
+	byHost        map[uuid.UUID][]*models.Container
+	stateUpdates  map[string]models.ContainerState
+	batchUpserted []*models.Container
+	deleted       []string
+	stats         *postgres.ContainerStats
+	statsHistory  []*models.ContainerStats
+	deletedStats  int64
+	deletedLogs   int64
+	containerIDs  []string
+	securityInfos map[string]int
+	listErr       error
 }
 
 func newTestContainerRepo() *testContainerRepo {
@@ -195,15 +195,15 @@ func (h *testHostService) List(_ context.Context, _ postgres.HostListOptions) ([
 
 type testDockerClientForService struct {
 	docker.ClientAPI
-	containers   map[string]*docker.ContainerDetails
+	containers    map[string]*docker.ContainerDetails
 	containerList []docker.Container
-	startErr     error
-	stopErr      error
-	restartErr   error
-	started      []string
-	stopped      []string
-	restarted    []string
-	killed       []string
+	startErr      error
+	stopErr       error
+	restartErr    error
+	started       []string
+	stopped       []string
+	restarted     []string
+	killed        []string
 }
 
 func newTestDockerClientForService() *testDockerClientForService {

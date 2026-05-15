@@ -30,9 +30,9 @@ const (
 
 // RegistrationService handles agent registration and token management.
 type RegistrationService struct {
-	hostRepo    HostRepository
-	tokenStore  TokenStore
-	log         *logger.Logger
+	hostRepo   HostRepository
+	tokenStore TokenStore
+	log        *logger.Logger
 
 	// In-memory token cache for fast validation
 	tokenCache  map[string]uuid.UUID // token -> hostID

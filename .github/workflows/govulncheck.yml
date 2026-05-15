@@ -1,0 +1,90 @@
+# Run govulncheck against the Go module on every push to main and every
+# PR. The audit in docs/v26.5/security-review-v26.5.1.md flagged that
+# this could not run in the sandbox (vuln.go.dev was blocked) so it
+# lives here as the authoritative gate before release.
+#
+# govulncheck only flags vulnerabilities that the binary actually
+# reaches; pure dependency presence is reported separately as
+# "informational". The job fails on any reachable vulnerability.
+
+name: govulncheck
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: govulncheck-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  govulncheck:
+    name: govulncheck
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          check-latest: true
+          cache: true
+
+      - name: Install govulncheck
+        run: go install golang.org/x/vuln/cmd/govulncheck@latest
+
+      - name: Run govulncheck (with documented allowlist)
+        id: govulncheck
+        # scripts/govulncheck.sh runs govulncheck, captures both the human
+        # report (govulncheck.txt) and the JSON stream (govulncheck.json),
+        # then fails only if a reachable finding lands outside the
+        # documented allowlist in the script header. The allowlist exists
+        # to acknowledge the two server-side Moby false positives (the
+        # github.com/docker/docker module has "Fixed in: N/A" while the
+        # fix lives in github.com/moby/moby/v2 v2.0.0-beta.8 — see the
+        # script's inline justification). Every other reachable
+        # vulnerability still fails the job.
+        run: bash scripts/govulncheck.sh
+
+      - name: Always attach report to job summary
+        if: always() && hashFiles('govulncheck.txt') != ''
+        run: |
+          {
+            echo "## govulncheck report"
+            echo ""
+            echo '```'
+            cat govulncheck.txt
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Post / update sticky PR comment with govulncheck output
+        if: always() && github.event_name == 'pull_request' && hashFiles('govulncheck.txt') != ''
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const marker = '<!-- govulncheck-report -->';
+            let body = marker + '\n### govulncheck report (' + context.sha.substring(0, 7) + ')\n\n';
+            const status = '${{ steps.govulncheck.outcome }}';
+            body += '**Outcome:** `' + status + '`\n\n';
+            body += '<details><summary>Full output</summary>\n\n```\n';
+            body += fs.readFileSync('govulncheck.txt', 'utf8');
+            body += '\n```\n</details>\n';
+            const {owner, repo} = context.repo;
+            const issue_number = context.issue.number;
+            const {data: comments} = await github.rest.issues.listComments({owner, repo, issue_number});
+            const existing = comments.find(c => c.body && c.body.includes(marker));
+            if (existing) {
+              await github.rest.issues.updateComment({owner, repo, comment_id: existing.id, body});
+            } else {
+              await github.rest.issues.createComment({owner, repo, issue_number, body});
+            }

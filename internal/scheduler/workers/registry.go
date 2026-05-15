@@ -13,6 +13,7 @@ type Dependencies struct {
 	SecurityService     SecurityService
 	DockerClient        DockerClientForScan
 	BackupService       BackupService
+	BackupVerifyService BackupVerifyService
 	UpdateService       UpdateService
 	CleanupService      CleanupService
 	JobCleanupService   JobCleanupService
@@ -27,6 +28,7 @@ type Dependencies struct {
 	AutoDeployRepo      AutoDeployRuleRepo
 	StackService        StackDeployService
 	TrackedVulnRepo     TrackedVulnRepository
+	SSLScanService      SSLScanService
 	Logger              *logger.Logger
 }
 
@@ -46,6 +48,11 @@ func RegisterDefaultWorkers(registry *WorkerRegistry, deps *Dependencies) {
 	if deps.BackupService != nil {
 		registry.Register(NewBackupWorker(deps.BackupService, log))
 		registry.Register(NewBackupRestoreWorker(deps.BackupService, log))
+	}
+
+	// Backup verification worker
+	if deps.BackupVerifyService != nil {
+		registry.Register(NewBackupVerifyWorker(deps.BackupVerifyService, log))
 	}
 
 	// Update workers
@@ -106,6 +113,11 @@ func RegisterDefaultWorkers(registry *WorkerRegistry, deps *Dependencies) {
 	if deps.TrackedVulnRepo != nil {
 		registry.Register(NewSLABreachWorker(deps.TrackedVulnRepo, deps.NotificationService, log))
 	}
+
+	// SSL observatory scan worker (v26.5.1).
+	if deps.SSLScanService != nil {
+		registry.Register(NewSSLScanWorker(deps.SSLScanService, log))
+	}
 }
 
 // WorkerInfo holds information about a registered worker
@@ -139,5 +151,7 @@ func GetWorkerDescriptions() []WorkerInfo {
 		{Type: "runbook_execute", Description: "Executes runbook steps in background"},
 		{Type: "auto_deploy", Description: "Performs auto-deploy actions triggered by webhooks"},
 		{Type: "sla_breach", Description: "Checks for vulnerability SLA deadline breaches and notifies assignees"},
+		{Type: "backup_verify", Description: "Verifies existing backups via checksum + sandboxed restore tests"},
+		{Type: "ssl_scan", Description: "Scans configured SSL/TLS endpoints for certificate health and grading"},
 	}
 }

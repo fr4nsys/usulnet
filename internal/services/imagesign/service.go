@@ -284,7 +284,8 @@ func (s *Service) VerifyImage(ctx context.Context, imageRef string) (*VerifyResu
 	cmd.Stderr = &stderr
 
 	if err := cmd.Run(); err != nil {
-		// cosign returns non-zero when verification fails (unsigned image).
+		// result envelope: cosign's non-zero exit is verification info,
+		// surfaced via VerifyResult.{Verified,Errors}
 		result.Verified = false
 		result.Errors = append(result.Errors, stderr.String())
 
@@ -292,7 +293,7 @@ func (s *Service) VerifyImage(ctx context.Context, imageRef string) (*VerifyResu
 			"image_ref", imageRef,
 			"stderr", stderr.String())
 
-		return result, nil
+		return result, nil //nolint:nilerr
 	}
 
 	// Parse the JSON array that cosign verify writes to stdout.

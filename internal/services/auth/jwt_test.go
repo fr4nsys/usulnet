@@ -5,6 +5,7 @@
 package auth
 
 import (
+	"errors"
 	"strings"
 	"testing"
 	"time"
@@ -276,7 +277,7 @@ func TestValidateAccessToken_WrongSecret(t *testing.T) {
 	if err == nil {
 		t.Fatal("expected error for wrong secret")
 	}
-	if err != ErrInvalidSignature {
+	if !errors.Is(err, ErrInvalidSignature) {
 		t.Errorf("expected ErrInvalidSignature, got %v", err)
 	}
 }
@@ -319,7 +320,7 @@ func TestValidateAccessToken_Expired(t *testing.T) {
 	if err == nil {
 		t.Fatal("expected error for expired token")
 	}
-	if err != ErrExpiredToken {
+	if !errors.Is(err, ErrExpiredToken) {
 		t.Errorf("expected ErrExpiredToken, got %v", err)
 	}
 }
@@ -682,7 +683,7 @@ func TestMapJWTError_ExpiredToken(t *testing.T) {
 
 	token, _, _ := svc.GenerateAccessTokenWithTTL(user, -1*time.Hour)
 	_, err := svc.ValidateAccessToken(token)
-	if err != ErrExpiredToken {
+	if !errors.Is(err, ErrExpiredToken) {
 		t.Errorf("expected ErrExpiredToken, got %v", err)
 	}
 }
@@ -694,7 +695,7 @@ func TestMapJWTError_InvalidSignature(t *testing.T) {
 
 	token, _, _ := svc1.GenerateAccessToken(user)
 	_, err := svc2.ValidateAccessToken(token)
-	if err != ErrInvalidSignature {
+	if !errors.Is(err, ErrInvalidSignature) {
 		t.Errorf("expected ErrInvalidSignature, got %v", err)
 	}
 }

@@ -1,0 +1,23 @@
+// SPDX-License-Identifier: AGPL-3.0-or-later
+// Copyright (c) 2024-2026 usulnet contributors
+// https://github.com/fr4nsys/usulnet
+
+package rollback
+
+// ExecutionsPartial renders just the rows portion of the execution log,
+// suitable for an HTMX swap on a periodic refresh. The list and detail
+// pages reuse ExecutionRow directly; this entry point lets the front
+// end refresh without re-rendering the surrounding chrome.
+templ ExecutionsPartial(executions []ExecutionView) {
+	if len(executions) == 0 {
+		<div class="card p-6 text-center text-sm text-gray-400">
+			No executions in the selected window.
+		</div>
+	} else {
+		<div class="space-y-2">
+			for _, e := range executions {
+				@ExecutionRow(e)
+			}
+		</div>
+	}
+}

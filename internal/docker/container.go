@@ -11,8 +11,8 @@ import (
 
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
-        "github.com/docker/docker/api/types/network"
 	"github.com/docker/docker/api/types/filters"
+	"github.com/docker/docker/api/types/network"
 	"github.com/docker/docker/client"
 	"github.com/docker/go-connections/nat"
 
@@ -47,7 +47,7 @@ type ContainerCreateOptions struct {
 	User       string
 	Tty        bool
 	OpenStdin  bool
-	
+
 	// Host configuration
 	Binds         []string
 	PortBindings  map[string][]PortBinding
@@ -59,7 +59,7 @@ type ContainerCreateOptions struct {
 	CapDrop       []string
 	DNS           []string
 	ExtraHosts    []string
-	
+
 	// Resource limits
 	Memory     int64
 	MemorySwap int64
@@ -547,7 +547,7 @@ func (c *Client) ContainerWait(ctx context.Context, containerID string) (int64, 
 	case status := <-statusCh:
 		return status.StatusCode, nil
 	case <-ctx.Done():
-		return -1, errors.Wrap(ctx.Err(), errors.CodeTimeout, "context cancelled while waiting for container")
+		return -1, errors.Wrap(ctx.Err(), errors.CodeTimeout, "context canceled while waiting for container")
 	}
 
 	return -1, nil
@@ -771,7 +771,7 @@ func (c *Client) ContainerCopyFromContainer(ctx context.Context, containerID, sr
 
 // ContainerCopyFileStream is a thin wrapper over ContainerCopyFromContainer
 // that drops the PathStat result. The recon sandbox launcher uses this
-// when extracting a single artefact (e.g., a cleaned file produced by
+// when extracting a single artifact (e.g., a cleaned file produced by
 // mat2) out of a stopped one-shot container; the PathStat metadata is
 // not needed in that path.
 func (c *Client) ContainerCopyFileStream(ctx context.Context, containerID, srcPath string) (io.ReadCloser, error) {
@@ -793,7 +793,7 @@ func (c *Client) WaitForHealthy(ctx context.Context, containerID string, timeout
 	for {
 		select {
 		case <-ctx.Done():
-			return errors.Wrap(ctx.Err(), errors.CodeTimeout, "context cancelled while waiting for container health")
+			return errors.Wrap(ctx.Err(), errors.CodeTimeout, "context canceled while waiting for container health")
 		case <-ticker.C:
 			if time.Now().After(deadline) {
 				return errors.New(errors.CodeHealthCheckFailed, "timeout waiting for container to become healthy").
@@ -824,4 +824,3 @@ func (c *Client) WaitForHealthy(ctx context.Context, containerID string, timeout
 		}
 	}
 }
-

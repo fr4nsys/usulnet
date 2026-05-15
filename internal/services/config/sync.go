@@ -5,10 +5,10 @@
 package config
 
 import (
-	"fmt"
 	"context"
 	"crypto/sha256"
 	"encoding/hex"
+	"fmt"
 	"sort"
 	"time"
 
@@ -62,15 +62,15 @@ type SyncOptions struct {
 
 // SyncResult represents the result of a sync operation
 type SyncResult struct {
-	Success         bool                  `json:"success"`
-	ContainerID     string                `json:"container_id"`
-	ContainerName   string                `json:"container_name"`
-	TemplateName    *string               `json:"template_name,omitempty"`
-	VariablesHash   string                `json:"variables_hash"`
-	RequiresRestart bool                  `json:"requires_restart"`
-	Diff            *models.ConfigDiff    `json:"diff,omitempty"`
+	Success         bool                     `json:"success"`
+	ContainerID     string                   `json:"container_id"`
+	ContainerName   string                   `json:"container_name"`
+	TemplateName    *string                  `json:"template_name,omitempty"`
+	VariablesHash   string                   `json:"variables_hash"`
+	RequiresRestart bool                     `json:"requires_restart"`
+	Diff            *models.ConfigDiff       `json:"diff,omitempty"`
 	Variables       []*models.ConfigVariable `json:"variables,omitempty"`
-	ErrorMessage    *string               `json:"error_message,omitempty"`
+	ErrorMessage    *string                  `json:"error_message,omitempty"`
 }
 
 // Sync synchronizes configuration to a container

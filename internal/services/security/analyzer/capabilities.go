@@ -55,14 +55,14 @@ func (a *CapabilitiesAnalyzer) Analyze(ctx context.Context, data *security.Conta
 		for _, cap := range dangerousCaps {
 			risk := getCapabilityRisk(cap)
 			issues = append(issues, security.Issue{
-				CheckID:     models.CheckCapabilities,
-				Severity:    risk.Severity,
-				Category:    models.IssueCategorySecurity,
-				Title:       "Dangerous Capability Added: " + cap,
-				Description: risk.Description,
+				CheckID:        models.CheckCapabilities,
+				Severity:       risk.Severity,
+				Category:       models.IssueCategorySecurity,
+				Title:          "Dangerous Capability Added: " + cap,
+				Description:    risk.Description,
 				Recommendation: risk.Recommendation,
-				FixCommand:  "Remove cap_add: " + cap + " from container configuration",
-				Penalty:     risk.Penalty,
+				FixCommand:     "Remove cap_add: " + cap + " from container configuration",
+				Penalty:        risk.Penalty,
 			}.WithDetail("capability", cap).
 				WithDetail("container", data.Name))
 		}

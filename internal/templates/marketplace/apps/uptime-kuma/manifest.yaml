@@ -1,0 +1,35 @@
+slug: uptime-kuma
+name: Uptime Kuma
+description: Self-hosted uptime monitoring tool with a clean web UI.
+long_description: |
+  Uptime Kuma is a self-hosted monitoring tool similar to Uptime Robot.
+  It polls HTTP/TCP/DNS endpoints, alerts on failures via 90+ channels,
+  and renders status pages — all without phoning home.
+
+  Image: docker.io/louislam/uptime-kuma (MIT).
+category: monitoring
+icon: fa-chart-line
+icon_color: "#5CDD8B"
+version: "1.23"
+manifest_version: 1
+website: https://uptime.kuma.pet/
+source: https://github.com/louislam/uptime-kuma
+author: usulnet contributors
+license: MIT
+tags:
+  - monitoring
+  - uptime
+  - status-page
+min_memory_mb: 128
+min_cpu_cores: 0.25
+is_official: true
+is_verified: true
+featured: true
+fields:
+  - key: PORT
+    label: Host port
+    description: Host port to expose the Uptime Kuma UI on.
+    type: text
+    default: "3001"
+    required: true
+    placeholder: "3001"

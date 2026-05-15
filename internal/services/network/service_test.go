@@ -54,8 +54,8 @@ type mockDockerClient struct {
 	networkPruneErr   error
 	networkExistsRet  bool
 	networkExistsErr  error
-	networkTopoRet   map[string][]string
-	networkTopoErr   error
+	networkTopoRet    map[string][]string
+	networkTopoErr    error
 }
 
 func (m *mockDockerClient) NetworkList(_ context.Context, _ docker.NetworkListOptions) ([]docker.Network, error) {

@@ -444,10 +444,10 @@ func (v *stubVerifier) Verify(_ context.Context, _ *Target, p *OwnershipProof, _
 // ---------------------------------------------------------------------------
 
 type stubEngine struct {
-	name      string
-	events    []EngineEvent
-	startErr  error
-	cancelled bool
+	name     string
+	events   []EngineEvent
+	startErr error
+	canceled bool
 }
 
 func (e *stubEngine) Name() string { return e.name }
@@ -475,7 +475,7 @@ func (e *stubEngine) Events(ctx context.Context, _ string) (<-chan EngineEvent, 
 }
 
 func (e *stubEngine) Cancel(_ context.Context, _ string) error {
-	e.cancelled = true
+	e.canceled = true
 	return nil
 }
 
@@ -1118,7 +1118,7 @@ func TestCancelScan_HappyPath(t *testing.T) {
 	}
 	got, _ := svc.GetScan(context.Background(), scan.ID)
 	if got.Status != ScanCancelled {
-		t.Errorf("Status = %q, want cancelled", got.Status)
+		t.Errorf("Status = %q, want canceled", got.Status)
 	}
 }
 
@@ -1258,13 +1258,13 @@ func TestRunScan_ContextCancelled(t *testing.T) {
 	}
 	got, _ := svc.GetScan(context.Background(), scan.ID)
 	if got.Status != ScanCancelled {
-		t.Errorf("Status = %q, want cancelled", got.Status)
+		t.Errorf("Status = %q, want canceled", got.Status)
 	}
 }
 
 // slowEngine never emits an event; Events stays open until ctx is
-// cancelled, which lets the cancellation branch of RunScan run.
-type slowEngine struct{ cancelled bool }
+// canceled, which lets the cancellation branch of RunScan run.
+type slowEngine struct{ canceled bool }
 
 func (e *slowEngine) Name() string { return "stub" }
 func (e *slowEngine) Start(_ context.Context, _ EngineStartRequest) (string, error) {
@@ -1279,7 +1279,7 @@ func (e *slowEngine) Events(ctx context.Context, _ string) (<-chan EngineEvent, 
 	return out, nil
 }
 func (e *slowEngine) Cancel(_ context.Context, _ string) error {
-	e.cancelled = true
+	e.canceled = true
 	return nil
 }
 func (e *slowEngine) Status(_ context.Context, _ string) (EngineStatus, error) {

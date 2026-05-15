@@ -40,7 +40,7 @@ func (r *SessionRecordingRepository) IsRecordingEnabled(ctx context.Context, use
 	if err == nil {
 		return enabled, retentionDays, nil
 	}
-	if err != pgx.ErrNoRows {
+	if !errors.Is(err, pgx.ErrNoRows) {
 		return false, 30, errors.Wrap(err, errors.CodeDatabaseError, "failed to check user recording config")
 	}
 
@@ -56,7 +56,7 @@ func (r *SessionRecordingRepository) IsRecordingEnabled(ctx context.Context, use
 	if err == nil {
 		return enabled, retentionDays, nil
 	}
-	if err != pgx.ErrNoRows {
+	if !errors.Is(err, pgx.ErrNoRows) {
 		return false, 30, errors.Wrap(err, errors.CodeDatabaseError, "failed to check role recording config")
 	}
 

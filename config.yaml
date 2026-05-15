@@ -21,6 +21,13 @@ server:
     # cert_file: ""             # Custom certificate path (overrides auto-generated)
     # key_file: ""              # Custom private key path
     # data_dir: ""              # PKI data directory (default: <storage.path>/pki)
+    # local_services: false     # Opt-in: TLS for the in-cluster Postgres/Redis/NATS links
+                                # (USULNET_TLS_LOCAL_SERVICES=true in docker-compose).
+                                # Defaults to false — plain TCP on the private docker network.
+                                # When true, the compose entrypoints generate self-signed
+                                # ECDSA P-256 certs and the application rewrites the
+                                # connection URLs to postgres ssl=require (skip-verify),
+                                # rediss://, and nats with TLS.
   redirect_https: true          # Redirect HTTP→HTTPS when TLS is enabled (health checks still work over HTTP)
 
 # Database (PostgreSQL)

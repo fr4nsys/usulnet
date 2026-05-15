@@ -189,9 +189,9 @@ func TestHostEventWatcher_ContextCancel(t *testing.T) {
 
 	done := make(chan struct{})
 	go func() {
-		// hostEventWatcher should return when context is cancelled.
+		// hostEventWatcher should return when context is canceled.
 		// It will fail to get a client (hostService is nil) and retry,
-		// but cancelling the context should stop it.
+		// but canceling the context should stop it.
 		svc.hostEventWatcher(ctx, hostID)
 		close(done)
 	}()
@@ -245,12 +245,12 @@ func TestServiceStop_CancelsWatchers(t *testing.T) {
 	}
 
 	// Add some fake watchers
-	cancelled := make([]bool, 3)
+	canceled := make([]bool, 3)
 	for i := range 3 {
 		idx := i
 		_, cancel := context.WithCancel(context.Background())
 		wrappedCancel := func() {
-			cancelled[idx] = true
+			canceled[idx] = true
 			cancel()
 		}
 		svc.activeWatchers[uuid.New()] = wrappedCancel
@@ -260,9 +260,9 @@ func TestServiceStop_CancelsWatchers(t *testing.T) {
 		t.Fatalf("Stop() error: %v", err)
 	}
 
-	for i, c := range cancelled {
+	for i, c := range canceled {
 		if !c {
-			t.Errorf("watcher %d was not cancelled", i)
+			t.Errorf("watcher %d was not canceled", i)
 		}
 	}
 

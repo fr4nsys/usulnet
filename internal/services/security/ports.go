@@ -46,24 +46,24 @@ type OpenPort struct {
 
 // HostPortAnalysis represents the complete port analysis for a host
 type HostPortAnalysis struct {
-	ScannedAt        time.Time           `json:"scanned_at"`
-	Duration         time.Duration       `json:"duration"`
-	TotalOpenPorts   int                 `json:"total_open_ports"`
-	TCPPorts         []OpenPort          `json:"tcp_ports"`
-	UDPPorts         []OpenPort          `json:"udp_ports"`
-	ExposedPorts     []OpenPort          `json:"exposed_ports"`     // Ports bound to 0.0.0.0 or ::
-	PrivilegedPorts  []OpenPort          `json:"privileged_ports"`  // Ports < 1024
-	HighRiskPorts    []HighRiskPort      `json:"high_risk_ports"`   // Known risky services
-	UnknownServices  []OpenPort          `json:"unknown_services"`  // Ports without known service
-	Recommendations  []string            `json:"recommendations,omitempty"`
-	SecurityScore    int                 `json:"security_score"`    // 0-100
+	ScannedAt       time.Time      `json:"scanned_at"`
+	Duration        time.Duration  `json:"duration"`
+	TotalOpenPorts  int            `json:"total_open_ports"`
+	TCPPorts        []OpenPort     `json:"tcp_ports"`
+	UDPPorts        []OpenPort     `json:"udp_ports"`
+	ExposedPorts    []OpenPort     `json:"exposed_ports"`    // Ports bound to 0.0.0.0 or ::
+	PrivilegedPorts []OpenPort     `json:"privileged_ports"` // Ports < 1024
+	HighRiskPorts   []HighRiskPort `json:"high_risk_ports"`  // Known risky services
+	UnknownServices []OpenPort     `json:"unknown_services"` // Ports without known service
+	Recommendations []string       `json:"recommendations,omitempty"`
+	SecurityScore   int            `json:"security_score"` // 0-100
 }
 
 // HighRiskPort represents a port that is commonly associated with security risks
 type HighRiskPort struct {
 	OpenPort
 	ServiceName string `json:"service_name"`
-	Risk        string `json:"risk"`        // low, medium, high, critical
+	Risk        string `json:"risk"` // low, medium, high, critical
 	Description string `json:"description"`
 	Mitigation  string `json:"mitigation"`
 }
@@ -117,33 +117,35 @@ var knownHighRiskPorts = map[uint16]struct {
 	27018: {"MongoDB", "high", "MongoDB shard port", "Never expose publicly"},
 }
 
-// TCP connection states
+// TCP connection states as encoded in /proc/net/tcp's "st" column.
+// The names mirror the Linux kernel TCP_* constants; the values are
+// the lowercase hex bytes the proc fs serializes.
 const (
-	TCP_ESTABLISHED = "01"
-	TCP_SYN_SENT    = "02"
-	TCP_SYN_RECV    = "03"
-	TCP_FIN_WAIT1   = "04"
-	TCP_FIN_WAIT2   = "05"
-	TCP_TIME_WAIT   = "06"
-	TCP_CLOSE       = "07"
-	TCP_CLOSE_WAIT  = "08"
-	TCP_LAST_ACK    = "09"
-	TCP_LISTEN      = "0A"
-	TCP_CLOSING     = "0B"
+	tcpEstablished = "01"
+	tcpSynSent     = "02"
+	tcpSynRecv     = "03"
+	tcpFinWait1    = "04"
+	tcpFinWait2    = "05"
+	tcpTimeWait    = "06"
+	tcpClose       = "07"
+	tcpCloseWait   = "08"
+	tcpLastAck     = "09"
+	tcpListen      = "0A"
+	tcpClosing     = "0B"
 )
 
 var tcpStateNames = map[string]string{
-	TCP_ESTABLISHED: "ESTABLISHED",
-	TCP_SYN_SENT:    "SYN_SENT",
-	TCP_SYN_RECV:    "SYN_RECV",
-	TCP_FIN_WAIT1:   "FIN_WAIT1",
-	TCP_FIN_WAIT2:   "FIN_WAIT2",
-	TCP_TIME_WAIT:   "TIME_WAIT",
-	TCP_CLOSE:       "CLOSE",
-	TCP_CLOSE_WAIT:  "CLOSE_WAIT",
-	TCP_LAST_ACK:    "LAST_ACK",
-	TCP_LISTEN:      "LISTEN",
-	TCP_CLOSING:     "CLOSING",
+	tcpEstablished: "ESTABLISHED",
+	tcpSynSent:     "SYN_SENT",
+	tcpSynRecv:     "SYN_RECV",
+	tcpFinWait1:    "FIN_WAIT1",
+	tcpFinWait2:    "FIN_WAIT2",
+	tcpTimeWait:    "TIME_WAIT",
+	tcpClose:       "CLOSE",
+	tcpCloseWait:   "CLOSE_WAIT",
+	tcpLastAck:     "LAST_ACK",
+	tcpListen:      "LISTEN",
+	tcpClosing:     "CLOSING",
 }
 
 // ScanHostPorts performs a comprehensive scan of open ports on the host
@@ -495,8 +497,9 @@ func (s *HostPortScanner) GetProcessForPort(inode uint64) (int, string, error) {
 			continue
 		}
 
-		// Read fd directory
-		fdPath := filepath.Join("/proc", proc.Name(), "fd")
+		// Read fd directory. /proc is the documented Linux procfs mount
+		// point, used here as the literal absolute path the kernel exposes.
+		fdPath := filepath.Join("/proc", proc.Name(), "fd") //nolint:gocritic // intentional: /proc is the canonical absolute path
 		fds, err := os.ReadDir(fdPath)
 		if err != nil {
 			continue // May not have permission
@@ -512,11 +515,13 @@ func (s *HostPortScanner) GetProcessForPort(inode uint64) (int, string, error) {
 			// Check if this fd points to our socket
 			expectedSocket := fmt.Sprintf("socket:[%d]", inode)
 			if link == expectedSocket {
-				// Found it! Get process name
-				commPath := filepath.Join("/proc", proc.Name(), "comm")
+				// Found it! Get process name from the kernel's procfs.
+				commPath := filepath.Join("/proc", proc.Name(), "comm") //nolint:gocritic // intentional: /proc is the canonical absolute path
 				comm, err := os.ReadFile(commPath)
 				if err != nil {
-					return pid, "", nil
+					// partial result: PID is enough; missing comm is
+					// reported as empty name rather than aborting the scan.
+					return pid, "", nil //nolint:nilerr
 				}
 				return pid, strings.TrimSpace(string(comm)), nil
 			}

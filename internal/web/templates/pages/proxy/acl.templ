@@ -9,6 +9,7 @@ type ACLListData struct {
 	PageData    layouts.PageData
 	Connected   bool
 	AccessLists []ACLView
+	Support     BackendSupport
 }
 
 type ACLView struct {
@@ -39,6 +40,8 @@ templ ACLList(data ACLListData) {
 			</div>
 
 			@Nav("accesslists", data.Connected)
+
+			@SupportMatrixBanner(data.Support)
 
 			if data.Connected {
 				if len(data.AccessLists) > 0 {

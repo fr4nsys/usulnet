@@ -733,16 +733,6 @@ func (h *Handler) HostDetailTempl(w http.ResponseWriter, r *http.Request) {
 	h.renderTempl(w, r, hosts.Detail(hostData))
 }
 
-// findChar finds the first occurrence of a character in a string
-func findChar(s string, c byte) int {
-	for i := 0; i < len(s); i++ {
-		if s[i] == c {
-			return i
-		}
-	}
-	return -1
-}
-
 // ============================================================================
 // Proxy Handlers
 // ============================================================================
@@ -1028,16 +1018,16 @@ func (h *Handler) SettingsUpdate(w http.ResponseWriter, r *http.Request) {
 
 	// Map form fields to config variable names (namespaced keys)
 	fields := map[string]string{
-		"settings.app_name":          r.FormValue("site_name"),
-		"backup.path":                r.FormValue("backup_path"),
-		"backup.retention_days":      r.FormValue("backup_retention"),
+		"settings.app_name":            r.FormValue("site_name"),
+		"backup.path":                  r.FormValue("backup_path"),
+		"backup.retention_days":        r.FormValue("backup_retention"),
 		"security.scan_interval_hours": r.FormValue("scan_interval"),
-		"system.update_check_hours":  r.FormValue("update_check_hours"),
-		
+		"system.update_check_hours":    r.FormValue("update_check_hours"),
+
 		// S3
-		"backup.s3.enabled":          formatCheckbox(r.FormValue("s3_enabled")),
-		"backup.s3.bucket":           r.FormValue("s3_bucket"),
-		"backup.s3.region":           r.FormValue("s3_region"),
+		"backup.s3.enabled": formatCheckbox(r.FormValue("s3_enabled")),
+		"backup.s3.bucket":  r.FormValue("s3_bucket"),
+		"backup.s3.region":  r.FormValue("s3_region"),
 
 		// SMTP
 		"notifications.smtp.enabled": formatCheckbox(r.FormValue("smtp_enabled")),
@@ -1048,16 +1038,16 @@ func (h *Handler) SettingsUpdate(w http.ResponseWriter, r *http.Request) {
 	var failedFields []string
 	for name, value := range fields {
 		// For checkboxes/booleans, we always want to save the state even if empty/false (handled by formatCheckbox)
-		// For strings, we might want to allow empty values to clear settings? 
+		// For strings, we might want to allow empty values to clear settings?
 		// For now, we save everything present in the map.
-		
+
 		v := &ConfigVarView{
 			Name:    name,
 			Value:   value,
 			VarType: "string", // Everything is stored as string
 			Scope:   "global",
 		}
-		
+
 		if err := h.services.Config().CreateVariable(ctx, v); err != nil {
 			slog.Error("Failed to save setting", "name", name, "error", err)
 			failedFields = append(failedFields, name)
@@ -1171,10 +1161,11 @@ func (h *Handler) PortsTempl(w http.ResponseWriter, r *http.Request) {
 				}
 				exposureLevel := "internal"
 				isRisky := false
-				if hostIP == "0.0.0.0" {
+				switch hostIP {
+				case "0.0.0.0":
 					exposureLevel = "internet"
 					isRisky = true
-				} else if hostIP == "127.0.0.1" {
+				case "127.0.0.1":
 					exposureLevel = "localhost"
 				}
 
@@ -1590,9 +1581,10 @@ func (h *Handler) ContainerRowPartial(w http.ResponseWriter, r *http.Request) {
 		portStr += p.Display
 	}
 	stateClass := "text-gray-400"
-	if container.State == "running" {
+	switch container.State {
+	case "running":
 		stateClass = "text-green-400"
-	} else if container.State == "exited" {
+	case "exited":
 		stateClass = "text-red-400"
 	}
 	w.Write([]byte(`<tr id="container-` + container.ShortID + `">` +
@@ -1816,10 +1808,7 @@ func (h *Handler) TerminalHubTempl(w http.ResponseWriter, r *http.Request) {
 		// Single container mode
 		container, err := h.services.Containers().Get(ctx, containerID)
 		if err == nil && container != nil {
-			name := container.Name
-			if strings.HasPrefix(name, "/") {
-				name = name[1:]
-			}
+			name := strings.TrimPrefix(container.Name, "/")
 			initialTabs = append(initialTabs, components.TerminalTabConfig{
 				ID:       containerID[:12],
 				Name:     name,
@@ -1833,10 +1822,7 @@ func (h *Handler) TerminalHubTempl(w http.ResponseWriter, r *http.Request) {
 		// Add a new tab for the specified container
 		container, err := h.services.Containers().Get(ctx, addContainerID)
 		if err == nil && container != nil {
-			name := container.Name
-			if strings.HasPrefix(name, "/") {
-				name = name[1:]
-			}
+			name := strings.TrimPrefix(container.Name, "/")
 			initialTabs = append(initialTabs, components.TerminalTabConfig{
 				ID:       addContainerID[:12],
 				Name:     name,
@@ -1855,10 +1841,7 @@ func (h *Handler) TerminalHubTempl(w http.ResponseWriter, r *http.Request) {
 		if err == nil && len(containerList) > 0 {
 			for _, c := range containerList {
 				if c.State == "running" {
-					name := c.Name
-					if strings.HasPrefix(name, "/") {
-						name = name[1:]
-					}
+					name := strings.TrimPrefix(c.Name, "/")
 					initialTabs = append(initialTabs, components.TerminalTabConfig{
 						ID:       c.ID[:12],
 						Name:     name,
@@ -1890,10 +1873,7 @@ func (h *Handler) TerminalPickerTempl(w http.ResponseWriter, r *http.Request) {
 	if err == nil {
 		for _, c := range containerList {
 			if c.State == "running" {
-				name := c.Name
-				if strings.HasPrefix(name, "/") {
-					name = name[1:]
-				}
+				name := strings.TrimPrefix(c.Name, "/")
 				pickerContainers = append(pickerContainers, pages.TerminalPickerContainer{
 					ID:     c.ID,
 					Name:   name,

@@ -1,0 +1,130 @@
+// SPDX-License-Identifier: AGPL-3.0-or-later
+// Copyright (c) 2024-2026 usulnet contributors
+// https://github.com/fr4nsys/usulnet
+
+package wireguard
+
+import (
+	"fmt"
+
+	"github.com/fr4nsys/usulnet/internal/web/templates/layouts"
+)
+
+type MeshData struct {
+	PageData      layouts.PageData
+	Links         []MeshLinkView
+	StandaloneMsg string
+	// AgentCount and AppliedCount feed the summary cards.
+	AgentCount   int
+	AppliedCount int
+	PendingCount int
+	FailedCount  int
+}
+
+type MeshLinkView struct {
+	PeerID        string
+	PeerName      string
+	AgentHostID   string
+	AgentHostname string
+	Status        string
+	LastError     string
+	LastHandshake string
+	AppliedAt     string
+	UpdatedAt     string
+}
+
+templ Mesh(data MeshData) {
+	@layouts.Base(data.PageData) {
+		<div class="space-y-6">
+			@Nav("mesh")
+			if data.StandaloneMsg != "" {
+				<div class="bg-blue-500/10 border border-blue-500/30 text-blue-300 rounded-lg p-4 text-sm">
+					<i class="fas fa-info-circle mr-2"></i>{ data.StandaloneMsg }
+				</div>
+			}
+			<div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+				<div class="bg-dark-700 rounded-lg p-4 border border-dark-600">
+					<p class="text-xs text-gray-500 uppercase tracking-wide">Agents</p>
+					<p class="text-2xl font-bold text-white mt-1">{ fmt.Sprintf("%d", data.AgentCount) }</p>
+				</div>
+				<div class="bg-dark-700 rounded-lg p-4 border border-dark-600">
+					<p class="text-xs text-gray-500 uppercase tracking-wide">Applied</p>
+					<p class="text-2xl font-bold text-green-400 mt-1">{ fmt.Sprintf("%d", data.AppliedCount) }</p>
+				</div>
+				<div class="bg-dark-700 rounded-lg p-4 border border-dark-600">
+					<p class="text-xs text-gray-500 uppercase tracking-wide">Pending</p>
+					<p class="text-2xl font-bold text-yellow-400 mt-1">{ fmt.Sprintf("%d", data.PendingCount) }</p>
+				</div>
+				<div class="bg-dark-700 rounded-lg p-4 border border-dark-600">
+					<p class="text-xs text-gray-500 uppercase tracking-wide">Failed</p>
+					<p class="text-2xl font-bold text-red-400 mt-1">{ fmt.Sprintf("%d", data.FailedCount) }</p>
+				</div>
+			</div>
+			<div class="bg-dark-700 rounded-lg border border-dark-600 overflow-hidden">
+				<div class="p-4 border-b border-dark-600">
+					<h3 class="text-sm font-semibold text-white">Mesh links</h3>
+					<p class="text-xs text-gray-500 mt-1">Each row is a (peer, agent) pair pushed from this master.</p>
+				</div>
+				<table class="w-full">
+					<thead>
+						<tr class="border-b border-dark-600 text-xs text-gray-500 uppercase tracking-wide">
+							<th class="text-left p-4">Peer</th>
+							<th class="text-left p-4">Agent</th>
+							<th class="text-left p-4">Status</th>
+							<th class="text-left p-4">Last handshake</th>
+							<th class="text-left p-4">Applied at</th>
+							<th class="text-left p-4">Updated at</th>
+							<th class="text-left p-4">Last error</th>
+						</tr>
+					</thead>
+					<tbody>
+						for _, link := range data.Links {
+							<tr class="border-b border-dark-600/50 hover:bg-dark-600/30 transition-colors">
+								<td class="p-4">
+									<a href={ templ.SafeURL("/wireguard/peers/" + link.PeerID) } class="text-primary-400 hover:text-primary-300 font-medium">
+										if link.PeerName != "" {
+											{ link.PeerName }
+										} else {
+											{ link.PeerID }
+										}
+									</a>
+								</td>
+								<td class="p-4 text-sm text-gray-300">
+									if link.AgentHostname != "" {
+										{ link.AgentHostname }
+									} else {
+										<span class="font-mono text-xs">{ link.AgentHostID }</span>
+									}
+								</td>
+								<td class="p-4">@meshStatusBadge(link.Status)</td>
+								<td class="p-4 text-xs text-gray-400">
+									if link.LastHandshake != "" {
+										{ link.LastHandshake }
+									} else {
+										<span class="text-gray-500">—</span>
+									}
+								</td>
+								<td class="p-4 text-xs text-gray-400">
+									if link.AppliedAt != "" {
+										{ link.AppliedAt }
+									} else {
+										<span class="text-gray-500">—</span>
+									}
+								</td>
+								<td class="p-4 text-xs text-gray-400">{ link.UpdatedAt }</td>
+								<td class="p-4 text-xs text-red-400">{ link.LastError }</td>
+							</tr>
+						}
+						if len(data.Links) == 0 {
+							<tr>
+								<td colspan="7" class="p-8 text-center text-gray-500">
+									No mesh links recorded yet. Add a peer and select target agents on the new-peer form.
+								</td>
+							</tr>
+						}
+					</tbody>
+				</table>
+			</div>
+		</div>
+	}
+}

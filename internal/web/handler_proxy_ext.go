@@ -409,9 +409,11 @@ func (h *Handler) StreamListTempl(w http.ResponseWriter, r *http.Request) {
 
 	var connected bool
 	var streams []proxy.StreamView
+	var support proxy.BackendSupport
 
 	if proxySvc := h.services.Proxy(); proxySvc != nil {
 		connected = proxySvc.IsConnected(ctx)
+		support = toTemplBackendSupport(proxySvc.BackendSupport())
 		if connected {
 			if list, err := proxySvc.ListStreams(ctx); err == nil {
 				for _, s := range list {
@@ -433,8 +435,22 @@ func (h *Handler) StreamListTempl(w http.ResponseWriter, r *http.Request) {
 		PageData:  pageData,
 		Connected: connected,
 		Streams:   streams,
+		Support:   support,
 	}
 	h.renderTempl(w, r, proxy.StreamList(data))
+}
+
+// toTemplBackendSupport converts the web-layer support shape into the
+// template-package shape used by the SupportMatrixBanner.
+func toTemplBackendSupport(s ProxyBackendSupport) proxy.BackendSupport {
+	return proxy.BackendSupport{
+		Mode:         s.Mode,
+		AccessLists:  s.AccessLists,
+		DeadHosts:    s.DeadHosts,
+		Locations:    s.Locations,
+		Redirections: s.Redirections,
+		Streams:      s.Streams,
+	}
 }
 
 func (h *Handler) StreamNewTempl(w http.ResponseWriter, r *http.Request) {
@@ -686,9 +702,11 @@ func (h *Handler) ACLListTempl(w http.ResponseWriter, r *http.Request) {
 
 	var connected bool
 	var accessLists []proxy.ACLView
+	var support proxy.BackendSupport
 
 	if proxySvc := h.services.Proxy(); proxySvc != nil {
 		connected = proxySvc.IsConnected(ctx)
+		support = toTemplBackendSupport(proxySvc.BackendSupport())
 		if connected {
 			if list, err := proxySvc.ListAccessLists(ctx); err == nil {
 				for _, al := range list {
@@ -709,6 +727,7 @@ func (h *Handler) ACLListTempl(w http.ResponseWriter, r *http.Request) {
 		PageData:    pageData,
 		Connected:   connected,
 		AccessLists: accessLists,
+		Support:     support,
 	}
 	h.renderTempl(w, r, proxy.ACLList(data))
 }

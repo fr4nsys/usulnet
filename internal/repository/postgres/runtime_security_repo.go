@@ -32,9 +32,9 @@ type RuntimeEventListOptions struct {
 
 // RuntimeEventStats holds aggregated statistics for runtime security events.
 type RuntimeEventStats struct {
-	TotalEvents   int64                 `json:"total_events"`
-	SeverityCounts map[string]int       `json:"severity_counts"`
-	TypeCounts     map[string]int       `json:"type_counts"`
+	TotalEvents    int64                 `json:"total_events"`
+	SeverityCounts map[string]int        `json:"severity_counts"`
+	TypeCounts     map[string]int        `json:"type_counts"`
 	TopContainers  []ContainerEventCount `json:"top_containers"`
 }
 
@@ -64,21 +64,6 @@ func NewRuntimeSecurityRepository(db *DB, log *logger.Logger) *RuntimeSecurityRe
 const runtimeEventColumns = `id, host_id, container_id, container_name, event_type,
 	severity, rule_id, rule_name, description, details, source, action_taken,
 	acknowledged, acknowledged_by, acknowledged_at, detected_at`
-
-// scanRuntimeEventRow scans a single pgx.Row into a models.RuntimeSecurityEvent.
-func scanRuntimeEventRow(row pgx.Row) (*models.RuntimeSecurityEvent, error) {
-	var e models.RuntimeSecurityEvent
-	err := row.Scan(
-		&e.ID, &e.HostID, &e.ContainerID, &e.ContainerName, &e.EventType,
-		&e.Severity, &e.RuleID, &e.RuleName, &e.Description, &e.Details,
-		&e.Source, &e.ActionTaken, &e.Acknowledged, &e.AcknowledgedBy,
-		&e.AcknowledgedAt, &e.DetectedAt,
-	)
-	if err != nil {
-		return nil, err
-	}
-	return &e, nil
-}
 
 // scanRuntimeEventRows scans multiple pgx.Rows into a slice of models.RuntimeSecurityEvent.
 func scanRuntimeEventRows(rows pgx.Rows) ([]*models.RuntimeSecurityEvent, error) {
@@ -524,7 +509,7 @@ func (r *RuntimeSecurityRepository) GetRule(ctx context.Context, id uuid.UUID) (
 
 	rule, err := scanRuntimeRuleRow(r.db.QueryRow(ctx, query, id))
 	if err != nil {
-		if err == pgx.ErrNoRows {
+		if errors.Is(err, pgx.ErrNoRows) {
 			return nil, errors.NotFound("runtime security rule")
 		}
 		return nil, errors.Wrap(err, errors.CodeDatabaseError, "failed to get runtime security rule")
@@ -740,7 +725,7 @@ func (r *RuntimeSecurityRepository) GetActiveBaseline(ctx context.Context, conta
 		&b.CreatedAt, &b.UpdatedAt,
 	)
 	if err != nil {
-		if err == pgx.ErrNoRows {
+		if errors.Is(err, pgx.ErrNoRows) {
 			return nil, nil // No active baseline is not an error
 		}
 		return nil, errors.Wrap(err, errors.CodeDatabaseError, "failed to get active runtime baseline")

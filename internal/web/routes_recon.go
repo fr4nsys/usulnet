@@ -14,7 +14,7 @@ import (
 //
 // The recon module is feature-flag gated at the service layer: when the
 // service is nil or IsEnabled() returns false the handlers themselves
-// short-circuit with 404, matching the API behaviour described in
+// short-circuit with 404, matching the API behavior described in
 // docs/v26.5/technical-notes.md "Feature flag".
 func RegisterReconRoutes(r chi.Router, h *Handler, m *Middleware) {
 	// Privacy & Recon UI pages.

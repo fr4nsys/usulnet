@@ -12,11 +12,13 @@
 3. [Installation with Standalone Binary](#installation-with-standalone-binary)
 4. [First Access & Initial Setup](#first-access--initial-setup)
 5. [HTTPS / TLS Configuration](#https--tls-configuration)
+   - [Optional: TLS for In-Cluster Postgres / Redis / NATS](#optional-tls-for-in-cluster-postgres--redis--nats)
 6. [Multi-Host Setup (Master + Agents)](#multi-host-setup-master--agents)
 7. [Recon Module (Opt-In)](#recon-module-opt-in)
-8. [Upgrading](#upgrading)
-9. [Uninstalling](#uninstalling)
-10. [Troubleshooting](#troubleshooting)
+8. [Capability Requirements (v26.5.1 modules)](#capability-requirements-v2651-modules)
+9. [Upgrading](#upgrading)
+10. [Uninstalling](#uninstalling)
+11. [Troubleshooting](#troubleshooting)
 
 ---
 
@@ -263,6 +265,12 @@ psql -U postgres -c "CREATE DATABASE usulnet OWNER usulnet;"
 usulnet migrate up
 ```
 
+To verify the schema, run `usulnet migrate status` — it lists every
+migration (`001_foundation` through `056_marketplace`) with its applied
+state.
+
+![Migration status](screenshots/migrate-status.png)
+
 ### Step 6: Start the Server
 
 ```bash
@@ -306,13 +314,16 @@ sudo systemctl status usulnet
 ## First Access & Initial Setup
 
 1. Open the web interface at `http://localhost:8080` (or your configured URL)
+
+   ![Login page](screenshots/login.png)
+
 2. Log in with the default credentials: `admin` / `usulnet`
 3. **Change the admin password immediately** via the profile page
 4. Configure system settings in **Admin > Settings**:
    - Set the platform name and base URL
    - Configure email/SMTP for notifications (optional)
    - Configure backup storage (optional)
-   - Set up LDAP authentication if required (requires Business/Enterprise license)
+   - Set up LDAP authentication (built-in, no separate license)
 
 ---
 
@@ -355,6 +366,52 @@ volumes:
   - ./certs/cert.pem:/app/certs/cert.pem:ro
   - ./certs/key.pem:/app/certs/key.pem:ro
 ```
+
+### Optional: TLS for In-Cluster Postgres / Redis / NATS
+
+By default, the application talks to its Postgres, Redis, and NATS
+containers over **plain TCP on the private `usulnet-backend` Docker
+network**. The network is not exposed to the host, so on a single-box
+install the traffic never leaves the loopback bridge.
+
+When that hop needs to be encrypted (multi-host overlays, defence-in-
+depth, regulatory requirements), turn on **local-services TLS**:
+
+```bash
+USULNET_TLS_LOCAL_SERVICES=true docker compose up -d
+```
+
+What changes when the flag is true:
+
+- The Postgres / Redis / NATS entrypoint scripts under `deploy/tls/`
+  generate a self-signed ECDSA P-256 server certificate (valid 3650
+  days) on first boot and persist it in the data volume.
+- Postgres starts with `ssl=on` and accepts TLS on 5432.
+- Redis disables plain-TCP listener and binds TLS on 6379. The
+  application connects with `rediss://`.
+- NATS appends a `tls{}` block to `nats-server.conf` and accepts TLS
+  on 4222.
+- The application detects the flag at boot via `server.tls.local_services`
+  (Viper key) or `USULNET_TLS_LOCAL_SERVICES=true` and rewrites the
+  Postgres, Redis, and NATS connection settings automatically — no
+  config changes needed in `config.yaml`. Self-signed certificates are
+  accepted with `skip-verify` by default; mount your own CA bundle and
+  flip `redis.tls_skip_verify: false` / `nats.tls.skip_verify: false`
+  to opt back into `verify-full`.
+- Defaults stay plain TCP. With the env var unset or `false`, the
+  compose entrypoint scripts execute the upstream binaries with no
+  changes — there is no on-disk PKI material and no scheme rewrite.
+
+You can also pre-generate the certs on the host (useful for audit,
+mTLS, or mounting your own CA):
+
+```bash
+USULNET_TLS_LOCAL_SERVICES=true make dev-certs
+```
+
+The certs land under `deploy/tls/certs/{postgres,redis,nats}/` and are
+gitignored. The `make dev-certs` target is a no-op when the env var is
+unset.
 
 ---
 
@@ -406,7 +463,165 @@ The v26.5.0 recon and metadata module ships **off by default**. A fresh install 
 
 ---
 
+## Capability Requirements (v26.5.1 modules)
+
+v26.5.1 ports eleven modules from v26.2.7 into the AGPL build. The
+defaults in [`docker-compose.yml`](../docker-compose.yml) cover every
+module that operates strictly inside the usulnet container. The modules
+that reach out to the host (firewall, WireGuard, docker-engine config,
+image builder) require extra mounts or capabilities, listed here.
+Operators who do not use a given module can ignore its row.
+
+### Firewall (`/firewall`)
+
+The firewall service does not open raw sockets from the usulnet
+container; it issues `ufw`/`nft`/`iptables` commands against the host
+via the host-management transport. Two prerequisites:
+
+- The host (or remote agent) must have at least one of `ufw`,
+  `nftables`, or `iptables` installed. The service detects the active
+  backend on first use and surfaces it on the Operations → Firewall
+  page.
+- The user account the transport runs as needs **`NET_ADMIN`** on the
+  host to apply rules. For the bundled installer this means running the
+  agent process under `root` or a user with the `cap_net_admin`
+  capability granted via `setcap cap_net_admin+ep /usr/local/bin/iptables`
+  (or the equivalent for `nft`/`ufw`). The usulnet container itself
+  does **not** receive a new capability — the privilege lives on the
+  host.
+
+### WireGuard (`/wireguard`)
+
+WireGuard peer/interface management runs on each agent host via the
+existing NATS gateway. Per agent:
+
+- The Linux **WireGuard kernel module** must be loaded
+  (`modprobe wireguard`; verify with `lsmod | grep wireguard`). Kernel
+  5.6+ ships the module in-tree; earlier kernels need
+  `wireguard-dkms` or `wireguard-tools` from the distro repos.
+- The `wg` and `wg-quick` binaries must be on `PATH`. usulnet probes
+  both at startup (`wireguard.ProbeLocal`) and surfaces a yellow banner
+  on the WireGuard list page when either is missing — installation
+  continues but mutating routes return `503 service_unavailable` until
+  the dependency is satisfied.
+- The agent process needs **`NET_ADMIN`** to bring interfaces up,
+  same justification as firewall. Same options apply
+  (`root`, `cap_net_admin`).
+- Setting `USULNET_ENCRYPTION_KEY` is **required** — when the
+  installation data encryption key is unavailable at boot, the service
+  is intentionally not constructed so cleartext WireGuard private keys
+  never land in the database. The web UI then renders a
+  "not configured" page rather than persisting unsealed material.
+
+### Docker engine config (`/docker-engine`)
+
+The Monaco diff editor needs read-write access to the host's
+`/etc/docker/daemon.json`. The default `docker-compose.yml` does **not**
+mount this path — opt in by adding the following volume to the
+`usulnet` service:
+
+```yaml
+volumes:
+  - /etc/docker:/etc/docker:rw
+```
+
+The atomic writer creates `daemon.json.tmp.<rand>` in the same
+directory, `fsync`s, then `rename(2)`s onto `daemon.json`, so a crash
+during apply leaves the previous `daemon.json` intact. Reload uses
+`SIGHUP` to the daemon and polls `dockerd`'s API for up to 60 s; on
+timeout or unhealthy response the editor restores the pre-apply
+snapshot and re-issues `SIGHUP`. Snapshot history lives on disk under
+`/etc/docker/usulnet-snapshots/` (rotated; default keep = 50). When the
+mount is missing the entire `/docker-engine` route family returns
+`503 service_unavailable` with an explicit "host /etc/docker not
+mounted" message.
+
+> The v26.2.7 nsenter-via-`docker exec` self-exec path is **not**
+> ported. v26.5.1 expects an explicit `/etc/docker` bind mount.
+
+### Image builder (`/image-builder`)
+
+Local Docker builds shell out to the **host Docker socket** that is
+already mounted into the usulnet container by the default compose file
+(`/var/run/docker.sock`). No extra capability is required. Build
+context uploads are capped at `image_builder.max_context_bytes`
+(default 256 MiB; 413 from the API past that). Optional cosign signing
+is wired through the existing `imagesign` service and only fires when
+`image_sign.enabled=true`.
+
+If your install does not mount the Docker socket (rare; the platform
+fundamentally needs it for container management), every
+`/image-builder` route returns `503 service_unavailable`.
+
+### Backup verification (`/backup-verify`)
+
+Verification jobs launch a sandboxed container via the recon sandbox
+launcher (`internal/services/recon/sandbox/launcher.go`). The sandbox
+shares the same posture as the recon engines:
+
+- Read-only rootfs, `CAP_DROP=ALL`, `no-new-privileges`, default
+  seccomp, non-root UID `65534:65534`.
+- 512 MiB memory cap, 1 vCPU, 256 PIDs.
+- Dedicated egress-controlled bridge network.
+- The per-installation encryption key is passed to the verification
+  container via a **tmpfs file mount** — never an environment variable.
+
+No additional host capability is required; the Docker socket the
+launcher needs is already mounted for the platform itself.
+
+### DNS providers (`/dns`)
+
+Cloudflare, AWS Route 53, DigitalOcean, and RFC 2136 providers all
+operate over outbound HTTPS / UDP from the usulnet container. The only
+requirement is **egress to the provider's API endpoint** (and DNS
+resolution for that endpoint). Provider credentials are AES-256-GCM
+encrypted at rest with the installation data encryption key (same key
+as recon + WireGuard); set `USULNET_ENCRYPTION_KEY` to a 32-byte
+hex/base64 secret to enable the service.
+
+### Other v26.5.1 modules
+
+The remaining modules — **firewall** (above), **crontab**,
+**rollback**, **SSL observatory**, **calendar**, **marketplace**,
+**proxy-extended** — operate entirely inside the usulnet container and
+need no extra mounts or capabilities beyond what the default compose
+file already grants. They each persist to PostgreSQL (migrations 046,
+049, 054, 051, 046, 056, 047 respectively); see
+[CHANGELOG.md](../CHANGELOG.md) for per-module detail.
+
+---
+
 ## Upgrading
+
+### v26.5.0 → v26.5.1
+
+v26.5.1 is **migration-additive only**. Migrations 046–056 create new
+tables; no destructive `ALTER` runs against an existing v26.5.0
+table, and the v26.5.0 `recon_*` schema (044/045) is untouched. The
+schema check `scripts/verify-migrations.sh` is part of `make quality`
+and asserts no gap, no duplicate, no orphan up.sql/down.sql.
+
+No application config keys are removed. New keys default to safe
+values:
+
+- `image_builder.max_context_bytes` → 256 MiB
+- `image_builder.image_sign.enabled` → false
+- `ssl_observatory.per_target_concurrency` → 4
+- `crontab.*` → no global toggles; the page is reachable as soon as
+  the user has the new `crontab:view` permission
+
+A v26.5.0 install can roll forward by pulling the new image and
+restarting:
+
+```bash
+docker compose pull
+docker compose up -d
+```
+
+To roll back from v26.5.1 to v26.5.0, see the **Rollback** section in
+[`docs/v26.5/release-notes-v26.5.1.md`](v26.5/release-notes-v26.5.1.md)
+— migrations 046–056 drop cleanly in reverse order, and the rolled-back
+binary will ignore the now-empty `recon_*`/`v26.5.0` data.
 
 ### Docker Compose
 

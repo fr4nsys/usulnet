@@ -65,9 +65,20 @@ services:
       - USULNET_MODE=${USULNET_MODE:-standalone}
 
       # --- Infrastructure connections ---
+      # URLs stay plain by default. When USULNET_TLS_LOCAL_SERVICES=true,
+      # the application rewires the schemes at startup (postgres
+      # sslmode=require, rediss://, NATS with TLS).
       - USULNET_DATABASE_URL=postgres://${DB_USER:-usulnet}:${DB_PASSWORD}@postgres:5432/${DB_NAME:-usulnet}
       - USULNET_REDIS_URL=redis://redis:6379
       - USULNET_NATS_URL=nats://nats:4222
+
+      # --- Optional TLS for in-cluster Postgres / Redis / NATS ---
+      # Opt-in only. When unset/false, services run on plain TCP on the
+      # private usulnet-backend network (defaults unchanged). When true,
+      # the matching entrypoint scripts in ./deploy/tls/ generate
+      # self-signed ECDSA P-256 certs and the binary rewrites the URL
+      # schemes to use TLS.
+      - USULNET_TLS_LOCAL_SERVICES=${USULNET_TLS_LOCAL_SERVICES:-false}
 
       # --- Security (MUST be changed in production) ---
       - USULNET_JWT_SECRET=${JWT_SECRET}
@@ -192,8 +203,17 @@ services:
       POSTGRES_DB: ${DB_NAME:-usulnet}
       # Performance tuning for containerized PostgreSQL
       POSTGRES_INITDB_ARGS: "--data-checksums"
+      # Toggle TLS bootstrap inside the entrypoint. Off by default.
+      USULNET_TLS_LOCAL_SERVICES: ${USULNET_TLS_LOCAL_SERVICES:-false}
+    # The entrypoint script is a dispatcher: when
+    # USULNET_TLS_LOCAL_SERVICES is unset or false it execs the stock
+    # postgres entrypoint with the tuning args below and behaves
+    # exactly like before. When the flag is true it generates a
+    # self-signed ECDSA P-256 cert in /var/lib/postgresql/tls/ and
+    # re-execs with `-c ssl=on` prepended.
+    entrypoint:
+      - "/usulnet-tls/postgres-entrypoint.sh"
     command:
-      - "postgres"
       - "-c"
       - "shared_buffers=128MB"
       - "-c"
@@ -212,6 +232,7 @@ services:
       - "log_min_duration_statement=1000"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      - ./deploy/tls:/usulnet-tls:ro
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-usulnet} -d ${DB_NAME:-usulnet}"]
       interval: 10s
@@ -242,6 +263,16 @@ services:
     image: redis:8-alpine
     container_name: usulnet-redis
     restart: unless-stopped
+    environment:
+      USULNET_TLS_LOCAL_SERVICES: ${USULNET_TLS_LOCAL_SERVICES:-false}
+    # The entrypoint script is a dispatcher: when
+    # USULNET_TLS_LOCAL_SERVICES is unset or false it execs the stock
+    # redis entrypoint with the args below and behaves exactly like
+    # before (plain TCP on 6379). When the flag is true it generates a
+    # self-signed cert in /tls/ and starts redis-server with TLS bound
+    # on 6379 — plain TCP is disabled.
+    entrypoint:
+      - "/usulnet-tls/redis-entrypoint.sh"
     command:
       - "redis-server"
       - "--appendonly"
@@ -257,8 +288,11 @@ services:
       - "511"
     volumes:
       - redis_data:/data
+      - ./deploy/tls:/usulnet-tls:ro
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      # When TLS is on, redis-cli speaks plaintext on 6379 by default
+      # and PING fails. Skip the cipher check by using TCP probe.
+      test: ["CMD-SHELL", "redis-cli ping 2>/dev/null || nc -z localhost 6379"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -285,12 +319,20 @@ services:
     image: nats:2.12-alpine
     container_name: usulnet-nats
     restart: unless-stopped
-    command:
-      - "-c"
-      - "/etc/nats/nats-server.conf"
+    environment:
+      USULNET_TLS_LOCAL_SERVICES: ${USULNET_TLS_LOCAL_SERVICES:-false}
+    # The entrypoint script is a dispatcher: when
+    # USULNET_TLS_LOCAL_SERVICES is unset or false it execs nats-server
+    # against the mounted nats-server.conf (plain TCP on 4222). When
+    # the flag is true it generates a self-signed cert in /tls/,
+    # appends a tls{} block to a copy of the config, and execs
+    # nats-server against the effective copy.
+    entrypoint:
+      - "/usulnet-tls/nats-entrypoint.sh"
     volumes:
       - nats_data:/data
       - ./deploy/nats-server.conf:/etc/nats/nats-server.conf:ro
+      - ./deploy/tls:/usulnet-tls:ro
     healthcheck:
       test: ["CMD", "wget", "-q", "--spider", "http://localhost:8222/healthz"]
       interval: 10s

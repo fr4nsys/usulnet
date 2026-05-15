@@ -626,7 +626,7 @@ func (r *ConfigSyncRepository) scanSync(row pgx.Row) (*models.ConfigSync, error)
 		&s.UpdatedAt,
 	)
 	if err != nil {
-		if err == pgx.ErrNoRows {
+		if errors.Is(err, pgx.ErrNoRows) {
 			return nil, errors.NotFound("config sync")
 		}
 		return nil, errors.Wrap(err, errors.CodeDatabaseError, "failed to scan sync")

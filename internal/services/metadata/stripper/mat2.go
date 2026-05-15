@@ -145,7 +145,7 @@ func (m *Mat2) Strip(ctx context.Context, input metadata.StripInput) (metadata.S
 
 	// Cross-check the in-container sha256 against the bytes we copied
 	// back. A mismatch would suggest the tmpfs got reused or the
-	// container produced an artefact at a different path; fail loudly
+	// container produced an artifact at a different path; fail loudly
 	// rather than write a stale copy.
 	if report.SHA256 != "" {
 		gotSum := hex.EncodeToString(sha256Bytes(cleaned))

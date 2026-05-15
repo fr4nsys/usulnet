@@ -22,14 +22,14 @@ import (
 
 // EventProcessor processes events from agents.
 type EventProcessor struct {
-	server    *Server
-	log       *logger.Logger
-	handlers  map[protocol.EventType][]EventHandler
-	mu        sync.RWMutex
+	server   *Server
+	log      *logger.Logger
+	handlers map[protocol.EventType][]EventHandler
+	mu       sync.RWMutex
 
 	// Event buffer for batch processing
-	buffer    chan *protocol.Event
-	batchSize int
+	buffer        chan *protocol.Event
+	batchSize     int
 	flushInterval time.Duration
 }
 
@@ -457,12 +457,12 @@ func isSecurityEvent(t protocol.EventType) bool {
 
 // EventAggregator aggregates events for reporting.
 type EventAggregator struct {
-	counts   map[protocol.EventType]int64
-	byHost   map[uuid.UUID]int64
+	counts     map[protocol.EventType]int64
+	byHost     map[uuid.UUID]int64
 	bySeverity map[protocol.EventSeverity]int64
-	window   time.Duration
-	lastReset time.Time
-	mu       sync.RWMutex
+	window     time.Duration
+	lastReset  time.Time
+	mu         sync.RWMutex
 }
 
 // NewEventAggregator creates a new event aggregator.
@@ -500,12 +500,12 @@ func (a *EventAggregator) Record(event *protocol.Event) {
 
 // EventSummary contains aggregated event statistics.
 type EventSummary struct {
-	WindowStart   time.Time                           `json:"window_start"`
-	WindowEnd     time.Time                           `json:"window_end"`
-	TotalEvents   int64                               `json:"total_events"`
-	ByType        map[protocol.EventType]int64        `json:"by_type"`
-	BySeverity    map[protocol.EventSeverity]int64    `json:"by_severity"`
-	ByHost        map[string]int64                    `json:"by_host"`
+	WindowStart time.Time                        `json:"window_start"`
+	WindowEnd   time.Time                        `json:"window_end"`
+	TotalEvents int64                            `json:"total_events"`
+	ByType      map[protocol.EventType]int64     `json:"by_type"`
+	BySeverity  map[protocol.EventSeverity]int64 `json:"by_severity"`
+	ByHost      map[string]int64                 `json:"by_host"`
 }
 
 // Summary returns aggregated statistics.

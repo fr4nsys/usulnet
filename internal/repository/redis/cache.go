@@ -7,6 +7,7 @@ package redis
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"time"
 
 	"github.com/redis/go-redis/v9"
@@ -78,7 +79,7 @@ func (c *Client) GetOrSet(ctx context.Context, key string, expiration time.Durat
 	if err == nil {
 		return val, nil
 	}
-	if err != redis.Nil {
+	if !errors.Is(err, redis.Nil) {
 		return "", err
 	}
 
@@ -103,7 +104,7 @@ func (c *Client) GetOrSetJSON(ctx context.Context, key string, dest interface{},
 	if err == nil {
 		return nil
 	}
-	if err != redis.Nil {
+	if !errors.Is(err, redis.Nil) {
 		return err
 	}
 

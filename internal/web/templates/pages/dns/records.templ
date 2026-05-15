@@ -1,0 +1,79 @@
+package dns
+
+import (
+	"fmt"
+
+	"github.com/fr4nsys/usulnet/internal/web/templates/layouts"
+)
+
+// RecordsAcrossProvidersData powers the /dns/records page that lists
+// every record managed by any provider on the active host.
+type RecordsAcrossProvidersData struct {
+	PageData  layouts.PageData
+	Providers []ProviderView
+	Records   []RecordView
+}
+
+templ Records(data RecordsAcrossProvidersData) {
+	@layouts.Base(data.PageData) {
+		<div class="space-y-6">
+			<div>
+				<h1 class="text-2xl font-display font-bold text-white">Records</h1>
+				<p class="text-gray-400 mt-1">All records the platform owns across every provider on this host.</p>
+			</div>
+			@Nav("records")
+
+			if len(data.Providers) == 0 {
+				<div class="card p-8 text-center">
+					<i class="fas fa-list text-4xl text-gray-400 mb-4"></i>
+					<h3 class="text-lg font-medium text-white mb-2">No DNS providers</h3>
+					<p class="text-gray-400 mb-4">Add a provider first to create records.</p>
+					<a href="/dns/new" class="btn-primary"><i class="fas fa-plus mr-2"></i>Add provider</a>
+				</div>
+			} else {
+				<div class="card">
+					<div class="overflow-x-auto">
+						<table class="table">
+							<thead>
+								<tr>
+									<th>Provider</th>
+									<th>Name</th>
+									<th>Type</th>
+									<th>Content</th>
+									<th>TTL</th>
+									<th>Managed by</th>
+								</tr>
+							</thead>
+							<tbody>
+								for _, r := range data.Records {
+									<tr>
+										<td>
+											<a href={ templ.SafeURL(fmt.Sprintf("/dns/%s", r.ProviderID)) } class="text-primary-400 hover:text-primary-300 text-sm">{ providerNameFor(data.Providers, r.ProviderID) }</a>
+										</td>
+										<td class="font-mono text-sm">{ r.Name }</td>
+										<td><span class="badge badge-neutral">{ r.Type }</span></td>
+										<td class="font-mono text-sm text-gray-300">{ r.Content }</td>
+										<td class="text-sm text-gray-400">{ fmt.Sprintf("%d", r.TTL) }</td>
+										<td><span class="text-xs text-gray-400">{ r.ManagedBy }</span></td>
+									</tr>
+								}
+								if len(data.Records) == 0 {
+									<tr><td colspan="6" class="text-center text-gray-500 py-6">No records yet</td></tr>
+								}
+							</tbody>
+						</table>
+					</div>
+				</div>
+			}
+		</div>
+	}
+}
+
+func providerNameFor(providers []ProviderView, id string) string {
+	for _, p := range providers {
+		if p.ID == id {
+			return p.Name
+		}
+	}
+	return id
+}

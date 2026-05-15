@@ -13,6 +13,7 @@ import (
 	"crypto/x509"
 	"crypto/x509/pkix"
 	"encoding/pem"
+	"errors"
 	"fmt"
 	"log/slog"
 	"os"
@@ -79,7 +80,7 @@ func (a *ACMEClient) RequestCertificate(ctx context.Context, domains []string, e
 	}
 	if _, err := client.Register(ctx, acct, acme.AcceptTOS); err != nil {
 		// ErrAccountAlreadyExists means we're already registered — that's fine
-		if err != acme.ErrAccountAlreadyExists {
+		if !errors.Is(err, acme.ErrAccountAlreadyExists) {
 			return "", "", fmt.Errorf("acme: register account: %w", err)
 		}
 	}
@@ -129,22 +130,23 @@ func (a *ACMEClient) RequestCertificate(ctx context.Context, domains []string, e
 		if err := os.WriteFile(challengePath, []byte(response), 0644); err != nil {
 			return "", "", fmt.Errorf("acme: write challenge: %w", err)
 		}
-		defer os.Remove(challengePath) // Clean up after
 
 		slog.Info("acme: challenge token written", "domain", authz.Identifier.Value, "token", challenge.Token)
 
 		// Accept the challenge
 		if _, err := client.Accept(ctx, challenge); err != nil {
+			_ = os.Remove(challengePath)
 			return "", "", fmt.Errorf("acme: accept challenge: %w", err)
 		}
 
 		// Wait for authorization to complete
 		authzCtx, cancel := context.WithTimeout(ctx, 2*time.Minute)
-		if _, err := client.WaitAuthorization(authzCtx, authzURL); err != nil {
-			cancel()
-			return "", "", fmt.Errorf("acme: authorization failed for %s: %w", authz.Identifier.Value, err)
-		}
+		_, authzErr := client.WaitAuthorization(authzCtx, authzURL)
 		cancel()
+		_ = os.Remove(challengePath) // Clean up immediately — keep token files from accumulating across many domains.
+		if authzErr != nil {
+			return "", "", fmt.Errorf("acme: authorization failed for %s: %w", authz.Identifier.Value, authzErr)
+		}
 	}
 
 	// Wait for order to be ready

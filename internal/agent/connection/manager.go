@@ -58,10 +58,10 @@ type Config struct {
 	MaxPingsOut   int
 	Timeout       time.Duration
 	// TLS
-	TLSEnabled bool
-	TLSCert    string
-	TLSKey     string
-	TLSCA      string
+	TLSEnabled    bool
+	TLSCert       string
+	TLSKey        string
+	TLSCA         string
 	TLSSkipVerify bool
 }
 
@@ -79,11 +79,11 @@ func DefaultConfig() Config {
 
 // Manager manages the NATS connection for the agent.
 type Manager struct {
-	config    Config
-	conn      *nats.Conn
-	state     State
-	stateMu   sync.RWMutex
-	log       *logger.Logger
+	config  Config
+	conn    *nats.Conn
+	state   State
+	stateMu sync.RWMutex
+	log     *logger.Logger
 
 	// Callbacks
 	onConnect    func()

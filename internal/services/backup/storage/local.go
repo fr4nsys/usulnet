@@ -219,10 +219,15 @@ func (s *LocalStorage) List(ctx context.Context, prefix string) ([]backup.Storag
 			return nil
 		}
 
-		// Get relative path
+		// Get relative path. Walk's contract is "return nil to continue
+		// or filepath.SkipDir to skip"; filepath.Rel can only fail when
+		// path is outside basePath, which would already have been caught
+		// by os.Stat upstream — skip the entry rather than abort the
+		// whole listing.
 		relPath, err := filepath.Rel(s.basePath, path)
 		if err != nil {
-			return nil
+			// walk continuation: skip entry, not the whole walk
+			return nil //nolint:nilerr
 		}
 
 		entries = append(entries, backup.StorageEntry{
@@ -297,11 +302,8 @@ func (s *LocalStorage) resolvePath(path string) (string, error) {
 
 // cleanupEmptyDirs removes empty parent directories up to basePath.
 func (s *LocalStorage) cleanupEmptyDirs(dir string) {
-	for {
+	for dir != s.basePath && strings.HasPrefix(dir, s.basePath) {
 		// Don't go above basePath
-		if dir == s.basePath || !strings.HasPrefix(dir, s.basePath) {
-			break
-		}
 
 		// Try to remove directory
 		if err := os.Remove(dir); err != nil {

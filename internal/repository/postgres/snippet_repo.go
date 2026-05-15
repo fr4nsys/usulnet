@@ -33,7 +33,7 @@ func NewSnippetRepository(db *DB) *SnippetRepository {
 // Create creates a new snippet.
 func (r *SnippetRepository) Create(ctx context.Context, userID uuid.UUID, input *models.CreateSnippetInput) (*models.UserSnippet, error) {
 	id := uuid.New()
-	
+
 	query := `
 		INSERT INTO user_snippets (
 			id, user_id, name, path, language, content, description, tags
@@ -98,7 +98,7 @@ func (r *SnippetRepository) Get(ctx context.Context, userID, snippetID uuid.UUID
 		&snippet.UpdatedAt,
 	)
 
-	if err == pgx.ErrNoRows {
+	if errors.Is(err, pgx.ErrNoRows) {
 		return nil, errors.NotFound("snippet")
 	}
 	if err != nil {
@@ -146,7 +146,7 @@ func (r *SnippetRepository) Update(ctx context.Context, userID, snippetID uuid.U
 		&snippet.UpdatedAt,
 	)
 
-	if err == pgx.ErrNoRows {
+	if errors.Is(err, pgx.ErrNoRows) {
 		return nil, errors.NotFound("snippet")
 	}
 	if err != nil {

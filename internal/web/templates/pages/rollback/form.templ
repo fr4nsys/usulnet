@@ -1,0 +1,212 @@
+// SPDX-License-Identifier: AGPL-3.0-or-later
+// Copyright (c) 2024-2026 usulnet contributors
+// https://github.com/fr4nsys/usulnet
+
+package rollback
+
+// FormData is the shared input bundle for the policy editor — used by
+// both the create and edit pages so a single template renders the form.
+type FormData struct {
+	Action      string // "/rollback" or "/rollback/{id}"
+	Method      string // "POST" or "PUT"
+	CSRFToken   string
+	IsEdit      bool
+	Policy      PolicyView
+	Stacks      []StackOption
+	FieldError  string
+}
+
+templ PolicyForm(data FormData) {
+	<form method="POST" action={ templ.SafeURL(data.Action) } class="space-y-6">
+		<input type="hidden" name="csrf_token" value={ data.CSRFToken }/>
+		if data.Method != "POST" {
+			<input type="hidden" name="_method" value={ data.Method }/>
+		}
+
+		if data.FieldError != "" {
+			<div class="card p-4 border border-red-500/40 bg-red-500/10 text-red-200 text-sm">
+				<i class="fas fa-triangle-exclamation mr-2"></i>{ data.FieldError }
+			</div>
+		}
+
+		<div class="card p-6 space-y-4">
+			<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+				<div>
+					<label class="block text-sm font-medium text-gray-300 mb-1">Name</label>
+					<input
+						type="text"
+						name="name"
+						value={ data.Policy.Name }
+						required
+						minlength="1"
+						maxlength="255"
+						class="form-input w-full"
+						placeholder="prod-api rollback"
+					/>
+				</div>
+				<div>
+					<label class="block text-sm font-medium text-gray-300 mb-1">Enabled</label>
+					<div class="flex items-center gap-3 mt-2">
+						<label class="inline-flex items-center gap-2 text-sm text-gray-300">
+							<input
+								type="checkbox"
+								name="enabled"
+								value="true"
+								class="form-checkbox"
+								if data.Policy.Enabled || !data.IsEdit {
+									checked
+								}
+							/>
+							active
+						</label>
+						<label class="inline-flex items-center gap-2 text-sm text-gray-300">
+							<input
+								type="checkbox"
+								name="dry_run"
+								value="true"
+								class="form-checkbox"
+								if data.Policy.DryRun {
+									checked
+								}
+							/>
+							dry-run
+						</label>
+					</div>
+				</div>
+			</div>
+
+			<div>
+				<label class="block text-sm font-medium text-gray-300 mb-1">Description</label>
+				<textarea
+					name="description"
+					rows="2"
+					maxlength="4096"
+					class="form-textarea w-full"
+					placeholder="What this policy does and why."
+				>{ data.Policy.Description }</textarea>
+			</div>
+		</div>
+
+		<div class="card p-6 space-y-4">
+			<h3 class="text-base font-semibold text-white">Scope</h3>
+			<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+				<div>
+					<label class="block text-sm font-medium text-gray-300 mb-1">Apply to</label>
+					<select name="scope" class="form-select w-full" id="scopeSelect">
+						@scopeOption("all", "All stacks", data.Policy.Scope)
+						@scopeOption("stack", "A single stack", data.Policy.Scope)
+						@scopeOption("tag", "Stacks matching tag", data.Policy.Scope)
+					</select>
+				</div>
+				<div>
+					<label class="block text-sm font-medium text-gray-300 mb-1">Stack (scope=stack)</label>
+					<select name="scope_stack_id" class="form-select w-full">
+						<option value="">— pick a stack —</option>
+						for _, s := range data.Stacks {
+							if s.ID == data.Policy.ScopeStackID {
+								<option value={ s.ID } selected>{ s.Name }</option>
+							} else {
+								<option value={ s.ID }>{ s.Name }</option>
+							}
+						}
+					</select>
+				</div>
+				<div>
+					<label class="block text-sm font-medium text-gray-300 mb-1">Tag substring (scope=tag)</label>
+					<input
+						type="text"
+						name="scope_value"
+						value={ data.Policy.ScopeValue }
+						maxlength="255"
+						class="form-input w-full"
+						placeholder="prod"
+					/>
+				</div>
+			</div>
+		</div>
+
+		<div class="card p-6 space-y-4">
+			<h3 class="text-base font-semibold text-white">Trigger</h3>
+			<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+				<div>
+					<label class="block text-sm font-medium text-gray-300 mb-1">Fires on</label>
+					<select name="trigger_kind" class="form-select w-full">
+						@triggerOption("deploy_failed", "deploy_failed — non-zero exit", data.Policy.TriggerKind)
+						@triggerOption("healthcheck_failed", "healthcheck_failed — never went green", data.Policy.TriggerKind)
+						@triggerOption("container_crash", "container_crash — restart loop", data.Policy.TriggerKind)
+					</select>
+				</div>
+				<div>
+					<label class="block text-sm font-medium text-gray-300 mb-1">Cooldown (s)</label>
+					<input
+						type="number"
+						name="cooldown_seconds"
+						value={ itoaPad(data.Policy.CooldownSeconds) }
+						min="0"
+						class="form-input w-full"
+					/>
+					<p class="text-xs text-gray-500 mt-1">Refuses to re-fire on the same stack inside the window.</p>
+				</div>
+			</div>
+		</div>
+
+		<div class="card p-6 space-y-4">
+			<h3 class="text-base font-semibold text-white">Last known-good strategy</h3>
+			<div>
+				<label class="inline-flex items-center gap-2 text-sm text-gray-300">
+					<input
+						type="radio"
+						name="last_good_strategy"
+						value="last_healthy"
+						class="form-radio"
+						if data.Policy.LastGoodStrategy == "last_healthy" || data.Policy.LastGoodStrategy == "" {
+							checked
+						}
+					/>
+					last_healthy — walk history until is_deployed && deployed_at (default)
+				</label>
+			</div>
+			<div>
+				<label class="inline-flex items-center gap-2 text-sm text-gray-300">
+					<input
+						type="radio"
+						name="last_good_strategy"
+						value="previous"
+						class="form-radio"
+						if data.Policy.LastGoodStrategy == "previous" {
+							checked
+						}
+					/>
+					previous — take the version immediately before the failure
+				</label>
+			</div>
+		</div>
+
+		<div class="flex items-center justify-end gap-2">
+			<a href="/rollback" class="btn-secondary">Cancel</a>
+			<button type="submit" class="btn-primary">
+				if data.IsEdit {
+					<i class="fas fa-save mr-2"></i>Save changes
+				} else {
+					<i class="fas fa-check mr-2"></i>Create policy
+				}
+			</button>
+		</div>
+	</form>
+}
+
+templ scopeOption(value, label, current string) {
+	if value == current {
+		<option value={ value } selected>{ label }</option>
+	} else {
+		<option value={ value }>{ label }</option>
+	}
+}
+
+templ triggerOption(value, label, current string) {
+	if value == current {
+		<option value={ value } selected>{ label }</option>
+	} else {
+		<option value={ value }>{ label }</option>
+	}
+}

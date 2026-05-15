@@ -221,4 +221,3 @@ func metadataArtifactViewToTmpl(a MetadataArtifactView) metadatatmpl.ArtifactVie
 		ExtractedJSON:     a.ExtractedJSON,
 	}
 }
-

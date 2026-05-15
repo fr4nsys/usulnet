@@ -54,14 +54,14 @@ func (h *LicenseHandler) Routes() chi.Router {
 
 // LicenseInfoResponse represents the current license information.
 type LicenseInfoResponse struct {
-	Edition    string           `json:"edition"`
-	EditionName string         `json:"edition_name"`
-	Valid      bool             `json:"valid"`
-	LicenseID  string          `json:"license_id,omitempty"`
-	ExpiresAt  *string         `json:"expires_at,omitempty"`
-	Features   []string         `json:"features"`
-	Limits     LicenseLimitsResponse `json:"limits"`
-	InstanceID string           `json:"instance_id,omitempty"`
+	Edition     string                `json:"edition"`
+	EditionName string                `json:"edition_name"`
+	Valid       bool                  `json:"valid"`
+	LicenseID   string                `json:"license_id,omitempty"`
+	ExpiresAt   *string               `json:"expires_at,omitempty"`
+	Features    []string              `json:"features"`
+	Limits      LicenseLimitsResponse `json:"limits"`
+	InstanceID  string                `json:"instance_id,omitempty"`
 }
 
 // LicenseLimitsResponse represents the resource limits.
@@ -86,8 +86,8 @@ type ActivateLicenseRequest struct {
 
 // ActivateLicenseResponse represents the result of activating a license.
 type ActivateLicenseResponse struct {
-	Success bool              `json:"success"`
-	Message string            `json:"message"`
+	Success bool                `json:"success"`
+	Message string              `json:"message"`
 	License LicenseInfoResponse `json:"license"`
 }
 
@@ -99,13 +99,13 @@ type DeactivateLicenseResponse struct {
 
 // LicenseStatusResponse provides detailed license status including degradation state.
 type LicenseStatusResponse struct {
-	License        LicenseInfoResponse `json:"license"`
-	DaysRemaining  int                 `json:"days_remaining"`
-	IsExpired      bool                `json:"is_expired"`
-	IsDegraded     bool                `json:"is_degraded"`
-	DegradedFrom   string              `json:"degraded_from,omitempty"`
-	ActiveLimits   LicenseLimitsResponse `json:"active_limits"`
-	StatusMessage  string              `json:"status_message"`
+	License       LicenseInfoResponse   `json:"license"`
+	DaysRemaining int                   `json:"days_remaining"`
+	IsExpired     bool                  `json:"is_expired"`
+	IsDegraded    bool                  `json:"is_degraded"`
+	DegradedFrom  string                `json:"degraded_from,omitempty"`
+	ActiveLimits  LicenseLimitsResponse `json:"active_limits"`
+	StatusMessage string                `json:"status_message"`
 }
 
 // ============================================================================
@@ -351,4 +351,3 @@ func toLicenseInfoResponse(info *license.Info, instanceID string) LicenseInfoRes
 		InstanceID: instanceID,
 	}
 }
-

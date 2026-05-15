@@ -148,7 +148,7 @@ func (c *Client) ContainerLogsString(ctx context.Context, containerID string, op
 
 // ContainerLogsStream streams container logs line by line
 // Returns a channel of LogLine that the caller should consume
-// The channel is closed when the stream ends or context is cancelled
+// The channel is closed when the stream ends or context is canceled
 func (c *Client) ContainerLogsStream(ctx context.Context, containerID string, opts LogOptions) (<-chan LogLine, error) {
 	log := logger.FromContext(ctx)
 
@@ -206,7 +206,7 @@ func (c *Client) streamTTYLogs(ctx context.Context, reader io.Reader, logCh chan
 
 		line := scanner.Text()
 		logLine := parseLogLine(line, "stdout", hasTimestamps)
-		
+
 		select {
 		case logCh <- logLine:
 		case <-ctx.Done():

@@ -23,12 +23,12 @@ import (
 // produced once and rendered to JSON / CSV / PDF — so the data
 // surfaces are identical across formats (no JSON-only fields).
 type Report struct {
-	ScanID      uuid.UUID                 `json:"scan_id"`
-	Target      ReportTarget              `json:"target"`
-	Profile     ReportProfile             `json:"profile"`
-	Summary     ReportSummary             `json:"summary"`
-	Categories  []ReportCategory          `json:"categories"`
-	GeneratedAt time.Time                 `json:"generated_at"`
+	ScanID      uuid.UUID        `json:"scan_id"`
+	Target      ReportTarget     `json:"target"`
+	Profile     ReportProfile    `json:"profile"`
+	Summary     ReportSummary    `json:"summary"`
+	Categories  []ReportCategory `json:"categories"`
+	GeneratedAt time.Time        `json:"generated_at"`
 }
 
 // ReportTarget is the subset of the recon.Target safe to embed in a
@@ -64,9 +64,9 @@ type ReportSummary struct {
 // ReportCategory groups findings by Finding.Category. The grouping
 // happens once, in Build, so every generator sees the same ordering.
 type ReportCategory struct {
-	Category string            `json:"category"`
-	Severity recon.Severity    `json:"highest_severity"`
-	Findings []ReportFinding   `json:"findings"`
+	Category string          `json:"category"`
+	Severity recon.Severity  `json:"highest_severity"`
+	Findings []ReportFinding `json:"findings"`
 }
 
 // ReportFinding is the per-row shape rendered into JSON and CSV.

@@ -26,7 +26,7 @@ import (
 type fakeDocker struct {
 	mu sync.Mutex
 
-	// programmed behaviour
+	// programmed behavior
 	createErr  error
 	startErr   error
 	killErr    error

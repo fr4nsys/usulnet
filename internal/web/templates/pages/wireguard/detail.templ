@@ -1,0 +1,141 @@
+// SPDX-License-Identifier: AGPL-3.0-or-later
+// Copyright (c) 2024-2026 usulnet contributors
+// https://github.com/fr4nsys/usulnet
+
+package wireguard
+
+import (
+	"fmt"
+
+	"github.com/fr4nsys/usulnet/internal/web/templates/layouts"
+)
+
+type DetailData struct {
+	PageData  layouts.PageData
+	Interface InterfaceView
+	Peers     []PeerView
+}
+
+type PeerView struct {
+	ID                  string
+	Name                string
+	PublicKey           string
+	AllowedIPs          string
+	Endpoint            string
+	PersistentKeepalive int
+	Enabled             bool
+	LastHandshake       string
+	TransferRx          string
+	TransferTx          string
+	CreatedAt           string
+}
+
+templ Detail(data DetailData) {
+	@layouts.Base(data.PageData) {
+		<div class="space-y-6">
+			@Nav("interfaces")
+			<div class="flex items-center justify-between">
+				<div>
+					<h2 class="text-lg font-semibold text-white">{ data.Interface.DisplayName }</h2>
+					<p class="text-sm text-gray-400">{ data.Interface.Name } — { data.Interface.Address }</p>
+				</div>
+				<div class="flex gap-2">
+					<a href={ templ.SafeURL("/wireguard/" + data.Interface.ID + "/peers/new") }
+						class="px-3 py-2 bg-primary-600 hover:bg-primary-700 text-black font-medium rounded-lg transition-colors text-sm">
+						<i class="fas fa-plus mr-1"></i>Add Peer
+					</a>
+					<form method="POST" action={ templ.SafeURL("/wireguard/" + data.Interface.ID + "/delete") }
+						onsubmit="return confirm('Delete this interface and all its peers?');">
+						<button type="submit" class="px-3 py-2 bg-red-600/20 hover:bg-red-600/30 text-red-400 rounded-lg transition-colors text-sm">
+							<i class="fas fa-trash mr-1"></i>Delete
+						</button>
+					</form>
+				</div>
+			</div>
+			<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+				<div class="bg-dark-700 rounded-lg p-4 border border-dark-600">
+					<p class="text-xs text-gray-500 uppercase tracking-wide">Status</p>
+					<div class="mt-2">@wgStatusBadge(data.Interface.Status)</div>
+				</div>
+				<div class="bg-dark-700 rounded-lg p-4 border border-dark-600">
+					<p class="text-xs text-gray-500 uppercase tracking-wide">Listen Port</p>
+					<p class="text-lg font-bold text-white mt-1">{ fmt.Sprintf("%d", data.Interface.ListenPort) }</p>
+				</div>
+				<div class="bg-dark-700 rounded-lg p-4 border border-dark-600">
+					<p class="text-xs text-gray-500 uppercase tracking-wide">Public Key</p>
+					<p class="text-xs font-mono text-gray-300 mt-1 break-all">{ data.Interface.PublicKey }</p>
+				</div>
+			</div>
+			<div class="bg-dark-700 rounded-lg border border-dark-600 overflow-hidden">
+				<div class="p-4 border-b border-dark-600 flex items-center justify-between">
+					<h3 class="text-sm font-semibold text-white">Peers ({ fmt.Sprintf("%d", len(data.Peers)) })</h3>
+				</div>
+				<table class="w-full">
+					<thead>
+						<tr class="border-b border-dark-600 text-xs text-gray-500 uppercase tracking-wide">
+							<th class="text-left p-4">Name</th>
+							<th class="text-left p-4">Allowed IPs</th>
+							<th class="text-left p-4">Endpoint</th>
+							<th class="text-left p-4">Status</th>
+							<th class="text-left p-4">Transfer</th>
+							<th class="text-left p-4">Actions</th>
+						</tr>
+					</thead>
+					<tbody>
+						for _, peer := range data.Peers {
+							<tr class="border-b border-dark-600/50 hover:bg-dark-600/30 transition-colors">
+								<td class="p-4">
+									<a href={ templ.SafeURL("/wireguard/peers/" + peer.ID) } class="text-white font-medium hover:text-primary-300">{ peer.Name }</a>
+									if !peer.Enabled {
+										<span class="ml-2 px-1.5 py-0.5 text-[10px] font-medium rounded bg-gray-500/20 text-gray-400">DISABLED</span>
+									}
+								</td>
+								<td class="p-4 text-sm text-gray-300 font-mono">{ peer.AllowedIPs }</td>
+								<td class="p-4 text-sm text-gray-300 font-mono">
+									if peer.Endpoint != "" {
+										{ peer.Endpoint }
+									} else {
+										<span class="text-gray-500">—</span>
+									}
+								</td>
+								<td class="p-4">
+									if peer.LastHandshake != "" {
+										<span class="text-xs text-green-400">
+											<i class="fas fa-circle text-[6px] mr-1"></i>{ peer.LastHandshake }
+										</span>
+									} else {
+										<span class="text-xs text-gray-500">Never connected</span>
+									}
+								</td>
+								<td class="p-4 text-xs text-gray-400">
+									<span class="text-green-400">↓ { peer.TransferRx }</span>
+									<span class="mx-1">|</span>
+									<span class="text-blue-400">↑ { peer.TransferTx }</span>
+								</td>
+								<td class="p-4 flex gap-2">
+									<a href={ templ.SafeURL("/wireguard/peers/" + peer.ID) } class="text-gray-400 hover:text-white transition-colors" title="View Config">
+										<i class="fas fa-qrcode"></i>
+									</a>
+									<form method="POST" action={ templ.SafeURL("/wireguard/peers/" + peer.ID + "/delete") }
+										onsubmit="return confirm('Delete this peer?');">
+										<button type="submit" class="text-gray-400 hover:text-red-400 transition-colors" title="Delete">
+											<i class="fas fa-trash"></i>
+										</button>
+									</form>
+								</td>
+							</tr>
+						}
+						if len(data.Peers) == 0 {
+							<tr>
+								<td colspan="6" class="p-8 text-center text-gray-500">
+									No peers configured.
+									<a href={ templ.SafeURL("/wireguard/" + data.Interface.ID + "/peers/new") } class="text-primary-400 hover:text-primary-300 ml-1">Add one</a>
+								</td>
+							</tr>
+						}
+					</tbody>
+				</table>
+			</div>
+		</div>
+	}
+}

@@ -187,10 +187,8 @@ func (c *Client) ContainerExecInteractive(ctx context.Context, containerID strin
 		return types.HijackedResponse{}, "", errors.New(errors.CodeDockerConnection, "client is closed")
 	}
 
-	// Force TTY and stdin for interactive mode
-	opts.Tty = true
-	opts.AttachStdin = true
-
+	// Force TTY and stdin for interactive mode: the execConfig built
+	// below pins both to true regardless of what the caller passed in.
 	execConfig := container.ExecOptions{
 		User:         opts.User,
 		Privileged:   opts.Privileged,

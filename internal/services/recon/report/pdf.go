@@ -29,7 +29,7 @@ const (
 	pdfMarginRight  = 15.0
 	pdfMarginBottom = 18.0
 
-	pdfHeaderFontSize = 18.0
+	pdfHeaderFontSize  = 18.0
 	pdfSectionFontSize = 12.0
 	pdfBodyFontSize    = 9.5
 
@@ -41,12 +41,12 @@ const (
 
 // GeneratePDF renders the report as a PDF document to w. Layout:
 //
-//   1. Title bar (target value, scan ID, generated_at).
-//   2. Profile + summary block: name, description, grade, total
-//      findings, severity counts.
-//   3. One section per category, listing findings as a small table
-//      with a coloured severity cell so a reader scanning the page
-//      can spot the high/critical rows immediately.
+//  1. Title bar (target value, scan ID, generated_at).
+//  2. Profile + summary block: name, description, grade, total
+//     findings, severity counts.
+//  3. One section per category, listing findings as a small table
+//     with a colored severity cell so a reader scanning the page
+//     can spot the high/critical rows immediately.
 //
 // The output is deterministic for the same Report value: gofpdf's
 // CreationDate / ModDate are pinned to r.GeneratedAt and no
@@ -113,7 +113,7 @@ func renderHeader(pdf *gofpdf.Fpdf, r *Report) {
 }
 
 // renderProfileBlock writes the profile name + description in a small
-// labelled box.
+// labeled box.
 func renderProfileBlock(pdf *gofpdf.Fpdf, r *Report) {
 	pdf.SetFont(pdfFontFamily, "B", pdfSectionFontSize)
 	pdf.Cell(0, 7, "Profile")
@@ -219,8 +219,8 @@ func renderCategories(pdf *gofpdf.Fpdf, r *Report) {
 	}
 }
 
-// setSeverityFill applies a fill colour for the severity badge cells.
-// Colours are chosen for printability — they survive grayscale toner
+// setSeverityFill applies a fill color for the severity badge cells.
+// Colors are chosen for printability — they survive grayscale toner
 // without all rows collapsing to the same shade. Text contrast is set
 // alongside so light fills get black text and dark fills get white.
 func setSeverityFill(pdf *gofpdf.Fpdf, s recon.Severity) {
@@ -247,7 +247,7 @@ func setSeverityFill(pdf *gofpdf.Fpdf, s recon.Severity) {
 }
 
 // safeText strips characters that gofpdf's core fonts cannot encode in
-// the default Latin-1 code page. The recon module already sanitises
+// the default Latin-1 code page. The recon module already sanitizes
 // engine output, but engine values can still contain stray bytes from
 // scraping HTML; replacing them with '?' prevents the PDF writer from
 // emitting unreadable runs.

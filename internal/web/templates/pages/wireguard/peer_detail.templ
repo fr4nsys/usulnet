@@ -1,0 +1,138 @@
+// SPDX-License-Identifier: AGPL-3.0-or-later
+// Copyright (c) 2024-2026 usulnet contributors
+// https://github.com/fr4nsys/usulnet
+
+package wireguard
+
+import "github.com/fr4nsys/usulnet/internal/web/templates/layouts"
+
+type PeerDetailData struct {
+	PageData layouts.PageData
+	Peer     PeerView
+	// MeshLinks shows the propagation status of this peer across agents.
+	// Empty in standalone mode.
+	MeshLinks []MeshLinkView
+}
+
+templ PeerDetail(data PeerDetailData) {
+	@layouts.Base(data.PageData) {
+		<div class="space-y-6">
+			@Nav("peers")
+			<div class="max-w-3xl">
+				<div class="flex items-center justify-between mb-6">
+					<div>
+						<h2 class="text-lg font-semibold text-white">{ data.Peer.Name }</h2>
+						<p class="text-sm text-gray-400">Peer Configuration</p>
+					</div>
+					<form method="POST" action={ templ.SafeURL("/wireguard/peers/" + data.Peer.ID + "/delete") }
+						onsubmit="return confirm('Delete this peer?');">
+						<button type="submit" class="px-3 py-2 bg-red-600/20 hover:bg-red-600/30 text-red-400 rounded-lg transition-colors text-sm">
+							<i class="fas fa-trash mr-1"></i>Delete
+						</button>
+					</form>
+				</div>
+				<div class="bg-dark-700 rounded-lg border border-dark-600 p-4 mb-6 space-y-3">
+					<div class="grid grid-cols-2 gap-4">
+						<div>
+							<p class="text-xs text-gray-500">Public Key</p>
+							<p class="text-sm font-mono text-gray-300 break-all">{ data.Peer.PublicKey }</p>
+						</div>
+						<div>
+							<p class="text-xs text-gray-500">Allowed IPs</p>
+							<p class="text-sm font-mono text-gray-300">{ data.Peer.AllowedIPs }</p>
+						</div>
+					</div>
+					<div class="grid grid-cols-2 gap-4">
+						<div>
+							<p class="text-xs text-gray-500">Endpoint</p>
+							<p class="text-sm text-gray-300">
+								if data.Peer.Endpoint != "" {
+									{ data.Peer.Endpoint }
+								} else {
+									<span class="text-gray-500">Not set</span>
+								}
+							</p>
+						</div>
+						<div>
+							<p class="text-xs text-gray-500">Last Handshake</p>
+							<p class="text-sm text-gray-300">
+								if data.Peer.LastHandshake != "" {
+									{ data.Peer.LastHandshake }
+								} else {
+									<span class="text-gray-500">Never</span>
+								}
+							</p>
+						</div>
+					</div>
+				</div>
+				<!-- One-time QR code -->
+				<div class="bg-dark-700 rounded-lg border border-dark-600 p-4 mb-6"
+					x-data="{ token: null, expires: null, cfg: null, err: null }"
+					x-init="$nextTick(() => { })"
+				>
+					<h3 class="text-sm font-semibold text-white mb-3">Client Configuration (one-time QR)</h3>
+					<p class="text-xs text-gray-500 mb-3">
+						Click "Issue QR token" to generate a single-use, 5-minute link
+						containing the cleartext peer configuration. The token can be
+						consumed exactly once; refresh the page to issue another.
+					</p>
+					<button type="button"
+						@click={ "fetch('/api/v1/wireguard/peers/" + data.Peer.ID + "/qr/issue', { method: 'POST', credentials: 'include' }).then(r => r.json()).then(j => { token = j.token; expires = j.expires_at; fetch(j.url, { credentials: 'include' }).then(r => r.json()).then(c => { cfg = c.config; setTimeout(() => { var el = document.getElementById('wg-qr'); if (el && window.QRCode) { el.innerHTML = ''; new QRCode(el, { text: c.config, width: 220, height: 220, colorDark: '#000', colorLight: '#fff' }); } }, 50); }); }).catch(e => { err = e.message; })" }
+						class="px-3 py-2 bg-primary-600 hover:bg-primary-700 text-black font-medium rounded-lg transition-colors text-sm">
+						<i class="fas fa-qrcode mr-1"></i>Issue QR token
+					</button>
+					<template x-if="cfg">
+						<div class="mt-4 space-y-3">
+							<p class="text-xs text-gray-500" x-text="'Expires at ' + expires"></p>
+							<div id="wg-qr" class="inline-block bg-white p-2 rounded"></div>
+							<pre class="bg-dark-800 rounded-lg p-4 text-xs text-gray-300 font-mono overflow-x-auto" x-text="cfg"></pre>
+						</div>
+					</template>
+					<template x-if="err">
+						<div class="mt-4 text-sm text-red-400" x-text="err"></div>
+					</template>
+				</div>
+				if len(data.MeshLinks) > 0 {
+					<div class="bg-dark-700 rounded-lg border border-dark-600 p-4">
+						<h3 class="text-sm font-semibold text-white mb-3">Mesh propagation</h3>
+						<table class="w-full text-sm">
+							<thead>
+								<tr class="text-xs text-gray-500 uppercase tracking-wide border-b border-dark-600">
+									<th class="text-left p-2">Agent</th>
+									<th class="text-left p-2">Status</th>
+									<th class="text-left p-2">Applied at</th>
+									<th class="text-left p-2">Last error</th>
+								</tr>
+							</thead>
+							<tbody>
+								for _, link := range data.MeshLinks {
+									<tr class="border-b border-dark-600/50">
+										<td class="p-2 font-mono text-gray-300">{ link.AgentHostID }</td>
+										<td class="p-2">@meshStatusBadge(link.Status)</td>
+										<td class="p-2 text-gray-300">{ link.AppliedAt }</td>
+										<td class="p-2 text-red-400 text-xs">{ link.LastError }</td>
+									</tr>
+								}
+							</tbody>
+						</table>
+					</div>
+				}
+			</div>
+		</div>
+		<!-- qrcodejs vendored under /static — referenced by the issue-token script above. -->
+		<script src="/static/vendor/qrcodejs/qrcode.min.js"></script>
+	}
+}
+
+templ meshStatusBadge(status string) {
+	switch status {
+		case "applied":
+			<span class="px-2 py-1 text-xs font-medium rounded-full bg-green-500/10 text-green-400 border border-green-500/20">applied</span>
+		case "pending":
+			<span class="px-2 py-1 text-xs font-medium rounded-full bg-yellow-500/10 text-yellow-400 border border-yellow-500/20">pending</span>
+		case "failed":
+			<span class="px-2 py-1 text-xs font-medium rounded-full bg-red-500/10 text-red-400 border border-red-500/20">failed</span>
+		default:
+			<span class="px-2 py-1 text-xs font-medium rounded-full bg-gray-500/10 text-gray-400 border border-gray-500/20">{ status }</span>
+	}
+}

@@ -179,7 +179,7 @@ func (n *NtfyChannel) buildTags(msg RenderedMessage) []string {
 	}
 
 	// Add category tag
-	tags = append(tags, string(msg.Type.Category()))
+	tags = append(tags, msg.Type.Category())
 
 	// Add configured default tags
 	if n.config.DefaultTags != "" {

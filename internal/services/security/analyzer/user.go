@@ -80,7 +80,7 @@ func isRootUser(user string) bool {
 	parts := strings.Split(user, ":")
 	if len(parts) > 0 {
 		uid := strings.TrimSpace(parts[0])
-		if uid == "0" || strings.ToLower(uid) == "root" {
+		if uid == "0" || strings.EqualFold(uid, "root") {
 			return true
 		}
 	}
@@ -99,19 +99,19 @@ func normalizeUserDisplay(user string) string {
 // KnownNonRootImages contains images that are known to run as non-root by default
 // This can be used to reduce false positives
 var KnownNonRootImages = map[string]bool{
-	"nginx":       false, // runs as root by default
-	"redis":       false, // runs as root by default
-	"postgres":    false, // runs as root, switches to postgres
-	"mysql":       false, // runs as root, switches to mysql
-	"mongo":       false, // runs as root by default
-	"node":        false, // runs as root by default
-	"python":      false, // runs as root by default
-	"golang":      false, // runs as root by default
-	"alpine":      false, // runs as root by default
-	"ubuntu":      false, // runs as root by default
-	"debian":      false, // runs as root by default
-	"bitnami/":    true,  // bitnami images run as non-root (1001)
-	"grafana/":    true,  // grafana runs as grafana user (472)
-	"prom/":       true,  // prometheus images run as nobody
-	"gcr.io/distroless/": true, // distroless runs as nonroot
+	"nginx":              false, // runs as root by default
+	"redis":              false, // runs as root by default
+	"postgres":           false, // runs as root, switches to postgres
+	"mysql":              false, // runs as root, switches to mysql
+	"mongo":              false, // runs as root by default
+	"node":               false, // runs as root by default
+	"python":             false, // runs as root by default
+	"golang":             false, // runs as root by default
+	"alpine":             false, // runs as root by default
+	"ubuntu":             false, // runs as root by default
+	"debian":             false, // runs as root by default
+	"bitnami/":           true,  // bitnami images run as non-root (1001)
+	"grafana/":           true,  // grafana runs as grafana user (472)
+	"prom/":              true,  // prometheus images run as nobody
+	"gcr.io/distroless/": true,  // distroless runs as nonroot
 }

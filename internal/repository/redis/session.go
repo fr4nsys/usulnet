@@ -7,6 +7,7 @@ package redis
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"time"
 
@@ -16,15 +17,15 @@ import (
 
 // Session represents a user session
 type Session struct {
-	ID           string    `json:"id"`
-	UserID       string    `json:"user_id"`
-	Username     string    `json:"username"`
-	Role         string    `json:"role"`
-	UserAgent    string    `json:"user_agent,omitempty"`
-	IPAddress    string    `json:"ip_address,omitempty"`
-	CreatedAt    time.Time `json:"created_at"`
-	LastAccessAt time.Time `json:"last_access_at"`
-	ExpiresAt    time.Time `json:"expires_at"`
+	ID           string                 `json:"id"`
+	UserID       string                 `json:"user_id"`
+	Username     string                 `json:"username"`
+	Role         string                 `json:"role"`
+	UserAgent    string                 `json:"user_agent,omitempty"`
+	IPAddress    string                 `json:"ip_address,omitempty"`
+	CreatedAt    time.Time              `json:"created_at"`
+	LastAccessAt time.Time              `json:"last_access_at"`
+	ExpiresAt    time.Time              `json:"expires_at"`
 	Data         map[string]interface{} `json:"data,omitempty"`
 }
 
@@ -96,7 +97,7 @@ func (s *SessionStore) Create(ctx context.Context, userID, username, role, userA
 func (s *SessionStore) Get(ctx context.Context, sessionID string) (*Session, error) {
 	data, err := s.client.rdb.Get(ctx, s.sessionKey(sessionID)).Bytes()
 	if err != nil {
-		if err == goredis.Nil {
+		if errors.Is(err, goredis.Nil) {
 			return nil, ErrSessionNotFound
 		}
 		return nil, fmt.Errorf("failed to get session: %w", err)
@@ -187,7 +188,7 @@ func (s *SessionStore) GetData(ctx context.Context, sessionID, key string) (inte
 func (s *SessionStore) Delete(ctx context.Context, sessionID string) error {
 	// Get session first to know the user ID
 	session, err := s.Get(ctx, sessionID)
-	if err != nil && err != ErrSessionNotFound && err != ErrSessionExpired {
+	if err != nil && !errors.Is(err, ErrSessionNotFound) && !errors.Is(err, ErrSessionExpired) {
 		return err
 	}
 
@@ -328,10 +329,14 @@ func (s *SessionStore) Exists(ctx context.Context, sessionID string) (bool, erro
 		return false, nil
 	}
 
-	// Verify it's not expired
+	// Verify it's not expired. Any Get failure (key missing, deserialization
+	// problem, transient Redis error) is treated as "not a valid session";
+	// the function's only commitment is a (valid, error) probe and the
+	// caller's contract is to forward unauthenticated traffic on `false`.
 	session, err := s.Get(ctx, sessionID)
 	if err != nil {
-		return false, nil
+		// probe: error means "treat as invalid", caller handles fallback
+		return false, nil //nolint:nilerr
 	}
 
 	return !time.Now().After(session.ExpiresAt), nil

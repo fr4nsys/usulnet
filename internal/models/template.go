@@ -34,11 +34,11 @@ type TemplateVolume struct {
 
 // TemplateEnv represents an environment variable in a catalog template.
 type TemplateEnv struct {
-	Name     string `json:"name"`
-	Label    string `json:"label,omitempty"`
-	Default  string `json:"default,omitempty"`
-	Required bool   `json:"required,omitempty"`
-	Type     string `json:"type,omitempty"` // "text", "password", "select"
+	Name     string   `json:"name"`
+	Label    string   `json:"label,omitempty"`
+	Default  string   `json:"default,omitempty"`
+	Required bool     `json:"required,omitempty"`
+	Type     string   `json:"type,omitempty"`    // "text", "password", "select"
 	Options  []string `json:"options,omitempty"` // for select type
 }
 

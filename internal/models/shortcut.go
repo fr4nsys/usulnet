@@ -32,9 +32,9 @@ type WebShortcut struct {
 	Color       string       `db:"color" json:"color,omitempty"`       // Hex color for background
 	Category    string       `db:"category" json:"category,omitempty"` // User-defined category
 	SortOrder   int          `db:"sort_order" json:"sort_order"`
-	OpenInNew   bool         `db:"open_in_new" json:"open_in_new"`     // Open in new tab
-	ShowInMenu  bool         `db:"show_in_menu" json:"show_in_menu"`   // Show in sidebar menu
-	IsPublic    bool         `db:"is_public" json:"is_public"`         // Visible to all users
+	OpenInNew   bool         `db:"open_in_new" json:"open_in_new"`   // Open in new tab
+	ShowInMenu  bool         `db:"show_in_menu" json:"show_in_menu"` // Show in sidebar menu
+	IsPublic    bool         `db:"is_public" json:"is_public"`       // Visible to all users
 	CreatedBy   uuid.UUID    `db:"created_by" json:"created_by"`
 	CreatedAt   time.Time    `db:"created_at" json:"created_at"`
 	UpdatedAt   time.Time    `db:"updated_at" json:"updated_at"`

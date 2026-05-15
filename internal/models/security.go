@@ -64,33 +64,33 @@ const (
 type IssueStatus string
 
 const (
-	IssueStatusOpen         IssueStatus = "open"
-	IssueStatusAcknowledged IssueStatus = "acknowledged"
-	IssueStatusResolved     IssueStatus = "resolved"
-	IssueStatusIgnored      IssueStatus = "ignored"
+	IssueStatusOpen          IssueStatus = "open"
+	IssueStatusAcknowledged  IssueStatus = "acknowledged"
+	IssueStatusResolved      IssueStatus = "resolved"
+	IssueStatusIgnored       IssueStatus = "ignored"
 	IssueStatusFalsePositive IssueStatus = "false_positive"
 )
 
 // SecurityScan represents a security scan result
 type SecurityScan struct {
-	ID              uuid.UUID       `json:"id" db:"id"`
-	HostID          uuid.UUID       `json:"host_id" db:"host_id"`
-	ContainerID     string          `json:"container_id" db:"container_id"`
-	ContainerName   string          `json:"container_name" db:"container_name"`
-	Image           string          `json:"image" db:"image"`
-	Score           int             `json:"score" db:"score"`
-	Grade           SecurityGrade   `json:"grade" db:"grade"`
-	Issues          []SecurityIssue `json:"issues,omitempty" db:"-"`
-	IssueCount      int             `json:"issue_count" db:"issue_count"`
-	CriticalCount   int             `json:"critical_count" db:"critical_count"`
-	HighCount       int             `json:"high_count" db:"high_count"`
-	MediumCount     int             `json:"medium_count" db:"medium_count"`
-	LowCount        int             `json:"low_count" db:"low_count"`
-	CVECount        int             `json:"cve_count" db:"cve_count"`
-	IncludeCVE      bool            `json:"include_cve" db:"include_cve"`
-	ScanDuration    time.Duration   `json:"scan_duration" db:"scan_duration_ms"`
-	CompletedAt     time.Time       `json:"completed_at" db:"completed_at"`
-	CreatedAt       time.Time       `json:"created_at" db:"created_at"`
+	ID            uuid.UUID       `json:"id" db:"id"`
+	HostID        uuid.UUID       `json:"host_id" db:"host_id"`
+	ContainerID   string          `json:"container_id" db:"container_id"`
+	ContainerName string          `json:"container_name" db:"container_name"`
+	Image         string          `json:"image" db:"image"`
+	Score         int             `json:"score" db:"score"`
+	Grade         SecurityGrade   `json:"grade" db:"grade"`
+	Issues        []SecurityIssue `json:"issues,omitempty" db:"-"`
+	IssueCount    int             `json:"issue_count" db:"issue_count"`
+	CriticalCount int             `json:"critical_count" db:"critical_count"`
+	HighCount     int             `json:"high_count" db:"high_count"`
+	MediumCount   int             `json:"medium_count" db:"medium_count"`
+	LowCount      int             `json:"low_count" db:"low_count"`
+	CVECount      int             `json:"cve_count" db:"cve_count"`
+	IncludeCVE    bool            `json:"include_cve" db:"include_cve"`
+	ScanDuration  time.Duration   `json:"scan_duration" db:"scan_duration_ms"`
+	CompletedAt   time.Time       `json:"completed_at" db:"completed_at"`
+	CreatedAt     time.Time       `json:"created_at" db:"created_at"`
 }
 
 // SecurityIssue represents a security issue
@@ -119,15 +119,15 @@ type SecurityIssue struct {
 
 // SecurityCheck represents a security check definition
 type SecurityCheck struct {
-	ID           string        `json:"id"`
-	Name         string        `json:"name"`
-	Description  string        `json:"description"`
-	Category     IssueCategory `json:"category"`
-	Severity     IssueSeverity `json:"severity"`
-	ScoreImpact  int           `json:"score_impact"`
-	IsEnabled    bool          `json:"is_enabled"`
-	FixCommand   string        `json:"fix_command,omitempty"`
-	DocURL       string        `json:"doc_url,omitempty"`
+	ID          string        `json:"id"`
+	Name        string        `json:"name"`
+	Description string        `json:"description"`
+	Category    IssueCategory `json:"category"`
+	Severity    IssueSeverity `json:"severity"`
+	ScoreImpact int           `json:"score_impact"`
+	IsEnabled   bool          `json:"is_enabled"`
+	FixCommand  string        `json:"fix_command,omitempty"`
+	DocURL      string        `json:"doc_url,omitempty"`
 }
 
 // Security check IDs
@@ -360,17 +360,17 @@ type CVEInfo struct {
 
 // SecurityReport represents a security report
 type SecurityReport struct {
-	ID              uuid.UUID          `json:"id"`
-	HostID          *uuid.UUID         `json:"host_id,omitempty"`
-	GeneratedAt     time.Time          `json:"generated_at"`
-	TotalContainers int                `json:"total_containers"`
-	ScannedCount    int                `json:"scanned_count"`
-	AverageScore    float64            `json:"average_score"`
+	ID                uuid.UUID        `json:"id"`
+	HostID            *uuid.UUID       `json:"host_id,omitempty"`
+	GeneratedAt       time.Time        `json:"generated_at"`
+	TotalContainers   int              `json:"total_containers"`
+	ScannedCount      int              `json:"scanned_count"`
+	AverageScore      float64          `json:"average_score"`
 	GradeDistribution map[string]int   `json:"grade_distribution"`
 	SeveritySummary   map[string]int   `json:"severity_summary"`
-	TopIssues       []SecurityIssue    `json:"top_issues,omitempty"`
-	ContainerScores []ContainerScore   `json:"container_scores,omitempty"`
-	Trends          *SecurityTrends    `json:"trends,omitempty"`
+	TopIssues         []SecurityIssue  `json:"top_issues,omitempty"`
+	ContainerScores   []ContainerScore `json:"container_scores,omitempty"`
+	Trends            *SecurityTrends  `json:"trends,omitempty"`
 }
 
 // ContainerScore represents a container's security score
@@ -386,10 +386,10 @@ type ContainerScore struct {
 
 // SecurityTrends represents security trends over time
 type SecurityTrends struct {
-	Period          string      `json:"period"` // daily, weekly, monthly
-	AverageScores   []TrendPoint `json:"average_scores"`
-	IssueCounts     []TrendPoint `json:"issue_counts"`
-	Improvement     float64      `json:"improvement"` // Percentage improvement
+	Period        string       `json:"period"` // daily, weekly, monthly
+	AverageScores []TrendPoint `json:"average_scores"`
+	IssueCounts   []TrendPoint `json:"issue_counts"`
+	Improvement   float64      `json:"improvement"` // Percentage improvement
 }
 
 // TrendPoint represents a data point in a trend
@@ -406,8 +406,8 @@ type UpdateIssueStatusInput struct {
 
 // ScanOptions represents options for security scanning
 type ScanOptions struct {
-	IncludeCVE        bool     `json:"include_cve"`
-	Severity          []string `json:"severity,omitempty"` // Filter by severity
-	IgnoreUnfixed     bool     `json:"ignore_unfixed"`
-	Timeout           *int     `json:"timeout,omitempty"` // In seconds
+	IncludeCVE    bool     `json:"include_cve"`
+	Severity      []string `json:"severity,omitempty"` // Filter by severity
+	IgnoreUnfixed bool     `json:"ignore_unfixed"`
+	Timeout       *int     `json:"timeout,omitempty"` // In seconds
 }

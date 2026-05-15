@@ -91,7 +91,7 @@ func (c *Config) withDefaults() {
 	}
 }
 
-// dockerAPI is the slice of *docker.Client behaviour the launcher
+// dockerAPI is the slice of *docker.Client behavior the launcher
 // needs.  Defining it here keeps the launcher mockable in unit tests
 // without pulling the docker SDK in.
 type dockerAPI interface {
@@ -289,7 +289,7 @@ func (l *Launcher) runOnce(ctx context.Context, spec recon.ContainerSpec, copyPa
 			}
 			if errors.Is(res.err, context.Canceled) || errors.Is(ctx.Err(), context.Canceled) {
 				l.killAndRemove(ctx, id, log)
-				return out, nil, -1, fmt.Errorf("recon sandbox: run cancelled: %w", context.Canceled)
+				return out, nil, -1, fmt.Errorf("recon sandbox: run canceled: %w", context.Canceled)
 			}
 			return out, nil, -1, fmt.Errorf("recon sandbox: wait: %w", res.err)
 		}
@@ -304,7 +304,7 @@ func (l *Launcher) runOnce(ctx context.Context, spec recon.ContainerSpec, copyPa
 		return out, copied, code, nil
 	case <-ctx.Done():
 		l.killAndRemove(ctx, id, log)
-		return output(), nil, -1, fmt.Errorf("recon sandbox: parent context cancelled: %w", ctx.Err())
+		return output(), nil, -1, fmt.Errorf("recon sandbox: parent context canceled: %w", ctx.Err())
 	}
 }
 

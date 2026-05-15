@@ -1,0 +1,35 @@
+slug: whoami
+name: whoami
+description: Tiny HTTP server that returns request metadata.
+long_description: |
+  whoami is a tiny Go HTTP server that prints the request headers,
+  hostname, IP, and other connection data. It's the standard "is my
+  reverse proxy wired up" sanity check.
+
+  Image: traefik/whoami (MIT).
+category: development
+icon: fa-id-badge
+icon_color: "#7C3AED"
+version: "1.10"
+manifest_version: 1
+website: https://github.com/traefik/whoami
+source: https://github.com/traefik/whoami
+author: usulnet contributors
+license: MIT
+tags:
+  - debug
+  - http
+  - test
+min_memory_mb: 16
+min_cpu_cores: 0.1
+is_official: true
+is_verified: true
+featured: false
+fields:
+  - key: PORT
+    label: Host port
+    description: Host port to expose the whoami service on.
+    type: text
+    default: "8082"
+    required: true
+    placeholder: "8082"

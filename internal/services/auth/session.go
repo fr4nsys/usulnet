@@ -437,12 +437,12 @@ func (s *SessionService) GetStats(ctx context.Context) (*postgres.SessionStats, 
 
 // SessionInfo contains session information for API responses.
 type SessionInfo struct {
-	ID        uuid.UUID  `json:"id"`
-	UserAgent string     `json:"user_agent,omitempty"`
-	IPAddress string     `json:"ip_address,omitempty"`
-	CreatedAt time.Time  `json:"created_at"`
-	ExpiresAt time.Time  `json:"expires_at"`
-	IsCurrent bool       `json:"is_current"`
+	ID        uuid.UUID `json:"id"`
+	UserAgent string    `json:"user_agent,omitempty"`
+	IPAddress string    `json:"ip_address,omitempty"`
+	CreatedAt time.Time `json:"created_at"`
+	ExpiresAt time.Time `json:"expires_at"`
+	IsCurrent bool      `json:"is_current"`
 }
 
 // ToSessionInfo converts a session to API-safe info.

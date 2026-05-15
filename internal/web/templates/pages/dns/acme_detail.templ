@@ -1,0 +1,88 @@
+package dns
+
+import (
+	"fmt"
+
+	"github.com/fr4nsys/usulnet/internal/web/templates/layouts"
+)
+
+templ OrderDetail(data OrderDetailData) {
+	@layouts.Base(data.PageData) {
+		<div class="space-y-6">
+			<div class="flex items-center justify-between">
+				<div>
+					<h1 class="text-2xl font-display font-bold text-white">{ data.Order.Domain }</h1>
+					<p class="text-gray-400 mt-1">ACME DNS-01 order { data.Order.ID }</p>
+				</div>
+				<div class="flex items-center gap-2">
+					<form method="POST" action={ templ.SafeURL(fmt.Sprintf("/dns/acme/%s/process", data.Order.ID)) } style="display:inline">
+						<input type="hidden" name="csrf_token" value={ data.PageData.CSRFToken }/>
+						<button type="submit" class="btn-secondary">Process</button>
+					</form>
+				</div>
+			</div>
+			@Nav("acme")
+
+			<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+				<div class="card p-4">
+					<p class="text-xs text-gray-500">State</p>
+					<p class="text-lg text-white mt-1">
+						<span class={ stateBadgeClass(data.Order.State) }>{ data.Order.StateLabel }</span>
+					</p>
+				</div>
+				<div class="card p-4">
+					<p class="text-xs text-gray-500">Provider</p>
+					<p class="text-sm text-gray-300 mt-1">{ data.Order.ProviderName }</p>
+				</div>
+				<div class="card p-4">
+					<p class="text-xs text-gray-500">Propagation checks</p>
+					<p class="text-sm text-gray-300 mt-1">{ fmt.Sprintf("%d", data.Order.PropChecks) }</p>
+				</div>
+			</div>
+
+			<div class="card p-6 space-y-4">
+				<div>
+					<p class="text-xs uppercase tracking-wide text-gray-500 mb-1">Challenge FQDN</p>
+					<p class="font-mono text-sm text-white">{ data.Order.ChallengeFQDN }</p>
+				</div>
+				<div>
+					<p class="text-xs uppercase tracking-wide text-gray-500 mb-1">Challenge value</p>
+					<p class="font-mono text-sm text-white break-all">{ data.Order.ChallengeValue }</p>
+				</div>
+				if data.Order.ErrorMsg != "" {
+					<div class="rounded-lg bg-red-500/10 border border-red-500/30 text-red-300 p-3 text-sm">{ data.Order.ErrorMsg }</div>
+				}
+			</div>
+
+			<div class="card">
+				<div class="px-6 py-4 border-b border-dark-700">
+					<h2 class="text-lg font-medium text-white">Order log</h2>
+					<p class="text-xs text-gray-500">State transitions and errors recorded as they happen.</p>
+				</div>
+				<div class="overflow-x-auto">
+					<table class="table">
+						<thead>
+							<tr>
+								<th>When</th>
+								<th>Action</th>
+								<th>Details</th>
+							</tr>
+						</thead>
+						<tbody>
+							for _, e := range data.Audit {
+								<tr>
+									<td class="text-sm text-gray-400 whitespace-nowrap">{ e.When }</td>
+									<td><span class="text-sm text-gray-300">{ e.Action }</span></td>
+									<td class="text-sm text-gray-300">{ e.Details }</td>
+								</tr>
+							}
+							if len(data.Audit) == 0 {
+								<tr><td colspan="3" class="text-center text-gray-500 py-6">No log entries</td></tr>
+							}
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	}
+}

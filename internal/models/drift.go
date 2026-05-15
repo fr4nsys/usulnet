@@ -20,9 +20,9 @@ const (
 
 // Drift status constants.
 const (
-	DriftStatusOpen        = "open"
-	DriftStatusAccepted    = "accepted"
-	DriftStatusRemediated  = "remediated"
+	DriftStatusOpen       = "open"
+	DriftStatusAccepted   = "accepted"
+	DriftStatusRemediated = "remediated"
 )
 
 // Drift diff type constants.

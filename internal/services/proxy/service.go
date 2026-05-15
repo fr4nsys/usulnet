@@ -46,6 +46,15 @@ type Service struct {
 	cfg     Config
 	logger  *logger.Logger
 
+	// Extended-feature repositories (v26.5.1). Nil-safe: methods on
+	// Service check for nil and return ErrFeatureNotSupported when the
+	// caller did not wire them.
+	accessLists  AccessListRepository
+	deadHosts    DeadHostRepository
+	locations    LocationRepository
+	redirections RedirectionRepository
+	streams      StreamRepository
+
 	// Sync mutex to prevent concurrent config pushes
 	syncMu sync.Mutex
 }
@@ -78,6 +87,25 @@ func NewService(
 // Backend returns the active sync backend.
 func (s *Service) Backend() SyncBackend {
 	return s.backend
+}
+
+// WithExtendedRepositories wires the extended-feature repositories. Calling
+// this enables the access-list, dead-host, location, redirection and stream
+// methods on the service. Repositories may be nil individually if the
+// corresponding feature is not desired.
+func (s *Service) WithExtendedRepositories(
+	accessLists AccessListRepository,
+	deadHosts DeadHostRepository,
+	locations LocationRepository,
+	redirections RedirectionRepository,
+	streams StreamRepository,
+) *Service {
+	s.accessLists = accessLists
+	s.deadHosts = deadHosts
+	s.locations = locations
+	s.redirections = redirections
+	s.streams = streams
+	return s
 }
 
 // ============================================================================

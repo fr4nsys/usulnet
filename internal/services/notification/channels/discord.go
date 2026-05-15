@@ -53,11 +53,11 @@ type DiscordConfig struct {
 
 // DiscordMessage represents a Discord webhook payload.
 type DiscordMessage struct {
-	Content   string         `json:"content,omitempty"`
-	Username  string         `json:"username,omitempty"`
-	AvatarURL string         `json:"avatar_url,omitempty"`
-	TTS       bool           `json:"tts,omitempty"`
-	Embeds    []DiscordEmbed `json:"embeds,omitempty"`
+	Content         string                  `json:"content,omitempty"`
+	Username        string                  `json:"username,omitempty"`
+	AvatarURL       string                  `json:"avatar_url,omitempty"`
+	TTS             bool                    `json:"tts,omitempty"`
+	Embeds          []DiscordEmbed          `json:"embeds,omitempty"`
 	AllowedMentions *DiscordAllowedMentions `json:"allowed_mentions,omitempty"`
 }
 

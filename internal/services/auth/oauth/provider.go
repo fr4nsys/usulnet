@@ -25,25 +25,25 @@ import (
 
 // OAuth errors
 var (
-	ErrProviderDisabled   = errors.New("OAuth provider is disabled")
-	ErrInvalidCode        = errors.New("invalid authorization code")
-	ErrTokenExchange      = errors.New("token exchange failed")
-	ErrUserInfoFetch      = errors.New("failed to fetch user info")
-	ErrInvalidToken       = errors.New("invalid token")
-	ErrMissingUserID      = errors.New("user ID not found in response")
-	ErrMissingUsername    = errors.New("username not found in response")
-	ErrProviderNotFound   = errors.New("OAuth provider not found")
-	ErrInvalidConfig      = errors.New("invalid OAuth configuration")
+	ErrProviderDisabled = errors.New("OAuth provider is disabled")
+	ErrInvalidCode      = errors.New("invalid authorization code")
+	ErrTokenExchange    = errors.New("token exchange failed")
+	ErrUserInfoFetch    = errors.New("failed to fetch user info")
+	ErrInvalidToken     = errors.New("invalid token")
+	ErrMissingUserID    = errors.New("user ID not found in response")
+	ErrMissingUsername  = errors.New("username not found in response")
+	ErrProviderNotFound = errors.New("OAuth provider not found")
+	ErrInvalidConfig    = errors.New("invalid OAuth configuration")
 )
 
 // ProviderType represents the type of OAuth provider.
 type ProviderType string
 
 const (
-	ProviderTypeGeneric ProviderType = "generic"
-	ProviderTypeOIDC    ProviderType = "oidc"
-	ProviderTypeGitHub  ProviderType = "github"
-	ProviderTypeGoogle  ProviderType = "google"
+	ProviderTypeGeneric   ProviderType = "generic"
+	ProviderTypeOIDC      ProviderType = "oidc"
+	ProviderTypeGitHub    ProviderType = "github"
+	ProviderTypeGoogle    ProviderType = "google"
 	ProviderTypeMicrosoft ProviderType = "microsoft"
 )
 
@@ -211,11 +211,11 @@ type Provider interface {
 
 // GenericProvider implements OAuth2 authentication.
 type GenericProvider struct {
-	config      Config
-	oauth2Cfg   *oauth2.Config
-	httpClient  *http.Client
-	logger      *logger.Logger
-	mu          sync.RWMutex
+	config     Config
+	oauth2Cfg  *oauth2.Config
+	httpClient *http.Client
+	logger     *logger.Logger
+	mu         sync.RWMutex
 }
 
 // NewGenericProvider creates a new generic OAuth2 provider.
@@ -283,7 +283,7 @@ func (p *GenericProvider) Exchange(ctx context.Context, code string) (*User, err
 	token, err := p.oauth2Cfg.Exchange(ctx, code)
 	if err != nil {
 		p.logger.Error("token exchange failed", "error", err)
-		return nil, fmt.Errorf("%w: %v", ErrTokenExchange, err)
+		return nil, fmt.Errorf("%w: %w", ErrTokenExchange, err)
 	}
 
 	// Fetch user info
@@ -318,7 +318,7 @@ func (p *GenericProvider) fetchUserInfo(ctx context.Context, token *oauth2.Token
 	// Execute request
 	resp, err := p.httpClient.Do(req)
 	if err != nil {
-		return nil, fmt.Errorf("%w: %v", ErrUserInfoFetch, err)
+		return nil, fmt.Errorf("%w: %w", ErrUserInfoFetch, err)
 	}
 	defer resp.Body.Close()
 
@@ -429,12 +429,12 @@ func (p *GenericProvider) UpdateConfig(config Config) error {
 
 // OIDCProvider implements OpenID Connect authentication.
 type OIDCProvider struct {
-	config     Config
-	oauth2Cfg  *oauth2.Config
+	config       Config
+	oauth2Cfg    *oauth2.Config
 	oidcProvider *oidc.Provider
-	verifier   *oidc.IDTokenVerifier
-	logger     *logger.Logger
-	mu         sync.RWMutex
+	verifier     *oidc.IDTokenVerifier
+	logger       *logger.Logger
+	mu           sync.RWMutex
 }
 
 // NewOIDCProvider creates a new OIDC provider.
@@ -508,7 +508,7 @@ func (p *OIDCProvider) Exchange(ctx context.Context, code string) (*User, error)
 	token, err := p.oauth2Cfg.Exchange(ctx, code)
 	if err != nil {
 		p.logger.Error("token exchange failed", "error", err)
-		return nil, fmt.Errorf("%w: %v", ErrTokenExchange, err)
+		return nil, fmt.Errorf("%w: %w", ErrTokenExchange, err)
 	}
 
 	// Extract ID token
@@ -520,7 +520,7 @@ func (p *OIDCProvider) Exchange(ctx context.Context, code string) (*User, error)
 	// Verify ID token
 	idToken, err := p.verifier.Verify(ctx, rawIDToken)
 	if err != nil {
-		return nil, fmt.Errorf("%w: %v", ErrInvalidToken, err)
+		return nil, fmt.Errorf("%w: %w", ErrInvalidToken, err)
 	}
 
 	// Extract claims

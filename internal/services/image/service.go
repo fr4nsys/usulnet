@@ -378,14 +378,14 @@ func (s *Service) dockerToModel(img docker.Image, hostID uuid.UUID) *models.Imag
 // detailsToModel converts ImageDetails to our model.
 func (s *Service) detailsToModel(d *docker.ImageDetails, hostID uuid.UUID) *models.Image {
 	return &models.Image{
-		ID:           d.ID,
-		HostID:       hostID,
-		RepoTags:     d.RepoTags,
-		RepoDigests:  d.RepoDigests,
-		CreatedAt:    d.Created,
-		Size:         d.Size,
-		VirtualSize:  d.VirtualSize,
-		Labels:       d.Labels,
+		ID:          d.ID,
+		HostID:      hostID,
+		RepoTags:    d.RepoTags,
+		RepoDigests: d.RepoDigests,
+		CreatedAt:   d.Created,
+		Size:        d.Size,
+		VirtualSize: d.VirtualSize,
+		Labels:      d.Labels,
 	}
 }
 
@@ -421,17 +421,17 @@ func ValidateReference(reference string) error {
 
 // BuildOptions contains options for building an image.
 type BuildOptions struct {
-	Tags           []string          `json:"tags"`            // Image tags (e.g., ["myimage:latest"])
-	Dockerfile     string            `json:"dockerfile"`      // Path to Dockerfile (default: "Dockerfile")
-	BuildArgs      map[string]*string `json:"build_args"`     // Build arguments
-	Target         string            `json:"target"`          // Target build stage
-	NoCache        bool              `json:"no_cache"`        // Don't use cache
-	Pull           bool              `json:"pull"`            // Always pull base images
-	Remove         bool              `json:"remove"`          // Remove intermediate containers
-	ForceRemove    bool              `json:"force_remove"`    // Always remove intermediate containers
-	Labels         map[string]string `json:"labels"`          // Labels to apply to the image
-	Platform       string            `json:"platform"`        // Target platform (e.g., "linux/amd64")
-	SquashLayers   bool              `json:"squash"`          // Squash layers into one
+	Tags         []string           `json:"tags"`         // Image tags (e.g., ["myimage:latest"])
+	Dockerfile   string             `json:"dockerfile"`   // Path to Dockerfile (default: "Dockerfile")
+	BuildArgs    map[string]*string `json:"build_args"`   // Build arguments
+	Target       string             `json:"target"`       // Target build stage
+	NoCache      bool               `json:"no_cache"`     // Don't use cache
+	Pull         bool               `json:"pull"`         // Always pull base images
+	Remove       bool               `json:"remove"`       // Remove intermediate containers
+	ForceRemove  bool               `json:"force_remove"` // Always remove intermediate containers
+	Labels       map[string]string  `json:"labels"`       // Labels to apply to the image
+	Platform     string             `json:"platform"`     // Target platform (e.g., "linux/amd64")
+	SquashLayers bool               `json:"squash"`       // Squash layers into one
 }
 
 // BuildProgress represents a build progress message.

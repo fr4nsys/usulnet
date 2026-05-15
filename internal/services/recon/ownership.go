@@ -22,7 +22,7 @@ import (
 // five concrete verifiers (DNS TXT, email link, RDAP, admin attest,
 // self-assert).
 //
-// Start initialises a fresh OwnershipProof: it populates Challenge and
+// Start initializes a fresh OwnershipProof: it populates Challenge and
 // Evidence as appropriate to the method but leaves Status untouched
 // (callers are expected to persist the pending row before verification
 // runs). Verify drives the actual check, updates Status / VerifiedAt and
@@ -371,7 +371,7 @@ func (v *rdapVerifier) Verify(ctx context.Context, target *Target, proof *Owners
 	return nil
 }
 
-// equalOrg compares two organisation names case-insensitively after
+// equalOrg compares two organization names case-insensitively after
 // trimming and collapsing internal whitespace. Registrars vary on
 // trailing commas, "Inc." vs "Inc", and similar; the comparison is
 // deliberately loose so a single space difference does not block

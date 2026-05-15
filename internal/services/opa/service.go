@@ -692,7 +692,7 @@ func defaultPolicies() []*models.OPAPolicy {
 }
 
 // mustJSON marshals v to a JSON string and panics on failure. Used only
-// during static default policy construction at programme start.
+// during static default policy construction at program start.
 func mustJSON(v interface{}) string {
 	b, err := json.Marshal(v)
 	if err != nil {

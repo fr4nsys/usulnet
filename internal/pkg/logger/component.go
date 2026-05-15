@@ -101,7 +101,7 @@ func (cl *ComponentLevels) ListOverrides() map[string]string {
 }
 
 // parseLevel converts a string to a zap level. Defaults to InfoLevel for
-// unrecognised values.
+// unrecognized values.
 func parseLevel(s string) zapcore.Level {
 	var lvl zapcore.Level
 	switch strings.ToLower(strings.TrimSpace(s)) {

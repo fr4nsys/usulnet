@@ -87,8 +87,8 @@ type WorkerResult struct {
 
 // WorkerContext provides context helpers for workers
 type WorkerContext struct {
-	ctx       context.Context
-	job       *models.Job
+	ctx        context.Context
+	job        *models.Job
 	onProgress func(progress int, message string)
 }
 
@@ -118,7 +118,7 @@ func (wc *WorkerContext) ReportProgress(progress int, message string) {
 	}
 }
 
-// IsCancelled checks if the context is cancelled
+// IsCancelled checks if the context is canceled
 func (wc *WorkerContext) IsCancelled() bool {
 	select {
 	case <-wc.ctx.Done():

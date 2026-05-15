@@ -184,7 +184,7 @@ func (r *SecurityIssueRepository) GetByID(ctx context.Context, id int64) (*model
 
 	issue, err := scanIssueRow(r.db.QueryRow(ctx, query, id))
 	if err != nil {
-		if err == pgx.ErrNoRows {
+		if errors.Is(err, pgx.ErrNoRows) {
 			return nil, errors.NotFound("security issue")
 		}
 		return nil, errors.Wrap(err, errors.CodeDatabaseError, "failed to get security issue")
@@ -399,7 +399,6 @@ func (r *SecurityIssueRepository) GetSeverityCounts(ctx context.Context, hostID 
 	if status != nil {
 		conditions = append(conditions, fmt.Sprintf("status = $%d", argNum))
 		args = append(args, string(*status))
-		argNum++
 	}
 
 	whereClause := ""

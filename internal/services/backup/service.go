@@ -6,7 +6,6 @@ package backup
 
 import (
 	"context"
-	"fmt"
 	"sync"
 	"sync/atomic"
 	"time"
@@ -16,7 +15,6 @@ import (
 
 	"github.com/fr4nsys/usulnet/internal/license"
 	"github.com/fr4nsys/usulnet/internal/models"
-	apperrors "github.com/fr4nsys/usulnet/internal/pkg/errors"
 	"github.com/fr4nsys/usulnet/internal/pkg/logger"
 )
 
@@ -41,18 +39,12 @@ type Service struct {
 
 	// Concurrency control
 	semaphore chan struct{}
-
-	// License enforcement
-	limitMu       sync.RWMutex
-	limitProvider license.LimitProvider
 }
 
-// SetLimitProvider sets the license limit provider for enforcing MaxBackupDestinations.
-func (s *Service) SetLimitProvider(lp license.LimitProvider) {
-	s.limitMu.Lock()
-	s.limitProvider = lp
-	s.limitMu.Unlock()
-}
+// SetLimitProvider is a no-op kept for callers that still wire the
+// legacy hook; the AGPL build does not cap backup destinations via a
+// license token.
+func (s *Service) SetLimitProvider(_ license.LimitProvider) {}
 
 // ServiceOption configures the backup Service.
 type ServiceOption func(*serviceOptions)
@@ -392,22 +384,8 @@ func (s *Service) PruneTarget(ctx context.Context, hostID uuid.UUID, targetID st
 // ============================================================================
 
 // CreateSchedule creates a new backup schedule.
+// There is no license-driven cap in the AGPL build.
 func (s *Service) CreateSchedule(ctx context.Context, input models.CreateBackupScheduleInput, hostID uuid.UUID, createdBy *uuid.UUID) (*models.BackupSchedule, error) {
-	// Enforce MaxBackupDestinations license limit (schedules count as destinations)
-	s.limitMu.RLock()
-	lp := s.limitProvider
-	s.limitMu.RUnlock()
-	if lp != nil {
-		limit := lp.GetLimits().MaxBackupDestinations
-		if limit > 0 {
-			existing, err := s.repo.ListSchedules(ctx, nil) // nil = all hosts
-			if err == nil && len(existing) >= limit {
-				return nil, apperrors.NewWithStatus(apperrors.CodeLimitExceeded,
-					fmt.Sprintf("backup schedule limit reached (%d/%d), upgrade your license for more", len(existing), limit), 402)
-			}
-		}
-	}
-
 	schedule := &models.BackupSchedule{
 		ID:            uuid.New(),
 		HostID:        hostID,

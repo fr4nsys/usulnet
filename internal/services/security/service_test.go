@@ -151,12 +151,12 @@ func (r *mockScanRepo) GetAverageScore(_ context.Context, _ *uuid.UUID) (float64
 // ---------------------------------------------------------------------------
 
 type mockIssueRepo struct {
-	issues       []*models.SecurityIssue
-	createErr    error
-	updateErr    error
-	deleteErr    error
-	getByIDErr   error
-	nextIssueID  int64
+	issues      []*models.SecurityIssue
+	createErr   error
+	updateErr   error
+	deleteErr   error
+	getByIDErr  error
+	nextIssueID int64
 }
 
 func (r *mockIssueRepo) CreateBatch(_ context.Context, issues []models.SecurityIssue) error {

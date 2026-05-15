@@ -16,10 +16,10 @@ import (
 // Throttler controls notification rate to prevent spam.
 // Uses sliding window rate limiting per notification type.
 type Throttler struct {
-	mu       sync.RWMutex
-	config   ThrottleConfig
-	windows  map[channels.NotificationType]*slidingWindow
-	global   *slidingWindow
+	mu      sync.RWMutex
+	config  ThrottleConfig
+	windows map[channels.NotificationType]*slidingWindow
+	global  *slidingWindow
 }
 
 // ThrottleConfig defines rate limiting configuration.
@@ -223,8 +223,8 @@ func (t *Throttler) Stats() ThrottleStats {
 
 // ThrottleStats contains throttling statistics.
 type ThrottleStats struct {
-	GlobalCount int                                          `json:"global_count"`
-	GlobalLimit int                                          `json:"global_limit"`
+	GlobalCount int                                             `json:"global_count"`
+	GlobalLimit int                                             `json:"global_limit"`
 	TypeCounts  map[channels.NotificationType]TypeThrottleStats `json:"type_counts"`
 }
 

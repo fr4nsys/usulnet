@@ -477,7 +477,7 @@ func (r *ConfigTemplateRepository) scanTemplate(row pgx.Row) (*models.ConfigTemp
 		&t.UpdatedAt,
 	)
 	if err != nil {
-		if err == pgx.ErrNoRows {
+		if errors.Is(err, pgx.ErrNoRows) {
 			return nil, errors.NotFound("template")
 		}
 		return nil, errors.Wrap(err, errors.CodeDatabaseError, "failed to scan template")

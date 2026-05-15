@@ -59,29 +59,29 @@ func (a *NetworkAnalyzer) Analyze(ctx context.Context, data *security.ContainerD
 	}
 
 	// Check PID mode
-	if strings.ToLower(data.PidMode) == "host" {
+	if strings.EqualFold(data.PidMode, "host") {
 		issues = append(issues, security.Issue{
-			CheckID:     models.CheckNetworkMode,
-			Severity:    models.IssueSeverityHigh,
-			Category:    models.IssueCategorySecurity,
-			Title:       "Host PID Namespace",
-			Description: "Container shares the host's PID namespace. This allows seeing and potentially signaling all host processes.",
+			CheckID:        models.CheckNetworkMode,
+			Severity:       models.IssueSeverityHigh,
+			Category:       models.IssueCategorySecurity,
+			Title:          "Host PID Namespace",
+			Description:    "Container shares the host's PID namespace. This allows seeing and potentially signaling all host processes.",
 			Recommendation: "Avoid using PID namespace sharing unless absolutely required for monitoring tools.",
-			Penalty:     15,
+			Penalty:        15,
 		}.WithDetail("container", data.Name).
 			WithDetail("pid_mode", data.PidMode))
 	}
 
 	// Check IPC mode
-	if strings.ToLower(data.IpcMode) == "host" {
+	if strings.EqualFold(data.IpcMode, "host") {
 		issues = append(issues, security.Issue{
-			CheckID:     models.CheckNetworkMode,
-			Severity:    models.IssueSeverityMedium,
-			Category:    models.IssueCategorySecurity,
-			Title:       "Host IPC Namespace",
-			Description: "Container shares the host's IPC namespace. This allows access to shared memory segments.",
+			CheckID:        models.CheckNetworkMode,
+			Severity:       models.IssueSeverityMedium,
+			Category:       models.IssueCategorySecurity,
+			Title:          "Host IPC Namespace",
+			Description:    "Container shares the host's IPC namespace. This allows access to shared memory segments.",
 			Recommendation: "Avoid using IPC namespace sharing unless required for specific IPC communication.",
-			Penalty:     10,
+			Penalty:        10,
 		}.WithDetail("container", data.Name).
 			WithDetail("ipc_mode", data.IpcMode))
 	}
@@ -90,13 +90,13 @@ func (a *NetworkAnalyzer) Analyze(ctx context.Context, data *security.ContainerD
 	if strings.HasPrefix(networkMode, "container:") {
 		containerID := strings.TrimPrefix(networkMode, "container:")
 		issues = append(issues, security.Issue{
-			CheckID:     models.CheckNetworkMode,
-			Severity:    models.IssueSeverityLow,
-			Category:    models.IssueCategorySecurity,
-			Title:       "Shared Container Network",
-			Description: "Container shares network namespace with another container. Ensure this is intentional.",
+			CheckID:        models.CheckNetworkMode,
+			Severity:       models.IssueSeverityLow,
+			Category:       models.IssueCategorySecurity,
+			Title:          "Shared Container Network",
+			Description:    "Container shares network namespace with another container. Ensure this is intentional.",
 			Recommendation: "Verify that network sharing is required and the target container is trusted.",
-			Penalty:     3,
+			Penalty:        3,
 		}.WithDetail("container", data.Name).
 			WithDetail("shared_with", containerID))
 	}
@@ -104,13 +104,13 @@ func (a *NetworkAnalyzer) Analyze(ctx context.Context, data *security.ContainerD
 	// Check for "none" network mode (could be intentional but worth noting)
 	if networkMode == "none" {
 		issues = append(issues, security.Issue{
-			CheckID:     models.CheckNetworkMode,
-			Severity:    models.IssueSeverityInfo,
-			Category:    models.IssueCategorySecurity,
-			Title:       "No Network",
-			Description: "Container has no network connectivity. This is secure but may limit functionality.",
+			CheckID:        models.CheckNetworkMode,
+			Severity:       models.IssueSeverityInfo,
+			Category:       models.IssueCategorySecurity,
+			Title:          "No Network",
+			Description:    "Container has no network connectivity. This is secure but may limit functionality.",
 			Recommendation: "This is often desirable for batch jobs or security-sensitive workloads.",
-			Penalty:     0, // This is actually good for security
+			Penalty:        0, // This is actually good for security
 		}.WithDetail("container", data.Name))
 	}
 

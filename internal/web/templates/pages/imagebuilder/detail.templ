@@ -1,0 +1,176 @@
+// SPDX-License-Identifier: AGPL-3.0-or-later
+// Copyright (c) 2024-2026 usulnet contributors
+// https://github.com/fr4nsys/usulnet
+
+package imagebuilder
+
+import (
+	"fmt"
+	"github.com/fr4nsys/usulnet/internal/web/templates/layouts"
+)
+
+// DetailData carries the inputs the build detail page renders. The
+// LogStreamPath is the URL the in-page <script> opens a WebSocket
+// against to render live build output (Redis pub/sub backed).
+type DetailData struct {
+	PageData      layouts.PageData
+	Build         BuildView
+	LogStreamPath string // e.g. /api/v1/builds/<id>/log
+}
+
+templ Detail(data DetailData) {
+	@layouts.Base(data.PageData) {
+		<div class="space-y-6">
+			@Nav("builds")
+
+			<div class="max-w-5xl">
+				<!-- Header -->
+				<div class="flex items-center gap-3 mb-6">
+					<a href="/image-builder" class="text-gray-400 hover:text-white">
+						<i class="fas fa-arrow-left"></i>
+					</a>
+					<div>
+						<h2 class="text-xl font-display font-bold text-white">
+							if data.Build.Name != "" {
+								{ data.Build.Name }
+							} else {
+								Build { shortID(data.Build.ID) }
+							}
+						</h2>
+						<p class="text-sm text-gray-400">
+							for _, tag := range data.Build.Tags {
+								<span class="font-mono mr-2">{ tag }</span>
+							}
+						</p>
+					</div>
+					<div class="ml-auto flex items-center gap-2">
+						@buildStatusBadge(data.Build.Status)
+						if data.Build.Signed {
+							<span class="inline-flex items-center text-xs bg-emerald-500/10 text-emerald-400 px-2 py-0.5 rounded" title={ data.Build.SignatureRef }>
+								<i class="fas fa-shield-alt mr-1"></i>Signed
+							</span>
+						}
+					</div>
+				</div>
+
+				<!-- Summary Cards -->
+				<div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+					<div class="card p-4 text-center">
+						<p class="text-sm text-gray-400 mb-1">Duration</p>
+						<p class="text-lg font-mono text-white">
+							if data.Build.DurationMs > 0 {
+								{ fmt.Sprintf("%dms", data.Build.DurationMs) }
+							} else {
+								-
+							}
+						</p>
+					</div>
+					<div class="card p-4 text-center">
+						<p class="text-sm text-gray-400 mb-1">Image Size</p>
+						<p class="text-lg font-mono text-white">
+							if data.Build.ImageSize != "" && data.Build.ImageSize != "0 B" {
+								{ data.Build.ImageSize }
+							} else {
+								-
+							}
+						</p>
+					</div>
+					<div class="card p-4 text-center">
+						<p class="text-sm text-gray-400 mb-1">Platform</p>
+						<p class="text-lg font-mono text-white">
+							if data.Build.Platform != "" {
+								{ data.Build.Platform }
+							} else {
+								auto
+							}
+						</p>
+					</div>
+				</div>
+
+				if data.Build.ErrorMessage != "" {
+					<div class="bg-red-500/10 border border-red-500/20 rounded-lg p-4 mb-6">
+						<h4 class="font-medium text-red-400 mb-1">
+							<i class="fas fa-exclamation-triangle mr-1"></i>Error
+						</h4>
+						<p class="text-sm text-red-300 font-mono whitespace-pre-wrap">{ data.Build.ErrorMessage }</p>
+					</div>
+				}
+
+				<!-- Live log viewer -->
+				<div class="card p-4 mb-6">
+					<div class="flex items-center justify-between mb-2">
+						<h3 class="text-sm font-semibold text-white">Build Log</h3>
+						<span id="ib-log-status" class="text-xs text-gray-400">connecting…</span>
+					</div>
+					<pre
+						id="ib-log"
+						class="bg-black text-green-300 font-mono text-xs p-3 h-96 overflow-auto rounded whitespace-pre-wrap"
+					>{ data.Build.Output }</pre>
+				</div>
+
+				<script type="text/javascript">
+					(function() {
+						var path = { templ.JSONString(data.LogStreamPath) };
+						var pre = document.getElementById('ib-log');
+						var status = document.getElementById('ib-log-status');
+						if (!path || !pre) { return; }
+						try {
+							var proto = location.protocol === 'https:' ? 'wss' : 'ws';
+							var ws = new WebSocket(proto + '://' + location.host + path);
+							ws.onopen = function() { status.textContent = 'streaming'; };
+							ws.onmessage = function(ev) {
+								pre.appendChild(document.createTextNode(ev.data));
+								pre.scrollTop = pre.scrollHeight;
+							};
+							ws.onerror = function() { status.textContent = 'error'; };
+							ws.onclose = function() { status.textContent = 'closed'; };
+						} catch (e) {
+							status.textContent = 'unsupported';
+						}
+					})();
+				</script>
+
+				<!-- Details -->
+				<div class="card p-6">
+					<h3 class="text-lg font-semibold text-white mb-4">Build Details</h3>
+					<div class="grid grid-cols-2 gap-4">
+						<div>
+							<p class="text-xs text-gray-500 uppercase">Build ID</p>
+							<p class="text-sm font-mono text-gray-300 break-all">{ data.Build.ID }</p>
+						</div>
+						<div>
+							<p class="text-xs text-gray-500 uppercase">Image ID</p>
+							<p class="text-sm font-mono text-gray-300 break-all">
+								if data.Build.ImageID != "" {
+									{ data.Build.ImageID }
+								} else {
+									<span class="text-gray-500">-</span>
+								}
+							</p>
+						</div>
+						<div>
+							<p class="text-xs text-gray-500 uppercase">Created At</p>
+							<p class="text-sm text-white">{ data.Build.CreatedAt }</p>
+						</div>
+						<div>
+							<p class="text-xs text-gray-500 uppercase">Completed At</p>
+							<p class="text-sm text-white">
+								if data.Build.CompletedAt != "" {
+									{ data.Build.CompletedAt }
+								} else {
+									<span class="text-gray-500">-</span>
+								}
+							</p>
+						</div>
+						if data.Build.SignatureRef != "" {
+							<div class="col-span-2">
+								<p class="text-xs text-gray-500 uppercase">Signature Reference</p>
+								<p class="text-sm font-mono text-gray-300 break-all">{ data.Build.SignatureRef }</p>
+							</div>
+						}
+					</div>
+				</div>
+			</div>
+		</div>
+	}
+}

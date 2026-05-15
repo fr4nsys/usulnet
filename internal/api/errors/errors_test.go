@@ -363,40 +363,6 @@ func TestTimeout(t *testing.T) {
 }
 
 // ============================================================================
-// License error constructors - critical for license enforcement
-// ============================================================================
-
-func TestLicenseRequired_HTTP402(t *testing.T) {
-	e := LicenseRequired("multi_node")
-	if e.Status != http.StatusPaymentRequired {
-		t.Errorf("LicenseRequired Status = %d, want %d (402 Payment Required)", e.Status, http.StatusPaymentRequired)
-	}
-	if e.Code != ErrCodeLicenseRequired {
-		t.Errorf("Code = %q, want %q", e.Code, ErrCodeLicenseRequired)
-	}
-}
-
-func TestLicenseExpired_HTTP402(t *testing.T) {
-	e := LicenseExpired()
-	if e.Status != http.StatusPaymentRequired {
-		t.Errorf("LicenseExpired Status = %d, want %d (402 Payment Required)", e.Status, http.StatusPaymentRequired)
-	}
-	if e.Code != ErrCodeLicenseExpired {
-		t.Errorf("Code = %q, want %q", e.Code, ErrCodeLicenseExpired)
-	}
-}
-
-func TestFeatureDisabled_HTTP403(t *testing.T) {
-	e := FeatureDisabled("ldap")
-	if e.Status != http.StatusForbidden {
-		t.Errorf("FeatureDisabled Status = %d, want %d (403 Forbidden)", e.Status, http.StatusForbidden)
-	}
-	if e.Code != ErrCodeFeatureDisabled {
-		t.Errorf("Code = %q, want %q", e.Code, ErrCodeFeatureDisabled)
-	}
-}
-
-// ============================================================================
 // NotImplemented
 // ============================================================================
 
@@ -522,18 +488,6 @@ func TestFromAppError_Internal(t *testing.T) {
 	}
 	if got.Code != ErrorCode(pkgerrors.CodeInternal) {
 		t.Errorf("Code = %q, want %q", got.Code, pkgerrors.CodeInternal)
-	}
-}
-
-func TestFromAppError_LimitExceeded(t *testing.T) {
-	appErr := pkgerrors.LimitExceeded("nodes", 3, 3)
-	got := FromAppError(appErr)
-
-	if got.Status != http.StatusPaymentRequired {
-		t.Errorf("Status = %d, want %d", got.Status, http.StatusPaymentRequired)
-	}
-	if got.Details == nil {
-		t.Error("Details should be populated from AppError.Details")
 	}
 }
 
@@ -682,38 +636,12 @@ func TestErrorCodeConstants_NotEmpty(t *testing.T) {
 		ErrCodeInternal, ErrCodeServiceUnavailable, ErrCodeTimeout, ErrCodeDatabaseError,
 		ErrCodeDockerError, ErrCodeContainerNotFound, ErrCodeImageNotFound,
 		ErrCodeNetworkNotFound, ErrCodeVolumeNotFound, ErrCodeHostNotFound, ErrCodeHostUnreachable,
-		ErrCodeLicenseRequired, ErrCodeLicenseExpired, ErrCodeLicenseInvalid, ErrCodeFeatureDisabled,
+		ErrCodeLicenseInvalid,
 	}
 
 	for _, code := range codes {
 		if code == "" {
 			t.Error("ErrorCode constant should not be empty")
 		}
-	}
-}
-
-// ============================================================================
-// License error HTTP status consistency
-// ============================================================================
-
-func TestLicenseErrors_HTTPStatusConsistency(t *testing.T) {
-	// License-related errors must use HTTP 402 (Payment Required)
-	// Feature disabled uses HTTP 403 (Forbidden)
-	tests := []struct {
-		name   string
-		err    *APIError
-		status int
-	}{
-		{"LicenseRequired", LicenseRequired("feature"), http.StatusPaymentRequired},
-		{"LicenseExpired", LicenseExpired(), http.StatusPaymentRequired},
-		{"FeatureDisabled", FeatureDisabled("ldap"), http.StatusForbidden},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if tt.err.Status != tt.status {
-				t.Errorf("%s Status = %d, want %d", tt.name, tt.err.Status, tt.status)
-			}
-		})
 	}
 }

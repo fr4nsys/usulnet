@@ -6,7 +6,10 @@ package redis
 
 import (
 	"context"
+	"crypto/tls"
+	"crypto/x509"
 	"fmt"
+	"os"
 	"strings"
 	"time"
 
@@ -20,6 +23,21 @@ type Options struct {
 	DialTimeout  time.Duration
 	ReadTimeout  time.Duration
 	WriteTimeout time.Duration
+
+	// TLSEnabled forces TLS even when the URL is `redis://`. When the
+	// URL is already `rediss://` go-redis's ParseURL hands us a non-nil
+	// *tls.Config and the flag has no further effect.
+	TLSEnabled bool
+	// TLSSkipVerify disables certificate-chain verification. Set this
+	// when talking to a self-signed in-cluster Redis (the opt-in
+	// USULNET_TLS_LOCAL_SERVICES path).
+	TLSSkipVerify bool
+	// TLSCAFile is an optional PEM file to populate RootCAs (verify-full
+	// against an operator-supplied CA).
+	TLSCAFile string
+	// TLSCertFile / TLSKeyFile enable client mTLS when both are set.
+	TLSCertFile string
+	TLSKeyFile  string
 }
 
 // DefaultOptions returns sensible default options
@@ -60,6 +78,40 @@ func New(ctx context.Context, url string, opts Options) (*Client, error) {
 	}
 	if opts.WriteTimeout > 0 {
 		options.WriteTimeout = opts.WriteTimeout
+	}
+
+	// TLS plumbing. ParseURL pre-fills options.TLSConfig with a default
+	// (verify-full, no RootCAs) when the scheme is rediss://. Layer the
+	// caller-provided knobs on top so an operator can mount a custom CA
+	// or a client cert without having to reach into go-redis directly.
+	if options.TLSConfig == nil && (opts.TLSEnabled || opts.TLSCAFile != "" || opts.TLSCertFile != "") {
+		options.TLSConfig = &tls.Config{MinVersion: tls.VersionTLS12}
+	}
+	if options.TLSConfig != nil {
+		if options.TLSConfig.MinVersion == 0 {
+			options.TLSConfig.MinVersion = tls.VersionTLS12
+		}
+		if opts.TLSSkipVerify {
+			options.TLSConfig.InsecureSkipVerify = true
+		}
+		if opts.TLSCAFile != "" {
+			caPEM, readErr := os.ReadFile(opts.TLSCAFile)
+			if readErr != nil {
+				return nil, fmt.Errorf("failed to read Redis TLS CA %s: %w", opts.TLSCAFile, readErr)
+			}
+			pool := x509.NewCertPool()
+			if !pool.AppendCertsFromPEM(caPEM) {
+				return nil, fmt.Errorf("failed to parse Redis TLS CA from %s", opts.TLSCAFile)
+			}
+			options.TLSConfig.RootCAs = pool
+		}
+		if opts.TLSCertFile != "" && opts.TLSKeyFile != "" {
+			cert, certErr := tls.LoadX509KeyPair(opts.TLSCertFile, opts.TLSKeyFile)
+			if certErr != nil {
+				return nil, fmt.Errorf("failed to load Redis TLS client cert: %w", certErr)
+			}
+			options.TLSConfig.Certificates = []tls.Certificate{cert}
+		}
 	}
 
 	rdb := redis.NewClient(options)

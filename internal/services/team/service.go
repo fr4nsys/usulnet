@@ -8,7 +8,6 @@ package team
 import (
 	"context"
 	"fmt"
-	"sync"
 	"time"
 
 	"github.com/google/uuid"
@@ -28,21 +27,16 @@ type Config struct {
 
 // Service provides team management operations.
 type Service struct {
-	teamRepo      *postgres.TeamRepository
-	permRepo      *postgres.ResourcePermissionRepository
-	config        Config
-	logger        *logger.Logger
-	limitMu       sync.RWMutex
-	limitProvider license.LimitProvider
+	teamRepo *postgres.TeamRepository
+	permRepo *postgres.ResourcePermissionRepository
+	config   Config
+	logger   *logger.Logger
 }
 
-// SetLimitProvider sets the license limit provider for dynamic limit enforcement.
-// Thread-safe: may be called while goroutines read limitProvider.
-func (s *Service) SetLimitProvider(lp license.LimitProvider) {
-	s.limitMu.Lock()
-	s.limitProvider = lp
-	s.limitMu.Unlock()
-}
+// SetLimitProvider is retained as a no-op for callers that still wire
+// the legacy hook; the AGPL build does not cap team count from a
+// license token. Operators can still set Config.MaxTeams.
+func (s *Service) SetLimitProvider(_ license.LimitProvider) {}
 
 // NewService creates a new team service.
 func NewService(
@@ -66,24 +60,17 @@ func NewService(
 // Team CRUD
 // ============================================================================
 
-// CreateTeam creates a new team.
+// CreateTeam creates a new team. The optional operator-controlled
+// Config.MaxTeams cap is honored; there is no license-driven cap.
 func (s *Service) CreateTeam(ctx context.Context, name, description string, createdBy uuid.UUID) (*models.Team, error) {
-	// Check team limit dynamically from license provider (defense in depth)
-	maxTeams := s.config.MaxTeams
-	s.limitMu.RLock()
-	lp := s.limitProvider
-	s.limitMu.RUnlock()
-	if lp != nil {
-		maxTeams = lp.GetLimits().MaxTeams
-	}
-	if maxTeams > 0 {
+	if s.config.MaxTeams > 0 {
 		count, err := s.teamRepo.Count(ctx)
 		if err != nil {
 			return nil, fmt.Errorf("check team limit: %w", err)
 		}
-		if count >= maxTeams {
+		if count >= s.config.MaxTeams {
 			return nil, apperrors.New(apperrors.CodeBadRequest,
-				fmt.Sprintf("team limit reached (%d), upgrade your license for more teams", maxTeams))
+				fmt.Sprintf("team limit reached (%d) by operator policy", s.config.MaxTeams))
 		}
 	}
 
@@ -300,8 +287,9 @@ func (s *Service) GetUserScope(ctx context.Context, userID string, userRole stri
 
 	uid, err := uuid.Parse(userID)
 	if err != nil {
-		// Invalid UUID, can't look up teams
-		return scope, nil
+		// graceful fallback: malformed user id returns the default empty
+		// scope, never crashes the request.
+		return scope, nil //nolint:nilerr
 	}
 
 	computed, err := s.permRepo.GetUserScope(ctx, uid)

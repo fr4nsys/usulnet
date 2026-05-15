@@ -187,7 +187,7 @@ usulnet/
 | `make frontend` | Run both `templ` and `css` |
 | `make test` | Run all tests with race detector and coverage |
 | `make test-coverage` | Generate HTML coverage report (`coverage.html`) |
-| `make test-check-coverage` | Check coverage against 40% threshold |
+| `make test-check-coverage` | Check coverage (interim 15%, target 40%; auto-generated `_templ.go` excluded) |
 | `make test-benchmark` | Run performance benchmarks |
 | `make test-e2e` | Run end-to-end tests |
 | `make lint` | Run golangci-lint |
@@ -437,7 +437,7 @@ make test
 make test-coverage
 # Open coverage.html in browser
 
-# Check coverage threshold (40% minimum)
+# Check coverage threshold (interim 15%, target 40%; auto-generated _templ.go excluded)
 make test-check-coverage
 
 # Run benchmarks

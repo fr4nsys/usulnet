@@ -156,7 +156,7 @@ func (r *TerminalSessionRepository) Get(ctx context.Context, sessionID uuid.UUID
 		&session.Status, &session.ErrorMessage,
 	)
 	if err != nil {
-		if err == pgx.ErrNoRows {
+		if errors.Is(err, pgx.ErrNoRows) {
 			return nil, errors.Wrap(err, errors.CodeNotFound, "terminal session not found")
 		}
 		return nil, errors.Wrap(err, errors.CodeDatabaseError, "failed to get terminal session")

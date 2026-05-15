@@ -116,7 +116,7 @@ func TestNewService(t *testing.T) {
 		t.Fatal("expected config.Enabled to be true by default")
 	}
 	if svc.compiledPolicies == nil {
-		t.Fatal("expected compiledPolicies map to be initialised")
+		t.Fatal("expected compiledPolicies map to be initialized")
 	}
 }
 

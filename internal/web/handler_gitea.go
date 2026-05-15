@@ -328,8 +328,8 @@ func (h *Handler) GiteaPullRequestsPage(w http.ResponseWriter, r *http.Request) 
 	}
 
 	data := giteapages.PRListData{
-		PageData:    pageData,
-		Repo:        giteapages.RepoDetail{
+		PageData: pageData,
+		Repo: giteapages.RepoDetail{
 			ID:             repo.ID.String(),
 			ConnectionID:   repo.ConnectionID.String(),
 			ConnectionName: connName,
@@ -453,8 +453,8 @@ func (h *Handler) GiteaIssuesPage(w http.ResponseWriter, r *http.Request) {
 	}
 
 	data := giteapages.IssueListData{
-		PageData:    pageData,
-		Repo:        giteapages.RepoDetail{
+		PageData: pageData,
+		Repo: giteapages.RepoDetail{
 			ID:             repo.ID.String(),
 			ConnectionID:   repo.ConnectionID.String(),
 			ConnectionName: connName,

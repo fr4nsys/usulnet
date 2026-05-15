@@ -1,0 +1,94 @@
+package dns
+
+import (
+	"fmt"
+
+	"github.com/fr4nsys/usulnet/internal/web/templates/layouts"
+)
+
+templ ProviderDetail(data ProviderDetailData) {
+	@layouts.Base(data.PageData) {
+		<div class="space-y-6">
+			<div class="flex items-center justify-between">
+				<div>
+					<h1 class="text-2xl font-display font-bold text-white">{ data.Provider.Name }</h1>
+					<p class="text-gray-400 mt-1">{ data.Selected.DisplayName }</p>
+				</div>
+				<div class="flex items-center gap-2">
+					<a href={ templ.SafeURL(fmt.Sprintf("/dns/%s/edit", data.Provider.ID)) } class="btn-secondary">Edit</a>
+					<a href={ templ.SafeURL(fmt.Sprintf("/dns/%s/records/new", data.Provider.ID)) } class="btn-primary">
+						<i class="fas fa-plus mr-2"></i>Add record
+					</a>
+				</div>
+			</div>
+
+			@Nav("providers")
+
+			<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+				<div class="card p-4">
+					<p class="text-xs text-gray-500">Status</p>
+					<p class="text-lg text-white mt-1">
+						if data.Provider.Enabled {
+							<span class="badge badge-success">Enabled</span>
+						} else {
+							<span class="badge badge-danger">Disabled</span>
+						}
+					</p>
+				</div>
+				<div class="card p-4">
+					<p class="text-xs text-gray-500">Records managed</p>
+					<p class="text-lg text-white mt-1">{ fmt.Sprintf("%d", data.Provider.RecordCount) }</p>
+				</div>
+				<div class="card p-4">
+					<p class="text-xs text-gray-500">Created</p>
+					<p class="text-sm text-gray-300 mt-1">{ data.Provider.CreatedAt }</p>
+				</div>
+			</div>
+
+			<div class="card">
+				<div class="px-6 py-4 border-b border-dark-700">
+					<h2 class="text-lg font-medium text-white">Records</h2>
+					<p class="text-xs text-gray-500">Records the platform owns through this provider. ACME-managed entries cannot be deleted by hand.</p>
+				</div>
+				<div class="overflow-x-auto">
+					<table class="table">
+						<thead>
+							<tr>
+								<th>Name</th>
+								<th>Type</th>
+								<th>Content</th>
+								<th>TTL</th>
+								<th>Managed by</th>
+								<th class="text-right">Actions</th>
+							</tr>
+						</thead>
+						<tbody>
+							for _, r := range data.Records {
+								<tr>
+									<td class="font-mono text-sm">{ r.Name }</td>
+									<td><span class="badge badge-neutral">{ r.Type }</span></td>
+									<td class="font-mono text-sm text-gray-300">{ r.Content }</td>
+									<td class="text-sm text-gray-400">{ fmt.Sprintf("%d", r.TTL) }</td>
+									<td><span class="text-xs text-gray-400">{ r.ManagedBy }</span></td>
+									<td class="text-right">
+										if r.IsManual {
+											<form method="POST" action={ templ.SafeURL(fmt.Sprintf("/dns/records/%s/delete", r.ID)) } onsubmit="return confirm('Delete record?')" style="display:inline">
+												<input type="hidden" name="csrf_token" value={ data.PageData.CSRFToken }/>
+												<button type="submit" class="text-red-400 hover:text-red-300 text-sm">Delete</button>
+											</form>
+										} else {
+											<span class="text-xs text-gray-500">Managed</span>
+										}
+									</td>
+								</tr>
+							}
+							if len(data.Records) == 0 {
+								<tr><td colspan="6" class="text-center text-gray-500 py-6">No records yet</td></tr>
+							}
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	}
+}

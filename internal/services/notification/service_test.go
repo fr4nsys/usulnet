@@ -426,25 +426,23 @@ func TestRegisterChannel_UnsupportedType(t *testing.T) {
 	}
 }
 
-func TestRegisterChannel_LicenseLimit_Enforced(t *testing.T) {
+func TestRegisterChannel_NoLicenseLimit(t *testing.T) {
+	// The AGPL build never caps notification channels from a license
+	// token. A SetLimitProvider call with a non-zero MaxNotificationChannels
+	// must NOT block additional channel registrations.
 	svc := newTestService(nil)
 	svc.SetLimitProvider(&mockLimitProvider{
 		limits: license.Limits{MaxNotificationChannels: 1},
 	})
 
-	// First channel should succeed.
-	err := svc.RegisterChannel("hook-1", webhookConfig("http://example.com/1"))
-	if err != nil {
-		t.Fatalf("first RegisterChannel failed: %v", err)
+	for i, name := range []string{"hook-1", "hook-2", "hook-3"} {
+		if err := svc.RegisterChannel(name, webhookConfig("http://example.com/"+name)); err != nil {
+			t.Fatalf("RegisterChannel %d failed: %v", i, err)
+		}
 	}
 
-	// Second channel should fail due to limit.
-	err = svc.RegisterChannel("hook-2", webhookConfig("http://example.com/2"))
-	if err == nil {
-		t.Fatal("expected license limit error on second channel")
-	}
-	if len(svc.ListChannels()) != 1 {
-		t.Errorf("should still have 1 channel, got %d", len(svc.ListChannels()))
+	if got := len(svc.ListChannels()); got != 3 {
+		t.Errorf("ListChannels() = %d, want 3", got)
 	}
 }
 
@@ -1152,22 +1150,23 @@ func TestResetThrottle(t *testing.T) {
 // SetLimitProvider tests
 // ============================================================================
 
-func TestSetLimitProvider_NilToValue(t *testing.T) {
+func TestSetLimitProvider_IsNoOp(t *testing.T) {
 	svc := newTestService(nil)
 
-	// Initially nil.
 	_ = svc.RegisterChannel("hook-1", webhookConfig("http://example.com/1"))
 	_ = svc.RegisterChannel("hook-2", webhookConfig("http://example.com/2"))
 
-	// Set a limit provider that caps at 2.
+	// SetLimitProvider is retained for backward compat but the AGPL
+	// build never enforces the supplied cap.
 	svc.SetLimitProvider(&mockLimitProvider{
 		limits: license.Limits{MaxNotificationChannels: 2},
 	})
 
-	// Third channel should fail.
-	err := svc.RegisterChannel("hook-3", webhookConfig("http://example.com/3"))
-	if err == nil {
-		t.Fatal("expected license limit error")
+	if err := svc.RegisterChannel("hook-3", webhookConfig("http://example.com/3")); err != nil {
+		t.Fatalf("third channel rejected after SetLimitProvider: %v", err)
+	}
+	if got := len(svc.ListChannels()); got != 3 {
+		t.Errorf("ListChannels() = %d, want 3", got)
 	}
 }
 
@@ -1424,8 +1423,8 @@ func TestAddRoutingRule(t *testing.T) {
 	svc := newTestService(nil)
 
 	rule := &RoutingRule{
-		Name:    "test-rule",
-		Enabled: true,
+		Name:     "test-rule",
+		Enabled:  true,
 		Channels: []string{"ch1"},
 	}
 
@@ -1650,38 +1649,6 @@ func TestConvenienceMethod_Priorities(t *testing.T) {
 }
 
 // ============================================================================
-// Edge case: RegisterChannel after removing one frees up a license slot
-// ============================================================================
-
-func TestRegisterChannel_AfterRemove_FreesSlot(t *testing.T) {
-	svc := newTestService(nil)
-	svc.SetLimitProvider(&mockLimitProvider{
-		limits: license.Limits{MaxNotificationChannels: 1},
-	})
-
-	// Register first channel.
-	err := svc.RegisterChannel("hook-1", webhookConfig("http://example.com/1"))
-	if err != nil {
-		t.Fatalf("first RegisterChannel failed: %v", err)
-	}
-
-	// At limit; second should fail.
-	err = svc.RegisterChannel("hook-2", webhookConfig("http://example.com/2"))
-	if err == nil {
-		t.Fatal("expected limit error")
-	}
-
-	// Remove first channel.
-	_ = svc.RemoveChannel("hook-1")
-
-	// Now we should be able to register again.
-	err = svc.RegisterChannel("hook-2", webhookConfig("http://example.com/2"))
-	if err != nil {
-		t.Fatalf("RegisterChannel after remove failed: %v", err)
-	}
-}
-
-// ============================================================================
 // Send with zero-value Message
 // ============================================================================
 
@@ -1716,8 +1683,8 @@ func TestRegisterChannel_SupportedTypes(t *testing.T) {
 		{"slack", map[string]interface{}{"webhook_url": "http://hooks.slack.com/test"}, false},
 		{"discord", map[string]interface{}{"webhook_url": "http://discord.com/api/webhooks/test"}, false},
 		{"telegram", map[string]interface{}{"bot_token": "tok", "chat_id": "123"}, false},
-		{"gotify", map[string]interface{}{"url": "http://gotify.local", "token": "tok"}, false},
-		{"ntfy", map[string]interface{}{"url": "http://ntfy.local", "topic": "test"}, false},
+		{"gotify", map[string]interface{}{"server_url": "http://gotify.local", "app_token": "tok"}, false},
+		{"ntfy", map[string]interface{}{"server_url": "http://ntfy.local", "topic": "test"}, false},
 		{"pagerduty", map[string]interface{}{"routing_key": "key123"}, false},
 		{"opsgenie", map[string]interface{}{"api_key": "key123"}, false},
 		{"unsupported_type", map[string]interface{}{}, true},

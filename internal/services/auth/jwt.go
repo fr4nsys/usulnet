@@ -140,7 +140,6 @@ type TokenPair struct {
 
 // GenerateTokenPair generates both access and refresh tokens for a user.
 func (s *JWTService) GenerateTokenPair(user *models.User, sessionID uuid.UUID) (*TokenPair, error) {
-
 	// Generate access token
 	accessToken, accessExp, err := s.GenerateAccessToken(user)
 	if err != nil {

@@ -124,10 +124,10 @@ func TestUser_IsLocked_Past(t *testing.T) {
 
 func TestUser_CanLogin(t *testing.T) {
 	tests := []struct {
-		name     string
-		active   bool
-		locked   *time.Time
-		want     bool
+		name   string
+		active bool
+		locked *time.Time
+		want   bool
 	}{
 		{"active unlocked", true, nil, true},
 		{"inactive unlocked", false, nil, false},

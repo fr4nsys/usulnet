@@ -323,7 +323,7 @@ func (r *RoleRepository) scanRole(row pgx.Row) (*models.Role, error) {
 	)
 
 	if err != nil {
-		if err == pgx.ErrNoRows {
+		if errors.Is(err, pgx.ErrNoRows) {
 			return nil, errors.NotFound("role")
 		}
 		return nil, errors.Wrap(err, errors.CodeDatabaseError, "failed to scan role")

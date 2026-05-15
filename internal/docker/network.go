@@ -445,15 +445,15 @@ func IsDefaultNetwork(name string) bool {
 
 // NetworkAnalysis contains analysis results for a network
 type NetworkAnalysis struct {
-	Network           Network
-	ContainerCount    int
-	IsDefault         bool
-	IsInternal        bool
-	HasIPv6           bool
-	AvailableIPs      int
-	UsedIPs           int
-	Warnings          []string
-	Recommendations   []string
+	Network         Network
+	ContainerCount  int
+	IsDefault       bool
+	IsInternal      bool
+	HasIPv6         bool
+	AvailableIPs    int
+	UsedIPs         int
+	Warnings        []string
+	Recommendations []string
 }
 
 // AnalyzeNetwork performs a basic analysis of a network

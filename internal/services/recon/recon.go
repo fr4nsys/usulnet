@@ -57,7 +57,7 @@ const (
 	ScanRunning   ScanStatus = "running"
 	ScanCompleted ScanStatus = "completed"
 	ScanFailed    ScanStatus = "failed"
-	ScanCancelled ScanStatus = "cancelled"
+	ScanCancelled ScanStatus = "canceled"
 )
 
 // Severity classifies a finding.
@@ -301,17 +301,17 @@ type Repository interface {
 // They appear in recon_audit_log.action and in API responses, so they
 // are part of the public contract.
 const (
-	AuditActionModuleEnabled      = "module.enabled"
-	AuditActionTargetCreated      = "target.created"
-	AuditActionTargetDeleted      = "target.deleted"
-	AuditActionOwnershipVerified  = "ownership.verified"
-	AuditActionScanStarted        = "scan.start"
-	AuditActionScanCancelled      = "scan.cancelled"
-	AuditActionRetentionDelete    = "retention.delete"
-	AuditActionConnectorUpdated   = "connector.updated"
-	AuditActionProfileCreated     = "profile.created"
-	AuditActionProfileUpdated     = "profile.updated"
-	AuditActionProfileDeleted     = "profile.deleted"
+	AuditActionModuleEnabled     = "module.enabled"
+	AuditActionTargetCreated     = "target.created"
+	AuditActionTargetDeleted     = "target.deleted"
+	AuditActionOwnershipVerified = "ownership.verified"
+	AuditActionScanStarted       = "scan.start"
+	AuditActionScanCancelled     = "scan.cancelled"
+	AuditActionRetentionDelete   = "retention.delete"
+	AuditActionConnectorUpdated  = "connector.updated"
+	AuditActionProfileCreated    = "profile.created"
+	AuditActionProfileUpdated    = "profile.updated"
+	AuditActionProfileDeleted    = "profile.deleted"
 )
 
 // AuditEntry is one row in the append-only audit log.
@@ -385,7 +385,7 @@ type ContainerLauncher interface {
 
 	// RunOnceWithCopy starts a one-shot container exactly like RunOnce,
 	// then before removing it copies a single file out of the
-	// container's filesystem (typically a tmpfs artefact written by the
+	// container's filesystem (typically a tmpfs artifact written by the
 	// command). It is used by the metadata stripper to retrieve the
 	// cleaned file produced by mat2 in the toolkit container.
 	RunOnceWithCopy(ctx context.Context, spec ContainerSpec, copyPath string) (output []byte, copied []byte, exitCode int, err error)

@@ -10,8 +10,9 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/fr4nsys/usulnet/internal/models"
 	"github.com/google/uuid"
+
+	"github.com/fr4nsys/usulnet/internal/models"
 )
 
 // AlertRepository implements alert persistence.
@@ -77,7 +78,9 @@ func (r *AlertRepository) GetRule(ctx context.Context, id uuid.UUID) (*models.Al
 	}
 
 	if labelsJSON != nil {
-		json.Unmarshal(labelsJSON, &rule.Labels)
+		if err := json.Unmarshal(labelsJSON, &rule.Labels); err != nil {
+			return nil, fmt.Errorf("unmarshal labels: %w", err)
+		}
 	}
 	if autoActionsJSON != nil {
 		rule.AutoActions = autoActionsJSON
@@ -206,7 +209,9 @@ func (r *AlertRepository) ListRules(ctx context.Context, opts models.AlertListOp
 		}
 
 		if labelsJSON != nil {
-			json.Unmarshal(labelsJSON, &rule.Labels)
+			if err := json.Unmarshal(labelsJSON, &rule.Labels); err != nil {
+				return nil, 0, fmt.Errorf("unmarshal labels: %w", err)
+			}
 		}
 		if autoActionsJSON != nil {
 			rule.AutoActions = autoActionsJSON
@@ -262,7 +267,9 @@ func (r *AlertRepository) GetEvent(ctx context.Context, id uuid.UUID) (*models.A
 	}
 
 	if labelsJSON != nil {
-		json.Unmarshal(labelsJSON, &event.Labels)
+		if err := json.Unmarshal(labelsJSON, &event.Labels); err != nil {
+			return nil, fmt.Errorf("unmarshal labels: %w", err)
+		}
 	}
 
 	return event, nil
@@ -364,7 +371,9 @@ func (r *AlertRepository) ListEvents(ctx context.Context, opts models.AlertEvent
 		}
 
 		if labelsJSON != nil {
-			json.Unmarshal(labelsJSON, &event.Labels)
+			if err := json.Unmarshal(labelsJSON, &event.Labels); err != nil {
+				return nil, 0, fmt.Errorf("unmarshal labels: %w", err)
+			}
 		}
 
 		events = append(events, event)

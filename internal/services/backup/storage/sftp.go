@@ -432,11 +432,8 @@ func (s *SFTPStorage) fullPath(filePath string) string {
 
 // cleanupEmptyDirs removes empty parent directories up to basePath.
 func (s *SFTPStorage) cleanupEmptyDirs(dir string) {
-	for {
+	for dir != s.basePath && strings.HasPrefix(dir, s.basePath) {
 		// Don't go above basePath
-		if dir == s.basePath || !strings.HasPrefix(dir, s.basePath) {
-			break
-		}
 
 		// Check if directory is empty
 		entries, err := s.client.ReadDir(dir)

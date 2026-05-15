@@ -272,9 +272,9 @@ type ImageSignature struct {
 
 // Signature types.
 const (
-	SignatureTypeCosign  = "cosign"
-	SignatureTypeNotary  = "notary"
-	SignatureTypeGPG     = "gpg"
+	SignatureTypeCosign = "cosign"
+	SignatureTypeNotary = "notary"
+	SignatureTypeGPG    = "gpg"
 )
 
 // ImageAttestation represents a signed attestation about an image.

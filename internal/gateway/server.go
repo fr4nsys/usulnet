@@ -17,14 +17,12 @@ import (
 	"github.com/google/uuid"
 	"github.com/nats-io/nats.go"
 
-	inats "github.com/fr4nsys/usulnet/internal/nats"
 	"github.com/fr4nsys/usulnet/internal/gateway/protocol"
 	"github.com/fr4nsys/usulnet/internal/models"
+	inats "github.com/fr4nsys/usulnet/internal/nats"
 	"github.com/fr4nsys/usulnet/internal/pkg/logger"
 	containersvc "github.com/fr4nsys/usulnet/internal/services/container"
 )
-
-
 
 // AgentConnection represents a connected agent.
 type AgentConnection struct {
@@ -65,15 +63,15 @@ func DefaultServerConfig() ServerConfig {
 
 // Server is the gateway server that manages agent connections.
 type Server struct {
-	natsClient *inats.Client
-	jetstream  *inats.JetStream
-	publisher  *inats.Publisher
-	subscriber *inats.Subscriber
-	hostRepo   HostRepository
+	natsClient       *inats.Client
+	jetstream        *inats.JetStream
+	publisher        *inats.Publisher
+	subscriber       *inats.Subscriber
+	hostRepo         HostRepository
 	containerService *containersvc.Service
-	eventStore EventStore
-	config     ServerConfig
-	log        *logger.Logger
+	eventStore       EventStore
+	config           ServerConfig
+	log              *logger.Logger
 
 	agents    map[string]*AgentConnection // agentID -> connection
 	hostIndex map[uuid.UUID]string        // hostID -> agentID
@@ -104,16 +102,16 @@ func NewServer(
 	}
 
 	return &Server{
-		natsClient: natsClient,
-		jetstream:  js,
-		publisher:  inats.NewPublisher(natsClient),
-		subscriber: inats.NewSubscriber(natsClient),
-		hostRepo:   hostRepo,
+		natsClient:       natsClient,
+		jetstream:        js,
+		publisher:        inats.NewPublisher(natsClient),
+		subscriber:       inats.NewSubscriber(natsClient),
+		hostRepo:         hostRepo,
 		containerService: containerService,
-		config:     config,
-		log:        log.Named("gateway"),
-		agents:     make(map[string]*AgentConnection),
-		hostIndex:  make(map[uuid.UUID]string),
+		config:           config,
+		log:              log.Named("gateway"),
+		agents:           make(map[string]*AgentConnection),
+		hostIndex:        make(map[uuid.UUID]string),
 	}, nil
 }
 
@@ -480,7 +478,7 @@ func (s *Server) handleInventory(msg *nats.Msg) error {
 				}
 
 				imageID := c.ImageID
-				
+
 				containers[i] = &models.Container{
 					ID:              c.ID,
 					HostID:          conn.HostID,

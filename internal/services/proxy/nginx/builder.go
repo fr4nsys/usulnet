@@ -86,18 +86,18 @@ func buildServerBlock(h *models.ProxyHost, customCerts map[string]*models.ProxyC
 	// HTTP server block
 	if hasSSL && h.SSLForceHTTPS {
 		// HTTP → HTTPS redirect
-		b.WriteString(fmt.Sprintf("server {\n"))
+		b.WriteString("server {\n")
 		b.WriteString(fmt.Sprintf("    listen %s;\n", listenHTTP))
 		b.WriteString(fmt.Sprintf("    listen [::]:%s;\n", listenHTTP))
 		b.WriteString(fmt.Sprintf("    server_name %s;\n\n", domains))
 		// ACME challenge location (always serve, even during redirect)
-		b.WriteString(fmt.Sprintf("    location /.well-known/acme-challenge/ {\n"))
+		b.WriteString("    location /.well-known/acme-challenge/ {\n")
 		b.WriteString(fmt.Sprintf("        root %s;\n", acmeWebRoot))
-		b.WriteString(fmt.Sprintf("    }\n\n"))
-		b.WriteString(fmt.Sprintf("    location / {\n"))
-		b.WriteString(fmt.Sprintf("        return 301 https://$host$request_uri;\n"))
-		b.WriteString(fmt.Sprintf("    }\n"))
-		b.WriteString(fmt.Sprintf("}\n\n"))
+		b.WriteString("    }\n\n")
+		b.WriteString("    location / {\n")
+		b.WriteString("        return 301 https://$host$request_uri;\n")
+		b.WriteString("    }\n")
+		b.WriteString("}\n\n")
 	}
 
 	// Main server block (HTTPS or plain HTTP)
@@ -155,9 +155,9 @@ func buildServerBlock(h *models.ProxyHost, customCerts map[string]*models.ProxyC
 
 	// ACME challenge (in case SSL block serves HTTP too)
 	if hasSSL && !h.SSLForceHTTPS {
-		b.WriteString(fmt.Sprintf("    location /.well-known/acme-challenge/ {\n"))
+		b.WriteString("    location /.well-known/acme-challenge/ {\n")
 		b.WriteString(fmt.Sprintf("        root %s;\n", acmeWebRoot))
-		b.WriteString(fmt.Sprintf("    }\n\n"))
+		b.WriteString("    }\n\n")
 	}
 
 	// Proxy location

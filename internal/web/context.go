@@ -309,7 +309,7 @@ type NetworkView struct {
 type StackView struct {
 	ID             string    `json:"id"`
 	Name           string    `json:"name"`
-	Type           string    `json:"type"`     // compose or swarm
+	Type           string    `json:"type"` // compose or swarm
 	HostID         string    `json:"host_id"`
 	Status         string    `json:"status"`
 	ServiceCount   int       `json:"service_count"`

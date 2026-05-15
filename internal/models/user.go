@@ -53,10 +53,10 @@ type User struct {
 	LastLoginAt            *time.Time `json:"last_login_at,omitempty" db:"last_login_at"`
 	PasswordChangedAt      *time.Time `json:"password_changed_at,omitempty" db:"password_changed_at"`
 	PasswordExpiresAt      *time.Time `json:"password_expires_at,omitempty" db:"password_expires_at"`
-	TOTPSecret             *string    `json:"-" db:"totp_secret"`                                    // Encrypted
+	TOTPSecret             *string    `json:"-" db:"totp_secret"` // Encrypted
 	TOTPEnabled            bool       `json:"totp_enabled" db:"totp_enabled"`
 	TOTPVerifiedAt         *time.Time `json:"totp_verified_at,omitempty" db:"totp_verified_at"`
-	BackupCodes            []byte     `json:"-" db:"backup_codes"`                                   // JSONB array of {hash, used}
+	BackupCodes            []byte     `json:"-" db:"backup_codes"` // JSONB array of {hash, used}
 	BackupCodesGeneratedAt *time.Time `json:"backup_codes_generated_at,omitempty" db:"backup_codes_generated_at"`
 	CreatedAt              time.Time  `json:"created_at" db:"created_at"`
 	UpdatedAt              time.Time  `json:"updated_at" db:"updated_at"`
@@ -162,18 +162,18 @@ type APIKeyWithSecret struct {
 
 // AuditLogEntry represents an audit log entry
 type AuditLogEntry struct {
-	ID          int64           `json:"id" db:"id"`
-	UserID      *uuid.UUID      `json:"user_id,omitempty" db:"user_id"`
-	Username    *string         `json:"username,omitempty" db:"username"`
-	Action      string          `json:"action" db:"action"`
-	EntityType  string          `json:"entity_type" db:"entity_type"`
-	EntityID    *string         `json:"entity_id,omitempty" db:"entity_id"`
-	Details     *map[string]any `json:"details,omitempty" db:"details"`
-	IPAddress   *string         `json:"ip_address,omitempty" db:"ip_address"`
-	UserAgent   *string         `json:"user_agent,omitempty" db:"user_agent"`
-	Success     bool            `json:"success" db:"success"`
-	ErrorMsg    *string         `json:"error_msg,omitempty" db:"error_msg"`
-	CreatedAt   time.Time       `json:"created_at" db:"created_at"`
+	ID         int64           `json:"id" db:"id"`
+	UserID     *uuid.UUID      `json:"user_id,omitempty" db:"user_id"`
+	Username   *string         `json:"username,omitempty" db:"username"`
+	Action     string          `json:"action" db:"action"`
+	EntityType string          `json:"entity_type" db:"entity_type"`
+	EntityID   *string         `json:"entity_id,omitempty" db:"entity_id"`
+	Details    *map[string]any `json:"details,omitempty" db:"details"`
+	IPAddress  *string         `json:"ip_address,omitempty" db:"ip_address"`
+	UserAgent  *string         `json:"user_agent,omitempty" db:"user_agent"`
+	Success    bool            `json:"success" db:"success"`
+	ErrorMsg   *string         `json:"error_msg,omitempty" db:"error_msg"`
+	CreatedAt  time.Time       `json:"created_at" db:"created_at"`
 }
 
 // AuditAction constants
@@ -203,27 +203,27 @@ const (
 
 // LDAPConfig represents LDAP server configuration
 type LDAPConfig struct {
-	ID             uuid.UUID `json:"id" db:"id"`
-	Name           string    `json:"name" db:"name"`
-	Host           string    `json:"host" db:"host"`
-	Port           int       `json:"port" db:"port"`
-	UseTLS         bool      `json:"use_tls" db:"use_tls"`
-	StartTLS       bool      `json:"start_tls" db:"start_tls"`
-	SkipTLSVerify  bool      `json:"skip_tls_verify" db:"skip_tls_verify"`
-	BindDN         string    `json:"bind_dn" db:"bind_dn"`
-	BindPassword   string    `json:"-" db:"bind_password"` // Encrypted
-	BaseDN         string    `json:"base_dn" db:"base_dn"`
-	UserFilter     string    `json:"user_filter" db:"user_filter"`
-	UsernameAttr   string    `json:"username_attr" db:"username_attr"`
-	EmailAttr      string    `json:"email_attr" db:"email_attr"`
-	GroupFilter    string    `json:"group_filter,omitempty" db:"group_filter"`
-	GroupAttr      string    `json:"group_attr,omitempty" db:"group_attr"`
-	AdminGroup     string    `json:"admin_group,omitempty" db:"admin_group"`
-	OperatorGroup  string    `json:"operator_group,omitempty" db:"operator_group"`
-	DefaultRole    UserRole  `json:"default_role" db:"default_role"`
-	IsEnabled      bool      `json:"is_enabled" db:"is_enabled"`
-	CreatedAt      time.Time `json:"created_at" db:"created_at"`
-	UpdatedAt      time.Time `json:"updated_at" db:"updated_at"`
+	ID            uuid.UUID `json:"id" db:"id"`
+	Name          string    `json:"name" db:"name"`
+	Host          string    `json:"host" db:"host"`
+	Port          int       `json:"port" db:"port"`
+	UseTLS        bool      `json:"use_tls" db:"use_tls"`
+	StartTLS      bool      `json:"start_tls" db:"start_tls"`
+	SkipTLSVerify bool      `json:"skip_tls_verify" db:"skip_tls_verify"`
+	BindDN        string    `json:"bind_dn" db:"bind_dn"`
+	BindPassword  string    `json:"-" db:"bind_password"` // Encrypted
+	BaseDN        string    `json:"base_dn" db:"base_dn"`
+	UserFilter    string    `json:"user_filter" db:"user_filter"`
+	UsernameAttr  string    `json:"username_attr" db:"username_attr"`
+	EmailAttr     string    `json:"email_attr" db:"email_attr"`
+	GroupFilter   string    `json:"group_filter,omitempty" db:"group_filter"`
+	GroupAttr     string    `json:"group_attr,omitempty" db:"group_attr"`
+	AdminGroup    string    `json:"admin_group,omitempty" db:"admin_group"`
+	OperatorGroup string    `json:"operator_group,omitempty" db:"operator_group"`
+	DefaultRole   UserRole  `json:"default_role" db:"default_role"`
+	IsEnabled     bool      `json:"is_enabled" db:"is_enabled"`
+	CreatedAt     time.Time `json:"created_at" db:"created_at"`
+	UpdatedAt     time.Time `json:"updated_at" db:"updated_at"`
 }
 
 // OAuthConfig represents OAuth provider configuration

@@ -127,7 +127,8 @@ func (c *Client) Healthy(ctx context.Context) (bool, error) {
 	cmd := exec.CommandContext(ctx, c.bin, "-t")
 	err := cmd.Run()
 	if err != nil {
-		return false, nil
+		// probe: any failure means "not healthy", caller takes false as the signal
+		return false, nil //nolint:nilerr
 	}
 	return true, nil
 }

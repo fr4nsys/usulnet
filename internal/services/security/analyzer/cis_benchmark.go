@@ -43,9 +43,9 @@ func NewCISBenchmarkAnalyzerStrict() *CISBenchmarkAnalyzer {
 // CIS Check IDs follow CIS Docker Benchmark numbering
 const (
 	// Section 4: Container Images and Build File Configuration
-	CISCheckContainerUser   = "CIS-4.1" // Ensure a user for the container has been created
-	CISCheckContentTrust    = "CIS-4.5" // Ensure Content trust for Docker is enabled
-	CISCheckHealthcheck     = "CIS-4.6" // Ensure HEALTHCHECK instructions have been added to container images
+	CISCheckContainerUser = "CIS-4.1" // Ensure a user for the container has been created
+	CISCheckContentTrust  = "CIS-4.5" // Ensure Content trust for Docker is enabled
+	CISCheckHealthcheck   = "CIS-4.6" // Ensure HEALTHCHECK instructions have been added to container images
 
 	// Section 5: Container Runtime Configuration
 	CISCheckAppArmorProfile   = "CIS-5.1"  // Ensure that, if applicable, an AppArmor Profile is enabled

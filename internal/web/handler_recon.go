@@ -33,16 +33,16 @@ func (h *Handler) ReconDashboardTempl(w http.ResponseWriter, r *http.Request) {
 	}
 	if dash, err := svc.GetDashboard(r.Context()); err == nil && dash != nil {
 		data.Stats = recontmpl.DashboardStats{
-			Targets:        dash.TotalTargets,
-			Scans:          dash.TotalScans,
-			Running:        dash.RunningScans,
-			Completed:      dash.CompletedScans,
-			Failed:         dash.FailedScans,
-			FindingsBySev:  dash.FindingsBySev,
-			Critical:       dash.FindingsBySev["critical"],
-			High:           dash.FindingsBySev["high"],
-			Medium:         dash.FindingsBySev["medium"],
-			Low:            dash.FindingsBySev["low"],
+			Targets:       dash.TotalTargets,
+			Scans:         dash.TotalScans,
+			Running:       dash.RunningScans,
+			Completed:     dash.CompletedScans,
+			Failed:        dash.FailedScans,
+			FindingsBySev: dash.FindingsBySev,
+			Critical:      dash.FindingsBySev["critical"],
+			High:          dash.FindingsBySev["high"],
+			Medium:        dash.FindingsBySev["medium"],
+			Low:           dash.FindingsBySev["low"],
 		}
 		for _, s := range dash.RecentScans {
 			data.RecentScans = append(data.RecentScans, reconScanViewToTmpl(s))

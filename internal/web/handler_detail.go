@@ -271,29 +271,6 @@ func (h *Handler) getUserData(r *http.Request) *layouts.UserData {
 	}
 }
 
-// getStatsData gets system stats for the sidebar
-func (h *Handler) getStatsData(ctx context.Context) *layouts.StatsData {
-	// Try to get stats from services
-	stats := &layouts.StatsData{
-		ContainersTotal:   0,
-		ContainersRunning: 0,
-		SecurityIssues:    0,
-		UpdatesAvailable:  0,
-	}
-
-	// Get container counts
-	if containers, err := h.services.Containers().List(ctx, nil); err == nil {
-		stats.ContainersTotal = len(containers)
-		for _, c := range containers {
-			if c.State == "running" {
-				stats.ContainersRunning++
-			}
-		}
-	}
-
-	return stats
-}
-
 // ============================================================================
 // Formatting Helper Functions
 // ============================================================================

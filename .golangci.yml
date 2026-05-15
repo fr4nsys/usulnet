@@ -21,13 +21,21 @@ output:
     - severity
     - file
 linters:
+  # NOTE: `prealloc` is intentionally not in the enabled set. It is a
+  # performance-hint linter whose suggestions ("make([]T, 0,
+  # len(source))" before an append-only range loop) deliver no
+  # measurable benefit at the slice sizes this codebase deals with
+  # (config maps, container lists, request batches — all well below
+  # the allocation threshold where preallocation matters), and the
+  # suggestions clutter every list-building helper with boilerplate
+  # that obscures intent. Hot paths are protected by the benchmarks
+  # under tests/benchmarks/ instead.
   enable:
     - errorlint
     - gocritic
     - gosec
     - misspell
     - nilerr
-    - prealloc
     - revive
     - unconvert
     - whitespace
@@ -35,6 +43,12 @@ linters:
     errcheck:
       check-type-assertions: false
       check-blank: false
+      # Exclusions are for calls whose error path is genuinely safe to
+      # discard (cleanup on shutdown, best-effort deadline plumbing,
+      # logger flushes that buffer-fill on process exit). Real
+      # error-producing calls (database mutations, JSON parsing of
+      # user input, NATS publish) are NOT here — those still need an
+      # explicit `_ = ...` or proper handling.
       exclude-functions:
         - io.Copy
         - io.WriteTo
@@ -43,6 +57,38 @@ linters:
         - (net/http.ResponseWriter).Write
         - fmt.Fprintf
         - fmt.Fprintln
+        # JSON response encoding: by the time we're streaming the
+        # response body, the status code is already on the wire — an
+        # Encode failure is logged by the HTTP server middleware and
+        # there is no way to recover the response at this point.
+        - (*encoding/json.Encoder).Encode
+        # fmt.Sscanf is used pervasively for best-effort parsing of
+        # docker stats, /proc lines, and human-readable strings where
+        # a parse miss leaves the target variable at its zero value
+        # (the desired fallback).
+        - fmt.Sscanf
+        # Logger flush at process tear-down — there is no consumer for
+        # the error and the program is about to exit anyway.
+        - (*go.uber.org/zap.Logger).Sync
+        - (*go.uber.org/zap.SugaredLogger).Sync
+        - (*github.com/fr4nsys/usulnet/internal/pkg/logger.Logger).Sync
+        # WebSocket deadlines: a SetReadDeadline / SetWriteDeadline
+        # error means the connection is already gone, which the next
+        # Read/Write will surface immediately with a better message.
+        - (*github.com/gorilla/websocket.Conn).SetReadDeadline
+        - (*github.com/gorilla/websocket.Conn).SetWriteDeadline
+        # pgx transaction rollback: the doc-recommended pattern is to
+        # defer rollback unconditionally and ignore the "tx already
+        # committed" error path it produces on the happy commit.
+        - (*github.com/jackc/pgx/v5.Tx).Rollback
+        - (github.com/jackc/pgx/v5.Tx).Rollback
+        # mime.AddExtensionType: returns an error when the extension
+        # value is malformed; we register only static literal types.
+        - mime.AddExtensionType
+        # NATS subscription teardown — deliberate fire-and-forget on
+        # service shutdown and on error-path cleanup.
+        - (*github.com/nats-io/nats.go.Subscription).Unsubscribe
+        - (*github.com/nats-io/nats.go.Subscription).AutoUnsubscribe
     gocritic:
       disabled-checks:
         - hugeParam
@@ -68,10 +114,6 @@ linters:
       enable-all: true
     misspell:
       locale: US
-    prealloc:
-      simple: true
-      range-loops: true
-      for-loops: false
     revive:
       rules:
         - name: exported
@@ -96,7 +138,7 @@ linters:
           - errcheck
           - gocritic
           - gosec
-          - prealloc
+          - govet
         path: _test\.go
       - linters:
           - all

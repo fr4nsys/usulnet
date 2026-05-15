@@ -189,10 +189,7 @@ func (s *Service) IngestContainerLogs(ctx context.Context, hostID uuid.UUID, con
 	defer reader.Close()
 
 	// Determine if the container uses TTY (no multiplexing)
-	isTTY := false
-	if details != nil && details.Config != nil && details.Config.Tty {
-		isTTY = true
-	}
+	isTTY := details != nil && details.Config != nil && details.Config.Tty
 
 	var logs []*models.AggregatedLog
 

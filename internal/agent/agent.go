@@ -51,10 +51,10 @@ type Config struct {
 	// ScannerEnabled enables security scanning capabilities on this agent
 	ScannerEnabled bool
 	// TLS configuration for NATS
-	TLSEnabled   bool
-	TLSCertFile  string
-	TLSKeyFile   string
-	TLSCAFile    string
+	TLSEnabled  bool
+	TLSCertFile string
+	TLSKeyFile  string
+	TLSCAFile   string
 }
 
 // DefaultConfig returns default agent configuration.
@@ -85,11 +85,11 @@ type Agent struct {
 	inventoryInterval time.Duration
 
 	// Agent state
-	startedAt time.Time
-	lastError string
+	startedAt     time.Time
+	lastError     string
 	lastErrorTime *time.Time
-	activeJobs  int
-	jobsMu      sync.Mutex
+	activeJobs    int
+	jobsMu        sync.Mutex
 
 	// Shutdown handling
 	ctx    context.Context
@@ -121,7 +121,7 @@ func New(cfg Config, log *logger.Logger) (*Agent, error) {
 	}, nil
 }
 
-// Run starts the agent and blocks until context is cancelled.
+// Run starts the agent and blocks until context is canceled.
 func (a *Agent) Run(ctx context.Context) error {
 	a.ctx, a.cancel = context.WithCancel(ctx)
 	a.startedAt = time.Now().UTC()
@@ -342,7 +342,7 @@ func (a *Agent) deregister() {
 
 	data, _ := json.Marshal(req)
 	subject := fmt.Sprintf("usulnet.agent.deregister.%s", a.id)
-	
+
 	// Best effort - don't wait for response
 	a.nats.Publish(subject, data)
 	a.nats.Flush()
@@ -591,7 +591,7 @@ func (a *Agent) collectInventory() (*protocol.Inventory, error) {
 				ImageID: c.ImageID,
 				Command: c.Command,
 				Created: c.Created,
-				State:   string(c.State),
+				State:   c.State,
 				Status:  c.Status,
 				Labels:  c.Labels,
 			}

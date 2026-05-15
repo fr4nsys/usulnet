@@ -28,15 +28,15 @@ type ContainerVersionUpdater interface {
 
 // Service handles container update operations
 type Service struct {
-	repo              UpdateRepository
-	checker           *Checker
-	changelogFetcher  *ChangelogFetcher
-	dockerClient      DockerClient
-	backupService     BackupService
-	securityService   SecurityService
-	versionUpdater    ContainerVersionUpdater
-	logger            *logger.Logger
-	config            *ServiceConfig
+	repo             UpdateRepository
+	checker          *Checker
+	changelogFetcher *ChangelogFetcher
+	dockerClient     DockerClient
+	backupService    BackupService
+	securityService  SecurityService
+	versionUpdater   ContainerVersionUpdater
+	logger           *logger.Logger
+	config           *ServiceConfig
 
 	// Running updates tracking
 	runningUpdates map[uuid.UUID]*runningUpdate
@@ -206,7 +206,7 @@ func NewService(
 	}
 
 	return &Service{
-		repo:              repo,
+		repo:             repo,
 		checker:          checker,
 		changelogFetcher: changelogFetcher,
 		dockerClient:     dockerClient,
@@ -374,10 +374,10 @@ func (s *Service) UpdateContainer(ctx context.Context, hostID uuid.UUID, opts *m
 		}
 		if available == nil || !available.NeedsUpdate() {
 			return &models.UpdateResult{
-				Update:      update,
-				Success:     true,
-				FromVersion: update.FromVersion,
-				ToVersion:   update.FromVersion,
+				Update:       update,
+				Success:      true,
+				FromVersion:  update.FromVersion,
+				ToVersion:    update.FromVersion,
 				ErrorMessage: "already up to date",
 			}, nil
 		}
@@ -742,18 +742,19 @@ func (s *Service) RollbackUpdate(ctx context.Context, opts *models.RollbackOptio
 		}
 	}
 
-	// Pull old image
+	// Pull old image. result envelope: every error path below surfaces via
+	// RollbackResult.ErrorMessage so the worker can serialize the outcome.
 	oldImage := buildImageRef(update.Image, update.FromVersion)
 	if err := s.dockerClient.ImagePull(ctx, oldImage, nil); err != nil {
 		result.ErrorMessage = "failed to pull original image: " + err.Error()
-		return result, nil
+		return result, nil //nolint:nilerr
 	}
 
 	// Get current container info
 	containerInfo, err := s.dockerClient.ContainerInspect(ctx, update.TargetID)
 	if err != nil {
 		result.ErrorMessage = "failed to inspect container: " + err.Error()
-		return result, nil
+		return result, nil //nolint:nilerr
 	}
 
 	// Stop current container
@@ -774,7 +775,7 @@ func (s *Service) RollbackUpdate(ctx context.Context, opts *models.RollbackOptio
 		s.dockerClient.ContainerRename(ctx, update.TargetID, containerInfo.Name)
 		s.dockerClient.ContainerStart(ctx, update.TargetID)
 		result.ErrorMessage = "failed to create rolled back container: " + err.Error()
-		return result, nil
+		return result, nil //nolint:nilerr
 	}
 
 	// Start new container
@@ -783,7 +784,7 @@ func (s *Service) RollbackUpdate(ctx context.Context, opts *models.RollbackOptio
 		s.dockerClient.ContainerRename(ctx, update.TargetID, containerInfo.Name)
 		s.dockerClient.ContainerStart(ctx, update.TargetID)
 		result.ErrorMessage = "failed to start rolled back container: " + err.Error()
-		return result, nil
+		return result, nil //nolint:nilerr
 	}
 
 	// Cleanup
@@ -979,5 +980,3 @@ func ExtractDigestFromRepoDigests(repoDigests []string, image string) string {
 
 	return ""
 }
-
-

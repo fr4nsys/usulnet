@@ -66,17 +66,17 @@ type GiteaRepository struct {
 
 // GiteaWebhookEvent represents a received webhook event
 type GiteaWebhookEvent struct {
-	ID             uuid.UUID  `json:"id" db:"id"`
-	ConnectionID   uuid.UUID  `json:"connection_id" db:"connection_id"`
-	RepositoryID   *uuid.UUID `json:"repository_id,omitempty" db:"repository_id"`
-	EventType      string     `json:"event_type" db:"event_type"`
-	DeliveryID     *string    `json:"delivery_id,omitempty" db:"delivery_id"`
-	Payload        []byte     `json:"payload" db:"payload"` // JSONB
-	Processed      bool       `json:"processed" db:"processed"`
-	ProcessedAt    *time.Time `json:"processed_at,omitempty" db:"processed_at"`
-	ProcessResult  *string    `json:"process_result,omitempty" db:"process_result"`
-	ProcessError   *string    `json:"process_error,omitempty" db:"process_error"`
-	ReceivedAt     time.Time  `json:"received_at" db:"received_at"`
+	ID            uuid.UUID  `json:"id" db:"id"`
+	ConnectionID  uuid.UUID  `json:"connection_id" db:"connection_id"`
+	RepositoryID  *uuid.UUID `json:"repository_id,omitempty" db:"repository_id"`
+	EventType     string     `json:"event_type" db:"event_type"`
+	DeliveryID    *string    `json:"delivery_id,omitempty" db:"delivery_id"`
+	Payload       []byte     `json:"payload" db:"payload"` // JSONB
+	Processed     bool       `json:"processed" db:"processed"`
+	ProcessedAt   *time.Time `json:"processed_at,omitempty" db:"processed_at"`
+	ProcessResult *string    `json:"process_result,omitempty" db:"process_result"`
+	ProcessError  *string    `json:"process_error,omitempty" db:"process_error"`
+	ReceivedAt    time.Time  `json:"received_at" db:"received_at"`
 }
 
 // GiteaWebhookEventType constants

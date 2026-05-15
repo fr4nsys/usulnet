@@ -2,22 +2,29 @@
 // Copyright (c) 2024-2026 usulnet contributors
 // https://github.com/fr4nsys/usulnet
 
-// Package license defines the usulnet edition system, feature flags,
-// resource limits, and JWT license claims.
+// Package license defines the usulnet license system: cryptographic
+// JWT validation, edition tagging, and feature/limit accessors.
 //
-// Editions:
-//   - CE (Community Edition): free, AGPLv3, limited resources
-//   - Business: paid per-node, expanded limits
-//   - Enterprise: custom pricing, unlimited
+// usulnet ships as a single AGPL build with every feature unlocked
+// and no runtime caps (see CHANGELOG `[v26.5.0] → Open and unlimited`
+// and `docs/0526/x/principles.md` principle 2). The module retains
+// the JWT validator so an operator can attach a commercial support
+// token, but the token does not unlock additional features — every
+// resolved license, including the default no-token state, returns
+// the full feature set and zero (unlimited) limits.
 //
-// License keys are JWT tokens signed with RSA-4096 (RS512).
-// The public key is embedded in the binary; the private key
-// exists only on the Cloudflare Worker that issues licenses.
+// License keys are JWT tokens signed with RSA-4096 (RS512). The
+// public key is embedded in the binary; the private key exists only
+// on the issuer's signing service. The validator is local and never
+// calls home.
 package license
 
 import "time"
 
-// Edition identifies the usulnet product tier.
+// Edition tags the support tier carried on a license token. It does
+// not control feature availability — every edition resolves to the
+// open feature set and unlimited caps. The constants are preserved
+// so previously-issued tokens remain parseable.
 type Edition string
 
 const (
@@ -26,7 +33,9 @@ const (
 	Enterprise Edition = "ee"
 )
 
-// Feature is a boolean capability gated by edition.
+// Feature is a feature-flag identifier. Retained so previously-issued
+// JWTs that reference these names still parse; the AGPL build never
+// gates on them — see AllFeatures and NewOpenInfo.
 type Feature string
 
 const (
@@ -39,28 +48,35 @@ const (
 	FeatureAPIKeys           Feature = "api_keys"
 	FeaturePrioritySupport   Feature = "priority_support"
 	// Reserved for future implementation — not included in any tier until implemented.
-	FeatureSSOSAML         Feature = "sso_saml"
-	FeatureHAMode          Feature = "ha_mode"
-	FeatureSharedTerminals Feature = "shared_terminals"
-	FeatureWhiteLabel      Feature = "white_label"
-	FeatureSwarm             Feature = "swarm"
-	FeatureCompliance        Feature = "compliance"
-	FeatureOPAPolicies       Feature = "opa_policies"
-	FeatureImageSigning      Feature = "image_signing"
-	FeatureRuntimeSecurity   Feature = "runtime_security"
-	FeatureLogAggregation    Feature = "log_aggregation"
-	FeatureCustomDashboards  Feature = "custom_dashboards"
-	FeatureTemplateCatalog   Feature = "template_catalog"
+	FeatureSSOSAML          Feature = "sso_saml"
+	FeatureHAMode           Feature = "ha_mode"
+	FeatureSharedTerminals  Feature = "shared_terminals"
+	FeatureWhiteLabel       Feature = "white_label"
+	FeatureSwarm            Feature = "swarm"
+	FeatureCompliance       Feature = "compliance"
+	FeatureOPAPolicies      Feature = "opa_policies"
+	FeatureImageSigning     Feature = "image_signing"
+	FeatureRuntimeSecurity  Feature = "runtime_security"
+	FeatureLogAggregation   Feature = "log_aggregation"
+	FeatureCustomDashboards Feature = "custom_dashboards"
+	FeatureTemplateCatalog  Feature = "template_catalog"
 	// Phase 3: Market Expansion - GitOps
-	FeatureGitSync           Feature = "git_sync"
-	FeatureEphemeralEnvs     Feature = "ephemeral_envs"
-	FeatureManifestBuilder   Feature = "manifest_builder"
+	FeatureGitSync         Feature = "git_sync"
+	FeatureEphemeralEnvs   Feature = "ephemeral_envs"
+	FeatureManifestBuilder Feature = "manifest_builder"
 	// Phase 6: Registry browsing
 	FeatureRegistryBrowsing Feature = "registry_browsing"
 )
 
-// AllBusinessFeatures returns every feature flag enabled in Business edition.
-func AllBusinessFeatures() []Feature {
+// AllFeatures returns every implemented feature flag. The AGPL build
+// unlocks all of them unconditionally; this set is what NewCEInfo and
+// ClaimsToInfo install on every resolved license.
+//
+// Reserved-but-unimplemented flags (FeatureSSOSAML, FeatureHAMode,
+// FeatureSharedTerminals, FeatureWhiteLabel) are intentionally
+// excluded so HasFeature does not lie about a capability the binary
+// does not actually provide.
+func AllFeatures() []Feature {
 	return []Feature{
 		FeatureCustomRoles,
 		FeatureOAuth,
@@ -72,26 +88,6 @@ func AllBusinessFeatures() []Feature {
 		FeaturePrioritySupport,
 		FeatureSwarm,
 		FeatureTemplateCatalog,
-		FeatureGitSync,
-		FeatureRegistryBrowsing,
-	}
-}
-
-// AllEnterpriseFeatures returns every feature flag enabled in Enterprise edition.
-func AllEnterpriseFeatures() []Feature {
-	return []Feature{
-		FeatureCustomRoles,
-		FeatureOAuth,
-		FeatureLDAP,
-		FeatureMultiNotification,
-		FeatureAuditExport,
-		FeatureMultiBackup,
-		FeatureAPIKeys,
-		FeaturePrioritySupport,
-		FeatureSwarm,
-		FeatureTemplateCatalog,
-		// FeatureSSOSAML, FeatureHAMode, FeatureSharedTerminals, FeatureWhiteLabel
-		// excluded — not yet implemented (see technical-development-plan.md FG-002)
 		FeatureCompliance,
 		FeatureOPAPolicies,
 		FeatureImageSigning,
@@ -106,6 +102,8 @@ func AllEnterpriseFeatures() []Feature {
 }
 
 // Limits defines numeric resource caps. Value 0 = unlimited.
+// The AGPL build runs with every cap at 0; the struct remains so the
+// JSON API and on-disk degradation snapshot stay backward-compatible.
 type Limits struct {
 	MaxNodes                int `json:"max_nodes"`
 	MaxUsers                int `json:"max_users"`
@@ -120,52 +118,10 @@ type Limits struct {
 	MaxNotificationChannels int `json:"max_notification_channels"`
 }
 
-const (
-	// CEBaseNodes is the number of nodes included free with every installation.
-	// CE gets only the master/local node. Business licenses add their purchased
-	// nodes on top of this base (buy 1 → get 2, buy 2 → get 3, etc.).
-	CEBaseNodes = 1
-)
-
-// CELimits returns the hard-coded limits for Community Edition.
-// These are the DEFAULTS when no valid license JWT is present.
-func CELimits() Limits {
-	return Limits{
-		MaxNodes:                CEBaseNodes, // 1 — master/local node only
-		MaxUsers:                3,
-		MaxTeams:                1,
-		MaxCustomRoles:          1,
-		MaxLDAPServers:          1, // 1 LDAP server in CE
-		MaxOAuthProviders:       0, // disabled entirely (no FeatureOAuth)
-		MaxAPIKeys:              3,
-		MaxGitConnections:       1,
-		MaxS3Connections:        1,
-		MaxBackupDestinations:   1,
-		MaxNotificationChannels: 1,
-	}
-}
-
-// BusinessDefaultLimits returns the default limits for a Business license.
-// In practice, nod and usr come from the JWT claims.
-func BusinessDefaultLimits() Limits {
-	return Limits{
-		MaxNodes:                0, // from JWT nod + CEBaseNodes
-		MaxUsers:                0, // from JWT usr
-		MaxTeams:                5,
-		MaxCustomRoles:          0, // unlimited
-		MaxLDAPServers:          3,
-		MaxOAuthProviders:       3,
-		MaxAPIKeys:              25,
-		MaxGitConnections:       5,
-		MaxS3Connections:        5,
-		MaxBackupDestinations:   5,
-		MaxNotificationChannels: 0, // unlimited
-	}
-}
-
-// EnterpriseLimits returns limits for Enterprise (all unlimited).
-func EnterpriseLimits() Limits {
-	return Limits{} // all zeros = unlimited
+// OpenLimits returns the unlimited-everything limit set used by the
+// AGPL build. Every field is the zero value (= unlimited).
+func OpenLimits() Limits {
+	return Limits{}
 }
 
 // LimitProvider is the interface services use to check resource limits.
@@ -177,13 +133,13 @@ type LimitProvider interface {
 
 // Info holds the resolved license state at runtime.
 type Info struct {
-	Edition    Edition   `json:"edition"`
-	Valid      bool      `json:"valid"`
-	LicenseID  string   `json:"license_id,omitempty"`
+	Edition    Edition    `json:"edition"`
+	Valid      bool       `json:"valid"`
+	LicenseID  string     `json:"license_id,omitempty"`
 	ExpiresAt  *time.Time `json:"expires_at,omitempty"`
-	Features   []Feature `json:"features"`
-	Limits     Limits    `json:"limits"`
-	InstanceID string   `json:"instance_id,omitempty"`
+	Features   []Feature  `json:"features"`
+	Limits     Limits     `json:"limits"`
+	InstanceID string     `json:"instance_id,omitempty"`
 }
 
 // HasFeature returns true if the given feature is enabled.
@@ -222,15 +178,22 @@ func (i *Info) EditionName() string {
 	}
 }
 
-// NewCEInfo returns the default Community Edition info (no JWT needed).
-func NewCEInfo() *Info {
-	limits := CELimits()
+// NewOpenInfo returns the default Info for the AGPL build when no
+// commercial license JWT is present. It carries every implemented
+// feature and unlimited limits — the open-edition contract.
+func NewOpenInfo() *Info {
 	return &Info{
 		Edition:  CE,
 		Valid:    true,
-		Features: nil,
-		Limits:   limits,
+		Features: AllFeatures(),
+		Limits:   OpenLimits(),
 	}
+}
+
+// NewCEInfo is an alias of NewOpenInfo kept for callers that have not
+// yet migrated to the open-edition vocabulary.
+func NewCEInfo() *Info {
+	return NewOpenInfo()
 }
 
 // IsWithinLimit checks if a current count is within a resource limit.

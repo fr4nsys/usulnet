@@ -1,0 +1,151 @@
+package sslobservatory
+
+import (
+	"fmt"
+
+	"github.com/fr4nsys/usulnet/internal/web/templates/layouts"
+)
+
+type TargetListData struct {
+	PageData layouts.PageData
+	Targets  []TargetView
+}
+
+type TargetView struct {
+	ID             string
+	Name           string
+	Hostname       string
+	Port           int
+	ExtraHostnames []string
+	Enabled        bool
+	LatestGrade    string
+	LatestScore    string
+	LastScan       string
+	CertExpires    string
+}
+
+templ TargetList(data TargetListData) {
+	@layouts.Base(data.PageData) {
+		<div class="space-y-6">
+			<!-- Header -->
+			<div class="flex items-center justify-between">
+				<div>
+					<h1 class="text-2xl font-display font-bold text-white">SSL Targets</h1>
+					<p class="text-gray-400 mt-1">Manage TLS/SSL monitoring targets</p>
+				</div>
+				<a href="/ssl/targets/new" class="btn-primary">
+					<i class="fas fa-plus mr-2"></i>Add Target
+				</a>
+			</div>
+
+			@Nav("targets")
+
+			<!-- Targets Table -->
+			if len(data.Targets) > 0 {
+				<div class="card">
+					<div class="overflow-x-auto">
+						<table class="table">
+							<thead>
+								<tr>
+									<th>Name</th>
+									<th>Hostname</th>
+									<th>SNI</th>
+									<th>Grade</th>
+									<th>Score</th>
+									<th>Cert Expires</th>
+									<th>Last Scan</th>
+									<th>Actions</th>
+								</tr>
+							</thead>
+							<tbody>
+								for _, target := range data.Targets {
+									<tr>
+										<td>
+											<a href={ templ.SafeURL(fmt.Sprintf("/ssl/targets/%s", target.ID)) } class="text-white hover:text-primary-400">
+												{ target.Name }
+											</a>
+											if !target.Enabled {
+												<span class="badge badge-danger ml-2 text-xs">Disabled</span>
+											}
+										</td>
+										<td>
+											<span class="text-sm font-mono text-gray-300">{ target.Hostname }:{ fmt.Sprintf("%d", target.Port) }</span>
+										</td>
+										<td>
+											if len(target.ExtraHostnames) > 0 {
+												<span class="text-xs text-gray-400">+{ fmt.Sprintf("%d", len(target.ExtraHostnames)) }</span>
+											} else {
+												<span class="text-xs text-gray-500">-</span>
+											}
+										</td>
+										<td>
+											if target.LatestGrade != "" {
+												@GradeBadge(target.LatestGrade)
+											} else {
+												<span class="text-sm text-gray-500">-</span>
+											}
+										</td>
+										<td>
+											if target.LatestScore != "" {
+												<span class="text-sm text-gray-300">{ target.LatestScore }</span>
+											} else {
+												<span class="text-sm text-gray-500">-</span>
+											}
+										</td>
+										<td>
+											if target.CertExpires != "" {
+												<span class="text-sm text-gray-300">{ target.CertExpires }</span>
+											} else {
+												<span class="text-sm text-gray-500">-</span>
+											}
+										</td>
+										<td>
+											if target.LastScan != "" {
+												<span class="text-sm text-gray-400">{ target.LastScan }</span>
+											} else {
+												<span class="text-sm text-gray-500">Never</span>
+											}
+										</td>
+										<td>
+											<div class="flex items-center gap-2">
+												<a href={ templ.SafeURL(fmt.Sprintf("/ssl/targets/%s", target.ID)) } class="text-primary-400 hover:text-primary-300 text-sm">
+													View
+												</a>
+												<form method="POST" action={ templ.SafeURL(fmt.Sprintf("/ssl/targets/%s/scan", target.ID)) } style="display:inline">
+													<input type="hidden" name="csrf_token" value={ data.PageData.CSRFToken }/>
+													<button type="submit" class="text-blue-400 hover:text-blue-300 text-sm">
+														Scan
+													</button>
+												</form>
+												<button
+													hx-delete={ fmt.Sprintf("/ssl/targets/%s", target.ID) }
+													hx-confirm="Delete this SSL target?"
+													hx-target="closest tr"
+													hx-swap="outerHTML"
+													class="text-red-400 hover:text-red-300 text-sm"
+												>
+													Delete
+												</button>
+											</div>
+										</td>
+									</tr>
+								}
+							</tbody>
+						</table>
+					</div>
+				</div>
+			}
+
+			if len(data.Targets) == 0 {
+				<div class="card p-8 text-center">
+					<i class="fas fa-crosshairs text-4xl text-gray-400 mb-4"></i>
+					<h3 class="text-lg font-medium text-white mb-2">No SSL targets</h3>
+					<p class="text-gray-400 mb-4">Add your first SSL target to start monitoring certificate health</p>
+					<a href="/ssl/targets/new" class="btn-primary">
+						<i class="fas fa-plus mr-2"></i>Add Target
+					</a>
+				</div>
+			}
+		</div>
+	}
+}

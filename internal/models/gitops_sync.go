@@ -160,9 +160,9 @@ type EphemeralEnvironment struct {
 type EphemeralEnvironmentLog struct {
 	ID            uuid.UUID       `db:"id" json:"id"`
 	EnvironmentID uuid.UUID       `db:"environment_id" json:"environment_id"`
-	Phase         string          `db:"phase" json:"phase"`     // provision, deploy, healthcheck, destroy
+	Phase         string          `db:"phase" json:"phase"` // provision, deploy, healthcheck, destroy
 	Message       string          `db:"message" json:"message"`
-	Level         string          `db:"level" json:"level"`     // info, warn, error
+	Level         string          `db:"level" json:"level"` // info, warn, error
 	Metadata      json.RawMessage `db:"metadata" json:"metadata"`
 	CreatedAt     time.Time       `db:"created_at" json:"created_at"`
 }
@@ -212,7 +212,7 @@ type ManifestTemplate struct {
 // ManifestTemplateVariable represents a template variable definition.
 type ManifestTemplateVariable struct {
 	Name        string   `json:"name"`
-	Type        string   `json:"type"`        // string, number, boolean, select
+	Type        string   `json:"type"` // string, number, boolean, select
 	Default     string   `json:"default"`
 	Description string   `json:"description"`
 	Required    bool     `json:"required"`
@@ -241,19 +241,19 @@ type ManifestBuilderSession struct {
 
 // ManifestServiceBlock represents a service definition in the visual builder.
 type ManifestServiceBlock struct {
-	Name        string            `json:"name"`
-	Image       string            `json:"image"`
-	Tag         string            `json:"tag"`
+	Name        string              `json:"name"`
+	Image       string              `json:"image"`
+	Tag         string              `json:"tag"`
 	Ports       []GitOpsPortMapping `json:"ports"`
-	Volumes     []VolumeMount     `json:"volumes"`
-	Environment map[string]string `json:"environment"`
-	Command     string            `json:"command,omitempty"`
-	Restart     string            `json:"restart"`
-	HealthCheck *HealthCheckDef   `json:"health_check,omitempty"`
-	DependsOn   []string          `json:"depends_on,omitempty"`
-	Networks    []string          `json:"networks,omitempty"`
-	Deploy      *DeployConfig     `json:"deploy,omitempty"`
-	Labels      map[string]string `json:"labels,omitempty"`
+	Volumes     []VolumeMount       `json:"volumes"`
+	Environment map[string]string   `json:"environment"`
+	Command     string              `json:"command,omitempty"`
+	Restart     string              `json:"restart"`
+	HealthCheck *HealthCheckDef     `json:"health_check,omitempty"`
+	DependsOn   []string            `json:"depends_on,omitempty"`
+	Networks    []string            `json:"networks,omitempty"`
+	Deploy      *DeployConfig       `json:"deploy,omitempty"`
+	Labels      map[string]string   `json:"labels,omitempty"`
 	// Canvas positioning
 	PositionX int `json:"position_x"`
 	PositionY int `json:"position_y"`

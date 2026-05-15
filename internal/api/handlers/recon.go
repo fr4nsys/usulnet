@@ -915,7 +915,7 @@ func nilableUUID(id uuid.UUID) *uuid.UUID {
 }
 
 // mapOwnershipError converts package-level recon errors into typed
-// APIErrors. Anything not recognised is passed through unchanged so
+// APIErrors. Anything not recognized is passed through unchanged so
 // BaseHandler.HandleError takes over.
 func mapOwnershipError(err error) error {
 	switch {
@@ -932,7 +932,7 @@ func mapOwnershipError(err error) error {
 // mapProfileError translates the user-defined profile CRUD sentinels
 // into APIErrors with stable status codes. ErrProfileNotFound → 404;
 // ErrProfileExists → 409 with code ALREADY_EXISTS; ErrProfileBuiltin
-// → 403 (the row exists but the caller is not authorised to mutate
+// → 403 (the row exists but the caller is not authorized to mutate
 // it); ErrProfileInUse → 409 Conflict; ErrProfileInvalid → 400.
 // Anything else flows through to BaseHandler.HandleError.
 func mapProfileError(err error) error {

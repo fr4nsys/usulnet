@@ -354,7 +354,7 @@ func (c *Client) determineRole(groups []string) models.UserRole {
 	if c.config.AdminGroup != "" {
 		adminLower := strings.ToLower(c.config.AdminGroup)
 		for _, group := range groups {
-			if strings.ToLower(group) == adminLower {
+			if strings.EqualFold(group, adminLower) {
 				return models.RoleAdmin
 			}
 		}
@@ -362,7 +362,7 @@ func (c *Client) determineRole(groups []string) models.UserRole {
 	if c.config.OperatorGroup != "" {
 		operatorLower := strings.ToLower(c.config.OperatorGroup)
 		for _, group := range groups {
-			if strings.ToLower(group) == operatorLower {
+			if strings.EqualFold(group, operatorLower) {
 				return models.RoleOperator
 			}
 		}

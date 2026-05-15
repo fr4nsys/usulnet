@@ -176,32 +176,32 @@ func (l *Logger) Base() *zap.Logger {
 
 // Fatal logs a message at Fatal level and exits
 func (l *Logger) Fatal(msg string, keysAndValues ...interface{}) {
-	l.SugaredLogger.Fatalw(msg, keysAndValues...)
+	l.Fatalw(msg, keysAndValues...)
 }
 
 // Panic logs a message at Panic level and panics
 func (l *Logger) Panic(msg string, keysAndValues ...interface{}) {
-	l.SugaredLogger.Panicw(msg, keysAndValues...)
+	l.Panicw(msg, keysAndValues...)
 }
 
 // Error logs a message at Error level
 func (l *Logger) Error(msg string, keysAndValues ...interface{}) {
-	l.SugaredLogger.Errorw(msg, keysAndValues...)
+	l.Errorw(msg, keysAndValues...)
 }
 
 // Warn logs a message at Warn level
 func (l *Logger) Warn(msg string, keysAndValues ...interface{}) {
-	l.SugaredLogger.Warnw(msg, keysAndValues...)
+	l.Warnw(msg, keysAndValues...)
 }
 
 // Info logs a message at Info level
 func (l *Logger) Info(msg string, keysAndValues ...interface{}) {
-	l.SugaredLogger.Infow(msg, keysAndValues...)
+	l.Infow(msg, keysAndValues...)
 }
 
 // Debug logs a message at Debug level
 func (l *Logger) Debug(msg string, keysAndValues ...interface{}) {
-	l.SugaredLogger.Debugw(msg, keysAndValues...)
+	l.Debugw(msg, keysAndValues...)
 }
 
 // Nop returns a no-op logger that discards all output
@@ -222,9 +222,9 @@ func Nop() *Logger {
 // timestamp suffix. Old rotated files beyond MaxBackups or MaxAge are pruned.
 // Optionally, rotated files are compressed with gzip.
 type RotatingFileWriter struct {
-	mu         sync.Mutex
-	cfg        FileConfig
-	file       *os.File
+	mu          sync.Mutex
+	cfg         FileConfig
+	file        *os.File
 	currentSize int64
 }
 

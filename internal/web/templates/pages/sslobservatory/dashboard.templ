@@ -1,0 +1,182 @@
+package sslobservatory
+
+import (
+	"fmt"
+
+	"github.com/fr4nsys/usulnet/internal/web/templates/layouts"
+)
+
+type DashboardData struct {
+	PageData          layouts.PageData
+	TotalTargets      int
+	GradeDistribution map[string]int
+	ExpiringSoon      []ExpiringCertView
+	LastScanTime      string
+}
+
+type ExpiringCertView struct {
+	TargetID   string
+	TargetName string
+	Hostname   string
+	Grade      string
+	CertCN     string
+	ExpiresAt  string
+	DaysLeft   int
+}
+
+templ Dashboard(data DashboardData) {
+	@layouts.Base(data.PageData) {
+		<div class="space-y-6">
+			<!-- Header -->
+			<div class="flex items-center justify-between">
+				<div>
+					<h1 class="text-2xl font-display font-bold text-white">SSL Observatory</h1>
+					<p class="text-gray-400 mt-1">Monitor TLS/SSL certificates and security posture</p>
+				</div>
+				<div class="flex items-center gap-2">
+					<form method="POST" action="/ssl/scan-all" style="display:inline">
+						<input type="hidden" name="csrf_token" value={ data.PageData.CSRFToken }/>
+						<button type="submit" class="btn btn-warning" onclick="return confirm('Scan all enabled targets?')">
+							<i class="fas fa-sync-alt mr-2"></i>Scan All
+						</button>
+					</form>
+					<a href="/ssl/targets/new" class="btn-primary">
+						<i class="fas fa-plus mr-2"></i>Add Target
+					</a>
+				</div>
+			</div>
+
+			@Nav("dashboard")
+
+			<!-- Stats Cards -->
+			<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+				<div class="card p-4">
+					<div class="flex items-center justify-between">
+						<div>
+							<p class="text-sm text-gray-400">Total Targets</p>
+							<p class="text-2xl font-bold text-white">{ fmt.Sprintf("%d", data.TotalTargets) }</p>
+						</div>
+						<div class="text-primary-400">
+							<i class="fas fa-crosshairs text-2xl"></i>
+						</div>
+					</div>
+				</div>
+				<div class="card p-4">
+					<div class="flex items-center justify-between">
+						<div>
+							<p class="text-sm text-gray-400">Expiring Soon</p>
+							<p class="text-2xl font-bold text-yellow-400">{ fmt.Sprintf("%d", len(data.ExpiringSoon)) }</p>
+						</div>
+						<div class="text-yellow-400">
+							<i class="fas fa-exclamation-triangle text-2xl"></i>
+						</div>
+					</div>
+				</div>
+				<div class="card p-4">
+					<div class="flex items-center justify-between">
+						<div>
+							<p class="text-sm text-gray-400">Grade Distribution</p>
+							<div class="flex items-center gap-1 mt-1">
+								if data.GradeDistribution != nil {
+									for _, g := range []string{"A+", "A", "B", "C", "D", "F"} {
+										if count, ok := data.GradeDistribution[g]; ok && count > 0 {
+											<span class="text-xs font-medium">
+												@GradeBadge(g)
+												<span class="text-gray-400 ml-0.5">{ fmt.Sprintf("%d", count) }</span>
+											</span>
+										}
+									}
+								}
+							</div>
+						</div>
+						<div class="text-green-400">
+							<i class="fas fa-chart-bar text-2xl"></i>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			if data.LastScanTime != "" {
+				<p class="text-sm text-gray-500">Last scan: { data.LastScanTime }</p>
+			}
+
+			<!-- Expiring Certificates Table -->
+			if len(data.ExpiringSoon) > 0 {
+				<div class="card">
+					<div class="p-4 border-b border-dark-700">
+						<h3 class="text-lg font-semibold text-white">
+							<i class="fas fa-exclamation-triangle text-yellow-400 mr-2"></i>Certificates Expiring Soon
+						</h3>
+					</div>
+					<div class="overflow-x-auto">
+						<table class="table">
+							<thead>
+								<tr>
+									<th>Target</th>
+									<th>Hostname</th>
+									<th>Common Name</th>
+									<th>Expires At</th>
+									<th>Days Left</th>
+									<th>Grade</th>
+								</tr>
+							</thead>
+							<tbody>
+								for _, cert := range data.ExpiringSoon {
+									<tr>
+										<td>
+											<a href={ templ.SafeURL(fmt.Sprintf("/ssl/targets/%s", cert.TargetID)) } class="text-white hover:text-primary-400">
+												{ cert.TargetName }
+											</a>
+										</td>
+										<td class="text-sm font-mono text-gray-300">{ cert.Hostname }</td>
+										<td class="text-sm font-mono text-gray-300">{ cert.CertCN }</td>
+										<td class="text-sm text-gray-300">{ cert.ExpiresAt }</td>
+										<td>
+											if cert.DaysLeft <= 7 {
+												<span class="text-red-400 font-bold">{ fmt.Sprintf("%d", cert.DaysLeft) }</span>
+											} else if cert.DaysLeft <= 30 {
+												<span class="text-yellow-400 font-bold">{ fmt.Sprintf("%d", cert.DaysLeft) }</span>
+											} else {
+												<span class="text-gray-300">{ fmt.Sprintf("%d", cert.DaysLeft) }</span>
+											}
+										</td>
+										<td>
+											@GradeBadge(cert.Grade)
+										</td>
+									</tr>
+								}
+							</tbody>
+						</table>
+					</div>
+				</div>
+			}
+
+			if data.TotalTargets == 0 {
+				<div class="card p-8 text-center">
+					<i class="fas fa-lock text-4xl text-gray-400 mb-4"></i>
+					<h3 class="text-lg font-medium text-white mb-2">No SSL targets configured</h3>
+					<p class="text-gray-400 mb-4">Add your first SSL target to start monitoring certificate health</p>
+					<a href="/ssl/targets/new" class="btn-primary">
+						<i class="fas fa-plus mr-2"></i>Add Target
+					</a>
+				</div>
+			}
+		</div>
+	}
+}
+
+templ GradeBadge(grade string) {
+	if grade == "A+" || grade == "A" {
+		<span class="inline-flex items-center gap-1 text-xs bg-green-500/10 text-green-400 px-2 py-0.5 rounded font-bold">{ grade }</span>
+	} else if grade == "B" {
+		<span class="inline-flex items-center gap-1 text-xs bg-blue-500/10 text-blue-400 px-2 py-0.5 rounded font-bold">{ grade }</span>
+	} else if grade == "C" {
+		<span class="inline-flex items-center gap-1 text-xs bg-yellow-500/10 text-yellow-400 px-2 py-0.5 rounded font-bold">{ grade }</span>
+	} else if grade == "D" {
+		<span class="inline-flex items-center gap-1 text-xs bg-orange-500/10 text-orange-400 px-2 py-0.5 rounded font-bold">{ grade }</span>
+	} else if grade == "F" {
+		<span class="inline-flex items-center gap-1 text-xs bg-red-500/10 text-red-400 px-2 py-0.5 rounded font-bold">{ grade }</span>
+	} else {
+		<span class="inline-flex items-center gap-1 text-xs bg-gray-500/10 text-gray-400 px-2 py-0.5 rounded font-bold">{ grade }</span>
+	}
+}

@@ -10,21 +10,19 @@ package swarm
 import (
 	"context"
 	"fmt"
-	"sync"
 
 	"github.com/google/uuid"
 
 	"github.com/fr4nsys/usulnet/internal/docker"
 	"github.com/fr4nsys/usulnet/internal/models"
-	hostsvc "github.com/fr4nsys/usulnet/internal/services/host"
 	"github.com/fr4nsys/usulnet/internal/pkg/logger"
+	hostsvc "github.com/fr4nsys/usulnet/internal/services/host"
 )
 
 // Service manages Docker Swarm operations through the host service.
 type Service struct {
 	hostService *hostsvc.Service
 	logger      *logger.Logger
-	mu          sync.RWMutex
 }
 
 // NewService creates a new Swarm service.
@@ -55,9 +53,9 @@ func (s *Service) GetClusterInfo(ctx context.Context, hostID uuid.UUID) (*models
 	}
 
 	info := &models.SwarmClusterInfo{
-		Active:       state.Active,
-		ClusterID:    state.ClusterID,
-		ManagerAddr:  state.NodeAddr,
+		Active:      state.Active,
+		ClusterID:   state.ClusterID,
+		ManagerAddr: state.NodeAddr,
 	}
 
 	if !state.Active {

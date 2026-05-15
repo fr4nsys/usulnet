@@ -10,6 +10,7 @@ import (
 	"crypto/tls"
 	"crypto/x509"
 	"encoding/pem"
+	"errors"
 	"net"
 	"os"
 	"path/filepath"
@@ -106,7 +107,7 @@ func TestLoadCA_KeyMismatch(t *testing.T) {
 	bundle2, _ := GenerateCA()
 
 	_, err := LoadCA(bundle1.CertPEM, bundle2.KeyPEM)
-	if err != ErrCAKeyMismatch {
+	if !errors.Is(err, ErrCAKeyMismatch) {
 		t.Errorf("expected ErrCAKeyMismatch, got: %v", err)
 	}
 }

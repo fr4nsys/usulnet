@@ -60,7 +60,7 @@ func (h *Handler) MaintenanceTempl(w http.ResponseWriter, r *http.Request) {
 			for _, mw := range dbWindows {
 				var actions maintenanceActions
 				if len(mw.Actions) > 0 {
-					json.Unmarshal(mw.Actions, &actions)
+					_ = json.Unmarshal(mw.Actions, &actions) // best-effort decode; zero-value defaults are acceptable for render
 				}
 
 				wv := mnttmpl.MaintenanceWindowView{
@@ -217,7 +217,9 @@ func (h *Handler) MaintenanceDelete(w http.ResponseWriter, r *http.Request) {
 	if h.maintenanceRepo != nil {
 		uid, err := uuid.Parse(id)
 		if err == nil {
-			h.maintenanceRepo.Delete(r.Context(), uid)
+			if err := h.maintenanceRepo.Delete(r.Context(), uid); err != nil {
+				h.logger.Warn("failed to delete maintenance window", "id", uid, "error", err)
+			}
 		}
 	}
 
@@ -258,11 +260,13 @@ func (h *Handler) MaintenanceExecute(w http.ResponseWriter, r *http.Request) {
 
 	var actions maintenanceActions
 	if len(mw.Actions) > 0 {
-		json.Unmarshal(mw.Actions, &actions)
+		_ = json.Unmarshal(mw.Actions, &actions) // best-effort decode; zero-value defaults are acceptable
 	}
 
 	// Mark as active
-	h.maintenanceRepo.SetActive(ctx, uid, true)
+	if err := h.maintenanceRepo.SetActive(ctx, uid, true); err != nil {
+		h.logger.Warn("failed to mark maintenance window active", "id", uid, "error", err)
+	}
 
 	var actionsPerformed []string
 	var execErr error
@@ -287,11 +291,13 @@ func (h *Handler) MaintenanceExecute(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	// 2. Prune images
+	// 2. Prune images. This is the first error-producing step; execErr
+	// is still its zero value, so the "keep the first" guard collapses
+	// to an unconditional assignment here.
 	if actions.PruneImages && imageSvc != nil {
 		if freed, err := imageSvc.Prune(ctx); err == nil {
 			actionsPerformed = append(actionsPerformed, fmt.Sprintf("pruned images (%s freed)", formatBytes(freed)))
-		} else if execErr == nil {
+		} else {
 			execErr = err
 		}
 	}

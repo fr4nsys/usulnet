@@ -143,6 +143,31 @@ func TestConfig_Validate_NATS_TLS_NoCert(t *testing.T) {
 	}
 }
 
+func TestConfig_LoadFromEnv_TLSLocalServices(t *testing.T) {
+	t.Setenv("USULNET_TLS_LOCAL_SERVICES", "true")
+	t.Setenv("USULNET_DATABASE_URL", "postgres://x:y@h/d")
+	t.Setenv("USULNET_REDIS_URL", "redis://h:1")
+	t.Setenv("USULNET_JWT_SECRET", strings.Repeat("a", 32))
+
+	cfg, err := LoadConfig("")
+	if err != nil {
+		t.Fatalf("LoadConfig: %v", err)
+	}
+	if !cfg.Server.TLS.LocalServices {
+		t.Errorf("expected server.tls.local_services=true from env, got false")
+	}
+}
+
+func TestConfig_DefaultTLSLocalServicesFalse(t *testing.T) {
+	cfg, err := LoadConfig("")
+	if err != nil {
+		t.Fatalf("LoadConfig: %v", err)
+	}
+	if cfg.Server.TLS.LocalServices {
+		t.Errorf("expected server.tls.local_services default false, got true")
+	}
+}
+
 func TestConfig_Validate_AgentMode_MissingMasterURL(t *testing.T) {
 	cfg := &Config{
 		Mode: "agent",

@@ -121,7 +121,7 @@ func (d *Dispatch) toolsForMIME(mime string) []toolEntry {
 }
 
 // isOfficeMIME reports whether mime is one of the OLE / Office Open
-// XML types that oletools can analyse. The list mirrors the most
+// XML types that oletools can analyze. The list mirrors the most
 // common upload classes; unknown variants fall through to exiftool
 // only, which still pulls authorship/timestamps for almost every
 // office format.

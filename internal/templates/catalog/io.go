@@ -92,22 +92,22 @@ func Import(data []byte) ([]models.CatalogTemplate, error) {
 
 // portainerTemplate represents a Portainer v2 app template.
 type portainerTemplate struct {
-	Type        int                    `json:"type"` // 1=container, 3=stack
-	Title       string                 `json:"title"`
-	Description string                 `json:"description"`
-	Image       string                 `json:"image"`
-	Logo        string                 `json:"logo"`
-	Categories  []string               `json:"categories"`
-	Platform    string                 `json:"platform"`
-	Ports       []string               `json:"ports"`
-	Volumes     []portainerVolume      `json:"volumes"`
-	Env         []portainerEnv         `json:"env"`
-	Labels      []portainerLabel       `json:"labels"`
-	Note        string                 `json:"note"`
-	Restart     string                 `json:"restart_policy"`
-	Command     string                 `json:"command"`
-	Network     string                 `json:"network"`
-	Repository  *portainerRepo         `json:"repository"`
+	Type        int               `json:"type"` // 1=container, 3=stack
+	Title       string            `json:"title"`
+	Description string            `json:"description"`
+	Image       string            `json:"image"`
+	Logo        string            `json:"logo"`
+	Categories  []string          `json:"categories"`
+	Platform    string            `json:"platform"`
+	Ports       []string          `json:"ports"`
+	Volumes     []portainerVolume `json:"volumes"`
+	Env         []portainerEnv    `json:"env"`
+	Labels      []portainerLabel  `json:"labels"`
+	Note        string            `json:"note"`
+	Restart     string            `json:"restart_policy"`
+	Command     string            `json:"command"`
+	Network     string            `json:"network"`
+	Repository  *portainerRepo    `json:"repository"`
 }
 
 type portainerVolume struct {
@@ -117,11 +117,11 @@ type portainerVolume struct {
 }
 
 type portainerEnv struct {
-	Name        string   `json:"name"`
-	Label       string   `json:"label"`
-	Default     string   `json:"default"`
-	Description string   `json:"description"`
-	Preset      bool     `json:"preset"`
+	Name        string `json:"name"`
+	Label       string `json:"label"`
+	Default     string `json:"default"`
+	Description string `json:"description"`
+	Preset      bool   `json:"preset"`
 	Select      []struct {
 		Text    string `json:"text"`
 		Value   string `json:"value"`

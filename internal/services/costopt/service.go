@@ -102,11 +102,11 @@ func (s *Service) GenerateRecommendations(ctx context.Context, summaries []*mode
 		// Check for oversized memory (using less than 30% of limit)
 		if summary.MemoryLimit > 0 && summary.MemoryAvg > 0 && float64(summary.MemoryAvg)/float64(summary.MemoryLimit) < 0.3 {
 			rec := &models.ResourceRecommendation{
-				ContainerID:   summary.ContainerID,
-				ContainerName: summary.ContainerName,
-				Type:          models.RecommendDownsizeMemory,
-				Severity:      "warning",
-				Reason:        "memory usage is below 30% of limit",
+				ContainerID:      summary.ContainerID,
+				ContainerName:    summary.ContainerName,
+				Type:             models.RecommendDownsizeMemory,
+				Severity:         "warning",
+				Reason:           "memory usage is below 30% of limit",
 				CurrentValue:     formatBytes(summary.MemoryLimit),
 				RecommendedValue: formatBytes(summary.MemoryLimit / 2),
 			}

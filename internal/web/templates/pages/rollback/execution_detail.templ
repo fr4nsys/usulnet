@@ -1,0 +1,99 @@
+// SPDX-License-Identifier: AGPL-3.0-or-later
+// Copyright (c) 2024-2026 usulnet contributors
+// https://github.com/fr4nsys/usulnet
+
+package rollback
+
+import "github.com/fr4nsys/usulnet/internal/web/templates/layouts"
+
+type ExecutionDetailData struct {
+	PageData  layouts.PageData
+	Execution ExecutionView
+}
+
+templ ExecutionDetail(data ExecutionDetailData) {
+	@layouts.Base(data.PageData) {
+		<div class="space-y-6">
+			<div>
+				<a href="/rollback/executions" class="text-sm text-gray-400 hover:text-white">
+					<i class="fas fa-chevron-left mr-1"></i>back to execution log
+				</a>
+				<div class="flex items-center gap-3 mt-1">
+					<h1 class="text-2xl font-display font-bold text-white">Execution { data.Execution.ID }</h1>
+					@statusBadge(data.Execution.Status)
+				</div>
+			</div>
+
+			<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+				<div class="card p-4">
+					<h3 class="text-sm font-semibold text-white mb-3">Subject</h3>
+					<dl class="space-y-2 text-sm">
+						<div class="flex items-baseline justify-between">
+							<dt class="text-gray-500">Policy</dt>
+							<dd class="text-gray-200">
+								if data.Execution.PolicyName != "" {
+									<a href={ templ.SafeURL("/rollback/" + data.Execution.PolicyID) } class="hover:text-primary-400">{ data.Execution.PolicyName }</a>
+								} else {
+									<span class="font-mono text-xs">{ data.Execution.PolicyID }</span>
+								}
+							</dd>
+						</div>
+						<div class="flex items-baseline justify-between">
+							<dt class="text-gray-500">Stack</dt>
+							<dd class="text-gray-200">
+								if data.Execution.StackName != "" {
+									{ data.Execution.StackName }
+								} else {
+									<span class="font-mono text-xs">{ data.Execution.StackID }</span>
+								}
+							</dd>
+						</div>
+						<div class="flex items-baseline justify-between">
+							<dt class="text-gray-500">Trigger</dt>
+							<dd class="text-gray-200">{ data.Execution.TriggerKind }</dd>
+						</div>
+					</dl>
+				</div>
+
+				<div class="card p-4">
+					<h3 class="text-sm font-semibold text-white mb-3">Outcome</h3>
+					<dl class="space-y-2 text-sm">
+						if data.Execution.FromVersion != "" {
+							<div class="flex items-baseline justify-between">
+								<dt class="text-gray-500">From version</dt>
+								<dd class="text-gray-200">v{ data.Execution.FromVersion }</dd>
+							</div>
+						}
+						if data.Execution.ToVersion != "" {
+							<div class="flex items-baseline justify-between">
+								<dt class="text-gray-500">To version</dt>
+								<dd class="text-gray-200">v{ data.Execution.ToVersion }</dd>
+							</div>
+						}
+						<div class="flex items-baseline justify-between">
+							<dt class="text-gray-500">Started</dt>
+							<dd class="text-gray-200 text-xs">{ data.Execution.StartedAt }</dd>
+						</div>
+						<div class="flex items-baseline justify-between">
+							<dt class="text-gray-500">Finished</dt>
+							<dd class="text-gray-200 text-xs">{ data.Execution.FinishedAt }</dd>
+						</div>
+					</dl>
+				</div>
+			</div>
+
+			if data.Execution.Reason != "" {
+				<div class="card p-4">
+					<h3 class="text-sm font-semibold text-white mb-2">Reason</h3>
+					<p class="text-sm text-gray-200 whitespace-pre-wrap">{ data.Execution.Reason }</p>
+				</div>
+			}
+			if data.Execution.Error != "" {
+				<div class="card p-4 border border-red-500/40 bg-red-500/5">
+					<h3 class="text-sm font-semibold text-red-200 mb-2"><i class="fas fa-triangle-exclamation mr-1"></i>Error</h3>
+					<p class="text-sm text-red-300 whitespace-pre-wrap">{ data.Execution.Error }</p>
+				</div>
+			}
+		</div>
+	}
+}

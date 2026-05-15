@@ -27,26 +27,21 @@ type Config struct {
 
 // Service manages S3-compatible storage connections and operations.
 type Service struct {
-	connRepo      ConnectionRepository
-	bucketRepo    BucketRepository
-	auditRepo     AuditRepository
-	encryptor     Encryptor
-	config        Config
-	logger        *logger.Logger
-	limitMu       sync.RWMutex
-	limitProvider license.LimitProvider
+	connRepo   ConnectionRepository
+	bucketRepo BucketRepository
+	auditRepo  AuditRepository
+	encryptor  Encryptor
+	config     Config
+	logger     *logger.Logger
 
 	mu      sync.RWMutex
 	clients map[uuid.UUID]S3Client
 }
 
-// SetLimitProvider sets the license limit provider for enforcing MaxS3Connections.
-// Thread-safe: may be called while goroutines read limitProvider.
-func (s *Service) SetLimitProvider(lp license.LimitProvider) {
-	s.limitMu.Lock()
-	s.limitProvider = lp
-	s.limitMu.Unlock()
-}
+// SetLimitProvider is a no-op kept for callers that still wire the
+// legacy hook; the AGPL build does not cap storage connections via a
+// license token.
+func (s *Service) SetLimitProvider(_ license.LimitProvider) {}
 
 // NewService creates a new storage service.
 func NewService(
@@ -73,22 +68,8 @@ func NewService(
 // ============================================================================
 
 // CreateConnection creates, encrypts credentials, and tests a storage connection.
+// There is no license-driven cap in the AGPL build.
 func (s *Service) CreateConnection(ctx context.Context, input models.CreateStorageConnectionInput, userID string) (*models.StorageConnection, error) {
-	// Enforce MaxS3Connections license limit
-	s.limitMu.RLock()
-	lp := s.limitProvider
-	s.limitMu.RUnlock()
-	if lp != nil {
-		limit := lp.GetLimits().MaxS3Connections
-		if limit > 0 {
-			existing, err := s.connRepo.List(ctx, s.config.DefaultHostID)
-			if err == nil && len(existing) >= limit {
-				return nil, errors.NewWithStatus(errors.CodeLimitExceeded,
-					fmt.Sprintf("storage connection limit reached (%d/%d), upgrade your license for more", len(existing), limit), 402)
-			}
-		}
-	}
-
 	encAccess, err := s.encryptor.EncryptString(input.AccessKey)
 	if err != nil {
 		return nil, errors.Wrap(err, errors.CodeEncryptionFailed, "failed to encrypt access key")

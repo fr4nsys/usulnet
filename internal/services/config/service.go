@@ -228,13 +228,14 @@ func (s *Service) UpdateVariable(ctx context.Context, id uuid.UUID, input models
 	// Update fields
 	if input.Value != nil {
 		newValue := *input.Value
-		if existing.Type == models.VariableTypeSecret {
+		switch existing.Type {
+		case models.VariableTypeSecret:
 			encrypted, err := s.encryptor.EncryptString(newValue)
 			if err != nil {
 				return nil, errors.Wrap(err, errors.CodeEncryptionFailed, "failed to encrypt secret")
 			}
 			newValue = encrypted
-		} else if existing.Type == models.VariableTypeComputed {
+		case models.VariableTypeComputed:
 			computed, err := s.computeValue(newValue)
 			if err != nil {
 				return nil, err

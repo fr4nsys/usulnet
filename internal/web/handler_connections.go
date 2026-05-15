@@ -15,11 +15,12 @@ import (
 	"strings"
 	"time"
 
+	"github.com/go-chi/chi/v5"
+	"github.com/google/uuid"
+
 	"github.com/fr4nsys/usulnet/internal/models"
 	sshsvc "github.com/fr4nsys/usulnet/internal/services/ssh"
 	"github.com/fr4nsys/usulnet/internal/web/templates/pages/connections"
-	"github.com/go-chi/chi/v5"
-	"github.com/google/uuid"
 )
 
 // ============================================================================

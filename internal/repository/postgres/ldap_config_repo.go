@@ -128,7 +128,7 @@ func (r *LDAPConfigRepository) GetByID(ctx context.Context, id uuid.UUID) (*mode
 	)
 
 	if err != nil {
-		if err == pgx.ErrNoRows {
+		if errors.Is(err, pgx.ErrNoRows) {
 			return nil, errors.New(errors.CodeNotFound, "LDAP config not found")
 		}
 		return nil, errors.Wrap(err, errors.CodeDatabaseError, "failed to get LDAP config")
@@ -157,7 +157,7 @@ func (r *LDAPConfigRepository) GetByName(ctx context.Context, name string) (*mod
 	)
 
 	if err != nil {
-		if err == pgx.ErrNoRows {
+		if errors.Is(err, pgx.ErrNoRows) {
 			return nil, errors.New(errors.CodeNotFound, "LDAP config not found")
 		}
 		return nil, errors.Wrap(err, errors.CodeDatabaseError, "failed to get LDAP config")

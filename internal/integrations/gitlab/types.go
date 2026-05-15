@@ -93,18 +93,18 @@ type APIBranchHead struct {
 
 // APICommit represents a GitLab commit
 type APICommit struct {
-	ID             string    `json:"id"`
-	ShortID        string    `json:"short_id"`
-	Title          string    `json:"title"`
-	Message        string    `json:"message"`
-	AuthorName     string    `json:"author_name"`
-	AuthorEmail    string    `json:"author_email"`
-	CommitterName  string    `json:"committer_name"`
-	CommitterEmail string    `json:"committer_email"`
-	AuthoredDate   time.Time `json:"authored_date"`
-	CommittedDate  time.Time `json:"committed_date"`
-	WebURL         string    `json:"web_url"`
-	ParentIDs      []string  `json:"parent_ids"`
+	ID             string          `json:"id"`
+	ShortID        string          `json:"short_id"`
+	Title          string          `json:"title"`
+	Message        string          `json:"message"`
+	AuthorName     string          `json:"author_name"`
+	AuthorEmail    string          `json:"author_email"`
+	CommitterName  string          `json:"committer_name"`
+	CommitterEmail string          `json:"committer_email"`
+	AuthoredDate   time.Time       `json:"authored_date"`
+	CommittedDate  time.Time       `json:"committed_date"`
+	WebURL         string          `json:"web_url"`
+	ParentIDs      []string        `json:"parent_ids"`
 	Stats          *APICommitStats `json:"stats,omitempty"`
 }
 
@@ -117,12 +117,12 @@ type APICommitStats struct {
 
 // APITag represents a GitLab tag
 type APITag struct {
-	Name      string          `json:"name"`
-	Message   string          `json:"message"`
-	Target    string          `json:"target"` // commit SHA
-	Commit    APIBranchHead   `json:"commit"`
-	Release   *APITagRelease  `json:"release,omitempty"`
-	Protected bool            `json:"protected"`
+	Name      string         `json:"name"`
+	Message   string         `json:"message"`
+	Target    string         `json:"target"` // commit SHA
+	Commit    APIBranchHead  `json:"commit"`
+	Release   *APITagRelease `json:"release,omitempty"`
+	Protected bool           `json:"protected"`
 }
 
 // APITagRelease is release info attached to a tag
@@ -156,33 +156,33 @@ type APIFileContent struct {
 
 // APIMergeRequest represents a GitLab merge request
 type APIMergeRequest struct {
-	ID             int64       `json:"id"`
-	IID            int64       `json:"iid"` // Internal ID (what users see)
-	Title          string      `json:"title"`
-	Description    string      `json:"description"`
-	State          string      `json:"state"` // opened, closed, merged, locked
-	SourceBranch   string      `json:"source_branch"`
-	TargetBranch   string      `json:"target_branch"`
-	Author         APIUser     `json:"author"`
-	Assignees      []APIUser   `json:"assignees"`
-	Reviewers      []APIUser   `json:"reviewers"`
-	Labels         []string    `json:"labels"`
+	ID             int64         `json:"id"`
+	IID            int64         `json:"iid"` // Internal ID (what users see)
+	Title          string        `json:"title"`
+	Description    string        `json:"description"`
+	State          string        `json:"state"` // opened, closed, merged, locked
+	SourceBranch   string        `json:"source_branch"`
+	TargetBranch   string        `json:"target_branch"`
+	Author         APIUser       `json:"author"`
+	Assignees      []APIUser     `json:"assignees"`
+	Reviewers      []APIUser     `json:"reviewers"`
+	Labels         []string      `json:"labels"`
 	Milestone      *APIMilestone `json:"milestone"`
-	MergeStatus    string      `json:"merge_status"` // can_be_merged, cannot_be_merged, etc
-	Draft          bool        `json:"draft"` // or work_in_progress
-	WebURL         string      `json:"web_url"`
-	DiffRefs       *APIDiffRefs `json:"diff_refs"`
-	UserNotesCount int         `json:"user_notes_count"`
-	Upvotes        int         `json:"upvotes"`
-	Downvotes      int         `json:"downvotes"`
-	CreatedAt      time.Time   `json:"created_at"`
-	UpdatedAt      time.Time   `json:"updated_at"`
-	MergedAt       *time.Time  `json:"merged_at"`
-	ClosedAt       *time.Time  `json:"closed_at"`
-	MergedBy       *APIUser    `json:"merged_by"`
-	ClosedBy       *APIUser    `json:"closed_by"`
-	ChangesCount   string      `json:"changes_count"`
-	HasConflicts   bool        `json:"has_conflicts"`
+	MergeStatus    string        `json:"merge_status"` // can_be_merged, cannot_be_merged, etc
+	Draft          bool          `json:"draft"`        // or work_in_progress
+	WebURL         string        `json:"web_url"`
+	DiffRefs       *APIDiffRefs  `json:"diff_refs"`
+	UserNotesCount int           `json:"user_notes_count"`
+	Upvotes        int           `json:"upvotes"`
+	Downvotes      int           `json:"downvotes"`
+	CreatedAt      time.Time     `json:"created_at"`
+	UpdatedAt      time.Time     `json:"updated_at"`
+	MergedAt       *time.Time    `json:"merged_at"`
+	ClosedAt       *time.Time    `json:"closed_at"`
+	MergedBy       *APIUser      `json:"merged_by"`
+	ClosedBy       *APIUser      `json:"closed_by"`
+	ChangesCount   string        `json:"changes_count"`
+	HasConflicts   bool          `json:"has_conflicts"`
 }
 
 // APIDiffRefs contains diff references
@@ -194,40 +194,40 @@ type APIDiffRefs struct {
 
 // APIIssue represents a GitLab issue
 type APIIssue struct {
-	ID          int64       `json:"id"`
-	IID         int64       `json:"iid"` // Internal ID
-	Title       string      `json:"title"`
-	Description string      `json:"description"`
-	State       string      `json:"state"` // opened, closed
-	Author      APIUser     `json:"author"`
-	Assignees   []APIUser   `json:"assignees"`
-	Labels      []string    `json:"labels"`
-	Milestone   *APIMilestone `json:"milestone"`
-	WebURL      string      `json:"web_url"`
-	Confidential bool       `json:"confidential"`
-	Weight      *int        `json:"weight"`
-	UserNotesCount int      `json:"user_notes_count"`
-	Upvotes     int         `json:"upvotes"`
-	Downvotes   int         `json:"downvotes"`
-	CreatedAt   time.Time   `json:"created_at"`
-	UpdatedAt   time.Time   `json:"updated_at"`
-	ClosedAt    *time.Time  `json:"closed_at"`
-	ClosedBy    *APIUser    `json:"closed_by"`
-	DueDate     *string     `json:"due_date"` // YYYY-MM-DD
+	ID             int64         `json:"id"`
+	IID            int64         `json:"iid"` // Internal ID
+	Title          string        `json:"title"`
+	Description    string        `json:"description"`
+	State          string        `json:"state"` // opened, closed
+	Author         APIUser       `json:"author"`
+	Assignees      []APIUser     `json:"assignees"`
+	Labels         []string      `json:"labels"`
+	Milestone      *APIMilestone `json:"milestone"`
+	WebURL         string        `json:"web_url"`
+	Confidential   bool          `json:"confidential"`
+	Weight         *int          `json:"weight"`
+	UserNotesCount int           `json:"user_notes_count"`
+	Upvotes        int           `json:"upvotes"`
+	Downvotes      int           `json:"downvotes"`
+	CreatedAt      time.Time     `json:"created_at"`
+	UpdatedAt      time.Time     `json:"updated_at"`
+	ClosedAt       *time.Time    `json:"closed_at"`
+	ClosedBy       *APIUser      `json:"closed_by"`
+	DueDate        *string       `json:"due_date"` // YYYY-MM-DD
 }
 
 // APIMilestone represents a milestone
 type APIMilestone struct {
-	ID          int64      `json:"id"`
-	IID         int64      `json:"iid"`
-	Title       string     `json:"title"`
-	Description string     `json:"description"`
-	State       string     `json:"state"` // active, closed
-	StartDate   *string    `json:"start_date"`
-	DueDate     *string    `json:"due_date"`
-	WebURL      string     `json:"web_url"`
-	CreatedAt   time.Time  `json:"created_at"`
-	UpdatedAt   time.Time  `json:"updated_at"`
+	ID          int64     `json:"id"`
+	IID         int64     `json:"iid"`
+	Title       string    `json:"title"`
+	Description string    `json:"description"`
+	State       string    `json:"state"` // active, closed
+	StartDate   *string   `json:"start_date"`
+	DueDate     *string   `json:"due_date"`
+	WebURL      string    `json:"web_url"`
+	CreatedAt   time.Time `json:"created_at"`
+	UpdatedAt   time.Time `json:"updated_at"`
 }
 
 // APILabel represents a label
@@ -241,16 +241,16 @@ type APILabel struct {
 
 // APIRelease represents a GitLab release
 type APIRelease struct {
-	TagName         string              `json:"tag_name"`
-	Name            string              `json:"name"`
-	Description     string              `json:"description"`
-	DescriptionHTML string              `json:"description_html"`
-	CreatedAt       time.Time           `json:"created_at"`
-	ReleasedAt      time.Time           `json:"released_at"`
-	Author          APIUser             `json:"author"`
-	Commit          APIBranchHead       `json:"commit"`
-	UpcomingRelease bool                `json:"upcoming_release"`
-	Assets          APIReleaseAssets    `json:"assets"`
+	TagName         string           `json:"tag_name"`
+	Name            string           `json:"name"`
+	Description     string           `json:"description"`
+	DescriptionHTML string           `json:"description_html"`
+	CreatedAt       time.Time        `json:"created_at"`
+	ReleasedAt      time.Time        `json:"released_at"`
+	Author          APIUser          `json:"author"`
+	Commit          APIBranchHead    `json:"commit"`
+	UpcomingRelease bool             `json:"upcoming_release"`
+	Assets          APIReleaseAssets `json:"assets"`
 }
 
 // APIReleaseAssets contains release assets
@@ -276,22 +276,22 @@ type APIAssetLink struct {
 
 // APIHook represents a project webhook
 type APIHook struct {
-	ID                    int64     `json:"id"`
-	URL                   string    `json:"url"`
-	ProjectID             int64     `json:"project_id"`
-	PushEvents            bool      `json:"push_events"`
-	PushEventsBranchFilter string   `json:"push_events_branch_filter"`
-	IssuesEvents          bool      `json:"issues_events"`
-	MergeRequestsEvents   bool      `json:"merge_requests_events"`
-	TagPushEvents         bool      `json:"tag_push_events"`
-	NoteEvents            bool      `json:"note_events"`
-	JobEvents             bool      `json:"job_events"`
-	PipelineEvents        bool      `json:"pipeline_events"`
-	WikiPageEvents        bool      `json:"wiki_page_events"`
-	DeploymentEvents      bool      `json:"deployment_events"`
-	ReleasesEvents        bool      `json:"releases_events"`
-	EnableSSLVerification bool      `json:"enable_ssl_verification"`
-	CreatedAt             time.Time `json:"created_at"`
+	ID                     int64     `json:"id"`
+	URL                    string    `json:"url"`
+	ProjectID              int64     `json:"project_id"`
+	PushEvents             bool      `json:"push_events"`
+	PushEventsBranchFilter string    `json:"push_events_branch_filter"`
+	IssuesEvents           bool      `json:"issues_events"`
+	MergeRequestsEvents    bool      `json:"merge_requests_events"`
+	TagPushEvents          bool      `json:"tag_push_events"`
+	NoteEvents             bool      `json:"note_events"`
+	JobEvents              bool      `json:"job_events"`
+	PipelineEvents         bool      `json:"pipeline_events"`
+	WikiPageEvents         bool      `json:"wiki_page_events"`
+	DeploymentEvents       bool      `json:"deployment_events"`
+	ReleasesEvents         bool      `json:"releases_events"`
+	EnableSSLVerification  bool      `json:"enable_ssl_verification"`
+	CreatedAt              time.Time `json:"created_at"`
 }
 
 // APIDeployKey represents a deploy key
@@ -305,51 +305,51 @@ type APIDeployKey struct {
 
 // APIProjectMember represents a project member
 type APIProjectMember struct {
-	ID          int64     `json:"id"`
-	Username    string    `json:"username"`
-	Name        string    `json:"name"`
-	State       string    `json:"state"`
-	AvatarURL   string    `json:"avatar_url"`
-	WebURL      string    `json:"web_url"`
-	AccessLevel int       `json:"access_level"` // 10=guest, 20=reporter, 30=developer, 40=maintainer, 50=owner
-	ExpiresAt   *string   `json:"expires_at"`
+	ID          int64   `json:"id"`
+	Username    string  `json:"username"`
+	Name        string  `json:"name"`
+	State       string  `json:"state"`
+	AvatarURL   string  `json:"avatar_url"`
+	WebURL      string  `json:"web_url"`
+	AccessLevel int     `json:"access_level"` // 10=guest, 20=reporter, 30=developer, 40=maintainer, 50=owner
+	ExpiresAt   *string `json:"expires_at"`
 }
 
 // APIPipeline represents a CI/CD pipeline
 type APIPipeline struct {
-	ID        int64     `json:"id"`
-	IID       int64     `json:"iid"`
-	ProjectID int64     `json:"project_id"`
-	SHA       string    `json:"sha"`
-	Ref       string    `json:"ref"`
-	Status    string    `json:"status"` // created, waiting_for_resource, preparing, pending, running, success, failed, canceled, skipped, manual, scheduled
-	Source    string    `json:"source"` // push, web, trigger, schedule, api, external, pipeline, chat, etc
-	WebURL    string    `json:"web_url"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
-	StartedAt *time.Time `json:"started_at"`
+	ID         int64      `json:"id"`
+	IID        int64      `json:"iid"`
+	ProjectID  int64      `json:"project_id"`
+	SHA        string     `json:"sha"`
+	Ref        string     `json:"ref"`
+	Status     string     `json:"status"` // created, waiting_for_resource, preparing, pending, running, success, failed, canceled, skipped, manual, scheduled
+	Source     string     `json:"source"` // push, web, trigger, schedule, api, external, pipeline, chat, etc
+	WebURL     string     `json:"web_url"`
+	CreatedAt  time.Time  `json:"created_at"`
+	UpdatedAt  time.Time  `json:"updated_at"`
+	StartedAt  *time.Time `json:"started_at"`
 	FinishedAt *time.Time `json:"finished_at"`
-	Duration  *int       `json:"duration"` // seconds
-	User      APIUser   `json:"user"`
+	Duration   *int       `json:"duration"` // seconds
+	User       APIUser    `json:"user"`
 }
 
 // APIJob represents a CI/CD job
 type APIJob struct {
-	ID           int64         `json:"id"`
-	Name         string        `json:"name"`
-	Stage        string        `json:"stage"`
-	Status       string        `json:"status"`
-	Ref          string        `json:"ref"`
-	Tag          bool          `json:"tag"`
-	Coverage     *float64      `json:"coverage"`
-	AllowFailure bool          `json:"allow_failure"`
-	CreatedAt    time.Time     `json:"created_at"`
-	StartedAt    *time.Time    `json:"started_at"`
-	FinishedAt   *time.Time    `json:"finished_at"`
-	Duration     *float64      `json:"duration"`
-	User         APIUser       `json:"user"`
-	Pipeline     APIPipeline   `json:"pipeline"`
-	WebURL       string        `json:"web_url"`
+	ID           int64       `json:"id"`
+	Name         string      `json:"name"`
+	Stage        string      `json:"stage"`
+	Status       string      `json:"status"`
+	Ref          string      `json:"ref"`
+	Tag          bool        `json:"tag"`
+	Coverage     *float64    `json:"coverage"`
+	AllowFailure bool        `json:"allow_failure"`
+	CreatedAt    time.Time   `json:"created_at"`
+	StartedAt    *time.Time  `json:"started_at"`
+	FinishedAt   *time.Time  `json:"finished_at"`
+	Duration     *float64    `json:"duration"`
+	User         APIUser     `json:"user"`
+	Pipeline     APIPipeline `json:"pipeline"`
+	WebURL       string      `json:"web_url"`
 }
 
 // APIError represents a GitLab API error response

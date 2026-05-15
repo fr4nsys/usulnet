@@ -6,8 +6,6 @@
 package executor
 
 import (
-	"time"
-
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/api/types/filters"
@@ -85,20 +83,6 @@ func containerLogsOptionsFromParams(p protocol.CommandParams) container.LogsOpti
 	}
 
 	return opts
-}
-
-func containerExecConfigFromParams(p protocol.CommandParams) container.ExecOptions {
-	return container.ExecOptions{
-		Cmd:          p.Cmd,
-		Env:          p.Env,
-		WorkingDir:   p.WorkingDir,
-		User:         p.User,
-		Tty:          p.Tty,
-		AttachStdin:  p.AttachStdin,
-		AttachStdout: p.AttachStdout,
-		AttachStderr: p.AttachStderr,
-		Privileged:   p.Privileged,
-	}
 }
 
 // ============================================================================
@@ -286,16 +270,4 @@ func filtersFromMap(m map[string][]string) filters.Args {
 		}
 	}
 	return f
-}
-
-// ============================================================================
-// Time Helpers
-// ============================================================================
-
-func durationPtr(d time.Duration) *time.Duration {
-	return &d
-}
-
-func intPtr(i int) *int {
-	return &i
 }

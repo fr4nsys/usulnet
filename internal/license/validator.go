@@ -98,17 +98,21 @@ func (v *Validator) Validate(licenseKey string) (*Claims, error) {
 	return claims, nil
 }
 
-// ClaimsToInfo converts validated JWT claims into a runtime Info struct.
-// When the JWT does not contain an explicit features list, the full set
-// of features for the edition is used (AllBusinessFeatures or
-// AllEnterpriseFeatures). This ensures that a license JWT that relies on
-// the edition field alone still grants access to all edition features.
+// ClaimsToInfo converts validated JWT claims into a runtime Info
+// struct. The Edition tag and expiry from the token are preserved so
+// the UI can display the support tier and renewal date, but the
+// resolved Features and Limits always match the AGPL open contract
+// (every implemented feature, every cap at zero). A commercial token
+// grants additional rights to the same code base — not additional
+// runtime capability.
 func ClaimsToInfo(claims *Claims, instanceID string) *Info {
 	info := &Info{
 		Edition:    claims.Edition,
 		Valid:      true,
 		LicenseID:  claims.LicenseID,
 		InstanceID: instanceID,
+		Features:   AllFeatures(),
+		Limits:     OpenLimits(),
 	}
 
 	if claims.ExpiresAt != nil {
@@ -119,53 +123,5 @@ func ClaimsToInfo(claims *Claims, instanceID string) *Info {
 		}
 	}
 
-	// Build limits and resolve features from claims + edition defaults
-	switch claims.Edition {
-	case Business:
-		info.Limits = BusinessDefaultLimits()
-		// Purchased nodes (from JWT "nod") are added on top of the CE base
-		// so a customer who buys 3 nodes gets 3 + 1 (CE) = 4 total.
-		if claims.MaxNodes > 0 {
-			info.Limits.MaxNodes = claims.MaxNodes + CEBaseNodes
-		}
-		info.Limits.MaxUsers = claims.MaxUsers
-		info.Features = resolveFeatures(claims.Features, AllBusinessFeatures())
-	case Enterprise:
-		info.Limits = EnterpriseLimits()
-		info.Features = resolveFeatures(claims.Features, AllEnterpriseFeatures())
-	}
-
 	return info
-}
-
-// resolveFeatures returns the effective feature set for a license.
-// If the JWT provides an explicit feature list, the result is the union
-// of that list with the edition defaults — ensuring no edition feature
-// is accidentally omitted. If the JWT list is empty, the full edition
-// defaults are used.
-func resolveFeatures(jwtFeatures []Feature, editionDefaults []Feature) []Feature {
-	if len(jwtFeatures) == 0 {
-		return editionDefaults
-	}
-
-	// Build a set from edition defaults, then merge any JWT-explicit features
-	// that may not be in the defaults (forward-compatibility: a newer JWT
-	// could grant features not yet known to this binary's defaults).
-	seen := make(map[Feature]struct{}, len(editionDefaults)+len(jwtFeatures))
-	merged := make([]Feature, 0, len(editionDefaults)+len(jwtFeatures))
-
-	for _, f := range editionDefaults {
-		if _, ok := seen[f]; !ok {
-			seen[f] = struct{}{}
-			merged = append(merged, f)
-		}
-	}
-	for _, f := range jwtFeatures {
-		if _, ok := seen[f]; !ok {
-			seen[f] = struct{}{}
-			merged = append(merged, f)
-		}
-	}
-
-	return merged
 }

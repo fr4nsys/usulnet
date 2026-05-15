@@ -173,6 +173,13 @@ func (r *BackupRepository) List(ctx context.Context, opts models.BackupListOptio
 	argCount := 0
 
 	// Apply filters
+	if opts.HostID != nil {
+		argCount++
+		query += ` AND host_id = $` + strconv.Itoa(argCount)
+		countQuery += ` AND host_id = $` + strconv.Itoa(argCount)
+		args = append(args, *opts.HostID)
+	}
+
 	if opts.Type != nil {
 		argCount++
 		query += ` AND type = $` + strconv.Itoa(argCount)
@@ -576,7 +583,7 @@ func (r *BackupRepository) scanBackup(row scanner) (*models.Backup, error) {
 		&b.CreatedAt,
 	)
 	if err != nil {
-		if err == pgx.ErrNoRows {
+		if errors.Is(err, pgx.ErrNoRows) {
 			return nil, errors.NotFound("backup")
 		}
 		return nil, errors.Wrap(err, errors.CodeDatabaseError, "failed to scan backup")
@@ -634,7 +641,7 @@ func (r *BackupRepository) scanSchedule(row scanner) (*models.BackupSchedule, er
 		&s.UpdatedAt,
 	)
 	if err != nil {
-		if err == pgx.ErrNoRows {
+		if errors.Is(err, pgx.ErrNoRows) {
 			return nil, errors.NotFound("backup schedule")
 		}
 		return nil, errors.Wrap(err, errors.CodeDatabaseError, "failed to scan schedule")

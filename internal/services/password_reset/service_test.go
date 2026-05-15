@@ -163,8 +163,6 @@ func newTestService(t *testing.T) (*Service, *mockUserRepo, *mockResetRepo, *moc
 	return svc, userRepo, resetRepo, emailSender, audit
 }
 
-func ptrStr(s string) *string { return &s }
-
 func testUser() *models.User {
 	id := uuid.New()
 	email := "user@example.com"

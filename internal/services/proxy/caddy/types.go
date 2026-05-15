@@ -16,8 +16,8 @@ type CaddyConfig struct {
 
 // AdminConfig controls the admin API endpoint.
 type AdminConfig struct {
-	Listen  string `json:"listen,omitempty"`
-	Enforce bool   `json:"enforce_origin,omitempty"`
+	Listen  string   `json:"listen,omitempty"`
+	Enforce bool     `json:"enforce_origin,omitempty"`
 	Origins []string `json:"origins,omitempty"`
 }
 
@@ -35,14 +35,14 @@ type HTTPApp struct {
 
 // Server is an HTTP server within Caddy.
 type Server struct {
-	Listen            []string           `json:"listen,omitempty"`
-	Routes            []Route            `json:"routes,omitempty"`
-	AutomaticHTTPS    *AutoHTTPS         `json:"automatic_https,omitempty"`
+	Listen                []string        `json:"listen,omitempty"`
+	Routes                []Route         `json:"routes,omitempty"`
+	AutomaticHTTPS        *AutoHTTPS      `json:"automatic_https,omitempty"`
 	TLSConnectionPolicies []TLSConnPolicy `json:"tls_connection_policies,omitempty"`
-	Logs              *ServerLogs        `json:"logs,omitempty"`
+	Logs                  *ServerLogs     `json:"logs,omitempty"`
 }
 
-// AutoHTTPS controls automatic HTTPS behaviour.
+// AutoHTTPS controls automatic HTTPS behavior.
 type AutoHTTPS struct {
 	Disable          bool     `json:"disable,omitempty"`
 	DisableRedirects bool     `json:"disable_redirects,omitempty"`
@@ -52,10 +52,10 @@ type AutoHTTPS struct {
 
 // Route is a Caddy HTTP route.
 type Route struct {
-	ID       string           `json:"@id,omitempty"` // For scoped API access
-	Match    []MatchConfig    `json:"match,omitempty"`
+	ID       string            `json:"@id,omitempty"` // For scoped API access
+	Match    []MatchConfig     `json:"match,omitempty"`
 	Handle   []json.RawMessage `json:"handle,omitempty"`
-	Terminal bool             `json:"terminal,omitempty"`
+	Terminal bool              `json:"terminal,omitempty"`
 }
 
 // MatchConfig defines route matching rules.
@@ -74,12 +74,12 @@ type SubrouteHandler struct {
 
 // ReverseProxyHandler is the reverse_proxy handler.
 type ReverseProxyHandler struct {
-	Handler      string              `json:"handler"` // "reverse_proxy"
-	Upstreams    []Upstream          `json:"upstreams,omitempty"`
-	Transport    *HTTPTransport      `json:"transport,omitempty"`
-	Headers      *HeaderOps          `json:"headers,omitempty"`
-	HealthChecks *HealthChecks       `json:"health_checks,omitempty"`
-	FlushInterval json.Number        `json:"flush_interval,omitempty"` // -1 for WebSocket
+	Handler       string         `json:"handler"` // "reverse_proxy"
+	Upstreams     []Upstream     `json:"upstreams,omitempty"`
+	Transport     *HTTPTransport `json:"transport,omitempty"`
+	Headers       *HeaderOps     `json:"headers,omitempty"`
+	HealthChecks  *HealthChecks  `json:"health_checks,omitempty"`
+	FlushInterval json.Number    `json:"flush_interval,omitempty"` // -1 for WebSocket
 }
 
 // Upstream defines a backend upstream.
@@ -89,9 +89,9 @@ type Upstream struct {
 
 // HTTPTransport configures the transport to upstreams.
 type HTTPTransport struct {
-	Module    string    `json:"protocol"` // "http"
-	TLS       *UpstreamTLS `json:"tls,omitempty"`
-	Versions  []string  `json:"versions,omitempty"` // ["h2c", "2"]
+	Module   string       `json:"protocol"` // "http"
+	TLS      *UpstreamTLS `json:"tls,omitempty"`
+	Versions []string     `json:"versions,omitempty"` // ["h2c", "2"]
 }
 
 // UpstreamTLS configures TLS to the upstream.
@@ -133,7 +133,7 @@ type EncodeHandler struct {
 
 // HeadersHandler manipulates response/request headers.
 type HeadersHandler struct {
-	Handler  string       `json:"handler"` // "headers"
+	Handler  string          `json:"handler"` // "headers"
 	Response *HeaderFieldOps `json:"response,omitempty"`
 	Request  *HeaderFieldOps `json:"request,omitempty"`
 }
@@ -142,7 +142,7 @@ type HeadersHandler struct {
 
 // TLSApp is the tls app configuration.
 type TLSApp struct {
-	Automation *TLSAutomation `json:"automation,omitempty"`
+	Automation   *TLSAutomation   `json:"automation,omitempty"`
 	Certificates *TLSCertificates `json:"certificates,omitempty"`
 }
 
@@ -153,30 +153,30 @@ type TLSAutomation struct {
 
 // TLSAutomationPolicy defines how certificates are obtained for given subjects.
 type TLSAutomationPolicy struct {
-	Subjects []string     `json:"subjects,omitempty"`
-	Issuers  []TLSIssuer  `json:"issuers,omitempty"`
-	OnDemand bool         `json:"on_demand,omitempty"`
+	Subjects []string    `json:"subjects,omitempty"`
+	Issuers  []TLSIssuer `json:"issuers,omitempty"`
+	OnDemand bool        `json:"on_demand,omitempty"`
 }
 
 // TLSIssuer is a certificate issuer (ACME, internal, etc.).
 type TLSIssuer struct {
-	Module      string       `json:"module"`                    // "acme", "internal", "zerossl"
-	CA          string       `json:"ca,omitempty"`              // e.g. "https://acme-v02.api.letsencrypt.org/directory"
-	Email       string       `json:"email,omitempty"`
-	Challenges  *Challenges  `json:"challenges,omitempty"`
+	Module     string      `json:"module"`       // "acme", "internal", "zerossl"
+	CA         string      `json:"ca,omitempty"` // e.g. "https://acme-v02.api.letsencrypt.org/directory"
+	Email      string      `json:"email,omitempty"`
+	Challenges *Challenges `json:"challenges,omitempty"`
 }
 
 // Challenges configures ACME challenge types.
 type Challenges struct {
-	DNS *DNSChallenge `json:"dns,omitempty"`
+	DNS  *DNSChallenge  `json:"dns,omitempty"`
 	HTTP *HTTPChallenge `json:"http,omitempty"`
 }
 
 // DNSChallenge configures the DNS-01 ACME challenge.
 type DNSChallenge struct {
-	Provider   json.RawMessage `json:"provider,omitempty"`
-	Resolvers  []string        `json:"resolvers,omitempty"`
-	PropagationTimeout string  `json:"propagation_timeout,omitempty"` // e.g. "120s"
+	Provider           json.RawMessage `json:"provider,omitempty"`
+	Resolvers          []string        `json:"resolvers,omitempty"`
+	PropagationTimeout string          `json:"propagation_timeout,omitempty"` // e.g. "120s"
 }
 
 // HTTPChallenge configures the HTTP-01 ACME challenge.
@@ -196,13 +196,13 @@ type LoadPEMCert struct {
 	Tags        []string `json:"tags,omitempty"`
 }
 
-// TLSConnPolicy controls per-connection TLS behaviour.
+// TLSConnPolicy controls per-connection TLS behavior.
 type TLSConnPolicy struct {
-	Match          *TLSConnMatch `json:"match,omitempty"`
-	CertSelection  interface{}   `json:"certificate_selection,omitempty"`
-	ALPN           []string      `json:"alpn,omitempty"`
-	ProtocolMin    string        `json:"protocol_min,omitempty"`
-	ProtocolMax    string        `json:"protocol_max,omitempty"`
+	Match         *TLSConnMatch `json:"match,omitempty"`
+	CertSelection interface{}   `json:"certificate_selection,omitempty"`
+	ALPN          []string      `json:"alpn,omitempty"`
+	ProtocolMin   string        `json:"protocol_min,omitempty"`
+	ProtocolMax   string        `json:"protocol_max,omitempty"`
 }
 
 // TLSConnMatch matches TLS connections by SNI.
@@ -222,8 +222,8 @@ type LoggingConfig struct {
 
 // LogConfig defines a single logger.
 type LogConfig struct {
-	Writer  *LogWriter `json:"writer,omitempty"`
-	Level   string     `json:"level,omitempty"`
+	Writer  *LogWriter  `json:"writer,omitempty"`
+	Level   string      `json:"level,omitempty"`
 	Encoder *LogEncoder `json:"encoder,omitempty"`
 }
 
@@ -253,8 +253,8 @@ type StaticResponseHandler struct {
 
 // AuthenticationHandler provides HTTP authentication.
 type AuthenticationHandler struct {
-	Handler   string             `json:"handler"` // "authentication"
-	Providers *AuthProviders     `json:"providers,omitempty"`
+	Handler   string         `json:"handler"` // "authentication"
+	Providers *AuthProviders `json:"providers,omitempty"`
 }
 
 // AuthProviders holds authentication provider configs.

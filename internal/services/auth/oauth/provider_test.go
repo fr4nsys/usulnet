@@ -6,6 +6,7 @@ package oauth
 
 import (
 	"context"
+	"errors"
 	"strings"
 	"testing"
 
@@ -366,7 +367,7 @@ func TestGenericProvider_Exchange_DisabledProvider(t *testing.T) {
 	}
 
 	_, err = p.Exchange(context.Background(), "some-code")
-	if err != ErrProviderDisabled {
+	if !errors.Is(err, ErrProviderDisabled) {
 		t.Fatalf("expected ErrProviderDisabled, got %v", err)
 	}
 }
@@ -573,15 +574,15 @@ func TestGenericProvider_DetermineRole_AdminTakesPriority(t *testing.T) {
 
 func TestGenericProvider_DetermineRole_NoGroups(t *testing.T) {
 	cfg := Config{
-		Name:          "Test",
-		Type:          ProviderTypeGeneric,
-		ClientID:      "id",
-		ClientSecret:  "secret",
-		AuthURL:       "http://localhost/auth",
-		TokenURL:      "http://localhost/token",
-		RedirectURL:   "http://localhost/callback",
-		AdminGroup:    "admins",
-		DefaultRole:   models.RoleViewer,
+		Name:         "Test",
+		Type:         ProviderTypeGeneric,
+		ClientID:     "id",
+		ClientSecret: "secret",
+		AuthURL:      "http://localhost/auth",
+		TokenURL:     "http://localhost/token",
+		RedirectURL:  "http://localhost/callback",
+		AdminGroup:   "admins",
+		DefaultRole:  models.RoleViewer,
 	}
 
 	p, err := NewGenericProvider(cfg, nil)
@@ -607,9 +608,9 @@ func TestGenericProvider_ParseUserInfo_Complete(t *testing.T) {
 	data := map[string]interface{}{
 		"sub":                "user-123",
 		"preferred_username": "jdoe",
-		"email":             "jdoe@example.com",
-		"name":              "John Doe",
-		"groups":            []interface{}{"users", "admins"},
+		"email":              "jdoe@example.com",
+		"name":               "John Doe",
+		"groups":             []interface{}{"users", "admins"},
 	}
 
 	user, err := p.parseUserInfo(data)
@@ -648,7 +649,7 @@ func TestGenericProvider_ParseUserInfo_MissingUserID(t *testing.T) {
 	}
 
 	_, err := p.parseUserInfo(data)
-	if err != ErrMissingUserID {
+	if !errors.Is(err, ErrMissingUserID) {
 		t.Fatalf("expected ErrMissingUserID, got %v", err)
 	}
 }
@@ -842,9 +843,9 @@ type mockProvider struct {
 	enabled bool
 }
 
-func (m *mockProvider) GetName() string                                    { return m.name }
-func (m *mockProvider) IsEnabled() bool                                    { return m.enabled }
-func (m *mockProvider) GetAuthURL(state string) string                     { return "http://mock/auth?state=" + state }
+func (m *mockProvider) GetName() string                                     { return m.name }
+func (m *mockProvider) IsEnabled() bool                                     { return m.enabled }
+func (m *mockProvider) GetAuthURL(state string) string                      { return "http://mock/auth?state=" + state }
 func (m *mockProvider) Exchange(_ context.Context, _ string) (*User, error) { return nil, nil }
 
 func TestRegistry_RegisterAndGet(t *testing.T) {
@@ -866,7 +867,7 @@ func TestRegistry_Get_NotFound(t *testing.T) {
 	reg := NewRegistry(nil)
 
 	_, err := reg.Get("nonexistent")
-	if err != ErrProviderNotFound {
+	if !errors.Is(err, ErrProviderNotFound) {
 		t.Fatalf("expected ErrProviderNotFound, got %v", err)
 	}
 }
@@ -928,7 +929,7 @@ func TestRegistry_Remove(t *testing.T) {
 
 	// Verify it's gone
 	_, err = reg.Get("test")
-	if err != ErrProviderNotFound {
+	if !errors.Is(err, ErrProviderNotFound) {
 		t.Fatalf("expected ErrProviderNotFound after removal, got %v", err)
 	}
 }
@@ -940,7 +941,7 @@ func TestRegistry_Remove_CaseInsensitive(t *testing.T) {
 	reg.Remove("github")
 
 	_, err := reg.Get("github")
-	if err != ErrProviderNotFound {
+	if !errors.Is(err, ErrProviderNotFound) {
 		t.Fatalf("expected removal via case-insensitive name")
 	}
 }

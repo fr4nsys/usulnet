@@ -34,7 +34,7 @@ func (db *DB) WithTx(ctx context.Context, fn TxFn) error {
 	// Execute function
 	if err := fn(tx); err != nil {
 		if rbErr := tx.Rollback(ctx); rbErr != nil {
-			return fmt.Errorf("tx error: %v, rollback error: %w", err, rbErr)
+			return fmt.Errorf("tx error: %w, rollback error: %w", err, rbErr)
 		}
 		return err
 	}
@@ -63,7 +63,7 @@ func (db *DB) WithTxOptions(ctx context.Context, opts pgx.TxOptions, fn TxFn) er
 
 	if err := fn(tx); err != nil {
 		if rbErr := tx.Rollback(ctx); rbErr != nil {
-			return fmt.Errorf("tx error: %v, rollback error: %w", err, rbErr)
+			return fmt.Errorf("tx error: %w, rollback error: %w", err, rbErr)
 		}
 		return err
 	}

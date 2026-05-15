@@ -142,7 +142,7 @@ func TestCalculateNextRun_ReturnsCorrectNextTime(t *testing.T) {
 		t.Fatal("calculateNextRun(\"* * * * *\") = nil, want non-nil")
 	}
 
-	diff := result.Sub(time.Now())
+	diff := time.Until(*result)
 	if diff < 0 || diff > 61*time.Second {
 		t.Errorf("calculateNextRun(\"* * * * *\") returned time %v from now, want within 61 seconds", diff)
 	}
@@ -155,7 +155,7 @@ func TestCalculateNextRun_DailySchedule(t *testing.T) {
 		t.Fatal("calculateNextRun(\"0 2 * * *\") = nil, want non-nil")
 	}
 
-	diff := result.Sub(time.Now())
+	diff := time.Until(*result)
 	if diff < 0 || diff > 24*time.Hour+time.Minute {
 		t.Errorf("calculateNextRun(\"0 2 * * *\") returned time %v from now, want within 24 hours", diff)
 	}

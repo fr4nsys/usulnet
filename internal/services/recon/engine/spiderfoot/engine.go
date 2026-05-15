@@ -147,7 +147,7 @@ func (e *Engine) Start(ctx context.Context, req recon.EngineStartRequest) (strin
 // goroutine polls SpiderFoot on opts.PollInterval, de-duplicates by
 // event hash, maps each event through MapEventType, and pushes it to
 // the channel. The goroutine closes the channel when /scanstatus
-// reports a terminal status or ctx is cancelled.
+// reports a terminal status or ctx is canceled.
 func (e *Engine) Events(ctx context.Context, runID string) (<-chan recon.EngineEvent, error) {
 	if runID == "" {
 		return nil, errors.New("spiderfoot: empty run id")
@@ -178,7 +178,7 @@ func (e *Engine) streamEvents(ctx context.Context, runID string, ch chan<- recon
 	for {
 		select {
 		case <-ctx.Done():
-			log.Debug("spiderfoot: events context cancelled", "error", ctx.Err())
+			log.Debug("spiderfoot: events context canceled", "error", ctx.Err())
 			return
 		case <-ticker.C:
 			if done := e.pollOnce(ctx, runID, seen, ch, log); done {

@@ -8,8 +8,9 @@ import (
 	"context"
 	"time"
 
-	"github.com/fr4nsys/usulnet/internal/models"
 	"github.com/google/uuid"
+
+	"github.com/fr4nsys/usulnet/internal/models"
 )
 
 // Type aliases pointing to shared model types.
@@ -153,7 +154,11 @@ func (r *LifecycleRepository) TotalSpaceReclaimed(ctx context.Context) (int64, e
 	return total, err
 }
 
-func scanLifecycleHistory(rows interface{ Next() bool; Scan(...interface{}) error; Close() }) ([]*LifecycleHistoryEntry, error) {
+func scanLifecycleHistory(rows interface {
+	Next() bool
+	Scan(...interface{}) error
+	Close()
+}) ([]*LifecycleHistoryEntry, error) {
 	defer rows.Close()
 	var entries []*LifecycleHistoryEntry
 	for rows.Next() {

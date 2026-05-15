@@ -716,9 +716,9 @@ func (s *Implementation) ListScans(ctx context.Context, filter ListScansFilter) 
 	return scans, nil
 }
 
-// CancelScan flips a queued or running scan to cancelled. Terminal
-// scans (completed / failed / cancelled) return ErrScanInvalidState.
-// The engine is signalled to stop only if the scan was running and an
+// CancelScan flips a queued or running scan to canceled. Terminal
+// scans (completed / failed / canceled) return ErrScanInvalidState.
+// The engine is signaled to stop only if the scan was running and an
 // EngineRunID is recorded; engines that no longer know the run ID
 // simply ignore the call.
 func (s *Implementation) CancelScan(ctx context.Context, id uuid.UUID) error {
@@ -766,7 +766,7 @@ func (s *Implementation) CancelScan(ctx context.Context, id uuid.UUID) error {
 		Scan(scan.ID).
 		Build())
 
-	s.log.Info("scan cancelled",
+	s.log.Info("scan canceled",
 		"scan_id", scan.ID,
 		"target_id", scan.TargetID,
 		"engine", scan.Engine,
@@ -835,11 +835,11 @@ func (s *Implementation) GetScanSummary(ctx context.Context, scanID uuid.UUID) (
 //  5. Engine.Start → engineRunID, write engineRunID back to the row.
 //  6. Engine.Events → stream; per event:
 //     - build a Finding, hash the value, call Repository.UpsertFinding
-//       with the raw payload.
+//     with the raw payload.
 //     - bump counts in a local map keyed by Severity.
 //  7. On channel close: flip the scan to completed, write
 //     ScanSummary with the counts and a coarse Grade.
-//  8. On ctx.Done: try Engine.Cancel, flip the scan to cancelled.
+//  8. On ctx.Done: try Engine.Cancel, flip the scan to canceled.
 //
 // Failure surfaces from RunScan are recorded against the scan row by
 // the Service itself; the worker does NOT mutate the row. The
@@ -907,7 +907,7 @@ func (s *Implementation) RunScan(ctx context.Context, scanID uuid.UUID) error {
 		select {
 		case <-ctx.Done():
 			// Cooperative cancellation: signal the engine, persist the
-			// cancelled status, and return the context error. The
+			// canceled status, and return the context error. The
 			// caller (worker) records the cancellation against the job.
 			if cancelErr := engine.Cancel(context.Background(), runID); cancelErr != nil {
 				s.log.Warn("engine cancel during context cancel failed",
@@ -1021,15 +1021,15 @@ func (s *Implementation) completeScan(ctx context.Context, scan *Scan, target *T
 	return nil
 }
 
-// transitionScanCancelled writes a cancelled status row. The caller
-// already signalled the engine.
+// transitionScanCancelled writes a canceled status row. The caller
+// already signaled the engine.
 func (s *Implementation) transitionScanCancelled(ctx context.Context, scan *Scan) error {
 	now := s.clock.Now()
 	scan.Status = ScanCancelled
 	scan.FinishedAt = &now
 	scan.UpdatedAt = now
 	if err := s.repo.UpdateScan(ctx, scan); err != nil {
-		return fmt.Errorf("recon service: run scan: persist cancelled: %w", err)
+		return fmt.Errorf("recon service: run scan: persist canceled: %w", err)
 	}
 	return fmt.Errorf("recon service: run scan: %w", context.Canceled)
 }

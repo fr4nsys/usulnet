@@ -32,10 +32,10 @@ const (
 // ReportOptions holds options for report generation
 type ReportOptions struct {
 	Format          ReportFormat
-	IncludeDetails  bool // Include full issue details
-	IncludeTrends   bool // Include historical trends
-	GroupByCategory bool // Group issues by category
-	GroupBySeverity bool // Group issues by severity
+	IncludeDetails  bool                 // Include full issue details
+	IncludeTrends   bool                 // Include historical trends
+	GroupByCategory bool                 // Group issues by category
+	GroupBySeverity bool                 // Group issues by severity
 	MinSeverity     models.IssueSeverity // Minimum severity to include
 }
 
@@ -112,7 +112,7 @@ type ReportData struct {
 	GradeDistribution map[models.SecurityGrade]int `json:"grade_distribution"`
 
 	// Issue summary
-	TotalIssues   int                          `json:"total_issues"`
+	TotalIssues    int                          `json:"total_issues"`
 	SeverityCounts map[models.IssueSeverity]int `json:"severity_counts"`
 
 	// Container details

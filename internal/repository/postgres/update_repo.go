@@ -97,7 +97,7 @@ func (r *UpdateRepository) Get(ctx context.Context, id uuid.UUID) (*models.Updat
 	)
 
 	if err != nil {
-		if err == pgx.ErrNoRows {
+		if errors.Is(err, pgx.ErrNoRows) {
 			return nil, errors.New(errors.CodeNotFound, "update not found").
 				WithDetail("update_id", id.String())
 		}
@@ -373,7 +373,7 @@ func (r *UpdateRepository) GetLatestByTarget(ctx context.Context, hostID uuid.UU
 	)
 
 	if err != nil {
-		if err == pgx.ErrNoRows {
+		if errors.Is(err, pgx.ErrNoRows) {
 			return nil, nil
 		}
 		return nil, errors.Wrap(err, errors.CodeInternal, "failed to get latest update")
@@ -412,7 +412,7 @@ func (r *UpdateRepository) GetRollbackCandidate(ctx context.Context, hostID uuid
 	)
 
 	if err != nil {
-		if err == pgx.ErrNoRows {
+		if errors.Is(err, pgx.ErrNoRows) {
 			return nil, nil
 		}
 		return nil, errors.Wrap(err, errors.CodeInternal, "failed to get rollback candidate")
@@ -580,7 +580,7 @@ func (r *UpdateRepository) GetPolicy(ctx context.Context, id uuid.UUID) (*models
 	)
 
 	if err != nil {
-		if err == pgx.ErrNoRows {
+		if errors.Is(err, pgx.ErrNoRows) {
 			return nil, errors.New(errors.CodeNotFound, "update policy not found")
 		}
 		return nil, errors.Wrap(err, errors.CodeInternal, "failed to get update policy")
@@ -609,7 +609,7 @@ func (r *UpdateRepository) GetPolicyByTarget(ctx context.Context, hostID uuid.UU
 	)
 
 	if err != nil {
-		if err == pgx.ErrNoRows {
+		if errors.Is(err, pgx.ErrNoRows) {
 			return nil, nil
 		}
 		return nil, errors.Wrap(err, errors.CodeInternal, "failed to get update policy by target")
@@ -805,7 +805,7 @@ func (r *UpdateRepository) GetWebhookByToken(ctx context.Context, token string) 
 	)
 
 	if err != nil {
-		if err == pgx.ErrNoRows {
+		if errors.Is(err, pgx.ErrNoRows) {
 			return nil, errors.New(errors.CodeNotFound, "webhook not found")
 		}
 		return nil, errors.Wrap(err, errors.CodeInternal, "failed to get webhook")

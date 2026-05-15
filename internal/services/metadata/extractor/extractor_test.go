@@ -261,8 +261,8 @@ func TestNewDispatch_NilExifToolRejected(t *testing.T) {
 
 func TestIsOfficeMIME(t *testing.T) {
 	cases := map[string]bool{
-		"application/pdf":      false,
-		"application/msword":   true,
+		"application/pdf":          false,
+		"application/msword":       true,
 		"application/vnd.ms-excel": true,
 		"application/vnd.openxmlformats-officedocument.wordprocessingml.document": true,
 		"application/vnd.oasis.opendocument.text":                                 true,

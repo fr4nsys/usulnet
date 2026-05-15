@@ -1,0 +1,22 @@
+package sslobservatory
+
+templ Nav(active string) {
+	<div class="border-b border-dark-700 mb-6">
+		<nav class="flex gap-1 -mb-px overflow-x-auto">
+			@navTab("/ssl", "Dashboard", "fas fa-chart-bar", active == "dashboard")
+			@navTab("/ssl/targets", "Targets", "fas fa-crosshairs", active == "targets")
+		</nav>
+	</div>
+}
+
+templ navTab(href string, label string, icon string, isActive bool) {
+	<a
+		href={ templ.SafeURL(href) }
+		class={ "flex items-center gap-2 px-4 py-3 text-sm font-medium whitespace-nowrap border-b-2 transition-colors",
+			templ.KV("border-primary-500 text-primary-400", isActive),
+			templ.KV("border-transparent text-gray-400 hover:text-white hover:border-gray-600", !isActive) }
+	>
+		<i class={ icon }></i>
+		{ label }
+	</a>
+}

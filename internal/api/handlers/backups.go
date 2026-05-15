@@ -16,7 +16,6 @@ import (
 	"github.com/google/uuid"
 
 	"github.com/fr4nsys/usulnet/internal/api/middleware"
-	"github.com/fr4nsys/usulnet/internal/license"
 	"github.com/fr4nsys/usulnet/internal/models"
 	"github.com/fr4nsys/usulnet/internal/pkg/logger"
 	"github.com/fr4nsys/usulnet/internal/services/backup"
@@ -25,8 +24,7 @@ import (
 // BackupHandler handles backup-related HTTP requests.
 type BackupHandler struct {
 	BaseHandler
-	backupService   *backup.Service
-	licenseProvider middleware.LicenseProvider
+	backupService *backup.Service
 }
 
 // NewBackupHandler creates a new backup handler.
@@ -37,10 +35,9 @@ func NewBackupHandler(backupService *backup.Service, log *logger.Logger) *Backup
 	}
 }
 
-// SetLicenseProvider sets the license provider for limit enforcement.
-func (h *BackupHandler) SetLicenseProvider(provider middleware.LicenseProvider) {
-	h.licenseProvider = provider
-}
+// SetLicenseProvider is a no-op kept for callers that still wire the
+// legacy hook; backup limits are not enforced in the AGPL build.
+func (h *BackupHandler) SetLicenseProvider(_ middleware.LicenseProvider) {}
 
 // Routes returns the router for backup endpoints.
 func (h *BackupHandler) Routes() chi.Router {
@@ -82,23 +79,9 @@ func (h *BackupHandler) Routes() chi.Router {
 			})
 		})
 
-		// Schedule creation — operator+ with license limit
+		// Schedule creation — operator+
 		r.Group(func(r chi.Router) {
 			r.Use(middleware.RequireOperator)
-			if h.licenseProvider != nil {
-				r.Use(middleware.RequireLimit(
-					h.licenseProvider,
-					"backup schedules",
-					func(r *http.Request) int {
-						schedules, err := h.backupService.ListSchedules(r.Context(), nil)
-						if err != nil {
-							return 0
-						}
-						return len(schedules)
-					},
-					func(l license.Limits) int { return l.MaxBackupDestinations },
-				))
-			}
 			r.Post("/", h.CreateSchedule)
 		})
 	})

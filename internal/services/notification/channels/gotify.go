@@ -38,9 +38,9 @@ type GotifyConfig struct {
 
 // gotifyMessage is the Gotify API message payload.
 type gotifyMessage struct {
-	Title    string            `json:"title"`
-	Message  string            `json:"message"`
-	Priority int               `json:"priority"`
+	Title    string                 `json:"title"`
+	Message  string                 `json:"message"`
+	Priority int                    `json:"priority"`
 	Extras   map[string]interface{} `json:"extras,omitempty"`
 }
 

@@ -14,7 +14,6 @@ import (
 
 	apierrors "github.com/fr4nsys/usulnet/internal/api/errors"
 	"github.com/fr4nsys/usulnet/internal/api/middleware"
-	"github.com/fr4nsys/usulnet/internal/license"
 	"github.com/fr4nsys/usulnet/internal/models"
 	"github.com/fr4nsys/usulnet/internal/pkg/logger"
 	"github.com/fr4nsys/usulnet/internal/repository/postgres"
@@ -24,10 +23,9 @@ import (
 // SettingsHandler handles application settings endpoints.
 type SettingsHandler struct {
 	BaseHandler
-	configRepo      *postgres.ConfigVariableRepository
-	ldapConfigRepo  *postgres.LDAPConfigRepository
-	auditService    *audit.Service
-	licenseProvider middleware.LicenseProvider
+	configRepo     *postgres.ConfigVariableRepository
+	ldapConfigRepo *postgres.LDAPConfigRepository
+	auditService   *audit.Service
 }
 
 // NewSettingsHandler creates a new settings handler.
@@ -45,10 +43,9 @@ func NewSettingsHandler(
 	}
 }
 
-// SetLicenseProvider sets the license provider for feature gating.
-func (h *SettingsHandler) SetLicenseProvider(provider middleware.LicenseProvider) {
-	h.licenseProvider = provider
-}
+// SetLicenseProvider is a no-op kept for callers that still wire the
+// legacy hook; LDAP settings are unconditional in the AGPL build.
+func (h *SettingsHandler) SetLicenseProvider(_ middleware.LicenseProvider) {}
 
 // Routes returns the settings routes.
 func (h *SettingsHandler) Routes() chi.Router {
@@ -57,11 +54,7 @@ func (h *SettingsHandler) Routes() chi.Router {
 	r.Get("/", h.GetSettings)
 	r.Put("/", h.UpdateSettings)
 
-	// LDAP settings require FeatureLDAP (Business+)
 	r.Route("/ldap", func(r chi.Router) {
-		if h.licenseProvider != nil {
-			r.Use(middleware.RequireFeature(h.licenseProvider, license.FeatureLDAP))
-		}
 		r.Get("/", h.GetLDAPSettings)
 		r.Put("/", h.UpdateLDAPSettings)
 		r.Post("/test", h.TestLDAPConnection)
@@ -83,11 +76,11 @@ type SettingsResponse struct {
 
 // GeneralSettings represents general application settings.
 type GeneralSettings struct {
-	AppName     string `json:"app_name"`
-	AppURL      string `json:"app_url"`
-	SessionTTL  int    `json:"session_ttl_minutes"`
-	EnableSignup bool  `json:"enable_signup"`
-	DefaultRole string `json:"default_role"`
+	AppName      string `json:"app_name"`
+	AppURL       string `json:"app_url"`
+	SessionTTL   int    `json:"session_ttl_minutes"`
+	EnableSignup bool   `json:"enable_signup"`
+	DefaultRole  string `json:"default_role"`
 }
 
 // SecuritySettings represents security-related settings.
@@ -118,11 +111,11 @@ type UpdateSettingsRequest struct {
 
 // UpdateGeneralSettings represents updatable general settings.
 type UpdateGeneralSettings struct {
-	AppName     *string `json:"app_name,omitempty"`
-	AppURL      *string `json:"app_url,omitempty"`
-	SessionTTL  *int    `json:"session_ttl_minutes,omitempty"`
-	EnableSignup *bool  `json:"enable_signup,omitempty"`
-	DefaultRole *string `json:"default_role,omitempty"`
+	AppName      *string `json:"app_name,omitempty"`
+	AppURL       *string `json:"app_url,omitempty"`
+	SessionTTL   *int    `json:"session_ttl_minutes,omitempty"`
+	EnableSignup *bool   `json:"enable_signup,omitempty"`
+	DefaultRole  *string `json:"default_role,omitempty"`
 }
 
 // UpdateSecuritySettings represents updatable security settings.
@@ -226,11 +219,11 @@ type TestLDAPResponse struct {
 func defaultSettings() SettingsResponse {
 	return SettingsResponse{
 		General: GeneralSettings{
-			AppName:     "usulnet",
-			AppURL:      "",
-			SessionTTL:  1440, // 24 hours
+			AppName:      "usulnet",
+			AppURL:       "",
+			SessionTTL:   1440, // 24 hours
 			EnableSignup: false,
-			DefaultRole: "viewer",
+			DefaultRole:  "viewer",
 		},
 		Security: SecuritySettings{
 			PasswordMinLength: 8,
@@ -244,7 +237,7 @@ func defaultSettings() SettingsResponse {
 		UI: UISettings{
 			Theme:            "system",
 			ItemsPerPage:     20,
-			DateFormat:        "YYYY-MM-DD HH:mm:ss",
+			DateFormat:       "YYYY-MM-DD HH:mm:ss",
 			EnableAnimations: true,
 		},
 	}

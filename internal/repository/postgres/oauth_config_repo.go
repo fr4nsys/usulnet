@@ -138,7 +138,7 @@ func (r *OAuthConfigRepository) GetByID(ctx context.Context, id uuid.UUID) (*mod
 	)
 
 	if err != nil {
-		if err == pgx.ErrNoRows {
+		if errors.Is(err, pgx.ErrNoRows) {
 			return nil, errors.New(errors.CodeNotFound, "OAuth config not found")
 		}
 		return nil, errors.Wrap(err, errors.CodeDatabaseError, "failed to get OAuth config")
@@ -171,7 +171,7 @@ func (r *OAuthConfigRepository) GetByName(ctx context.Context, name string) (*mo
 	)
 
 	if err != nil {
-		if err == pgx.ErrNoRows {
+		if errors.Is(err, pgx.ErrNoRows) {
 			return nil, errors.New(errors.CodeNotFound, "OAuth config not found")
 		}
 		return nil, errors.Wrap(err, errors.CodeDatabaseError, "failed to get OAuth config")

@@ -1,0 +1,104 @@
+package sslobservatory
+
+import (
+	"github.com/fr4nsys/usulnet/internal/web/templates/layouts"
+)
+
+type NewTargetData struct {
+	PageData layouts.PageData
+	Error    string
+}
+
+templ NewTarget(data NewTargetData) {
+	@layouts.Base(data.PageData) {
+		<div class="space-y-6">
+			@Nav("targets")
+
+			<div class="max-w-3xl">
+				<div class="flex items-center gap-3 mb-6">
+					<a href="/ssl/targets" class="text-gray-400 hover:text-white">
+						<i class="fas fa-arrow-left"></i>
+					</a>
+					<h2 class="text-xl font-display font-bold text-white">New SSL Target</h2>
+				</div>
+
+				if data.Error != "" {
+					<div class="bg-red-500/10 border border-red-500/20 rounded-lg p-4 mb-4">
+						<p class="text-red-400 text-sm">{ data.Error }</p>
+					</div>
+				}
+
+				<form method="POST" action="/ssl/targets" class="space-y-4">
+					<input type="hidden" name="csrf_token" value={ data.PageData.CSRFToken }/>
+
+					<div>
+						<label class="block text-sm font-medium text-gray-300 mb-1">Name</label>
+						<input
+							type="text"
+							name="name"
+							placeholder="My Website"
+							required
+							class="w-full bg-dark-800 border border-dark-600 text-white rounded-lg px-3 py-2 focus:ring-2 focus:ring-accent-500 focus:border-transparent"
+						/>
+					</div>
+
+					<div>
+						<label class="block text-sm font-medium text-gray-300 mb-1">Hostname</label>
+						<input
+							type="text"
+							name="hostname"
+							placeholder="example.com"
+							required
+							class="w-full bg-dark-800 border border-dark-600 text-white font-mono rounded-lg px-3 py-2 focus:ring-2 focus:ring-accent-500 focus:border-transparent"
+						/>
+					</div>
+
+					<div>
+						<label class="block text-sm font-medium text-gray-300 mb-1">Port</label>
+						<input
+							type="number"
+							name="port"
+							value="443"
+							min="1"
+							max="65535"
+							class="w-full bg-dark-800 border border-dark-600 text-white font-mono rounded-lg px-3 py-2 focus:ring-2 focus:ring-accent-500 focus:border-transparent"
+						/>
+					</div>
+
+					<div>
+						<label class="block text-sm font-medium text-gray-300 mb-1">
+							Extra SNI Hostnames
+							<span class="text-xs text-gray-500 ml-1">(comma or newline separated; one cert scanned per hostname)</span>
+						</label>
+						<textarea
+							name="extra_hostnames"
+							rows="3"
+							placeholder="www.example.com&#10;api.example.com"
+							class="w-full bg-dark-800 border border-dark-600 text-white font-mono rounded-lg px-3 py-2 focus:ring-2 focus:ring-accent-500 focus:border-transparent"
+						></textarea>
+					</div>
+
+					<div>
+						<label class="block text-sm font-medium text-gray-300 mb-1">
+							Alert Thresholds (days)
+							<span class="text-xs text-gray-500 ml-1">(blank = defaults 30,14,7,3,1)</span>
+						</label>
+						<input
+							type="text"
+							name="alert_thresholds"
+							placeholder="30,14,7,3,1"
+							class="w-full bg-dark-800 border border-dark-600 text-white font-mono rounded-lg px-3 py-2 focus:ring-2 focus:ring-accent-500 focus:border-transparent"
+						/>
+					</div>
+
+					<div class="flex gap-2 pt-4">
+						<button type="submit" class="btn btn-primary">
+							<i class="fas fa-plus mr-1"></i> Create Target
+						</button>
+						<a href="/ssl/targets" class="btn btn-secondary">Cancel</a>
+					</div>
+				</form>
+			</div>
+		</div>
+	}
+}

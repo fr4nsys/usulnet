@@ -1,0 +1,278 @@
+// SPDX-License-Identifier: AGPL-3.0-or-later
+// Copyright (c) 2024-2026 usulnet contributors
+// https://github.com/fr4nsys/usulnet
+
+package dockerconfig
+
+import (
+	"strings"
+
+	"github.com/fr4nsys/usulnet/internal/web/templates/layouts"
+)
+
+// Editor renders the Docker daemon.json editor page.
+//
+// The page hosts a Monaco diff editor (left = on-disk daemon.json,
+// right = the operator's working copy). The Apply button POSTs the
+// right-hand text to /config/docker/apply; the response is rendered
+// inline as either a success banner ("Applied: <fields>") or a forced
+// rollback banner ("Daemon failed to reload — rolled back to snapshot
+// <id>").
+templ Editor(data EditorData) {
+	@layouts.Base(data.PageData) {
+		<div class="space-y-6">
+			<!-- Header -->
+			<div class="flex items-center justify-between flex-wrap gap-4">
+				<div>
+					<h1 class="text-2xl font-display font-bold text-white">Docker Engine Configuration</h1>
+					<p class="text-gray-400 mt-1">Edit <code class="text-xs px-1.5 py-0.5 bg-dark-700 rounded">{ data.ConfigPath }</code> with safe-apply &amp; rollback (timeout { data.ReloadTimeout })</p>
+				</div>
+				<div class="flex items-center gap-2">
+					<a href="/config/docker/history" class="btn-secondary text-sm">
+						<i class="fas fa-history mr-1"></i>History
+					</a>
+				</div>
+			</div>
+
+			if data.UnavailableMsg != "" {
+				<div class="bg-yellow-500/10 border border-yellow-500/20 rounded-lg p-4">
+					<p class="text-yellow-400 text-sm">{ data.UnavailableMsg }</p>
+					<p class="text-yellow-300/80 text-xs mt-2">For containerised installs, mount the host's <code>/etc/docker</code> into the usulnet container as <code>:rw</code>.</p>
+				</div>
+			} else {
+				if data.Flash.Type != "" {
+					@FlashBanner(data.Flash)
+				}
+				if data.LastApplied != nil {
+					@AppliedBanner(*data.LastApplied)
+				}
+
+				<!-- Editor + side panel -->
+				<div class="grid grid-cols-1 lg:grid-cols-4 gap-4">
+					<div class="lg:col-span-3 card overflow-hidden">
+						<div class="px-4 py-2 bg-dark-800 border-b border-dark-600 flex items-center justify-between">
+							<div class="flex items-center gap-2 text-xs text-gray-400">
+								<span class="px-2 py-0.5 rounded bg-blue-500/10 text-blue-300">on-disk</span>
+								<span>vs</span>
+								<span class="px-2 py-0.5 rounded bg-primary-500/10 text-primary-400">working copy</span>
+							</div>
+							<div class="flex items-center gap-2">
+								<button type="button" id="btn-format" class="text-xs btn-ghost">
+									<i class="fas fa-magic mr-1"></i>Format
+								</button>
+								<button type="button" id="btn-revert" class="text-xs btn-ghost">
+									<i class="fas fa-undo mr-1"></i>Revert
+								</button>
+								<button type="button" id="btn-apply" class="btn-primary text-sm" data-rollback-warning="If the daemon does not return healthy within { data.ReloadTimeout } usulnet will roll back automatically.">
+									<i class="fas fa-bolt mr-1"></i>Apply
+								</button>
+							</div>
+						</div>
+						<div id="monaco-diff" data-original={ data.RawJSON } class="w-full" style="height: 60vh"></div>
+					</div>
+
+					<div class="space-y-3">
+						<div class="card p-4">
+							<h3 class="text-sm font-semibold text-white mb-2">Safety</h3>
+							<ul class="text-xs text-gray-400 space-y-2">
+								<li class="flex items-start gap-2">
+									<i class="fas fa-check text-green-400 mt-0.5"></i>
+									<span>Atomic write (temp + fsync + rename)</span>
+								</li>
+								<li class="flex items-start gap-2">
+									<i class="fas fa-check text-green-400 mt-0.5"></i>
+									<span>Snapshot before write</span>
+								</li>
+								<li class="flex items-start gap-2">
+									<i class="fas fa-check text-green-400 mt-0.5"></i>
+									<span>{ data.ReloadTimeout } hard reload timeout</span>
+								</li>
+								<li class="flex items-start gap-2">
+									<i class="fas fa-check text-green-400 mt-0.5"></i>
+									<span>Automatic rollback on reload failure</span>
+								</li>
+							</ul>
+						</div>
+
+						<div class="card p-4">
+							<h3 class="text-sm font-semibold text-white mb-2">Recent snapshots</h3>
+							if len(data.Snapshots) == 0 {
+								<p class="text-xs text-gray-500">No snapshots yet — first apply will create one.</p>
+							} else {
+								<ul class="space-y-2">
+									for i, snap := range data.Snapshots {
+										if i < 5 {
+											<li class="text-xs flex items-center justify-between gap-2">
+												<a href={ templ.SafeURL("/config/docker/history#" + snap.ID) } class="text-gray-300 hover:text-primary-400 truncate">
+													<i class="fas fa-clock text-gray-500 mr-1"></i>{ snap.Timestamp }
+												</a>
+												<span class="text-gray-500 whitespace-nowrap">{ snap.Size }</span>
+											</li>
+										}
+									}
+								</ul>
+								<a href="/config/docker/history" class="text-xs text-primary-400 hover:underline mt-3 inline-block">View all <i class="fas fa-arrow-right text-[10px] ml-0.5"></i></a>
+							}
+						</div>
+					</div>
+				</div>
+			}
+		</div>
+
+		<!-- Monaco loader -->
+		<script src="/static/vendor/monaco-editor/min/vs/loader.js"></script>
+		<script>
+		(function() {
+			var container = document.getElementById('monaco-diff');
+			if (!container) return;
+			var originalText = container.dataset.original || "{}";
+
+			require.config({ paths: { vs: '/static/vendor/monaco-editor/min/vs' } });
+			require(['vs/editor/editor.main'], function() {
+				monaco.editor.defineTheme('usulnet-dark', {
+					base: 'vs-dark',
+					inherit: true,
+					rules: [
+						{ token: '', foreground: 'e6edf3', background: '0d1117' },
+					],
+					colors: {
+						'editor.background': '#0d1117',
+						'editorLineNumber.foreground': '#484f58',
+						'editorLineNumber.activeForeground': '#e6edf3',
+						'diffEditor.insertedTextBackground': '#22863a22',
+						'diffEditor.removedTextBackground': '#cb242122',
+					}
+				});
+
+				var origModel = monaco.editor.createModel(originalText, 'json');
+				var workModel = monaco.editor.createModel(originalText, 'json');
+
+				var diffEditor = monaco.editor.createDiffEditor(container, {
+					theme: 'usulnet-dark',
+					automaticLayout: true,
+					originalEditable: false,
+					readOnly: false,
+					renderSideBySide: true,
+					fontSize: 13,
+					fontFamily: "'IBM Plex Mono', monospace",
+					minimap: { enabled: false },
+				});
+				diffEditor.setModel({ original: origModel, modified: workModel });
+
+				document.getElementById('btn-revert').addEventListener('click', function() {
+					workModel.setValue(originalText);
+				});
+
+				document.getElementById('btn-format').addEventListener('click', function() {
+					try {
+						var parsed = JSON.parse(workModel.getValue());
+						workModel.setValue(JSON.stringify(parsed, null, 2));
+					} catch (e) {
+						alert('Cannot format: invalid JSON: ' + e.message);
+					}
+				});
+
+				document.getElementById('btn-apply').addEventListener('click', function() {
+					var msg = this.dataset.rollbackWarning || '';
+					if (!confirm('Apply changes to /etc/docker/daemon.json?\n\n' + msg)) return;
+
+					var btn = this;
+					btn.disabled = true;
+					btn.innerHTML = '<i class="fas fa-circle-notch fa-spin mr-1"></i>Applying...';
+
+					var csrf = document.querySelector('meta[name="csrf-token"]');
+					var headers = { 'Content-Type': 'application/x-www-form-urlencoded' };
+					if (csrf) headers['X-CSRF-Token'] = csrf.content;
+
+					var body = new URLSearchParams();
+					body.set('raw', workModel.getValue());
+					if (csrf) body.set('csrf_token', csrf.content);
+
+					fetch('/config/docker/apply', {
+						method: 'POST',
+						headers: headers,
+						body: body.toString(),
+					}).then(function(resp) {
+						// Replace the page with the server-rendered response
+						// so the apply / rollback banner is shown inline.
+						window.location.href = '/config/docker';
+					}).catch(function(err) {
+						alert('Apply failed: ' + err);
+						btn.disabled = false;
+						btn.innerHTML = '<i class="fas fa-bolt mr-1"></i>Apply';
+					});
+				});
+			});
+		})();
+		</script>
+	}
+}
+
+// FlashBanner renders a coloured banner for the page-level flash
+// message persisted across the redirect after an apply.
+templ FlashBanner(f FlashMessage) {
+	<div class={ "rounded-lg p-4 border", flashClasses(f.Type) }>
+		<p class="text-sm">{ f.Message }</p>
+	</div>
+}
+
+// AppliedBanner renders the structured result of the last apply,
+// including the rollback indicator the spec calls out.
+templ AppliedBanner(a AppliedView) {
+	if a.RolledBack {
+		<div class="rounded-lg p-4 border bg-red-500/10 border-red-500/20">
+			<div class="flex items-start gap-3">
+				<i class="fas fa-undo text-red-400 mt-0.5"></i>
+				<div class="flex-1 min-w-0">
+					<p class="text-sm font-medium text-red-300">Rollback fired</p>
+					<p class="text-xs text-red-200/80 mt-1">The daemon did not return healthy after reload — daemon.json was restored to snapshot <code>{ a.SnapshotID }</code>.</p>
+					if a.RollbackError != "" {
+						<p class="text-xs text-red-200/80 mt-1">Rollback note: { a.RollbackError }</p>
+					}
+				</div>
+			</div>
+		</div>
+	} else if a.Reloaded {
+		<div class="rounded-lg p-4 border bg-green-500/10 border-green-500/20">
+			<div class="flex items-start gap-3">
+				<i class="fas fa-check text-green-400 mt-0.5"></i>
+				<div class="flex-1 min-w-0">
+					<p class="text-sm font-medium text-green-300">Applied — daemon reloaded</p>
+					<p class="text-xs text-green-200/80 mt-1">Snapshot: <code>{ a.SnapshotID }</code> · Mode: <code>{ a.ApplyMode }</code></p>
+					if len(a.ChangedFields) > 0 {
+						<p class="text-xs text-green-200/80 mt-1">Changed: { strings.Join(a.ChangedFields, ", ") }</p>
+					}
+				</div>
+			</div>
+		</div>
+	} else {
+		<div class="rounded-lg p-4 border bg-blue-500/10 border-blue-500/20">
+			<div class="flex items-start gap-3">
+				<i class="fas fa-info-circle text-blue-400 mt-0.5"></i>
+				<div class="flex-1 min-w-0">
+					<p class="text-sm font-medium text-blue-300">Applied — { a.ApplyMode } required</p>
+					if a.Warning != "" {
+						<p class="text-xs text-blue-200/80 mt-1">{ a.Warning }</p>
+					}
+					if a.SnapshotID != "" {
+						<p class="text-xs text-blue-200/80 mt-1">Snapshot: <code>{ a.SnapshotID }</code></p>
+					}
+				</div>
+			</div>
+		</div>
+	}
+}
+
+// flashClasses maps the flash type to the banner palette.
+func flashClasses(t string) string {
+	switch t {
+	case "success":
+		return "bg-green-500/10 border-green-500/20 text-green-300"
+	case "warning":
+		return "bg-yellow-500/10 border-yellow-500/20 text-yellow-300"
+	case "error":
+		return "bg-red-500/10 border-red-500/20 text-red-300"
+	default:
+		return "bg-dark-700 border-dark-600 text-gray-300"
+	}
+}

@@ -87,7 +87,9 @@ func (r *DatabaseConnectionRepository) GetByID(ctx context.Context, id uuid.UUID
 	}
 
 	if len(optionsJSON) > 0 {
-		json.Unmarshal(optionsJSON, &conn.Options)
+		if err := json.Unmarshal(optionsJSON, &conn.Options); err != nil {
+			return nil, errors.Wrap(err, errors.CodeDatabaseError, "unmarshal options")
+		}
 	}
 
 	return &conn, nil
@@ -121,7 +123,9 @@ func (r *DatabaseConnectionRepository) ListByUser(ctx context.Context, userID uu
 			return nil, errors.Wrap(err, errors.CodeDatabaseError, "failed to scan database connection")
 		}
 		if len(optionsJSON) > 0 {
-			json.Unmarshal(optionsJSON, &conn.Options)
+			if err := json.Unmarshal(optionsJSON, &conn.Options); err != nil {
+				return nil, errors.Wrap(err, errors.CodeDatabaseError, "unmarshal options")
+			}
 		}
 		conns = append(conns, &conn)
 	}

@@ -5,10 +5,10 @@
 package update
 
 import (
-	"sort"
-	"fmt"
 	"context"
+	"fmt"
 	"regexp"
+	"sort"
 	"strings"
 	"sync"
 	"time"
@@ -24,13 +24,13 @@ import (
 type RegistryClient interface {
 	// GetLatestVersion gets the latest version info for an image
 	GetLatestVersion(ctx context.Context, ref *models.ImageRef) (*models.ImageVersion, error)
-	
+
 	// GetDigest gets the digest for a specific tag
 	GetDigest(ctx context.Context, ref *models.ImageRef) (string, error)
-	
+
 	// ListTags lists available tags for an image
 	ListTags(ctx context.Context, ref *models.ImageRef, limit int) ([]string, error)
-	
+
 	// SupportsRegistry returns true if this client supports the given registry
 	SupportsRegistry(registry string) bool
 }
@@ -46,16 +46,16 @@ type VersionCache interface {
 type CheckerConfig struct {
 	// CacheTTL is how long to cache version information
 	CacheTTL time.Duration
-	
+
 	// CheckTimeout is the timeout for checking a single image
 	CheckTimeout time.Duration
-	
+
 	// MaxConcurrent is the maximum number of concurrent checks
 	MaxConcurrent int
-	
+
 	// IncludePrerelease includes prerelease versions in checks
 	IncludePrerelease bool
-	
+
 	// SkipLocalImages skips images that appear to be locally built
 	SkipLocalImages bool
 }
@@ -73,11 +73,11 @@ func DefaultCheckerConfig() *CheckerConfig {
 
 // Checker checks for available updates
 type Checker struct {
-	config    *CheckerConfig
-	clients   []RegistryClient
-	cache     VersionCache
-	logger    *logger.Logger
-	
+	config  *CheckerConfig
+	clients []RegistryClient
+	cache   VersionCache
+	logger  *logger.Logger
+
 	// Concurrency control
 	semaphore chan struct{}
 }
@@ -87,12 +87,12 @@ func NewChecker(config *CheckerConfig, cache VersionCache, log *logger.Logger) *
 	if config == nil {
 		config = DefaultCheckerConfig()
 	}
-	
+
 	maxConcurrent := config.MaxConcurrent
 	if maxConcurrent <= 0 {
 		maxConcurrent = 5
 	}
-	
+
 	return &Checker{
 		config:    config,
 		clients:   make([]RegistryClient, 0),
@@ -176,35 +176,35 @@ func (c *Checker) CheckContainers(ctx context.Context, containers []ContainerInf
 		Updates:         make([]models.AvailableUpdate, 0),
 		SkippedImages:   make([]string, 0),
 	}
-	
+
 	var wg sync.WaitGroup
 	var mu sync.Mutex
-	
+
 	for _, container := range containers {
 		wg.Add(1)
 		go func(ct ContainerInfo) {
 			defer wg.Done()
-			
+
 			update, err := c.CheckContainer(ctx, ct.ID, ct.Name, ct.Image, ct.Digest)
-			
+
 			mu.Lock()
 			defer mu.Unlock()
-			
+
 			if err != nil {
 				result.Errors++
 				result.SkippedImages = append(result.SkippedImages, ct.Image)
 				return
 			}
-			
+
 			result.CheckedCount++
-			
+
 			if update != nil && update.NeedsUpdate() {
 				result.UpdatesAvailable++
 				result.Updates = append(result.Updates, *update)
 			}
 		}(container)
 	}
-	
+
 	wg.Wait()
 	return result, nil
 }
@@ -259,17 +259,17 @@ func isLocalImage(ref *models.ImageRef) bool {
 	if ref.Registry == "" && ref.Namespace == "" {
 		return true
 	}
-	
+
 	// localhost or local registry
 	if strings.HasPrefix(ref.Registry, "localhost") || strings.HasPrefix(ref.Registry, "127.0.0.1") {
 		return true
 	}
-	
+
 	// SHA256 digest without tag often means local build
 	if ref.Tag == "" && ref.Digest != "" && strings.HasPrefix(ref.Digest, "sha256:") {
 		return true
 	}
-	
+
 	return false
 }
 
@@ -291,10 +291,10 @@ var (
 	// Regex patterns for parsing image references
 	digestRegex = regexp.MustCompile(`@(sha256:[a-fA-F0-9]{64})$`)
 	tagRegex    = regexp.MustCompile(`:([^:@/]+)$`)
-	
+
 	// Semver-like pattern for detecting version tags
 	semverRegex = regexp.MustCompile(`^v?(\d+)\.(\d+)\.(\d+)(-[a-zA-Z0-9.-]+)?(\+[a-zA-Z0-9.-]+)?$`)
-	
+
 	// Pattern for prerelease tags
 	prereleaseRegex = regexp.MustCompile(`(?i)(alpha|beta|rc|dev|preview|snapshot|nightly|canary)`)
 )
@@ -304,30 +304,30 @@ func ParseImageRef(image string) (*models.ImageRef, error) {
 	if image == "" {
 		return nil, errors.New(errors.CodeInvalidInput, "empty image reference")
 	}
-	
+
 	ref := &models.ImageRef{}
 	remaining := image
-	
+
 	// Extract digest if present
 	if matches := digestRegex.FindStringSubmatch(remaining); len(matches) > 1 {
 		ref.Digest = matches[1]
 		remaining = strings.TrimSuffix(remaining, "@"+matches[1])
 	}
-	
+
 	// Extract tag if present
 	if matches := tagRegex.FindStringSubmatch(remaining); len(matches) > 1 {
 		ref.Tag = matches[1]
 		remaining = strings.TrimSuffix(remaining, ":"+matches[1])
 	}
-	
+
 	// Default tag to "latest" if no tag or digest
 	if ref.Tag == "" && ref.Digest == "" {
 		ref.Tag = "latest"
 	}
-	
+
 	// Parse registry/namespace/repository
 	parts := strings.Split(remaining, "/")
-	
+
 	switch len(parts) {
 	case 1:
 		// Just repository name (e.g., "nginx")
@@ -335,7 +335,7 @@ func ParseImageRef(image string) (*models.ImageRef, error) {
 		ref.Registry = RegistryDockerHub
 		ref.Namespace = "library"
 		ref.Repository = parts[0]
-		
+
 	case 2:
 		// namespace/repository or registry/repository
 		if isRegistry(parts[0]) {
@@ -346,20 +346,20 @@ func ParseImageRef(image string) (*models.ImageRef, error) {
 			ref.Namespace = parts[0]
 			ref.Repository = parts[1]
 		}
-		
+
 	case 3:
 		// registry/namespace/repository
 		ref.Registry = normalizeRegistry(parts[0])
 		ref.Namespace = parts[1]
 		ref.Repository = parts[2]
-		
+
 	default:
 		// registry/namespace/.../repository
 		ref.Registry = normalizeRegistry(parts[0])
 		ref.Namespace = strings.Join(parts[1:len(parts)-1], "/")
 		ref.Repository = parts[len(parts)-1]
 	}
-	
+
 	return ref, nil
 }
 
@@ -369,7 +369,7 @@ func isRegistry(s string) bool {
 	if strings.Contains(s, ".") || strings.Contains(s, ":") {
 		return true
 	}
-	
+
 	// Known registries without dots
 	knownRegistries := []string{"localhost"}
 	for _, r := range knownRegistries {
@@ -377,7 +377,7 @@ func isRegistry(s string) bool {
 			return true
 		}
 	}
-	
+
 	return false
 }
 
@@ -396,12 +396,12 @@ func IsPrerelease(tag string) bool {
 	if prereleaseRegex.MatchString(tag) {
 		return true
 	}
-	
+
 	// Check semver prerelease suffix
 	if matches := semverRegex.FindStringSubmatch(tag); len(matches) > 4 && matches[4] != "" {
 		return true
 	}
-	
+
 	return false
 }
 
@@ -416,10 +416,10 @@ func CompareSemver(a, b string) int {
 	// Strip 'v' prefix
 	a = strings.TrimPrefix(a, "v")
 	b = strings.TrimPrefix(b, "v")
-	
+
 	aParts := parseSemverParts(a)
 	bParts := parseSemverParts(b)
-	
+
 	// Compare major.minor.patch
 	for i := 0; i < 3; i++ {
 		if aParts[i] < bParts[i] {
@@ -429,7 +429,7 @@ func CompareSemver(a, b string) int {
 			return 1
 		}
 	}
-	
+
 	// Equal base versions
 	return 0
 }
@@ -437,19 +437,19 @@ func CompareSemver(a, b string) int {
 // parseSemverParts extracts major, minor, patch from semver
 func parseSemverParts(version string) [3]int {
 	var parts [3]int
-	
+
 	// Remove prerelease/build metadata
 	if idx := strings.IndexAny(version, "-+"); idx != -1 {
 		version = version[:idx]
 	}
-	
+
 	segments := strings.Split(version, ".")
 	for i := 0; i < len(segments) && i < 3; i++ {
 		var num int
 		fmt.Sscanf(segments[i], "%d", &num)
 		parts[i] = num
 	}
-	
+
 	return parts
 }
 
@@ -463,13 +463,13 @@ func ExtractSourceRepo(labels map[string]string) string {
 		"source",
 		"vcs-url",
 	}
-	
+
 	for _, key := range keys {
 		if url, ok := labels[key]; ok && url != "" {
 			return url
 		}
 	}
-	
+
 	return ""
 }
 
@@ -483,8 +483,8 @@ const maxVersionCacheSize = 1000
 
 // MemoryVersionCache is an in-memory cache for version information with LRU eviction.
 type MemoryVersionCache struct {
-	cache  map[string]*cacheEntry
-	mu     sync.RWMutex
+	cache   map[string]*cacheEntry
+	mu      sync.RWMutex
 	maxSize int
 }
 
@@ -514,17 +514,17 @@ func (c *MemoryVersionCache) cacheKey(image, tag string) string {
 func (c *MemoryVersionCache) Get(ctx context.Context, image, tag string) (*models.ImageVersion, bool) {
 	c.mu.RLock()
 	defer c.mu.RUnlock()
-	
+
 	key := c.cacheKey(image, tag)
 	entry, ok := c.cache[key]
 	if !ok {
 		return nil, false
 	}
-	
+
 	if time.Now().After(entry.expiresAt) {
 		return nil, false
 	}
-	
+
 	return entry.version, true
 }
 
@@ -570,7 +570,7 @@ func (c *MemoryVersionCache) evictOldest() {
 func (c *MemoryVersionCache) Delete(ctx context.Context, image, tag string) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
-	
+
 	key := c.cacheKey(image, tag)
 	delete(c.cache, key)
 }
@@ -579,7 +579,7 @@ func (c *MemoryVersionCache) Delete(ctx context.Context, image, tag string) {
 func (c *MemoryVersionCache) cleanup() {
 	ticker := time.NewTicker(10 * time.Minute)
 	defer ticker.Stop()
-	
+
 	for range ticker.C {
 		c.mu.Lock()
 		now := time.Now()
@@ -664,31 +664,31 @@ func ShouldSkipImage(image string, skipPatterns []string) bool {
 // FilterUpdates filters available updates based on criteria
 func FilterUpdates(updates []models.AvailableUpdate, includePrerelease bool) []models.AvailableUpdate {
 	filtered := make([]models.AvailableUpdate, 0, len(updates))
-	
+
 	for _, update := range updates {
 		// Skip prereleases if not included
 		if !includePrerelease && update.IsPrerelease {
 			continue
 		}
-		
+
 		// Only include if actually needs update
 		if update.NeedsUpdate() {
 			filtered = append(filtered, update)
 		}
 	}
-	
+
 	return filtered
 }
 
 // GroupUpdatesByHost groups updates by host ID
 func GroupUpdatesByHost(updates []models.AvailableUpdate, getHostID func(containerID string) uuid.UUID) map[uuid.UUID][]models.AvailableUpdate {
 	grouped := make(map[uuid.UUID][]models.AvailableUpdate)
-	
+
 	for _, update := range updates {
 		hostID := getHostID(update.ContainerID)
 		grouped[hostID] = append(grouped[hostID], update)
 	}
-	
+
 	return grouped
 }
 
@@ -715,17 +715,4 @@ func sortTagsBySemver(tags []string) []string {
 	})
 
 	return sorted
-}
-
-// isNumeric checks if a string contains only digits
-func isNumeric(s string) bool {
-	if s == "" {
-		return false
-	}
-	for _, c := range s {
-		if c < '0' || c > '9' {
-			return false
-		}
-	}
-	return true
 }

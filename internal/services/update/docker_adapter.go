@@ -164,4 +164,3 @@ func (a *DockerClientAdapter) ImageInspect(ctx context.Context, imageID string) 
 		Labels:      details.Labels,
 	}, nil
 }
-

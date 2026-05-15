@@ -232,12 +232,29 @@ CLI ergonomics targets:
 A new top-level section **Privacy & Recon** in the sidebar (hidden when the feature flag is off). Pages:
 
 - `/recon/dashboard` — recent scans, exposure summary, top findings.
+
+  ![Recon dashboard](screenshots/recon-dashboard.png)
+
 - `/recon/targets` — CRUD for targets, ownership verification flow.
+
+  ![Recon — ownership verification](screenshots/recon-ownership.png)
+
 - `/recon/scans` — scan list, live progress, cancel.
 - `/recon/scans/:id` — findings table, filterable by module/severity, raw payload viewer.
+
+  ![Recon — scan results](screenshots/recon-results.png)
+
 - `/recon/metadata` — drag-drop file → preview metadata → optional strip + download.
+
+  ![Metadata strip flow](screenshots/metadata-strip.png)
+
 - `/recon/connectors` — manage optional API keys (HIBP, Shodan, …) with the existing encrypted-secret pattern.
+
+  ![HIBP connector](screenshots/recon-hibp.png)
+
 - `/recon/reports` — generated PDF/CSV exports.
+
+  ![Recon PDF report](screenshots/recon-report-pdf.png)
 
 All pages follow the existing Templ + HTMX + Alpine pattern; no new frontend frameworks introduced. Charts reuse the vendored Chart.js bundle.
 

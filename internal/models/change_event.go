@@ -81,11 +81,11 @@ type ChangeEventListOptions struct {
 
 // ChangeEventStats aggregates change event counts.
 type ChangeEventStats struct {
-	TotalEvents   int            `json:"total_events"`
-	TodayEvents   int            `json:"today_events"`
-	TopUsers      []ChangeUserStat   `json:"top_users"`
-	ByAction      map[string]int `json:"by_action"`
-	ByResource    map[string]int `json:"by_resource"`
+	TotalEvents int              `json:"total_events"`
+	TodayEvents int              `json:"today_events"`
+	TopUsers    []ChangeUserStat `json:"top_users"`
+	ByAction    map[string]int   `json:"by_action"`
+	ByResource  map[string]int   `json:"by_resource"`
 }
 
 // ChangeUserStat is a user's change count for the stats panel.

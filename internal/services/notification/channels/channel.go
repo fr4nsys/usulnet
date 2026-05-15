@@ -117,10 +117,10 @@ const (
 	TypeCVEDetected      NotificationType = "cve_detected"
 
 	// Update notifications
-	TypeUpdateAvailable NotificationType = "update_available"
-	TypeUpdateStarted   NotificationType = "update_started"
-	TypeUpdateCompleted NotificationType = "update_completed"
-	TypeUpdateFailed    NotificationType = "update_failed"
+	TypeUpdateAvailable  NotificationType = "update_available"
+	TypeUpdateStarted    NotificationType = "update_started"
+	TypeUpdateCompleted  NotificationType = "update_completed"
+	TypeUpdateFailed     NotificationType = "update_failed"
 	TypeUpdateRolledBack NotificationType = "update_rolled_back"
 
 	// Backup notifications
@@ -135,18 +135,18 @@ const (
 	TypeHealthCheckFailed  NotificationType = "healthcheck_failed"
 
 	// Host notifications
-	TypeHostOffline     NotificationType = "host_offline"
-	TypeHostOnline      NotificationType = "host_online"
-	TypeHostHighLoad    NotificationType = "host_high_load"
-	TypeHostLowDisk     NotificationType = "host_low_disk"
+	TypeHostOffline       NotificationType = "host_offline"
+	TypeHostOnline        NotificationType = "host_online"
+	TypeHostHighLoad      NotificationType = "host_high_load"
+	TypeHostLowDisk       NotificationType = "host_low_disk"
 	TypeAgentDisconnected NotificationType = "agent_disconnected"
 
 	// System notifications
-	TypeSystemError   NotificationType = "system_error"
-	TypeSystemInfo    NotificationType = "system_info"
-	TypeLicenseExpiry NotificationType = "license_expiry"
+	TypeSystemError    NotificationType = "system_error"
+	TypeSystemInfo     NotificationType = "system_info"
+	TypeLicenseExpiry  NotificationType = "license_expiry"
 	TypeLicenseExpired NotificationType = "license_expired"
-	TypeTestMessage   NotificationType = "test_message"
+	TypeTestMessage    NotificationType = "test_message"
 
 	// Resource notifications
 	TypeResourceThreshold NotificationType = "resource_threshold"
@@ -180,13 +180,13 @@ func (t NotificationType) Category() string {
 func (t NotificationType) DefaultPriority() Priority {
 	switch t {
 	case TypeSecurityAlert, TypeCVEDetected, TypeContainerDown, TypeHostOffline,
-		TypeUpdateFailed, TypeBackupFailed, TypeRestoreFailed, TypeHealthCheckFailed, 
+		TypeUpdateFailed, TypeBackupFailed, TypeRestoreFailed, TypeHealthCheckFailed,
 		TypeSystemError, TypeLicenseExpired:
 		return PriorityCritical
 	case TypeUpdateRolledBack, TypeContainerOOM, TypeHostHighLoad, TypeHostLowDisk,
 		TypeAgentDisconnected, TypeLicenseExpiry, TypeResourceThreshold:
 		return PriorityHigh
-	case TypeUpdateAvailable, TypeBackupCompleted, TypeSecurityScanDone, 
+	case TypeUpdateAvailable, TypeBackupCompleted, TypeSecurityScanDone,
 		TypeRestoreCompleted:
 		return PriorityNormal
 	default:

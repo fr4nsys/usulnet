@@ -7,6 +7,7 @@ package web
 import (
 	"bytes"
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"net"
@@ -402,7 +403,7 @@ func (h *Handler) WSRDPExec(w http.ResponseWriter, r *http.Request) {
 					ws.WriteMessage(websocket.TextMessage, pending)
 					wsMu.Unlock()
 				}
-				if err != io.EOF {
+				if !errors.Is(err, io.EOF) {
 					h.logger.Debug("RDP guacd read ended", "error", err)
 				}
 				return

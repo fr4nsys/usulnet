@@ -6,6 +6,7 @@ package docker
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"time"
 
@@ -50,7 +51,7 @@ func (c *Client) GetEvents(ctx context.Context, since time.Time) ([]DockerEvent,
 			}
 			events = append(events, convertDockerEvent(msg))
 		case err := <-errCh:
-			if err != nil && err != context.DeadlineExceeded {
+			if err != nil && !errors.Is(err, context.DeadlineExceeded) {
 				return events, err
 			}
 			return events, nil

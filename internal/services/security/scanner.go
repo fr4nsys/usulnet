@@ -108,23 +108,23 @@ func (s *Scanner) IsTrivyAvailable() bool {
 // ScanResult holds the result of a security scan
 type ScanResult struct {
 	// Scan metadata
-	ID            uuid.UUID     `json:"id"`
-	ContainerID   string        `json:"container_id"`
-	ContainerName string        `json:"container_name"`
-	Image         string        `json:"image"`
-	HostID        uuid.UUID     `json:"host_id"`
+	ID            uuid.UUID `json:"id"`
+	ContainerID   string    `json:"container_id"`
+	ContainerName string    `json:"container_name"`
+	Image         string    `json:"image"`
+	HostID        uuid.UUID `json:"host_id"`
 
 	// Score and grade
 	Score int                  `json:"score"`
 	Grade models.SecurityGrade `json:"grade"`
 
 	// Issues found
-	Issues       []Issue `json:"issues"`
-	IssueCount   int     `json:"issue_count"`
-	CriticalCount int    `json:"critical_count"`
-	HighCount    int     `json:"high_count"`
-	MediumCount  int     `json:"medium_count"`
-	LowCount     int     `json:"low_count"`
+	Issues        []Issue `json:"issues"`
+	IssueCount    int     `json:"issue_count"`
+	CriticalCount int     `json:"critical_count"`
+	HighCount     int     `json:"high_count"`
+	MediumCount   int     `json:"medium_count"`
+	LowCount      int     `json:"low_count"`
 
 	// CVE information (if scanned)
 	CVECount   int  `json:"cve_count"`
@@ -269,7 +269,7 @@ func (s *Scanner) ScanContainers(ctx context.Context, containers []types.Contain
 			sem <- struct{}{}
 			defer func() { <-sem }()
 
-			// Check if context cancelled
+			// Check if context canceled
 			select {
 			case <-ctx.Done():
 				errs[idx] = ctx.Err()

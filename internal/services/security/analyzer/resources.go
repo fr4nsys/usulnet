@@ -69,26 +69,26 @@ func (a *ResourcesAnalyzer) Analyze(ctx context.Context, data *security.Containe
 	// Check individual limits
 	if !hasMemoryLimit {
 		issues = append(issues, security.Issue{
-			CheckID:     models.CheckResourceLimits,
-			Severity:    models.IssueSeverityMedium,
-			Category:    models.IssueCategoryReliability,
-			Title:       "No Memory Limit",
-			Description: "Container has no memory limit configured. A memory leak or spike could affect other workloads.",
+			CheckID:        models.CheckResourceLimits,
+			Severity:       models.IssueSeverityMedium,
+			Category:       models.IssueCategoryReliability,
+			Title:          "No Memory Limit",
+			Description:    "Container has no memory limit configured. A memory leak or spike could affect other workloads.",
 			Recommendation: "Set a memory limit appropriate for your workload using mem_limit in compose or --memory flag.",
-			FixCommand:  "docker update --memory 512m " + data.Name,
-			Penalty:     5,
+			FixCommand:     "docker update --memory 512m " + data.Name,
+			Penalty:        5,
 		}.WithDetail("container", data.Name))
 	} else {
 		// Check if memory limit is very low
 		if data.MemoryLimit < a.MinMemoryRecommended {
 			issues = append(issues, security.Issue{
-				CheckID:     models.CheckResourceLimits,
-				Severity:    models.IssueSeverityLow,
-				Category:    models.IssueCategoryPerformance,
-				Title:       "Very Low Memory Limit",
-				Description: fmt.Sprintf("Memory limit (%s) is very low and may cause OOM kills.", formatBytes(data.MemoryLimit)),
+				CheckID:        models.CheckResourceLimits,
+				Severity:       models.IssueSeverityLow,
+				Category:       models.IssueCategoryPerformance,
+				Title:          "Very Low Memory Limit",
+				Description:    fmt.Sprintf("Memory limit (%s) is very low and may cause OOM kills.", formatBytes(data.MemoryLimit)),
 				Recommendation: "Ensure the memory limit is appropriate for your application's needs.",
-				Penalty:     2,
+				Penalty:        2,
 			}.WithDetail("memory_limit_bytes", data.MemoryLimit).
 				WithDetail("memory_limit_human", formatBytes(data.MemoryLimit)))
 		}
@@ -96,13 +96,13 @@ func (a *ResourcesAnalyzer) Analyze(ctx context.Context, data *security.Containe
 		// Check if memory limit is very high (potential misconfiguration)
 		if data.MemoryLimit > a.MaxMemoryWarning {
 			issues = append(issues, security.Issue{
-				CheckID:     models.CheckResourceLimits,
-				Severity:    models.IssueSeverityInfo,
-				Category:    models.IssueCategoryPerformance,
-				Title:       "Very High Memory Limit",
-				Description: fmt.Sprintf("Memory limit (%s) is very high. Verify this is intentional.", formatBytes(data.MemoryLimit)),
+				CheckID:        models.CheckResourceLimits,
+				Severity:       models.IssueSeverityInfo,
+				Category:       models.IssueCategoryPerformance,
+				Title:          "Very High Memory Limit",
+				Description:    fmt.Sprintf("Memory limit (%s) is very high. Verify this is intentional.", formatBytes(data.MemoryLimit)),
 				Recommendation: "Review if this high memory limit is actually needed.",
-				Penalty:     1,
+				Penalty:        1,
 			}.WithDetail("memory_limit_bytes", data.MemoryLimit).
 				WithDetail("memory_limit_human", formatBytes(data.MemoryLimit)))
 		}
@@ -110,28 +110,28 @@ func (a *ResourcesAnalyzer) Analyze(ctx context.Context, data *security.Containe
 
 	if !hasCPULimit {
 		issues = append(issues, security.Issue{
-			CheckID:     models.CheckResourceLimits,
-			Severity:    models.IssueSeverityLow,
-			Category:    models.IssueCategoryReliability,
-			Title:       "No CPU Limit",
-			Description: "Container has no CPU limit configured. A CPU-intensive process could starve other workloads.",
+			CheckID:        models.CheckResourceLimits,
+			Severity:       models.IssueSeverityLow,
+			Category:       models.IssueCategoryReliability,
+			Title:          "No CPU Limit",
+			Description:    "Container has no CPU limit configured. A CPU-intensive process could starve other workloads.",
 			Recommendation: "Set a CPU limit using cpus in compose or --cpus flag.",
-			FixCommand:  "docker update --cpus 1.0 " + data.Name,
-			Penalty:     3,
+			FixCommand:     "docker update --cpus 1.0 " + data.Name,
+			Penalty:        3,
 		}.WithDetail("container", data.Name))
 	}
 
 	// Check for PIDs limit
 	if data.PidsLimit == 0 {
 		issues = append(issues, security.Issue{
-			CheckID:     models.CheckResourceLimits,
-			Severity:    models.IssueSeverityLow,
-			Category:    models.IssueCategoryReliability,
-			Title:       "No PIDs Limit",
-			Description: "Container has no PIDs limit. A fork bomb could exhaust process table entries.",
+			CheckID:        models.CheckResourceLimits,
+			Severity:       models.IssueSeverityLow,
+			Category:       models.IssueCategoryReliability,
+			Title:          "No PIDs Limit",
+			Description:    "Container has no PIDs limit. A fork bomb could exhaust process table entries.",
 			Recommendation: "Set a PIDs limit to prevent fork bomb attacks.",
-			FixCommand:  "docker update --pids-limit 200 " + data.Name,
-			Penalty:     2,
+			FixCommand:     "docker update --pids-limit 200 " + data.Name,
+			Penalty:        2,
 		}.WithDetail("container", data.Name))
 	}
 

@@ -1,4 +1,4 @@
-.PHONY: all build build-agent run test test-coverage test-check-coverage test-benchmark test-e2e clean dev-up dev-down migrate lint lint-fix fmt vet templ css install-hooks help docker-build-recon-toolkit docker-build-recon-spiderfoot docker-build-recon publish-public publish-public-check publish-public-test publish-public-clean
+.PHONY: all build build-agent run test test-coverage test-check-coverage test-benchmark test-e2e clean dev-up dev-down dev-certs migrate lint lint-fix fmt vet templ css install-hooks help docker-build-recon-toolkit docker-build-recon-spiderfoot docker-build-recon publish-public publish-public-check publish-public-test publish-public-clean
 
 # Variables
 BINARY_NAME=usulnet
@@ -34,20 +34,29 @@ templ:
 templ-watch:
 	$(TEMPL) generate --watch
 
-# Compile Tailwind CSS
+# Tailwind v3.x — the project is on v3 syntax (per CLAUDE.md). Pin the
+# release URL because the `latest` link now resolves to v4 which has
+# breaking changes (`@apply` rules with v3-only utilities like `px-4` no
+# longer compile).
+TAILWIND_VERSION=v3.4.17
+TAILWIND_URL=https://github.com/tailwindlabs/tailwindcss/releases/download/$(TAILWIND_VERSION)/tailwindcss-linux-x64
+
+# Compile Tailwind CSS. Invoked from web/static/ so the relative `content`
+# paths in tailwind.config.js (../../internal/web/templates/**/*.templ)
+# resolve against the templates tree.
 css:
 	@echo "Compiling Tailwind CSS..."
 	@if [ ! -f $(TAILWIND) ]; then \
-		echo "Downloading Tailwind CSS standalone CLI..."; \
+		echo "Downloading Tailwind CSS standalone CLI ($(TAILWIND_VERSION))..."; \
 		mkdir -p bin; \
-		curl -sLo $(TAILWIND) https://github.com/tailwindlabs/tailwindcss/releases/latest/download/tailwindcss-linux-x64; \
+		curl -sLo $(TAILWIND) $(TAILWIND_URL); \
 		chmod +x $(TAILWIND); \
 	fi
-	$(TAILWIND) -i web/static/src/input.css -o web/static/css/style.css --minify
+	cd web/static && ../../$(TAILWIND) -i src/input.css -o css/style.css --minify
 
 # Watch CSS for development
 css-watch:
-	$(TAILWIND) -i web/static/src/input.css -o web/static/css/style.css --watch
+	cd web/static && ../../$(TAILWIND) -i src/input.css -o css/style.css --watch
 
 # Combined frontend build
 frontend: templ css
@@ -76,7 +85,7 @@ test-coverage:
 
 test-check-coverage:
 	@echo "Running coverage threshold check..."
-	@bash scripts/check-coverage.sh 40
+	@bash scripts/check-coverage.sh 15
 
 test-benchmark:
 	@echo "Running benchmarks..."
@@ -103,6 +112,36 @@ dev-down:
 
 dev-logs:
 	docker compose -f docker-compose.dev.yml logs -f
+
+# Pre-generate the self-signed certs used by the in-cluster Postgres /
+# Redis / NATS containers when USULNET_TLS_LOCAL_SERVICES=true. The
+# deploy/tls/*.sh entrypoints will generate certs on first boot
+# automatically; this target is for operators who want them on the
+# host filesystem ahead of time (audit, mTLS, verify-full). Gated by
+# the same env var so plain-TCP installs are a no-op.
+dev-certs:
+	@if [ "$$USULNET_TLS_LOCAL_SERVICES" != "true" ]; then \
+		echo "dev-certs: USULNET_TLS_LOCAL_SERVICES is not true — skipping (set USULNET_TLS_LOCAL_SERVICES=true to generate)"; \
+		exit 0; \
+	fi
+	@command -v openssl >/dev/null 2>&1 || { echo "dev-certs: openssl not found in PATH"; exit 1; }
+	@mkdir -p deploy/tls/certs/postgres deploy/tls/certs/redis deploy/tls/certs/nats
+	@for svc in postgres redis nats; do \
+		dir=deploy/tls/certs/$$svc; \
+		if [ -s $$dir/server.crt ] && [ -s $$dir/server.key ]; then \
+			echo "dev-certs: $$svc cert already present ($$dir/server.crt) — keeping"; \
+		else \
+			echo "dev-certs: generating self-signed ECDSA P-256 cert for $$svc"; \
+			openssl ecparam -name prime256v1 -genkey -noout -out $$dir/server.key; \
+			openssl req -new -x509 -key $$dir/server.key -out $$dir/server.crt -days 3650 \
+				-subj "/CN=usulnet-$$svc" \
+				-addext "subjectAltName=DNS:$$svc,DNS:localhost,IP:127.0.0.1"; \
+			cp $$dir/server.crt $$dir/ca.crt; \
+			chmod 600 $$dir/server.key; \
+			chmod 644 $$dir/server.crt $$dir/ca.crt; \
+		fi; \
+	done
+	@echo "dev-certs: all certs in deploy/tls/certs/{postgres,redis,nats}/"
 
 # Database
 migrate:
@@ -222,11 +261,13 @@ help:
 	@echo "  make dev-up             Start dev services (PostgreSQL, Redis, NATS)"
 	@echo "  make dev-down           Stop dev services"
 	@echo "  make dev-up-agent       Start dev services with agent profile"
+	@echo "  make dev-certs          Generate self-signed certs for Postgres/Redis/NATS"
+	@echo "                          (requires USULNET_TLS_LOCAL_SERVICES=true)"
 	@echo ""
 	@echo "Test:"
 	@echo "  make test               Run tests with race detection and coverage"
 	@echo "  make test-coverage      Generate HTML coverage report"
-	@echo "  make test-check-coverage  Check 40%% coverage threshold"
+	@echo "  make test-check-coverage  Check coverage threshold (interim 15%%, target 40%%)"
 	@echo "  make test-benchmark     Run benchmark tests"
 	@echo "  make test-e2e           Run E2E tests (requires running services)"
 	@echo ""

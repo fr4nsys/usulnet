@@ -1,0 +1,27 @@
+// SPDX-License-Identifier: AGPL-3.0-or-later
+// Copyright (c) 2024-2026 usulnet contributors
+// https://github.com/fr4nsys/usulnet
+
+package wireguard
+
+templ Nav(active string) {
+	<div class="border-b border-dark-700 mb-6">
+		<nav class="flex gap-1 -mb-px overflow-x-auto">
+			@navTab("/wireguard", "Interfaces", "fas fa-network-wired", active == "interfaces")
+			@navTab("/wireguard/peers", "Peers", "fas fa-users", active == "peers")
+			@navTab("/wireguard/mesh", "Mesh", "fas fa-project-diagram", active == "mesh")
+		</nav>
+	</div>
+}
+
+templ navTab(href string, label string, icon string, isActive bool) {
+	<a
+		href={ templ.SafeURL(href) }
+		class={ "flex items-center gap-2 px-4 py-3 text-sm font-medium whitespace-nowrap border-b-2 transition-colors",
+			templ.KV("border-primary-500 text-primary-400", isActive),
+			templ.KV("border-transparent text-gray-400 hover:text-white hover:border-gray-600", !isActive) }
+	>
+		<i class={ icon }></i>
+		{ label }
+	</a>
+}

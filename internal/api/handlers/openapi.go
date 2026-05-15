@@ -47,7 +47,7 @@ func (h *OpenAPIHandler) buildSpec() map[string]any {
 		"servers": []map[string]any{
 			{"url": "/api/v1", "description": "API v1"},
 		},
-		"tags": h.buildTags(),
+		"tags":  h.buildTags(),
 		"paths": h.buildPaths(),
 		"components": map[string]any{
 			"securitySchemes": map[string]any{
@@ -949,7 +949,7 @@ func (h *OpenAPIHandler) buildSchemas() map[string]any {
 		"LicenseInfo": map[string]any{
 			"type": "object",
 			"properties": map[string]any{
-				"edition":      map[string]any{"type": "string", "enum": []string{"ce", "biz", "ee"}},
+				"edition":      map[string]any{"type": "string", "description": "Support-tier tag carried on the optional commercial token; the AGPL build never gates on this value."},
 				"edition_name": map[string]any{"type": "string"},
 				"valid":        map[string]any{"type": "boolean"},
 				"license_id":   map[string]any{"type": "string"},

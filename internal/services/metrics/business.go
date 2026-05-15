@@ -29,8 +29,11 @@ type BusinessMetrics struct {
 	ContainersByState map[string]int            // state -> count (running, stopped, paused, etc.)
 	ContainersByHost  map[string]map[string]int // hostID -> state -> count
 	ImagesWithVulns   map[string]int            // severity -> count (critical, high, medium, low)
-	LicenseType       string                    // "community", "business", "enterprise"
-	LicenseDaysLeft   int                       // -1 if no license
+	// LicenseType labels the optional commercial support tier reported
+	// to Prometheus. It is purely informational — the AGPL build runs
+	// every feature regardless of the value.
+	LicenseType     string
+	LicenseDaysLeft int // -1 if no license
 
 	// Counters - monotonically increasing
 	BackupsTotal       map[string]int64 // status -> count ("success", "failure")
@@ -50,7 +53,7 @@ type durationTracker struct {
 	sum   float64
 }
 
-// NewBusinessMetrics creates a new business metrics collector with initialised maps.
+// NewBusinessMetrics creates a new business metrics collector with initialized maps.
 func NewBusinessMetrics() *BusinessMetrics {
 	return &BusinessMetrics{
 		ContainersByState:  make(map[string]int),

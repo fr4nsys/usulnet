@@ -31,8 +31,6 @@ func NewHostRepository(db *sqlx.DB) *HostRepository {
 	return &HostRepository{db: db}
 }
 
-
-
 // GetByAgentToken finds a host by validating the agent token against stored hash.
 func (r *HostRepository) GetByAgentToken(ctx context.Context, token string) (*models.HostInfo, error) {
 	query := `
@@ -148,7 +146,7 @@ func (r *HostRepository) GetByID(ctx context.Context, id uuid.UUID) (*models.Hos
 
 	var host models.Host
 	if err := r.db.GetContext(ctx, &host, query, id); err != nil {
-		if err == sql.ErrNoRows {
+		if errors.Is(err, sql.ErrNoRows) {
 			return nil, errors.NotFound("host")
 		}
 		return nil, errors.Wrap(err, errors.CodeInternal, "failed to get host")
@@ -170,7 +168,7 @@ func (r *HostRepository) GetByName(ctx context.Context, name string) (*models.Ho
 
 	var host models.Host
 	if err := r.db.GetContext(ctx, &host, query, name); err != nil {
-		if err == sql.ErrNoRows {
+		if errors.Is(err, sql.ErrNoRows) {
 			return nil, errors.NotFound("host")
 		}
 		return nil, errors.Wrap(err, errors.CodeInternal, "failed to get host by name")
@@ -237,19 +235,19 @@ func (r *HostRepository) List(ctx context.Context, filter HostFilter) ([]*models
 // Create creates a new host.
 func (r *HostRepository) Create(ctx context.Context, input *models.CreateHostInput) (*models.Host, error) {
 	host := &models.Host{
-		ID:           uuid.New(),
-		Name:         input.Name,
-		DisplayName:  input.DisplayName,
-		EndpointType: input.EndpointType,
-		EndpointURL:  input.EndpointURL,
-		TLSEnabled:   input.TLSEnabled,
-		TLSCACert:    input.TLSCACert,
+		ID:            uuid.New(),
+		Name:          input.Name,
+		DisplayName:   input.DisplayName,
+		EndpointType:  input.EndpointType,
+		EndpointURL:   input.EndpointURL,
+		TLSEnabled:    input.TLSEnabled,
+		TLSCACert:     input.TLSCACert,
 		TLSClientCert: input.TLSClientCert,
-		TLSClientKey: input.TLSClientKey,
-		Status:       models.HostStatusUnknown,
-		Labels:       models.JSONStringMap(input.Labels),
-		CreatedAt:    time.Now().UTC(),
-		UpdatedAt:    time.Now().UTC(),
+		TLSClientKey:  input.TLSClientKey,
+		Status:        models.HostStatusUnknown,
+		Labels:        models.JSONStringMap(input.Labels),
+		CreatedAt:     time.Now().UTC(),
+		UpdatedAt:     time.Now().UTC(),
 	}
 
 	query := `
@@ -913,7 +911,7 @@ func (r *HostRepository) GetLatestMetrics(ctx context.Context, hostID uuid.UUID)
 
 	var metrics models.HostMetrics
 	if err := r.db.GetContext(ctx, &metrics, query, hostID); err != nil {
-		if err == sql.ErrNoRows {
+		if errors.Is(err, sql.ErrNoRows) {
 			return nil, nil
 		}
 		return nil, errors.Wrap(err, errors.CodeInternal, "failed to get latest metrics")
@@ -955,7 +953,7 @@ func (r *HostRepository) GetByAgentID(ctx context.Context, agentID uuid.UUID) (*
 
 	var host models.Host
 	if err := r.db.GetContext(ctx, &host, query, agentID); err != nil {
-		if err == sql.ErrNoRows {
+		if errors.Is(err, sql.ErrNoRows) {
 			return nil, errors.NotFound("host")
 		}
 		return nil, errors.Wrap(err, errors.CodeInternal, "failed to get host by agent ID")
@@ -977,7 +975,7 @@ func (r *HostRepository) ValidateAgentToken(ctx context.Context, agentID uuid.UU
 
 	var host models.Host
 	if err := r.db.GetContext(ctx, &host, query, agentID, tokenHash); err != nil {
-		if err == sql.ErrNoRows {
+		if errors.Is(err, sql.ErrNoRows) {
 			return nil, errors.New(errors.CodeUnauthorized, "invalid agent token")
 		}
 		return nil, errors.Wrap(err, errors.CodeInternal, "failed to validate agent token")

@@ -88,7 +88,7 @@ func (s *stubLauncher) RunOnceWithCopy(ctx context.Context, spec recon.Container
 	s.mu.Lock()
 	s.calls = append(s.calls, stubCall{image: spec.Image, cmd: spec.Command})
 	res, ok := s.canned[firstArg(spec.Command)]
-	cp, _ := s.canned[copyPath]
+	cp := s.canned[copyPath]
 	s.mu.Unlock()
 	if !ok {
 		return nil, nil, 2, nil
@@ -373,7 +373,7 @@ func TestStart_ToolFailureMarksRunFailed(t *testing.T) {
 // TestStart_ContextCancelStopsDispatch verifies that ctx cancellation
 // stops the dispatch loop between modules. The stub blocks on a
 // configured cmd so the test can cancel mid-flight and assert the
-// resulting status is "cancelled".
+// resulting status is "canceled".
 func TestStart_ContextCancelStopsDispatch(t *testing.T) {
 	stub := newStubLauncher()
 	stub.blockCmd = "subfinder"
@@ -410,7 +410,7 @@ func TestStart_ContextCancelStopsDispatch(t *testing.T) {
 			t.Fatalf("Status: %v", err)
 		}
 		if st.Status != recon.ScanCancelled {
-			t.Errorf("status = %q, want cancelled", st.Status)
+			t.Errorf("status = %q, want canceled", st.Status)
 		}
 	case <-time.After(2 * time.Second):
 		t.Fatal("Start never returned after cancel")
@@ -488,12 +488,12 @@ func TestParseHoleheRaw_MarkersMapToSeverity(t *testing.T) {
 
 func TestIsVoIPCarrier(t *testing.T) {
 	cases := map[string]bool{
-		"Twilio LLC":   true,
-		"twilio":       true,
-		"Google Voice": true,
+		"Twilio LLC":    true,
+		"twilio":        true,
+		"Google Voice":  true,
 		"AT&T Mobility": false,
-		"":            false,
-		"vonage US":   true,
+		"":              false,
+		"vonage US":     true,
 	}
 	for in, want := range cases {
 		if got := isVoIPCarrier(in); got != want {
@@ -509,7 +509,7 @@ func TestIsVoIPLineType(t *testing.T) {
 		"NonFixedVoIP":   true,
 		"mobile":         false,
 		"fixed-line":     false,
-		"":              false,
+		"":               false,
 	}
 	for in, want := range cases {
 		if got := isVoIPLineType(in); got != want {

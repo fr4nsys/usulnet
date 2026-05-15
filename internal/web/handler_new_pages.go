@@ -169,7 +169,7 @@ func (h *Handler) JobDetailTempl(w http.ResponseWriter, r *http.Request) {
 	h.renderTempl(w, r, jobs.JobDetail(data))
 }
 
-// JobCancel handles cancelling a pending or running job.
+// JobCancel handles canceling a pending or running job.
 func (h *Handler) JobCancel(w http.ResponseWriter, r *http.Request) {
 	jobIDStr := chi.URLParam(r, "id")
 	if jobIDStr == "" {
@@ -196,13 +196,13 @@ func (h *Handler) JobCancel(w http.ResponseWriter, r *http.Request) {
 	if err := schedulerSvc.CancelJob(ctx, jobID); err != nil {
 		h.setFlash(w, r, "error", fmt.Sprintf("Failed to cancel job: %v", err))
 	} else {
-		h.setFlash(w, r, "success", "Job cancelled successfully")
+		h.setFlash(w, r, "success", "Job canceled successfully")
 	}
 
 	http.Redirect(w, r, "/jobs", http.StatusSeeOther)
 }
 
-// JobDelete handles deleting a completed/failed/cancelled job.
+// JobDelete handles deleting a completed/failed/canceled job.
 func (h *Handler) JobDelete(w http.ResponseWriter, r *http.Request) {
 	jobIDStr := chi.URLParam(r, "id")
 	if jobIDStr == "" {

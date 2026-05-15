@@ -6,6 +6,7 @@ package web
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
 	"time"
@@ -15,9 +16,9 @@ import (
 
 // CookieConfig holds session cookie settings wired from app config.
 type CookieConfig struct {
-	Secure   bool           // Force Secure flag (overrides TLS auto-detection)
-	SameSite http.SameSite  // SameSite attribute (default Lax)
-	Domain   string         // Cookie Domain (empty = browser default)
+	Secure   bool          // Force Secure flag (overrides TLS auto-detection)
+	SameSite http.SameSite // SameSite attribute (default Lax)
+	Domain   string        // Cookie Domain (empty = browser default)
 }
 
 // WebSessionStore adapts redis.SessionStore to the web.SessionStore interface.
@@ -43,7 +44,7 @@ func NewWebSessionStore(redisStore *redisrepo.SessionStore, ttl time.Duration, c
 func (s *WebSessionStore) Get(r *http.Request, name string) (*Session, error) {
 	cookie, err := r.Cookie(name)
 	if err != nil {
-		if err == http.ErrNoCookie {
+		if errors.Is(err, http.ErrNoCookie) {
 			return nil, nil // No session
 		}
 		return nil, err

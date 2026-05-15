@@ -9,6 +9,7 @@ package main
 
 import (
 	"context"
+	"errors"
 	"flag"
 	"fmt"
 	"os"
@@ -69,11 +70,14 @@ func main() {
 		"built", BuildDate,
 	)
 
-	// Load config from file if specified
+	// Load config from file if specified. Use Error+Sync+Exit instead of
+	// log.Fatal so the deferred log.Sync() flush above isn't skipped.
 	cfg := agent.DefaultConfig()
 	if *configFile != "" {
 		if err := loadConfigFile(*configFile, &cfg); err != nil {
-			log.Fatal("Failed to load config file", "error", err)
+			log.Error("Failed to load config file", "error", err)
+			_ = log.Sync()
+			os.Exit(1)
 		}
 	}
 
@@ -128,7 +132,7 @@ func main() {
 	}()
 
 	// Run agent
-	if err := ag.Run(ctx); err != nil && err != context.Canceled {
+	if err := ag.Run(ctx); err != nil && !errors.Is(err, context.Canceled) {
 		log.Fatal("Agent failed", "error", err)
 	}
 

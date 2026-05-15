@@ -7,8 +7,9 @@ package postgres
 import (
 	"context"
 
-	"github.com/fr4nsys/usulnet/internal/models"
 	"github.com/google/uuid"
+
+	"github.com/fr4nsys/usulnet/internal/models"
 )
 
 // Type alias pointing to shared model type.

@@ -143,24 +143,24 @@ func TestDaysUntilExpiration(t *testing.T) {
 // ============================================================================
 
 func TestGetDegradationState(t *testing.T) {
-	t.Run("nil info returns CE state", func(t *testing.T) {
+	t.Run("nil info returns open state", func(t *testing.T) {
 		state := GetDegradationState(nil)
 		if state.IsExpired {
 			t.Error("nil info should not be expired")
 		}
-		if state.ActiveLimits != CELimits() {
-			t.Error("nil info should have CE limits")
+		if state.ActiveLimits != OpenLimits() {
+			t.Error("nil info should have open (unlimited) limits")
 		}
 	})
 
-	t.Run("valid business license - no degradation", func(t *testing.T) {
+	t.Run("valid business token - no degradation", func(t *testing.T) {
 		future := time.Now().Add(365 * 24 * time.Hour)
 		info := &Info{
 			Edition:   Business,
 			Valid:     true,
 			ExpiresAt: &future,
-			Features:  AllBusinessFeatures(),
-			Limits:    BusinessDefaultLimits(),
+			Features:  AllFeatures(),
+			Limits:    OpenLimits(),
 		}
 		state := GetDegradationState(info)
 		if state.IsExpired {
@@ -171,56 +171,58 @@ func TestGetDegradationState(t *testing.T) {
 		}
 	})
 
-	t.Run("expired business license - degraded to CE", func(t *testing.T) {
+	t.Run("expired business token - features still open", func(t *testing.T) {
 		past := time.Now().Add(-24 * time.Hour)
 		info := &Info{
 			Edition:   Business,
 			Valid:     false,
 			ExpiresAt: &past,
-			Features:  AllBusinessFeatures(),
-			Limits:    BusinessDefaultLimits(),
+			Features:  AllFeatures(),
+			Limits:    OpenLimits(),
 		}
 		state := GetDegradationState(info)
 		if !state.IsExpired {
-			t.Error("expired license should be degraded")
+			t.Error("expired license should be flagged expired")
 		}
 		if state.PreviousEdition != Business {
 			t.Errorf("PreviousEdition = %q, want %q", state.PreviousEdition, Business)
 		}
-		if state.ActiveLimits != CELimits() {
-			t.Error("expired license should have CE limits")
+		// AGPL build never downgrades runtime capability — limits stay open
+		// and no features are reported as disabled.
+		if state.ActiveLimits != OpenLimits() {
+			t.Error("expired license should still report open (unlimited) limits in the AGPL build")
 		}
-		if len(state.DisabledFeatures) == 0 {
-			t.Error("expired license should list disabled features")
+		if len(state.DisabledFeatures) != 0 {
+			t.Errorf("DisabledFeatures = %v, want empty (AGPL build never gates features)", state.DisabledFeatures)
 		}
 	})
 
-	t.Run("expired enterprise license - degraded to CE", func(t *testing.T) {
+	t.Run("expired enterprise token - features still open", func(t *testing.T) {
 		past := time.Now().Add(-24 * time.Hour)
 		info := &Info{
 			Edition:   Enterprise,
 			Valid:     false,
 			ExpiresAt: &past,
-			Features:  AllEnterpriseFeatures(),
-			Limits:    EnterpriseLimits(),
+			Features:  AllFeatures(),
+			Limits:    OpenLimits(),
 		}
 		state := GetDegradationState(info)
 		if !state.IsExpired {
-			t.Error("expired enterprise should be degraded")
+			t.Error("expired enterprise should be flagged expired")
 		}
 		if state.PreviousEdition != Enterprise {
 			t.Errorf("PreviousEdition = %q, want %q", state.PreviousEdition, Enterprise)
 		}
-		if state.ActiveLimits != CELimits() {
-			t.Error("expired enterprise should have CE limits")
+		if state.ActiveLimits != OpenLimits() {
+			t.Error("expired enterprise should still report open limits")
 		}
 	})
 
-	t.Run("CE license - no degradation possible", func(t *testing.T) {
+	t.Run("open edition - no degradation possible", func(t *testing.T) {
 		info := NewCEInfo()
 		state := GetDegradationState(info)
 		if state.IsExpired {
-			t.Error("CE should never be expired")
+			t.Error("open edition should never be expired")
 		}
 	})
 }
@@ -240,8 +242,8 @@ func TestExpirationChecker_ExpiringNotification(t *testing.T) {
 			Valid:     true,
 			LicenseID: "USN-test-expiring",
 			ExpiresAt: &expiresIn7Days,
-			Features:  AllBusinessFeatures(),
-			Limits:    BusinessDefaultLimits(),
+			Features:  AllFeatures(),
+			Limits:    OpenLimits(),
 		},
 	}
 
@@ -275,7 +277,7 @@ func TestExpirationChecker_ExpiredNotification(t *testing.T) {
 			Valid:     false,
 			LicenseID: "USN-test-expired",
 			ExpiresAt: &expiredYesterday,
-			Features:  AllBusinessFeatures(),
+			Features:  AllFeatures(),
 		},
 	}
 
@@ -331,7 +333,7 @@ func TestExpirationChecker_NoDuplicateNotifications(t *testing.T) {
 			Valid:     true,
 			LicenseID: "USN-test-dedup",
 			ExpiresAt: &expiresIn5Days,
-			Features:  AllBusinessFeatures(),
+			Features:  AllFeatures(),
 		},
 	}
 
@@ -364,7 +366,7 @@ func TestExpirationChecker_ResetNotifications(t *testing.T) {
 			Valid:     true,
 			LicenseID: "USN-test-reset",
 			ExpiresAt: &expiresIn5Days,
-			Features:  AllBusinessFeatures(),
+			Features:  AllFeatures(),
 		},
 	}
 
@@ -398,7 +400,7 @@ func TestExpirationChecker_30DayThreshold(t *testing.T) {
 			Valid:     true,
 			LicenseID: "USN-test-30d",
 			ExpiresAt: &expiresIn25Days,
-			Features:  AllEnterpriseFeatures(),
+			Features:  AllFeatures(),
 		},
 	}
 
@@ -429,7 +431,7 @@ func TestExpirationChecker_FarFutureLicenseNoNotification(t *testing.T) {
 			Valid:     true,
 			LicenseID: "USN-test-far",
 			ExpiresAt: &expiresIn365Days,
-			Features:  AllBusinessFeatures(),
+			Features:  AllFeatures(),
 		},
 	}
 

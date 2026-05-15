@@ -428,7 +428,7 @@ func (r *ConfigVariableRepository) GetHistoryVersion(ctx context.Context, variab
 		&h.UpdatedAt,
 	)
 	if err != nil {
-		if err == pgx.ErrNoRows {
+		if errors.Is(err, pgx.ErrNoRows) {
 			return nil, errors.NotFound("variable history version")
 		}
 		return nil, errors.Wrap(err, errors.CodeDatabaseError, "failed to get variable history version")
@@ -570,7 +570,7 @@ func (r *ConfigVariableRepository) scanVariable(row pgx.Row) (*models.ConfigVari
 		&v.UpdatedAt,
 	)
 	if err != nil {
-		if err == pgx.ErrNoRows {
+		if errors.Is(err, pgx.ErrNoRows) {
 			return nil, errors.NotFound("variable")
 		}
 		return nil, errors.Wrap(err, errors.CodeDatabaseError, "failed to scan variable")

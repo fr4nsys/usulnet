@@ -69,12 +69,12 @@ const (
 type HostStatus string
 
 const (
-	HostStatusOnline       HostStatus = "online"
-	HostStatusOffline      HostStatus = "offline"
-	HostStatusConnecting   HostStatus = "connecting"
-	HostStatusError        HostStatus = "error"
-	HostStatusMaintenance  HostStatus = "maintenance"
-	HostStatusUnknown      HostStatus = "unknown"
+	HostStatusOnline      HostStatus = "online"
+	HostStatusOffline     HostStatus = "offline"
+	HostStatusConnecting  HostStatus = "connecting"
+	HostStatusError       HostStatus = "error"
+	HostStatusMaintenance HostStatus = "maintenance"
+	HostStatusUnknown     HostStatus = "unknown"
 )
 
 // HostInfo contains minimal host information needed by the gateway.
@@ -105,7 +105,7 @@ type Host struct {
 	Architecture   *string          `json:"architecture,omitempty" db:"architecture"`
 	TotalMemory    *int64           `json:"total_memory,omitempty" db:"total_memory"`
 	TotalCPUs      *int             `json:"total_cpus,omitempty" db:"total_cpus"`
-	Labels         JSONStringMap     `json:"labels,omitempty" db:"labels"`
+	Labels         JSONStringMap    `json:"labels,omitempty" db:"labels"`
 	CreatedAt      time.Time        `json:"created_at" db:"created_at"`
 	UpdatedAt      time.Time        `json:"updated_at" db:"updated_at"`
 }
@@ -122,26 +122,26 @@ func (h *Host) IsAgent() bool {
 
 // CreateHostInput represents input for creating a host
 type CreateHostInput struct {
-	Name         string           `json:"name" validate:"required,min=1,max=100"`
-	DisplayName  *string          `json:"display_name,omitempty" validate:"omitempty,max=200"`
-	EndpointType HostEndpointType `json:"endpoint_type" validate:"required,oneof=local socket tcp agent"`
-	EndpointURL  *string          `json:"endpoint_url,omitempty" validate:"omitempty,url"`
-	TLSEnabled   bool             `json:"tls_enabled"`
-	TLSCACert    *string          `json:"tls_ca_cert,omitempty"`
-	TLSClientCert *string         `json:"tls_client_cert,omitempty"`
-	TLSClientKey *string          `json:"tls_client_key,omitempty"`
-	Labels       map[string]string `json:"labels,omitempty"`
+	Name          string            `json:"name" validate:"required,min=1,max=100"`
+	DisplayName   *string           `json:"display_name,omitempty" validate:"omitempty,max=200"`
+	EndpointType  HostEndpointType  `json:"endpoint_type" validate:"required,oneof=local socket tcp agent"`
+	EndpointURL   *string           `json:"endpoint_url,omitempty" validate:"omitempty,url"`
+	TLSEnabled    bool              `json:"tls_enabled"`
+	TLSCACert     *string           `json:"tls_ca_cert,omitempty"`
+	TLSClientCert *string           `json:"tls_client_cert,omitempty"`
+	TLSClientKey  *string           `json:"tls_client_key,omitempty"`
+	Labels        map[string]string `json:"labels,omitempty"`
 }
 
 // UpdateHostInput represents input for updating a host
 type UpdateHostInput struct {
-	DisplayName   *string            `json:"display_name,omitempty" validate:"omitempty,max=200"`
-	EndpointURL   *string            `json:"endpoint_url,omitempty" validate:"omitempty,url"`
-	TLSEnabled    *bool              `json:"tls_enabled,omitempty"`
-	TLSCACert     *string            `json:"tls_ca_cert,omitempty"`
-	TLSClientCert *string            `json:"tls_client_cert,omitempty"`
-	TLSClientKey  *string            `json:"tls_client_key,omitempty"`
-	Labels        map[string]string  `json:"labels,omitempty"`
+	DisplayName   *string           `json:"display_name,omitempty" validate:"omitempty,max=200"`
+	EndpointURL   *string           `json:"endpoint_url,omitempty" validate:"omitempty,url"`
+	TLSEnabled    *bool             `json:"tls_enabled,omitempty"`
+	TLSCACert     *string           `json:"tls_ca_cert,omitempty"`
+	TLSClientCert *string           `json:"tls_client_cert,omitempty"`
+	TLSClientKey  *string           `json:"tls_client_key,omitempty"`
+	Labels        map[string]string `json:"labels,omitempty"`
 }
 
 // HostMetrics represents host-level metrics
@@ -174,14 +174,14 @@ type HostSummary struct {
 
 // AgentRegistration represents an agent registration request
 type AgentRegistration struct {
-	AgentID      uuid.UUID `json:"agent_id"`
-	HostName     string    `json:"host_name"`
-	Version      string    `json:"version"`
-	DockerVersion string   `json:"docker_version"`
-	OSType       string    `json:"os_type"`
-	Architecture string    `json:"architecture"`
-	TotalMemory  int64     `json:"total_memory"`
-	TotalCPUs    int       `json:"total_cpus"`
+	AgentID       uuid.UUID `json:"agent_id"`
+	HostName      string    `json:"host_name"`
+	Version       string    `json:"version"`
+	DockerVersion string    `json:"docker_version"`
+	OSType        string    `json:"os_type"`
+	Architecture  string    `json:"architecture"`
+	TotalMemory   int64     `json:"total_memory"`
+	TotalCPUs     int       `json:"total_cpus"`
 }
 
 // AgentHeartbeat represents an agent heartbeat
@@ -196,35 +196,35 @@ type AgentHeartbeat struct {
 
 // HostDockerInfo represents Docker daemon information
 type HostDockerInfo struct {
-	ID                 string            `json:"id"`
-	Name               string            `json:"name"`
-	ServerVersion      string            `json:"server_version"`
-	APIVersion         string            `json:"api_version"`
-	OSType             string            `json:"os_type"`
-	Architecture       string            `json:"architecture"`
-	KernelVersion      string            `json:"kernel_version"`
-	OperatingSystem    string            `json:"operating_system"`
-	NCPU               int               `json:"ncpu"`
-	MemTotal           int64             `json:"mem_total"`
-	Containers         int               `json:"containers"`
-	ContainersRunning  int               `json:"containers_running"`
-	ContainersPaused   int               `json:"containers_paused"`
-	ContainersStopped  int               `json:"containers_stopped"`
-	Images             int               `json:"images"`
-	DockerRootDir      string            `json:"docker_root_dir"`
-	StorageDriver      string            `json:"storage_driver"`
-	LoggingDriver      string            `json:"logging_driver"`
-	CgroupDriver       string            `json:"cgroup_driver"`
-	CgroupVersion      string            `json:"cgroup_version"`
-	DefaultRuntime     string            `json:"default_runtime"`
-	SecurityOptions    []string          `json:"security_options,omitempty"`
-	IndexServerAddress string            `json:"index_server_address"`
-	RegistryConfig     map[string]any    `json:"registry_config,omitempty"`
-	Labels             []string          `json:"labels,omitempty"`
-	RuntimeNames       []string          `json:"runtime_names,omitempty"`
-	Runtimes           map[string]any    `json:"runtimes,omitempty"`
-	Swarm              *SwarmInfo        `json:"swarm,omitempty"`
-	SwarmActive        bool              `json:"swarm_active"`
+	ID                 string              `json:"id"`
+	Name               string              `json:"name"`
+	ServerVersion      string              `json:"server_version"`
+	APIVersion         string              `json:"api_version"`
+	OSType             string              `json:"os_type"`
+	Architecture       string              `json:"architecture"`
+	KernelVersion      string              `json:"kernel_version"`
+	OperatingSystem    string              `json:"operating_system"`
+	NCPU               int                 `json:"ncpu"`
+	MemTotal           int64               `json:"mem_total"`
+	Containers         int                 `json:"containers"`
+	ContainersRunning  int                 `json:"containers_running"`
+	ContainersPaused   int                 `json:"containers_paused"`
+	ContainersStopped  int                 `json:"containers_stopped"`
+	Images             int                 `json:"images"`
+	DockerRootDir      string              `json:"docker_root_dir"`
+	StorageDriver      string              `json:"storage_driver"`
+	LoggingDriver      string              `json:"logging_driver"`
+	CgroupDriver       string              `json:"cgroup_driver"`
+	CgroupVersion      string              `json:"cgroup_version"`
+	DefaultRuntime     string              `json:"default_runtime"`
+	SecurityOptions    []string            `json:"security_options,omitempty"`
+	IndexServerAddress string              `json:"index_server_address"`
+	RegistryConfig     map[string]any      `json:"registry_config,omitempty"`
+	Labels             []string            `json:"labels,omitempty"`
+	RuntimeNames       []string            `json:"runtime_names,omitempty"`
+	Runtimes           map[string]any      `json:"runtimes,omitempty"`
+	Swarm              *SwarmInfo          `json:"swarm,omitempty"`
+	SwarmActive        bool                `json:"swarm_active"`
 	Plugins            map[string][]string `json:"plugins,omitempty"`
 }
 

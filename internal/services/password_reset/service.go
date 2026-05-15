@@ -120,9 +120,10 @@ func (s *Service) RequestReset(ctx context.Context, input RequestResetInput) (*R
 	// Look up user by email
 	user, err := s.userRepo.GetByEmail(ctx, input.Email)
 	if err != nil {
-		// Log but don't reveal to user
+		// privacy: response must be indistinguishable from the success
+		// path so email enumeration is blocked.
 		s.logger.Debug("password reset requested for non-existent email", "email", input.Email)
-		return successResult, nil
+		return successResult, nil //nolint:nilerr
 	}
 
 	// Check if user is active
@@ -184,7 +185,8 @@ type ValidateTokenResult struct {
 func (s *Service) ValidateToken(ctx context.Context, input ValidateTokenInput) (*ValidateTokenResult, error) {
 	userID, err := s.resetRepo.ValidateToken(ctx, input.Token)
 	if err != nil {
-		return &ValidateTokenResult{Valid: false}, nil
+		// result envelope: Valid=false captures all reasons a token is unusable
+		return &ValidateTokenResult{Valid: false}, nil //nolint:nilerr
 	}
 
 	return &ValidateTokenResult{

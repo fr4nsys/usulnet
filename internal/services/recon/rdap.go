@@ -20,7 +20,7 @@ import (
 // RDAP returns structured registration data for domains and IP space.
 // We use the IANA-maintained bootstrap servers (rdap.org as a thin
 // indirection) and parse the minimum subset of RFC 7483 we need to
-// extract a registrant organisation name.
+// extract a registrant organization name.
 
 // rdapDefaultBaseURL is the public bootstrap front-end. It accepts
 // "/domain/<name>" and "/ip/<addr>" and 302-redirects to the
@@ -85,7 +85,7 @@ type rdapEntity struct {
 }
 
 // LookupDomainOrg fetches RDAP data for a domain and returns the
-// registrant organisation name, or ErrRDAPNotFound when the registry
+// registrant organization name, or ErrRDAPNotFound when the registry
 // refuses the lookup.
 func (c *RDAPClient) LookupDomainOrg(ctx context.Context, domain string) (string, error) {
 	domain = strings.TrimSpace(strings.ToLower(domain))
@@ -153,7 +153,7 @@ func (c *RDAPClient) get(ctx context.Context, endpoint string) (*rdapResponse, e
 
 // extractRegistrantOrg walks the entity tree looking for an entity with
 // the "registrant" role (preferred) or, failing that, the first entity
-// with a usable organisation name. Returns "" when nothing matches —
+// with a usable organization name. Returns "" when nothing matches —
 // callers handle that case by reporting an ownership mismatch.
 func extractRegistrantOrg(r *rdapResponse) string {
 	if r == nil {

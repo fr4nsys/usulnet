@@ -9,6 +9,7 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"os"
 	"strings"
 	"time"
 
@@ -26,6 +27,14 @@ type Service struct {
 	categoryRepo *postgres.ShortcutCategoryRepository
 	logger       *logger.Logger
 	httpClient   *http.Client
+
+	// externalFaviconFallback controls whether the favicon fetcher may
+	// query third-party services (currently Google's s2/favicons) when
+	// the bookmarked host does not expose a favicon at the standard
+	// paths. Default false — fetching a fallback leaks the bookmark
+	// host to the third-party service. Toggle via
+	// USULNET_SHORTCUTS_EXTERNAL_FAVICON_FALLBACK.
+	externalFaviconFallback bool
 }
 
 // NewService creates a new shortcuts service.
@@ -41,7 +50,17 @@ func NewService(
 		httpClient: &http.Client{
 			Timeout: 10 * time.Second,
 		},
+		externalFaviconFallback: externalFaviconFallbackEnabled(),
 	}
+}
+
+// externalFaviconFallbackEnabled reads the privacy-sensitive opt-in flag.
+// The fallback is off by default because every fallback request reveals
+// the user's bookmark host to a third party (Google).
+func externalFaviconFallbackEnabled() bool {
+	v := strings.ToLower(strings.TrimSpace(
+		os.Getenv("USULNET_SHORTCUTS_EXTERNAL_FAVICON_FALLBACK")))
+	return v == "1" || v == "true" || v == "yes" || v == "on"
 }
 
 // ============================================================================
@@ -201,11 +220,14 @@ func (s *Service) FetchFavicon(ctx context.Context, targetURL string) (string, [
 		}
 	}
 
-	// Try Google's favicon service as fallback
-	googleFaviconURL := "https://www.google.com/s2/favicons?domain=" + parsed.Host + "&sz=64"
-	iconData, err := s.downloadFavicon(ctx, googleFaviconURL)
-	if err == nil && len(iconData) > 0 {
-		return googleFaviconURL, iconData, nil
+	// Third-party favicon fallback. Off by default — every request to the
+	// fallback service leaks the bookmark host to Google.
+	if s.externalFaviconFallback {
+		googleFaviconURL := "https://www.google.com/s2/favicons?domain=" + parsed.Host + "&sz=64"
+		iconData, err := s.downloadFavicon(ctx, googleFaviconURL)
+		if err == nil && len(iconData) > 0 {
+			return googleFaviconURL, iconData, nil
+		}
 	}
 
 	return "", nil, errors.NotFound("favicon")
@@ -217,7 +239,7 @@ func (s *Service) downloadFavicon(ctx context.Context, faviconURL string) ([]byt
 		return nil, err
 	}
 
-	req.Header.Set("User-Agent", "Mozilla/5.0 (compatible; usulnet/1.0)")
+	req.Header.Set("User-Agent", "Mozilla/5.0 (compatible; usulnet-favicon-bot; +https://usulnet.com)")
 
 	resp, err := s.httpClient.Do(req)
 	if err != nil {

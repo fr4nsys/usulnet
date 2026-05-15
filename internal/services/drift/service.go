@@ -54,7 +54,7 @@ func NewService(repo Repository, log *logger.Logger) *Service {
 func (s *Service) TakeSnapshot(ctx context.Context, resourceType, resourceID, resourceName string, config any, takenBy *uuid.UUID, note string) (*models.ConfigSnapshot, error) {
 	raw, err := json.Marshal(config)
 	if err != nil {
-		return nil, fmt.Errorf("marshalling snapshot config: %w", err)
+		return nil, fmt.Errorf("marshaling snapshot config: %w", err)
 	}
 
 	msg := json.RawMessage(raw)
@@ -121,7 +121,7 @@ func (s *Service) DetectDrift(ctx context.Context, resourceType, resourceID, res
 	// Marshal and unmarshal current config into map.
 	currentRaw, err := json.Marshal(currentConfig)
 	if err != nil {
-		return nil, fmt.Errorf("marshalling current config: %w", err)
+		return nil, fmt.Errorf("marshaling current config: %w", err)
 	}
 	var currentMap map[string]any
 	if err := json.Unmarshal(currentRaw, &currentMap); err != nil {
@@ -137,7 +137,7 @@ func (s *Service) DetectDrift(ctx context.Context, resourceType, resourceID, res
 
 	diffsRaw, err := json.Marshal(diffs)
 	if err != nil {
-		return nil, fmt.Errorf("marshalling diffs: %w", err)
+		return nil, fmt.Errorf("marshaling diffs: %w", err)
 	}
 	diffsMsg := json.RawMessage(diffsRaw)
 

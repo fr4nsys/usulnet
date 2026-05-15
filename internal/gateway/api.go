@@ -423,7 +423,8 @@ func (h *APIHandler) buildCommand(req CommandRequest) *protocol.Command {
 }
 
 func (h *APIHandler) handleCommandError(w http.ResponseWriter, err error) {
-	if protocolErr, ok := err.(*protocol.ProtocolError); ok {
+	protocolErr := &protocol.ProtocolError{}
+	if errors.As(err, &protocolErr) {
 		switch protocolErr.Code {
 		case protocol.ErrCodeAgentUnavailable:
 			h.errorResponse(w, http.StatusServiceUnavailable, protocolErr.Message)

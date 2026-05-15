@@ -66,7 +66,7 @@ func (r *GiteaConnectionRepository) GetByID(ctx context.Context, id uuid.UUID) (
 	row := r.db.QueryRow(ctx, query, id)
 	conn, err := scanGiteaConnRow(row)
 	if err != nil {
-		if err == pgx.ErrNoRows {
+		if errors.Is(err, pgx.ErrNoRows) {
 			return nil, errors.New(errors.CodeNotFound, "gitea connection not found")
 		}
 		return nil, errors.Wrap(err, errors.CodeDatabaseError, "failed to get gitea connection")

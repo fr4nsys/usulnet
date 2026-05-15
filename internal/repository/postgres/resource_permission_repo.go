@@ -6,13 +6,14 @@ package postgres
 
 import (
 	"context"
+	stderrors "errors"
 	"time"
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 
-	apperrors "github.com/fr4nsys/usulnet/internal/pkg/errors"
 	"github.com/fr4nsys/usulnet/internal/models"
+	apperrors "github.com/fr4nsys/usulnet/internal/pkg/errors"
 )
 
 // ResourcePermissionRepository handles resource permission database operations.
@@ -265,7 +266,7 @@ func (r *ResourcePermissionRepository) GetAccessLevel(ctx context.Context, userI
 	).Scan(&level)
 
 	if err != nil {
-		if err == pgx.ErrNoRows {
+		if stderrors.Is(err, pgx.ErrNoRows) {
 			return "", nil // No access
 		}
 		return "", apperrors.Wrap(err, apperrors.CodeDatabaseError, "failed to check access level")

@@ -18,7 +18,7 @@ import (
 )
 
 // ContainerStats returns a channel of real-time container statistics
-// The channel is closed when the context is cancelled
+// The channel is closed when the context is canceled
 func (c *Client) ContainerStats(ctx context.Context, containerID string) (<-chan ContainerStats, error) {
 	log := logger.FromContext(ctx)
 
@@ -149,18 +149,18 @@ func (c *Client) AllContainerStats(ctx context.Context) (map[string]*ContainerSt
 
 // StatsAggregator aggregates stats from multiple containers
 type StatsAggregator struct {
-	TotalCPUPercent    float64
-	TotalMemoryUsage   uint64
-	TotalMemoryLimit   uint64
-	TotalNetworkRx     uint64
-	TotalNetworkTx     uint64
-	TotalBlockRead     uint64
-	TotalBlockWrite    uint64
-	TotalPIDs          uint64
-	ContainerCount     int
-	HealthyCount       int
-	UnhealthyCount     int
-	Timestamp          time.Time
+	TotalCPUPercent  float64
+	TotalMemoryUsage uint64
+	TotalMemoryLimit uint64
+	TotalNetworkRx   uint64
+	TotalNetworkTx   uint64
+	TotalBlockRead   uint64
+	TotalBlockWrite  uint64
+	TotalPIDs        uint64
+	ContainerCount   int
+	HealthyCount     int
+	UnhealthyCount   int
+	Timestamp        time.Time
 }
 
 // AggregateStats aggregates stats from a map of container stats

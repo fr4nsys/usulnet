@@ -15,8 +15,8 @@ import (
 	"github.com/gorilla/websocket"
 
 	"github.com/fr4nsys/usulnet/internal/models"
-	metricspkg "github.com/fr4nsys/usulnet/internal/services/metrics"
 	"github.com/fr4nsys/usulnet/internal/scheduler/workers"
+	metricspkg "github.com/fr4nsys/usulnet/internal/services/metrics"
 )
 
 // ============================================================================
@@ -345,8 +345,8 @@ type WSMetricsMessage struct {
 }
 
 type HistoryResponse struct {
-	Type       string           `json:"type"`
-	Timestamps []string         `json:"timestamps"`
+	Type       string               `json:"type"`
+	Timestamps []string             `json:"timestamps"`
 	Series     map[string][]float64 `json:"series"`
 }
 

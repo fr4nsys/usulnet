@@ -214,7 +214,6 @@ func (s *Service) GetLive(ctx context.Context, hostID uuid.UUID, containerID str
 // Container Lifecycle Operations
 // ============================================================================
 
-
 // SyncInventory synchronizes the container inventory from an agent.
 // It reconciles the received list with the database, updating existing records,
 // inserting new ones, and marking missing ones as removed.
@@ -1024,11 +1023,6 @@ func (s *Service) GetContainerStats(ctx context.Context, hostID *uuid.UUID) (*po
 // Internal Methods
 // ============================================================================
 
-func parseDockerTime(s string) time.Time {
-	t, _ := time.Parse(time.RFC3339Nano, s)
-	return t
-}
-
 // eventWatcherManager periodically discovers online hosts and ensures each has
 // an active Docker event stream watcher. This replaces the old 30-second
 // full-polling approach with real-time event-driven updates.
@@ -1115,7 +1109,7 @@ func (s *Service) hostEventWatcher(ctx context.Context, hostID uuid.UUID) {
 
 		err := s.watchHostEvents(ctx, hostID)
 		if err == nil {
-			// Stream ended cleanly (e.g. context cancelled)
+			// Stream ended cleanly (e.g. context canceled)
 			return
 		}
 
@@ -1142,8 +1136,11 @@ func (s *Service) hostEventWatcher(ctx context.Context, hostID uuid.UUID) {
 }
 
 // watchHostEvents opens a Docker event stream for a host and processes events.
-// Returns an error if the stream fails; returns nil if the context is cancelled.
+// Returns an error if the stream fails; returns nil if the context is canceled.
 func (s *Service) watchHostEvents(ctx context.Context, hostID uuid.UUID) error {
+	if s.hostService == nil {
+		return fmt.Errorf("host service not configured")
+	}
 	client, err := s.hostService.GetClient(ctx, hostID)
 	if err != nil {
 		return fmt.Errorf("get client: %w", err)
@@ -1176,17 +1173,17 @@ func (s *Service) watchHostEvents(ctx context.Context, hostID uuid.UUID) error {
 // containerEventActions is the set of Docker event actions that should trigger
 // a container state update in the database.
 var containerEventActions = map[string]bool{
-	"create":  true,
-	"start":   true,
-	"stop":    true,
-	"die":     true,
-	"kill":    true,
-	"pause":   true,
-	"unpause": true,
-	"destroy": true,
-	"rename":  true,
-	"restart": true,
-	"oom":     true,
+	"create":        true,
+	"start":         true,
+	"stop":          true,
+	"die":           true,
+	"kill":          true,
+	"pause":         true,
+	"unpause":       true,
+	"destroy":       true,
+	"rename":        true,
+	"restart":       true,
+	"oom":           true,
 	"health_status": true,
 }
 

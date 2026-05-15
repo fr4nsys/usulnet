@@ -872,15 +872,15 @@ type BulkSyncRequest struct {
 
 // SyncResponse represents a sync operation result.
 type SyncResponse struct {
-	Success         bool                   `json:"success"`
-	ContainerID     string                 `json:"container_id"`
-	ContainerName   string                 `json:"container_name"`
-	TemplateName    *string                `json:"template_name,omitempty"`
-	VariablesHash   string                 `json:"variables_hash"`
-	RequiresRestart bool                   `json:"requires_restart"`
-	Diff            *ConfigDiffResponse    `json:"diff,omitempty"`
-	Variables       []VariableResponse     `json:"variables,omitempty"`
-	ErrorMessage    *string                `json:"error_message,omitempty"`
+	Success         bool                `json:"success"`
+	ContainerID     string              `json:"container_id"`
+	ContainerName   string              `json:"container_name"`
+	TemplateName    *string             `json:"template_name,omitempty"`
+	VariablesHash   string              `json:"variables_hash"`
+	RequiresRestart bool                `json:"requires_restart"`
+	Diff            *ConfigDiffResponse `json:"diff,omitempty"`
+	Variables       []VariableResponse  `json:"variables,omitempty"`
+	ErrorMessage    *string             `json:"error_message,omitempty"`
 }
 
 // ConfigDiffResponse represents configuration differences.

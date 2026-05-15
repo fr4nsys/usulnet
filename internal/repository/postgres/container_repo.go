@@ -16,8 +16,8 @@ import (
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 
-	apperrors "github.com/fr4nsys/usulnet/internal/pkg/errors"
 	"github.com/fr4nsys/usulnet/internal/models"
+	apperrors "github.com/fr4nsys/usulnet/internal/pkg/errors"
 )
 
 // ContainerRepository handles container database operations.
@@ -363,19 +363,29 @@ func (r *ContainerRepository) scanContainer(row pgx.Row) (*models.Container, err
 
 	// Deserialize JSON fields
 	if len(portsJSON) > 0 {
-		json.Unmarshal(portsJSON, &container.Ports)
+		if err := json.Unmarshal(portsJSON, &container.Ports); err != nil {
+			return nil, fmt.Errorf("unmarshal ports: %w", err)
+		}
 	}
 	if len(labelsJSON) > 0 {
-		json.Unmarshal(labelsJSON, &container.Labels)
+		if err := json.Unmarshal(labelsJSON, &container.Labels); err != nil {
+			return nil, fmt.Errorf("unmarshal labels: %w", err)
+		}
 	}
 	if len(envVarsJSON) > 0 {
-		json.Unmarshal(envVarsJSON, &container.EnvVars)
+		if err := json.Unmarshal(envVarsJSON, &container.EnvVars); err != nil {
+			return nil, fmt.Errorf("unmarshal env vars: %w", err)
+		}
 	}
 	if len(mountsJSON) > 0 {
-		json.Unmarshal(mountsJSON, &container.Mounts)
+		if err := json.Unmarshal(mountsJSON, &container.Mounts); err != nil {
+			return nil, fmt.Errorf("unmarshal mounts: %w", err)
+		}
 	}
 	if len(networksJSON) > 0 {
-		json.Unmarshal(networksJSON, &container.Networks)
+		if err := json.Unmarshal(networksJSON, &container.Networks); err != nil {
+			return nil, fmt.Errorf("unmarshal networks: %w", err)
+		}
 	}
 
 	return container, nil
@@ -389,13 +399,13 @@ func (r *ContainerRepository) scanContainer(row pgx.Row) (*models.Container, err
 type ContainerListOptions struct {
 	Page     int
 	PerPage  int
-	HostID   *uuid.UUID              // Filter by host
-	Search   string                  // Search in name and image
-	State    *models.ContainerState  // Filter by state
-	Image    string                  // Filter by image (partial match)
-	Labels   map[string]string       // Filter by labels
-	SortBy   string                  // Field to sort by
-	SortDesc bool                    // Sort descending
+	HostID   *uuid.UUID             // Filter by host
+	Search   string                 // Search in name and image
+	State    *models.ContainerState // Filter by state
+	Image    string                 // Filter by image (partial match)
+	Labels   map[string]string      // Filter by labels
+	SortBy   string                 // Field to sort by
+	SortDesc bool                   // Sort descending
 
 	// Cursor-based pagination (preferred for large datasets)
 	// When Cursor is set, Page/PerPage offset-based pagination is ignored.
@@ -404,11 +414,11 @@ type ContainerListOptions struct {
 
 	// Scoping fields (opt-in model)
 	// Containers are scoped via stack inheritance + Docker label usulnet.team.group.
-	ScopeEnabled           bool
-	AllowedStackIDs        []uuid.UUID // stack IDs the user has access to
-	AssignedStackIDs       []uuid.UUID // stack IDs claimed by ANY team
-	AllowedContainerGroups []string    // container group labels the user has access to
-	AssignedContainerGroups []string   // container group labels claimed by ANY team
+	ScopeEnabled            bool
+	AllowedStackIDs         []uuid.UUID // stack IDs the user has access to
+	AssignedStackIDs        []uuid.UUID // stack IDs claimed by ANY team
+	AllowedContainerGroups  []string    // container group labels the user has access to
+	AssignedContainerGroups []string    // container group labels claimed by ANY team
 }
 
 // ContainerCursorPage represents a page of containers with cursor info.
@@ -710,19 +720,29 @@ func (r *ContainerRepository) scanContainers(rows pgx.Rows) ([]*models.Container
 
 		// Deserialize JSON
 		if len(portsJSON) > 0 {
-			json.Unmarshal(portsJSON, &container.Ports)
+			if err := json.Unmarshal(portsJSON, &container.Ports); err != nil {
+				return nil, fmt.Errorf("unmarshal ports: %w", err)
+			}
 		}
 		if len(labelsJSON) > 0 {
-			json.Unmarshal(labelsJSON, &container.Labels)
+			if err := json.Unmarshal(labelsJSON, &container.Labels); err != nil {
+				return nil, fmt.Errorf("unmarshal labels: %w", err)
+			}
 		}
 		if len(envVarsJSON) > 0 {
-			json.Unmarshal(envVarsJSON, &container.EnvVars)
+			if err := json.Unmarshal(envVarsJSON, &container.EnvVars); err != nil {
+				return nil, fmt.Errorf("unmarshal env vars: %w", err)
+			}
 		}
 		if len(mountsJSON) > 0 {
-			json.Unmarshal(mountsJSON, &container.Mounts)
+			if err := json.Unmarshal(mountsJSON, &container.Mounts); err != nil {
+				return nil, fmt.Errorf("unmarshal mounts: %w", err)
+			}
 		}
 		if len(networksJSON) > 0 {
-			json.Unmarshal(networksJSON, &container.Networks)
+			if err := json.Unmarshal(networksJSON, &container.Networks); err != nil {
+				return nil, fmt.Errorf("unmarshal networks: %w", err)
+			}
 		}
 
 		containers = append(containers, container)
@@ -827,18 +847,18 @@ func (r *ContainerRepository) ClearUpdateAvailable(ctx context.Context, id strin
 
 // ContainerStats contains container statistics.
 type ContainerStats struct {
-	Total           int64 `json:"total"`
-	Running         int64 `json:"running"`
-	Stopped         int64 `json:"stopped"`
-	Paused          int64 `json:"paused"`
-	Exited          int64 `json:"exited"`
-	Dead            int64 `json:"dead"`
+	Total            int64 `json:"total"`
+	Running          int64 `json:"running"`
+	Stopped          int64 `json:"stopped"`
+	Paused           int64 `json:"paused"`
+	Exited           int64 `json:"exited"`
+	Dead             int64 `json:"dead"`
 	UpdatesAvailable int64 `json:"updates_available"`
-	GradeA          int64 `json:"grade_a"`
-	GradeB          int64 `json:"grade_b"`
-	GradeC          int64 `json:"grade_c"`
-	GradeD          int64 `json:"grade_d"`
-	GradeF          int64 `json:"grade_f"`
+	GradeA           int64 `json:"grade_a"`
+	GradeB           int64 `json:"grade_b"`
+	GradeC           int64 `json:"grade_c"`
+	GradeD           int64 `json:"grade_d"`
+	GradeF           int64 `json:"grade_f"`
 }
 
 // GetStats retrieves container statistics.
@@ -1276,7 +1296,7 @@ func (r *ContainerRepository) ListCursor(ctx context.Context, opts ContainerList
 	var total int64
 	if opts.Cursor == "" {
 		countQuery := fmt.Sprintf("SELECT COUNT(*) FROM containers %s", whereClause)
-		if err := r.db.QueryRow(ctx, countQuery, args[:len(args)]...).Scan(&total); err != nil {
+		if err := r.db.QueryRow(ctx, countQuery, args...).Scan(&total); err != nil {
 			return nil, fmt.Errorf("count containers: %w", err)
 		}
 	}

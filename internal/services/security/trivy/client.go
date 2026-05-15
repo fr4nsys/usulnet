@@ -202,11 +202,11 @@ func (c *Client) ScanImage(ctx context.Context, image string) ([]security.Issue,
 
 // TrivyReport represents the JSON output from Trivy
 type TrivyReport struct {
-	SchemaVersion int            `json:"SchemaVersion"`
-	ArtifactName  string         `json:"ArtifactName"`
-	ArtifactType  string         `json:"ArtifactType"`
-	Metadata      TrivyMetadata  `json:"Metadata"`
-	Results       []TrivyResult  `json:"Results"`
+	SchemaVersion int           `json:"SchemaVersion"`
+	ArtifactName  string        `json:"ArtifactName"`
+	ArtifactType  string        `json:"ArtifactType"`
+	Metadata      TrivyMetadata `json:"Metadata"`
+	Results       []TrivyResult `json:"Results"`
 }
 
 // TrivyMetadata represents image metadata
@@ -226,9 +226,9 @@ type TrivyOS struct {
 
 // TrivyResult represents scan results for a target
 type TrivyResult struct {
-	Target          string             `json:"Target"`
-	Class           string             `json:"Class"`
-	Type            string             `json:"Type"`
+	Target          string               `json:"Target"`
+	Class           string               `json:"Class"`
+	Type            string               `json:"Type"`
 	Vulnerabilities []TrivyVulnerability `json:"Vulnerabilities"`
 }
 
@@ -532,13 +532,13 @@ type CycloneDXReport struct {
 
 // CycloneDXComponent represents a component in CycloneDX format
 type CycloneDXComponent struct {
-	Type     string                 `json:"type"`
-	Name     string                 `json:"name"`
-	Version  string                 `json:"version"`
-	Purl     string                 `json:"purl"`
-	Licenses []CycloneDXLicense     `json:"licenses,omitempty"`
-	Supplier *CycloneDXSupplier     `json:"supplier,omitempty"`
-	BomRef   string                 `json:"bom-ref"`
+	Type     string             `json:"type"`
+	Name     string             `json:"name"`
+	Version  string             `json:"version"`
+	Purl     string             `json:"purl"`
+	Licenses []CycloneDXLicense `json:"licenses,omitempty"`
+	Supplier *CycloneDXSupplier `json:"supplier,omitempty"`
+	BomRef   string             `json:"bom-ref"`
 }
 
 // CycloneDXLicense represents a license in CycloneDX format
@@ -620,12 +620,12 @@ func DefaultFilesystemOptions() *ScanFilesystemOptions {
 
 // FilesystemScanResult represents the result of a filesystem scan
 type FilesystemScanResult struct {
-	Path           string            `json:"path"`
-	ScannedAt      time.Time         `json:"scanned_at"`
-	Duration       time.Duration     `json:"duration"`
-	Vulnerabilities []security.Issue `json:"vulnerabilities"`
-	Secrets        []SecretFinding   `json:"secrets,omitempty"`
-	Misconfigs     []MisconfigFinding `json:"misconfigs,omitempty"`
+	Path            string             `json:"path"`
+	ScannedAt       time.Time          `json:"scanned_at"`
+	Duration        time.Duration      `json:"duration"`
+	Vulnerabilities []security.Issue   `json:"vulnerabilities"`
+	Secrets         []SecretFinding    `json:"secrets,omitempty"`
+	Misconfigs      []MisconfigFinding `json:"misconfigs,omitempty"`
 }
 
 // SecretFinding represents a detected secret
@@ -764,17 +764,17 @@ func (c *Client) ScanFilesystem(ctx context.Context, path string, opts *ScanFile
 
 // FilesystemReport represents the JSON output from Trivy filesystem scan
 type FilesystemReport struct {
-	SchemaVersion int                   `json:"SchemaVersion"`
-	Results       []FilesystemResult    `json:"Results"`
+	SchemaVersion int                `json:"SchemaVersion"`
+	Results       []FilesystemResult `json:"Results"`
 }
 
 // FilesystemResult represents results for a target in filesystem scan
 type FilesystemResult struct {
-	Target          string                 `json:"Target"`
-	Class           string                 `json:"Class"`
-	Type            string                 `json:"Type"`
-	Vulnerabilities []TrivyVulnerability   `json:"Vulnerabilities,omitempty"`
-	Secrets         []TrivySecret          `json:"Secrets,omitempty"`
+	Target            string               `json:"Target"`
+	Class             string               `json:"Class"`
+	Type              string               `json:"Type"`
+	Vulnerabilities   []TrivyVulnerability `json:"Vulnerabilities,omitempty"`
+	Secrets           []TrivySecret        `json:"Secrets,omitempty"`
 	Misconfigurations []TrivyMisconfig     `json:"Misconfigurations,omitempty"`
 }
 
@@ -889,14 +889,14 @@ func (c *Client) convertMisconfigs(report FilesystemReport) []MisconfigFinding {
 
 // ScanPolicy defines a policy for scanning
 type ScanPolicy struct {
-	Name                string   `json:"name"`
-	BlockOnCritical     bool     `json:"block_on_critical"`
-	BlockOnHigh         bool     `json:"block_on_high"`
-	MaxCriticalCount    int      `json:"max_critical_count"`   // -1 for unlimited
-	MaxHighCount        int      `json:"max_high_count"`       // -1 for unlimited
-	MaxCVSSScore        float64  `json:"max_cvss_score"`       // Block if any CVE exceeds this
-	AllowedCVEs         []string `json:"allowed_cves"`         // CVEs to ignore
-	RequiredFixes       bool     `json:"required_fixes"`       // Only block if fix is available
+	Name             string   `json:"name"`
+	BlockOnCritical  bool     `json:"block_on_critical"`
+	BlockOnHigh      bool     `json:"block_on_high"`
+	MaxCriticalCount int      `json:"max_critical_count"` // -1 for unlimited
+	MaxHighCount     int      `json:"max_high_count"`     // -1 for unlimited
+	MaxCVSSScore     float64  `json:"max_cvss_score"`     // Block if any CVE exceeds this
+	AllowedCVEs      []string `json:"allowed_cves"`       // CVEs to ignore
+	RequiredFixes    bool     `json:"required_fixes"`     // Only block if fix is available
 }
 
 // DefaultScanPolicy returns a default (permissive) scan policy

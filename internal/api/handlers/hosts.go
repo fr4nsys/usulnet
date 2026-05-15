@@ -12,7 +12,6 @@ import (
 	"github.com/go-chi/chi/v5"
 
 	"github.com/fr4nsys/usulnet/internal/api/middleware"
-	"github.com/fr4nsys/usulnet/internal/license"
 	"github.com/fr4nsys/usulnet/internal/models"
 	"github.com/fr4nsys/usulnet/internal/pkg/logger"
 	"github.com/fr4nsys/usulnet/internal/repository/postgres"
@@ -22,8 +21,7 @@ import (
 // HostHandler handles host-related HTTP requests.
 type HostHandler struct {
 	BaseHandler
-	hostService     *host.Service
-	licenseProvider middleware.LicenseProvider
+	hostService *host.Service
 }
 
 // NewHostHandler creates a new host handler.
@@ -34,10 +32,9 @@ func NewHostHandler(hostService *host.Service, log *logger.Logger) *HostHandler 
 	}
 }
 
-// SetLicenseProvider sets the license provider for feature gating.
-func (h *HostHandler) SetLicenseProvider(provider middleware.LicenseProvider) {
-	h.licenseProvider = provider
-}
+// SetLicenseProvider is a no-op kept for callers that still wire the
+// legacy hook; node count is not capped in the AGPL build.
+func (h *HostHandler) SetLicenseProvider(_ middleware.LicenseProvider) {}
 
 // Routes returns the router for host endpoints.
 func (h *HostHandler) Routes() chi.Router {
@@ -52,25 +49,7 @@ func (h *HostHandler) Routes() chi.Router {
 	r.Group(func(r chi.Router) {
 		r.Use(middleware.RequireOperator)
 		r.Post("/test", h.TestConnection)
-
-		// Node creation enforces MaxNodes limit
-		r.Group(func(r chi.Router) {
-			if h.licenseProvider != nil {
-				r.Use(middleware.RequireLimit(
-					h.licenseProvider,
-					"nodes",
-					func(r *http.Request) int {
-						stats, err := h.hostService.GetStats(r.Context())
-						if err != nil {
-							return 0
-						}
-						return stats.Total
-					},
-					func(l license.Limits) int { return l.MaxNodes },
-				))
-			}
-			r.Post("/", h.CreateHost)
-		})
+		r.Post("/", h.CreateHost)
 	})
 
 	r.Route("/{hostID}", func(r chi.Router) {

@@ -88,7 +88,7 @@ func (r *GitRepositoryRepository) GetByID(ctx context.Context, id uuid.UUID) (*m
 	row := r.db.QueryRow(ctx, query, id)
 	repo, err := scanGitRepoRow(row)
 	if err != nil {
-		if err == pgx.ErrNoRows {
+		if errors.Is(err, pgx.ErrNoRows) {
 			return nil, errors.New(errors.CodeNotFound, "git repository not found")
 		}
 		return nil, errors.Wrap(err, errors.CodeDatabaseError, "failed to get git repository")
@@ -102,7 +102,7 @@ func (r *GitRepositoryRepository) GetByProviderID(ctx context.Context, connectio
 	row := r.db.QueryRow(ctx, query, connectionID, providerID)
 	repo, err := scanGitRepoRow(row)
 	if err != nil {
-		if err == pgx.ErrNoRows {
+		if errors.Is(err, pgx.ErrNoRows) {
 			return nil, errors.New(errors.CodeNotFound, "git repository not found")
 		}
 		return nil, errors.Wrap(err, errors.CodeDatabaseError, "failed to get git repository by provider ID")

@@ -182,9 +182,10 @@ func (s *Service) TestConnection(ctx context.Context, id uuid.UUID) (*TestResult
 
 	token, err := s.encryptor.DecryptString(conn.APITokenEncrypted)
 	if err != nil {
+		// result envelope: error surfaces via TestResult.Error
 		result.Success = false
 		result.Error = "failed to decrypt API token"
-		return result, nil
+		return result, nil //nolint:nilerr
 	}
 
 	client := NewClient(conn.URL, token)

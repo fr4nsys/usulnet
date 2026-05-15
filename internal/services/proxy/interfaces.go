@@ -60,3 +60,45 @@ type Encryptor interface {
 	EncryptString(plaintext string) (string, error)
 	DecryptString(ciphertext string) (string, error)
 }
+
+// AccessListRepository defines persistence for proxy access lists (auth + IP rules).
+type AccessListRepository interface {
+	Create(ctx context.Context, al *models.ProxyAccessList) error
+	GetByID(ctx context.Context, id uuid.UUID) (*models.ProxyAccessList, error)
+	List(ctx context.Context, hostID uuid.UUID) ([]*models.ProxyAccessList, error)
+	Update(ctx context.Context, al *models.ProxyAccessList) error
+	Delete(ctx context.Context, id uuid.UUID) error
+}
+
+// DeadHostRepository defines persistence for proxy dead hosts (404 catch-alls).
+type DeadHostRepository interface {
+	Create(ctx context.Context, d *models.ProxyDeadHost) error
+	GetByID(ctx context.Context, id uuid.UUID) (*models.ProxyDeadHost, error)
+	List(ctx context.Context, hostID uuid.UUID) ([]*models.ProxyDeadHost, error)
+	Update(ctx context.Context, d *models.ProxyDeadHost) error
+	Delete(ctx context.Context, id uuid.UUID) error
+}
+
+// LocationRepository defines persistence for per-host path routes.
+type LocationRepository interface {
+	ListByHost(ctx context.Context, proxyHostID uuid.UUID) ([]models.ProxyLocation, error)
+	ReplaceForHost(ctx context.Context, proxyHostID uuid.UUID, locations []models.ProxyLocation) error
+}
+
+// RedirectionRepository defines persistence for proxy redirections.
+type RedirectionRepository interface {
+	Create(ctx context.Context, rd *models.ProxyRedirection) error
+	GetByID(ctx context.Context, id uuid.UUID) (*models.ProxyRedirection, error)
+	List(ctx context.Context, hostID uuid.UUID) ([]*models.ProxyRedirection, error)
+	Update(ctx context.Context, rd *models.ProxyRedirection) error
+	Delete(ctx context.Context, id uuid.UUID) error
+}
+
+// StreamRepository defines persistence for raw TCP/UDP streams.
+type StreamRepository interface {
+	Create(ctx context.Context, s *models.ProxyStream) error
+	GetByID(ctx context.Context, id uuid.UUID) (*models.ProxyStream, error)
+	List(ctx context.Context, hostID uuid.UUID) ([]*models.ProxyStream, error)
+	Update(ctx context.Context, s *models.ProxyStream) error
+	Delete(ctx context.Context, id uuid.UUID) error
+}

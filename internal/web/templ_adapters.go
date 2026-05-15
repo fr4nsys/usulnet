@@ -362,8 +362,8 @@ func toTemplContainerFull(c ContainerView) containers.ContainerFull {
 		CreatedAgo:    c.CreatedHuman,
 		CPUShares:     0,
 		Memory:        c.MemoryLimit,
-		CPUs:          0,       // Actual CPU quota comes from Docker inspect, not from stats
-		Hostname:      "",      // Actual hostname comes from Docker inspect
+		CPUs:          0,  // Actual CPU quota comes from Docker inspect, not from stats
+		Hostname:      "", // Actual hostname comes from Docker inspect
 		SecurityScore: c.SecurityScore,
 		SecurityGrade: c.SecurityGrade,
 		HasUpdates:    c.UpdateAvailable,

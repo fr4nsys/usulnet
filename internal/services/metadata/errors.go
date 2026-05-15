@@ -39,7 +39,7 @@ var (
 
 	// ErrPathEscape is returned by the local ArtifactStore when the
 	// computed on-disk path would escape the store's root. It is a
-	// defence in depth against operator mistakes — the Service should
+	// defense in depth against operator mistakes — the Service should
 	// have already rejected unsafe filenames via ErrInvalidFilename.
 	ErrPathEscape = errors.New("path escapes artifact store root")
 

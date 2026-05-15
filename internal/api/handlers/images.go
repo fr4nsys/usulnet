@@ -606,13 +606,13 @@ func (h *ImageHandler) BuildImage(w http.ResponseWriter, r *http.Request) {
 	}
 
 	opts := image.BuildOptions{
-		Tags:       req.Tags,
-		BuildArgs:  buildArgs,
-		Target:     req.Target,
-		NoCache:    req.NoCache,
-		Pull:       req.Pull,
-		Labels:     req.Labels,
-		Platform:   req.Platform,
+		Tags:      req.Tags,
+		BuildArgs: buildArgs,
+		Target:    req.Target,
+		NoCache:   req.NoCache,
+		Pull:      req.Pull,
+		Labels:    req.Labels,
+		Platform:  req.Platform,
 	}
 
 	// Collect logs

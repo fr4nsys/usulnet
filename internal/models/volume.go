@@ -60,10 +60,10 @@ type VolumeInspect struct {
 
 // ClusterVolume represents cluster volume information (Swarm)
 type ClusterVolume struct {
-	ID      string              `json:"id"`
+	ID      string               `json:"id"`
 	Version ClusterVolumeVersion `json:"version"`
-	Spec    ClusterVolumeSpec   `json:"spec"`
-	Info    ClusterVolumeInfo   `json:"info,omitempty"`
+	Spec    ClusterVolumeSpec    `json:"spec"`
+	Info    ClusterVolumeInfo    `json:"info,omitempty"`
 }
 
 // ClusterVolumeVersion represents cluster volume version
@@ -73,20 +73,20 @@ type ClusterVolumeVersion struct {
 
 // ClusterVolumeSpec represents cluster volume specification
 type ClusterVolumeSpec struct {
-	Group                string                 `json:"group,omitempty"`
-	AccessMode           *VolumeAccessMode      `json:"access_mode,omitempty"`
-	Secrets              []VolumeSecret         `json:"secrets,omitempty"`
-	AccessibilityReqs    *TopologyRequirement   `json:"accessibility_requirements,omitempty"`
-	CapacityRange        *CapacityRange         `json:"capacity_range,omitempty"`
-	Availability         string                 `json:"availability,omitempty"`
+	Group             string               `json:"group,omitempty"`
+	AccessMode        *VolumeAccessMode    `json:"access_mode,omitempty"`
+	Secrets           []VolumeSecret       `json:"secrets,omitempty"`
+	AccessibilityReqs *TopologyRequirement `json:"accessibility_requirements,omitempty"`
+	CapacityRange     *CapacityRange       `json:"capacity_range,omitempty"`
+	Availability      string               `json:"availability,omitempty"`
 }
 
 // VolumeAccessMode represents volume access mode
 type VolumeAccessMode struct {
-	Scope         string `json:"scope,omitempty"`
-	Sharing       string `json:"sharing,omitempty"`
-	MountVolume   any    `json:"mount_volume,omitempty"`
-	BlockVolume   any    `json:"block_volume,omitempty"`
+	Scope       string `json:"scope,omitempty"`
+	Sharing     string `json:"sharing,omitempty"`
+	MountVolume any    `json:"mount_volume,omitempty"`
+	BlockVolume any    `json:"block_volume,omitempty"`
 }
 
 // VolumeSecret represents a volume secret
@@ -114,10 +114,10 @@ type CapacityRange struct {
 
 // ClusterVolumeInfo represents cluster volume info
 type ClusterVolumeInfo struct {
-	CapacityBytes           int64             `json:"capacity_bytes,omitempty"`
-	VolumeContext           map[string]string `json:"volume_context,omitempty"`
-	VolumeID                string            `json:"volume_id,omitempty"`
-	AccessibleTopology      []Topology        `json:"accessible_topology,omitempty"`
+	CapacityBytes      int64             `json:"capacity_bytes,omitempty"`
+	VolumeContext      map[string]string `json:"volume_context,omitempty"`
+	VolumeID           string            `json:"volume_id,omitempty"`
+	AccessibleTopology []Topology        `json:"accessible_topology,omitempty"`
 }
 
 // CreateVolumeInput represents input for creating a volume
@@ -147,20 +147,20 @@ type VolumePruneReport struct {
 
 // VolumeBackup represents a volume backup
 type VolumeBackup struct {
-	ID            uuid.UUID  `json:"id" db:"id"`
-	VolumeName    string     `json:"volume_name" db:"volume_name"`
-	HostID        uuid.UUID  `json:"host_id" db:"host_id"`
-	Path          string     `json:"path" db:"path"`
-	SizeBytes     int64      `json:"size_bytes" db:"size_bytes"`
-	Compression   string     `json:"compression" db:"compression"` // none, gzip, zstd
-	Encrypted     bool       `json:"encrypted" db:"encrypted"`
-	Trigger       string     `json:"trigger" db:"trigger"` // manual, scheduled, pre_update
-	Status        string     `json:"status" db:"status"`   // pending, running, completed, failed
-	ErrorMessage  *string    `json:"error_message,omitempty" db:"error_message"`
-	StartedAt     *time.Time `json:"started_at,omitempty" db:"started_at"`
-	CompletedAt   *time.Time `json:"completed_at,omitempty" db:"completed_at"`
-	ExpiresAt     *time.Time `json:"expires_at,omitempty" db:"expires_at"`
-	CreatedAt     time.Time  `json:"created_at" db:"created_at"`
+	ID           uuid.UUID  `json:"id" db:"id"`
+	VolumeName   string     `json:"volume_name" db:"volume_name"`
+	HostID       uuid.UUID  `json:"host_id" db:"host_id"`
+	Path         string     `json:"path" db:"path"`
+	SizeBytes    int64      `json:"size_bytes" db:"size_bytes"`
+	Compression  string     `json:"compression" db:"compression"` // none, gzip, zstd
+	Encrypted    bool       `json:"encrypted" db:"encrypted"`
+	Trigger      string     `json:"trigger" db:"trigger"` // manual, scheduled, pre_update
+	Status       string     `json:"status" db:"status"`   // pending, running, completed, failed
+	ErrorMessage *string    `json:"error_message,omitempty" db:"error_message"`
+	StartedAt    *time.Time `json:"started_at,omitempty" db:"started_at"`
+	CompletedAt  *time.Time `json:"completed_at,omitempty" db:"completed_at"`
+	ExpiresAt    *time.Time `json:"expires_at,omitempty" db:"expires_at"`
+	CreatedAt    time.Time  `json:"created_at" db:"created_at"`
 }
 
 // IsCompleted returns true if backup is completed
@@ -183,17 +183,17 @@ func (b *VolumeBackup) IsExpired() bool {
 
 // CreateVolumeBackupInput represents input for creating a volume backup
 type CreateVolumeBackupInput struct {
-	VolumeName  string `json:"volume_name" validate:"required"`
-	Compression string `json:"compression,omitempty" validate:"omitempty,oneof=none gzip zstd"`
-	Encrypted   bool   `json:"encrypted,omitempty"`
-	RetentionDays *int `json:"retention_days,omitempty" validate:"omitempty,min=1,max=365"`
+	VolumeName    string `json:"volume_name" validate:"required"`
+	Compression   string `json:"compression,omitempty" validate:"omitempty,oneof=none gzip zstd"`
+	Encrypted     bool   `json:"encrypted,omitempty"`
+	RetentionDays *int   `json:"retention_days,omitempty" validate:"omitempty,min=1,max=365"`
 }
 
 // RestoreVolumeInput represents input for restoring a volume
 type RestoreVolumeInput struct {
-	BackupID       uuid.UUID `json:"backup_id" validate:"required"`
-	TargetVolume   string    `json:"target_volume,omitempty"`
-	OverwriteExisting bool   `json:"overwrite_existing,omitempty"`
+	BackupID          uuid.UUID `json:"backup_id" validate:"required"`
+	TargetVolume      string    `json:"target_volume,omitempty"`
+	OverwriteExisting bool      `json:"overwrite_existing,omitempty"`
 }
 
 // VolumeStats holds volume statistics.
@@ -208,9 +208,9 @@ type VolumeStats struct {
 
 // VolumeBackupInfo holds information needed for volume backup.
 type VolumeBackupInfo struct {
-	Name       string `json:"name"`
-	Driver     string `json:"driver"`
-	Mountpoint string `json:"mountpoint"`
-	Size       int64  `json:"size"`
+	Name       string            `json:"name"`
+	Driver     string            `json:"driver"`
+	Mountpoint string            `json:"mountpoint"`
+	Size       int64             `json:"size"`
 	Labels     map[string]string `json:"labels,omitempty"`
 }

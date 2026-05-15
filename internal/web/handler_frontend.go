@@ -46,9 +46,9 @@ const (
 // renderTempl renders a templ component to the response writer.
 func (h *Handler) renderTempl(w http.ResponseWriter, r *http.Request, component templ.Component) {
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	err := component.Render(r.Context(), w)
-	if err != nil {
+	if err := component.Render(r.Context(), w); err != nil {
 		http.Error(w, "Template rendering error: "+err.Error(), http.StatusInternalServerError)
+		return
 	}
 }
 
@@ -56,9 +56,9 @@ func (h *Handler) renderTempl(w http.ResponseWriter, r *http.Request, component 
 func (h *Handler) renderTemplWithStatus(w http.ResponseWriter, r *http.Request, status int, component templ.Component) {
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.WriteHeader(status)
-	err := component.Render(r.Context(), w)
-	if err != nil {
+	if err := component.Render(r.Context(), w); err != nil {
 		http.Error(w, "Template rendering error: "+err.Error(), http.StatusInternalServerError)
+		return
 	}
 }
 
@@ -1095,10 +1095,10 @@ func (h *Handler) RenderErrorTempl(w http.ResponseWriter, r *http.Request, code 
 		Version: h.version,
 	}
 
-	err := pages.Error(errorData).Render(r.Context(), w)
-	if err != nil {
+	if err := pages.Error(errorData).Render(r.Context(), w); err != nil {
 		// Fallback to simple error if template fails
 		http.Error(w, message, code)
+		return
 	}
 }
 
@@ -1183,9 +1183,10 @@ func (h *Handler) ContainersPartialTempl(w http.ResponseWriter, r *http.Request)
 	for _, c := range containersList {
 		// Generate row HTML
 		stateClass := "bg-red-500"
-		if c.State == "running" {
+		switch c.State {
+		case "running":
 			stateClass = "bg-green-500"
-		} else if c.State == "paused" {
+		case "paused":
 			stateClass = "bg-yellow-500"
 		}
 

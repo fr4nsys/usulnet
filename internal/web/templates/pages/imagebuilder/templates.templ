@@ -1,0 +1,113 @@
+// SPDX-License-Identifier: AGPL-3.0-or-later
+// Copyright (c) 2024-2026 usulnet contributors
+// https://github.com/fr4nsys/usulnet
+
+package imagebuilder
+
+import (
+	"fmt"
+	"github.com/fr4nsys/usulnet/internal/web/templates/layouts"
+)
+
+// TemplateListData carries the inputs the template list page renders.
+type TemplateListData struct {
+	PageData  layouts.PageData
+	Templates []TemplateView
+}
+
+// TemplateView is the row shape templates pages render.
+type TemplateView struct {
+	ID          string
+	Name        string
+	Description string
+	Category    string
+	IsBuiltin   bool
+	CreatedAt   string
+}
+
+templ TemplateList(data TemplateListData) {
+	@layouts.Base(data.PageData) {
+		<div class="space-y-6">
+			<!-- Header -->
+			<div class="flex items-center justify-between">
+				<div>
+					<h1 class="text-2xl font-display font-bold text-white">Dockerfile Templates</h1>
+					<p class="text-gray-400 mt-1">Reusable Dockerfile templates for common patterns</p>
+				</div>
+				<a href="/image-builder/templates/new" class="btn-primary">
+					<i class="fas fa-plus mr-2"></i>New Template
+				</a>
+			</div>
+
+			@Nav("templates")
+
+			if len(data.Templates) > 0 {
+				<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+					for _, t := range data.Templates {
+						<div class="card p-4 hover:border-primary-500/30 transition-colors">
+							<div class="flex items-start justify-between mb-2">
+								<div>
+									<h3 class="text-sm font-medium text-white">
+										{ t.Name }
+										if t.IsBuiltin {
+											<span class="ml-1 inline-flex items-center text-[10px] uppercase tracking-wide bg-primary-500/10 text-primary-300 px-1.5 py-0.5 rounded">builtin</span>
+										}
+									</h3>
+									<p class="text-xs text-gray-400 mt-0.5">{ t.Description }</p>
+								</div>
+								@categoryBadge(t.Category)
+							</div>
+							<div class="flex items-center justify-between mt-3 pt-3 border-t border-dark-600">
+								<span class="text-xs text-gray-500">{ t.CreatedAt }</span>
+								<div class="flex gap-2">
+									<a href={ templ.SafeURL(fmt.Sprintf("/image-builder/new?template=%s", t.ID)) } class="text-primary-400 hover:text-primary-300 text-xs">
+										Use
+									</a>
+									if !t.IsBuiltin {
+										<form
+											method="POST"
+											action={ templ.SafeURL(fmt.Sprintf("/image-builder/templates/%s/delete", t.ID)) }
+											onsubmit="return confirm('Delete this template?');"
+											class="inline"
+										>
+											<input type="hidden" name="csrf_token" value={ data.PageData.CSRFToken }/>
+											<button type="submit" class="text-red-400 hover:text-red-300 text-xs">
+												Delete
+											</button>
+										</form>
+									}
+								</div>
+							</div>
+						</div>
+					}
+				</div>
+			}
+
+			if len(data.Templates) == 0 {
+				<div class="card p-8 text-center">
+					<i class="fas fa-file-code text-4xl text-gray-400 mb-4"></i>
+					<h3 class="text-lg font-medium text-white mb-2">No templates</h3>
+					<p class="text-gray-400 mb-4">Create reusable Dockerfile templates for your builds</p>
+					<a href="/image-builder/templates/new" class="btn-primary">
+						<i class="fas fa-plus mr-2"></i>New Template
+					</a>
+				</div>
+			}
+		</div>
+	}
+}
+
+templ categoryBadge(category string) {
+	switch category {
+		case "web":
+			<span class="inline-flex items-center text-xs bg-blue-500/10 text-blue-400 px-2 py-0.5 rounded">Web</span>
+		case "database":
+			<span class="inline-flex items-center text-xs bg-purple-500/10 text-purple-400 px-2 py-0.5 rounded">Database</span>
+		case "api":
+			<span class="inline-flex items-center text-xs bg-green-500/10 text-green-400 px-2 py-0.5 rounded">API</span>
+		case "worker":
+			<span class="inline-flex items-center text-xs bg-yellow-500/10 text-yellow-400 px-2 py-0.5 rounded">Worker</span>
+		default:
+			<span class="inline-flex items-center text-xs bg-gray-500/10 text-gray-400 px-2 py-0.5 rounded">Custom</span>
+	}
+}

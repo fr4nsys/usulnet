@@ -1,0 +1,323 @@
+package sslobservatory
+
+import (
+	"fmt"
+	"strings"
+
+	"github.com/fr4nsys/usulnet/internal/web/templates/layouts"
+)
+
+type TargetDetailData struct {
+	PageData    layouts.PageData
+	Target      TargetView
+	Thresholds  []int
+	ExtraSNI    []string
+	LatestScans []ScanView
+	ScanHistory []ScanView
+}
+
+type ScanView struct {
+	ID               string
+	ScanHostname     string
+	Grade            string
+	Score            int
+	ProtocolVersions string
+	CipherSuite      string
+	CertCN           string
+	CertIssuer       string
+	CertSANs         string
+	CertKeyType      string
+	CertKeyBits      int
+	CertNotBefore    string
+	CertNotAfter     string
+	ChainValid       bool
+	ChainLength      int
+	HasHSTS          bool
+	HasOCSP          bool
+	HasSCT           bool
+	ErrorMessage     string
+	ScanDuration     string
+	ScannedAt        string
+}
+
+templ TargetDetail(data TargetDetailData) {
+	@layouts.Base(data.PageData) {
+		<div class="space-y-6">
+			@Nav("targets")
+
+			<div class="max-w-5xl">
+				<!-- Header -->
+				<div class="flex items-center justify-between mb-6">
+					<div class="flex items-center gap-3">
+						<a href="/ssl/targets" class="text-gray-400 hover:text-white">
+							<i class="fas fa-arrow-left"></i>
+						</a>
+						<h2 class="text-xl font-display font-bold text-white">{ data.Target.Name }</h2>
+						if !data.Target.Enabled {
+							<span class="badge badge-danger">Disabled</span>
+						}
+					</div>
+					<div class="flex items-center gap-2">
+						<form method="POST" action={ templ.SafeURL(fmt.Sprintf("/ssl/targets/%s/scan", data.Target.ID)) } style="display:inline">
+							<input type="hidden" name="csrf_token" value={ data.PageData.CSRFToken }/>
+							<button type="submit" class="btn btn-primary">
+								<i class="fas fa-sync-alt mr-1"></i> Scan Now
+							</button>
+						</form>
+						<a href={ templ.SafeURL(fmt.Sprintf("/ssl/targets/%s/edit", data.Target.ID)) } class="btn btn-secondary">
+							<i class="fas fa-edit mr-1"></i> Edit
+						</a>
+						<button
+							hx-delete={ fmt.Sprintf("/ssl/targets/%s", data.Target.ID) }
+							hx-confirm="Delete this SSL target?"
+							class="btn btn-danger"
+						>
+							<i class="fas fa-trash mr-1"></i> Delete
+						</button>
+					</div>
+				</div>
+
+				<!-- Target Info -->
+				<div class="card p-6 mb-6">
+					<h3 class="text-lg font-semibold text-white mb-4">Target Information</h3>
+					<div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+						<div>
+							<p class="text-xs text-gray-500 uppercase tracking-wider">Hostname</p>
+							<p class="text-sm font-mono text-white">{ data.Target.Hostname }</p>
+						</div>
+						<div>
+							<p class="text-xs text-gray-500 uppercase tracking-wider">Port</p>
+							<p class="text-sm font-mono text-white">{ fmt.Sprintf("%d", data.Target.Port) }</p>
+						</div>
+						<div>
+							<p class="text-xs text-gray-500 uppercase tracking-wider">Last Scan</p>
+							if data.Target.LastScan != "" {
+								<p class="text-sm text-white">{ data.Target.LastScan }</p>
+							} else {
+								<p class="text-sm text-gray-500">Never</p>
+							}
+						</div>
+						<div>
+							<p class="text-xs text-gray-500 uppercase tracking-wider">Status</p>
+							if data.Target.Enabled {
+								<span class="badge badge-success">Enabled</span>
+							} else {
+								<span class="badge badge-danger">Disabled</span>
+							}
+						</div>
+					</div>
+
+					if len(data.ExtraSNI) > 0 || len(data.Thresholds) > 0 {
+						<div class="mt-4 pt-4 border-t border-dark-700 grid grid-cols-1 md:grid-cols-2 gap-4">
+							if len(data.ExtraSNI) > 0 {
+								<div>
+									<p class="text-xs text-gray-500 uppercase tracking-wider">Extra SNI Hostnames</p>
+									<p class="text-sm font-mono text-gray-300 break-all">{ strings.Join(data.ExtraSNI, ", ") }</p>
+								</div>
+							}
+							if len(data.Thresholds) > 0 {
+								<div>
+									<p class="text-xs text-gray-500 uppercase tracking-wider">Alert Thresholds (days)</p>
+									<p class="text-sm font-mono text-gray-300">{ joinInts(data.Thresholds) }</p>
+								</div>
+							}
+						</div>
+					}
+				</div>
+
+				<!-- Latest scans (one per hostname) -->
+				if len(data.LatestScans) > 0 {
+					for _, scan := range data.LatestScans {
+						@latestScanCard(scan)
+					}
+				} else {
+					<div class="card p-6 mb-6 text-center">
+						<i class="fas fa-search text-3xl text-gray-400 mb-3"></i>
+						<p class="text-gray-400">No scan results yet. Run a scan to analyze this target.</p>
+					</div>
+				}
+
+				<!-- Scan History -->
+				if len(data.ScanHistory) > 0 {
+					<div class="card">
+						<div class="p-4 border-b border-dark-700">
+							<h3 class="text-lg font-semibold text-white">Scan History</h3>
+						</div>
+						<div class="overflow-x-auto">
+							<table class="table">
+								<thead>
+									<tr>
+										<th>Date</th>
+										<th>Hostname</th>
+										<th>Grade</th>
+										<th>Score</th>
+										<th>Protocol</th>
+										<th>Chain Valid</th>
+										<th>Duration</th>
+										<th>Error</th>
+									</tr>
+								</thead>
+								<tbody>
+									for _, scan := range data.ScanHistory {
+										<tr>
+											<td class="text-sm text-gray-300">{ scan.ScannedAt }</td>
+											<td class="text-sm font-mono text-gray-300">{ scan.ScanHostname }</td>
+											<td>
+												@GradeBadge(scan.Grade)
+											</td>
+											<td class="text-sm text-white">{ fmt.Sprintf("%d", scan.Score) }</td>
+											<td class="text-sm font-mono text-gray-300">{ scan.ProtocolVersions }</td>
+											<td>
+												if scan.ChainValid {
+													<span class="badge badge-success text-xs">Valid</span>
+												} else {
+													<span class="badge badge-danger text-xs">Invalid</span>
+												}
+											</td>
+											<td class="text-sm text-gray-400">{ scan.ScanDuration }</td>
+											<td>
+												if scan.ErrorMessage != "" {
+													<span class="text-sm text-red-400 truncate max-w-xs" title={ scan.ErrorMessage }>{ scan.ErrorMessage }</span>
+												} else {
+													<span class="text-sm text-gray-500">-</span>
+												}
+											</td>
+										</tr>
+									}
+								</tbody>
+							</table>
+						</div>
+					</div>
+				}
+			</div>
+		</div>
+	}
+}
+
+templ latestScanCard(scan ScanView) {
+	<div class="card p-6 mb-6">
+		<div class="flex items-center justify-between mb-4">
+			<h3 class="text-lg font-semibold text-white">
+				Latest Scan
+				<span class="text-sm font-mono text-gray-400 ml-2">{ scan.ScanHostname }</span>
+			</h3>
+			@GradeBadge(scan.Grade)
+		</div>
+
+		if scan.ErrorMessage != "" {
+			<div class="bg-red-500/10 border border-red-500/20 rounded-lg p-4 mb-4">
+				<p class="text-red-400 text-sm">{ scan.ErrorMessage }</p>
+			</div>
+		}
+
+		<div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+			<div>
+				<p class="text-xs text-gray-500 uppercase tracking-wider">Score</p>
+				<p class="text-sm text-white font-bold">{ fmt.Sprintf("%d", scan.Score) } / 100</p>
+			</div>
+			<div>
+				<p class="text-xs text-gray-500 uppercase tracking-wider">Scan Duration</p>
+				<p class="text-sm text-white">{ scan.ScanDuration }</p>
+			</div>
+			<div>
+				<p class="text-xs text-gray-500 uppercase tracking-wider">Protocol</p>
+				<p class="text-sm font-mono text-white">{ scan.ProtocolVersions }</p>
+			</div>
+			<div>
+				<p class="text-xs text-gray-500 uppercase tracking-wider">Cipher Suite</p>
+				<p class="text-sm font-mono text-white break-all">{ scan.CipherSuite }</p>
+			</div>
+			<div>
+				<p class="text-xs text-gray-500 uppercase tracking-wider">Scanned At</p>
+				<p class="text-sm text-white">{ scan.ScannedAt }</p>
+			</div>
+		</div>
+
+		<!-- Certificate Information -->
+		<div class="mt-6 pt-4 border-t border-dark-700">
+			<h4 class="text-md font-semibold text-white mb-3">Certificate Information</h4>
+			<div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+				<div>
+					<p class="text-xs text-gray-500 uppercase tracking-wider">Common Name</p>
+					<p class="text-sm font-mono text-white">{ scan.CertCN }</p>
+				</div>
+				<div>
+					<p class="text-xs text-gray-500 uppercase tracking-wider">Issuer</p>
+					<p class="text-sm text-white">{ scan.CertIssuer }</p>
+				</div>
+				<div>
+					<p class="text-xs text-gray-500 uppercase tracking-wider">Key Type</p>
+					<p class="text-sm font-mono text-white">{ scan.CertKeyType } { fmt.Sprintf("%d", scan.CertKeyBits) }-bit</p>
+				</div>
+				<div>
+					<p class="text-xs text-gray-500 uppercase tracking-wider">Not Before</p>
+					<p class="text-sm text-white">{ scan.CertNotBefore }</p>
+				</div>
+				<div>
+					<p class="text-xs text-gray-500 uppercase tracking-wider">Not After</p>
+					<p class="text-sm text-white">{ scan.CertNotAfter }</p>
+				</div>
+				<div>
+					<p class="text-xs text-gray-500 uppercase tracking-wider">Chain Valid</p>
+					if scan.ChainValid {
+						<span class="badge badge-success">Valid</span>
+					} else {
+						<span class="badge badge-danger">Invalid</span>
+					}
+				</div>
+				<div>
+					<p class="text-xs text-gray-500 uppercase tracking-wider">Chain Length</p>
+					<p class="text-sm text-white">{ fmt.Sprintf("%d", scan.ChainLength) }</p>
+				</div>
+				if scan.CertSANs != "" {
+					<div class="col-span-2">
+						<p class="text-xs text-gray-500 uppercase tracking-wider">SANs</p>
+						<p class="text-sm font-mono text-gray-300 break-all">{ scan.CertSANs }</p>
+					</div>
+				}
+			</div>
+		</div>
+
+		<!-- Security Features -->
+		<div class="mt-6 pt-4 border-t border-dark-700">
+			<h4 class="text-md font-semibold text-white mb-3">Security Features</h4>
+			<div class="flex flex-wrap gap-3">
+				<div class="flex items-center gap-2">
+					if scan.HasHSTS {
+						<i class="fas fa-check-circle text-green-400"></i>
+					} else {
+						<i class="fas fa-times-circle text-red-400"></i>
+					}
+					<span class="text-sm text-gray-300">HSTS</span>
+				</div>
+				<div class="flex items-center gap-2">
+					if scan.HasOCSP {
+						<i class="fas fa-check-circle text-green-400"></i>
+					} else {
+						<i class="fas fa-times-circle text-red-400"></i>
+					}
+					<span class="text-sm text-gray-300">OCSP Stapling</span>
+				</div>
+				<div class="flex items-center gap-2">
+					if scan.HasSCT {
+						<i class="fas fa-check-circle text-green-400"></i>
+					} else {
+						<i class="fas fa-times-circle text-red-400"></i>
+					}
+					<span class="text-sm text-gray-300">Certificate Transparency</span>
+				</div>
+			</div>
+		</div>
+	</div>
+}
+
+func joinInts(in []int) string {
+	if len(in) == 0 {
+		return ""
+	}
+	out := fmt.Sprintf("%d", in[0])
+	for _, v := range in[1:] {
+		out += ", " + fmt.Sprintf("%d", v)
+	}
+	return out
+}

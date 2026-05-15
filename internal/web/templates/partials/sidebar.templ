@@ -2,6 +2,7 @@ package partials
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/fr4nsys/usulnet/internal/web/templates/types"
 )
@@ -15,7 +16,13 @@ type NavItem struct {
 	Badge  int
 }
 
+// Sidebar renders the main navigation. The `edition` and `editionName`
+// parameters are retained so existing call sites do not need to change,
+// but the AGPL build never branches on them — every navigation item is
+// registered unconditionally per `docs/0526/x/principles.md` principle 2.
 templ Sidebar(active string, user *types.UserData, stats *types.StatsData, edition string, editionName string, prefs *types.SidebarPreferences, reconEnabled bool) {
+	{{ _ = edition }}
+	{{ _ = editionName }}
 	<nav class="fixed top-0 left-0 bottom-0 w-64 bg-dark-800 border-r border-dark-600 flex flex-col z-40">
 		<!-- Logo -->
 		<div class="p-4 border-b border-dark-600">
@@ -39,12 +46,8 @@ templ Sidebar(active string, user *types.UserData, stats *types.StatsData, editi
 					@navItem("Dashboard", "fa-th-large", "/", active == "dashboard", 0)
 					@navItem("Infrastructure", "fa-globe", "/overview", active == "overview", 0)
 					@navItem("Nodes", "fa-server", "/nodes", active == "nodes", 0)
-					if isEditionAvailable(edition, "biz") {
-						if !prefs.IsHidden("swarm") {
-							@navItem("Swarm", "fa-network-wired", "/swarm", active == "swarm", 0)
-						}
-					} else {
-						@navItemLocked("Swarm", "fa-network-wired", "biz")
+					if !prefs.IsHidden("swarm") {
+						@navItem("Swarm", "fa-network-wired", "/swarm", active == "swarm", 0)
 					}
 				</div>
 			</div>
@@ -71,15 +74,19 @@ templ Sidebar(active string, user *types.UserData, stats *types.StatsData, editi
 			@sidebarSection("operations", "Operations", prefs) {
 				@navItemDanger("Security", "fa-shield-alt", "/security", active == "security", getBadge(stats, "security"))
 				@navItem("Vulnerabilities", "fa-bug", "/vulnerabilities", active == "vulnerabilities", 0)
-				if isEditionAvailable(edition, "ee") {
-					if !prefs.IsHidden("compliance") {
-						@navItem("Compliance", "fa-check-double", "/compliance", active == "compliance", 0)
-					}
-				} else {
-					@navItemLocked("Compliance", "fa-check-double", "ee")
+				@navItem("Firewall", "fa-fire", "/firewall", active == "firewall", 0)
+				@navItem("WireGuard", "fa-shield-halved", "/wireguard", active == "wireguard", 0)
+				@navItem("Crontab", "fa-clock", "/crontab", active == "crontab", 0)
+				@navItem("Docker Engine", "fab fa-docker", "/config/docker", active == "docker-config", 0)
+				@navItem("Image Builder", "fa-hammer", "/image-builder", active == "image-builder", 0)
+				@navItem("Rollback", "fa-undo-alt", "/rollback", active == "rollback", 0)
+				@navItem("SSL Observatory", "fa-lock", "/ssl", active == "ssl", 0)
+				if !prefs.IsHidden("compliance") {
+					@navItem("Compliance", "fa-check-double", "/compliance", active == "compliance", 0)
 				}
 				@navItemPrimary("Updates", "fa-sync-alt", "/updates", active == "updates", getBadge(stats, "updates"))
 				@navItem("Backups", "fa-archive", "/backups", active == "backups", 0)
+				@navItem("Backup Verify", "fa-clipboard-check", "/backup-verify", active == "backup-verify", 0)
 				if !prefs.IsHidden("config") {
 					@navItem("Config", "fa-cogs", "/config", active == "config", 0)
 				}
@@ -115,6 +122,7 @@ templ Sidebar(active string, user *types.UserData, stats *types.StatsData, editi
 			@sidebarSection("tools", "Tools", prefs) {
 				@navItem("Terminal Hub", "fa-terminal", "/terminal", active == "terminal", 0)
 				@navItem("Editor", "fa-edit", "/editor", active == "editor", 0)
+				@navItem("Calendar", "fa-calendar", "/calendar", active == "calendar", 0)
 				@navItem("Cheat Sheet", "fa-book", "/tools/cheatsheet", active == "cheatsheet", 0)
 				if !prefs.IsHidden("ansible") {
 					@navItem("Ansible", "fa-cogs", "/tools/ansible", active == "ansible", 0)
@@ -129,15 +137,15 @@ templ Sidebar(active string, user *types.UserData, stats *types.StatsData, editi
 				if !prefs.IsHidden("proxy") {
 					@navItem("Reverse Proxy", "fa-random", "/proxy", active == "proxy", 0)
 				}
+				if !prefs.IsHidden("dns") {
+					@navItem("DNS Providers", "fa-cloud", "/dns", active == "dns", 0)
+				}
+				@navItem("Marketplace", "fa-store", "/marketplace", active == "marketplace", 0)
 				if !prefs.IsHidden("repositories") {
 					@navItem("Repositories", "fa-code-branch", "/integrations/gitea", active == "gitea", 0)
 				}
-				if isEditionAvailable(edition, "biz") {
-					if !prefs.IsHidden("gitops") {
-						@navItem("GitOps", "fa-code-branch", "/gitops", active == "gitops", 0)
-					}
-				} else {
-					@navItemLocked("GitOps", "fa-code-branch", "biz")
+				if !prefs.IsHidden("gitops") {
+					@navItem("GitOps", "fa-code-branch", "/gitops", active == "gitops", 0)
 				}
 				@navItem("Storage", "fa-database", "/storage", active == "storage", 0)
 				@navItem("Notifications", "fa-bell", "/notifications", active == "notifications", 0)
@@ -153,12 +161,8 @@ templ Sidebar(active string, user *types.UserData, stats *types.StatsData, editi
 					@navItem("Health", "fa-heartbeat", "/health-dashboard", active == "health", 0)
 				}
 				@navItem("Logs", "fa-file-alt", "/logs", active == "logs", 0)
-				if isEditionAvailable(edition, "ee") {
-					if !prefs.IsHidden("log-management") {
-						@navItem("Log Analysis", "fa-search-plus", "/logs/management", active == "log-management", 0)
-					}
-				} else {
-					@navItemLocked("Log Analysis", "fa-search-plus", "ee")
+				if !prefs.IsHidden("log-management") {
+					@navItem("Log Analysis", "fa-search-plus", "/logs/management", active == "log-management", 0)
 				}
 				@navItem("Events", "fa-stream", "/events", active == "events", 0)
 				@navItem("Topology", "fa-project-diagram", "/topology", active == "topology", 0)
@@ -181,43 +185,15 @@ templ Sidebar(active string, user *types.UserData, stats *types.StatsData, editi
 				}
 			}
 
-			<!-- Enterprise Features -->
-			@sidebarSection("enterprise", "Enterprise", prefs) {
-				if isEditionAvailable(edition, "ee") {
-					@navItem("OPA Policies", "fa-gavel", "/opa-policies", active == "opa-policies", 0)
-				} else {
-					@navItemLocked("OPA Policies", "fa-gavel", "ee")
-				}
-				if isEditionAvailable(edition, "ee") {
-					@navItem("Runtime Security", "fa-shield-virus", "/runtime-security", active == "runtime-security", 0)
-				} else {
-					@navItemLocked("Runtime Security", "fa-shield-virus", "ee")
-				}
-				if isEditionAvailable(edition, "ee") {
-					@navItem("Image Signing", "fa-file-signature", "/image-signing", active == "image-signing", 0)
-				} else {
-					@navItemLocked("Image Signing", "fa-file-signature", "ee")
-				}
-				if isEditionAvailable(edition, "ee") {
-					@navItem("Dashboards", "fa-tachometer-alt", "/custom-dashboards", active == "custom-dashboards", 0)
-				} else {
-					@navItemLocked("Dashboards", "fa-tachometer-alt", "ee")
-				}
-				if isEditionAvailable(edition, "ee") {
-					@navItem("Ephemeral Envs", "fa-clock", "/ephemeral-environments", active == "ephemeral-envs", 0)
-				} else {
-					@navItemLocked("Ephemeral Envs", "fa-clock", "ee")
-				}
-				if isEditionAvailable(edition, "ee") {
-					@navItem("Manifest Builder", "fa-puzzle-piece", "/manifest-builder", active == "manifest-builder", 0)
-				} else {
-					@navItemLocked("Manifest Builder", "fa-puzzle-piece", "ee")
-				}
-				if isEditionAvailable(edition, "biz") {
-					@navItem("Git Sync", "fa-sync", "/git-sync", active == "git-sync", 0)
-				} else {
-					@navItemLocked("Git Sync", "fa-sync", "biz")
-				}
+			<!-- Advanced -->
+			@sidebarSection("advanced", "Advanced", prefs) {
+				@navItem("OPA Policies", "fa-gavel", "/opa-policies", active == "opa-policies", 0)
+				@navItem("Runtime Security", "fa-shield-virus", "/runtime-security", active == "runtime-security", 0)
+				@navItem("Image Signing", "fa-file-signature", "/image-signing", active == "image-signing", 0)
+				@navItem("Dashboards", "fa-tachometer-alt", "/custom-dashboards", active == "custom-dashboards", 0)
+				@navItem("Ephemeral Envs", "fa-clock", "/ephemeral-environments", active == "ephemeral-envs", 0)
+				@navItem("Manifest Builder", "fa-puzzle-piece", "/manifest-builder", active == "manifest-builder", 0)
+				@navItem("Git Sync", "fa-sync", "/git-sync", active == "git-sync", 0)
 			}
 
 			<!-- Admin (only for admin users, always expanded) -->
@@ -228,19 +204,11 @@ templ Sidebar(active string, user *types.UserData, stats *types.StatsData, editi
 						@navItem("Teams", "fa-users-cog", "/teams", active == "teams", 0)
 						@navItem("Users", "fa-users", "/users", active == "users", 0)
 						@navItem("Roles", "fa-user-shield", "/admin/roles", active == "roles", 0)
-						if isEditionAvailable(edition, "biz") {
-							if !prefs.IsHidden("oauth") {
-								@navItem("OAuth", "fa-sign-in-alt", "/admin/oauth", active == "oauth-providers", 0)
-							}
-						} else {
-							@navItemLocked("OAuth", "fa-sign-in-alt", "biz")
+						if !prefs.IsHidden("oauth") {
+							@navItem("OAuth", "fa-sign-in-alt", "/admin/oauth", active == "oauth-providers", 0)
 						}
-						if isEditionAvailable(edition, "biz") {
-							if !prefs.IsHidden("ldap-providers") {
-								@navItem("LDAP", "fa-address-book", "/admin/ldap", active == "ldap-providers", 0)
-							}
-						} else {
-							@navItemLocked("LDAP", "fa-address-book", "biz")
+						if !prefs.IsHidden("ldap-providers") {
+							@navItem("LDAP", "fa-address-book", "/admin/ldap", active == "ldap-providers", 0)
 						}
 						if !prefs.IsHidden("channels") {
 							@navItem("Channels", "fa-paper-plane", "/admin/notifications/channels", active == "notification-channels", 0)
@@ -270,15 +238,9 @@ templ Sidebar(active string, user *types.UserData, stats *types.StatsData, editi
 		<!-- Edition Info -->
 		<div class="px-4 py-2 border-t border-dark-600">
 			<a href="/license" class="flex items-center gap-2 text-[10px] text-gray-400 hover:text-gray-400 transition-colors">
-				if edition == "biz" {
-					<span class="font-medium uppercase tracking-wide text-blue-500/60">Business</span>
-				} else if edition == "ee" {
-					<span class="font-medium uppercase tracking-wide text-primary-500/60">Enterprise</span>
-				} else {
-					<span class="font-medium uppercase tracking-wide">Community Edition</span>
-					<span>·</span>
-					<span>AGPLv3</span>
-				}
+				<span class="font-medium uppercase tracking-wide">Community Edition</span>
+				<span>·</span>
+				<span>AGPLv3</span>
 			</a>
 		</div>
 
@@ -379,7 +341,7 @@ templ navItem(label, icon, url string, isActive bool, badge int) {
 			templ.KV("active bg-primary-500/10 text-primary-400", isActive),
 			templ.KV("text-gray-300 hover:bg-dark-700 hover:text-primary-400", !isActive) }
 	>
-		<i class={ "fas " + icon + " w-5 text-center text-sm" }></i>
+		<i class={ iconClass(icon) + " w-5 text-center text-sm" }></i>
 		<span class="text-sm font-medium">{ label }</span>
 		if badge > 0 {
 			<span class="ml-auto text-xs bg-dark-600 text-gray-300 px-2 py-0.5 rounded-full">{ itoa(badge) }</span>
@@ -394,7 +356,7 @@ templ navItemDanger(label, icon, url string, isActive bool, badge int) {
 			templ.KV("active bg-primary-500/10 text-primary-400", isActive),
 			templ.KV("text-gray-300 hover:bg-dark-700 hover:text-primary-400", !isActive) }
 	>
-		<i class={ "fas " + icon + " w-5 text-center text-sm" }></i>
+		<i class={ iconClass(icon) + " w-5 text-center text-sm" }></i>
 		<span class="text-sm font-medium">{ label }</span>
 		if badge > 0 {
 			<span class="ml-auto text-xs bg-red-500/20 text-red-400 px-2 py-0.5 rounded-full">{ itoa(badge) }</span>
@@ -409,7 +371,7 @@ templ navItemPrimary(label, icon, url string, isActive bool, badge int) {
 			templ.KV("active bg-primary-500/10 text-primary-400", isActive),
 			templ.KV("text-gray-300 hover:bg-dark-700 hover:text-primary-400", !isActive) }
 	>
-		<i class={ "fas " + icon + " w-5 text-center text-sm" }></i>
+		<i class={ iconClass(icon) + " w-5 text-center text-sm" }></i>
 		<span class="text-sm font-medium">{ label }</span>
 		if badge > 0 {
 			<span class="ml-auto text-xs bg-primary-500/20 text-primary-400 px-2 py-0.5 rounded-full">{ itoa(badge) }</span>
@@ -417,47 +379,7 @@ templ navItemPrimary(label, icon, url string, isActive bool, badge int) {
 	</a>
 }
 
-// navItemLocked renders a non-clickable nav item with an edition badge.
-// Used for features that require a higher edition than the user has.
-templ navItemLocked(label, icon string, requiredEdition string) {
-	<div
-		class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-500/60 cursor-default"
-		title={ requiredEditionLabel(requiredEdition) + " feature" }
-	>
-		<i class={ "fas " + icon + " w-5 text-center text-sm opacity-40" }></i>
-		<span class="text-sm font-medium">{ label }</span>
-		if requiredEdition == "biz" {
-			<span class="ml-auto text-[9px] font-semibold tracking-wide bg-blue-500/10 text-blue-400/60 px-1.5 py-0.5 rounded">Business</span>
-		} else {
-			<span class="ml-auto text-[9px] font-semibold tracking-wide bg-purple-500/10 text-purple-400/60 px-1.5 py-0.5 rounded">Enterprise</span>
-		}
-	</div>
-}
-
 // Helper functions
-
-// isEditionAvailable returns true if the current edition includes the required tier.
-func isEditionAvailable(currentEdition, requiredEdition string) bool {
-	if requiredEdition == "biz" {
-		return currentEdition == "biz" || currentEdition == "ee"
-	}
-	if requiredEdition == "ee" {
-		return currentEdition == "ee"
-	}
-	return true
-}
-
-// requiredEditionLabel returns the human-readable name for an edition code.
-func requiredEditionLabel(edition string) string {
-	switch edition {
-	case "biz":
-		return "Business"
-	case "ee":
-		return "Enterprise"
-	default:
-		return "Community"
-	}
-}
 
 func getBadge(stats *types.StatsData, key string) int {
 	if stats == nil {
@@ -498,4 +420,18 @@ func getUserRole(user *types.UserData) string {
 
 func itoa(n int) string {
 	return fmt.Sprintf("%d", n)
+}
+
+// iconClass returns the Font Awesome class string for an icon name.
+// Bare names ("fa-server") get the default "fas " (solid) prefix to
+// preserve the original navItem shape. Names that already include a
+// family prefix ("fab fa-docker", "far fa-clock", etc.) are returned
+// as-is so brand and other-family glyphs render correctly.
+func iconClass(name string) string {
+	if strings.HasPrefix(name, "fas ") || strings.HasPrefix(name, "fab ") ||
+		strings.HasPrefix(name, "far ") || strings.HasPrefix(name, "fal ") ||
+		strings.HasPrefix(name, "fad ") {
+		return name
+	}
+	return "fas " + name
 }

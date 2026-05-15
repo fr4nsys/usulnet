@@ -293,10 +293,6 @@ func (a *stackAdapter) GetServices(ctx context.Context, name string) ([]StackSer
 				}
 			}
 		}
-		// Reset error since we found services
-		if len(containers) > 0 {
-			err = nil
-		}
 	}
 
 	// Build views from live containers (keyed by compose service name)
@@ -399,8 +395,9 @@ func (a *stackAdapter) GetComposeConfig(ctx context.Context, name string) (strin
 
 	config, err := a.svc.GetComposeConfig(ctx, s.ID)
 	if err != nil {
-		// Fallback to stored compose file
-		return s.ComposeFile, nil
+		// Fallback to stored compose file — live compose config
+		// unavailable; the stored file is the contract baseline.
+		return s.ComposeFile, nil //nolint:nilerr // graceful fallback: stored file is the contract baseline
 	}
 	return config, nil
 }

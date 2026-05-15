@@ -134,10 +134,8 @@ func truncateStr(s string, maxLen int) string {
 // ============================================================================
 
 type pdfWriter struct {
-	buf     bytes.Buffer
 	objects []string
 	pages   []int // object indices for page objects
-	offsets []int // byte offsets for xref
 
 	currentPage int
 	pageContent []string
@@ -167,8 +165,7 @@ func (pw *pdfWriter) setFont(name string, size float64) {
 	pw.fontSize = size
 	// Font changes are embedded in the content stream.
 	fontRef := "/F1"
-	switch name {
-	case "Helvetica-Bold":
+	if name == "Helvetica-Bold" {
 		fontRef = "/F2"
 	}
 	pw.pageContent = append(pw.pageContent,

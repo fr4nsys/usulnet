@@ -82,39 +82,39 @@ func (a *HealthcheckAnalyzer) validateHealthcheckConfig(data *security.Container
 	if hc.Interval > 300_000_000_000 { // 5 minutes in nanoseconds
 		// This is a low severity issue - not the main check
 		issues = append(issues, security.Issue{
-			CheckID:     models.CheckHealthcheck,
-			Severity:    models.IssueSeverityLow,
-			Category:    models.IssueCategoryReliability,
-			Title:       "Long Healthcheck Interval",
-			Description: "Healthcheck interval is longer than 5 minutes, which may delay failure detection.",
+			CheckID:        models.CheckHealthcheck,
+			Severity:       models.IssueSeverityLow,
+			Category:       models.IssueCategoryReliability,
+			Title:          "Long Healthcheck Interval",
+			Description:    "Healthcheck interval is longer than 5 minutes, which may delay failure detection.",
 			Recommendation: "Consider reducing the healthcheck interval to 30-60 seconds for faster failure detection.",
-			Penalty:     2,
+			Penalty:        2,
 		}.WithDetail("interval_seconds", hc.Interval/1_000_000_000))
 	}
 
 	// Check for very short timeout (< 5 seconds)
 	if hc.Timeout > 0 && hc.Timeout < 5_000_000_000 { // 5 seconds
 		issues = append(issues, security.Issue{
-			CheckID:     models.CheckHealthcheck,
-			Severity:    models.IssueSeverityInfo,
-			Category:    models.IssueCategoryReliability,
-			Title:       "Short Healthcheck Timeout",
-			Description: "Healthcheck timeout is very short, which may cause false positives during load.",
+			CheckID:        models.CheckHealthcheck,
+			Severity:       models.IssueSeverityInfo,
+			Category:       models.IssueCategoryReliability,
+			Title:          "Short Healthcheck Timeout",
+			Description:    "Healthcheck timeout is very short, which may cause false positives during load.",
 			Recommendation: "Consider increasing timeout to at least 5-10 seconds.",
-			Penalty:     1,
+			Penalty:        1,
 		}.WithDetail("timeout_seconds", hc.Timeout/1_000_000_000))
 	}
 
 	// Check for zero or low retries
 	if hc.Retries < 2 {
 		issues = append(issues, security.Issue{
-			CheckID:     models.CheckHealthcheck,
-			Severity:    models.IssueSeverityInfo,
-			Category:    models.IssueCategoryReliability,
-			Title:       "Low Healthcheck Retries",
-			Description: "Healthcheck has few retries, which may cause unnecessary restarts on transient failures.",
+			CheckID:        models.CheckHealthcheck,
+			Severity:       models.IssueSeverityInfo,
+			Category:       models.IssueCategoryReliability,
+			Title:          "Low Healthcheck Retries",
+			Description:    "Healthcheck has few retries, which may cause unnecessary restarts on transient failures.",
 			Recommendation: "Consider setting retries to 3 or more for better tolerance.",
-			Penalty:     1,
+			Penalty:        1,
 		}.WithDetail("retries", hc.Retries))
 	}
 

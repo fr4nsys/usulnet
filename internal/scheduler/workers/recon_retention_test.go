@@ -202,7 +202,7 @@ func TestReconRetention_PayloadOverridesDefaults(t *testing.T) {
 
 func TestReconRetention_PartialErrorDoesNotShortCircuit(t *testing.T) {
 	svc := &stubRetentionSvc{
-		findingsErr: errors.New("boom"),
+		findingsErr:  errors.New("boom"),
 		scansDeleted: 5,
 	}
 	w := NewReconRetentionWorker(svc, ReconRetentionConfig{RetentionDays: 30}, logger.Nop())

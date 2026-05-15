@@ -446,12 +446,12 @@ func (h *OAuthConfigHandler) Stats(w http.ResponseWriter, r *http.Request) {
 // GetProviderDefaults returns default configuration for a provider type
 func GetProviderDefaults(provider string) map[string]any {
 	defaults := map[string]any{
-		"user_id_claim":   "sub",
-		"username_claim":  "preferred_username",
-		"email_claim":     "email",
-		"groups_claim":    "groups",
-		"auto_provision":  true,
-		"default_role":    "viewer",
+		"user_id_claim":  "sub",
+		"username_claim": "preferred_username",
+		"email_claim":    "email",
+		"groups_claim":   "groups",
+		"auto_provision": true,
+		"default_role":   "viewer",
 	}
 
 	switch strings.ToLower(provider) {

@@ -29,22 +29,22 @@ type MetricsService interface {
 
 // HostMetrics holds host-level metrics
 type HostMetrics struct {
-	HostID          uuid.UUID `json:"host_id"`
-	CPUUsagePercent float64   `json:"cpu_usage_percent"`
-	MemoryUsed      int64     `json:"memory_used"`
-	MemoryTotal     int64     `json:"memory_total"`
-	MemoryPercent   float64   `json:"memory_percent"`
-	DiskUsed        int64     `json:"disk_used"`
-	DiskTotal       int64     `json:"disk_total"`
-	DiskPercent     float64   `json:"disk_percent"`
-	NetworkRxBytes  int64     `json:"network_rx_bytes"`
-	NetworkTxBytes  int64     `json:"network_tx_bytes"`
-	ContainersTotal int       `json:"containers_total"`
-	ContainersRunning int     `json:"containers_running"`
-	ContainersStopped int     `json:"containers_stopped"`
-	ImagesTotal     int       `json:"images_total"`
-	VolumesTotal    int       `json:"volumes_total"`
-	CollectedAt     time.Time `json:"collected_at"`
+	HostID            uuid.UUID `json:"host_id"`
+	CPUUsagePercent   float64   `json:"cpu_usage_percent"`
+	MemoryUsed        int64     `json:"memory_used"`
+	MemoryTotal       int64     `json:"memory_total"`
+	MemoryPercent     float64   `json:"memory_percent"`
+	DiskUsed          int64     `json:"disk_used"`
+	DiskTotal         int64     `json:"disk_total"`
+	DiskPercent       float64   `json:"disk_percent"`
+	NetworkRxBytes    int64     `json:"network_rx_bytes"`
+	NetworkTxBytes    int64     `json:"network_tx_bytes"`
+	ContainersTotal   int       `json:"containers_total"`
+	ContainersRunning int       `json:"containers_running"`
+	ContainersStopped int       `json:"containers_stopped"`
+	ImagesTotal       int       `json:"images_total"`
+	VolumesTotal      int       `json:"volumes_total"`
+	CollectedAt       time.Time `json:"collected_at"`
 }
 
 // ContainerMetrics holds container-level metrics
@@ -68,10 +68,10 @@ type ContainerMetrics struct {
 
 // MetricsSnapshot holds a complete metrics snapshot
 type MetricsSnapshot struct {
-	HostID     uuid.UUID           `json:"host_id"`
-	Host       *HostMetrics        `json:"host"`
-	Containers []*ContainerMetrics `json:"containers"`
-	CollectedAt time.Time          `json:"collected_at"`
+	HostID      uuid.UUID           `json:"host_id"`
+	Host        *HostMetrics        `json:"host"`
+	Containers  []*ContainerMetrics `json:"containers"`
+	CollectedAt time.Time           `json:"collected_at"`
 }
 
 // MetricsCollectionWorker handles metrics collection jobs
@@ -216,13 +216,13 @@ type InventoryService interface {
 
 // HostInventory holds complete host inventory
 type HostInventory struct {
-	HostID       uuid.UUID          `json:"host_id"`
-	DockerInfo   *DockerInfo        `json:"docker_info"`
-	Containers   []*ContainerInfo   `json:"containers"`
-	Images       []*ImageInfo       `json:"images"`
-	Volumes      []*VolumeInfo      `json:"volumes"`
-	Networks     []*NetworkInfo     `json:"networks"`
-	CollectedAt  time.Time          `json:"collected_at"`
+	HostID      uuid.UUID        `json:"host_id"`
+	DockerInfo  *DockerInfo      `json:"docker_info"`
+	Containers  []*ContainerInfo `json:"containers"`
+	Images      []*ImageInfo     `json:"images"`
+	Volumes     []*VolumeInfo    `json:"volumes"`
+	Networks    []*NetworkInfo   `json:"networks"`
+	CollectedAt time.Time        `json:"collected_at"`
 }
 
 // DockerInfo holds Docker daemon information
@@ -257,11 +257,11 @@ type ContainerInfo struct {
 
 // ImageInfo holds image information for inventory
 type ImageInfo struct {
-	ID          string    `json:"id"`
-	RepoTags    []string  `json:"repo_tags"`
-	Size        int64     `json:"size"`
-	Created     time.Time `json:"created"`
-	InUse       bool      `json:"in_use"`
+	ID       string    `json:"id"`
+	RepoTags []string  `json:"repo_tags"`
+	Size     int64     `json:"size"`
+	Created  time.Time `json:"created"`
+	InUse    bool      `json:"in_use"`
 }
 
 // VolumeInfo holds volume information for inventory

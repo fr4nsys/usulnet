@@ -1,0 +1,82 @@
+// SPDX-License-Identifier: AGPL-3.0-or-later
+// Copyright (c) 2024-2026 usulnet contributors
+// https://github.com/fr4nsys/usulnet
+
+package dockerconfig
+
+import "github.com/fr4nsys/usulnet/internal/web/templates/layouts"
+
+// History renders the daemon.json snapshot history page.
+//
+// Each row shows the snapshot timestamp + size and a Restore button
+// that POSTs to /config/docker/restore/{id}. The restore action runs
+// the same apply cycle as a manual edit (snapshot-current → atomic
+// write → SIGHUP → verify → rollback), so restoring is safe even when
+// the operator is restoring to recover from a bad apply.
+templ History(data HistoryData) {
+	@layouts.Base(data.PageData) {
+		<div class="space-y-6">
+			<div class="flex items-center justify-between flex-wrap gap-4">
+				<div>
+					<h1 class="text-2xl font-display font-bold text-white">Docker Engine Snapshots</h1>
+					<p class="text-gray-400 mt-1">History of <code class="text-xs px-1.5 py-0.5 bg-dark-700 rounded">{ data.ConfigPath }</code></p>
+				</div>
+				<div>
+					<a href="/config/docker" class="btn-secondary text-sm">
+						<i class="fas fa-arrow-left mr-1"></i>Back to editor
+					</a>
+				</div>
+			</div>
+
+			if data.UnavailableMsg != "" {
+				<div class="bg-yellow-500/10 border border-yellow-500/20 rounded-lg p-4">
+					<p class="text-yellow-400 text-sm">{ data.UnavailableMsg }</p>
+				</div>
+			} else {
+				if data.Flash.Type != "" {
+					@FlashBanner(data.Flash)
+				}
+
+				if len(data.Snapshots) == 0 {
+					<div class="card p-8 text-center">
+						<i class="fas fa-clock text-4xl text-gray-500 mb-4"></i>
+						<p class="text-gray-300">No snapshots recorded yet.</p>
+						<p class="text-sm text-gray-500 mt-1">Each successful apply writes a snapshot of the prior daemon.json into the snapshot directory.</p>
+					</div>
+				} else {
+					<div class="card overflow-hidden">
+						<table class="w-full text-sm">
+							<thead class="bg-dark-800 text-gray-400 text-xs uppercase">
+								<tr>
+									<th class="px-4 py-3 text-left font-semibold">Snapshot ID</th>
+									<th class="px-4 py-3 text-left font-semibold">Timestamp</th>
+									<th class="px-4 py-3 text-left font-semibold">Size</th>
+									<th class="px-4 py-3 text-right font-semibold">Action</th>
+								</tr>
+							</thead>
+							<tbody class="divide-y divide-dark-600">
+								for _, s := range data.Snapshots {
+									<tr id={ s.ID } class="text-gray-300">
+										<td class="px-4 py-3 font-mono text-xs">{ s.ID }</td>
+										<td class="px-4 py-3 text-xs">{ s.Timestamp }</td>
+										<td class="px-4 py-3 text-xs">{ s.Size }</td>
+										<td class="px-4 py-3 text-right">
+											<form method="POST" action={ templ.SafeURL("/config/docker/restore/" + s.ID) } class="inline">
+												<input type="hidden" name="csrf_token" value={ data.PageData.CSRFToken }/>
+												<button type="submit"
+													class="btn-warning text-xs"
+													onclick="return confirm('Restore this snapshot? The daemon will reload — usulnet will roll back automatically if it does not return healthy.')">
+													<i class="fas fa-undo mr-1"></i>Restore
+												</button>
+											</form>
+										</td>
+									</tr>
+								}
+							</tbody>
+						</table>
+					</div>
+				}
+			}
+		</div>
+	}
+}

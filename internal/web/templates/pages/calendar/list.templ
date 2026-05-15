@@ -1,0 +1,345 @@
+// SPDX-License-Identifier: AGPL-3.0-or-later
+// Copyright (c) 2024-2026 usulnet contributors
+// https://github.com/fr4nsys/usulnet
+
+package calendar
+
+import (
+	"fmt"
+	"github.com/fr4nsys/usulnet/internal/web/templates/layouts"
+)
+
+// ListData is the view-model for the calendar month grid.
+type ListData struct {
+	PageData    layouts.PageData
+	Events      []EventView
+	Stats       StatsView
+	MonthLabel  string
+	PrevMonth   string
+	NextMonth   string
+	Today       string
+	Weeks       [][]DayCell
+	RangeFrom   string
+	RangeTo     string
+	Sources     []string
+	CreateError string
+}
+
+// EventView is the row representation of one calendar event.
+type EventView struct {
+	ID          string
+	Source      string
+	Kind        string
+	Title       string
+	Description string
+	Location    string
+	URL         string
+	StartsAt    string
+	EndsAt      string
+	StartsLabel string
+	EndsLabel   string
+	AllDay      bool
+	ExternalID  string
+}
+
+// StatsView is the aggregate counts header.
+type StatsView struct {
+	Total       int
+	Maintenance int
+	Backup      int
+	Deploy      int
+	Job         int
+	Alert       int
+	Note        int
+}
+
+// DayCell is one cell in the month grid.
+type DayCell struct {
+	DateLabel string
+	DateISO   string
+	InMonth   bool
+	IsToday   bool
+	Events    []EventView
+}
+
+func kindColor(kind string) string {
+	switch kind {
+	case "maintenance":
+		return "bg-yellow-500/15 text-yellow-300 border-yellow-500/40"
+	case "backup":
+		return "bg-blue-500/15 text-blue-300 border-blue-500/40"
+	case "deploy":
+		return "bg-purple-500/15 text-purple-300 border-purple-500/40"
+	case "job":
+		return "bg-cyan-500/15 text-cyan-300 border-cyan-500/40"
+	case "alert":
+		return "bg-red-500/15 text-red-300 border-red-500/40"
+	case "note":
+		return "bg-gray-500/15 text-gray-300 border-gray-500/40"
+	}
+	return "bg-gray-500/15 text-gray-300 border-gray-500/40"
+}
+
+func sourceLabel(s string) string {
+	switch s {
+	case "manual":
+		return "Manual"
+	case "backup":
+		return "Backup"
+	case "scheduled_job":
+		return "Scheduled"
+	}
+	return s
+}
+
+templ List(data ListData) {
+	@layouts.Base(data.PageData) {
+		<div class="space-y-6">
+			<div class="flex items-center justify-between">
+				<div>
+					<h1 class="text-2xl font-display font-bold text-white">Calendar</h1>
+					<p class="text-gray-400 mt-1">Operations events, maintenance windows, scheduled jobs</p>
+				</div>
+				<div class="flex items-center gap-2">
+					<a href="/api/v1/calendar/export.ics" class="btn-secondary" target="_blank" rel="noopener">
+						<i class="fas fa-file-export mr-2"></i>Export .ics
+					</a>
+					<a href="/calendar/new" class="btn-primary">
+						<i class="fas fa-plus mr-2"></i>New Event
+					</a>
+				</div>
+			</div>
+
+			<div class="grid grid-cols-2 md:grid-cols-6 gap-3">
+				@statCard("Total", data.Stats.Total, "fa-calendar", "text-primary-400")
+				@statCard("Maintenance", data.Stats.Maintenance, "fa-wrench", "text-yellow-400")
+				@statCard("Backup", data.Stats.Backup, "fa-database", "text-blue-400")
+				@statCard("Deploy", data.Stats.Deploy, "fa-rocket", "text-purple-400")
+				@statCard("Job", data.Stats.Job, "fa-tasks", "text-cyan-400")
+				@statCard("Alert", data.Stats.Alert, "fa-bell", "text-red-400")
+			</div>
+
+			<div class="card p-4">
+				<div class="flex items-center justify-between mb-4">
+					<div class="flex items-center gap-3">
+						<a href={ templ.SafeURL("/calendar?month=" + data.PrevMonth) } class="btn-secondary btn-sm">
+							<i class="fas fa-chevron-left"></i>
+						</a>
+						<h2 class="text-xl font-semibold text-white">{ data.MonthLabel }</h2>
+						<a href={ templ.SafeURL("/calendar?month=" + data.NextMonth) } class="btn-secondary btn-sm">
+							<i class="fas fa-chevron-right"></i>
+						</a>
+					</div>
+					<a href="/calendar" class="text-sm text-primary-400 hover:text-primary-300">Today</a>
+				</div>
+
+				<div class="grid grid-cols-7 text-xs uppercase tracking-wider text-gray-400 mb-2">
+					<div class="px-2 py-1">Mon</div>
+					<div class="px-2 py-1">Tue</div>
+					<div class="px-2 py-1">Wed</div>
+					<div class="px-2 py-1">Thu</div>
+					<div class="px-2 py-1">Fri</div>
+					<div class="px-2 py-1">Sat</div>
+					<div class="px-2 py-1">Sun</div>
+				</div>
+
+				<div class="grid grid-cols-7 gap-1">
+					for _, week := range data.Weeks {
+						for _, day := range week {
+							<div class={ dayClasses(day) }>
+								<div class={ dayHeaderClasses(day) }>
+									{ day.DateLabel }
+								</div>
+								<div class="space-y-1">
+									for _, ev := range day.Events {
+										<a href={ templ.SafeURL(eventHref(ev)) }
+											class={ "block text-xs px-2 py-1 rounded border " + kindColor(ev.Kind) + " truncate" }
+											title={ ev.Title + " — " + ev.StartsLabel }
+										>
+											if ev.AllDay {
+												<i class="fas fa-circle text-[6px] mr-1"></i>
+											} else {
+												<span class="opacity-70 mr-1">{ ev.StartsLabel }</span>
+											}
+											{ ev.Title }
+										</a>
+									}
+								</div>
+							</div>
+						}
+					}
+				</div>
+			</div>
+
+			<div class="card">
+				<div class="px-4 py-3 border-b border-gray-700 flex items-center justify-between">
+					<h3 class="text-lg font-semibold text-white">All events in range</h3>
+					<span class="text-xs text-gray-400">
+						{ data.RangeFrom } &rarr; { data.RangeTo }
+					</span>
+				</div>
+				if len(data.Events) > 0 {
+					<div class="overflow-x-auto">
+						<table class="table">
+							<thead>
+								<tr>
+									<th>Title</th>
+									<th>Kind</th>
+									<th>Source</th>
+									<th>Starts</th>
+									<th>Ends</th>
+									<th>Actions</th>
+								</tr>
+							</thead>
+							<tbody>
+								for _, ev := range data.Events {
+									<tr>
+										<td>
+											<div class="flex items-center gap-2">
+												<span class={ "inline-block w-2 h-2 rounded-full " + dotColor(ev.Kind) }></span>
+												<span class="text-white">{ ev.Title }</span>
+											</div>
+										</td>
+										<td>
+											<span class={ "badge " + kindBadge(ev.Kind) }>{ ev.Kind }</span>
+										</td>
+										<td>
+											<span class="text-sm text-gray-300">{ sourceLabel(ev.Source) }</span>
+										</td>
+										<td>
+											<span class="text-sm font-mono text-gray-300">{ ev.StartsAt }</span>
+										</td>
+										<td>
+											<span class="text-sm font-mono text-gray-300">{ ev.EndsAt }</span>
+										</td>
+										<td>
+											if ev.Source == "manual" {
+												<div class="flex items-center gap-2">
+													<a href={ templ.SafeURL(fmt.Sprintf("/calendar/%s/edit", ev.ID)) } class="text-primary-400 hover:text-primary-300 text-sm">
+														Edit
+													</a>
+													<button
+														hx-delete={ fmt.Sprintf("/calendar/%s", ev.ID) }
+														hx-confirm="Delete this event?"
+														hx-target="closest tr"
+														hx-swap="outerHTML"
+														class="text-red-400 hover:text-red-300 text-sm"
+													>
+														Delete
+													</button>
+												</div>
+											} else {
+												<span class="text-xs text-gray-500">{ "read-only" }</span>
+											}
+										</td>
+									</tr>
+								}
+							</tbody>
+						</table>
+					</div>
+				}
+				if len(data.Events) == 0 {
+					<div class="p-8 text-center">
+						<i class="fas fa-calendar-plus text-4xl text-gray-400 mb-4"></i>
+						<h3 class="text-lg font-medium text-white mb-2">No events in this range</h3>
+						<p class="text-gray-400 mb-4">Create a maintenance window, schedule a backup, or invite the calendar to pick up scheduled jobs.</p>
+						<a href="/calendar/new" class="btn-primary">
+							<i class="fas fa-plus mr-2"></i>New Event
+						</a>
+					</div>
+				}
+			</div>
+
+			if len(data.Sources) > 0 {
+				<p class="text-xs text-gray-500">
+					Active event sources:
+					for i, s := range data.Sources {
+						if i > 0 {
+							<span>, </span>
+						}
+						<span class="text-gray-400">{ sourceLabel(s) }</span>
+					}
+				</p>
+			}
+		</div>
+	}
+}
+
+templ statCard(label string, count int, icon string, color string) {
+	<div class="card p-3">
+		<div class="flex items-center justify-between">
+			<div>
+				<p class="text-xs text-gray-400">{ label }</p>
+				<p class="text-xl font-bold text-white">{ fmt.Sprintf("%d", count) }</p>
+			</div>
+			<div class={ color }>
+				<i class={ "fas " + icon + " text-xl" }></i>
+			</div>
+		</div>
+	</div>
+}
+
+func dayClasses(d DayCell) string {
+	cls := "min-h-[88px] p-2 border rounded text-xs "
+	if d.InMonth {
+		cls += "bg-gray-900 border-gray-800 "
+	} else {
+		cls += "bg-gray-950 border-gray-900 opacity-60 "
+	}
+	if d.IsToday {
+		cls += "ring-1 ring-primary-500"
+	}
+	return cls
+}
+
+func dayHeaderClasses(d DayCell) string {
+	if d.IsToday {
+		return "text-primary-300 font-semibold mb-1"
+	}
+	if !d.InMonth {
+		return "text-gray-600 mb-1"
+	}
+	return "text-gray-300 mb-1"
+}
+
+func eventHref(ev EventView) string {
+	if ev.Source == "manual" {
+		return "/calendar/" + ev.ID + "/edit"
+	}
+	if ev.URL != "" {
+		return ev.URL
+	}
+	return "/calendar"
+}
+
+func dotColor(kind string) string {
+	switch kind {
+	case "maintenance":
+		return "bg-yellow-400"
+	case "backup":
+		return "bg-blue-400"
+	case "deploy":
+		return "bg-purple-400"
+	case "job":
+		return "bg-cyan-400"
+	case "alert":
+		return "bg-red-400"
+	}
+	return "bg-gray-400"
+}
+
+func kindBadge(kind string) string {
+	switch kind {
+	case "maintenance":
+		return "badge-warning"
+	case "backup":
+		return "badge-info"
+	case "deploy":
+		return "badge-info"
+	case "job":
+		return "badge-info"
+	case "alert":
+		return "badge-danger"
+	}
+	return "badge-secondary"
+}

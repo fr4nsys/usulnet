@@ -35,8 +35,8 @@ func DefaultConfig() Config {
 
 // Client communicates with the Caddy v2 admin API.
 type Client struct {
-	cfg    Config
-	http   *http.Client
+	cfg  Config
+	http *http.Client
 }
 
 // NewClient creates a new Caddy admin API client.

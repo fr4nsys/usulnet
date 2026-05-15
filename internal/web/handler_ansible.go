@@ -10,9 +10,10 @@ import (
 	"regexp"
 	"strings"
 
-	toolspages "github.com/fr4nsys/usulnet/internal/web/templates/pages/tools"
 	"github.com/go-chi/chi/v5"
 	"github.com/google/uuid"
+
+	toolspages "github.com/fr4nsys/usulnet/internal/web/templates/pages/tools"
 )
 
 // ============================================================================
@@ -30,11 +31,10 @@ func (h *Handler) AnsibleInventory(w http.ResponseWriter, r *http.Request) {
 		PageData: pageData,
 	}
 
-	// In a real implementation, load inventories from database
-	// For now, show empty state
-	if selectedID != "" {
-		// Load selected inventory details
-	}
+	// TODO(session 16): hydrate `data.Selected` from
+	// inventoryRepo.GetByID(selectedID); the page currently always
+	// renders the empty-state stub.
+	_ = selectedID
 
 	h.renderTempl(w, r, toolspages.AnsibleInventory(data))
 }

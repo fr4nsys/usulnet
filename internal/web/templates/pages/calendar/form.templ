@@ -1,0 +1,131 @@
+// SPDX-License-Identifier: AGPL-3.0-or-later
+// Copyright (c) 2024-2026 usulnet contributors
+// https://github.com/fr4nsys/usulnet
+
+package calendar
+
+import (
+	"github.com/fr4nsys/usulnet/internal/web/templates/layouts"
+)
+
+// FormData drives both the New and Edit event forms.
+type FormData struct {
+	PageData    layouts.PageData
+	Mode        string // "new" or "edit"
+	ID          string
+	Kind        string
+	Title       string
+	Description string
+	Location    string
+	URL         string
+	StartsAt    string
+	EndsAt      string
+	AllDay      bool
+	Error       string
+}
+
+templ Form(data FormData) {
+	@layouts.Base(data.PageData) {
+		<div class="space-y-6 max-w-3xl">
+			<div>
+				if data.Mode == "edit" {
+					<h1 class="text-2xl font-display font-bold text-white">Edit event</h1>
+				} else {
+					<h1 class="text-2xl font-display font-bold text-white">New event</h1>
+				}
+				<p class="text-gray-400 mt-1">Manually-entered events appear on the operations calendar alongside backup runs and scheduled jobs.</p>
+			</div>
+
+			if data.Error != "" {
+				<div class="rounded-md bg-red-500/10 border border-red-500/30 px-4 py-3 text-red-300 text-sm">
+					<i class="fas fa-exclamation-circle mr-2"></i>{ data.Error }
+				</div>
+			}
+
+			<form method="POST" action={ templ.SafeURL(formAction(data)) } class="card p-6 space-y-5">
+				if data.PageData.CSRFToken != "" {
+					<input type="hidden" name="csrf_token" value={ data.PageData.CSRFToken }/>
+				}
+				<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+					<div>
+						<label class="block text-sm font-medium text-gray-200 mb-1">Title <span class="text-red-400">*</span></label>
+						<input type="text" name="title" value={ data.Title } required maxlength="255" class="input w-full"/>
+					</div>
+					<div>
+						<label class="block text-sm font-medium text-gray-200 mb-1">Kind <span class="text-red-400">*</span></label>
+						<select name="kind" class="input w-full" required>
+							@kindOption("maintenance", "Maintenance", data.Kind)
+							@kindOption("backup", "Backup", data.Kind)
+							@kindOption("deploy", "Deploy", data.Kind)
+							@kindOption("job", "Job", data.Kind)
+							@kindOption("alert", "Alert", data.Kind)
+							@kindOption("note", "Note", data.Kind)
+						</select>
+					</div>
+				</div>
+
+				<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+					<div>
+						<label class="block text-sm font-medium text-gray-200 mb-1">Starts at <span class="text-red-400">*</span></label>
+						<input type="datetime-local" name="starts_at" value={ data.StartsAt } required class="input w-full"/>
+					</div>
+					<div>
+						<label class="block text-sm font-medium text-gray-200 mb-1">Ends at <span class="text-red-400">*</span></label>
+						<input type="datetime-local" name="ends_at" value={ data.EndsAt } required class="input w-full"/>
+					</div>
+				</div>
+
+				<div>
+					<label class="flex items-center gap-2 text-sm text-gray-200">
+						if data.AllDay {
+							<input type="checkbox" name="all_day" checked/>
+						} else {
+							<input type="checkbox" name="all_day"/>
+						}
+						<span>All-day event</span>
+					</label>
+				</div>
+
+				<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+					<div>
+						<label class="block text-sm font-medium text-gray-200 mb-1">Location</label>
+						<input type="text" name="location" value={ data.Location } maxlength="255" class="input w-full" placeholder="optional"/>
+					</div>
+					<div>
+						<label class="block text-sm font-medium text-gray-200 mb-1">URL</label>
+						<input type="url" name="url" value={ data.URL } maxlength="2048" class="input w-full" placeholder="https://..."/>
+					</div>
+				</div>
+
+				<div>
+					<label class="block text-sm font-medium text-gray-200 mb-1">Description</label>
+					<textarea name="description" rows="4" maxlength="4096" class="input w-full">{ data.Description }</textarea>
+				</div>
+
+				<div class="flex items-center justify-end gap-2 pt-4 border-t border-gray-800">
+					<a href="/calendar" class="btn-secondary">Cancel</a>
+					if data.Mode == "edit" {
+						<button type="submit" class="btn-primary">Save changes</button>
+					} else {
+						<button type="submit" class="btn-primary">Create event</button>
+					}
+				</div>
+			</form>
+		</div>
+	}
+}
+
+templ kindOption(value, label, selected string) {
+	if value == selected {
+		<option value={ value } selected>{ label }</option>
+	} else {
+		<option value={ value }>{ label }</option>
+	}
+}
+
+func formAction(data FormData) string {
+	if data.Mode == "edit" {
+		return "/calendar/" + data.ID
+	}
+	return "/calendar"
+}

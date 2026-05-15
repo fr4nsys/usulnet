@@ -32,10 +32,10 @@ type SecurityScanResponse struct {
 // This implements Option B from the architecture: agent sends inspect data,
 // master runs the actual security analysis (lighter agent footprint).
 type ContainerScanData struct {
-	ContainerID   string                `json:"container_id"`
-	ContainerName string                `json:"container_name"`
-	Image         string                `json:"image"`
-	InspectData   types.ContainerJSON   `json:"inspect_data"`
+	ContainerID   string              `json:"container_id"`
+	ContainerName string              `json:"container_name"`
+	Image         string              `json:"image"`
+	InspectData   types.ContainerJSON `json:"inspect_data"`
 }
 
 // registerSecurityHandlers registers security-related command handlers.
@@ -171,4 +171,3 @@ func failedResult(msg string) *protocol.CommandResult {
 		},
 	}
 }
-

@@ -50,18 +50,18 @@ func (i *Image) IsDangling() bool {
 // ImageInspect represents detailed image information
 type ImageInspect struct {
 	Image
-	Architecture    string          `json:"architecture"`
-	Author          string          `json:"author,omitempty"`
-	Comment         string          `json:"comment,omitempty"`
-	Config          *ImageConfig    `json:"config,omitempty"`
-	Container       string          `json:"container,omitempty"`
-	DockerVersion   string          `json:"docker_version,omitempty"`
-	OS              string          `json:"os"`
-	OSVersion       string          `json:"os_version,omitempty"`
-	Variant         string          `json:"variant,omitempty"`
-	RootFS          RootFS          `json:"rootfs"`
-	GraphDriver     GraphDriverData `json:"graph_driver"`
-	Metadata        ImageMetadata   `json:"metadata,omitempty"`
+	Architecture  string          `json:"architecture"`
+	Author        string          `json:"author,omitempty"`
+	Comment       string          `json:"comment,omitempty"`
+	Config        *ImageConfig    `json:"config,omitempty"`
+	Container     string          `json:"container,omitempty"`
+	DockerVersion string          `json:"docker_version,omitempty"`
+	OS            string          `json:"os"`
+	OSVersion     string          `json:"os_version,omitempty"`
+	Variant       string          `json:"variant,omitempty"`
+	RootFS        RootFS          `json:"rootfs"`
+	GraphDriver   GraphDriverData `json:"graph_driver"`
+	Metadata      ImageMetadata   `json:"metadata,omitempty"`
 }
 
 // ImageConfig represents image configuration
@@ -122,18 +122,18 @@ type ImagePullInput struct {
 
 // ImageBuildInput represents input for building an image
 type ImageBuildInput struct {
-	Tags        []string          `json:"tags" validate:"required,dive,docker_image"`
-	Dockerfile  string            `json:"dockerfile,omitempty"` // Path within context
-	Context     string            `json:"context"`              // Path or URL
+	Tags        []string           `json:"tags" validate:"required,dive,docker_image"`
+	Dockerfile  string             `json:"dockerfile,omitempty"` // Path within context
+	Context     string             `json:"context"`              // Path or URL
 	BuildArgs   map[string]*string `json:"build_args,omitempty"`
-	Labels      map[string]string `json:"labels,omitempty"`
-	Target      string            `json:"target,omitempty"`
-	NoCache     bool              `json:"no_cache,omitempty"`
-	Pull        bool              `json:"pull,omitempty"`
-	Remove      bool              `json:"remove,omitempty"`
-	ForceRemove bool              `json:"force_remove,omitempty"`
-	Platform    string            `json:"platform,omitempty"`
-	Squash      bool              `json:"squash,omitempty"`
+	Labels      map[string]string  `json:"labels,omitempty"`
+	Target      string             `json:"target,omitempty"`
+	NoCache     bool               `json:"no_cache,omitempty"`
+	Pull        bool               `json:"pull,omitempty"`
+	Remove      bool               `json:"remove,omitempty"`
+	ForceRemove bool               `json:"force_remove,omitempty"`
+	Platform    string             `json:"platform,omitempty"`
+	Squash      bool               `json:"squash,omitempty"`
 }
 
 // ImagePushInput represents input for pushing an image
@@ -185,14 +185,14 @@ type ImageProgress struct {
 
 // Registry represents a container registry
 type Registry struct {
-	ID          uuid.UUID `json:"id" db:"id"`
-	Name        string    `json:"name" db:"name"`
-	URL         string    `json:"url" db:"url"`
-	Username    *string   `json:"username,omitempty" db:"username"`
-	Password    *string   `json:"-" db:"password"` // Encrypted
-	IsDefault   bool      `json:"is_default" db:"is_default"`
-	CreatedAt   time.Time `json:"created_at" db:"created_at"`
-	UpdatedAt   time.Time `json:"updated_at" db:"updated_at"`
+	ID        uuid.UUID `json:"id" db:"id"`
+	Name      string    `json:"name" db:"name"`
+	URL       string    `json:"url" db:"url"`
+	Username  *string   `json:"username,omitempty" db:"username"`
+	Password  *string   `json:"-" db:"password"` // Encrypted
+	IsDefault bool      `json:"is_default" db:"is_default"`
+	CreatedAt time.Time `json:"created_at" db:"created_at"`
+	UpdatedAt time.Time `json:"updated_at" db:"updated_at"`
 }
 
 // CreateRegistryInput represents input for creating a registry
@@ -206,9 +206,9 @@ type CreateRegistryInput struct {
 
 // ImageListOptions represents options for listing images
 type ImageListOptions struct {
-	All      bool              `json:"all"`
-	Filters  map[string][]string `json:"filters"`
-	Digests  bool              `json:"digests"`
+	All     bool                `json:"all"`
+	Filters map[string][]string `json:"filters"`
+	Digests bool                `json:"digests"`
 }
 
 // ImageLayer represents a layer in the image history.
@@ -223,12 +223,12 @@ type ImageLayer struct {
 
 // ImageUpdateInfo holds information about available image updates.
 type ImageUpdateInfo struct {
-	CurrentDigest string    `json:"current_digest"`
-	LatestDigest  string    `json:"latest_digest"`
-	CurrentTag    string    `json:"current_tag"`
-	LatestTag     string    `json:"latest_tag,omitempty"`
-	UpdateAvailable bool    `json:"update_available"`
-	CheckedAt     time.Time `json:"checked_at"`
+	CurrentDigest   string    `json:"current_digest"`
+	LatestDigest    string    `json:"latest_digest"`
+	CurrentTag      string    `json:"current_tag"`
+	LatestTag       string    `json:"latest_tag,omitempty"`
+	UpdateAvailable bool      `json:"update_available"`
+	CheckedAt       time.Time `json:"checked_at"`
 }
 
 // RegistryAuthConfig represents registry authentication configuration.

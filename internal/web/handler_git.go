@@ -12,10 +12,9 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/google/uuid"
 
-	"github.com/fr4nsys/usulnet/internal/models"
 	giteasvc "github.com/fr4nsys/usulnet/internal/integrations/gitea"
+	"github.com/fr4nsys/usulnet/internal/models"
 	gitsvc "github.com/fr4nsys/usulnet/internal/services/git"
-	gitea "github.com/fr4nsys/usulnet/internal/web/templates/pages/gitea"
 )
 
 // ============================================================================
@@ -35,7 +34,7 @@ func (h *Handler) GitListTempl(w http.ResponseWriter, r *http.Request) {
 // GitCreateConnection creates a new Git connection (any provider)
 func (h *Handler) GitCreateConnection(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-	
+
 	if err := r.ParseForm(); err != nil {
 		h.setFlash(w, r, "error", "Invalid form data")
 		http.Redirect(w, r, "/integrations/git", http.StatusSeeOther)
@@ -173,7 +172,7 @@ func (h *Handler) GitCreateConnection(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) GitTestConnection(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	idStr := chi.URLParam(r, "id")
-	
+
 	connID, err := uuid.Parse(idStr)
 	if err != nil {
 		h.setFlash(w, r, "error", "Invalid connection ID")
@@ -213,7 +212,7 @@ func (h *Handler) GitTestConnection(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) GitSyncRepos(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	idStr := chi.URLParam(r, "id")
-	
+
 	connID, err := uuid.Parse(idStr)
 	if err != nil {
 		h.setFlash(w, r, "error", "Invalid connection ID")
@@ -252,7 +251,7 @@ func (h *Handler) GitSyncRepos(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) GitDeleteConnection(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	idStr := chi.URLParam(r, "id")
-	
+
 	connID, err := uuid.Parse(idStr)
 	if err != nil {
 		h.setFlash(w, r, "error", "Invalid connection ID")
@@ -431,53 +430,3 @@ func (h *Handler) GitGetLatestRelease(w http.ResponseWriter, r *http.Request) {
 }
 
 // ============================================================================
-// Helper: Convert connection to view type with provider info
-// ============================================================================
-
-func connectionToViewItem(conn *models.GiteaConnection, providerType string) gitea.ConnectionItem {
-	status := string(conn.Status)
-	statusMsg := ""
-	if conn.StatusMessage != nil {
-		statusMsg = *conn.StatusMessage
-	}
-	version := ""
-	if conn.GiteaVersion != nil {
-		version = *conn.GiteaVersion
-	}
-
-	return gitea.ConnectionItem{
-		ID:              conn.ID.String(),
-		Name:            conn.Name,
-		URL:             conn.URL,
-		ProviderType:    providerType,
-		Status:          status,
-		StatusMsg:       statusMsg,
-		ProviderVersion: version,
-		ReposCount:      conn.ReposCount,
-		AutoSync:        conn.AutoSync,
-	}
-}
-
-func repoToViewItem(repo *models.GiteaRepository, connName, providerType string) gitea.RepoItem {
-	desc := ""
-	if repo.Description != nil {
-		desc = *repo.Description
-	}
-
-	return gitea.RepoItem{
-		ID:             repo.ID.String(),
-		ConnectionID:   repo.ConnectionID.String(),
-		ConnectionName: connName,
-		ProviderType:   providerType,
-		FullName:       repo.FullName,
-		Description:    desc,
-		DefaultBranch:  repo.DefaultBranch,
-		IsPrivate:      repo.IsPrivate,
-		IsFork:         repo.IsFork,
-		IsArchived:     repo.IsArchived,
-		Stars:          repo.StarsCount,
-		Forks:          repo.ForksCount,
-		HTMLURL:        repo.HTMLURL,
-	}
-}
-

@@ -1,0 +1,86 @@
+// SPDX-License-Identifier: AGPL-3.0-or-later
+// Copyright (c) 2024-2026 usulnet contributors
+// https://github.com/fr4nsys/usulnet
+
+package wireguard
+
+import (
+	"fmt"
+
+	"github.com/fr4nsys/usulnet/internal/web/templates/layouts"
+)
+
+type PeerListData struct {
+	PageData layouts.PageData
+	Peers    []PeerView
+	Total    int
+}
+
+templ PeerList(data PeerListData) {
+	@layouts.Base(data.PageData) {
+		<div class="space-y-6">
+			@Nav("peers")
+			<div class="flex justify-between items-center">
+				<p class="text-sm text-gray-400">{ fmt.Sprintf("%d", data.Total) } peers across all interfaces</p>
+			</div>
+			<div class="bg-dark-700 rounded-lg border border-dark-600 overflow-hidden">
+				<table class="w-full">
+					<thead>
+						<tr class="border-b border-dark-600 text-xs text-gray-500 uppercase tracking-wide">
+							<th class="text-left p-4">Name</th>
+							<th class="text-left p-4">Public Key</th>
+							<th class="text-left p-4">Allowed IPs</th>
+							<th class="text-left p-4">Endpoint</th>
+							<th class="text-left p-4">Last Handshake</th>
+							<th class="text-left p-4">Transfer</th>
+						</tr>
+					</thead>
+					<tbody>
+						for _, peer := range data.Peers {
+							<tr class="border-b border-dark-600/50 hover:bg-dark-600/30 transition-colors">
+								<td class="p-4">
+									<a href={ templ.SafeURL("/wireguard/peers/" + peer.ID) } class="text-primary-400 hover:text-primary-300 font-medium">
+										{ peer.Name }
+									</a>
+								</td>
+								<td class="p-4 text-xs font-mono text-gray-400">{ truncateKey(peer.PublicKey) }</td>
+								<td class="p-4 text-sm text-gray-300 font-mono">{ peer.AllowedIPs }</td>
+								<td class="p-4 text-sm text-gray-300 font-mono">
+									if peer.Endpoint != "" {
+										{ peer.Endpoint }
+									} else {
+										<span class="text-gray-500">—</span>
+									}
+								</td>
+								<td class="p-4 text-xs text-gray-400">
+									if peer.LastHandshake != "" {
+										{ peer.LastHandshake }
+									} else {
+										<span class="text-gray-500">Never</span>
+									}
+								</td>
+								<td class="p-4 text-xs text-gray-400">
+									<span class="text-green-400">↓ { peer.TransferRx }</span>
+									<span class="mx-1">|</span>
+									<span class="text-blue-400">↑ { peer.TransferTx }</span>
+								</td>
+							</tr>
+						}
+						if len(data.Peers) == 0 {
+							<tr>
+								<td colspan="6" class="p-8 text-center text-gray-500">No peers found.</td>
+							</tr>
+						}
+					</tbody>
+				</table>
+			</div>
+		</div>
+	}
+}
+
+func truncateKey(key string) string {
+	if len(key) > 20 {
+		return key[:10] + "..." + key[len(key)-6:]
+	}
+	return key
+}

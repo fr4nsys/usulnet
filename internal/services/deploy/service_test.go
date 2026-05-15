@@ -143,10 +143,10 @@ func TestDeployResult_Tracking(t *testing.T) {
 	}
 
 	result := &DeployResult{
-		ID:        "test-123",
-		HostID:    uuid.New(),
-		HostName:  "test-host",
-		Status:    StatusPending,
+		ID:       "test-123",
+		HostID:   uuid.New(),
+		HostName: "test-host",
+		Status:   StatusPending,
 	}
 
 	svc.mu.Lock()

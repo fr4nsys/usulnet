@@ -410,13 +410,13 @@ type PortSuggestion struct {
 
 // HostPortMap represents port usage on a host
 type HostPortMap struct {
-	HostID      string             `json:"host_id"`
-	HostName    string             `json:"host_name"`
-	TotalPorts  int                `json:"total_ports"`
-	UsedPorts   int                `json:"used_ports"`
-	Ports       []HostPortMapping  `json:"ports"`
-	ByProtocol  map[string]int     `json:"by_protocol"`  // tcp/udp counts
-	ByContainer map[string]int     `json:"by_container"` // Container -> port count
+	HostID      string            `json:"host_id"`
+	HostName    string            `json:"host_name"`
+	TotalPorts  int               `json:"total_ports"`
+	UsedPorts   int               `json:"used_ports"`
+	Ports       []HostPortMapping `json:"ports"`
+	ByProtocol  map[string]int    `json:"by_protocol"`  // tcp/udp counts
+	ByContainer map[string]int    `json:"by_container"` // Container -> port count
 }
 
 // HostPortMapping represents a single port mapping on a host
