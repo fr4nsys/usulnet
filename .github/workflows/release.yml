@@ -59,8 +59,8 @@ jobs:
           platforms: linux/amd64,linux/arm64
           push: true
           tags: |
-            ghcr.io/fr4nsys/usulnet:${{ steps.version.outputs.VERSION }}
-            ghcr.io/fr4nsys/usulnet:latest
+            ghcr.io/fran-olivares/usulnet:${{ steps.version.outputs.VERSION }}
+            ghcr.io/fran-olivares/usulnet:latest
             usulnet/usulnet:${{ steps.version.outputs.VERSION }}
             usulnet/usulnet:latest
           build-args: |
@@ -78,8 +78,8 @@ jobs:
           platforms: linux/amd64,linux/arm64
           push: true
           tags: |
-            ghcr.io/fr4nsys/usulnet-agent:${{ steps.version.outputs.VERSION }}
-            ghcr.io/fr4nsys/usulnet-agent:latest
+            ghcr.io/fran-olivares/usulnet-agent:${{ steps.version.outputs.VERSION }}
+            ghcr.io/fran-olivares/usulnet-agent:latest
             usulnet/usulnet-agent:${{ steps.version.outputs.VERSION }}
             usulnet/usulnet-agent:latest
           build-args: |
