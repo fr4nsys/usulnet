@@ -14,10 +14,12 @@ infrastructure tooling (firewall, crontab, WireGuard mesh, docker-engine
 config, image builder), and an opt-in privacy module (OSINT recon plus
 file metadata hygiene) from a single process on hardware you own.
 
-v26.5.1 Beta — released 2026-05-15. Bug reports:
+v26.5.2 Beta — released 2026-05-19. Bug reports:
 [issues](https://github.com/fr4nsys/usulnet/issues). Release notes:
 [`CHANGELOG.md`](CHANGELOG.md) and
-[`docs/v26.5/release-notes-v26.5.1.md`](docs/v26.5/release-notes-v26.5.1.md).
+[`docs/v26.5.2/release-notes.md`](docs/v26.5.2/release-notes.md)
+(v26.5.1 archive:
+[`docs/v26.5/release-notes-v26.5.1.md`](docs/v26.5/release-notes-v26.5.1.md)).
 
 ![Dashboard](docs/screenshots/dashboard-hero.png)
 
@@ -41,7 +43,23 @@ the password from the profile page.
 Manual Docker Compose install, standalone binary install, and offline
 procedures live in [`docs/installation.md`](docs/installation.md).
 
-## What's new in v26.5.1
+## What's new in v26.5.2
+
+Polish release on top of v26.5.1. **No database migration.** Adds the
+Shodan recon connector to the AGPL binary (second BYO-key external
+connector after HIBP), ports `usulnet-agent` to Cobra with `run` /
+`version` / `validate-config` subcommands and a canonical
+`USULNET_AGENT_DOCKER_HOST` env var, lands global CLI `--quiet` /
+`--json` flags with a JSON error envelope, adds `migrate up` /
+`down [N]` / `status` subcommands, ships header / sidebar / modal /
+flash a11y landmarks across the web chrome, bakes shell tab-completion
+into both production Docker images, and publishes a new operator CLI
+reference at [`docs/cli.md`](docs/cli.md). Per-feature detail in
+[`docs/v26.5.2/release-notes.md`](docs/v26.5.2/release-notes.md);
+full per-PR changelog in `[v26.5.2]` of
+[`CHANGELOG.md`](CHANGELOG.md).
+
+## What's in v26.5.1
 
 Eleven modules previously gated behind the Business edition now ship in
 the standard AGPL build, plus a proxy-extended enhancement and the
@@ -275,8 +293,24 @@ usulnet meta …             # opt-in metadata hygiene subcommand tree
 usulnet version            # print build info
 ```
 
-The agent binary (`usulnet-agent`) is documented in
-[`docs/agents.md`](docs/agents.md).
+Global flags affect every subcommand: `--quiet` suppresses
+informational summaries (errors and primary data still print);
+`--json` is a shortcut for `--output json` and also switches the
+error formatter to a single-record envelope on stderr —
+`{"error":"<string>","code":<int>}`. Plain errors carry a fixed
+`usulnet:` prefix. Exit codes (0 success, 64 usage, 70 infra, 71
+server unreachable, 72 auth) are stable across the binary. Full
+reference: [`docs/cli.md`](docs/cli.md).
+
+The agent binary (`usulnet-agent`) ships as a Cobra tree with `run`,
+`version`, and `validate-config` subcommands. Validate a config
+before restarting an agent:
+
+```bash
+usulnet-agent validate-config --config /etc/usulnet-agent/config.yaml
+```
+
+Full agent reference: [`docs/agents.md`](docs/agents.md).
 
 ![usulnet version output](docs/screenshots/cli-version.png)
 
@@ -322,6 +356,7 @@ output / crontab execution tail follow the same path scheme with the
 | Installation and deployment | [`docs/installation.md`](docs/installation.md) |
 | Capability requirements (v26.5.1 modules) | [`docs/installation.md#capability-requirements-v2651-modules`](docs/installation.md#capability-requirements-v2651-modules) |
 | Development setup and workflow | [`docs/development.md`](docs/development.md) |
+| CLI reference (`usulnet` binary) | [`docs/cli.md`](docs/cli.md) |
 | REST and WebSocket API | [`docs/api.md`](docs/api.md) |
 | Architecture | [`docs/architecture.md`](docs/architecture.md) |
 | Recon and metadata modules | [`docs/recon.md`](docs/recon.md) |
@@ -329,6 +364,8 @@ output / crontab execution tail follow the same path scheme with the
 | Licensing | [`docs/licensing.md`](docs/licensing.md) |
 | Signed security review (recon, v26.5) | [`docs/v26.5/security-review-checklist.md`](docs/v26.5/security-review-checklist.md) |
 | Security review (v26.5.1 hardening audit) | [`docs/v26.5/security-review-v26.5.1.md`](docs/v26.5/security-review-v26.5.1.md) |
+| Security review (v26.5.2 hardening audit) | [`docs/v26.5/security-review-v26.5.2.md`](docs/v26.5/security-review-v26.5.2.md) |
+| Release notes (v26.5.2) | [`docs/v26.5.2/release-notes.md`](docs/v26.5.2/release-notes.md) |
 | Release notes (v26.5.1) | [`docs/v26.5/release-notes-v26.5.1.md`](docs/v26.5/release-notes-v26.5.1.md) |
 | Ported modules status board | [`docs/v26.5/v26.5.1-ported-modules.md`](docs/v26.5/v26.5.1-ported-modules.md) |
 | Full changelog | [`CHANGELOG.md`](CHANGELOG.md) |
@@ -389,5 +426,11 @@ Security posture:
   docker 28.5.2; two Moby false positives (GO-2026-4883,
   GO-2026-4887) are in the allowlist with inline justification.
 
-Full v26.5.1 hardening audit:
-[`docs/v26.5/security-review-v26.5.1.md`](docs/v26.5/security-review-v26.5.1.md).
+Full hardening audits:
+[`docs/v26.5/security-review-v26.5.2.md`](docs/v26.5/security-review-v26.5.2.md)
+(current — covers v26.5.2 deltas: Shodan connector, agent Cobra port,
+CLI tab-completion install script, web a11y landmarks, JSON error
+envelope, route-scoped frontend gzip with BREACH mitigation, batched
+alert event resolution, request-id `strconv` swap) and
+[`docs/v26.5/security-review-v26.5.1.md`](docs/v26.5/security-review-v26.5.1.md)
+(baseline — eleven v26.2.7 modules ported into the AGPL build).
