@@ -83,7 +83,7 @@ func RedirForm(data RedirFormData) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"max-w-2xl mx-auto space-y-6\"><div class=\"flex items-center gap-4\"><a href=\"/proxy/redirections\" class=\"p-2 text-gray-400 hover:text-white hover:bg-dark-700 rounded-lg\"><i class=\"fas fa-arrow-left\"></i></a><div><h1 class=\"text-2xl font-display font-bold text-white\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"max-w-2xl mx-auto space-y-6\"><div class=\"flex items-center gap-4\"><a href=\"/proxy/redirections\" class=\"p-2 text-gray-400 hover:text-white hover:bg-dark-700 rounded-lg\"><i aria-hidden=\"true\" class=\"fas fa-arrow-left\"></i></a><div><h1 class=\"text-2xl font-display font-bold text-white\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -101,14 +101,14 @@ func RedirForm(data RedirFormData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			if data.Error != "" {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<div class=\"bg-red-500/10 border border-red-500/20 rounded-lg p-4 text-red-400\"><i class=\"fas fa-exclamation-triangle mr-2\"></i>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<div class=\"bg-red-500/10 border border-red-500/20 rounded-lg p-4 text-red-400\"><i aria-hidden=\"true\" class=\"fas fa-exclamation-triangle mr-2\"></i>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var4 string
 				templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(data.Error)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/proxy/redir_form.templ`, Line: 60, Col: 65}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/proxy/redir_form.templ`, Line: 60, Col: 84}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 				if templ_7745c5c3_Err != nil {
@@ -158,7 +158,7 @@ func RedirForm(data RedirFormData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "\" class=\"input w-full\"><p class=\"text-xs text-gray-500 mt-1\">Comma-separated domains that will be redirected.</p></div><!-- Forward Scheme --><div class=\"grid grid-cols-3 gap-4\"><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Scheme</label> <select name=\"forward_scheme\" class=\"input w-full\"><option value=\"https\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "\" class=\"input w-full\" aria-label=\"Source Domain Names\"><p class=\"text-xs text-gray-500 mt-1\">Comma-separated domains that will be redirected.</p></div><!-- Forward Scheme --><div class=\"grid grid-cols-3 gap-4\"><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Scheme</label> <select name=\"forward_scheme\" class=\"input w-full\"><option value=\"https\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -190,7 +190,7 @@ func RedirForm(data RedirFormData) templ.Component {
 				var templ_7745c5c3_Var8 string
 				templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(data.Redir.ForwardDomain)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/proxy/redir_form.templ`, Line: 95, Col: 40}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/proxy/redir_form.templ`, Line: 96, Col: 40}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 				if templ_7745c5c3_Err != nil {
@@ -201,7 +201,7 @@ func RedirForm(data RedirFormData) templ.Component {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, " class=\"input w-full\"></div></div><!-- HTTP Code --><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">HTTP Status Code</label><div class=\"grid grid-cols-2 gap-3\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, " class=\"input w-full\" aria-label=\"Destination Domain\"></div></div><!-- HTTP Code --><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">HTTP Status Code</label><div class=\"grid grid-cols-2 gap-3\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -222,7 +222,7 @@ func RedirForm(data RedirFormData) templ.Component {
 				var templ_7745c5c3_Var9 string
 				templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", code.V))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/proxy/redir_form.templ`, Line: 114, Col: 42}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/proxy/redir_form.templ`, Line: 116, Col: 42}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 				if templ_7745c5c3_Err != nil {
@@ -245,7 +245,7 @@ func RedirForm(data RedirFormData) templ.Component {
 				var templ_7745c5c3_Var10 string
 				templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(code.L)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/proxy/redir_form.templ`, Line: 118, Col: 60}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/proxy/redir_form.templ`, Line: 120, Col: 60}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 				if templ_7745c5c3_Err != nil {
@@ -258,7 +258,7 @@ func RedirForm(data RedirFormData) templ.Component {
 				var templ_7745c5c3_Var11 string
 				templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(code.D)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/proxy/redir_form.templ`, Line: 119, Col: 51}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/proxy/redir_form.templ`, Line: 121, Col: 51}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 				if templ_7745c5c3_Err != nil {
@@ -306,7 +306,7 @@ func RedirForm(data RedirFormData) templ.Component {
 					var templ_7745c5c3_Var12 string
 					templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", cert.ID))
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/proxy/redir_form.templ`, Line: 152, Col: 51}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/proxy/redir_form.templ`, Line: 154, Col: 51}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
 					if templ_7745c5c3_Err != nil {
@@ -329,7 +329,7 @@ func RedirForm(data RedirFormData) templ.Component {
 					var templ_7745c5c3_Var13 string
 					templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(cert.NiceName)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/proxy/redir_form.templ`, Line: 155, Col: 25}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/proxy/redir_form.templ`, Line: 157, Col: 25}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
 					if templ_7745c5c3_Err != nil {
@@ -342,7 +342,7 @@ func RedirForm(data RedirFormData) templ.Component {
 					var templ_7745c5c3_Var14 string
 					templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.JoinStringErrs(certDomainsDisplay(cert.DomainNames))
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/proxy/redir_form.templ`, Line: 155, Col: 70}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/proxy/redir_form.templ`, Line: 157, Col: 70}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var14))
 					if templ_7745c5c3_Err != nil {
@@ -383,12 +383,12 @@ func RedirForm(data RedirFormData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			if data.IsEdit {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 40, "<i class=\"fas fa-save mr-2\"></i>Save Changes")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 40, "<i aria-hidden=\"true\" class=\"fas fa-save mr-2\"></i>Save Changes")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			} else {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 41, "<i class=\"fas fa-plus mr-2\"></i>Create Redirection")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 41, "<i aria-hidden=\"true\" class=\"fas fa-plus mr-2\"></i>Create Redirection")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -405,13 +405,13 @@ func RedirForm(data RedirFormData) templ.Component {
 				var templ_7745c5c3_Var15 string
 				templ_7745c5c3_Var15, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("/proxy/redirections/%d", data.Redir.ID))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/proxy/redir_form.templ`, Line: 194, Col: 71}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/proxy/redir_form.templ`, Line: 196, Col: 71}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var15))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 44, "\" hx-confirm=\"Delete this redirection host?\" class=\"btn-danger\"><i class=\"fas fa-trash mr-2\"></i>Delete</button></div></div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 44, "\" hx-confirm=\"Delete this redirection host?\" class=\"btn-danger\"><i aria-hidden=\"true\" class=\"fas fa-trash mr-2\"></i>Delete</button></div></div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}

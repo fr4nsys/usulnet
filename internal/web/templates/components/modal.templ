@@ -1,10 +1,36 @@
 package components
 
+// modalFocusXData is the Alpine.js x-data expression shared by Modal and
+// ModalWithFooter. It tracks the modal's open state, the element that
+// triggered the open (so focus can return to it on close), and the
+// $watch wiring that moves focus to the first focusable child on open
+// and back to the trigger on close. Pulled out so both modal variants
+// stay in sync.
+const modalFocusXData = `{
+		open: false,
+		trigger: null,
+		init() {
+			this.$watch('open', (value) => {
+				if (value) {
+					this.trigger = document.activeElement;
+					this.$nextTick(() => {
+						const first = this.$el.querySelector('[autofocus]') ||
+							this.$el.querySelector('button:not([disabled]), a[href], input:not([type=hidden]):not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])');
+						if (first) first.focus();
+					});
+				} else if (this.trigger) {
+					this.trigger.focus();
+					this.trigger = null;
+				}
+			});
+		}
+	}`
+
 // Modal displays a modal dialog
 templ Modal(id, title string, size string) {
-	<div 
+	<div
 		id={ id }
-		x-data="{ open: false }"
+		x-data={ modalFocusXData }
 		x-show="open"
 		x-on:open-modal.window="if ($event.detail.id === $el.id) open = true"
 		x-on:close-modal.window="if ($event.detail.id === $el.id || !$event.detail.id) open = false"
@@ -36,17 +62,21 @@ templ Modal(id, title string, size string) {
 					x-transition:leave="transition ease-in duration-150"
 					x-transition:leave-start="opacity-100 scale-100"
 					x-transition:leave-end="opacity-0 scale-95"
-					class={ "w-full bg-dark-800 rounded-xl border border-dark-600 shadow-2xl", modalSize(size) }
+					class={ "w-full card shadow-2xl", modalSize(size) }
 					@click.stop
+					role="dialog"
+					aria-modal="true"
+					aria-labelledby={ id + "-title" }
 				>
 					<!-- Header -->
 					<div class="flex items-center justify-between p-5 border-b border-dark-600">
-						<h3 class="text-lg font-semibold text-white">{ title }</h3>
-						<button 
+						<h3 id={ id + "-title" } class="text-lg font-semibold text-white">{ title }</h3>
+						<button
 							@click="open = false"
+							aria-label="Close dialog"
 							class="p-2 text-gray-400 hover:text-white transition-colors rounded-lg hover:bg-dark-700"
 						>
-							<i class="fas fa-times"></i>
+							<i aria-hidden="true" class="fas fa-times"></i>
 						</button>
 					</div>
 					
@@ -62,9 +92,9 @@ templ Modal(id, title string, size string) {
 
 // ModalWithFooter displays a modal with footer actions
 templ ModalWithFooter(id, title string, size string) {
-	<div 
+	<div
 		id={ id }
-		x-data="{ open: false }"
+		x-data={ modalFocusXData }
 		x-show="open"
 		x-on:open-modal.window="if ($event.detail.id === $el.id) open = true"
 		x-on:close-modal.window="if ($event.detail.id === $el.id || !$event.detail.id) open = false"
@@ -96,17 +126,21 @@ templ ModalWithFooter(id, title string, size string) {
 					x-transition:leave="transition ease-in duration-150"
 					x-transition:leave-start="opacity-100 scale-100"
 					x-transition:leave-end="opacity-0 scale-95"
-					class={ "w-full bg-dark-800 rounded-xl border border-dark-600 shadow-2xl", modalSize(size) }
+					class={ "w-full card shadow-2xl", modalSize(size) }
 					@click.stop
+					role="dialog"
+					aria-modal="true"
+					aria-labelledby={ id + "-title" }
 				>
 					<!-- Header -->
 					<div class="flex items-center justify-between p-5 border-b border-dark-600">
-						<h3 class="text-lg font-semibold text-white">{ title }</h3>
-						<button 
+						<h3 id={ id + "-title" } class="text-lg font-semibold text-white">{ title }</h3>
+						<button
 							@click="open = false"
+							aria-label="Close dialog"
 							class="p-2 text-gray-400 hover:text-white transition-colors rounded-lg hover:bg-dark-700"
 						>
-							<i class="fas fa-times"></i>
+							<i aria-hidden="true" class="fas fa-times"></i>
 						</button>
 					</div>
 					

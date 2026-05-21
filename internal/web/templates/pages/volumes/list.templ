@@ -55,7 +55,7 @@ templ VolumesList(data VolumesListData) {
 			</div>
 			<div class="flex items-center gap-3">
 				<a href="/volumes/new" class="btn-primary">
-					<i class="fas fa-plus mr-2"></i>
+					<i aria-hidden="true" class="fas fa-plus mr-2"></i>
 					New Volume
 				</a>
 				<button 
@@ -64,14 +64,14 @@ templ VolumesList(data VolumesListData) {
 					hx-swap="none"
 					class="px-4 py-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-lg transition-colors"
 				>
-					<i class="fas fa-broom mr-2"></i>
+					<i aria-hidden="true" class="fas fa-broom mr-2"></i>
 					Prune
 				</button>
 			</div>
 		</div>
 
 		<!-- Filters -->
-		<div class="bg-dark-800 rounded-xl border border-dark-600 p-4 mb-6">
+		<div class="card p-4 mb-6">
 			<div class="flex flex-col md:flex-row gap-4">
 				<!-- Search -->
 				<div class="flex-1">
@@ -87,8 +87,9 @@ templ VolumesList(data VolumesListData) {
 							hx-target="#volume-table"
 							hx-select="#volume-table"
 							hx-push-url="true"
+							aria-label="Search volumes..."
 						/>
-						<i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-500"></i>
+						<i aria-hidden="true" class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-500"></i>
 					</div>
 				</div>
 				
@@ -129,7 +130,7 @@ templ VolumesList(data VolumesListData) {
 		</div>
 
 		<!-- Volumes Table -->
-		<div id="volume-table" class="bg-dark-800 rounded-xl border border-dark-600 overflow-hidden">
+		<div id="volume-table" class="card overflow-hidden">
 			@components.Table() {
 				@components.TableHead() {
 					@components.TableHeaderSortable("Name", "name", data.Filters.Sort, data.Filters.Dir)
@@ -167,7 +168,7 @@ templ volumeRow(vol Volume) {
 		<td class="px-4 py-3">
 			<div class="flex items-center gap-3">
 				<div class={ "w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0", volumeIcon(vol.InUse) }>
-					<i class="fas fa-hdd"></i>
+					<i aria-hidden="true" class="fas fa-hdd"></i>
 				</div>
 				<div>
 					<a href={ templ.SafeURL("/volumes/" + vol.Name) } class="font-medium text-white hover:text-primary-400 transition-colors font-mono">
@@ -209,7 +210,7 @@ templ volumeRow(vol Volume) {
 					class="p-2 text-gray-400 hover:text-primary-400 hover:bg-primary-500/10 rounded-lg transition-colors"
 					title="Details"
 				>
-					<i class="fas fa-info-circle text-sm"></i>
+					<i aria-hidden="true" class="fas fa-info-circle text-sm"></i>
 				</a>
 				if !vol.InUse {
 					<button 
@@ -219,7 +220,7 @@ templ volumeRow(vol Volume) {
 						class="p-2 text-gray-400 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
 						title="Remove"
 					>
-						<i class="fas fa-trash text-sm"></i>
+						<i aria-hidden="true" class="fas fa-trash text-sm"></i>
 					</button>
 				}
 			</div>

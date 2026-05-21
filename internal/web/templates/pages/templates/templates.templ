@@ -59,7 +59,7 @@ templ ContainerTemplates(data ContainerTemplatesData) {
 					<p class="text-gray-400 mt-1">Reusable container configurations for quick deployment</p>
 				</div>
 				<button onclick="document.getElementById('createTemplateModal').classList.remove('hidden')" class="btn-primary flex items-center gap-2">
-					<i class="fas fa-plus"></i>
+					<i aria-hidden="true" class="fas fa-plus"></i>
 					New Template
 				</button>
 			</div>
@@ -89,7 +89,7 @@ templ ContainerTemplates(data ContainerTemplatesData) {
 					<!-- Templates Grid -->
 					if len(data.Templates) == 0 {
 						<div class="card p-12 text-center">
-							<i class="fas fa-box-open text-4xl text-gray-400 mb-4"></i>
+							<i aria-hidden="true" class="fas fa-box-open text-4xl text-gray-400 mb-4"></i>
 							<h3 class="text-lg font-medium text-white mb-2">No Container Templates</h3>
 							<p class="text-gray-400 mb-4">Create reusable container configurations for quick deployment</p>
 						</div>
@@ -106,7 +106,7 @@ templ ContainerTemplates(data ContainerTemplatesData) {
 			} else {
 				if len(data.Templates) == 0 {
 					<div class="card p-12 text-center">
-						<i class="fas fa-box-open text-4xl text-gray-400 mb-4"></i>
+						<i aria-hidden="true" class="fas fa-box-open text-4xl text-gray-400 mb-4"></i>
 						<h3 class="text-lg font-medium text-white mb-2">No Container Templates</h3>
 						<p class="text-gray-400 mb-4">Create reusable container configurations for quick deployment</p>
 					</div>
@@ -156,12 +156,12 @@ templ templateCard(tmpl ContainerTemplateView, csrfToken string) {
 		}
 		<div class="space-y-2 mb-3 flex-1">
 			<div class="flex items-center gap-2 text-xs text-gray-500">
-				<i class="fas fa-docker"></i>
+				<i aria-hidden="true" class="fas fa-docker"></i>
 				<span class="text-gray-300">{ tmpl.Image }:{ tmpl.Tag }</span>
 			</div>
 			if len(tmpl.Ports) > 0 {
 				<div class="flex items-center gap-2 text-xs text-gray-500">
-					<i class="fas fa-network-wired"></i>
+					<i aria-hidden="true" class="fas fa-network-wired"></i>
 					<span class="text-gray-300">
 						for i, port := range tmpl.Ports {
 							if i > 0 {
@@ -174,33 +174,33 @@ templ templateCard(tmpl ContainerTemplateView, csrfToken string) {
 			}
 			if len(tmpl.Volumes) > 0 {
 				<div class="flex items-center gap-2 text-xs text-gray-500">
-					<i class="fas fa-hdd"></i>
+					<i aria-hidden="true" class="fas fa-hdd"></i>
 					<span class="text-gray-300">{ fmt.Sprintf("%d volume(s)", len(tmpl.Volumes)) }</span>
 				</div>
 			}
 			if len(tmpl.EnvVars) > 0 {
 				<div class="flex items-center gap-2 text-xs text-gray-500">
-					<i class="fas fa-cog"></i>
+					<i aria-hidden="true" class="fas fa-cog"></i>
 					<span class="text-gray-300">{ fmt.Sprintf("%d env var(s)", len(tmpl.EnvVars)) }</span>
 				</div>
 			}
 		</div>
 		<div class="flex items-center justify-between pt-3 border-t border-dark-600">
 			<div class="flex items-center gap-2 text-xs text-gray-500">
-				<span><i class="fas fa-rocket mr-1"></i>{ fmt.Sprintf("%d deploys", tmpl.UsageCount) }</span>
-				<span><i class="fas fa-clock mr-1"></i>{ tmpl.CreatedAt }</span>
+				<span><i aria-hidden="true" class="fas fa-rocket mr-1"></i>{ fmt.Sprintf("%d deploys", tmpl.UsageCount) }</span>
+				<span><i aria-hidden="true" class="fas fa-clock mr-1"></i>{ tmpl.CreatedAt }</span>
 			</div>
 			<div class="flex items-center gap-1">
 				<form method="POST" action={ templ.SafeURL("/container-templates/" + tmpl.ID + "/deploy") }>
 					<input type="hidden" name="csrf_token" value={ csrfToken }/>
 					<button type="submit" class="p-1.5 text-gray-400 hover:text-green-400 transition-colors" title="Deploy">
-						<i class="fas fa-play text-sm"></i>
+						<i aria-hidden="true" class="fas fa-play text-sm"></i>
 					</button>
 				</form>
 				<form method="POST" action={ templ.SafeURL("/container-templates/" + tmpl.ID + "/delete") } onsubmit="return confirm('Delete this template?')">
 					<input type="hidden" name="csrf_token" value={ csrfToken }/>
 					<button type="submit" class="p-1.5 text-gray-400 hover:text-red-400 transition-colors" title="Delete">
-						<i class="fas fa-trash text-sm"></i>
+						<i aria-hidden="true" class="fas fa-trash text-sm"></i>
 					</button>
 				</form>
 			</div>
@@ -214,7 +214,7 @@ templ createTemplateModal(csrfToken string) {
 			<div class="flex items-center justify-between p-6 border-b border-dark-600 sticky top-0 bg-dark-800 z-10">
 				<h2 class="text-lg font-display font-bold text-white">Create Container Template</h2>
 				<button onclick="document.getElementById('createTemplateModal').classList.add('hidden')" class="text-gray-400 hover:text-white">
-					<i class="fas fa-times"></i>
+					<i aria-hidden="true" class="fas fa-times"></i>
 				</button>
 			</div>
 			<form method="POST" action="/container-templates" class="p-6 space-y-4">
@@ -223,7 +223,7 @@ templ createTemplateModal(csrfToken string) {
 				<div class="grid grid-cols-2 gap-4">
 					<div>
 						<label class="block text-sm font-medium text-gray-300 mb-1">Template Name</label>
-						<input type="text" name="name" required class="input w-full" placeholder="e.g., Nginx Reverse Proxy"/>
+						<input type="text" name="name" required class="input w-full" placeholder="e.g., Nginx Reverse Proxy" aria-label="e.g., Nginx Reverse Proxy"/>
 					</div>
 					<div>
 						<label class="block text-sm font-medium text-gray-300 mb-1">Category</label>
@@ -248,11 +248,11 @@ templ createTemplateModal(csrfToken string) {
 				<div class="grid grid-cols-2 gap-4">
 					<div>
 						<label class="block text-sm font-medium text-gray-300 mb-1">Docker Image</label>
-						<input type="text" name="image" required class="input w-full" placeholder="e.g., nginx"/>
+						<input type="text" name="image" required class="input w-full" placeholder="e.g., nginx" aria-label="e.g., nginx"/>
 					</div>
 					<div>
 						<label class="block text-sm font-medium text-gray-300 mb-1">Tag</label>
-						<input type="text" name="tag" class="input w-full" placeholder="latest" value="latest"/>
+						<input type="text" name="tag" class="input w-full" placeholder="latest" aria-label="latest" value="latest"/>
 					</div>
 				</div>
 
@@ -274,7 +274,7 @@ templ createTemplateModal(csrfToken string) {
 				<div class="grid grid-cols-2 gap-4">
 					<div>
 						<label class="block text-sm font-medium text-gray-300 mb-1">Network</label>
-						<input type="text" name="network" class="input w-full" placeholder="default (optional)"/>
+						<input type="text" name="network" class="input w-full" placeholder="default (optional)" aria-label="default (optional)"/>
 					</div>
 					<div>
 						<label class="block text-sm font-medium text-gray-300 mb-1">Restart Policy</label>
@@ -289,7 +289,7 @@ templ createTemplateModal(csrfToken string) {
 
 				<div>
 					<label class="block text-sm font-medium text-gray-300 mb-1">Command (optional)</label>
-					<input type="text" name="command" class="input w-full font-mono text-sm" placeholder="Custom command override"/>
+					<input type="text" name="command" class="input w-full font-mono text-sm" placeholder="Custom command override" aria-label="Custom command override"/>
 				</div>
 
 				<label class="flex items-center gap-2">
@@ -300,7 +300,7 @@ templ createTemplateModal(csrfToken string) {
 				<div class="flex justify-end gap-3 pt-4 border-t border-dark-600">
 					<button type="button" onclick="document.getElementById('createTemplateModal').classList.add('hidden')" class="btn-secondary">Cancel</button>
 					<button type="submit" class="btn-primary">
-						<i class="fas fa-plus mr-2"></i>Create Template
+						<i aria-hidden="true" class="fas fa-plus mr-2"></i>Create Template
 					</button>
 				</div>
 			</form>

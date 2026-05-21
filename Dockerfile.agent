@@ -53,12 +53,15 @@ RUN CGO_ENABLED=0 GOOS=${TARGETOS} GOARCH=${TARGETARCH} go build \
 # =============================================================================
 FROM alpine:3.21
 
+ARG VERSION=dev
+
 # OCI image metadata labels
 LABEL org.opencontainers.image.title="usulnet-agent" \
       org.opencontainers.image.description="usulnet Docker Management Agent" \
       org.opencontainers.image.url="https://github.com/fr4nsys/usulnet" \
       org.opencontainers.image.source="https://github.com/fr4nsys/usulnet" \
       org.opencontainers.image.vendor="usulnet" \
+      org.opencontainers.image.version="${VERSION}" \
       org.opencontainers.image.licenses="AGPL-3.0"
 
 RUN apk add --no-cache ca-certificates tzdata curl su-exec && \
@@ -75,6 +78,19 @@ WORKDIR /app
 
 # Copy agent binary with proper ownership
 COPY --from=builder --chown=usulnet:usulnet /build/usulnet-agent /app/usulnet-agent
+
+# Pre-generate shell tab-completion scripts so operators can `docker cp`
+# them out without running the binary on the host. Cobra's completion
+# subcommand produces shell-portable scripts; we bake one per shell.
+# Runs on TARGETPLATFORM (no --platform on this stage) so the cross-
+# compiled binary executes natively.
+RUN mkdir -p /app/completions/bash /app/completions/zsh \
+             /app/completions/fish /app/completions/powershell && \
+    /app/usulnet-agent completion bash       > /app/completions/bash/usulnet-agent && \
+    /app/usulnet-agent completion zsh        > /app/completions/zsh/_usulnet-agent && \
+    /app/usulnet-agent completion fish       > /app/completions/fish/usulnet-agent.fish && \
+    /app/usulnet-agent completion powershell > /app/completions/powershell/usulnet-agent.ps1 && \
+    chown -R usulnet:usulnet /app/completions
 
 # Agent entrypoint
 COPY docker-entrypoint.agent.sh /app/docker-entrypoint.agent.sh

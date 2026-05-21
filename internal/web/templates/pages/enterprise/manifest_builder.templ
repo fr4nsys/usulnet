@@ -31,16 +31,16 @@ templ ManifestBuilder(data ManifestBuilderData) {
 						<p class="text-gray-400 mt-1">Visually compose Docker Compose files from reusable service blocks</p>
 					</div>
 					<button @click="showCreateModal = true" class="btn-primary">
-						<i class="fas fa-plus mr-2"></i>New Session
+						<i aria-hidden="true" class="fas fa-plus mr-2"></i>New Session
 					</button>
 				</div>
 
 				<!-- Stats -->
 				<div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-					<div class="bg-dark-800 rounded-xl border border-dark-600 p-5">
+					<div class="card p-5">
 						<div class="flex items-center gap-3">
 							<div class="w-10 h-10 rounded-lg bg-primary-500/10 flex items-center justify-center">
-								<i class="fas fa-drafting-compass text-primary-400"></i>
+								<i aria-hidden="true" class="fas fa-drafting-compass text-primary-400"></i>
 							</div>
 							<div>
 								<p class="text-2xl font-bold text-white" x-text="sessions.length"></p>
@@ -48,10 +48,10 @@ templ ManifestBuilder(data ManifestBuilderData) {
 							</div>
 						</div>
 					</div>
-					<div class="bg-dark-800 rounded-xl border border-dark-600 p-5">
+					<div class="card p-5">
 						<div class="flex items-center gap-3">
 							<div class="w-10 h-10 rounded-lg bg-green-500/10 flex items-center justify-center">
-								<i class="fas fa-puzzle-piece text-green-400"></i>
+								<i aria-hidden="true" class="fas fa-puzzle-piece text-green-400"></i>
 							</div>
 							<div>
 								<p class="text-2xl font-bold text-white" x-text="components.length"></p>
@@ -59,10 +59,10 @@ templ ManifestBuilder(data ManifestBuilderData) {
 							</div>
 						</div>
 					</div>
-					<div class="bg-dark-800 rounded-xl border border-dark-600 p-5">
+					<div class="card p-5">
 						<div class="flex items-center gap-3">
 							<div class="w-10 h-10 rounded-lg bg-blue-500/10 flex items-center justify-center">
-								<i class="fas fa-file-code text-blue-400"></i>
+								<i aria-hidden="true" class="fas fa-file-code text-blue-400"></i>
 							</div>
 							<div>
 								<p class="text-2xl font-bold text-white" x-text="templates.length"></p>
@@ -73,16 +73,16 @@ templ ManifestBuilder(data ManifestBuilderData) {
 				</div>
 
 				<!-- Sessions List -->
-				<div class="bg-dark-800 rounded-xl border border-dark-600 overflow-hidden">
+				<div class="card overflow-hidden">
 					<template x-if="loadingSessions">
 						<div class="p-8 text-center text-gray-400">
-							<i class="fas fa-spinner fa-spin text-2xl mb-3"></i>
+							<i aria-hidden="true" class="fas fa-spinner fa-spin text-2xl mb-3"></i>
 							<p>Loading sessions...</p>
 						</div>
 					</template>
 					<template x-if="!loadingSessions && sessions.length === 0">
 						<div class="p-8 text-center text-gray-400">
-							<i class="fas fa-drafting-compass text-3xl mb-3"></i>
+							<i aria-hidden="true" class="fas fa-drafting-compass text-3xl mb-3"></i>
 							<p>No builder sessions yet</p>
 							<p class="text-sm mt-1">Create a session to start composing Docker Compose files visually.</p>
 						</div>
@@ -103,23 +103,23 @@ templ ManifestBuilder(data ManifestBuilderData) {
 									</div>
 									<div class="flex items-center gap-3 text-xs text-gray-400 mb-4">
 										<span>
-											<i class="fas fa-cubes mr-1"></i>
+											<i aria-hidden="true" class="fas fa-cubes mr-1"></i>
 											<span x-text="serviceCount(session) + ' services'"></span>
 										</span>
 										<span>
-											<i class="fas fa-file-code mr-1"></i>
+											<i aria-hidden="true" class="fas fa-file-code mr-1"></i>
 											<span x-text="session.format || 'compose'"></span>
 										</span>
 									</div>
 									<div class="flex items-center gap-2">
 										<button @click="openSession(session)" class="flex-1 btn-primary text-sm py-1.5">
-											<i class="fas fa-edit mr-1"></i>Open
+											<i aria-hidden="true" class="fas fa-edit mr-1"></i>Open
 										</button>
 										<button @click="generateFromList(session)" class="p-1.5 text-gray-400 hover:text-blue-400 transition-colors" title="Generate YAML">
-											<i class="fas fa-file-export text-sm"></i>
+											<i aria-hidden="true" class="fas fa-file-export text-sm"></i>
 										</button>
 										<button @click="deleteSession(session)" class="p-1.5 text-gray-400 hover:text-red-400 transition-colors" title="Delete">
-											<i class="fas fa-trash text-sm"></i>
+											<i aria-hidden="true" class="fas fa-trash text-sm"></i>
 										</button>
 									</div>
 								</div>
@@ -137,7 +137,7 @@ templ ManifestBuilder(data ManifestBuilderData) {
 				<div class="flex items-center justify-between mb-4">
 					<div class="flex items-center gap-3">
 						<button @click="closeSession()" class="p-2 text-gray-400 hover:text-white transition-colors" title="Back to sessions">
-							<i class="fas fa-arrow-left"></i>
+							<i aria-hidden="true" class="fas fa-arrow-left"></i>
 						</button>
 						<div>
 							<h1 class="text-xl font-display font-bold text-white" x-text="activeSession?.name || 'Untitled'"></h1>
@@ -150,8 +150,8 @@ templ ManifestBuilder(data ManifestBuilderData) {
 					</div>
 					<div class="flex items-center gap-2">
 						<button @click="autoSave()" class="btn-secondary text-sm" :disabled="saving">
-							<i class="fas fa-save mr-1" x-show="!saving"></i>
-							<i class="fas fa-spinner fa-spin mr-1" x-show="saving"></i>
+							<i aria-hidden="true" class="fas fa-save mr-1" x-show="!saving"></i>
+							<i aria-hidden="true" class="fas fa-spinner fa-spin mr-1" x-show="saving"></i>
 							Save
 						</button>
 					</div>
@@ -160,10 +160,10 @@ templ ManifestBuilder(data ManifestBuilderData) {
 				<!-- Three-panel Layout -->
 				<div class="grid grid-cols-12 gap-4" style="min-height: 70vh;">
 					<!-- Left Panel: Available Components/Templates -->
-					<div class="col-span-3 bg-dark-800 rounded-xl border border-dark-600 overflow-hidden flex flex-col">
+					<div class="col-span-3 card overflow-hidden flex flex-col">
 						<div class="p-3 border-b border-dark-600">
 							<h2 class="text-sm font-semibold text-white mb-2">Service Library</h2>
-							<input type="text" x-model="componentSearch" class="input w-full text-sm" placeholder="Search components..."/>
+							<input type="text" x-model="componentSearch" class="input w-full text-sm" placeholder="Search components..." aria-label="Search components..."/>
 							<div class="flex gap-1 mt-2 flex-wrap">
 								<button @click="componentFilter = ''" class="px-2 py-0.5 text-xs rounded transition-colors"
 									:class="componentFilter === '' ? 'bg-primary-500/20 text-primary-400' : 'bg-dark-700 text-gray-400 hover:text-white'">
@@ -180,7 +180,7 @@ templ ManifestBuilder(data ManifestBuilderData) {
 						<div class="flex-1 overflow-y-auto p-2 space-y-1">
 							<template x-if="loadingComponents">
 								<div class="p-4 text-center text-gray-400 text-sm">
-									<i class="fas fa-spinner fa-spin mr-1"></i>Loading...
+									<i aria-hidden="true" class="fas fa-spinner fa-spin mr-1"></i>Loading...
 								</div>
 							</template>
 							<template x-for="comp in filteredComponents()" :key="comp.id">
@@ -193,7 +193,7 @@ templ ManifestBuilder(data ManifestBuilderData) {
 											<p class="text-sm text-white font-medium truncate" x-text="comp.name"></p>
 											<p class="text-xs text-gray-500 truncate" x-text="comp.description"></p>
 										</div>
-										<i class="fas fa-plus text-xs text-gray-600 group-hover:text-primary-400 transition-colors flex-shrink-0"></i>
+										<i aria-hidden="true" class="fas fa-plus text-xs text-gray-600 group-hover:text-primary-400 transition-colors flex-shrink-0"></i>
 									</div>
 								</button>
 							</template>
@@ -211,7 +211,7 @@ templ ManifestBuilder(data ManifestBuilderData) {
 													<p class="text-sm text-white font-medium truncate" x-text="tmpl.name"></p>
 													<p class="text-xs text-gray-500 truncate" x-text="tmpl.category"></p>
 												</div>
-												<i class="fas fa-plus text-xs text-gray-600 group-hover:text-blue-400 transition-colors flex-shrink-0"></i>
+												<i aria-hidden="true" class="fas fa-plus text-xs text-gray-600 group-hover:text-blue-400 transition-colors flex-shrink-0"></i>
 											</div>
 										</button>
 									</template>
@@ -221,7 +221,7 @@ templ ManifestBuilder(data ManifestBuilderData) {
 					</div>
 
 					<!-- Center Panel: Service Cards Grid -->
-					<div class="col-span-5 bg-dark-800 rounded-xl border border-dark-600 overflow-hidden flex flex-col">
+					<div class="col-span-5 card overflow-hidden flex flex-col">
 						<div class="p-3 border-b border-dark-600 flex items-center justify-between">
 							<h2 class="text-sm font-semibold text-white">Services</h2>
 							<span class="text-xs text-gray-500" x-text="editorServices.length + ' service(s)'"></span>
@@ -229,7 +229,7 @@ templ ManifestBuilder(data ManifestBuilderData) {
 						<div class="flex-1 overflow-y-auto p-3">
 							<template x-if="editorServices.length === 0">
 								<div class="flex flex-col items-center justify-center h-full text-gray-400">
-									<i class="fas fa-cubes text-3xl mb-3"></i>
+									<i aria-hidden="true" class="fas fa-cubes text-3xl mb-3"></i>
 									<p class="text-sm">No services added yet</p>
 									<p class="text-xs mt-1">Click a component from the left panel to add it</p>
 								</div>
@@ -240,7 +240,7 @@ templ ManifestBuilder(data ManifestBuilderData) {
 										<div class="flex items-start justify-between mb-3">
 											<div class="flex items-center gap-2 min-w-0">
 												<div class="w-8 h-8 rounded bg-primary-500/10 flex items-center justify-center flex-shrink-0">
-													<i class="fas fa-cube text-primary-400 text-sm"></i>
+													<i aria-hidden="true" class="fas fa-cube text-primary-400 text-sm"></i>
 												</div>
 												<div class="min-w-0">
 													<p class="text-white font-medium text-sm truncate" x-text="svc.name"></p>
@@ -249,10 +249,10 @@ templ ManifestBuilder(data ManifestBuilderData) {
 											</div>
 											<div class="flex items-center gap-1 flex-shrink-0">
 												<button @click="editService(idx)" class="p-1 text-gray-400 hover:text-primary-400 transition-colors" title="Edit">
-													<i class="fas fa-pen text-xs"></i>
+													<i aria-hidden="true" class="fas fa-pen text-xs"></i>
 												</button>
 												<button @click="removeService(idx)" class="p-1 text-gray-400 hover:text-red-400 transition-colors" title="Remove">
-													<i class="fas fa-times text-xs"></i>
+													<i aria-hidden="true" class="fas fa-times text-xs"></i>
 												</button>
 											</div>
 										</div>
@@ -260,31 +260,31 @@ templ ManifestBuilder(data ManifestBuilderData) {
 										<div class="space-y-1.5 text-xs">
 											<template x-if="svc.ports && svc.ports.length > 0">
 												<div class="flex items-center gap-1.5 text-gray-400">
-													<i class="fas fa-network-wired w-3.5 text-center"></i>
+													<i aria-hidden="true" class="fas fa-network-wired w-3.5 text-center"></i>
 													<span x-text="svc.ports.map(function(p) { return p.host + ':' + p.container; }).join(', ')"></span>
 												</div>
 											</template>
 											<template x-if="svc.volumes && svc.volumes.length > 0">
 												<div class="flex items-center gap-1.5 text-gray-400">
-													<i class="fas fa-hdd w-3.5 text-center"></i>
+													<i aria-hidden="true" class="fas fa-hdd w-3.5 text-center"></i>
 													<span x-text="svc.volumes.length + ' volume(s)'"></span>
 												</div>
 											</template>
 											<template x-if="svc.environment && Object.keys(svc.environment).length > 0">
 												<div class="flex items-center gap-1.5 text-gray-400">
-													<i class="fas fa-key w-3.5 text-center"></i>
+													<i aria-hidden="true" class="fas fa-key w-3.5 text-center"></i>
 													<span x-text="Object.keys(svc.environment).length + ' env var(s)'"></span>
 												</div>
 											</template>
 											<template x-if="svc.depends_on && svc.depends_on.length > 0">
 												<div class="flex items-center gap-1.5 text-gray-400">
-													<i class="fas fa-link w-3.5 text-center"></i>
+													<i aria-hidden="true" class="fas fa-link w-3.5 text-center"></i>
 													<span x-text="'depends on: ' + svc.depends_on.join(', ')"></span>
 												</div>
 											</template>
 											<template x-if="svc.restart">
 												<div class="flex items-center gap-1.5 text-gray-400">
-													<i class="fas fa-redo w-3.5 text-center"></i>
+													<i aria-hidden="true" class="fas fa-redo w-3.5 text-center"></i>
 													<span x-text="'restart: ' + svc.restart"></span>
 												</div>
 											</template>
@@ -296,19 +296,19 @@ templ ManifestBuilder(data ManifestBuilderData) {
 					</div>
 
 					<!-- Right Panel: YAML Preview & Actions -->
-					<div class="col-span-4 bg-dark-800 rounded-xl border border-dark-600 overflow-hidden flex flex-col">
+					<div class="col-span-4 card overflow-hidden flex flex-col">
 						<div class="p-3 border-b border-dark-600 flex items-center justify-between">
 							<h2 class="text-sm font-semibold text-white">Generated YAML</h2>
 							<div class="flex items-center gap-1">
 								<button @click="copyYaml()" class="p-1.5 text-gray-400 hover:text-white transition-colors" title="Copy to clipboard" x-show="generatedYaml">
-									<i class="fas fa-copy text-xs"></i>
+									<i aria-hidden="true" class="fas fa-copy text-xs"></i>
 								</button>
 							</div>
 						</div>
 						<div class="flex-1 overflow-y-auto p-3">
 							<template x-if="!generatedYaml">
 								<div class="flex flex-col items-center justify-center h-full text-gray-400">
-									<i class="fas fa-file-code text-3xl mb-3"></i>
+									<i aria-hidden="true" class="fas fa-file-code text-3xl mb-3"></i>
 									<p class="text-sm">No YAML generated yet</p>
 									<p class="text-xs mt-1">Add services and click Generate</p>
 								</div>
@@ -322,7 +322,7 @@ templ ManifestBuilder(data ManifestBuilderData) {
 							<div class="px-3 py-2 border-t border-dark-600 max-h-32 overflow-y-auto">
 								<template x-for="(err, i) in validationErrors" :key="i">
 									<div class="flex items-start gap-2 text-xs py-1">
-										<i class="fas fa-exclamation-circle text-red-400 mt-0.5 flex-shrink-0"></i>
+										<i aria-hidden="true" class="fas fa-exclamation-circle text-red-400 mt-0.5 flex-shrink-0"></i>
 										<span class="text-red-300" x-text="typeof err === 'string' ? err : (err.message ? (err.field ? err.field + ': ' + err.message : err.message) : JSON.stringify(err))"></span>
 									</div>
 								</template>
@@ -331,19 +331,19 @@ templ ManifestBuilder(data ManifestBuilderData) {
 						<!-- Action Buttons -->
 						<div class="p-3 border-t border-dark-600 space-y-2">
 							<button @click="generateYaml()" class="w-full btn-primary text-sm" :disabled="generating || editorServices.length === 0">
-								<i class="fas fa-cogs mr-1.5" x-show="!generating"></i>
-								<i class="fas fa-spinner fa-spin mr-1.5" x-show="generating"></i>
+								<i aria-hidden="true" class="fas fa-cogs mr-1.5" x-show="!generating"></i>
+								<i aria-hidden="true" class="fas fa-spinner fa-spin mr-1.5" x-show="generating"></i>
 								<span x-text="generating ? 'Generating...' : 'Generate'"></span>
 							</button>
 							<div class="grid grid-cols-2 gap-2">
 								<button @click="validateYaml()" class="btn-secondary text-sm" :disabled="!generatedYaml || validating">
-									<i class="fas fa-check-circle mr-1" x-show="!validating"></i>
-									<i class="fas fa-spinner fa-spin mr-1" x-show="validating"></i>
+									<i aria-hidden="true" class="fas fa-check-circle mr-1" x-show="!validating"></i>
+									<i aria-hidden="true" class="fas fa-spinner fa-spin mr-1" x-show="validating"></i>
 									Validate
 								</button>
 								<button @click="saveAsStack()" class="btn-secondary text-sm" :disabled="!generatedYaml || savingStack">
-									<i class="fas fa-layer-group mr-1" x-show="!savingStack"></i>
-									<i class="fas fa-spinner fa-spin mr-1" x-show="savingStack"></i>
+									<i aria-hidden="true" class="fas fa-layer-group mr-1" x-show="!savingStack"></i>
+									<i aria-hidden="true" class="fas fa-spinner fa-spin mr-1" x-show="savingStack"></i>
 									Save as Stack
 								</button>
 							</div>
@@ -358,17 +358,17 @@ templ ManifestBuilder(data ManifestBuilderData) {
 			<template x-if="showCreateModal">
 				<div class="fixed inset-0 z-50 flex items-center justify-center p-4" @keydown.escape.window="showCreateModal = false">
 					<div class="fixed inset-0 bg-black/60" @click="showCreateModal = false"></div>
-					<div class="relative bg-dark-800 rounded-xl border border-dark-600 w-full max-w-md shadow-2xl">
+					<div class="relative card w-full max-w-md shadow-2xl">
 						<div class="flex items-center justify-between p-5 border-b border-dark-600">
 							<h3 class="text-lg font-semibold text-white">New Builder Session</h3>
 							<button @click="showCreateModal = false" class="text-gray-400 hover:text-white">
-								<i class="fas fa-times"></i>
+								<i aria-hidden="true" class="fas fa-times"></i>
 							</button>
 						</div>
 						<div class="p-5 space-y-4">
 							<div>
 								<label class="block text-sm font-medium text-gray-300 mb-2">Session Name</label>
-								<input type="text" x-model="newSession.name" class="input w-full" placeholder="my-compose-project" @keydown.enter="createSession()"/>
+								<input type="text" x-model="newSession.name" class="input w-full" placeholder="my-compose-project" aria-label="my-compose-project" @keydown.enter="createSession()"/>
 							</div>
 							<div>
 								<label class="block text-sm font-medium text-gray-300 mb-2">Format</label>
@@ -382,8 +382,8 @@ templ ManifestBuilder(data ManifestBuilderData) {
 						<div class="flex justify-end gap-3 p-5 border-t border-dark-600">
 							<button @click="showCreateModal = false" class="btn-secondary">Cancel</button>
 							<button @click="createSession()" class="btn-primary" :disabled="!newSession.name || creatingSession">
-								<i class="fas fa-plus mr-2" x-show="!creatingSession"></i>
-								<i class="fas fa-spinner fa-spin mr-2" x-show="creatingSession"></i>
+								<i aria-hidden="true" class="fas fa-plus mr-2" x-show="!creatingSession"></i>
+								<i aria-hidden="true" class="fas fa-spinner fa-spin mr-2" x-show="creatingSession"></i>
 								<span x-text="creatingSession ? 'Creating...' : 'Create'"></span>
 							</button>
 						</div>
@@ -397,28 +397,28 @@ templ ManifestBuilder(data ManifestBuilderData) {
 			<template x-if="showServiceModal">
 				<div class="fixed inset-0 z-50 flex items-center justify-center p-4" @keydown.escape.window="showServiceModal = false">
 					<div class="fixed inset-0 bg-black/60" @click="showServiceModal = false"></div>
-					<div class="relative bg-dark-800 rounded-xl border border-dark-600 w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl">
+					<div class="relative card w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl">
 						<div class="flex items-center justify-between p-5 border-b border-dark-600">
 							<h3 class="text-lg font-semibold text-white" x-text="editingServiceIdx >= 0 ? 'Edit Service' : 'Add Service'"></h3>
 							<button @click="showServiceModal = false" class="text-gray-400 hover:text-white">
-								<i class="fas fa-times"></i>
+								<i aria-hidden="true" class="fas fa-times"></i>
 							</button>
 						</div>
 						<div class="p-5 space-y-4">
 							<!-- Name -->
 							<div>
 								<label class="block text-sm font-medium text-gray-300 mb-2">Service Name</label>
-								<input type="text" x-model="serviceForm.name" class="input w-full" placeholder="my-service"/>
+								<input type="text" x-model="serviceForm.name" class="input w-full" placeholder="my-service" aria-label="my-service"/>
 							</div>
 							<!-- Image -->
 							<div class="grid grid-cols-3 gap-3">
 								<div class="col-span-2">
 									<label class="block text-sm font-medium text-gray-300 mb-2">Image</label>
-									<input type="text" x-model="serviceForm.image" class="input w-full font-mono" placeholder="nginx"/>
+									<input type="text" x-model="serviceForm.image" class="input w-full font-mono" placeholder="nginx" aria-label="nginx"/>
 								</div>
 								<div>
 									<label class="block text-sm font-medium text-gray-300 mb-2">Tag</label>
-									<input type="text" x-model="serviceForm.tag" class="input w-full font-mono" placeholder="latest"/>
+									<input type="text" x-model="serviceForm.tag" class="input w-full font-mono" placeholder="latest" aria-label="latest"/>
 								</div>
 							</div>
 							<!-- Restart Policy -->
@@ -434,12 +434,12 @@ templ ManifestBuilder(data ManifestBuilderData) {
 							<!-- Command -->
 							<div>
 								<label class="block text-sm font-medium text-gray-300 mb-2">Command (optional)</label>
-								<input type="text" x-model="serviceForm.command" class="input w-full font-mono" placeholder="e.g. --config /etc/app.conf"/>
+								<input type="text" x-model="serviceForm.command" class="input w-full font-mono" placeholder="e.g. --config /etc/app.conf" aria-label="e.g. --config /etc/app.conf"/>
 							</div>
 							<!-- Depends On -->
 							<div>
 								<label class="block text-sm font-medium text-gray-300 mb-2">Depends On (comma-separated)</label>
-								<input type="text" x-model="serviceForm.depends_on_str" class="input w-full font-mono" placeholder="db, redis"/>
+								<input type="text" x-model="serviceForm.depends_on_str" class="input w-full font-mono" placeholder="db, redis" aria-label="db, redis"/>
 							</div>
 							<!-- Ports -->
 							<div>
@@ -449,15 +449,15 @@ templ ManifestBuilder(data ManifestBuilderData) {
 								</label>
 								<template x-for="(port, pi) in serviceForm.ports" :key="pi">
 									<div class="flex items-center gap-2 mb-2">
-										<input type="number" x-model.number="port.host" class="input w-24 text-sm font-mono" placeholder="Host"/>
+										<input type="number" x-model.number="port.host" class="input w-24 text-sm font-mono" placeholder="Host" aria-label="Host"/>
 										<span class="text-gray-500">:</span>
-										<input type="number" x-model.number="port.container" class="input w-24 text-sm font-mono" placeholder="Container"/>
+										<input type="number" x-model.number="port.container" class="input w-24 text-sm font-mono" placeholder="Container" aria-label="Container"/>
 										<select x-model="port.protocol" class="input w-20 text-sm">
 											<option value="tcp">TCP</option>
 											<option value="udp">UDP</option>
 										</select>
 										<button @click="serviceForm.ports.splice(pi, 1)" class="p-1 text-gray-400 hover:text-red-400">
-											<i class="fas fa-times text-xs"></i>
+											<i aria-hidden="true" class="fas fa-times text-xs"></i>
 										</button>
 									</div>
 								</template>
@@ -470,15 +470,15 @@ templ ManifestBuilder(data ManifestBuilderData) {
 								</label>
 								<template x-for="(vol, vi) in serviceForm.volumes" :key="vi">
 									<div class="flex items-center gap-2 mb-2">
-										<input type="text" x-model="vol.source" class="input flex-1 text-sm font-mono" placeholder="Source"/>
+										<input type="text" x-model="vol.source" class="input flex-1 text-sm font-mono" placeholder="Source" aria-label="Source"/>
 										<span class="text-gray-500">:</span>
-										<input type="text" x-model="vol.target" class="input flex-1 text-sm font-mono" placeholder="Target"/>
+										<input type="text" x-model="vol.target" class="input flex-1 text-sm font-mono" placeholder="Target" aria-label="Target"/>
 										<label class="flex items-center gap-1 flex-shrink-0">
 											<input type="checkbox" x-model="vol.read_only" class="rounded border-dark-600 bg-dark-700 text-primary-500"/>
 											<span class="text-xs text-gray-400">RO</span>
 										</label>
 										<button @click="serviceForm.volumes.splice(vi, 1)" class="p-1 text-gray-400 hover:text-red-400">
-											<i class="fas fa-times text-xs"></i>
+											<i aria-hidden="true" class="fas fa-times text-xs"></i>
 										</button>
 									</div>
 								</template>
@@ -491,11 +491,11 @@ templ ManifestBuilder(data ManifestBuilderData) {
 								</label>
 								<template x-for="(ev, ei) in serviceForm.envList" :key="ei">
 									<div class="flex items-center gap-2 mb-2">
-										<input type="text" x-model="ev.key" class="input flex-1 text-sm font-mono" placeholder="KEY"/>
+										<input type="text" x-model="ev.key" class="input flex-1 text-sm font-mono" placeholder="KEY" aria-label="KEY"/>
 										<span class="text-gray-500">=</span>
-										<input type="text" x-model="ev.value" class="input flex-1 text-sm font-mono" placeholder="value"/>
+										<input type="text" x-model="ev.value" class="input flex-1 text-sm font-mono" placeholder="value" aria-label="value"/>
 										<button @click="serviceForm.envList.splice(ei, 1)" class="p-1 text-gray-400 hover:text-red-400">
-											<i class="fas fa-times text-xs"></i>
+											<i aria-hidden="true" class="fas fa-times text-xs"></i>
 										</button>
 									</div>
 								</template>
@@ -504,7 +504,7 @@ templ ManifestBuilder(data ManifestBuilderData) {
 						<div class="flex justify-end gap-3 p-5 border-t border-dark-600">
 							<button @click="showServiceModal = false" class="btn-secondary">Cancel</button>
 							<button @click="submitService()" class="btn-primary" :disabled="!serviceForm.name || !serviceForm.image">
-								<i class="fas fa-check mr-2"></i>
+								<i aria-hidden="true" class="fas fa-check mr-2"></i>
 								<span x-text="editingServiceIdx >= 0 ? 'Update' : 'Add Service'"></span>
 							</button>
 						</div>

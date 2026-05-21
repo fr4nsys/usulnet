@@ -125,7 +125,7 @@ func AccessAudit(data AccessAuditData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "\"> <button type=\"submit\" class=\"btn-secondary flex items-center gap-2\"><i class=\"fas fa-download\"></i> Export Report</button></form></div><!-- Stats --><div class=\"grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "\"> <button type=\"submit\" class=\"btn-secondary flex items-center gap-2\"><i aria-hidden=\"true\" class=\"fas fa-download\"></i> Export Report</button></form></div><!-- Stats --><div class=\"grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -158,7 +158,7 @@ func AccessAudit(data AccessAuditData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			if data.Stats.FailedLogins > 5 {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<div class=\"card border-l-4 border-l-red-500 p-4\"><div class=\"flex items-center gap-3\"><i class=\"fas fa-shield-alt text-red-400\"></i><div><h3 class=\"text-sm font-medium text-red-400\">Multiple Failed Login Attempts</h3><p class=\"text-xs text-gray-400 mt-0.5\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<div class=\"card border-l-4 border-l-red-500 p-4\"><div class=\"flex items-center gap-3\"><i aria-hidden=\"true\" class=\"fas fa-shield-alt text-red-400\"></i><div><h3 class=\"text-sm font-medium text-red-400\">Multiple Failed Login Attempts</h3><p class=\"text-xs text-gray-400 mt-0.5\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -189,7 +189,7 @@ func AccessAudit(data AccessAuditData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "\" class=\"space-y-4\"><div class=\"flex gap-1 border-b border-dark-600\"><button @click=\"tab = 'events'\" :class=\"tab === 'events' ? 'border-primary-500 text-white' : 'border-transparent text-gray-400 hover:text-gray-300'\" class=\"px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors\">Audit Log (")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "\" class=\"space-y-4\"><div class=\"flex gap-1 border-b border-dark-600\"><button @click=\"tab = 'events'\" :class=\"tab === 'events' ? 'border-primary-500 text-white' : 'border-transparent text-gray-400 hover:text-gray-300'\" class=\"tab-underline\">Audit Log (")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -202,7 +202,7 @@ func AccessAudit(data AccessAuditData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, ")</button> <button @click=\"tab = 'sessions'\" :class=\"tab === 'sessions' ? 'border-primary-500 text-white' : 'border-transparent text-gray-400 hover:text-gray-300'\" class=\"px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors\">Active Sessions (")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, ")</button> <button @click=\"tab = 'sessions'\" :class=\"tab === 'sessions' ? 'border-primary-500 text-white' : 'border-transparent text-gray-400 hover:text-gray-300'\" class=\"tab-underline\">Active Sessions (")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -215,7 +215,7 @@ func AccessAudit(data AccessAuditData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, ")</button> <button @click=\"tab = 'users'\" :class=\"tab === 'users' ? 'border-primary-500 text-white' : 'border-transparent text-gray-400 hover:text-gray-300'\" class=\"px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors\">User Activity (")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, ")</button> <button @click=\"tab = 'users'\" :class=\"tab === 'users' ? 'border-primary-500 text-white' : 'border-transparent text-gray-400 hover:text-gray-300'\" class=\"tab-underline\">User Activity (")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -233,12 +233,12 @@ func AccessAudit(data AccessAuditData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			if len(data.AuditLogs) == 0 {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "<div class=\"card p-12 text-center\"><i class=\"fas fa-list text-4xl text-gray-400 mb-4\"></i><h3 class=\"text-lg font-medium text-white mb-2\">No Audit Events</h3><p class=\"text-gray-400\">Audit events will appear here as users interact with the system</p></div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "<div class=\"card p-12 text-center\"><i aria-hidden=\"true\" class=\"fas fa-list text-4xl text-gray-400 mb-4\"></i><h3 class=\"text-lg font-medium text-white mb-2\">No Audit Events</h3><p class=\"text-gray-400\">Audit events will appear here as users interact with the system</p></div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			} else {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "<div class=\"card overflow-hidden\"><table class=\"w-full\"><thead><tr class=\"border-b border-dark-600\"><th class=\"text-left text-xs font-medium text-gray-400 uppercase px-4 py-3\">Time</th><th class=\"text-left text-xs font-medium text-gray-400 uppercase px-4 py-3\">User</th><th class=\"text-left text-xs font-medium text-gray-400 uppercase px-4 py-3\">Action</th><th class=\"text-left text-xs font-medium text-gray-400 uppercase px-4 py-3\">Resource</th><th class=\"text-left text-xs font-medium text-gray-400 uppercase px-4 py-3\">Details</th><th class=\"text-left text-xs font-medium text-gray-400 uppercase px-4 py-3\">IP</th><th class=\"text-left text-xs font-medium text-gray-400 uppercase px-4 py-3\">Status</th></tr></thead> <tbody class=\"divide-y divide-dark-700\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "<div class=\"card overflow-hidden\"><table class=\"w-full\"><thead><tr class=\"border-b border-dark-600\"><th scope=\"col\" class=\"text-left text-xs font-medium text-gray-400 uppercase px-4 py-3\">Time</th><th scope=\"col\" class=\"text-left text-xs font-medium text-gray-400 uppercase px-4 py-3\">User</th><th scope=\"col\" class=\"text-left text-xs font-medium text-gray-400 uppercase px-4 py-3\">Action</th><th scope=\"col\" class=\"text-left text-xs font-medium text-gray-400 uppercase px-4 py-3\">Resource</th><th scope=\"col\" class=\"text-left text-xs font-medium text-gray-400 uppercase px-4 py-3\">Details</th><th scope=\"col\" class=\"text-left text-xs font-medium text-gray-400 uppercase px-4 py-3\">IP</th><th scope=\"col\" class=\"text-left text-xs font-medium text-gray-400 uppercase px-4 py-3\">Status</th></tr></thead> <tbody class=\"divide-y divide-dark-700\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -427,7 +427,7 @@ func AccessAudit(data AccessAuditData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			if len(data.Sessions) == 0 {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 32, "<div class=\"card p-12 text-center\"><i class=\"fas fa-users text-4xl text-gray-400 mb-4\"></i><h3 class=\"text-lg font-medium text-white mb-2\">No Active Sessions</h3><p class=\"text-gray-400\">Active user sessions will appear here</p></div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 32, "<div class=\"card p-12 text-center\"><i aria-hidden=\"true\" class=\"fas fa-users text-4xl text-gray-400 mb-4\"></i><h3 class=\"text-lg font-medium text-white mb-2\">No Active Sessions</h3><p class=\"text-gray-400\">Active user sessions will appear here</p></div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -452,12 +452,12 @@ func AccessAudit(data AccessAuditData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			if len(data.Users) == 0 {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 36, "<div class=\"card p-12 text-center\"><i class=\"fas fa-user text-4xl text-gray-400 mb-4\"></i><h3 class=\"text-lg font-medium text-white mb-2\">No User Activity</h3><p class=\"text-gray-400\">User activity data will appear here</p></div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 36, "<div class=\"card p-12 text-center\"><i aria-hidden=\"true\" class=\"fas fa-user text-4xl text-gray-400 mb-4\"></i><h3 class=\"text-lg font-medium text-white mb-2\">No User Activity</h3><p class=\"text-gray-400\">User activity data will appear here</p></div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			} else {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 37, "<div class=\"card overflow-hidden\"><table class=\"w-full\"><thead><tr class=\"border-b border-dark-600\"><th class=\"text-left text-xs font-medium text-gray-400 uppercase px-4 py-3\">User</th><th class=\"text-left text-xs font-medium text-gray-400 uppercase px-4 py-3\">Role</th><th class=\"text-left text-xs font-medium text-gray-400 uppercase px-4 py-3\">Last Login</th><th class=\"text-left text-xs font-medium text-gray-400 uppercase px-4 py-3\">Last IP</th><th class=\"text-center text-xs font-medium text-gray-400 uppercase px-4 py-3\">Actions</th><th class=\"text-center text-xs font-medium text-gray-400 uppercase px-4 py-3\">Failed Logins</th><th class=\"text-left text-xs font-medium text-gray-400 uppercase px-4 py-3\">Status</th></tr></thead> <tbody class=\"divide-y divide-dark-700\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 37, "<div class=\"card overflow-hidden\"><table class=\"w-full\"><thead><tr class=\"border-b border-dark-600\"><th scope=\"col\" class=\"text-left text-xs font-medium text-gray-400 uppercase px-4 py-3\">User</th><th scope=\"col\" class=\"text-left text-xs font-medium text-gray-400 uppercase px-4 py-3\">Role</th><th scope=\"col\" class=\"text-left text-xs font-medium text-gray-400 uppercase px-4 py-3\">Last Login</th><th scope=\"col\" class=\"text-left text-xs font-medium text-gray-400 uppercase px-4 py-3\">Last IP</th><th scope=\"col\" class=\"text-center text-xs font-medium text-gray-400 uppercase px-4 py-3\">Actions</th><th scope=\"col\" class=\"text-center text-xs font-medium text-gray-400 uppercase px-4 py-3\">Failed Logins</th><th scope=\"col\" class=\"text-left text-xs font-medium text-gray-400 uppercase px-4 py-3\">Status</th></tr></thead> <tbody class=\"divide-y divide-dark-700\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -568,7 +568,7 @@ func AccessAudit(data AccessAuditData) templ.Component {
 						return templ_7745c5c3_Err
 					}
 					if u.IsLocked {
-						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 49, "<span class=\"px-2 py-0.5 text-xs bg-red-500/20 text-red-400 rounded flex items-center gap-1 w-fit\"><i class=\"fas fa-lock text-[10px]\"></i>Locked</span>")
+						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 49, "<span class=\"px-2 py-0.5 text-xs bg-red-500/20 text-red-400 rounded flex items-center gap-1 w-fit\"><i aria-hidden=\"true\" class=\"fas fa-lock text-[10px]\"></i>Locked</span>")
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
@@ -777,14 +777,14 @@ func sessionCard(s SessionView, csrfToken string) templ.Component {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 68, "</div><div class=\"flex items-center gap-4 mt-1 text-xs text-gray-500\"><span><i class=\"fas fa-network-wired mr-1\"></i>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 68, "</div><div class=\"flex items-center gap-4 mt-1 text-xs text-gray-500\"><span><i aria-hidden=\"true\" class=\"fas fa-network-wired mr-1\"></i>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var38 string
 		templ_7745c5c3_Var38, templ_7745c5c3_Err = templ.JoinStringErrs(s.IPAddress)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/accessaudit/accessaudit.templ`, Line: 294, Col: 66}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/accessaudit/accessaudit.templ`, Line: 294, Col: 85}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var38))
 		if templ_7745c5c3_Err != nil {
@@ -795,14 +795,14 @@ func sessionCard(s SessionView, csrfToken string) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		if s.Location != "" {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 70, "<span><i class=\"fas fa-map-marker-alt mr-1\"></i>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 70, "<span><i aria-hidden=\"true\" class=\"fas fa-map-marker-alt mr-1\"></i>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var39 string
 			templ_7745c5c3_Var39, templ_7745c5c3_Err = templ.JoinStringErrs(s.Location)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/accessaudit/accessaudit.templ`, Line: 296, Col: 67}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/accessaudit/accessaudit.templ`, Line: 296, Col: 86}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var39))
 			if templ_7745c5c3_Err != nil {
@@ -813,27 +813,27 @@ func sessionCard(s SessionView, csrfToken string) templ.Component {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 72, "<span><i class=\"fas fa-clock mr-1\"></i>Started: ")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 72, "<span><i aria-hidden=\"true\" class=\"fas fa-clock mr-1\"></i>Started: ")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var40 string
 		templ_7745c5c3_Var40, templ_7745c5c3_Err = templ.JoinStringErrs(s.StartedAt)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/accessaudit/accessaudit.templ`, Line: 298, Col: 67}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/accessaudit/accessaudit.templ`, Line: 298, Col: 86}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var40))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 73, "</span> <span><i class=\"fas fa-history mr-1\"></i>Last active: ")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 73, "</span> <span><i aria-hidden=\"true\" class=\"fas fa-history mr-1\"></i>Last active: ")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var41 string
 		templ_7745c5c3_Var41, templ_7745c5c3_Err = templ.JoinStringErrs(s.LastActiveAt)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/accessaudit/accessaudit.templ`, Line: 299, Col: 76}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/accessaudit/accessaudit.templ`, Line: 299, Col: 95}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var41))
 		if templ_7745c5c3_Err != nil {
@@ -883,7 +883,7 @@ func sessionCard(s SessionView, csrfToken string) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 78, "\"> <button type=\"submit\" class=\"btn-secondary text-sm text-red-400 hover:text-red-300\"><i class=\"fas fa-times mr-1\"></i>Revoke</button></form>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 78, "\"> <button type=\"submit\" class=\"btn-secondary text-sm text-red-400 hover:text-red-300\"><i aria-hidden=\"true\" class=\"fas fa-times mr-1\"></i>Revoke</button></form>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

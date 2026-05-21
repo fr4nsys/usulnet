@@ -14,13 +14,17 @@ package rollback
 import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
-import "github.com/fr4nsys/usulnet/internal/web/templates/layouts"
+import (
+	"github.com/fr4nsys/usulnet/internal/web/templates/components"
+	"github.com/fr4nsys/usulnet/internal/web/templates/layouts"
+)
 
 type ListData struct {
-	PageData layouts.PageData
-	Policies []PolicyView
-	Stats    StatsView
-	Error    string
+	PageData   layouts.PageData
+	Policies   []PolicyView
+	Stats      StatsView
+	Error      string
+	EmptyState components.EmptyStateData
 }
 
 type StatsView struct {
@@ -67,7 +71,7 @@ func List(data ListData) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"space-y-6\"><div class=\"flex items-center justify-between\"><div><h1 class=\"text-2xl font-display font-bold text-white\">Automated Rollback</h1><p class=\"text-gray-400 mt-1\">Policies that detect failed deploys and revert to the last known-good version</p></div><a href=\"/rollback/new\" class=\"btn-primary\"><i class=\"fas fa-plus mr-2\"></i>New Policy</a></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"space-y-6\"><div class=\"flex items-center justify-between\"><div><h1 class=\"text-2xl font-display font-bold text-white\">Automated Rollback</h1><p class=\"text-gray-400 mt-1\">Policies that detect failed deploys and revert to the last known-good version</p></div><a href=\"/rollback/new\" class=\"btn-primary\"><i aria-hidden=\"true\" class=\"fas fa-plus mr-2\"></i>New Policy</a></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -76,14 +80,14 @@ func List(data ListData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			if data.Error != "" {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<div class=\"card p-4 border border-red-500/40 bg-red-500/10 text-red-200 text-sm\"><i class=\"fas fa-triangle-exclamation mr-2\"></i>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<div class=\"card p-4 border border-red-500/40 bg-red-500/10 text-red-200 text-sm\"><i aria-hidden=\"true\" class=\"fas fa-triangle-exclamation mr-2\"></i>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var3 string
 				templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(data.Error)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/rollback/list.templ`, Line: 44, Col: 65}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/rollback/list.templ`, Line: 48, Col: 84}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 				if templ_7745c5c3_Err != nil {
@@ -101,7 +105,7 @@ func List(data ListData) templ.Component {
 			var templ_7745c5c3_Var4 string
 			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(itoaPad(data.Stats.Total))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/rollback/list.templ`, Line: 51, Col: 80}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/rollback/list.templ`, Line: 55, Col: 80}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 			if templ_7745c5c3_Err != nil {
@@ -114,7 +118,7 @@ func List(data ListData) templ.Component {
 			var templ_7745c5c3_Var5 string
 			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(itoaPad(data.Stats.Enabled))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/rollback/list.templ`, Line: 55, Col: 86}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/rollback/list.templ`, Line: 59, Col: 86}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 			if templ_7745c5c3_Err != nil {
@@ -127,7 +131,7 @@ func List(data ListData) templ.Component {
 			var templ_7745c5c3_Var6 string
 			templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(itoaPad(data.Stats.DryRun))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/rollback/list.templ`, Line: 59, Col: 84}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/rollback/list.templ`, Line: 63, Col: 84}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 			if templ_7745c5c3_Err != nil {
@@ -138,12 +142,7 @@ func List(data ListData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			if len(data.Policies) == 0 {
-				templ_7745c5c3_Err = EmptyState(
-					"No rollback policies yet",
-					"Define a policy to auto-revert a stack when a deploy fails or its healthcheck never goes green.",
-					"Create your first policy",
-					"/rollback/new",
-				).Render(ctx, templ_7745c5c3_Buffer)
+				templ_7745c5c3_Err = components.EmptyStateCTAs(data.EmptyState).Render(ctx, templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}

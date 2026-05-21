@@ -25,7 +25,7 @@ templ PolicyForm(data FormData) {
 
 		if data.FieldError != "" {
 			<div class="card p-4 border border-red-500/40 bg-red-500/10 text-red-200 text-sm">
-				<i class="fas fa-triangle-exclamation mr-2"></i>{ data.FieldError }
+				<i aria-hidden="true" class="fas fa-triangle-exclamation mr-2"></i>{ data.FieldError }
 			</div>
 		}
 
@@ -42,6 +42,7 @@ templ PolicyForm(data FormData) {
 						maxlength="255"
 						class="form-input w-full"
 						placeholder="prod-api rollback"
+						aria-label="Name"
 					/>
 				</div>
 				<div>
@@ -120,6 +121,7 @@ templ PolicyForm(data FormData) {
 						maxlength="255"
 						class="form-input w-full"
 						placeholder="prod"
+						aria-label="Tag substring (scope=tag)"
 					/>
 				</div>
 			</div>
@@ -144,6 +146,7 @@ templ PolicyForm(data FormData) {
 						value={ itoaPad(data.Policy.CooldownSeconds) }
 						min="0"
 						class="form-input w-full"
+						aria-label="Cooldown (s)"
 					/>
 					<p class="text-xs text-gray-500 mt-1">Refuses to re-fire on the same stack inside the window.</p>
 				</div>
@@ -186,9 +189,9 @@ templ PolicyForm(data FormData) {
 			<a href="/rollback" class="btn-secondary">Cancel</a>
 			<button type="submit" class="btn-primary">
 				if data.IsEdit {
-					<i class="fas fa-save mr-2"></i>Save changes
+					<i aria-hidden="true" class="fas fa-save mr-2"></i>Save changes
 				} else {
-					<i class="fas fa-check mr-2"></i>Create policy
+					<i aria-hidden="true" class="fas fa-check mr-2"></i>Create policy
 				}
 			</button>
 		</div>

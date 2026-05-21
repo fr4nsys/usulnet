@@ -23,6 +23,21 @@ type DeployService interface {
 	ListDeployments() []*deploy.DeployResult
 }
 
+// agentDeployForm captures the agent deploy form inputs. Every
+// field is optional at the bind layer because the handler fills in
+// host-derived defaults afterwards (host.Endpoint for ssh_host, a
+// freshly-generated agent token, "password" auth, "latest" image).
+type agentDeployForm struct {
+	SSHHost       string `form:"ssh_host"`
+	SSHUser       string `form:"ssh_user"`
+	SSHPassword   string `form:"ssh_password"`
+	SSHAuthType   string `form:"ssh_auth_type"`
+	SSHPrivateKey string `form:"ssh_private_key"`
+	AgentToken    string `form:"agent_token"`
+	GatewayURL    string `form:"gateway_url"`
+	AgentImage    string `form:"agent_image"`
+}
+
 // AgentDeployTempl handles POST /nodes/{id}/deploy - starts agent deployment.
 func (h *Handler) AgentDeployTempl(w http.ResponseWriter, r *http.Request) {
 	if h.deployService == nil {
@@ -38,8 +53,9 @@ func (h *Handler) AgentDeployTempl(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := r.ParseForm(); err != nil {
-		http.Error(w, "Invalid form data", http.StatusBadRequest)
+	var form agentDeployForm
+	if msg := BindForm(r, &form); msg != "" {
+		http.Error(w, msg, http.StatusBadRequest)
 		return
 	}
 
@@ -50,20 +66,13 @@ func (h *Handler) AgentDeployTempl(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	sshHost := r.FormValue("ssh_host")
-	sshUser := r.FormValue("ssh_user")
-	sshPassword := r.FormValue("ssh_password")
-	sshAuthType := r.FormValue("ssh_auth_type")
-	sshPrivateKey := r.FormValue("ssh_private_key")
-	agentToken := r.FormValue("agent_token")
-	gatewayURL := r.FormValue("gateway_url")
-	agentImage := r.FormValue("agent_image")
-
+	sshHost := form.SSHHost
 	if sshHost == "" {
 		sshHost = host.Endpoint
 	}
 
-	// Auto-generate token if not provided (user may have revisited page)
+	agentToken := form.AgentToken
+	// Auto-generate token if not provided (user may have revisited page).
 	if agentToken == "" {
 		token, err := h.services.Hosts().GenerateAgentToken(ctx, hostIDStr)
 		if err != nil {
@@ -72,9 +81,13 @@ func (h *Handler) AgentDeployTempl(w http.ResponseWriter, r *http.Request) {
 		}
 		agentToken = token
 	}
+
+	sshAuthType := form.SSHAuthType
 	if sshAuthType == "" {
 		sshAuthType = "password"
 	}
+
+	agentImage := form.AgentImage
 	if agentImage == "" {
 		agentImage = "usulnet-agent:latest"
 	}
@@ -84,12 +97,12 @@ func (h *Handler) AgentDeployTempl(w http.ResponseWriter, r *http.Request) {
 		HostName:      host.Name,
 		SSHHost:       sshHost,
 		SSHPort:       22,
-		SSHUser:       sshUser,
+		SSHUser:       form.SSHUser,
 		SSHAuthType:   sshAuthType,
-		SSHPassword:   sshPassword,
-		SSHPrivateKey: sshPrivateKey,
+		SSHPassword:   form.SSHPassword,
+		SSHPrivateKey: form.SSHPrivateKey,
 		AgentToken:    agentToken,
-		GatewayURL:    gatewayURL,
+		GatewayURL:    form.GatewayURL,
 		AgentImage:    agentImage,
 	}
 

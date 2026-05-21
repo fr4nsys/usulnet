@@ -5,15 +5,23 @@
 // Package recon — container image pins.
 //
 // These constants are the single source of truth for which exact image
-// the sandbox launcher pulls.  They are bumped by CI when
-// .github/workflows/build-recon-images.yml publishes a new build to
-// GHCR; the workflow opens a PR via peter-evans/create-pull-request
-// that updates this file in lockstep with the registry tag.
+// the sandbox launcher pulls. They are bumped by CI:
 //
-// Placeholder digests are checked in for the initial PR; the first CI
-// run on main will replace them with real ones.  Until then, callers
-// that need to pull the images locally should rely on the floating
-// :dev tag produced by `make docker-build-recon`.
+//   - SpiderFootImageDigest    — by .github/workflows/build-recon-images.yml
+//     on every push to main that touches deploy/recon/spiderfoot/.
+//   - ToolkitImageDigest       — by .github/workflows/recon-toolkit-weekly.yml
+//     on the weekly cron and on every push to main that touches
+//     images/recon-toolkit/. The toolkit Dockerfile bases on
+//     archlinux:latest + BlackArch overlay (amd64-only) and replaces
+//     the prior Debian-slim image at deploy/recon/toolkit/.
+//
+// Each workflow opens a PR via peter-evans/create-pull-request that
+// rewrites the matching digest in this file.
+//
+// Placeholder digests are checked in until the first CI run replaces
+// them. Callers that need to pull the images locally can rely on the
+// floating :latest tag or build the Dockerfile under images/recon-toolkit/
+// directly.
 
 package recon
 

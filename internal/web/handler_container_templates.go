@@ -100,88 +100,59 @@ func (h *Handler) ContainerTemplatesTempl(w http.ResponseWriter, r *http.Request
 }
 
 // ContainerTemplateCreate creates a new container template.
+// containerTemplateCreateForm captures the inputs of the create
+// template form. Ports / Volumes / EnvVars come in as one entry per
+// line in a textarea so they stay as raw strings here and are
+// post-processed below — BindForm only handles single-value scalar
+// conversions, not arbitrary text-to-slice parsing.
+type containerTemplateCreateForm struct {
+	Name          string `form:"name" validate:"required,min=1,max=200"`
+	Description   string `form:"description"`
+	Category      string `form:"category"`
+	Image         string `form:"image" validate:"required"`
+	Tag           string `form:"tag"`
+	PortsRaw      string `form:"ports"`
+	VolumesRaw    string `form:"volumes"`
+	EnvVarsRaw    string `form:"env_vars"`
+	Network       string `form:"network"`
+	RestartPolicy string `form:"restart_policy"`
+	Command       string `form:"command"`
+	IsPublic      bool   `form:"is_public"`
+}
+
 func (h *Handler) ContainerTemplateCreate(w http.ResponseWriter, r *http.Request) {
-	if err := r.ParseForm(); err != nil {
-		h.setFlash(w, r, "error", "Invalid form data")
+	var form containerTemplateCreateForm
+	if msg := BindForm(r, &form); msg != "" {
+		h.setFlash(w, r, "error", msg)
 		http.Redirect(w, r, "/container-templates", http.StatusSeeOther)
 		return
 	}
 
-	name := strings.TrimSpace(r.FormValue("name"))
-	if name == "" {
-		h.setFlash(w, r, "error", "Template name is required")
-		http.Redirect(w, r, "/container-templates", http.StatusSeeOther)
-		return
-	}
-
-	image := strings.TrimSpace(r.FormValue("image"))
-	if image == "" {
-		h.setFlash(w, r, "error", "Docker image is required")
-		http.Redirect(w, r, "/container-templates", http.StatusSeeOther)
-		return
-	}
-
-	tag := strings.TrimSpace(r.FormValue("tag"))
+	tag := form.Tag
 	if tag == "" {
 		tag = "latest"
 	}
 
-	// Parse ports (one per line)
-	var ports []string
-	if portsRaw := strings.TrimSpace(r.FormValue("ports")); portsRaw != "" {
-		for _, line := range strings.Split(portsRaw, "\n") {
-			line = strings.TrimSpace(line)
-			if line != "" {
-				ports = append(ports, line)
-			}
-		}
-	}
-
-	// Parse volumes (one per line)
-	var volumes []string
-	if volsRaw := strings.TrimSpace(r.FormValue("volumes")); volsRaw != "" {
-		for _, line := range strings.Split(volsRaw, "\n") {
-			line = strings.TrimSpace(line)
-			if line != "" {
-				volumes = append(volumes, line)
-			}
-		}
-	}
-
-	// Parse environment variables (KEY=VALUE per line)
-	var envVars []templateEnvVar
-	if envsRaw := strings.TrimSpace(r.FormValue("env_vars")); envsRaw != "" {
-		for _, line := range strings.Split(envsRaw, "\n") {
-			line = strings.TrimSpace(line)
-			if line == "" {
-				continue
-			}
-			parts := strings.SplitN(line, "=", 2)
-			ev := templateEnvVar{Key: parts[0]}
-			if len(parts) > 1 {
-				ev.Value = parts[1]
-			}
-			envVars = append(envVars, ev)
-		}
-	}
-
+	ports := splitNonEmptyLines(form.PortsRaw)
+	volumes := splitNonEmptyLines(form.VolumesRaw)
+	envVars := parseEnvVarLines(form.EnvVarsRaw)
 	envVarsJSON, _ := json.Marshal(envVars)
 
 	if h.containerTemplateRepo != nil {
 		t := &ContainerTemplateRecord{
 			ID:            uuid.New(),
-			Name:          name,
-			Description:   strings.TrimSpace(r.FormValue("description")),
-			Category:      r.FormValue("category"),
-			Image:         image,
+			Name:          form.Name,
+			Description:   form.Description,
+			Category:      form.Category,
+			Image:         form.Image,
 			Tag:           tag,
 			Ports:         ports,
 			Volumes:       volumes,
 			EnvVars:       envVarsJSON,
-			Network:       strings.TrimSpace(r.FormValue("network")),
-			RestartPolicy: r.FormValue("restart_policy"),
-			Command:       strings.TrimSpace(r.FormValue("command")),
-			IsPublic:      r.FormValue("is_public") == "on",
+			Network:       form.Network,
+			RestartPolicy: form.RestartPolicy,
+			Command:       form.Command,
+			IsPublic:      form.IsPublic,
 		}
 		if err := h.containerTemplateRepo.Create(r.Context(), t); err != nil {
 			h.setFlash(w, r, "error", "Failed to create template: "+err.Error())
@@ -190,8 +161,52 @@ func (h *Handler) ContainerTemplateCreate(w http.ResponseWriter, r *http.Request
 		}
 	}
 
-	h.setFlash(w, r, "success", "Container template '"+name+"' created")
+	h.setFlash(w, r, "success", "Container template '"+form.Name+"' created")
 	http.Redirect(w, r, "/container-templates", http.StatusSeeOther)
+}
+
+// splitNonEmptyLines breaks a textarea value into trimmed, non-empty
+// lines. Used by handlers whose forms render one-entry-per-line
+// textareas (ports, volumes, command args, etc.). Distinct from
+// the splitLines helper in converters.go, which preserves
+// whitespace for diff-style display.
+func splitNonEmptyLines(raw string) []string {
+	raw = strings.TrimSpace(raw)
+	if raw == "" {
+		return nil
+	}
+	var out []string
+	for _, line := range strings.Split(raw, "\n") {
+		if trimmed := strings.TrimSpace(line); trimmed != "" {
+			out = append(out, trimmed)
+		}
+	}
+	return out
+}
+
+// parseEnvVarLines parses a textarea value of KEY=VALUE lines into
+// templateEnvVar records. Lines without `=` keep their key with an
+// empty value (operators sometimes paste a bare KEY expecting the
+// host environment to populate it).
+func parseEnvVarLines(raw string) []templateEnvVar {
+	raw = strings.TrimSpace(raw)
+	if raw == "" {
+		return nil
+	}
+	var out []templateEnvVar
+	for _, line := range strings.Split(raw, "\n") {
+		line = strings.TrimSpace(line)
+		if line == "" {
+			continue
+		}
+		parts := strings.SplitN(line, "=", 2)
+		ev := templateEnvVar{Key: parts[0]}
+		if len(parts) > 1 {
+			ev.Value = parts[1]
+		}
+		out = append(out, ev)
+	}
+	return out
 }
 
 // ContainerTemplateDelete deletes a container template.

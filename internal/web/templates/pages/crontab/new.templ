@@ -21,7 +21,7 @@ templ New(data NewData) {
 			<div class="max-w-3xl">
 				<div class="flex items-center gap-3 mb-6">
 					<a href="/crontab" class="text-gray-400 hover:text-white">
-						<i class="fas fa-arrow-left"></i>
+						<i aria-hidden="true" class="fas fa-arrow-left"></i>
 					</a>
 					<h2 class="text-xl font-display font-bold text-white">New Cron Job</h2>
 				</div>
@@ -43,6 +43,7 @@ templ New(data NewData) {
 							placeholder="Backup database"
 							required
 							class="w-full bg-dark-800 border border-dark-600 text-white rounded-lg px-3 py-2 focus:ring-2 focus:ring-accent-500 focus:border-transparent"
+							aria-label="Name"
 						/>
 						<p class="text-xs text-gray-500 mt-1">A descriptive name for this cron job</p>
 					</div>
@@ -65,6 +66,7 @@ templ New(data NewData) {
 							placeholder="*/5 * * * *"
 							required
 							class="w-full bg-dark-800 border border-dark-600 text-white font-mono rounded-lg px-3 py-2 focus:ring-2 focus:ring-accent-500 focus:border-transparent"
+							aria-label="Schedule (Cron Expression)"
 						/>
 						<p class="text-xs text-gray-500 mt-1">
 							Standard 5-field cron expression: minute hour day-of-month month day-of-week.
@@ -105,6 +107,7 @@ templ New(data NewData) {
 								name="working_dir"
 								placeholder="/opt/app"
 								class="w-full bg-dark-800 border border-dark-600 text-white rounded-lg px-3 py-2 focus:ring-2 focus:ring-accent-500 focus:border-transparent"
+								aria-label="Working Directory"
 							/>
 						</div>
 					</div>
@@ -117,6 +120,7 @@ templ New(data NewData) {
 								name="container_id"
 								placeholder="my-container"
 								class="w-full bg-dark-800 border border-dark-600 text-white rounded-lg px-3 py-2 focus:ring-2 focus:ring-accent-500 focus:border-transparent"
+								aria-label="Container ID / Name"
 							/>
 						</div>
 					</div>
@@ -138,6 +142,7 @@ templ New(data NewData) {
 								name="http_url"
 								placeholder="https://example.com/api/webhook"
 								class="w-full bg-dark-800 border border-dark-600 text-white rounded-lg px-3 py-2 focus:ring-2 focus:ring-accent-500 focus:border-transparent"
+								aria-label="URL"
 							/>
 						</div>
 					</div>
@@ -149,7 +154,7 @@ templ New(data NewData) {
 
 					<div class="flex gap-2 pt-4">
 						<button type="submit" class="btn btn-primary">
-							<i class="fas fa-plus mr-1"></i> Create Cron Job
+							<i aria-hidden="true" class="fas fa-plus mr-1"></i> Create Cron Job
 						</button>
 						<a href="/crontab" class="btn btn-secondary">Cancel</a>
 					</div>

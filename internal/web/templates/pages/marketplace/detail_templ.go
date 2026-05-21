@@ -179,14 +179,14 @@ func Detail(data DetailData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			if data.App.Author != "" {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "<span><i class=\"fas fa-user mr-1\"></i>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "<span><i aria-hidden=\"true\" class=\"fas fa-user mr-1\"></i>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var8 string
 				templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(data.App.Author)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/marketplace/detail.templ`, Line: 68, Col: 62}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/marketplace/detail.templ`, Line: 68, Col: 81}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 				if templ_7745c5c3_Err != nil {
@@ -198,14 +198,14 @@ func Detail(data DetailData) templ.Component {
 				}
 			}
 			if data.App.Version != "" {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "<span><i class=\"fas fa-tag mr-1\"></i>v")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "<span><i aria-hidden=\"true\" class=\"fas fa-tag mr-1\"></i>v")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var9 string
 				templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(data.App.Version)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/marketplace/detail.templ`, Line: 71, Col: 63}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/marketplace/detail.templ`, Line: 71, Col: 82}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 				if templ_7745c5c3_Err != nil {
@@ -221,14 +221,14 @@ func Detail(data DetailData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			if data.App.AvgRating > 0 {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "<span><i class=\"fas fa-star text-yellow-400 mr-1\"></i>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "<span><i aria-hidden=\"true\" class=\"fas fa-star text-yellow-400 mr-1\"></i>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var10 string
 				templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%.1f", data.App.AvgRating))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/marketplace/detail.templ`, Line: 75, Col: 102}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/marketplace/detail.templ`, Line: 75, Col: 121}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 				if templ_7745c5c3_Err != nil {
@@ -241,7 +241,7 @@ func Detail(data DetailData) templ.Component {
 				var templ_7745c5c3_Var11 string
 				templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", data.App.RatingCount))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/marketplace/detail.templ`, Line: 75, Col: 147}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/marketplace/detail.templ`, Line: 75, Col: 166}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 				if templ_7745c5c3_Err != nil {
@@ -252,14 +252,14 @@ func Detail(data DetailData) templ.Component {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "<span><i class=\"fas fa-download mr-1\"></i>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "<span><i aria-hidden=\"true\" class=\"fas fa-download mr-1\"></i>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var12 string
 			templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", data.App.InstallCount))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/marketplace/detail.templ`, Line: 77, Col: 90}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/marketplace/detail.templ`, Line: 77, Col: 109}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
 			if templ_7745c5c3_Err != nil {
@@ -278,7 +278,7 @@ func Detail(data DetailData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 21, "\" class=\"px-4 py-2 bg-primary-600 hover:bg-primary-700 text-black font-medium rounded-lg transition-colors text-sm whitespace-nowrap\"><i class=\"fas fa-download mr-2\"></i>Install</a></div><div class=\"grid grid-cols-1 lg:grid-cols-3 gap-6\"><div class=\"lg:col-span-2 space-y-6\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 21, "\" class=\"px-4 py-2 bg-primary-600 hover:bg-primary-700 text-black font-medium rounded-lg transition-colors text-sm whitespace-nowrap\"><i aria-hidden=\"true\" class=\"fas fa-download mr-2\"></i>Install</a></div><div class=\"grid grid-cols-1 lg:grid-cols-3 gap-6\"><div class=\"lg:col-span-2 space-y-6\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -346,7 +346,7 @@ func Detail(data DetailData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 28, "\" class=\"text-xs text-primary-400 hover:text-primary-300\"><i class=\"fas fa-pen mr-1\"></i>Leave a review</a></div><p class=\"text-xs text-gray-500 mb-3\">Reviews are stored locally on this usulnet instance and never sent anywhere.</p>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 28, "\" class=\"text-xs text-primary-400 hover:text-primary-300\"><i aria-hidden=\"true\" class=\"fas fa-pen mr-1\"></i>Leave a review</a></div><p class=\"text-xs text-gray-500 mb-3\">Reviews are stored locally on this usulnet instance and never sent anywhere.</p>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -374,13 +374,13 @@ func Detail(data DetailData) templ.Component {
 						return templ_7745c5c3_Err
 					}
 					for i := 0; i < review.Rating; i++ {
-						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 32, "<i class=\"fas fa-star\"></i> ")
+						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 32, "<i aria-hidden=\"true\" class=\"fas fa-star\"></i> ")
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
 					}
 					for i := review.Rating; i < 5; i++ {
-						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 33, "<i class=\"far fa-star text-gray-600\"></i>")
+						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 33, "<i aria-hidden=\"true\" class=\"far fa-star text-gray-600\"></i>")
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}

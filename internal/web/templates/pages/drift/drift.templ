@@ -6,6 +6,7 @@ package drift
 
 import (
 	"fmt"
+	"github.com/fr4nsys/usulnet/internal/web/templates/components"
 	"github.com/fr4nsys/usulnet/internal/web/templates/layouts"
 )
 
@@ -105,7 +106,7 @@ templ Drift(data DriftData) {
 			<!-- Detections List -->
 			if len(data.Detections) == 0 {
 				<div class="card p-12 text-center">
-					<i class="fas fa-check-circle text-4xl text-green-400 mb-4"></i>
+					<i aria-hidden="true" class="fas fa-check-circle text-4xl text-green-400 mb-4"></i>
 					<h3 class="text-lg font-medium text-white mb-2">No Drift Detected</h3>
 					<p class="text-gray-400">Configuration drift detections will appear here when changes are found.</p>
 				</div>
@@ -122,7 +123,7 @@ templ Drift(data DriftData) {
 				<div class="flex items-center justify-center gap-2 mt-4">
 					if data.CurrentPage > 1 {
 						<a href={ templ.SafeURL(driftPaginationURL(data, data.CurrentPage-1)) } class="btn-secondary text-sm">
-							<i class="fas fa-chevron-left mr-1"></i>Prev
+							<i aria-hidden="true" class="fas fa-chevron-left mr-1"></i>Prev
 						</a>
 					}
 					<span class="text-sm text-gray-400">
@@ -130,7 +131,7 @@ templ Drift(data DriftData) {
 					</span>
 					if data.CurrentPage < data.TotalPages {
 						<a href={ templ.SafeURL(driftPaginationURL(data, data.CurrentPage+1)) } class="btn-secondary text-sm">
-							Next<i class="fas fa-chevron-right ml-1"></i>
+							Next<i aria-hidden="true" class="fas fa-chevron-right ml-1"></i>
 						</a>
 					}
 				</div>
@@ -141,17 +142,17 @@ templ Drift(data DriftData) {
 				<div class="bg-dark-800 rounded-lg shadow-xl max-w-4xl w-full mx-4 max-h-[80vh] flex flex-col">
 					<div class="flex items-center justify-between p-4 border-b border-dark-600">
 						<h3 class="text-lg font-medium text-white">Drift Diffs</h3>
-						<button @click="showDiffs = false; diffsData = []" class="text-gray-400 hover:text-white"><i class="fas fa-times"></i></button>
+						<button @click="showDiffs = false; diffsData = []" class="text-gray-400 hover:text-white"><i aria-hidden="true" class="fas fa-times"></i></button>
 					</div>
 					<div class="p-4 overflow-auto flex-1">
 						<template x-if="diffsData.length > 0">
 							<table class="w-full text-sm">
 								<thead>
 									<tr class="text-left text-gray-400 border-b border-dark-600">
-										<th class="pb-2 pr-3">Type</th>
-										<th class="pb-2 pr-3">Field</th>
-										<th class="pb-2 pr-3">Old Value</th>
-										<th class="pb-2">New Value</th>
+										<th scope="col" class="pb-2 pr-3">Type</th>
+										<th scope="col" class="pb-2 pr-3">Field</th>
+										<th scope="col" class="pb-2 pr-3">Old Value</th>
+										<th scope="col" class="pb-2">New Value</th>
 									</tr>
 								</thead>
 								<tbody>
@@ -205,7 +206,7 @@ templ driftRow(d DriftView) {
 					<span class="text-sm font-medium text-white">{ d.ResourceID }</span>
 				}
 				<!-- Severity badge -->
-				<span class={ driftSeverityBadge(d.Severity), "px-2 py-0.5 text-xs rounded" }>{ d.Severity }</span>
+				@components.Chip(driftSeverityTone(d.Severity), d.Severity)
 				<!-- Status badge -->
 				<span class={ driftStatusBadge(d.Status), "px-2 py-0.5 text-xs rounded" }>{ d.Status }</span>
 				<!-- Resource type badge -->
@@ -216,24 +217,24 @@ templ driftRow(d DriftView) {
 				</span>
 			</div>
 			<div class="flex items-center gap-3 mt-1 text-xs text-gray-500">
-				<span title={ d.DetectedAtFull }><i class="fas fa-clock mr-1"></i>{ d.DetectedAt }</span>
-				<span><i class="fas fa-fingerprint mr-1"></i>{ d.ResourceID }</span>
+				<span title={ d.DetectedAtFull }><i aria-hidden="true" class="fas fa-clock mr-1"></i>{ d.DetectedAt }</span>
+				<span><i aria-hidden="true" class="fas fa-fingerprint mr-1"></i>{ d.ResourceID }</span>
 			</div>
 		</div>
 		<!-- Actions -->
 		<div class="flex items-center gap-1 flex-shrink-0">
 			<button @click={ driftViewDiffsExpr(d.DiffsJSON) } class="p-1.5 text-gray-400 hover:text-primary-400 transition-colors" title="View Diffs">
-				<i class="fas fa-code-compare text-sm"></i>
+				<i aria-hidden="true" class="fas fa-code-compare text-sm"></i>
 			</button>
 			if d.Status == "open" {
 				<form method="POST" action={ templ.SafeURL(fmt.Sprintf("/drift/%s/accept", d.ID)) } class="inline">
 					<button type="submit" class="p-1.5 text-gray-400 hover:text-green-400 transition-colors" title="Accept drift">
-						<i class="fas fa-check text-sm"></i>
+						<i aria-hidden="true" class="fas fa-check text-sm"></i>
 					</button>
 				</form>
 				<form method="POST" action={ templ.SafeURL(fmt.Sprintf("/drift/%s/remediate", d.ID)) } class="inline">
 					<button type="submit" class="p-1.5 text-gray-400 hover:text-yellow-400 transition-colors" title="Remediate drift">
-						<i class="fas fa-wrench text-sm"></i>
+						<i aria-hidden="true" class="fas fa-wrench text-sm"></i>
 					</button>
 				</form>
 			}
@@ -258,16 +259,21 @@ func driftStatColor(color string) string {
 	}
 }
 
-func driftSeverityBadge(severity string) string {
+// driftSeverityTone maps drift's severity vocabulary (critical /
+// warning / info / …) to the shared components.Tone. Note that
+// drift uses "warning" rather than the recon "high"/"medium"
+// ladder, so we map it explicitly here rather than going through
+// components.SeverityToTone.
+func driftSeverityTone(severity string) components.Tone {
 	switch severity {
 	case "critical":
-		return "bg-red-500/20 text-red-400"
+		return components.ToneCritical
 	case "warning":
-		return "bg-yellow-500/20 text-yellow-400"
+		return components.ToneWarning
 	case "info":
-		return "bg-blue-500/20 text-blue-400"
+		return components.ToneInfo
 	default:
-		return "bg-gray-500/20 text-gray-400"
+		return components.ToneNeutral
 	}
 }
 

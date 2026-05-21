@@ -83,19 +83,19 @@ templ ExecutionRow(e ExecutionView) {
 					<div class="text-sm text-gray-300 truncate">{ e.Reason }</div>
 				}
 				if e.Error != "" {
-					<div class="text-sm text-red-300 truncate"><i class="fas fa-triangle-exclamation mr-1"></i>{ e.Error }</div>
+					<div class="text-sm text-red-300 truncate"><i aria-hidden="true" class="fas fa-triangle-exclamation mr-1"></i>{ e.Error }</div>
 				}
 				<div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-gray-500 mt-1">
 					if e.PolicyName != "" {
-						<span><i class="fas fa-shield-alt mr-1"></i>{ e.PolicyName }</span>
+						<span><i aria-hidden="true" class="fas fa-shield-alt mr-1"></i>{ e.PolicyName }</span>
 					}
 					if e.FromVersion != "" {
-						<span><i class="fas fa-arrow-up mr-1"></i>from v{ e.FromVersion }</span>
+						<span><i aria-hidden="true" class="fas fa-arrow-up mr-1"></i>from v{ e.FromVersion }</span>
 					}
 					if e.ToVersion != "" {
-						<span><i class="fas fa-arrow-down mr-1"></i>to v{ e.ToVersion }</span>
+						<span><i aria-hidden="true" class="fas fa-arrow-down mr-1"></i>to v{ e.ToVersion }</span>
 					}
-					<span><i class="fas fa-clock mr-1"></i>{ e.CreatedAt }</span>
+					<span><i aria-hidden="true" class="fas fa-clock mr-1"></i>{ e.CreatedAt }</span>
 				</div>
 			</div>
 		</div>

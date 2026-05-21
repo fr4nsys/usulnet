@@ -64,7 +64,7 @@ templ HealthDashboard(data HealthDashData) {
 					<p class="text-gray-400 mt-1">Monitor health check status, output, and failure history</p>
 				</div>
 				<a href="/containers" class="btn-secondary flex items-center gap-2">
-					<i class="fas fa-list"></i>
+					<i aria-hidden="true" class="fas fa-list"></i>
 					All Containers
 				</a>
 			</div>
@@ -83,7 +83,7 @@ templ HealthDashboard(data HealthDashData) {
 			if data.Stats.Unhealthy > 0 {
 				<div class="card border-l-4 border-l-red-500 p-4">
 					<div class="flex items-center gap-3">
-						<i class="fas fa-exclamation-triangle text-red-400"></i>
+						<i aria-hidden="true" class="fas fa-exclamation-triangle text-red-400"></i>
 						<div>
 							<h3 class="text-sm font-medium text-red-400">Unhealthy Containers Detected</h3>
 							<p class="text-xs text-gray-400 mt-0.5">{ fmt.Sprintf("%d container(s) are reporting unhealthy status. Review health check output below.", data.Stats.Unhealthy) }</p>
@@ -95,7 +95,7 @@ templ HealthDashboard(data HealthDashData) {
 			<!-- Container Health Cards -->
 			if len(data.Containers) == 0 {
 				<div class="card p-12 text-center">
-					<i class="fas fa-heartbeat text-4xl text-gray-400 mb-4"></i>
+					<i aria-hidden="true" class="fas fa-heartbeat text-4xl text-gray-400 mb-4"></i>
 					<h3 class="text-lg font-medium text-white mb-2">No Containers Found</h3>
 					<p class="text-gray-400">Container health data will appear here when containers are running</p>
 				</div>
@@ -107,16 +107,16 @@ templ HealthDashboard(data HealthDashData) {
 							All ({ fmt.Sprintf("%d", data.Stats.TotalContainers) })
 						</button>
 						<button @click="filter = 'healthy'" :class="filter === 'healthy' ? 'bg-green-600 text-white' : 'bg-dark-700 text-gray-400 hover:text-white'" class="px-3 py-1.5 rounded-lg text-sm transition-colors">
-							<i class="fas fa-heart mr-1"></i>Healthy ({ fmt.Sprintf("%d", data.Stats.Healthy) })
+							<i aria-hidden="true" class="fas fa-heart mr-1"></i>Healthy ({ fmt.Sprintf("%d", data.Stats.Healthy) })
 						</button>
 						<button @click="filter = 'unhealthy'" :class="filter === 'unhealthy' ? 'bg-red-600 text-white' : 'bg-dark-700 text-gray-400 hover:text-white'" class="px-3 py-1.5 rounded-lg text-sm transition-colors">
-							<i class="fas fa-heart-broken mr-1"></i>Unhealthy ({ fmt.Sprintf("%d", data.Stats.Unhealthy) })
+							<i aria-hidden="true" class="fas fa-heart-broken mr-1"></i>Unhealthy ({ fmt.Sprintf("%d", data.Stats.Unhealthy) })
 						</button>
 						<button @click="filter = 'starting'" :class="filter === 'starting' ? 'bg-yellow-600 text-white' : 'bg-dark-700 text-gray-400 hover:text-white'" class="px-3 py-1.5 rounded-lg text-sm transition-colors">
-							<i class="fas fa-spinner mr-1"></i>Starting ({ fmt.Sprintf("%d", data.Stats.Starting) })
+							<i aria-hidden="true" class="fas fa-spinner mr-1"></i>Starting ({ fmt.Sprintf("%d", data.Stats.Starting) })
 						</button>
 						<button @click="filter = 'none'" :class="filter === 'none' ? 'bg-gray-600 text-white' : 'bg-dark-700 text-gray-400 hover:text-white'" class="px-3 py-1.5 rounded-lg text-sm transition-colors">
-							<i class="fas fa-question-circle mr-1"></i>No Check ({ fmt.Sprintf("%d", data.Stats.NoHealthCheck) })
+							<i aria-hidden="true" class="fas fa-question-circle mr-1"></i>No Check ({ fmt.Sprintf("%d", data.Stats.NoHealthCheck) })
 						</button>
 					</div>
 
@@ -160,20 +160,20 @@ templ healthCard(c HealthContainerView) {
 					<!-- Health Check Config Summary -->
 					if c.HealthCheck.IsConfigured {
 						<div class="flex items-center gap-4 mt-2 text-xs text-gray-500 flex-wrap">
-							<span><i class="fas fa-terminal mr-1"></i>{ c.HealthCheck.Test }</span>
-							<span><i class="fas fa-clock mr-1"></i>Interval: { c.HealthCheck.Interval }</span>
-							<span><i class="fas fa-hourglass mr-1"></i>Timeout: { c.HealthCheck.Timeout }</span>
-							<span><i class="fas fa-redo mr-1"></i>Retries: { fmt.Sprintf("%d", c.HealthCheck.Retries) }</span>
+							<span><i aria-hidden="true" class="fas fa-terminal mr-1"></i>{ c.HealthCheck.Test }</span>
+							<span><i aria-hidden="true" class="fas fa-clock mr-1"></i>Interval: { c.HealthCheck.Interval }</span>
+							<span><i aria-hidden="true" class="fas fa-hourglass mr-1"></i>Timeout: { c.HealthCheck.Timeout }</span>
+							<span><i aria-hidden="true" class="fas fa-redo mr-1"></i>Retries: { fmt.Sprintf("%d", c.HealthCheck.Retries) }</span>
 							if c.FailingStreak > 0 {
-								<span class="text-red-400"><i class="fas fa-exclamation-triangle mr-1"></i>Failing streak: { fmt.Sprintf("%d", c.FailingStreak) }</span>
+								<span class="text-red-400"><i aria-hidden="true" class="fas fa-exclamation-triangle mr-1"></i>Failing streak: { fmt.Sprintf("%d", c.FailingStreak) }</span>
 							}
 							if c.LastCheckedAt != "" {
-								<span><i class="fas fa-history mr-1"></i>Last: { c.LastCheckedAt }</span>
+								<span><i aria-hidden="true" class="fas fa-history mr-1"></i>Last: { c.LastCheckedAt }</span>
 							}
 						</div>
 					} else {
 						<div class="flex items-center gap-2 mt-2 text-xs text-gray-500">
-							<i class="fas fa-info-circle"></i>
+							<i aria-hidden="true" class="fas fa-info-circle"></i>
 							<span>No health check configured</span>
 						</div>
 					}
@@ -191,7 +191,7 @@ templ healthCard(c HealthContainerView) {
 		if c.HealthCheck.IsConfigured && len(c.HealthLogs) > 0 {
 			<div x-show="expanded" x-cloak x-transition class="mt-4 border-t border-dark-600 pt-4">
 				<h4 class="text-sm font-medium text-gray-300 mb-2">
-					<i class="fas fa-clipboard-list mr-1"></i>Health Check History (last { fmt.Sprintf("%d", len(c.HealthLogs)) } checks)
+					<i aria-hidden="true" class="fas fa-clipboard-list mr-1"></i>Health Check History (last { fmt.Sprintf("%d", len(c.HealthLogs)) } checks)
 				</h4>
 				<div class="space-y-2 max-h-64 overflow-y-auto">
 					for _, log := range c.HealthLogs {
@@ -222,13 +222,13 @@ templ healthCard(c HealthContainerView) {
 templ healthIcon(health string) {
 	switch health {
 		case "healthy":
-			<i class="fas fa-heart text-green-400 text-lg"></i>
+			<i aria-hidden="true" class="fas fa-heart text-green-400 text-lg"></i>
 		case "unhealthy":
-			<i class="fas fa-heart-broken text-red-400 text-lg animate-pulse"></i>
+			<i aria-hidden="true" class="fas fa-heart-broken text-red-400 text-lg animate-pulse"></i>
 		case "starting":
-			<i class="fas fa-spinner text-yellow-400 text-lg animate-spin"></i>
+			<i aria-hidden="true" class="fas fa-spinner text-yellow-400 text-lg animate-spin"></i>
 		default:
-			<i class="fas fa-question-circle text-gray-500 text-lg"></i>
+			<i aria-hidden="true" class="fas fa-question-circle text-gray-500 text-lg"></i>
 	}
 }
 

@@ -35,12 +35,12 @@ templ SSHKeysList(data SSHKeysListData) {
 					<table class="w-full">
 						<thead class="bg-dark-900">
 							<tr>
-								<th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Name</th>
-								<th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Type</th>
-								<th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Fingerprint</th>
-								<th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Used By</th>
-								<th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Created</th>
-								<th class="px-4 py-3 text-right text-xs font-medium text-gray-400 uppercase tracking-wider">Actions</th>
+								<th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Name</th>
+								<th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Type</th>
+								<th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Fingerprint</th>
+								<th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Used By</th>
+								<th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Created</th>
+								<th scope="col" class="px-4 py-3 text-right text-xs font-medium text-gray-400 uppercase tracking-wider">Actions</th>
 							</tr>
 						</thead>
 						<tbody class="divide-y divide-dark-700">
@@ -203,6 +203,7 @@ templ SSHKeyNew(data layouts.PageData) {
 						required
 						placeholder="my-server-key"
 						class="w-full px-3 py-2 bg-dark-700 border border-dark-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+						aria-label="Key Name"
 					/>
 					<p class="mt-1 text-sm text-gray-500">A descriptive name to identify this key</p>
 				</div>
@@ -242,6 +243,7 @@ templ SSHKeyNew(data layouts.PageData) {
 						name="comment"
 						placeholder="user@hostname"
 						class="w-full px-3 py-2 bg-dark-700 border border-dark-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+						aria-label="Comment (optional)"
 					/>
 					<p class="mt-1 text-sm text-gray-500">Added to the end of the public key for identification</p>
 				</div>
@@ -253,6 +255,7 @@ templ SSHKeyNew(data layouts.PageData) {
 						name="passphrase"
 						placeholder="Optional passphrase for key encryption"
 						class="w-full px-3 py-2 bg-dark-700 border border-dark-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+						aria-label="Passphrase (optional)"
 					/>
 					<p class="mt-1 text-sm text-gray-500">Encrypts the private key. Recommended for additional security.</p>
 				</div>
@@ -289,6 +292,7 @@ templ SSHKeyNew(data layouts.PageData) {
 							required
 							placeholder="imported-key"
 							class="w-full px-3 py-2 bg-dark-700 border border-dark-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+							aria-label="Key Name"
 						/>
 					</div>
 					<div>
@@ -308,6 +312,7 @@ templ SSHKeyNew(data layouts.PageData) {
 							name="passphrase"
 							placeholder="Key passphrase"
 							class="w-full px-3 py-2 bg-dark-700 border border-dark-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+							aria-label="Passphrase ("
 						/>
 					</div>
 					<button

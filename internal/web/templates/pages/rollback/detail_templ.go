@@ -56,7 +56,7 @@ func Detail(data DetailData) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"space-y-6\"><div><a href=\"/rollback\" class=\"text-sm text-gray-400 hover:text-white\"><i class=\"fas fa-chevron-left mr-1\"></i>back to policies</a><div class=\"flex items-center gap-3 mt-1\"><h1 class=\"text-2xl font-display font-bold text-white\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"space-y-6\"><div><a href=\"/rollback\" class=\"text-sm text-gray-400 hover:text-white\"><i aria-hidden=\"true\" class=\"fas fa-chevron-left mr-1\"></i>back to policies</a><div class=\"flex items-center gap-3 mt-1\"><h1 class=\"text-2xl font-display font-bold text-white\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -126,7 +126,7 @@ func Detail(data DetailData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "\" class=\"btn-secondary text-sm\"><i class=\"fas fa-pen mr-2\"></i>Edit</a> <a href=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "\" class=\"btn-secondary text-sm\"><i aria-hidden=\"true\" class=\"fas fa-pen mr-2\"></i>Edit</a> <a href=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -139,7 +139,7 @@ func Detail(data DetailData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "\" class=\"btn-secondary text-sm\"><i class=\"fas fa-vial mr-2\"></i>Dry-run</a><form method=\"POST\" action=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "\" class=\"btn-secondary text-sm\"><i aria-hidden=\"true\" class=\"fas fa-vial mr-2\"></i>Dry-run</a><form method=\"POST\" action=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -165,7 +165,7 @@ func Detail(data DetailData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "\"> <button type=\"submit\" class=\"btn-danger text-sm\"><i class=\"fas fa-trash mr-2\"></i>Delete</button></form></div><div class=\"grid grid-cols-1 md:grid-cols-2 gap-4\"><div class=\"card p-4\"><h3 class=\"text-sm font-semibold text-white mb-3\">Detection</h3><dl class=\"space-y-2 text-sm\"><div class=\"flex items-baseline justify-between\"><dt class=\"text-gray-500\">Scope</dt><dd class=\"text-gray-200\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "\"> <button type=\"submit\" class=\"btn-danger text-sm\"><i aria-hidden=\"true\" class=\"fas fa-trash mr-2\"></i>Delete</button></form></div><div class=\"grid grid-cols-1 md:grid-cols-2 gap-4\"><div class=\"card p-4\"><h3 class=\"text-sm font-semibold text-white mb-3\">Detection</h3><dl class=\"space-y-2 text-sm\"><div class=\"flex items-baseline justify-between\"><dt class=\"text-gray-500\">Scope</dt><dd class=\"text-gray-200\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

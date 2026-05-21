@@ -31,30 +31,36 @@ func (h *Handler) GitListTempl(w http.ResponseWriter, r *http.Request) {
 // Connection Management
 // ============================================================================
 
+// gitCreateConnectionForm captures the inputs of the Git connection
+// creation form. provider_type drives a per-provider URL default
+// that is filled in after binding.
+type gitCreateConnectionForm struct {
+	ProviderType  string `form:"provider_type" validate:"required,oneof=github gitlab gitea"`
+	Name          string `form:"name" validate:"required"`
+	URL           string `form:"url"`
+	APIToken      string `form:"api_token" validate:"required"`
+	WebhookSecret string `form:"webhook_secret"`
+}
+
 // GitCreateConnection creates a new Git connection (any provider)
 func (h *Handler) GitCreateConnection(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
-	if err := r.ParseForm(); err != nil {
-		h.setFlash(w, r, "error", "Invalid form data")
+	var form gitCreateConnectionForm
+	if msg := BindForm(r, &form); msg != "" {
+		h.setFlash(w, r, "error", msg)
 		http.Redirect(w, r, "/integrations/git", http.StatusSeeOther)
 		return
 	}
 
-	providerType := r.FormValue("provider_type")
-	name := strings.TrimSpace(r.FormValue("name"))
-	url := strings.TrimSpace(r.FormValue("url"))
-	apiToken := r.FormValue("api_token")
-	webhookSecret := r.FormValue("webhook_secret")
+	providerType := form.ProviderType
+	name := form.Name
+	url := form.URL
+	apiToken := form.APIToken
+	webhookSecret := form.WebhookSecret
 
-	// Validation
-	if name == "" || apiToken == "" {
-		h.setFlash(w, r, "error", "Name and API token are required")
-		http.Redirect(w, r, "/integrations/git", http.StatusSeeOther)
-		return
-	}
-
-	// Set default URLs for providers
+	// Per-provider URL defaults. Gitea has no canonical URL so it
+	// remains an explicit field; the others get a sensible default.
 	switch providerType {
 	case "github":
 		if url == "" {
@@ -70,10 +76,6 @@ func (h *Handler) GitCreateConnection(w http.ResponseWriter, r *http.Request) {
 			http.Redirect(w, r, "/integrations/git", http.StatusSeeOther)
 			return
 		}
-	default:
-		h.setFlash(w, r, "error", "Invalid provider type")
-		http.Redirect(w, r, "/integrations/git", http.StatusSeeOther)
-		return
 	}
 
 	// Normalize URL

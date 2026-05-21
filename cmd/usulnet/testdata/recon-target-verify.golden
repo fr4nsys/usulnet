@@ -1,13 +1,22 @@
-Start ownership verification (uses rdap_match by default)
+Begin ownership verification for the given target.
+
+Currently rdap_match is the only supported method. The response
+includes the proof ID and the current status (pending|verified|
+failed). Scans cannot run against an unverified target.
 
 Usage:
   usulnet recon target verify <id> [flags]
+
+Examples:
+  usulnet recon target verify 11111111-1111-1111-1111-111111111111
 
 Flags:
   -h, --help   help for verify
 
 Global Flags:
   -c, --config string   config file path (default: /etc/usulnet/config.yaml or ./config.yaml)
+      --json            shortcut for --output json (overrides --output)
       --output string   output format: table|json|yaml (default "table")
+  -q, --quiet           suppress informational output (errors and primary data still print)
       --server string   usulnet API URL (default $USULNET_API_URL)
       --token string    API token (default $USULNET_API_TOKEN)

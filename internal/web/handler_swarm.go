@@ -181,37 +181,34 @@ func (h *Handler) SwarmServiceCreateTempl(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	if err := r.ParseForm(); err != nil {
-		h.setFlash(w, r, "error", "Invalid form data")
+	var form swarmServiceCreateForm
+	if msg := BindForm(r, &form); msg != "" {
+		h.setFlash(w, r, "error", msg)
 		http.Redirect(w, r, "/swarm/services/new", http.StatusSeeOther)
 		return
 	}
 
-	replicas, _ := strconv.Atoi(r.FormValue("replicas"))
+	replicas := form.Replicas
 	if replicas < 1 {
 		replicas = 1
 	}
 
 	input := &models.CreateSwarmServiceInput{
-		Name:     r.FormValue("name"),
-		Image:    r.FormValue("image"),
+		Name:     form.Name,
+		Image:    form.Image,
 		Replicas: replicas,
 	}
 
-	// Parse ports
-	publishedPort, _ := strconv.ParseUint(r.FormValue("published_port"), 10, 32)
-	targetPort, _ := strconv.ParseUint(r.FormValue("target_port"), 10, 32)
-	if publishedPort > 0 && targetPort > 0 {
+	if form.PublishedPort > 0 && form.TargetPort > 0 {
 		input.Ports = []models.SwarmPort{{
 			Protocol:      "tcp",
-			TargetPort:    uint32(targetPort),
-			PublishedPort: uint32(publishedPort),
+			TargetPort:    uint32(form.TargetPort),
+			PublishedPort: uint32(form.PublishedPort),
 			PublishMode:   "ingress",
 		}}
 	}
 
-	// Parse env
-	envStr := strings.TrimSpace(r.FormValue("env"))
+	envStr := strings.TrimSpace(form.Env)
 	if envStr != "" {
 		for _, line := range strings.Split(envStr, "\n") {
 			line = strings.TrimSpace(line)
@@ -230,6 +227,18 @@ func (h *Handler) SwarmServiceCreateTempl(w http.ResponseWriter, r *http.Request
 
 	h.setFlash(w, r, "success", fmt.Sprintf("Service '%s' created with %d replicas", input.Name, replicas))
 	http.Redirect(w, r, "/swarm", http.StatusSeeOther)
+}
+
+// swarmServiceCreateForm captures the swarm-service create
+// inputs. Env is a one-entry-per-line textarea split into
+// KEY=VALUE strings after binding.
+type swarmServiceCreateForm struct {
+	Name          string `form:"name" validate:"required"`
+	Image         string `form:"image" validate:"required"`
+	Replicas      int    `form:"replicas" validate:"gte=0"`
+	PublishedPort uint64 `form:"published_port" validate:"gte=0,lte=65535"`
+	TargetPort    uint64 `form:"target_port" validate:"gte=0,lte=65535"`
+	Env           string `form:"env"`
 }
 
 // SwarmServiceRemoveTempl handles DELETE /swarm/services/{serviceID}.

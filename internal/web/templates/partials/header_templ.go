@@ -40,7 +40,7 @@ func Header(user *types.UserData, notificationsCount int, hosts []types.HostSele
 			return templ_7745c5c3_Err
 		}
 		if len(hosts) > 1 {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<div x-data=\"{ open: false }\" class=\"relative flex-shrink-0\"><button @click=\"open = !open\" class=\"flex items-center gap-2 px-3 py-1.5 bg-dark-800 border border-dark-600 rounded-lg hover:border-primary-500/50 transition-colors min-w-[180px]\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<div x-data=\"{ open: false }\" class=\"relative flex-shrink-0\"><button @click=\"open = !open\" :aria-expanded=\"open ? 'true' : 'false'\" aria-label=\"Switch active node\" class=\"flex items-center gap-2 px-3 py-1.5 bg-dark-800 border border-dark-600 rounded-lg hover:border-primary-500/50 transition-colors min-w-[180px]\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -55,13 +55,13 @@ func Header(user *types.UserData, notificationsCount int, hosts []types.HostSele
 			var templ_7745c5c3_Var2 string
 			templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(activeHostName)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/partials/header.templ`, Line: 22, Col: 77}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/partials/header.templ`, Line: 24, Col: 77}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</span> <i class=\"fas fa-chevron-down text-xs text-gray-500 ml-auto\"></i></button><!-- Host Dropdown --><div x-show=\"open\" x-transition:enter=\"transition ease-out duration-100\" x-transition:enter-start=\"transform opacity-0 scale-95\" x-transition:enter-end=\"transform opacity-100 scale-100\" x-transition:leave=\"transition ease-in duration-75\" x-transition:leave-start=\"transform opacity-100 scale-100\" x-transition:leave-end=\"transform opacity-0 scale-95\" @click.outside=\"open = false\" class=\"absolute left-0 mt-2 w-64 bg-dark-800 rounded-xl border border-dark-600 shadow-xl py-1 z-50\" style=\"display: none;\"><div class=\"px-3 py-2 border-b border-dark-600\"><p class=\"text-xs font-medium text-gray-500 uppercase tracking-wider\">Switch Node</p></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</span> <i class=\"fas fa-chevron-down text-xs text-gray-500 ml-auto\"></i></button><!-- Host Dropdown --><div x-show=\"open\" x-transition:enter=\"transition ease-out duration-100\" x-transition:enter-start=\"transform opacity-0 scale-95\" x-transition:enter-end=\"transform opacity-100 scale-100\" x-transition:leave=\"transition ease-in duration-75\" x-transition:leave-start=\"transform opacity-100 scale-100\" x-transition:leave-end=\"transform opacity-0 scale-95\" @click.outside=\"open = false\" class=\"absolute left-0 mt-2 w-64 card shadow-xl py-1 z-50\" style=\"display: none;\"><div class=\"px-3 py-2 border-b border-dark-600\"><p class=\"text-xs font-medium text-gray-500 uppercase tracking-wider\">Switch Node</p></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -80,7 +80,7 @@ func Header(user *types.UserData, notificationsCount int, hosts []types.HostSele
 				var templ_7745c5c3_Var4 templ.SafeURL
 				templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinURLErrs(templ.SafeURL("/switch-host/" + h.ID))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/partials/header.templ`, Line: 43, Col: 53}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/partials/header.templ`, Line: 45, Col: 53}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 				if templ_7745c5c3_Err != nil {
@@ -114,7 +114,7 @@ func Header(user *types.UserData, notificationsCount int, hosts []types.HostSele
 				var templ_7745c5c3_Var6 string
 				templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(h.Name)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/partials/header.templ`, Line: 49, Col: 47}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/partials/header.templ`, Line: 51, Col: 47}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 				if templ_7745c5c3_Err != nil {
@@ -159,7 +159,7 @@ func Header(user *types.UserData, notificationsCount int, hosts []types.HostSele
 			var templ_7745c5c3_Var7 string
 			templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(hosts[0].Name)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/partials/header.templ`, Line: 68, Col: 66}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/partials/header.templ`, Line: 70, Col: 66}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 			if templ_7745c5c3_Err != nil {
@@ -170,30 +170,43 @@ func Header(user *types.UserData, notificationsCount int, hosts []types.HostSele
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "<!-- Search --><div class=\"flex-1 max-w-xl\"><div class=\"relative\"><input type=\"search\" name=\"q\" placeholder=\"Search containers, images, networks...\" class=\"w-full pl-10 pr-4 py-2 bg-dark-800 border border-dark-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500 transition-colors\" hx-get=\"/partials/search\" hx-trigger=\"keyup changed delay:300ms\" hx-target=\"#search-results\"> <i class=\"fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-500\"></i></div><div id=\"search-results\"></div></div></div><!-- Right Section --><div class=\"flex items-center gap-4 ml-4\"><!-- Theme Toggle --><button onclick=\"usulnet.toggleTheme()\" class=\"p-2 text-gray-400 hover:text-white transition-colors\" title=\"Toggle theme\"><i id=\"theme-toggle-icon\" class=\"fas fa-moon\"></i></button><script>\n\t\t\t\t\t(function() {\n\t\t\t\t\t\tvar theme = localStorage.getItem('usulnet-theme') || 'dark';\n\t\t\t\t\t\tvar icon = document.getElementById('theme-toggle-icon');\n\t\t\t\t\t\tif (icon) icon.className = 'fas ' + (theme === 'dark' ? 'fa-moon' : 'fa-sun');\n\t\t\t\t\t})();\n\t\t\t\t</script><!-- Notifications --><div x-data=\"{ open: false }\" class=\"relative\"><button @click=\"open = !open\" class=\"relative p-2 text-gray-400 hover:text-white transition-colors\"><i class=\"fas fa-bell\"></i> ")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "<!-- Search --><div class=\"flex-1 max-w-xl\"><div class=\"relative\"><input type=\"search\" name=\"q\" placeholder=\"Search containers, images, networks...\" class=\"w-full pl-10 pr-4 py-2 bg-dark-800 border border-dark-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500 transition-colors\" hx-get=\"/partials/search\" hx-trigger=\"keyup changed delay:300ms\" hx-target=\"#search-results\" aria-label=\"Search containers, images, networks...\"> <i class=\"fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-500\"></i></div><div id=\"search-results\"></div></div></div><!-- Right Section --><div class=\"flex items-center gap-4 ml-4\"><!-- Theme Toggle --><button onclick=\"usulnet.toggleTheme()\" class=\"p-2 text-gray-400 hover:text-white transition-colors\" title=\"Toggle theme\" aria-label=\"Toggle theme\"><i id=\"theme-toggle-icon\" class=\"fas fa-moon\"></i></button><script>\n\t\t\t\t\t(function() {\n\t\t\t\t\t\tvar theme = localStorage.getItem('usulnet-theme') || 'dark';\n\t\t\t\t\t\tvar icon = document.getElementById('theme-toggle-icon');\n\t\t\t\t\t\tif (icon) icon.className = 'fas ' + (theme === 'dark' ? 'fa-moon' : 'fa-sun');\n\t\t\t\t\t})();\n\t\t\t\t</script><!-- Notifications --><div x-data=\"{ open: false }\" class=\"relative\"><button @click=\"open = !open\" :aria-expanded=\"open ? 'true' : 'false'\" aria-label=\"")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var8 string
+		templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(notificationsAriaLabel(notificationsCount))
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/partials/header.templ`, Line: 117, Col: 61}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "\" class=\"relative p-2 text-gray-400 hover:text-white transition-colors\"><i class=\"fas fa-bell\"></i> ")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		if notificationsCount > 0 {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "<span class=\"absolute top-0 right-0 w-4 h-4 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "<span class=\"absolute top-0 right-0 w-4 h-4 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center\" aria-hidden=\"true\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var8 string
-			templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(formatCount(notificationsCount))
+			var templ_7745c5c3_Var9 string
+			templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(formatCount(notificationsCount))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/partials/header.templ`, Line: 117, Col: 41}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/partials/header.templ`, Line: 123, Col: 41}
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "</span>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "</span>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "</button><!-- Notifications Dropdown --><div x-show=\"open\" x-transition:enter=\"transition ease-out duration-100\" x-transition:enter-start=\"transform opacity-0 scale-95\" x-transition:enter-end=\"transform opacity-100 scale-100\" x-transition:leave=\"transition ease-in duration-75\" x-transition:leave-start=\"transform opacity-100 scale-100\" x-transition:leave-end=\"transform opacity-0 scale-95\" @click.outside=\"open = false\" class=\"absolute right-0 mt-2 w-80 bg-dark-800 rounded-xl border border-dark-600 shadow-xl\" style=\"display: none;\"><div class=\"p-4 border-b border-dark-600\"><div class=\"flex items-center justify-between\"><h3 class=\"font-semibold text-white\">Notifications</h3><a href=\"/notifications\" class=\"text-xs text-primary-400 hover:text-primary-300\">View all</a></div></div><div class=\"max-h-80 overflow-y-auto\"><div hx-get=\"/partials/notifications\" hx-trigger=\"revealed\" hx-swap=\"innerHTML\" class=\"p-4 text-center text-gray-500\"><i class=\"fas fa-spinner fa-spin\"></i></div></div></div></div><!-- Quick Actions --><div x-data=\"{ open: false }\" class=\"relative\"><button @click=\"open = !open\" class=\"flex items-center gap-2 px-3 py-2 bg-primary-500 hover:bg-primary-600 text-black font-medium rounded-lg transition-colors\"><i class=\"fas fa-plus\"></i> <span class=\"hidden md:inline\">New</span></button><!-- Quick Actions Dropdown --><div x-show=\"open\" x-transition @click.outside=\"open = false\" class=\"absolute right-0 mt-2 w-48 bg-dark-800 rounded-xl border border-dark-600 shadow-xl py-2\" style=\"display: none;\"><a href=\"/stacks/new\" class=\"flex items-center gap-3 px-4 py-2 text-gray-300 hover:bg-dark-700 hover:text-white transition-colors\"><i class=\"fas fa-cubes w-5 text-center text-primary-400\"></i> Deploy Stack</a> <a href=\"/containers/new\" class=\"flex items-center gap-3 px-4 py-2 text-gray-300 hover:bg-dark-700 hover:text-white transition-colors\"><i class=\"fas fa-cube w-5 text-center text-blue-400\"></i> New Container</a> <a href=\"/images/pull\" class=\"flex items-center gap-3 px-4 py-2 text-gray-300 hover:bg-dark-700 hover:text-white transition-colors\"><i class=\"fas fa-download w-5 text-center text-green-400\"></i> Pull Image</a> <a href=\"/networks/new\" class=\"flex items-center gap-3 px-4 py-2 text-gray-300 hover:bg-dark-700 hover:text-white transition-colors\"><i class=\"fas fa-network-wired w-5 text-center text-yellow-400\"></i> Create Network</a> <a href=\"/volumes/new\" class=\"flex items-center gap-3 px-4 py-2 text-gray-300 hover:bg-dark-700 hover:text-white transition-colors\"><i class=\"fas fa-hdd w-5 text-center text-purple-400\"></i> Create Volume</a></div></div></div></div></header>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 20, "</button><!-- Notifications Dropdown --><div x-show=\"open\" x-transition:enter=\"transition ease-out duration-100\" x-transition:enter-start=\"transform opacity-0 scale-95\" x-transition:enter-end=\"transform opacity-100 scale-100\" x-transition:leave=\"transition ease-in duration-75\" x-transition:leave-start=\"transform opacity-100 scale-100\" x-transition:leave-end=\"transform opacity-0 scale-95\" @click.outside=\"open = false\" class=\"absolute right-0 mt-2 w-80 card shadow-xl\" style=\"display: none;\"><div class=\"p-4 border-b border-dark-600\"><div class=\"flex items-center justify-between\"><h3 class=\"font-semibold text-white\">Notifications</h3><a href=\"/notifications\" class=\"text-xs text-primary-400 hover:text-primary-300\">View all</a></div></div><div class=\"max-h-80 overflow-y-auto\"><div hx-get=\"/partials/notifications\" hx-trigger=\"revealed\" hx-swap=\"innerHTML\" class=\"p-4 text-center text-gray-500\"><i class=\"fas fa-spinner fa-spin\"></i></div></div></div></div><!-- Quick Actions --><div x-data=\"{ open: false }\" class=\"relative\"><button @click=\"open = !open\" :aria-expanded=\"open ? 'true' : 'false'\" aria-label=\"Quick actions\" class=\"flex items-center gap-2 px-3 py-2 bg-primary-500 hover:bg-primary-600 text-black font-medium rounded-lg transition-colors\"><i class=\"fas fa-plus\"></i> <span class=\"hidden md:inline\">New</span></button><!-- Quick Actions Dropdown --><div x-show=\"open\" x-transition @click.outside=\"open = false\" class=\"absolute right-0 mt-2 w-48 card shadow-xl py-2\" style=\"display: none;\"><a href=\"/stacks/new\" class=\"flex items-center gap-3 px-4 py-2 text-gray-300 hover:bg-dark-700 hover:text-white transition-colors\"><i class=\"fas fa-cubes w-5 text-center text-primary-400\"></i> Deploy Stack</a> <a href=\"/containers/new\" class=\"flex items-center gap-3 px-4 py-2 text-gray-300 hover:bg-dark-700 hover:text-white transition-colors\"><i class=\"fas fa-cube w-5 text-center text-blue-400\"></i> New Container</a> <a href=\"/images/pull\" class=\"flex items-center gap-3 px-4 py-2 text-gray-300 hover:bg-dark-700 hover:text-white transition-colors\"><i class=\"fas fa-download w-5 text-center text-green-400\"></i> Pull Image</a> <a href=\"/networks/new\" class=\"flex items-center gap-3 px-4 py-2 text-gray-300 hover:bg-dark-700 hover:text-white transition-colors\"><i class=\"fas fa-network-wired w-5 text-center text-yellow-400\"></i> Create Network</a> <a href=\"/volumes/new\" class=\"flex items-center gap-3 px-4 py-2 text-gray-300 hover:bg-dark-700 hover:text-white transition-colors\"><i class=\"fas fa-hdd w-5 text-center text-purple-400\"></i> Create Volume</a></div></div></div></div></header>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -217,29 +230,29 @@ func hostStatusDot(status string) templ.Component {
 			}()
 		}
 		ctx = templ.InitializeContext(ctx)
-		templ_7745c5c3_Var9 := templ.GetChildren(ctx)
-		if templ_7745c5c3_Var9 == nil {
-			templ_7745c5c3_Var9 = templ.NopComponent
+		templ_7745c5c3_Var10 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var10 == nil {
+			templ_7745c5c3_Var10 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
 		switch status {
 		case "online":
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 20, "<span class=\"w-2 h-2 rounded-full bg-green-500 flex-shrink-0\"></span>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 21, "<span class=\"w-2 h-2 rounded-full bg-green-500 flex-shrink-0\"></span>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		case "offline":
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 21, "<span class=\"w-2 h-2 rounded-full bg-red-500 flex-shrink-0\"></span>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 22, "<span class=\"w-2 h-2 rounded-full bg-red-500 flex-shrink-0\"></span>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		case "error":
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 22, "<span class=\"w-2 h-2 rounded-full bg-yellow-500 flex-shrink-0\"></span>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 23, "<span class=\"w-2 h-2 rounded-full bg-yellow-500 flex-shrink-0\"></span>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		default:
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 23, "<span class=\"w-2 h-2 rounded-full bg-gray-500 flex-shrink-0\"></span>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 24, "<span class=\"w-2 h-2 rounded-full bg-gray-500 flex-shrink-0\"></span>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -264,24 +277,24 @@ func hostTypeBadge(endpointType string) templ.Component {
 			}()
 		}
 		ctx = templ.InitializeContext(ctx)
-		templ_7745c5c3_Var10 := templ.GetChildren(ctx)
-		if templ_7745c5c3_Var10 == nil {
-			templ_7745c5c3_Var10 = templ.NopComponent
+		templ_7745c5c3_Var11 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var11 == nil {
+			templ_7745c5c3_Var11 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
 		switch endpointType {
 		case "local":
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 24, "<span class=\"px-1.5 py-0.5 rounded text-[10px] font-medium bg-primary-500/15 text-primary-400\">Local</span>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 25, "<span class=\"px-1.5 py-0.5 rounded text-[10px] font-medium bg-primary-500/15 text-primary-400\">Local</span>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		case "tcp":
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 25, "<span class=\"px-1.5 py-0.5 rounded text-[10px] font-medium bg-blue-500/15 text-blue-400\">TCP</span>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 26, "<span class=\"px-1.5 py-0.5 rounded text-[10px] font-medium bg-blue-500/15 text-blue-400\">TCP</span>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		case "agent":
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 26, "<span class=\"px-1.5 py-0.5 rounded text-[10px] font-medium bg-green-500/15 text-green-400\">Agent</span>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 27, "<span class=\"px-1.5 py-0.5 rounded text-[10px] font-medium bg-green-500/15 text-green-400\">Agent</span>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -304,6 +317,20 @@ func formatCount(n int) string {
 		return "9+"
 	}
 	return fmt.Sprintf("%d", n)
+}
+
+// notificationsAriaLabel returns the screen-reader-friendly label for
+// the notifications bell. The visual count badge is aria-hidden because
+// it duplicates this announcement; the label has the canonical number.
+func notificationsAriaLabel(count int) string {
+	switch {
+	case count == 0:
+		return "Notifications, none unread"
+	case count == 1:
+		return "Notifications, 1 unread"
+	default:
+		return fmt.Sprintf("Notifications, %d unread", count)
+	}
 }
 
 var _ = templruntime.GeneratedTemplate

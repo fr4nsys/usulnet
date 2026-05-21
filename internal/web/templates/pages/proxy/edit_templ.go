@@ -74,7 +74,7 @@ func Edit(data EditData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "\" class=\"text-gray-400 hover:text-white\"><i class=\"fas fa-arrow-left\"></i></a><h2 class=\"text-xl font-display font-bold text-white\">Edit Proxy Host</h2></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "\" class=\"text-gray-400 hover:text-white\"><i aria-hidden=\"true\" class=\"fas fa-arrow-left\"></i></a><h2 class=\"text-xl font-display font-bold text-white\">Edit Proxy Host</h2></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -136,33 +136,33 @@ func Edit(data EditData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "\" required class=\"w-full bg-dark-800 border border-dark-600 text-white rounded-lg px-3 py-2 focus:ring-2 focus:ring-accent-500 focus:border-transparent\"></div><div class=\"grid grid-cols-2 gap-4\"><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Forward Host</label> <input type=\"text\" name=\"forward_host\" value=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "\" required class=\"w-full bg-dark-800 border border-dark-600 text-white rounded-lg px-3 py-2 focus:ring-2 focus:ring-accent-500 focus:border-transparent\" aria-label=\"Domain Name\"></div><div class=\"grid grid-cols-2 gap-4\"><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Forward Host</label> <input type=\"text\" name=\"forward_host\" value=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var8 string
 			templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(data.Host.ForwardHost)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/proxy/edit.templ`, Line: 51, Col: 37}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/proxy/edit.templ`, Line: 52, Col: 37}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "\" required class=\"w-full bg-dark-800 border border-dark-600 text-white rounded-lg px-3 py-2 focus:ring-2 focus:ring-accent-500 focus:border-transparent\"></div><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Forward Port</label> <input type=\"number\" name=\"forward_port\" value=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "\" required class=\"w-full bg-dark-800 border border-dark-600 text-white rounded-lg px-3 py-2 focus:ring-2 focus:ring-accent-500 focus:border-transparent\" aria-label=\"Forward Host\"></div><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Forward Port</label> <input type=\"number\" name=\"forward_port\" value=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var9 string
 			templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", data.Host.ForwardPort))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/proxy/edit.templ`, Line: 61, Col: 56}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/proxy/edit.templ`, Line: 63, Col: 56}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "\" min=\"1\" max=\"65535\" required class=\"w-full bg-dark-800 border border-dark-600 text-white rounded-lg px-3 py-2 focus:ring-2 focus:ring-accent-500 focus:border-transparent\"></div></div><div class=\"flex items-center gap-6 pt-2\"><label class=\"flex items-center gap-2 text-sm text-gray-300 cursor-pointer\"><input type=\"checkbox\" name=\"ssl_enabled\" value=\"true\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "\" min=\"1\" max=\"65535\" required class=\"w-full bg-dark-800 border border-dark-600 text-white rounded-lg px-3 py-2 focus:ring-2 focus:ring-accent-500 focus:border-transparent\" aria-label=\"Forward Port\"></div></div><div class=\"flex items-center gap-6 pt-2\"><label class=\"flex items-center gap-2 text-sm text-gray-300 cursor-pointer\"><input type=\"checkbox\" name=\"ssl_enabled\" value=\"true\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -182,14 +182,14 @@ func Edit(data EditData) templ.Component {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, " class=\"rounded border-dark-600 bg-dark-800 text-accent-500 focus:ring-accent-500\"> Enabled</label></div><div class=\"flex gap-2 pt-4\"><button type=\"submit\" class=\"btn btn-primary\"><i class=\"fas fa-save mr-1\"></i> Save Changes</button> <a href=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, " class=\"rounded border-dark-600 bg-dark-800 text-accent-500 focus:ring-accent-500\"> Enabled</label></div><div class=\"flex gap-2 pt-4\"><button type=\"submit\" class=\"btn btn-primary\"><i aria-hidden=\"true\" class=\"fas fa-save mr-1\"></i> Save Changes</button> <a href=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var10 templ.SafeURL
 			templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinURLErrs(templ.SafeURL(fmt.Sprintf("/proxy/%s", data.Host.ID)))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/proxy/edit.templ`, Line: 99, Col: 69}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/proxy/edit.templ`, Line: 102, Col: 69}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 			if templ_7745c5c3_Err != nil {

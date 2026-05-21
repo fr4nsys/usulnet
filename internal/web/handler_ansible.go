@@ -95,41 +95,39 @@ func (h *Handler) AnsibleInventoryUpload(w http.ResponseWriter, r *http.Request)
 	http.Redirect(w, r, "/tools/ansible?id="+invID, http.StatusSeeOther)
 }
 
+// ansibleInventoryParseForm captures the inputs of the paste-form
+// variant. Format is one of ini|yaml|auto|"" — anything else falls
+// back to autodetect after binding.
+type ansibleInventoryParseForm struct {
+	Name    string `form:"name" validate:"required"`
+	Content string `form:"content" validate:"required"`
+	Format  string `form:"format"`
+}
+
 // AnsibleInventoryParse handles pasted inventory content.
 // POST /tools/ansible/parse
 func (h *Handler) AnsibleInventoryParse(w http.ResponseWriter, r *http.Request) {
-	if err := r.ParseForm(); err != nil {
-		h.setFlash(w, r, "error", "Invalid form data")
-		http.Redirect(w, r, "/tools/ansible", http.StatusSeeOther)
-		return
-	}
-
-	name := r.FormValue("name")
-	content := r.FormValue("content")
-	formatStr := r.FormValue("format")
-
-	if name == "" || content == "" {
-		h.setFlash(w, r, "error", "Name and content are required")
+	var form ansibleInventoryParseForm
+	if msg := BindForm(r, &form); msg != "" {
+		h.setFlash(w, r, "error", msg)
 		http.Redirect(w, r, "/tools/ansible", http.StatusSeeOther)
 		return
 	}
 
 	// Detect or use specified format
-	var format string
-	if formatStr == "auto" || formatStr == "" {
-		format = detectInventoryFormat(content)
-	} else {
-		format = formatStr
+	format := form.Format
+	if format == "auto" || format == "" {
+		format = detectInventoryFormat(form.Content)
 	}
 
 	// Parse inventory
-	hosts, groups := parseInventory(content, format)
+	hosts, groups := parseInventory(form.Content, format)
 
 	invID := uuid.New().String()
 
 	h.logger.Info("Ansible inventory parsed",
 		"id", invID,
-		"name", name,
+		"name", form.Name,
 		"format", format,
 		"hosts", len(hosts),
 		"groups", len(groups),

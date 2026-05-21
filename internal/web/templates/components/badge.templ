@@ -1,0 +1,92 @@
+package components
+
+// Tone is the semantic colour a badge expresses. Maps to a Tailwind
+// alpha-tinted background + matching solid text colour. Values are
+// intentionally a closed set so badges across the app share one
+// palette — the SeverityBadge in the recon package and ad-hoc
+// "label" pills in older pages collapse into this one component.
+type Tone string
+
+const (
+	ToneNeutral  Tone = "neutral"  // gray, default
+	ToneInfo     Tone = "info"     // blue
+	ToneSuccess  Tone = "success"  // green
+	ToneWarning  Tone = "warning"  // yellow
+	ToneDanger   Tone = "danger"   // red
+	ToneAccent   Tone = "accent"   // orange (primary brand)
+	ToneCritical Tone = "critical" // red (alias used in severity ladders)
+	ToneHigh     Tone = "high"     // orange (alias)
+	ToneMedium   Tone = "medium"   // yellow (alias)
+	ToneLow      Tone = "low"      // blue (alias)
+)
+
+// chipClasses returns the Tailwind class string for a Chip given a
+// tone. The square `rounded` shape and `text-xs font-medium` density
+// reflect what ~60% of badge-like spans in the tree use; see the
+// dev/0526/x audit doc for the count.
+func chipClasses(tone Tone) string {
+	switch tone {
+	case ToneSuccess:
+		return "bg-green-500/10 text-green-400 border-green-500/20"
+	case ToneInfo, ToneLow:
+		return "bg-blue-500/10 text-blue-400 border-blue-500/20"
+	case ToneWarning, ToneMedium:
+		return "bg-yellow-500/10 text-yellow-400 border-yellow-500/20"
+	case ToneDanger, ToneCritical:
+		return "bg-red-500/10 text-red-400 border-red-500/20"
+	case ToneAccent, ToneHigh:
+		return "bg-orange-500/10 text-orange-400 border-orange-500/20"
+	case ToneNeutral:
+		fallthrough
+	default:
+		return "bg-gray-500/10 text-gray-400 border-gray-500/20"
+	}
+}
+
+// Chip is the small square badge used to tag a row, surface a status
+// label, or render a severity tier. Density is `text-xs px-2 py-0.5`
+// — small enough to fit in a table cell, large enough to read.
+templ Chip(tone Tone, label string) {
+	<span class={ "inline-flex items-center px-2 py-0.5 rounded text-xs font-medium border " + chipClasses(tone) }>
+		{ label }
+	</span>
+}
+
+// ChipWithIcon is the Chip variant that prepends a Font Awesome icon
+// (caller supplies the class, e.g. "fa-bug"). Useful for severity
+// badges that pair an icon with the label.
+templ ChipWithIcon(tone Tone, iconClass string, label string) {
+	<span class={ "inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium border " + chipClasses(tone) }>
+		<i class={ "fas " + iconClass }></i>
+		{ label }
+	</span>
+}
+
+// SeverityToTone maps the canonical recon severity strings
+// (critical / high / medium / low / info) to a Tone. Exported so
+// non-templ callers (handler code that builds a label string) can
+// reuse the mapping.
+func SeverityToTone(severity string) Tone {
+	switch severity {
+	case "critical":
+		return ToneCritical
+	case "high":
+		return ToneHigh
+	case "medium":
+		return ToneMedium
+	case "low":
+		return ToneLow
+	case "info":
+		return ToneInfo
+	default:
+		return ToneNeutral
+	}
+}
+
+// Severity is the dedicated badge component for the recon / security
+// severity ladder. Just sugar over Chip with SeverityToTone applied;
+// kept as a separate templ so callers don't have to import the Tone
+// constants for the most common case.
+templ Severity(severity string) {
+	@Chip(SeverityToTone(severity), severity)
+}

@@ -88,7 +88,7 @@ func LicensePage(data LicensePageData) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"space-y-6 max-w-6xl mx-auto\"><!-- Header --><div><h1 class=\"text-2xl font-bold text-white\"><i class=\"fas fa-id-card mr-2 text-primary-400\"></i> License Management</h1><p class=\"text-gray-400 mt-1\">usulnet ships under AGPL-3.0-or-later. Every feature is available unconditionally — see CHANGELOG &ldquo;Open and unlimited&rdquo;.</p></div><!-- Edition Card --><div class=\"bg-dark-800 border border-dark-700 rounded-xl p-6\"><div class=\"flex items-start justify-between flex-wrap gap-4\"><div class=\"flex items-center gap-4\"><div class=\"w-14 h-14 rounded-xl flex items-center justify-center bg-primary-500/10\"><i class=\"fas fa-infinity text-2xl text-primary-400\"></i></div><div><h2 class=\"text-xl font-bold text-white\">usulnet · AGPL build</h2><div class=\"flex items-center gap-3 mt-1 flex-wrap\"><span class=\"inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-green-500/10 text-green-400 border border-green-500/20\"><i class=\"fas fa-check-circle\"></i> All features unlocked</span> <span class=\"inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-dark-700 text-gray-400 border border-dark-600\">AGPLv3</span> <span class=\"text-sm text-gray-500\">Unlimited nodes &middot; users &middot; backups</span></div></div></div></div></div><!-- Instance Info + Optional Support Token --><div class=\"grid grid-cols-1 md:grid-cols-2 gap-6\"><!-- Instance Information --><div class=\"bg-dark-800 border border-dark-700 rounded-xl p-6\"><h3 class=\"text-sm font-medium text-gray-400 uppercase tracking-wider mb-4\"><i class=\"fas fa-server mr-2\"></i> Instance Information</h3><dl class=\"space-y-3\"><div class=\"flex items-center justify-between py-1\"><dt class=\"text-sm text-gray-500\">Instance ID</dt><dd class=\"text-sm text-white font-mono\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"space-y-6 max-w-6xl mx-auto\"><!-- Header --><div><h1 class=\"text-2xl font-bold text-white\"><i aria-hidden=\"true\" class=\"fas fa-id-card mr-2 text-primary-400\"></i> License Management</h1><p class=\"text-gray-400 mt-1\">usulnet ships under AGPL-3.0-or-later. Every feature is available unconditionally — see CHANGELOG &ldquo;Open and unlimited&rdquo;.</p></div><!-- Edition Card --><div class=\"bg-dark-800 border border-dark-700 rounded-xl p-6\"><div class=\"flex items-start justify-between flex-wrap gap-4\"><div class=\"flex items-center gap-4\"><div class=\"w-14 h-14 rounded-xl flex items-center justify-center bg-primary-500/10\"><i aria-hidden=\"true\" class=\"fas fa-infinity text-2xl text-primary-400\"></i></div><div><h2 class=\"text-xl font-bold text-white\">usulnet · AGPL build</h2><div class=\"flex items-center gap-3 mt-1 flex-wrap\"><span class=\"inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-green-500/10 text-green-400 border border-green-500/20\"><i aria-hidden=\"true\" class=\"fas fa-check-circle\"></i> All features unlocked</span> <span class=\"inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-dark-700 text-gray-400 border border-dark-600\">AGPLv3</span> <span class=\"text-sm text-gray-500\">Unlimited nodes &middot; users &middot; backups</span></div></div></div></div></div><!-- Instance Info + Optional Support Token --><div class=\"grid grid-cols-1 md:grid-cols-2 gap-6\"><!-- Instance Information --><div class=\"bg-dark-800 border border-dark-700 rounded-xl p-6\"><h3 class=\"text-sm font-medium text-gray-400 uppercase tracking-wider mb-4\"><i aria-hidden=\"true\" class=\"fas fa-server mr-2\"></i> Instance Information</h3><dl class=\"space-y-3\"><div class=\"flex items-center justify-between py-1\"><dt class=\"text-sm text-gray-500\">Instance ID</dt><dd class=\"text-sm text-white font-mono\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -203,12 +203,12 @@ func LicensePage(data LicensePageData) templ.Component {
 					return templ_7745c5c3_Err
 				}
 				if data.License.Status == "active" {
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "<i class=\"fas fa-check-circle\"></i> ")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "<i aria-hidden=\"true\" class=\"fas fa-check-circle\"></i> ")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
 				} else {
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "<i class=\"fas fa-exclamation-circle\"></i> ")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "<i aria-hidden=\"true\" class=\"fas fa-exclamation-circle\"></i> ")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
@@ -227,7 +227,7 @@ func LicensePage(data LicensePageData) templ.Component {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "</dl></div><!-- Optional commercial support token --><div class=\"bg-dark-800 border border-dark-700 rounded-xl p-6\"><h3 class=\"text-sm font-medium text-gray-400 uppercase tracking-wider mb-4\"><i class=\"fas fa-key mr-2\"></i> ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "</dl></div><!-- Optional commercial support token --><div class=\"bg-dark-800 border border-dark-700 rounded-xl p-6\"><h3 class=\"text-sm font-medium text-gray-400 uppercase tracking-wider mb-4\"><i aria-hidden=\"true\" class=\"fas fa-key mr-2\"></i> ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -255,7 +255,7 @@ func LicensePage(data LicensePageData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 20, "\"><div><label class=\"block text-sm text-gray-400 mb-2\">Support token (JWT)</label> <textarea name=\"license_key\" placeholder=\"eyJhbGciOiJSUzUxMiIs...\" required rows=\"4\" class=\"w-full bg-dark-700 border border-dark-600 rounded-lg text-white px-3 py-2.5 text-xs font-mono placeholder-gray-500 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 resize-none\"></textarea></div><button type=\"submit\" class=\"w-full bg-primary-500 hover:bg-primary-600 text-black font-medium px-4 py-2.5 rounded-lg transition-colors\"><i class=\"fas fa-check mr-2\"></i> Activate</button></form>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 20, "\"><div><label class=\"block text-sm text-gray-400 mb-2\">Support token (JWT)</label> <textarea name=\"license_key\" placeholder=\"eyJhbGciOiJSUzUxMiIs...\" required rows=\"4\" class=\"w-full bg-dark-700 border border-dark-600 rounded-lg text-white px-3 py-2.5 text-xs font-mono placeholder-gray-500 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 resize-none\"></textarea></div><button type=\"submit\" class=\"w-full bg-primary-500 hover:bg-primary-600 text-black font-medium px-4 py-2.5 rounded-lg transition-colors\"><i aria-hidden=\"true\" class=\"fas fa-check mr-2\"></i> Activate</button></form>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -273,7 +273,7 @@ func LicensePage(data LicensePageData) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 22, "\"> <button type=\"submit\" class=\"w-full text-sm text-gray-500 hover:text-red-400 transition-colors py-2\"><i class=\"fas fa-times mr-1\"></i> Remove support token</button></form>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 22, "\"> <button type=\"submit\" class=\"w-full text-sm text-gray-500 hover:text-red-400 transition-colors py-2\"><i aria-hidden=\"true\" class=\"fas fa-times mr-1\"></i> Remove support token</button></form>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}

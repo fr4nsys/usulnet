@@ -78,7 +78,7 @@ func RolesList(data RolesData) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"space-y-6\"><!-- Header --><div class=\"flex items-center justify-between\"><div><h1 class=\"text-2xl font-display font-bold text-white\">Roles & Permissions</h1><p class=\"text-gray-400 mt-1\">Manage user roles and granular permissions</p></div><button onclick=\"showNewRoleModal()\" class=\"btn-primary\"><i class=\"fas fa-plus mr-2\"></i>Create Role</button></div><!-- Stats Cards --><div class=\"grid grid-cols-2 md:grid-cols-5 gap-4\"><div class=\"card p-4\"><div class=\"text-2xl font-bold text-white\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"space-y-6\"><!-- Header --><div class=\"flex items-center justify-between\"><div><h1 class=\"text-2xl font-display font-bold text-white\">Roles & Permissions</h1><p class=\"text-gray-400 mt-1\">Manage user roles and granular permissions</p></div><button onclick=\"showNewRoleModal()\" class=\"btn-primary\"><i aria-hidden=\"true\" class=\"fas fa-plus mr-2\"></i>Create Role</button></div><!-- Stats Cards --><div class=\"grid grid-cols-2 md:grid-cols-5 gap-4\"><div class=\"card p-4\"><div class=\"text-2xl font-bold text-white\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -143,7 +143,7 @@ func RolesList(data RolesData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "</div><div class=\"text-sm text-gray-400\">Inactive</div></div></div><!-- System Roles Section --><div class=\"card\"><div class=\"p-4 border-b border-dark-700\"><h2 class=\"text-lg font-medium text-white\"><i class=\"fas fa-shield-alt mr-2 text-blue-400\"></i>System Roles</h2><p class=\"text-sm text-gray-500 mt-1\">Built-in roles that cannot be deleted</p></div><div class=\"overflow-x-auto\"><table class=\"table\"><thead><tr><th>Role</th><th>Description</th><th>Permissions</th><th>Users</th><th>Actions</th></tr></thead> <tbody>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "</div><div class=\"text-sm text-gray-400\">Inactive</div></div></div><!-- System Roles Section --><div class=\"card\"><div class=\"p-4 border-b border-dark-700\"><h2 class=\"text-lg font-medium text-white\"><i aria-hidden=\"true\" class=\"fas fa-shield-alt mr-2 text-blue-400\"></i>System Roles</h2><p class=\"text-sm text-gray-500 mt-1\">Built-in roles that cannot be deleted</p></div><div class=\"overflow-x-auto\"><table class=\"table\"><thead><tr><th scope=\"col\">Role</th><th scope=\"col\">Description</th><th scope=\"col\">Permissions</th><th scope=\"col\">Users</th><th scope=\"col\">Actions</th></tr></thead> <tbody>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -155,7 +155,7 @@ func RolesList(data RolesData) templ.Component {
 					}
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "</tbody></table></div></div><!-- Custom Roles Section --><div class=\"card\"><div class=\"p-4 border-b border-dark-700\"><h2 class=\"text-lg font-medium text-white\"><i class=\"fas fa-user-cog mr-2 text-purple-400\"></i>Custom Roles</h2><p class=\"text-sm text-gray-500 mt-1\">User-defined roles with custom permissions</p></div><div class=\"overflow-x-auto\"><table class=\"table\"><thead><tr><th>Role</th><th>Description</th><th>Permissions</th><th>Users</th><th>Status</th><th>Actions</th></tr></thead> <tbody>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "</tbody></table></div></div><!-- Custom Roles Section --><div class=\"card\"><div class=\"p-4 border-b border-dark-700\"><h2 class=\"text-lg font-medium text-white\"><i aria-hidden=\"true\" class=\"fas fa-user-cog mr-2 text-purple-400\"></i>Custom Roles</h2><p class=\"text-sm text-gray-500 mt-1\">User-defined roles with custom permissions</p></div><div class=\"overflow-x-auto\"><table class=\"table\"><thead><tr><th scope=\"col\">Role</th><th scope=\"col\">Description</th><th scope=\"col\">Permissions</th><th scope=\"col\">Users</th><th scope=\"col\">Status</th><th scope=\"col\">Actions</th></tr></thead> <tbody>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -168,12 +168,12 @@ func RolesList(data RolesData) templ.Component {
 				}
 			}
 			if countCustomRoles(data.Roles) == 0 {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "<tr><td colspan=\"6\" class=\"text-center text-gray-500 py-8\"><i class=\"fas fa-user-cog text-4xl mb-3 block\"></i> No custom roles yet. Create one to define granular permissions.</td></tr>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "<tr><td colspan=\"6\" class=\"text-center text-gray-500 py-8\"><i aria-hidden=\"true\" class=\"fas fa-user-cog text-4xl mb-3 block\"></i> No custom roles yet. Create one to define granular permissions.</td></tr>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "</tbody></table></div></div><!-- Permission Categories Reference --><details class=\"card\"><summary class=\"p-4 cursor-pointer text-white hover:bg-dark-700 rounded-t-xl font-medium\"><i class=\"fas fa-book mr-2 text-primary-400\"></i>Available Permissions Reference</summary><div class=\"p-4 pt-0 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "</tbody></table></div></div><!-- Permission Categories Reference --><details class=\"card\"><summary class=\"p-4 cursor-pointer text-white hover:bg-dark-700 rounded-t-xl font-medium\"><i aria-hidden=\"true\" class=\"fas fa-book mr-2 text-primary-400\"></i>Available Permissions Reference</summary><div class=\"p-4 pt-0 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -429,7 +429,7 @@ func customRoleRow(role RoleItem, csrfToken string) templ.Component {
 			templ_7745c5c3_Var19 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 23, "<tr><td><div class=\"flex items-center gap-3\"><div class=\"w-10 h-10 rounded-lg bg-purple-500/20 flex items-center justify-center\"><i class=\"fas fa-user-tag text-purple-400\"></i></div><div><div class=\"font-medium text-white\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 23, "<tr><td><div class=\"flex items-center gap-3\"><div class=\"w-10 h-10 rounded-lg bg-purple-500/20 flex items-center justify-center\"><i aria-hidden=\"true\" class=\"fas fa-user-tag text-purple-400\"></i></div><div><div class=\"font-medium text-white\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -731,7 +731,7 @@ func newRoleModal(csrfToken string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 50, "\"><!-- Basic Info --><div class=\"grid grid-cols-2 gap-4\"><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Role Name</label> <input type=\"text\" name=\"name\" required pattern=\"[a-z0-9_-]+\" class=\"input\" placeholder=\"e.g. devops-lead\"><p class=\"text-xs text-gray-500 mt-1\">Lowercase letters, numbers, hyphens, underscores only</p></div><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Display Name</label> <input type=\"text\" name=\"display_name\" required class=\"input\" placeholder=\"e.g. DevOps Lead\"></div></div><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Description</label> <textarea name=\"description\" rows=\"2\" class=\"input\" placeholder=\"Describe what this role can do...\"></textarea></div><div class=\"grid grid-cols-2 gap-4\"><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Priority</label> <input type=\"number\" name=\"priority\" value=\"25\" min=\"1\" max=\"99\" class=\"input w-24\"><p class=\"text-xs text-gray-500 mt-1\">Higher priority takes precedence (1-99)</p></div><div class=\"flex items-end\"><label class=\"flex items-center gap-2 cursor-pointer\"><input type=\"checkbox\" name=\"is_active\" checked class=\"w-4 h-4 rounded border-gray-600 bg-dark-700 text-primary-500\"> <span class=\"text-sm text-gray-300\">Enable role immediately</span></label></div></div><!-- Permissions --><div class=\"border-t border-dark-700 pt-6\"><div class=\"flex items-center justify-between mb-4\"><h3 class=\"text-lg font-medium text-white\">Permissions</h3><button type=\"button\" onclick=\"selectAll()\" class=\"text-sm text-primary-400 hover:text-primary-300\">Toggle All</button></div><div class=\"grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 50, "\"><!-- Basic Info --><div class=\"grid grid-cols-2 gap-4\"><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Role Name</label> <input type=\"text\" name=\"name\" required pattern=\"[a-z0-9_-]+\" class=\"input\" placeholder=\"e.g. devops-lead\" aria-label=\"e.g. devops-lead\"><p class=\"text-xs text-gray-500 mt-1\">Lowercase letters, numbers, hyphens, underscores only</p></div><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Display Name</label> <input type=\"text\" name=\"display_name\" required class=\"input\" placeholder=\"e.g. DevOps Lead\" aria-label=\"e.g. DevOps Lead\"></div></div><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Description</label> <textarea name=\"description\" rows=\"2\" class=\"input\" placeholder=\"Describe what this role can do...\"></textarea></div><div class=\"grid grid-cols-2 gap-4\"><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Priority</label> <input type=\"number\" name=\"priority\" value=\"25\" min=\"1\" max=\"99\" class=\"input w-24\"><p class=\"text-xs text-gray-500 mt-1\">Higher priority takes precedence (1-99)</p></div><div class=\"flex items-end\"><label class=\"flex items-center gap-2 cursor-pointer\"><input type=\"checkbox\" name=\"is_active\" checked class=\"w-4 h-4 rounded border-gray-600 bg-dark-700 text-primary-500\"> <span class=\"text-sm text-gray-300\">Enable role immediately</span></label></div></div><!-- Permissions --><div class=\"border-t border-dark-700 pt-6\"><div class=\"flex items-center justify-between mb-4\"><h3 class=\"text-lg font-medium text-white\">Permissions</h3><button type=\"button\" onclick=\"selectAll()\" class=\"text-sm text-primary-400 hover:text-primary-300\">Toggle All</button></div><div class=\"grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -1034,7 +1034,7 @@ func RoleEdit(data RoleEditData) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 61, "<div class=\"max-w-4xl mx-auto space-y-6\"><div class=\"flex items-center gap-4\"><a href=\"/admin/roles\" class=\"p-2 text-gray-400 hover:text-white hover:bg-dark-700 rounded-lg\"><i class=\"fas fa-arrow-left\"></i></a><div><h1 class=\"text-2xl font-display font-bold text-white\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 61, "<div class=\"max-w-4xl mx-auto space-y-6\"><div class=\"flex items-center gap-4\"><a href=\"/admin/roles\" class=\"p-2 text-gray-400 hover:text-white hover:bg-dark-700 rounded-lg\"><i aria-hidden=\"true\" class=\"fas fa-arrow-left\"></i></a><div><h1 class=\"text-2xl font-display font-bold text-white\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -1067,7 +1067,7 @@ func RoleEdit(data RoleEditData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			if data.Role.IsSystem {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 66, "<span class=\"badge bg-blue-500/20 text-blue-400 border border-blue-500/30\"><i class=\"fas fa-shield-alt mr-1\"></i>System Role</span>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 66, "<span class=\"badge bg-blue-500/20 text-blue-400 border border-blue-500/30\"><i aria-hidden=\"true\" class=\"fas fa-shield-alt mr-1\"></i>System Role</span>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}

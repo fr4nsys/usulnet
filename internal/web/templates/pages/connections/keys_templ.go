@@ -64,7 +64,7 @@ func SSHKeysList(data SSHKeysListData) templ.Component {
 					return templ_7745c5c3_Err
 				}
 			} else {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<div class=\"bg-dark-800 rounded-lg border border-dark-700\"><table class=\"w-full\"><thead class=\"bg-dark-900\"><tr><th class=\"px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider\">Name</th><th class=\"px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider\">Type</th><th class=\"px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider\">Fingerprint</th><th class=\"px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider\">Used By</th><th class=\"px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider\">Created</th><th class=\"px-4 py-3 text-right text-xs font-medium text-gray-400 uppercase tracking-wider\">Actions</th></tr></thead> <tbody class=\"divide-y divide-dark-700\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<div class=\"bg-dark-800 rounded-lg border border-dark-700\"><table class=\"w-full\"><thead class=\"bg-dark-900\"><tr><th scope=\"col\" class=\"px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider\">Name</th><th scope=\"col\" class=\"px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider\">Type</th><th scope=\"col\" class=\"px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider\">Fingerprint</th><th scope=\"col\" class=\"px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider\">Used By</th><th scope=\"col\" class=\"px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider\">Created</th><th scope=\"col\" class=\"px-4 py-3 text-right text-xs font-medium text-gray-400 uppercase tracking-wider\">Actions</th></tr></thead> <tbody class=\"divide-y divide-dark-700\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -360,20 +360,20 @@ func SSHKeyNew(data layouts.PageData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 22, "\"><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Key Name</label> <input type=\"text\" name=\"name\" required placeholder=\"my-server-key\" class=\"w-full px-3 py-2 bg-dark-700 border border-dark-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent\"><p class=\"mt-1 text-sm text-gray-500\">A descriptive name to identify this key</p></div><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Key Type</label><div class=\"space-y-2\"><label class=\"flex items-center p-3 bg-dark-700 border border-dark-600 rounded-lg cursor-pointer hover:border-dark-500 has-[:checked]:border-primary-500\"><input type=\"radio\" name=\"type\" value=\"ed25519\" class=\"mr-3 text-primary-500 focus:ring-primary-500\" checked><div><span class=\"text-white font-medium\">Ed25519</span> <span class=\"ml-2 px-2 py-0.5 bg-green-500/10 text-green-400 rounded text-xs\">Recommended</span><p class=\"text-gray-400 text-sm\">Modern, fast, and secure. Best choice for most cases.</p></div></label> <label class=\"flex items-center p-3 bg-dark-700 border border-dark-600 rounded-lg cursor-pointer hover:border-dark-500 has-[:checked]:border-primary-500\"><input type=\"radio\" name=\"type\" value=\"rsa\" class=\"mr-3 text-primary-500 focus:ring-primary-500\"><div><span class=\"text-white font-medium\">RSA (4096 bit)</span><p class=\"text-gray-400 text-sm\">Maximum compatibility with older systems.</p></div></label> <label class=\"flex items-center p-3 bg-dark-700 border border-dark-600 rounded-lg cursor-pointer hover:border-dark-500 has-[:checked]:border-primary-500\"><input type=\"radio\" name=\"type\" value=\"ecdsa\" class=\"mr-3 text-primary-500 focus:ring-primary-500\"><div><span class=\"text-white font-medium\">ECDSA (P-256)</span><p class=\"text-gray-400 text-sm\">Good balance of security and compatibility.</p></div></label></div></div><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Comment (optional)</label> <input type=\"text\" name=\"comment\" placeholder=\"user@hostname\" class=\"w-full px-3 py-2 bg-dark-700 border border-dark-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent\"><p class=\"mt-1 text-sm text-gray-500\">Added to the end of the public key for identification</p></div><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Passphrase (optional)</label> <input type=\"password\" name=\"passphrase\" placeholder=\"Optional passphrase for key encryption\" class=\"w-full px-3 py-2 bg-dark-700 border border-dark-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent\"><p class=\"mt-1 text-sm text-gray-500\">Encrypts the private key. Recommended for additional security.</p></div><!-- Actions --><div class=\"flex items-center justify-end space-x-3 pt-4 border-t border-dark-700\"><a href=\"/connections/keys\" class=\"px-4 py-2 text-gray-400 hover:text-white\">Cancel</a> <button type=\"submit\" class=\"px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors\">Generate Key</button></div></form><!-- Import Existing Key --><div class=\"bg-dark-800 rounded-lg border border-dark-700 p-6\"><h3 class=\"text-white font-medium mb-4\">Import Existing Key</h3><p class=\"text-gray-400 text-sm mb-4\">Have an existing SSH key? You can import it instead of generating a new one.</p><form action=\"/connections/keys\" method=\"POST\" class=\"space-y-4\"><input type=\"hidden\" name=\"csrf_token\" value=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 22, "\"><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Key Name</label> <input type=\"text\" name=\"name\" required placeholder=\"my-server-key\" class=\"w-full px-3 py-2 bg-dark-700 border border-dark-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent\" aria-label=\"Key Name\"><p class=\"mt-1 text-sm text-gray-500\">A descriptive name to identify this key</p></div><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Key Type</label><div class=\"space-y-2\"><label class=\"flex items-center p-3 bg-dark-700 border border-dark-600 rounded-lg cursor-pointer hover:border-dark-500 has-[:checked]:border-primary-500\"><input type=\"radio\" name=\"type\" value=\"ed25519\" class=\"mr-3 text-primary-500 focus:ring-primary-500\" checked><div><span class=\"text-white font-medium\">Ed25519</span> <span class=\"ml-2 px-2 py-0.5 bg-green-500/10 text-green-400 rounded text-xs\">Recommended</span><p class=\"text-gray-400 text-sm\">Modern, fast, and secure. Best choice for most cases.</p></div></label> <label class=\"flex items-center p-3 bg-dark-700 border border-dark-600 rounded-lg cursor-pointer hover:border-dark-500 has-[:checked]:border-primary-500\"><input type=\"radio\" name=\"type\" value=\"rsa\" class=\"mr-3 text-primary-500 focus:ring-primary-500\"><div><span class=\"text-white font-medium\">RSA (4096 bit)</span><p class=\"text-gray-400 text-sm\">Maximum compatibility with older systems.</p></div></label> <label class=\"flex items-center p-3 bg-dark-700 border border-dark-600 rounded-lg cursor-pointer hover:border-dark-500 has-[:checked]:border-primary-500\"><input type=\"radio\" name=\"type\" value=\"ecdsa\" class=\"mr-3 text-primary-500 focus:ring-primary-500\"><div><span class=\"text-white font-medium\">ECDSA (P-256)</span><p class=\"text-gray-400 text-sm\">Good balance of security and compatibility.</p></div></label></div></div><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Comment (optional)</label> <input type=\"text\" name=\"comment\" placeholder=\"user@hostname\" class=\"w-full px-3 py-2 bg-dark-700 border border-dark-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent\" aria-label=\"Comment (optional)\"><p class=\"mt-1 text-sm text-gray-500\">Added to the end of the public key for identification</p></div><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Passphrase (optional)</label> <input type=\"password\" name=\"passphrase\" placeholder=\"Optional passphrase for key encryption\" class=\"w-full px-3 py-2 bg-dark-700 border border-dark-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent\" aria-label=\"Passphrase (optional)\"><p class=\"mt-1 text-sm text-gray-500\">Encrypts the private key. Recommended for additional security.</p></div><!-- Actions --><div class=\"flex items-center justify-end space-x-3 pt-4 border-t border-dark-700\"><a href=\"/connections/keys\" class=\"px-4 py-2 text-gray-400 hover:text-white\">Cancel</a> <button type=\"submit\" class=\"px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors\">Generate Key</button></div></form><!-- Import Existing Key --><div class=\"bg-dark-800 rounded-lg border border-dark-700 p-6\"><h3 class=\"text-white font-medium mb-4\">Import Existing Key</h3><p class=\"text-gray-400 text-sm mb-4\">Have an existing SSH key? You can import it instead of generating a new one.</p><form action=\"/connections/keys\" method=\"POST\" class=\"space-y-4\"><input type=\"hidden\" name=\"csrf_token\" value=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var17 string
 			templ_7745c5c3_Var17, templ_7745c5c3_Err = templ.JoinStringErrs(data.CSRFToken)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/keys.templ`, Line: 282, Col: 66}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/keys.templ`, Line: 285, Col: 66}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var17))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 23, "\"> <input type=\"hidden\" name=\"import\" value=\"true\"><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Key Name</label> <input type=\"text\" name=\"name\" required placeholder=\"imported-key\" class=\"w-full px-3 py-2 bg-dark-700 border border-dark-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent\"></div><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Private Key</label> <textarea name=\"private_key\" required rows=\"5\" placeholder=\"-----BEGIN OPENSSH PRIVATE KEY-----&#10;...&#10;-----END OPENSSH PRIVATE KEY-----\" class=\"w-full px-3 py-2 bg-dark-700 border border-dark-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent font-mono text-sm\"></textarea></div><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Passphrase (if encrypted)</label> <input type=\"password\" name=\"passphrase\" placeholder=\"Key passphrase\" class=\"w-full px-3 py-2 bg-dark-700 border border-dark-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent\"></div><button type=\"submit\" class=\"px-4 py-2 border border-dark-600 text-gray-300 rounded-lg hover:bg-dark-700 transition-colors\">Import Key</button></form></div></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 23, "\"> <input type=\"hidden\" name=\"import\" value=\"true\"><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Key Name</label> <input type=\"text\" name=\"name\" required placeholder=\"imported-key\" class=\"w-full px-3 py-2 bg-dark-700 border border-dark-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent\" aria-label=\"Key Name\"></div><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Private Key</label> <textarea name=\"private_key\" required rows=\"5\" placeholder=\"-----BEGIN OPENSSH PRIVATE KEY-----&#10;...&#10;-----END OPENSSH PRIVATE KEY-----\" class=\"w-full px-3 py-2 bg-dark-700 border border-dark-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent font-mono text-sm\"></textarea></div><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Passphrase (if encrypted)</label> <input type=\"password\" name=\"passphrase\" placeholder=\"Key passphrase\" class=\"w-full px-3 py-2 bg-dark-700 border border-dark-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent\" aria-label=\"Passphrase (\"></div><button type=\"submit\" class=\"px-4 py-2 border border-dark-600 text-gray-300 rounded-lg hover:bg-dark-700 transition-colors\">Import Key</button></form></div></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -436,7 +436,7 @@ func SSHKeyDetail(data SSHKeyDetailData) templ.Component {
 			var templ_7745c5c3_Var20 string
 			templ_7745c5c3_Var20, templ_7745c5c3_Err = templ.JoinStringErrs(data.Key.Name)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/keys.templ`, Line: 343, Col: 76}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/keys.templ`, Line: 348, Col: 76}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var20))
 			if templ_7745c5c3_Err != nil {
@@ -471,7 +471,7 @@ func SSHKeyDetail(data SSHKeyDetailData) templ.Component {
 			var templ_7745c5c3_Var23 string
 			templ_7745c5c3_Var23, templ_7745c5c3_Err = templ.JoinStringErrs(data.Key.Type)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/keys.templ`, Line: 345, Col: 109}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/keys.templ`, Line: 350, Col: 109}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var23))
 			if templ_7745c5c3_Err != nil {
@@ -484,7 +484,7 @@ func SSHKeyDetail(data SSHKeyDetailData) templ.Component {
 			var templ_7745c5c3_Var24 string
 			templ_7745c5c3_Var24, templ_7745c5c3_Err = templ.JoinStringErrs(data.Key.CreatedAt)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/keys.templ`, Line: 346, Col: 63}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/keys.templ`, Line: 351, Col: 63}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var24))
 			if templ_7745c5c3_Err != nil {
@@ -497,7 +497,7 @@ func SSHKeyDetail(data SSHKeyDetailData) templ.Component {
 			var templ_7745c5c3_Var25 templ.SafeURL
 			templ_7745c5c3_Var25, templ_7745c5c3_Err = templ.JoinURLErrs(templ.SafeURL("/connections/keys/" + data.Key.ID + "/download"))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/keys.templ`, Line: 352, Col: 76}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/keys.templ`, Line: 357, Col: 76}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var25))
 			if templ_7745c5c3_Err != nil {
@@ -527,7 +527,7 @@ func SSHKeyDetail(data SSHKeyDetailData) templ.Component {
 			var templ_7745c5c3_Var27 string
 			templ_7745c5c3_Var27, templ_7745c5c3_Err = templ.JoinStringErrs(data.Key.PublicKey)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/keys.templ`, Line: 381, Col: 102}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/keys.templ`, Line: 386, Col: 102}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var27))
 			if templ_7745c5c3_Err != nil {
@@ -540,7 +540,7 @@ func SSHKeyDetail(data SSHKeyDetailData) templ.Component {
 			var templ_7745c5c3_Var28 string
 			templ_7745c5c3_Var28, templ_7745c5c3_Err = templ.JoinStringErrs(data.Key.Fingerprint)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/keys.templ`, Line: 392, Col: 76}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/keys.templ`, Line: 397, Col: 76}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var28))
 			if templ_7745c5c3_Err != nil {
@@ -575,7 +575,7 @@ func SSHKeyDetail(data SSHKeyDetailData) templ.Component {
 			var templ_7745c5c3_Var31 string
 			templ_7745c5c3_Var31, templ_7745c5c3_Err = templ.JoinStringErrs(data.Key.Type)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/keys.templ`, Line: 397, Col: 111}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/keys.templ`, Line: 402, Col: 111}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var31))
 			if templ_7745c5c3_Err != nil {
@@ -593,7 +593,7 @@ func SSHKeyDetail(data SSHKeyDetailData) templ.Component {
 				var templ_7745c5c3_Var32 string
 				templ_7745c5c3_Var32, templ_7745c5c3_Err = templ.JoinStringErrs(data.Key.Comment)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/keys.templ`, Line: 403, Col: 55}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/keys.templ`, Line: 408, Col: 55}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var32))
 				if templ_7745c5c3_Err != nil {
@@ -611,7 +611,7 @@ func SSHKeyDetail(data SSHKeyDetailData) templ.Component {
 			var templ_7745c5c3_Var33 string
 			templ_7745c5c3_Var33, templ_7745c5c3_Err = templ.JoinStringErrs(data.Key.CreatedAt)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/keys.templ`, Line: 408, Col: 56}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/keys.templ`, Line: 413, Col: 56}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var33))
 			if templ_7745c5c3_Err != nil {
@@ -629,7 +629,7 @@ func SSHKeyDetail(data SSHKeyDetailData) templ.Component {
 				var templ_7745c5c3_Var34 string
 				templ_7745c5c3_Var34, templ_7745c5c3_Err = templ.JoinStringErrs(data.Key.LastUsed)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/keys.templ`, Line: 413, Col: 56}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/keys.templ`, Line: 418, Col: 56}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var34))
 				if templ_7745c5c3_Err != nil {
@@ -662,7 +662,7 @@ func SSHKeyDetail(data SSHKeyDetailData) templ.Component {
 					var templ_7745c5c3_Var35 templ.SafeURL
 					templ_7745c5c3_Var35, templ_7745c5c3_Err = templ.JoinURLErrs(templ.SafeURL("/connections/ssh/" + conn.ID))
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/keys.templ`, Line: 428, Col: 61}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/keys.templ`, Line: 433, Col: 61}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var35))
 					if templ_7745c5c3_Err != nil {
@@ -697,7 +697,7 @@ func SSHKeyDetail(data SSHKeyDetailData) templ.Component {
 					var templ_7745c5c3_Var38 string
 					templ_7745c5c3_Var38, templ_7745c5c3_Err = templ.JoinStringErrs(conn.Name)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/keys.templ`, Line: 434, Col: 60}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/keys.templ`, Line: 439, Col: 60}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var38))
 					if templ_7745c5c3_Err != nil {
@@ -710,7 +710,7 @@ func SSHKeyDetail(data SSHKeyDetailData) templ.Component {
 					var templ_7745c5c3_Var39 string
 					templ_7745c5c3_Var39, templ_7745c5c3_Err = templ.JoinStringErrs(formatUserAtHost(conn.Username, conn.Host))
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/keys.templ`, Line: 435, Col: 97}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/keys.templ`, Line: 440, Col: 97}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var39))
 					if templ_7745c5c3_Err != nil {
@@ -733,7 +733,7 @@ func SSHKeyDetail(data SSHKeyDetailData) templ.Component {
 			var templ_7745c5c3_Var40 templ.SafeURL
 			templ_7745c5c3_Var40, templ_7745c5c3_Err = templ.JoinURLErrs(templ.SafeURL("/connections/keys/" + data.Key.ID + "/download"))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/keys.templ`, Line: 455, Col: 78}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/keys.templ`, Line: 460, Col: 78}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var40))
 			if templ_7745c5c3_Err != nil {
@@ -763,7 +763,7 @@ func SSHKeyDetail(data SSHKeyDetailData) templ.Component {
 			var templ_7745c5c3_Var42 string
 			templ_7745c5c3_Var42, templ_7745c5c3_Err = templ.JoinStringErrs(pluralize(data.Key.UsedByCount, "connection"))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/keys.templ`, Line: 480, Col: 91}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/keys.templ`, Line: 485, Col: 91}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var42))
 			if templ_7745c5c3_Err != nil {
@@ -781,7 +781,7 @@ func SSHKeyDetail(data SSHKeyDetailData) templ.Component {
 				var templ_7745c5c3_Var43 string
 				templ_7745c5c3_Var43, templ_7745c5c3_Err = templ.JoinStringErrs(data.Key.LastUsed)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/keys.templ`, Line: 485, Col: 52}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/keys.templ`, Line: 490, Col: 52}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var43))
 				if templ_7745c5c3_Err != nil {
@@ -804,7 +804,7 @@ func SSHKeyDetail(data SSHKeyDetailData) templ.Component {
 				var templ_7745c5c3_Var44 string
 				templ_7745c5c3_Var44, templ_7745c5c3_Err = templ.JoinStringErrs(pluralize(data.Key.UsedByCount, "connection"))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/keys.templ`, Line: 495, Col: 75}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/keys.templ`, Line: 500, Col: 75}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var44))
 				if templ_7745c5c3_Err != nil {

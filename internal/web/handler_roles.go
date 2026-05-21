@@ -8,7 +8,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
-	"strconv"
+	"net/url"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/google/uuid"
@@ -135,6 +135,18 @@ func (h *Handler) RoleEditTempl(w http.ResponseWriter, r *http.Request) {
 	h.renderTempl(w, r, admin.RoleEdit(data))
 }
 
+// roleForm captures the role create/update inputs. Permissions
+// is a multi-checkbox group; required+min=1 enforces "at least
+// one permission required" via the validator.
+type roleForm struct {
+	Name        string   `form:"name" validate:"required"`
+	DisplayName string   `form:"display_name"`
+	Description string   `form:"description"`
+	Priority    int      `form:"priority" validate:"gte=0"`
+	IsActive    bool     `form:"is_active"`
+	Permissions []string `form:"permissions" validate:"required,min=1,dive,required"`
+}
+
 // RoleCreate handles creating a new role.
 func (h *Handler) RoleCreate(w http.ResponseWriter, r *http.Request) {
 	// Enforce MaxCustomRoles license limit
@@ -152,35 +164,24 @@ func (h *Handler) RoleCreate(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	if err := r.ParseForm(); err != nil {
-		h.redirect(w, r, "/admin/roles?error=Invalid+form+data")
+	var form roleForm
+	if msg := BindForm(r, &form); msg != "" {
+		h.redirect(w, r, "/admin/roles?error="+url.QueryEscape(msg))
 		return
 	}
 
-	name := r.FormValue("name")
-	displayName := r.FormValue("display_name")
-	description := r.FormValue("description")
-	priorityStr := r.FormValue("priority")
-	isActive := r.FormValue("is_active") == "on"
-	permissions := r.Form["permissions"]
-
-	priority, _ := strconv.Atoi(priorityStr)
+	priority := form.Priority
 	if priority < 1 || priority > 99 {
 		priority = 25
 	}
 
-	if len(permissions) == 0 {
-		h.redirect(w, r, "/admin/roles?error=At+least+one+permission+required")
-		return
-	}
-
 	role := &models.Role{
-		Name:        name,
-		DisplayName: displayName,
-		Description: stringToPtr(description),
-		Permissions: permissions,
+		Name:        form.Name,
+		DisplayName: form.DisplayName,
+		Description: stringToPtr(form.Description),
+		Permissions: form.Permissions,
 		IsSystem:    false,
-		IsActive:    isActive,
+		IsActive:    form.IsActive,
 		Priority:    priority,
 	}
 
@@ -214,33 +215,23 @@ func (h *Handler) RoleUpdate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := r.ParseForm(); err != nil {
-		h.redirect(w, r, "/admin/roles/"+idStr+"?error=Invalid+form+data")
+	var form roleForm
+	if msg := BindForm(r, &form); msg != "" {
+		h.redirect(w, r, "/admin/roles/"+idStr+"?error="+url.QueryEscape(msg))
 		return
 	}
 
-	displayName := r.FormValue("display_name")
-	description := r.FormValue("description")
-	priorityStr := r.FormValue("priority")
-	isActive := r.FormValue("is_active") == "on"
-	permissions := r.Form["permissions"]
-
-	priority, _ := strconv.Atoi(priorityStr)
+	priority := form.Priority
 	if priority < 1 || priority > 99 {
 		priority = role.Priority
 	}
 
-	if len(permissions) == 0 {
-		h.redirect(w, r, "/admin/roles/"+idStr+"?error=At+least+one+permission+required")
-		return
-	}
-
 	// Update role fields
-	role.DisplayName = displayName
-	role.Description = stringToPtr(description)
+	role.DisplayName = form.DisplayName
+	role.Description = stringToPtr(form.Description)
 	role.Priority = priority
-	role.IsActive = isActive
-	role.Permissions = permissions
+	role.IsActive = form.IsActive
+	role.Permissions = form.Permissions
 
 	if err := h.roleRepo.Update(r.Context(), role); err != nil {
 		h.logger.Error("failed to update role", "error", err)

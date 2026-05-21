@@ -8,7 +8,6 @@ import (
 	"encoding/json"
 	"log/slog"
 	"net/http"
-	"strconv"
 	"strings"
 
 	"github.com/go-chi/chi/v5"
@@ -125,6 +124,21 @@ func (h *Handler) WebhooksTempl(w http.ResponseWriter, r *http.Request) {
 }
 
 // WebhookCreate handles creation of a new outgoing webhook.
+// webhookForm captures the outgoing-webhook inputs shared
+// between Create and Update. events is a comma-separated list
+// split into a slice after binding; headers is a raw JSON
+// payload validated by json.Unmarshal before being stored.
+type webhookForm struct {
+	Name        string `form:"name" validate:"required"`
+	URL         string `form:"url" validate:"required"`
+	Events      string `form:"events"`
+	IsEnabled   bool   `form:"is_enabled"`
+	RetryCount  int    `form:"retry_count" validate:"gte=0,lte=10"`
+	TimeoutSecs int    `form:"timeout_secs" validate:"gte=0,lte=60"`
+	Secret      string `form:"secret"`
+	Headers     string `form:"headers"`
+}
+
 func (h *Handler) WebhookCreate(w http.ResponseWriter, r *http.Request) {
 	if h.webhookRepo == nil {
 		h.setFlash(w, r, "error", "Webhook service not configured")
@@ -132,55 +146,45 @@ func (h *Handler) WebhookCreate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := r.ParseForm(); err != nil {
-		h.setFlash(w, r, "error", "Invalid form data")
+	var form webhookForm
+	if msg := BindForm(r, &form); msg != "" {
+		h.setFlash(w, r, "error", msg)
 		h.redirect(w, r, "/webhooks")
 		return
 	}
 
-	name := r.FormValue("name")
-	webhookURL := r.FormValue("url")
-	if name == "" || webhookURL == "" {
-		h.setFlash(w, r, "error", "Name and URL are required")
-		h.redirect(w, r, "/webhooks")
-		return
-	}
-
-	events := strings.Split(r.FormValue("events"), ",")
+	events := strings.Split(form.Events, ",")
 	for i := range events {
 		events[i] = strings.TrimSpace(events[i])
 	}
 
-	retryCount := 3
-	if rc := r.FormValue("retry_count"); rc != "" {
-		if v, err := strconv.Atoi(rc); err == nil && v >= 0 && v <= 10 {
-			retryCount = v
-		}
+	retryCount := form.RetryCount
+	if retryCount == 0 {
+		retryCount = 3
 	}
-	timeoutSecs := 10
-	if ts := r.FormValue("timeout_secs"); ts != "" {
-		if v, err := strconv.Atoi(ts); err == nil && v >= 1 && v <= 60 {
-			timeoutSecs = v
-		}
+	timeoutSecs := form.TimeoutSecs
+	if timeoutSecs == 0 {
+		timeoutSecs = 10
 	}
 
 	wh := &models.OutgoingWebhook{
-		Name:        name,
-		URL:         webhookURL,
+		Name:        form.Name,
+		URL:         form.URL,
 		Events:      events,
-		IsEnabled:   r.FormValue("is_enabled") == "on",
+		IsEnabled:   form.IsEnabled,
 		RetryCount:  retryCount,
 		TimeoutSecs: timeoutSecs,
 	}
 
-	if secret := r.FormValue("secret"); secret != "" {
+	if form.Secret != "" {
+		secret := form.Secret
 		wh.Secret = &secret
 	}
 
-	if headersStr := r.FormValue("headers"); headersStr != "" {
+	if form.Headers != "" {
 		var check map[string]string
-		if json.Unmarshal([]byte(headersStr), &check) == nil {
-			wh.Headers = json.RawMessage(headersStr)
+		if json.Unmarshal([]byte(form.Headers), &check) == nil {
+			wh.Headers = json.RawMessage(form.Headers)
 		}
 	}
 
@@ -216,8 +220,9 @@ func (h *Handler) WebhookUpdate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := r.ParseForm(); err != nil {
-		h.setFlash(w, r, "error", "Invalid form data")
+	var form webhookForm
+	if msg := BindForm(r, &form); msg != "" {
+		h.setFlash(w, r, "error", msg)
 		h.redirect(w, r, "/webhooks")
 		return
 	}
@@ -230,48 +235,37 @@ func (h *Handler) WebhookUpdate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	name := r.FormValue("name")
-	webhookURL := r.FormValue("url")
-	if name == "" || webhookURL == "" {
-		h.setFlash(w, r, "error", "Name and URL are required")
-		h.redirect(w, r, "/webhooks")
-		return
-	}
-
-	events := strings.Split(r.FormValue("events"), ",")
+	events := strings.Split(form.Events, ",")
 	for i := range events {
 		events[i] = strings.TrimSpace(events[i])
 	}
 
 	retryCount := existing.RetryCount
-	if rc := r.FormValue("retry_count"); rc != "" {
-		if v, err := strconv.Atoi(rc); err == nil && v >= 0 && v <= 10 {
-			retryCount = v
-		}
+	if form.RetryCount > 0 {
+		retryCount = form.RetryCount
 	}
 	timeoutSecs := existing.TimeoutSecs
-	if ts := r.FormValue("timeout_secs"); ts != "" {
-		if v, err := strconv.Atoi(ts); err == nil && v >= 1 && v <= 60 {
-			timeoutSecs = v
-		}
+	if form.TimeoutSecs > 0 {
+		timeoutSecs = form.TimeoutSecs
 	}
 
-	existing.Name = name
-	existing.URL = webhookURL
+	existing.Name = form.Name
+	existing.URL = form.URL
 	existing.Events = events
-	existing.IsEnabled = r.FormValue("is_enabled") == "on"
+	existing.IsEnabled = form.IsEnabled
 	existing.RetryCount = retryCount
 	existing.TimeoutSecs = timeoutSecs
 
 	// Update secret only if provided
-	if secret := r.FormValue("secret"); secret != "" {
+	if form.Secret != "" {
+		secret := form.Secret
 		existing.Secret = &secret
 	}
 
-	if headersStr := r.FormValue("headers"); headersStr != "" {
+	if form.Headers != "" {
 		var check map[string]string
-		if json.Unmarshal([]byte(headersStr), &check) == nil {
-			existing.Headers = json.RawMessage(headersStr)
+		if json.Unmarshal([]byte(form.Headers), &check) == nil {
+			existing.Headers = json.RawMessage(form.Headers)
 		}
 	}
 
@@ -308,6 +302,18 @@ func (h *Handler) WebhookDelete(w http.ResponseWriter, r *http.Request) {
 	h.redirect(w, r, "/webhooks")
 }
 
+// autoDeployForm captures the auto-deploy rule inputs.
+type autoDeployForm struct {
+	Name          string `form:"name" validate:"required"`
+	SourceType    string `form:"source_type"`
+	SourceRepo    string `form:"source_repo" validate:"required"`
+	SourceBranch  string `form:"source_branch"`
+	TargetStackID string `form:"target_stack_id"`
+	TargetService string `form:"target_service"`
+	Action        string `form:"action"`
+	IsEnabled     bool   `form:"is_enabled"`
+}
+
 // AutoDeployCreate handles creation of a new auto-deploy rule.
 func (h *Handler) AutoDeployCreate(w http.ResponseWriter, r *http.Request) {
 	if h.autoDeployRepo == nil {
@@ -316,36 +322,32 @@ func (h *Handler) AutoDeployCreate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := r.ParseForm(); err != nil {
-		h.setFlash(w, r, "error", "Invalid form data")
-		h.redirect(w, r, "/webhooks?tab=autodeploy")
-		return
-	}
-
-	name := r.FormValue("name")
-	sourceRepo := r.FormValue("source_repo")
-	if name == "" || sourceRepo == "" {
-		h.setFlash(w, r, "error", "Name and source repository are required")
+	var form autoDeployForm
+	if msg := BindForm(r, &form); msg != "" {
+		h.setFlash(w, r, "error", msg)
 		h.redirect(w, r, "/webhooks?tab=autodeploy")
 		return
 	}
 
 	rule := &models.AutoDeployRule{
-		Name:       name,
-		SourceType: r.FormValue("source_type"),
-		SourceRepo: sourceRepo,
-		Action:     r.FormValue("action"),
-		IsEnabled:  r.FormValue("is_enabled") == "on",
+		Name:       form.Name,
+		SourceType: form.SourceType,
+		SourceRepo: form.SourceRepo,
+		Action:     form.Action,
+		IsEnabled:  form.IsEnabled,
 	}
 
-	if branch := r.FormValue("source_branch"); branch != "" {
-		rule.SourceBranch = &branch
+	if form.SourceBranch != "" {
+		b := form.SourceBranch
+		rule.SourceBranch = &b
 	}
-	if stackID := r.FormValue("target_stack_id"); stackID != "" {
-		rule.TargetStackID = &stackID
+	if form.TargetStackID != "" {
+		s := form.TargetStackID
+		rule.TargetStackID = &s
 	}
-	if service := r.FormValue("target_service"); service != "" {
-		rule.TargetService = &service
+	if form.TargetService != "" {
+		s := form.TargetService
+		rule.TargetService = &s
 	}
 
 	if user := GetUserFromContext(r.Context()); user != nil {

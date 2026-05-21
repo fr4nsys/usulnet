@@ -8,7 +8,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"strconv"
 	"strings"
 	"time"
 
@@ -113,26 +112,38 @@ func (h *Handler) MaintenanceTempl(w http.ResponseWriter, r *http.Request) {
 }
 
 // MaintenanceCreate creates a new maintenance window.
+// maintenanceCreateForm captures the maintenance-window inputs.
+// The action_* fields are individual checkboxes that map to
+// maintenanceActions.
+type maintenanceCreateForm struct {
+	Name                    string `form:"name" validate:"required"`
+	Description             string `form:"description"`
+	HostID                  string `form:"host_id"`
+	Schedule                string `form:"schedule"`
+	DurationMinutes         int    `form:"duration_minutes" validate:"gte=0"`
+	ActionStopContainers    bool   `form:"action_stop_containers"`
+	ActionRestartContainers bool   `form:"action_restart_containers"`
+	ActionPruneImages       bool   `form:"action_prune_images"`
+	ActionPruneVolumes      bool   `form:"action_prune_volumes"`
+	ActionPruneNetworks     bool   `form:"action_prune_networks"`
+	ActionUpdateImages      bool   `form:"action_update_images"`
+	ActionBackupFirst       bool   `form:"action_backup_first"`
+}
+
 func (h *Handler) MaintenanceCreate(w http.ResponseWriter, r *http.Request) {
-	if err := r.ParseForm(); err != nil {
-		h.setFlash(w, r, "error", "Invalid form data")
+	var form maintenanceCreateForm
+	if msg := BindForm(r, &form); msg != "" {
+		h.setFlash(w, r, "error", msg)
 		http.Redirect(w, r, "/maintenance", http.StatusSeeOther)
 		return
 	}
 
-	name := strings.TrimSpace(r.FormValue("name"))
-	if name == "" {
-		h.setFlash(w, r, "error", "Window name is required")
-		http.Redirect(w, r, "/maintenance", http.StatusSeeOther)
-		return
-	}
-
-	durationMinutes, _ := strconv.Atoi(r.FormValue("duration_minutes"))
+	durationMinutes := form.DurationMinutes
 	if durationMinutes < 5 {
 		durationMinutes = 60
 	}
 
-	hostID := r.FormValue("host_id")
+	hostID := form.HostID
 	hostName := "All Hosts"
 	if hostID != "all" {
 		if hostSvc := h.services.Hosts(); hostSvc != nil {
@@ -148,13 +159,13 @@ func (h *Handler) MaintenanceCreate(w http.ResponseWriter, r *http.Request) {
 	}
 
 	actions := maintenanceActions{
-		StopContainers:    r.FormValue("action_stop_containers") == "on",
-		RestartContainers: r.FormValue("action_restart_containers") == "on",
-		PruneImages:       r.FormValue("action_prune_images") == "on",
-		PruneVolumes:      r.FormValue("action_prune_volumes") == "on",
-		PruneNetworks:     r.FormValue("action_prune_networks") == "on",
-		UpdateImages:      r.FormValue("action_update_images") == "on",
-		BackupFirst:       r.FormValue("action_backup_first") == "on",
+		StopContainers:    form.ActionStopContainers,
+		RestartContainers: form.ActionRestartContainers,
+		PruneImages:       form.ActionPruneImages,
+		PruneVolumes:      form.ActionPruneVolumes,
+		PruneNetworks:     form.ActionPruneNetworks,
+		UpdateImages:      form.ActionUpdateImages,
+		BackupFirst:       form.ActionBackupFirst,
 	}
 
 	actionsJSON, _ := json.Marshal(actions)
@@ -162,11 +173,11 @@ func (h *Handler) MaintenanceCreate(w http.ResponseWriter, r *http.Request) {
 	if h.maintenanceRepo != nil {
 		mw := &MaintenanceWindowRecord{
 			ID:              uuid.New(),
-			Name:            name,
-			Description:     strings.TrimSpace(r.FormValue("description")),
+			Name:            form.Name,
+			Description:     form.Description,
 			HostID:          hostID,
 			HostName:        hostName,
-			Schedule:        r.FormValue("schedule"),
+			Schedule:        form.Schedule,
 			DurationMinutes: durationMinutes,
 			Actions:         actionsJSON,
 			IsEnabled:       true,
@@ -178,7 +189,7 @@ func (h *Handler) MaintenanceCreate(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	h.setFlash(w, r, "success", "Maintenance window '"+name+"' created")
+	h.setFlash(w, r, "success", "Maintenance window '"+form.Name+"' created")
 	http.Redirect(w, r, "/maintenance", http.StatusSeeOther)
 }
 

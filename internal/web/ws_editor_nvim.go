@@ -291,9 +291,8 @@ vim.api.nvim_create_autocmd("BufWritePost", {
 				cancel()
 				return
 			}
-			msg, _ := json.Marshal(wsEditorMsg{Type: "output", Data: string(buf[:n])})
 			wsMu.Lock()
-			writeErr := conn.WriteMessage(websocket.TextMessage, msg)
+			writeErr := writeWSJSON(conn, wsEditorMsg{Type: "output", Data: string(buf[:n])})
 			wsMu.Unlock()
 			if writeErr != nil {
 				cancel()
@@ -490,9 +489,11 @@ func editorWSSendError(conn *websocket.Conn, msg string) {
 	editorWSSendJSON(conn, wsEditorMsg{Type: "error", Data: msg})
 }
 
-// editorWSSendJSON sends a typed JSON message over the editor WebSocket.
+// editorWSSendJSON sends a typed JSON message over the editor WebSocket
+// with the standard 10 s write deadline. The caller is responsible for
+// any concurrency mutex protecting writes to conn. Encoding goes
+// through the shared wsJSONEncoderPool — see ws_json_pool.go.
 func editorWSSendJSON(conn *websocket.Conn, msg wsEditorMsg) {
-	data, _ := json.Marshal(msg)
 	conn.SetWriteDeadline(time.Now().Add(10 * time.Second))
-	conn.WriteMessage(websocket.TextMessage, data)
+	_ = writeWSJSON(conn, msg)
 }

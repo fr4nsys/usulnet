@@ -64,7 +64,7 @@ func PullRequestsList(data PRListData) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"space-y-6\"><!-- Breadcrumb --><div class=\"flex items-center gap-2 text-sm text-gray-400\"><a href=\"/integrations/gitea\" class=\"hover:text-white transition-colors\"><i class=\"fas fa-code-branch mr-1\"></i>Gitea</a> <i class=\"fas fa-chevron-right text-xs\"></i> <a href=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"space-y-6\"><!-- Breadcrumb --><div class=\"flex items-center gap-2 text-sm text-gray-400\"><a href=\"/integrations/gitea\" class=\"hover:text-white transition-colors\"><i aria-hidden=\"true\" class=\"fas fa-code-branch mr-1\"></i>Gitea</a> <i aria-hidden=\"true\" class=\"fas fa-chevron-right text-xs\"></i> <a href=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -90,7 +90,7 @@ func PullRequestsList(data PRListData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</a> <i class=\"fas fa-chevron-right text-xs\"></i> <span class=\"text-white\">Pull Requests</span></div><!-- Header --><div class=\"flex items-center justify-between\"><div class=\"flex items-center gap-3\"><i class=\"fas fa-code-pull-request text-2xl text-green-400\"></i><div><h1 class=\"text-2xl font-display font-bold text-white\">Pull Requests</h1><p class=\"text-gray-400 text-sm\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</a> <i aria-hidden=\"true\" class=\"fas fa-chevron-right text-xs\"></i> <span class=\"text-white\">Pull Requests</span></div><!-- Header --><div class=\"flex items-center justify-between\"><div class=\"flex items-center gap-3\"><i aria-hidden=\"true\" class=\"fas fa-code-pull-request text-2xl text-green-400\"></i><div><h1 class=\"text-2xl font-display font-bold text-white\">Pull Requests</h1><p class=\"text-gray-400 text-sm\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -103,7 +103,7 @@ func PullRequestsList(data PRListData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</p></div></div><button onclick=\"openCreatePRModal()\" class=\"btn-primary\"><i class=\"fas fa-plus mr-2\"></i>New Pull Request</button></div><!-- Tab Navigation -->")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</p></div></div><button onclick=\"openCreatePRModal()\" class=\"btn-primary\"><i aria-hidden=\"true\" class=\"fas fa-plus mr-2\"></i>New Pull Request</button></div><!-- Tab Navigation -->")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -146,7 +146,7 @@ func PullRequestsList(data PRListData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "\"><i class=\"fas fa-circle-dot mr-1\"></i>Open ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "\"><i aria-hidden=\"true\" class=\"fas fa-circle-dot mr-1\"></i>Open ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -204,7 +204,7 @@ func PullRequestsList(data PRListData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "\"><i class=\"fas fa-check mr-1\"></i>Closed ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "\"><i aria-hidden=\"true\" class=\"fas fa-check mr-1\"></i>Closed ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -232,7 +232,7 @@ func PullRequestsList(data PRListData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			if len(data.PRs) == 0 {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "<div class=\"text-center py-12 text-gray-400\"><i class=\"fas fa-code-pull-request text-4xl mb-4\"></i><p class=\"text-lg\">No pull requests found</p><p class=\"text-sm mt-2\">Create a pull request to propose changes</p></div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "<div class=\"text-center py-12 text-gray-400\"><i aria-hidden=\"true\" class=\"fas fa-code-pull-request text-4xl mb-4\"></i><p class=\"text-lg\">No pull requests found</p><p class=\"text-sm mt-2\">Create a pull request to propose changes</p></div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -414,7 +414,7 @@ func prRow(pr PRItem, repoID string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 32, "</code> <i class=\"fas fa-arrow-right mx-1\"></i> <code class=\"bg-gray-700 px-1.5 py-0.5 rounded\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 32, "</code> <i aria-hidden=\"true\" class=\"fas fa-arrow-right mx-1\"></i> <code class=\"bg-gray-700 px-1.5 py-0.5 rounded\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -432,14 +432,14 @@ func prRow(pr PRItem, repoID string) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		if pr.Comments > 0 {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 34, "<span><i class=\"fas fa-comment mr-1\"></i>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 34, "<span><i aria-hidden=\"true\" class=\"fas fa-comment mr-1\"></i>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var24 string
 			templ_7745c5c3_Var24, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", pr.Comments))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/gitea/pulls.templ`, Line: 134, Col: 77}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/gitea/pulls.templ`, Line: 134, Col: 96}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var24))
 			if templ_7745c5c3_Err != nil {
@@ -534,7 +534,7 @@ func repoTabNav(repo RepoDetail, active string, openIssues, openPRs int) templ.C
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 40, "\"><i class=\"fas fa-code mr-2\"></i>Code</a> ")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 40, "\"><i aria-hidden=\"true\" class=\"fas fa-code mr-2\"></i>Code</a> ")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -569,7 +569,7 @@ func repoTabNav(repo RepoDetail, active string, openIssues, openPRs int) templ.C
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 43, "\"><i class=\"fas fa-code-pull-request\"></i>Pull Requests ")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 43, "\"><i aria-hidden=\"true\" class=\"fas fa-code-pull-request\"></i>Pull Requests ")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -627,7 +627,7 @@ func repoTabNav(repo RepoDetail, active string, openIssues, openPRs int) templ.C
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 49, "\"><i class=\"fas fa-circle-exclamation\"></i>Issues ")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 49, "\"><i aria-hidden=\"true\" class=\"fas fa-circle-exclamation\"></i>Issues ")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -686,7 +686,7 @@ func createPRModal(data PRListData) templ.Component {
 			templ_7745c5c3_Var37 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 53, "<div id=\"create-pr-modal\" class=\"fixed inset-0 bg-black/60 z-50 hidden items-center justify-center\"><div class=\"bg-gray-800 rounded-xl border border-gray-700 p-6 w-full max-w-lg mx-4\"><h3 class=\"text-lg font-semibold text-white mb-4\"><i class=\"fas fa-code-pull-request mr-2 text-green-400\"></i>New Pull Request</h3><form id=\"create-pr-form\" class=\"space-y-4\"><input type=\"hidden\" name=\"csrf_token\" value=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 53, "<div id=\"create-pr-modal\" class=\"fixed inset-0 bg-black/60 z-50 hidden items-center justify-center\"><div class=\"bg-gray-800 rounded-xl border border-gray-700 p-6 w-full max-w-lg mx-4\"><h3 class=\"text-lg font-semibold text-white mb-4\"><i aria-hidden=\"true\" class=\"fas fa-code-pull-request mr-2 text-green-400\"></i>New Pull Request</h3><form id=\"create-pr-form\" class=\"space-y-4\"><input type=\"hidden\" name=\"csrf_token\" value=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -699,7 +699,7 @@ func createPRModal(data PRListData) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 54, "\"><div><label class=\"block text-sm text-gray-400 mb-1\">Title</label> <input type=\"text\" name=\"title\" required placeholder=\"What does this PR do?\" class=\"w-full px-3 py-2 bg-gray-900 border border-gray-600 rounded-lg text-white focus:border-blue-500\"></div><div class=\"grid grid-cols-2 gap-4\"><div><label class=\"block text-sm text-gray-400 mb-1\">Head (source)</label> <select name=\"head\" class=\"w-full px-3 py-2 bg-gray-900 border border-gray-600 rounded-lg text-white\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 54, "\"><div><label class=\"block text-sm text-gray-400 mb-1\">Title</label> <input type=\"text\" name=\"title\" required placeholder=\"What does this PR do?\" class=\"w-full px-3 py-2 bg-gray-900 border border-gray-600 rounded-lg text-white focus:border-blue-500\" aria-label=\"Title\"></div><div class=\"grid grid-cols-2 gap-4\"><div><label class=\"block text-sm text-gray-400 mb-1\">Head (source)</label> <select name=\"head\" class=\"w-full px-3 py-2 bg-gray-900 border border-gray-600 rounded-lg text-white\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -833,7 +833,7 @@ func prDetailModalPartial() templ.Component {
 			templ_7745c5c3_Var45 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 66, "<div id=\"pr-detail-modal\" class=\"fixed inset-0 bg-black/60 z-50 hidden items-center justify-center\"><div class=\"bg-gray-800 rounded-xl border border-gray-700 p-6 w-full max-w-3xl mx-4 max-h-[85vh] flex flex-col\"><div class=\"flex items-center justify-between mb-4\"><h3 class=\"text-lg font-semibold text-white\"><i class=\"fas fa-code-pull-request mr-2 text-green-400\"></i> <span id=\"pr-detail-title\">Pull Request</span></h3><button onclick=\"closeModal('pr-detail-modal')\" class=\"text-gray-400 hover:text-white\"><i class=\"fas fa-times\"></i></button></div><div id=\"pr-detail-content\" class=\"flex-1 overflow-y-auto\"><div class=\"text-center py-8 text-gray-400\"><i class=\"fas fa-spinner fa-spin text-2xl\"></i></div></div></div></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 66, "<div id=\"pr-detail-modal\" class=\"fixed inset-0 bg-black/60 z-50 hidden items-center justify-center\"><div class=\"bg-gray-800 rounded-xl border border-gray-700 p-6 w-full max-w-3xl mx-4 max-h-[85vh] flex flex-col\"><div class=\"flex items-center justify-between mb-4\"><h3 class=\"text-lg font-semibold text-white\"><i aria-hidden=\"true\" class=\"fas fa-code-pull-request mr-2 text-green-400\"></i> <span id=\"pr-detail-title\">Pull Request</span></h3><button onclick=\"closeModal('pr-detail-modal')\" class=\"text-gray-400 hover:text-white\"><i aria-hidden=\"true\" class=\"fas fa-times\"></i></button></div><div id=\"pr-detail-content\" class=\"flex-1 overflow-y-auto\"><div class=\"text-center py-8 text-gray-400\"><i aria-hidden=\"true\" class=\"fas fa-spinner fa-spin text-2xl\"></i></div></div></div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -862,7 +862,7 @@ func prScripts(data PRListData) templ.Component {
 			templ_7745c5c3_Var46 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 67, "<script>\n\t\tconst prRepoID = { templ.JSONString(data.Repo.ID) };\n\t\tconst prCSRF = { templ.JSONString(data.CSRFToken) };\n\n\t\tfunction openModal(id) {\n\t\t\tdocument.getElementById(id).classList.remove('hidden');\n\t\t\tdocument.getElementById(id).classList.add('flex');\n\t\t}\n\t\tfunction closeModal(id) {\n\t\t\tdocument.getElementById(id).classList.add('hidden');\n\t\t\tdocument.getElementById(id).classList.remove('flex');\n\t\t}\n\t\tfunction openCreatePRModal() { openModal('create-pr-modal'); }\n\n\t\tfunction escapeHtml(text) {\n\t\t\tconst div = document.createElement('div');\n\t\t\tdiv.textContent = text || '';\n\t\t\treturn div.innerHTML;\n\t\t}\n\n\t\t// Create PR\n\t\tdocument.getElementById('create-pr-form')?.addEventListener('submit', async (e) => {\n\t\t\te.preventDefault();\n\t\t\tconst form = e.target;\n\t\t\tconst data = {\n\t\t\t\ttitle: form.title.value,\n\t\t\t\tbody: form.body.value,\n\t\t\t\thead: form.head.value,\n\t\t\t\tbase: form.base.value\n\t\t\t};\n\t\t\ttry {\n\t\t\t\tconst resp = await fetch(`/integrations/gitea/repos/${prRepoID}/pulls`, {\n\t\t\t\t\tmethod: 'POST',\n\t\t\t\t\theaders: {\n\t\t\t\t\t\t'Content-Type': 'application/json',\n\t\t\t\t\t\t'X-CSRF-Token': prCSRF\n\t\t\t\t\t},\n\t\t\t\t\tbody: JSON.stringify(data)\n\t\t\t\t});\n\t\t\t\tif (!resp.ok) {\n\t\t\t\t\tconst errText = await resp.text();\n\t\t\t\t\tthrow new Error(errText || 'Failed to create PR');\n\t\t\t\t}\n\t\t\t\tlocation.reload();\n\t\t\t} catch (err) {\n\t\t\t\talert('Error: ' + err.message);\n\t\t\t}\n\t\t});\n\n\t\t// View PR detail\n\t\tasync function viewPR(number) {\n\t\t\topenModal('pr-detail-modal');\n\t\t\tdocument.getElementById('pr-detail-content').innerHTML = '<div class=\"text-center py-8\"><i class=\"fas fa-spinner fa-spin text-2xl text-gray-400\"></i></div>';\n\n\t\t\ttry {\n\t\t\t\tconst resp = await fetch(`/integrations/gitea/repos/${prRepoID}/pulls/${number}`);\n\t\t\t\tif (!resp.ok) throw new Error('Failed to load PR');\n\t\t\t\tconst pr = await resp.json();\n\n\t\t\t\tdocument.getElementById('pr-detail-title').textContent = `#${pr.number} ${pr.title}`;\n\t\t\t\tdocument.getElementById('pr-detail-content').innerHTML = `\n\t\t\t\t\t<div class=\"space-y-4\">\n\t\t\t\t\t\t<div class=\"flex items-center gap-2 flex-wrap\">\n\t\t\t\t\t\t\t<span class=\"px-2 py-1 rounded text-sm ${pr.state === 'open' ? 'bg-green-500/20 text-green-400' : pr.merged ? 'bg-purple-500/20 text-purple-400' : 'bg-red-500/20 text-red-400'}\">\n\t\t\t\t\t\t\t\t${pr.merged ? 'Merged' : pr.state}\n\t\t\t\t\t\t\t<\\/span>\n\t\t\t\t\t\t\t<span class=\"text-gray-400 text-sm\">${escapeHtml(pr.user?.login)} wants to merge<\\/span>\n\t\t\t\t\t\t\t<code class=\"text-xs bg-gray-700 px-2 py-0.5 rounded\">${escapeHtml(pr.head?.ref)}<\\/code>\n\t\t\t\t\t\t\t<i class=\"fas fa-arrow-right text-gray-500 text-xs\"><\\/i>\n\t\t\t\t\t\t\t<code class=\"text-xs bg-gray-700 px-2 py-0.5 rounded\">${escapeHtml(pr.base?.ref)}<\\/code>\n\t\t\t\t\t\t<\\/div>\n\t\t\t\t\t\t${pr.body ? `<div class=\"bg-gray-900 p-4 rounded-lg text-gray-300 text-sm whitespace-pre-wrap\">${escapeHtml(pr.body)}<\\/div>` : ''}\n\t\t\t\t\t\t<div class=\"flex items-center gap-4 pt-4 border-t border-gray-700\">\n\t\t\t\t\t\t\t<a href=\"${escapeHtml(pr.html_url)}\" target=\"_blank\" class=\"btn-ghost text-sm\">\n\t\t\t\t\t\t\t\t<i class=\"fas fa-external-link-alt mr-2\"><\\/i>View in Gitea\n\t\t\t\t\t\t\t<\\/a>\n\t\t\t\t\t\t\t${pr.mergeable && pr.state === 'open' && !pr.merged ? `\n\t\t\t\t\t\t\t\t<button onclick=\"mergePR(${pr.number})\" class=\"btn-primary text-sm\">\n\t\t\t\t\t\t\t\t\t<i class=\"fas fa-code-merge mr-2\"><\\/i>Merge\n\t\t\t\t\t\t\t\t<\\/button>\n\t\t\t\t\t\t\t` : ''}\n\t\t\t\t\t\t<\\/div>\n\t\t\t\t\t<\\/div>\n\t\t\t\t`;\n\t\t\t} catch (err) {\n\t\t\t\tdocument.getElementById('pr-detail-content').innerHTML = `<p class=\"text-red-400\">${escapeHtml(err.message)}<\\/p>`;\n\t\t\t}\n\t\t}\n\n\t\tasync function mergePR(number) {\n\t\t\tif (!confirm('Merge this pull request?')) return;\n\t\t\ttry {\n\t\t\t\tconst resp = await fetch(`/integrations/gitea/repos/${prRepoID}/pulls/${number}/merge`, {\n\t\t\t\t\tmethod: 'POST',\n\t\t\t\t\theaders: { 'Content-Type': 'application/json', 'X-CSRF-Token': prCSRF },\n\t\t\t\t\tbody: JSON.stringify({ Do: 'merge' })\n\t\t\t\t});\n\t\t\t\tif (!resp.ok) throw new Error('Failed to merge');\n\t\t\t\tcloseModal('pr-detail-modal');\n\t\t\t\tlocation.reload();\n\t\t\t} catch (err) {\n\t\t\t\talert('Error: ' + err.message);\n\t\t\t}\n\t\t}\n\n\t\t// Escape key closes modals\n\t\tdocument.addEventListener('keydown', (e) => {\n\t\t\tif (e.key === 'Escape') {\n\t\t\t\tdocument.querySelectorAll('.fixed.z-50').forEach(m => {\n\t\t\t\t\tm.classList.add('hidden');\n\t\t\t\t\tm.classList.remove('flex');\n\t\t\t\t});\n\t\t\t}\n\t\t});\n\t</script>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 67, "<script>\n\t\tconst prRepoID = { templ.JSONString(data.Repo.ID) };\n\t\tconst prCSRF = { templ.JSONString(data.CSRFToken) };\n\n\t\tfunction openModal(id) {\n\t\t\tdocument.getElementById(id).classList.remove('hidden');\n\t\t\tdocument.getElementById(id).classList.add('flex');\n\t\t}\n\t\tfunction closeModal(id) {\n\t\t\tdocument.getElementById(id).classList.add('hidden');\n\t\t\tdocument.getElementById(id).classList.remove('flex');\n\t\t}\n\t\tfunction openCreatePRModal() { openModal('create-pr-modal'); }\n\n\t\tfunction escapeHtml(text) {\n\t\t\tconst div = document.createElement('div');\n\t\t\tdiv.textContent = text || '';\n\t\t\treturn div.innerHTML;\n\t\t}\n\n\t\t// Create PR\n\t\tdocument.getElementById('create-pr-form')?.addEventListener('submit', async (e) => {\n\t\t\te.preventDefault();\n\t\t\tconst form = e.target;\n\t\t\tconst data = {\n\t\t\t\ttitle: form.title.value,\n\t\t\t\tbody: form.body.value,\n\t\t\t\thead: form.head.value,\n\t\t\t\tbase: form.base.value\n\t\t\t};\n\t\t\ttry {\n\t\t\t\tconst resp = await fetch(`/integrations/gitea/repos/${prRepoID}/pulls`, {\n\t\t\t\t\tmethod: 'POST',\n\t\t\t\t\theaders: {\n\t\t\t\t\t\t'Content-Type': 'application/json',\n\t\t\t\t\t\t'X-CSRF-Token': prCSRF\n\t\t\t\t\t},\n\t\t\t\t\tbody: JSON.stringify(data)\n\t\t\t\t});\n\t\t\t\tif (!resp.ok) {\n\t\t\t\t\tconst errText = await resp.text();\n\t\t\t\t\tthrow new Error(errText || 'Failed to create PR');\n\t\t\t\t}\n\t\t\t\tlocation.reload();\n\t\t\t} catch (err) {\n\t\t\t\talert('Error: ' + err.message);\n\t\t\t}\n\t\t});\n\n\t\t// View PR detail\n\t\tasync function viewPR(number) {\n\t\t\topenModal('pr-detail-modal');\n\t\t\tdocument.getElementById('pr-detail-content').innerHTML = '<div class=\"text-center py-8\"><i aria-hidden=\"true\" class=\"fas fa-spinner fa-spin text-2xl text-gray-400\"></i></div>';\n\n\t\t\ttry {\n\t\t\t\tconst resp = await fetch(`/integrations/gitea/repos/${prRepoID}/pulls/${number}`);\n\t\t\t\tif (!resp.ok) throw new Error('Failed to load PR');\n\t\t\t\tconst pr = await resp.json();\n\n\t\t\t\tdocument.getElementById('pr-detail-title').textContent = `#${pr.number} ${pr.title}`;\n\t\t\t\tdocument.getElementById('pr-detail-content').innerHTML = `\n\t\t\t\t\t<div class=\"space-y-4\">\n\t\t\t\t\t\t<div class=\"flex items-center gap-2 flex-wrap\">\n\t\t\t\t\t\t\t<span class=\"px-2 py-1 rounded text-sm ${pr.state === 'open' ? 'bg-green-500/20 text-green-400' : pr.merged ? 'bg-purple-500/20 text-purple-400' : 'bg-red-500/20 text-red-400'}\">\n\t\t\t\t\t\t\t\t${pr.merged ? 'Merged' : pr.state}\n\t\t\t\t\t\t\t<\\/span>\n\t\t\t\t\t\t\t<span class=\"text-gray-400 text-sm\">${escapeHtml(pr.user?.login)} wants to merge<\\/span>\n\t\t\t\t\t\t\t<code class=\"text-xs bg-gray-700 px-2 py-0.5 rounded\">${escapeHtml(pr.head?.ref)}<\\/code>\n\t\t\t\t\t\t\t<i aria-hidden=\"true\" class=\"fas fa-arrow-right text-gray-500 text-xs\"><\\/i>\n\t\t\t\t\t\t\t<code class=\"text-xs bg-gray-700 px-2 py-0.5 rounded\">${escapeHtml(pr.base?.ref)}<\\/code>\n\t\t\t\t\t\t<\\/div>\n\t\t\t\t\t\t${pr.body ? `<div class=\"bg-gray-900 p-4 rounded-lg text-gray-300 text-sm whitespace-pre-wrap\">${escapeHtml(pr.body)}<\\/div>` : ''}\n\t\t\t\t\t\t<div class=\"flex items-center gap-4 pt-4 border-t border-gray-700\">\n\t\t\t\t\t\t\t<a href=\"${escapeHtml(pr.html_url)}\" target=\"_blank\" class=\"btn-ghost text-sm\">\n\t\t\t\t\t\t\t\t<i aria-hidden=\"true\" class=\"fas fa-external-link-alt mr-2\"><\\/i>View in Gitea\n\t\t\t\t\t\t\t<\\/a>\n\t\t\t\t\t\t\t${pr.mergeable && pr.state === 'open' && !pr.merged ? `\n\t\t\t\t\t\t\t\t<button onclick=\"mergePR(${pr.number})\" class=\"btn-primary text-sm\">\n\t\t\t\t\t\t\t\t\t<i aria-hidden=\"true\" class=\"fas fa-code-merge mr-2\"><\\/i>Merge\n\t\t\t\t\t\t\t\t<\\/button>\n\t\t\t\t\t\t\t` : ''}\n\t\t\t\t\t\t<\\/div>\n\t\t\t\t\t<\\/div>\n\t\t\t\t`;\n\t\t\t} catch (err) {\n\t\t\t\tdocument.getElementById('pr-detail-content').innerHTML = `<p class=\"text-red-400\">${escapeHtml(err.message)}<\\/p>`;\n\t\t\t}\n\t\t}\n\n\t\tasync function mergePR(number) {\n\t\t\tif (!confirm('Merge this pull request?')) return;\n\t\t\ttry {\n\t\t\t\tconst resp = await fetch(`/integrations/gitea/repos/${prRepoID}/pulls/${number}/merge`, {\n\t\t\t\t\tmethod: 'POST',\n\t\t\t\t\theaders: { 'Content-Type': 'application/json', 'X-CSRF-Token': prCSRF },\n\t\t\t\t\tbody: JSON.stringify({ Do: 'merge' })\n\t\t\t\t});\n\t\t\t\tif (!resp.ok) throw new Error('Failed to merge');\n\t\t\t\tcloseModal('pr-detail-modal');\n\t\t\t\tlocation.reload();\n\t\t\t} catch (err) {\n\t\t\t\talert('Error: ' + err.message);\n\t\t\t}\n\t\t}\n\n\t\t// Escape key closes modals\n\t\tdocument.addEventListener('keydown', (e) => {\n\t\t\tif (e.key === 'Escape') {\n\t\t\t\tdocument.querySelectorAll('.fixed.z-50').forEach(m => {\n\t\t\t\t\tm.classList.add('hidden');\n\t\t\t\t\tm.classList.remove('flex');\n\t\t\t\t});\n\t\t\t}\n\t\t});\n\t</script>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

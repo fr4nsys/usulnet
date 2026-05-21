@@ -121,6 +121,8 @@ type Handlers struct {
 	DNS            *handlers.DNSHandler
 	Calendar       *handlers.CalendarHandler
 	Marketplace    *handlers.MarketplaceHandler
+	Egress         *handlers.EgressHandler
+	YARA           *handlers.YARAHandler
 }
 
 // NewRouter creates a new chi router with all routes configured.
@@ -624,6 +626,32 @@ func NewRouter(config RouterConfig, h *Handlers) chi.Router {
 			// =============================================================
 			if h.Marketplace != nil {
 				r.Mount("/marketplace", h.Marketplace.Routes())
+			}
+
+			// =============================================================
+			// L7 egress filter (v26.5.2)
+			//
+			// REST: GET /{hostID}/policies (list), POST /{hostID}/policies
+			// (create), DELETE /policies/{id} (remove), GET /{hostID}/denies
+			// (recent audit). RequireOperator on every endpoint — egress is
+			// an operational security knob, not a viewer concern. The
+			// handler's nil-safe path returns 503 when the proxy is
+			// disabled, so mounting is unconditional.
+			// =============================================================
+			if h.Egress != nil {
+				r.Mount("/egress", h.Egress.Routes())
+			}
+
+			// =============================================================
+			// YARA scanner (v26.5.2)
+			//
+			// REST: GET /rulesets (list embedded), POST /scan (generic),
+			// plus a container-scoped POST at
+			// /containers/{hostID}/{containerID}/yara-scan mounted below.
+			// =============================================================
+			if h.YARA != nil {
+				r.Mount("/yara", h.YARA.Routes())
+				r.With(middleware.RequireOperator).Post("/containers/{hostID}/{containerID}/yara-scan", h.YARA.ContainerScan)
 			}
 
 			// =============================================================

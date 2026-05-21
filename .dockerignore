@@ -37,6 +37,8 @@ docs/
 # Development files
 docker-compose.dev.yml
 docker-compose.test.yml
+docker-compose.override.yml
+docker-compose.override.yaml
 Makefile
 
 # Test files

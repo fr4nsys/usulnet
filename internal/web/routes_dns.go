@@ -14,39 +14,35 @@ import (
 // when wiring is missing (typically because the data encryption key
 // is unset).
 func RegisterDNSRoutes(r chi.Router, h *Handler, m *Middleware) {
+	view := m.RequirePermission("dns:view")
+	write := m.RequirePermission("dns:write")
+
 	r.Route("/dns", func(r chi.Router) {
-		// Read endpoints — viewer+.
-		r.Group(func(r chi.Router) {
-			r.Use(m.RequirePermission("dns:view"))
-			r.Get("/", h.DNSProvidersTempl)
-			r.Get("/new", h.DNSProviderNewTempl)
-			r.Get("/records", h.DNSRecordsTempl)
-			r.Get("/acme", h.DNSACMETempl)
-			r.Get("/acme/{id}", h.DNSACMEDetailTempl)
-			r.Get("/supported", h.DNSSupportedTempl)
-			r.Get("/audit", h.DNSAuditTempl)
+		// Top-level read endpoints — viewer+.
+		r.With(view).Get("/", h.DNSProvidersTempl)
+		r.With(view).Get("/new", h.DNSProviderNewTempl)
+		r.With(view).Get("/records", h.DNSRecordsTempl)
+		r.With(view).Get("/acme", h.DNSACMETempl)
+		r.With(view).Get("/acme/{id}", h.DNSACMEDetailTempl)
+		r.With(view).Get("/supported", h.DNSSupportedTempl)
+		r.With(view).Get("/audit", h.DNSAuditTempl)
 
-			r.Route("/{id}", func(r chi.Router) {
-				r.Get("/", h.DNSProviderDetailTempl)
-				r.Get("/edit", h.DNSProviderEditTempl)
-				r.Get("/records/new", h.DNSRecordNewTempl)
-			})
-		})
+		// Top-level mutating endpoints — operator+.
+		r.With(write).Post("/", h.DNSProviderCreateTempl)
+		r.With(write).Post("/records/{id}/delete", h.DNSRecordDeleteTempl)
+		r.With(write).Post("/acme/{id}/process", h.DNSACMEProcessTempl)
 
-		// Mutating endpoints — operator+.
-		r.Group(func(r chi.Router) {
-			r.Use(m.RequirePermission("dns:write"))
-			r.Post("/", h.DNSProviderCreateTempl)
+		// Per-provider scope. A single subrouter mounted on /{id} so chi
+		// doesn't panic on a second Mount() at the same path. Each child
+		// route applies its own permission middleware inline.
+		r.Route("/{id}", func(r chi.Router) {
+			r.With(view).Get("/", h.DNSProviderDetailTempl)
+			r.With(view).Get("/edit", h.DNSProviderEditTempl)
+			r.With(view).Get("/records/new", h.DNSRecordNewTempl)
 
-			r.Route("/{id}", func(r chi.Router) {
-				r.Post("/", h.DNSProviderUpdateTempl)
-				r.Post("/delete", h.DNSProviderDeleteTempl)
-				r.Post("/records", h.DNSRecordCreateTempl)
-			})
-
-			r.Post("/records/{id}/delete", h.DNSRecordDeleteTempl)
-
-			r.Post("/acme/{id}/process", h.DNSACMEProcessTempl)
+			r.With(write).Post("/", h.DNSProviderUpdateTempl)
+			r.With(write).Post("/delete", h.DNSProviderDeleteTempl)
+			r.With(write).Post("/records", h.DNSRecordCreateTempl)
 		})
 	})
 }

@@ -1,6 +1,7 @@
 package recon
 
 import (
+	"github.com/fr4nsys/usulnet/internal/web/templates/components"
 	"github.com/fr4nsys/usulnet/internal/web/templates/layouts"
 )
 
@@ -13,10 +14,7 @@ templ Connectors(data ConnectorsData) {
 			</div>
 
 			if len(data.Connectors) == 0 {
-				<div class="card p-12 text-center">
-					<i class="fas fa-plug text-4xl text-gray-500 mb-4"></i>
-					<p class="text-gray-400">No connectors registered.</p>
-				</div>
+				@components.EmptyState("fa-plug", "", "No connectors registered.")
 			} else {
 				<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 					for _, c := range data.Connectors {
@@ -24,21 +22,53 @@ templ Connectors(data ConnectorsData) {
 					}
 				</div>
 			}
+
+			if len(data.SandboxTools) > 0 {
+				<div class="space-y-3 pt-4 border-t border-dark-600">
+					<div>
+						<h2 class="text-xl font-display font-semibold text-white">Sandbox tools</h2>
+						<p class="text-gray-400 mt-1 text-sm">
+							Tools bundled in the <code class="text-primary-400">recon-toolkit</code> sandbox image. Available to SpiderFoot modules and to operator-initiated exec from scan detail pages.
+						</p>
+					</div>
+					<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+						for _, g := range data.SandboxTools {
+							@sandboxToolGroupCard(g)
+						}
+					</div>
+				</div>
+			}
 		</div>
 	}
+}
+
+templ sandboxToolGroupCard(g SandboxToolGroup) {
+	<div class="card p-5">
+		<div class="flex items-center gap-3 mb-3">
+			<i aria-hidden="true" class="fas fa-screwdriver-wrench text-primary-400"></i>
+			<h3 class="text-base font-display font-semibold text-white capitalize">{ g.Category }</h3>
+		</div>
+		<ul class="flex flex-wrap gap-2">
+			for _, t := range g.Tools {
+				<li class="px-2.5 py-1 rounded bg-dark-700 border border-dark-500 text-xs font-mono text-gray-200">
+					{ t.Name }
+				</li>
+			}
+		</ul>
+	</div>
 }
 
 templ connectorCard(c ConnectorView) {
 	<div class="card p-5">
 		<div class="flex items-center justify-between mb-2">
 			<div class="flex items-center gap-3">
-				<i class="fas fa-plug text-primary-400"></i>
+				<i aria-hidden="true" class="fas fa-plug text-primary-400"></i>
 				<h2 class="text-lg font-display font-semibold text-white">{ c.Name }</h2>
 			</div>
 			if c.Enabled {
-				<span class="px-2 py-0.5 rounded text-xs font-medium bg-green-500/10 text-green-400 border border-green-500/20">enabled</span>
+				@components.Chip(components.ToneSuccess, "enabled")
 			} else {
-				<span class="px-2 py-0.5 rounded text-xs font-medium bg-dark-600 text-gray-400 border border-dark-500">disabled</span>
+				@components.Chip(components.ToneNeutral, "disabled")
 			}
 		</div>
 		<p class="text-sm text-gray-400">{ c.Description }</p>
@@ -48,11 +78,11 @@ templ connectorCard(c ConnectorView) {
 			hx-swap="none"
 		>
 			<label class="block text-xs text-gray-400">API Key</label>
-			<input type="password" name="api_key" autocomplete="off" placeholder="paste your key" class="w-full bg-dark-700 border border-dark-500 rounded px-3 py-1.5 text-sm text-white"/>
+			<input type="password" name="api_key" autocomplete="off" placeholder="paste your key" aria-label="paste your key" class="w-full bg-dark-700 border border-dark-500 rounded px-3 py-1.5 text-sm text-white"/>
 			<div class="flex items-center justify-between mt-3">
 				if c.DocsURL != "" {
 					<a href={ templ.SafeURL(c.DocsURL) } target="_blank" rel="noopener" class="text-xs text-primary-400 hover:underline">
-						<i class="fas fa-external-link-alt mr-1"></i>API docs
+						<i aria-hidden="true" class="fas fa-external-link-alt mr-1"></i>API docs
 					</a>
 				} else {
 					<span></span>

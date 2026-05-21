@@ -92,7 +92,7 @@ func NetworksList(data NetworksListData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</div><p class=\"text-gray-400 mt-1\">Manage Docker networks</p></div><div class=\"flex items-center gap-3\"><a href=\"/topology\" class=\"px-4 py-2 bg-dark-700 hover:bg-dark-600 text-gray-300 rounded-lg transition-colors\"><i class=\"fas fa-project-diagram mr-2\"></i> Topology</a> <a href=\"/networks/new\" class=\"btn-primary\"><i class=\"fas fa-plus mr-2\"></i> New Network</a> <button hx-post=\"/networks/prune\" hx-confirm=\"Remove all unused networks?\" hx-swap=\"none\" class=\"px-4 py-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-lg transition-colors\"><i class=\"fas fa-broom mr-2\"></i> Prune</button></div></div><!-- Filters --> <div class=\"bg-dark-800 rounded-xl border border-dark-600 p-4 mb-6\"><div class=\"flex flex-col md:flex-row gap-4\"><!-- Search --><div class=\"flex-1\"><div class=\"relative\"><input type=\"search\" name=\"search\" placeholder=\"Search networks...\" value=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</div><p class=\"text-gray-400 mt-1\">Manage Docker networks</p></div><div class=\"flex items-center gap-3\"><a href=\"/topology\" class=\"px-4 py-2 bg-dark-700 hover:bg-dark-600 text-gray-300 rounded-lg transition-colors\"><i aria-hidden=\"true\" class=\"fas fa-project-diagram mr-2\"></i> Topology</a> <a href=\"/networks/new\" class=\"btn-primary\"><i aria-hidden=\"true\" class=\"fas fa-plus mr-2\"></i> New Network</a> <button hx-post=\"/networks/prune\" hx-confirm=\"Remove all unused networks?\" hx-swap=\"none\" class=\"px-4 py-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-lg transition-colors\"><i aria-hidden=\"true\" class=\"fas fa-broom mr-2\"></i> Prune</button></div></div><!-- Filters --> <div class=\"card p-4 mb-6\"><div class=\"flex flex-col md:flex-row gap-4\"><!-- Search --><div class=\"flex-1\"><div class=\"relative\"><input type=\"search\" name=\"search\" placeholder=\"Search networks...\" value=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -105,7 +105,7 @@ func NetworksList(data NetworksListData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "\" class=\"w-full pl-10 pr-4 py-2 bg-dark-700 border border-dark-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500/50\" hx-get=\"/networks\" hx-trigger=\"keyup changed delay:300ms\" hx-target=\"#network-table\" hx-select=\"#network-table\" hx-push-url=\"true\"> <i class=\"fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-500\"></i></div></div><!-- Driver Filter --><div class=\"w-full md:w-40\"><select name=\"driver\" class=\"w-full px-4 py-2 bg-dark-700 border border-dark-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-primary-500/50 appearance-none\" hx-get=\"/networks\" hx-trigger=\"change\" hx-target=\"#network-table\" hx-select=\"#network-table\" hx-push-url=\"true\"><option value=\"\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "\" class=\"w-full pl-10 pr-4 py-2 bg-dark-700 border border-dark-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500/50\" hx-get=\"/networks\" hx-trigger=\"keyup changed delay:300ms\" hx-target=\"#network-table\" hx-select=\"#network-table\" hx-push-url=\"true\" aria-label=\"Search networks...\"> <i aria-hidden=\"true\" class=\"fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-500\"></i></div></div><!-- Driver Filter --><div class=\"w-full md:w-40\"><select name=\"driver\" class=\"w-full px-4 py-2 bg-dark-700 border border-dark-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-primary-500/50 appearance-none\" hx-get=\"/networks\" hx-trigger=\"change\" hx-target=\"#network-table\" hx-select=\"#network-table\" hx-push-url=\"true\"><option value=\"\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -205,7 +205,7 @@ func NetworksList(data NetworksListData) templ.Component {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 23, ">Global</option></select></div></div></div><!-- Networks Table --> <div id=\"network-table\" class=\"bg-dark-800 rounded-xl border border-dark-600 overflow-hidden\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 23, ">Global</option></select></div></div></div><!-- Networks Table --> <div id=\"network-table\" class=\"card overflow-hidden\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -421,7 +421,7 @@ func networkRow(net Network) templ.Component {
 		var templ_7745c5c3_Var12 templ.SafeURL
 		templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinURLErrs(templ.SafeURL("/networks/" + net.ID))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/networks/list.templ`, Line: 182, Col: 51}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/networks/list.templ`, Line: 183, Col: 51}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
 		if templ_7745c5c3_Err != nil {
@@ -434,7 +434,7 @@ func networkRow(net Network) templ.Component {
 		var templ_7745c5c3_Var13 string
 		templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(net.Name)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/networks/list.templ`, Line: 183, Col: 16}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/networks/list.templ`, Line: 184, Col: 16}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
 		if templ_7745c5c3_Err != nil {
@@ -447,7 +447,7 @@ func networkRow(net Network) templ.Component {
 		var templ_7745c5c3_Var14 string
 		templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.JoinStringErrs(net.ShortID)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/networks/list.templ`, Line: 185, Col: 61}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/networks/list.templ`, Line: 186, Col: 61}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var14))
 		if templ_7745c5c3_Err != nil {
@@ -482,7 +482,7 @@ func networkRow(net Network) templ.Component {
 		var templ_7745c5c3_Var17 string
 		templ_7745c5c3_Var17, templ_7745c5c3_Err = templ.JoinStringErrs(net.Driver)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/networks/list.templ`, Line: 191, Col: 16}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/networks/list.templ`, Line: 192, Col: 16}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var17))
 		if templ_7745c5c3_Err != nil {
@@ -500,7 +500,7 @@ func networkRow(net Network) templ.Component {
 			var templ_7745c5c3_Var18 string
 			templ_7745c5c3_Var18, templ_7745c5c3_Err = templ.JoinStringErrs(net.Subnet)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/networks/list.templ`, Line: 196, Col: 44}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/networks/list.templ`, Line: 197, Col: 44}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var18))
 			if templ_7745c5c3_Err != nil {
@@ -523,7 +523,7 @@ func networkRow(net Network) templ.Component {
 		var templ_7745c5c3_Var19 string
 		templ_7745c5c3_Var19, templ_7745c5c3_Err = templ.JoinStringErrs(net.Scope)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/networks/list.templ`, Line: 202, Col: 61}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/networks/list.templ`, Line: 203, Col: 61}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var19))
 		if templ_7745c5c3_Err != nil {
@@ -541,7 +541,7 @@ func networkRow(net Network) templ.Component {
 			var templ_7745c5c3_Var20 string
 			templ_7745c5c3_Var20, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", net.ContainerCount))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/networks/list.templ`, Line: 208, Col: 44}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/networks/list.templ`, Line: 209, Col: 44}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var20))
 			if templ_7745c5c3_Err != nil {
@@ -564,13 +564,13 @@ func networkRow(net Network) templ.Component {
 		var templ_7745c5c3_Var21 templ.SafeURL
 		templ_7745c5c3_Var21, templ_7745c5c3_Err = templ.JoinURLErrs(templ.SafeURL("/networks/" + net.ID))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/networks/list.templ`, Line: 217, Col: 48}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/networks/list.templ`, Line: 218, Col: 48}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var21))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 51, "\" class=\"p-2 text-gray-400 hover:text-primary-400 hover:bg-primary-500/10 rounded-lg transition-colors\" title=\"Details\"><i class=\"fas fa-info-circle text-sm\"></i></a> ")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 51, "\" class=\"p-2 text-gray-400 hover:text-primary-400 hover:bg-primary-500/10 rounded-lg transition-colors\" title=\"Details\"><i aria-hidden=\"true\" class=\"fas fa-info-circle text-sm\"></i></a> ")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -582,13 +582,13 @@ func networkRow(net Network) templ.Component {
 			var templ_7745c5c3_Var22 string
 			templ_7745c5c3_Var22, templ_7745c5c3_Err = templ.JoinStringErrs("/networks/" + net.ID + "/remove")
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/networks/list.templ`, Line: 225, Col: 49}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/networks/list.templ`, Line: 226, Col: 49}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var22))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 53, "\" hx-confirm=\"Remove this network?\" hx-swap=\"none\" class=\"p-2 text-gray-400 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors\" title=\"Remove\"><i class=\"fas fa-trash text-sm\"></i></button>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 53, "\" hx-confirm=\"Remove this network?\" hx-swap=\"none\" class=\"p-2 text-gray-400 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors\" title=\"Remove\"><i aria-hidden=\"true\" class=\"fas fa-trash text-sm\"></i></button>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

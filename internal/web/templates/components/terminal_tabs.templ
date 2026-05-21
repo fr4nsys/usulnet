@@ -36,7 +36,7 @@ templ TerminalTabs(data TerminalTabsData) {
 				href={ templ.SafeURL(data.BackURL) }
 				class="flex items-center gap-2 px-3 py-2 text-gray-400 hover:text-white transition-colors"
 			>
-				<i class="fas fa-arrow-left text-sm"></i>
+				<i aria-hidden="true" class="fas fa-arrow-left text-sm"></i>
 				<span class="text-sm">{ data.BackLabel }</span>
 			</a>
 
@@ -75,7 +75,7 @@ templ TerminalTabs(data TerminalTabsData) {
 					class="flex items-center justify-center w-8 h-8 text-gray-400 hover:text-white hover:bg-dark-700 rounded-lg transition-colors ml-1"
 					title="New Tab"
 				>
-					<i class="fas fa-plus text-sm"></i>
+					<i aria-hidden="true" class="fas fa-plus text-sm"></i>
 				</button>
 			}
 
@@ -86,14 +86,14 @@ templ TerminalTabs(data TerminalTabsData) {
 					class="p-2 text-gray-400 hover:text-white hover:bg-dark-700 rounded-lg transition-colors"
 					title="Reconnect"
 				>
-					<i class="fas fa-redo text-sm"></i>
+					<i aria-hidden="true" class="fas fa-redo text-sm"></i>
 				</button>
 				<button
 					@click="toggleFullscreen()"
 					class="p-2 text-gray-400 hover:text-white hover:bg-dark-700 rounded-lg transition-colors"
 					title="Fullscreen"
 				>
-					<i class="fas fa-expand text-sm"></i>
+					<i aria-hidden="true" class="fas fa-expand text-sm"></i>
 				</button>
 			</div>
 		</div>
@@ -109,7 +109,7 @@ templ TerminalTabs(data TerminalTabsData) {
 					Connected
 				</span>
 				<span x-show="getActiveStatus() === 'connecting'" class="flex items-center gap-1 text-yellow-400">
-					<i class="fas fa-spinner fa-spin"></i>
+					<i aria-hidden="true" class="fas fa-spinner fa-spin"></i>
 					Connecting...
 				</span>
 				<span x-show="getActiveStatus() === 'disconnected'" class="flex items-center gap-1 text-red-400">
@@ -151,7 +151,7 @@ templ TerminalTabs(data TerminalTabsData) {
 				class="fixed inset-0 z-50 flex items-center justify-center"
 			>
 				<div class="fixed inset-0 bg-black/50" @click="newTabModalOpen = false"></div>
-				<div class="relative bg-dark-800 rounded-xl border border-dark-600 p-6 max-w-md w-full mx-4">
+				<div class="relative card p-6 max-w-md w-full mx-4">
 					<h3 class="text-lg font-semibold text-white mb-4">Open New Terminal</h3>
 					<div
 						hx-get={ data.NewTabURL }
@@ -160,7 +160,7 @@ templ TerminalTabs(data TerminalTabsData) {
 					>
 						<div id="new-tab-content" class="space-y-4">
 							<div class="flex items-center justify-center py-8">
-								<i class="fas fa-spinner fa-spin text-2xl text-gray-500"></i>
+								<i aria-hidden="true" class="fas fa-spinner fa-spin text-2xl text-gray-500"></i>
 							</div>
 						</div>
 					</div>
@@ -550,9 +550,9 @@ templ TerminalTabsScript() {
 						btn.setAttribute('data-target-id', targetId);
 						btn.setAttribute('data-tab-name', name);
 						btn.className = 'flex items-center gap-2 px-3 py-1.5 rounded-t-lg border-b-2 text-sm whitespace-nowrap transition-colors group text-gray-400 hover:text-white hover:bg-dark-700 border-transparent';
-						btn.innerHTML = '<i class="fas fa-terminal text-xs"></i>' +
+						btn.innerHTML = '<i aria-hidden="true" class="fas fa-terminal text-xs"></i>' +
 							'<span>' + name + '</span>' +
-							'<i class="fas fa-times text-xs opacity-0 group-hover:opacity-100 hover:text-red-400 transition-opacity ml-1" data-close="' + id + '"></i>';
+							'<i aria-hidden="true" class="fas fa-times text-xs opacity-0 group-hover:opacity-100 hover:text-red-400 transition-opacity ml-1" data-close="' + id + '"></i>';
 						btn.addEventListener('click', (e) => {
 							if (e.target.dataset.close) {
 								this.closeTab(e.target.dataset.close);

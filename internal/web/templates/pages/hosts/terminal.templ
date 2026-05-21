@@ -17,15 +17,15 @@ templ HostTerminal(data HostTerminalData) {
 	@layouts.Base(data.PageData) {
 		<nav class="flex items-center gap-2 text-sm text-gray-400 mb-4">
 			<a href="/nodes" class="hover:text-primary-400 transition-colors">Nodes</a>
-			<i class="fas fa-chevron-right text-xs"></i>
+			<i aria-hidden="true" class="fas fa-chevron-right text-xs"></i>
 			<a href={ templ.SafeURL("/nodes/" + data.HostID) } class="hover:text-primary-400 transition-colors">{ data.HostName }</a>
-			<i class="fas fa-chevron-right text-xs"></i>
+			<i aria-hidden="true" class="fas fa-chevron-right text-xs"></i>
 			<span class="text-white">Terminal</span>
 		</nav>
 		<div class="flex items-center justify-between mb-6">
 			<div class="flex items-center gap-4">
 				<div class="w-10 h-10 rounded-lg bg-dark-700 flex items-center justify-center">
-					<i class="fas fa-terminal text-lg text-primary-400"></i>
+					<i aria-hidden="true" class="fas fa-terminal text-lg text-primary-400"></i>
 				</div>
 				<div>
 					<h1 class="text-2xl font-bold font-display text-white">Node Terminal</h1>
@@ -34,13 +34,13 @@ templ HostTerminal(data HostTerminalData) {
 			</div>
 			<div class="flex items-center gap-2">
 				<a href={ templ.SafeURL("/nodes/" + data.HostID) } class="px-4 py-2 bg-dark-700 hover:bg-dark-600 text-gray-300 rounded-lg transition-colors">
-					<i class="fas fa-arrow-left mr-2"></i>Back
+					<i aria-hidden="true" class="fas fa-arrow-left mr-2"></i>Back
 				</a>
 			</div>
 		</div>
 		if !data.Ready {
 			<div class="bg-yellow-500/10 border border-yellow-500/20 rounded-xl p-6 text-center">
-				<i class="fas fa-exclamation-triangle text-4xl text-yellow-400 mb-4"></i>
+				<i aria-hidden="true" class="fas fa-exclamation-triangle text-4xl text-yellow-400 mb-4"></i>
 				<h2 class="text-lg font-semibold text-white mb-2">Host PID Namespace Not Available</h2>
 				<p class="text-gray-400 mb-4">
 					The usulnet container needs <span class="text-primary-400 font-mono">pid: host</span> in docker-compose.yml to access the host terminal.
@@ -58,7 +58,7 @@ templ HostTerminal(data HostTerminalData) {
 			</div>
 		} else {
 			<div class="bg-dark-700/50 border border-dark-600 rounded-lg px-4 py-3 mb-4 flex items-center gap-3">
-				<i class="fas fa-shield-alt text-primary-400"></i>
+				<i aria-hidden="true" class="fas fa-shield-alt text-primary-400"></i>
 				<span class="text-sm text-gray-400">
 					Session as <span class="text-white font-medium">{ data.User }</span> — unprivileged user, no sudo.
 				</span>
@@ -66,7 +66,7 @@ templ HostTerminal(data HostTerminalData) {
 			<div
 				x-data="hostTerminal()"
 				data-host-id={ data.HostID }
-				class="bg-dark-800 rounded-xl border border-dark-600 overflow-hidden"
+				class="card overflow-hidden"
 			>
 				<div class="flex items-center justify-between px-4 py-3 border-b border-dark-600 bg-dark-850">
 					<div class="flex items-center gap-3">
@@ -87,7 +87,7 @@ templ HostTerminal(data HostTerminalData) {
 							Disconnected
 						</span>
 						<span x-show="connecting" class="flex items-center gap-1.5 text-xs text-yellow-400">
-							<i class="fas fa-spinner fa-spin"></i>
+							<i aria-hidden="true" class="fas fa-spinner fa-spin"></i>
 							Connecting...
 						</span>
 						<button
@@ -95,14 +95,14 @@ templ HostTerminal(data HostTerminalData) {
 							class="p-2 text-gray-400 hover:text-white hover:bg-dark-600 rounded-lg transition-colors"
 							title="Reconnect"
 						>
-							<i class="fas fa-redo"></i>
+							<i aria-hidden="true" class="fas fa-redo"></i>
 						</button>
 						<button
 							@click="toggleFullscreen()"
 							class="p-2 text-gray-400 hover:text-white hover:bg-dark-600 rounded-lg transition-colors"
 							title="Fullscreen"
 						>
-							<i class="fas fa-expand"></i>
+							<i aria-hidden="true" class="fas fa-expand"></i>
 						</button>
 					</div>
 				</div>

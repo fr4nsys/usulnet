@@ -79,7 +79,7 @@ func Edit(data EditData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "\" class=\"text-gray-400 hover:text-white\"><i class=\"fas fa-arrow-left\"></i></a><h2 class=\"text-xl font-display font-bold text-white\">Edit: ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "\" class=\"text-gray-400 hover:text-white\"><i aria-hidden=\"true\" class=\"fas fa-arrow-left\"></i></a><h2 class=\"text-xl font-display font-bold text-white\">Edit: ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -154,14 +154,14 @@ func Edit(data EditData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "\" required class=\"w-full bg-dark-800 border border-dark-600 text-white rounded-lg px-3 py-2 focus:ring-2 focus:ring-accent-500 focus:border-transparent\"></div><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Description</label> <textarea name=\"description\" rows=\"2\" class=\"w-full bg-dark-800 border border-dark-600 text-white rounded-lg px-3 py-2 focus:ring-2 focus:ring-accent-500 focus:border-transparent\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "\" required class=\"w-full bg-dark-800 border border-dark-600 text-white rounded-lg px-3 py-2 focus:ring-2 focus:ring-accent-500 focus:border-transparent\" aria-label=\"Name\"></div><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Description</label> <textarea name=\"description\" rows=\"2\" class=\"w-full bg-dark-800 border border-dark-600 text-white rounded-lg px-3 py-2 focus:ring-2 focus:ring-accent-500 focus:border-transparent\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var9 string
 			templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(data.Entry.Description)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/crontab/edit.templ`, Line: 57, Col: 31}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/crontab/edit.templ`, Line: 58, Col: 31}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 			if templ_7745c5c3_Err != nil {
@@ -174,13 +174,13 @@ func Edit(data EditData) templ.Component {
 			var templ_7745c5c3_Var10 string
 			templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(data.Entry.Schedule)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/crontab/edit.templ`, Line: 65, Col: 34}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/crontab/edit.templ`, Line: 66, Col: 34}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "\" required class=\"w-full bg-dark-800 border border-dark-600 text-white font-mono rounded-lg px-3 py-2 focus:ring-2 focus:ring-accent-500 focus:border-transparent\"><p class=\"text-xs text-gray-500 mt-1\">Standard 5-field cron expression: minute hour day-of-month month day-of-week</p></div><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Command Type</label> <select name=\"command_type\" id=\"command_type\" class=\"w-full bg-dark-800 border border-dark-600 text-white rounded-lg px-3 py-2 focus:ring-2 focus:ring-accent-500 focus:border-transparent\" onchange=\"toggleCommandFields(this.value)\"><option value=\"shell\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "\" required class=\"w-full bg-dark-800 border border-dark-600 text-white font-mono rounded-lg px-3 py-2 focus:ring-2 focus:ring-accent-500 focus:border-transparent\" aria-label=\"Schedule (Cron Expression)\"><p class=\"text-xs text-gray-500 mt-1\">Standard 5-field cron expression: minute hour day-of-month month day-of-week</p></div><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Command Type</label> <select name=\"command_type\" id=\"command_type\" class=\"w-full bg-dark-800 border border-dark-600 text-white rounded-lg px-3 py-2 focus:ring-2 focus:ring-accent-500 focus:border-transparent\" onchange=\"toggleCommandFields(this.value)\"><option value=\"shell\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -217,7 +217,7 @@ func Edit(data EditData) templ.Component {
 			var templ_7745c5c3_Var11 string
 			templ_7745c5c3_Var11, templ_7745c5c3_Err = templruntime.SanitizeStyleAttributeValues(showIf(data.Entry.CommandType == "shell" || data.Entry.CommandType == ""))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/crontab/edit.templ`, Line: 88, Col: 109}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/crontab/edit.templ`, Line: 90, Col: 109}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 			if templ_7745c5c3_Err != nil {
@@ -230,7 +230,7 @@ func Edit(data EditData) templ.Component {
 			var templ_7745c5c3_Var12 string
 			templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(data.Entry.Command)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/crontab/edit.templ`, Line: 95, Col: 28}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/crontab/edit.templ`, Line: 97, Col: 28}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
 			if templ_7745c5c3_Err != nil {
@@ -243,20 +243,20 @@ func Edit(data EditData) templ.Component {
 			var templ_7745c5c3_Var13 string
 			templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(derefStr(data.Entry.WorkingDir))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/crontab/edit.templ`, Line: 102, Col: 47}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/crontab/edit.templ`, Line: 104, Col: 47}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 21, "\" class=\"w-full bg-dark-800 border border-dark-600 text-white rounded-lg px-3 py-2 focus:ring-2 focus:ring-accent-500 focus:border-transparent\"></div></div><div id=\"docker-fields\" style=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 21, "\" class=\"w-full bg-dark-800 border border-dark-600 text-white rounded-lg px-3 py-2 focus:ring-2 focus:ring-accent-500 focus:border-transparent\" aria-label=\"Working Directory\"></div></div><div id=\"docker-fields\" style=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var14 string
 			templ_7745c5c3_Var14, templ_7745c5c3_Err = templruntime.SanitizeStyleAttributeValues(showIf(data.Entry.CommandType == "docker"))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/crontab/edit.templ`, Line: 108, Col: 79}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/crontab/edit.templ`, Line: 111, Col: 79}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var14))
 			if templ_7745c5c3_Err != nil {
@@ -269,20 +269,20 @@ func Edit(data EditData) templ.Component {
 			var templ_7745c5c3_Var15 string
 			templ_7745c5c3_Var15, templ_7745c5c3_Err = templ.JoinStringErrs(derefStr(data.Entry.ContainerID))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/crontab/edit.templ`, Line: 114, Col: 48}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/crontab/edit.templ`, Line: 117, Col: 48}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var15))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 23, "\" class=\"w-full bg-dark-800 border border-dark-600 text-white rounded-lg px-3 py-2 focus:ring-2 focus:ring-accent-500 focus:border-transparent\"></div></div><div id=\"http-fields\" style=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 23, "\" class=\"w-full bg-dark-800 border border-dark-600 text-white rounded-lg px-3 py-2 focus:ring-2 focus:ring-accent-500 focus:border-transparent\" aria-label=\"Container ID / Name\"></div></div><div id=\"http-fields\" style=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var16 string
 			templ_7745c5c3_Var16, templ_7745c5c3_Err = templruntime.SanitizeStyleAttributeValues(showIf(data.Entry.CommandType == "http"))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/crontab/edit.templ`, Line: 120, Col: 75}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/crontab/edit.templ`, Line: 124, Col: 75}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var16))
 			if templ_7745c5c3_Err != nil {
@@ -335,13 +335,13 @@ func Edit(data EditData) templ.Component {
 			var templ_7745c5c3_Var17 string
 			templ_7745c5c3_Var17, templ_7745c5c3_Err = templ.JoinStringErrs(derefStr(data.Entry.HTTPURL))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/crontab/edit.templ`, Line: 135, Col: 44}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/crontab/edit.templ`, Line: 139, Col: 44}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var17))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 33, "\" class=\"w-full bg-dark-800 border border-dark-600 text-white rounded-lg px-3 py-2 focus:ring-2 focus:ring-accent-500 focus:border-transparent\"></div></div><div class=\"flex items-center gap-2\"><input type=\"checkbox\" name=\"enabled\" id=\"enabled\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 33, "\" class=\"w-full bg-dark-800 border border-dark-600 text-white rounded-lg px-3 py-2 focus:ring-2 focus:ring-accent-500 focus:border-transparent\" aria-label=\"URL\"></div></div><div class=\"flex items-center gap-2\"><input type=\"checkbox\" name=\"enabled\" id=\"enabled\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -351,14 +351,14 @@ func Edit(data EditData) templ.Component {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 35, " class=\"rounded bg-dark-800 border-dark-600 text-primary-500 focus:ring-primary-500\"> <label for=\"enabled\" class=\"text-sm text-gray-300\">Enable this cron job</label></div><div class=\"flex gap-2 pt-4\"><button type=\"submit\" class=\"btn btn-primary\"><i class=\"fas fa-save mr-1\"></i> Save Changes</button> <a href=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 35, " class=\"rounded bg-dark-800 border-dark-600 text-primary-500 focus:ring-primary-500\"> <label for=\"enabled\" class=\"text-sm text-gray-300\">Enable this cron job</label></div><div class=\"flex gap-2 pt-4\"><button type=\"submit\" class=\"btn btn-primary\"><i aria-hidden=\"true\" class=\"fas fa-save mr-1\"></i> Save Changes</button> <a href=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var18 templ.SafeURL
 			templ_7745c5c3_Var18, templ_7745c5c3_Err = templ.JoinURLErrs(templ.SafeURL(fmt.Sprintf("/crontab/%s", data.Entry.ID)))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/crontab/edit.templ`, Line: 156, Col: 72}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/crontab/edit.templ`, Line: 161, Col: 72}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var18))
 			if templ_7745c5c3_Err != nil {

@@ -47,7 +47,7 @@ templ Detail(data StackDetailData) {
 			<div class="flex items-center justify-between">
 				<div class="flex items-center gap-4">
 					<a href="/stacks" class="p-2 text-gray-400 hover:text-white hover:bg-dark-700 rounded-lg">
-						<i class="fas fa-arrow-left"></i>
+						<i aria-hidden="true" class="fas fa-arrow-left"></i>
 					</a>
 					<div>
 						<h1 class="text-2xl font-display font-bold text-white">{ data.Stack.Name }</h1>
@@ -56,13 +56,13 @@ templ Detail(data StackDetailData) {
 				</div>
 				<div class="flex items-center gap-2">
 					<button hx-post={ "/stacks/" + data.Stack.Name + "/stop" } hx-swap="none" hx-headers={ fmt.Sprintf(`{"X-CSRF-Token":"%s"}`, data.PageData.CSRFToken) } hx-on::after-request="setTimeout(()=>location.reload(),500)" class="btn-secondary">
-						<i class="fas fa-stop mr-2"></i>Stop
+						<i aria-hidden="true" class="fas fa-stop mr-2"></i>Stop
 					</button>
 					<button hx-post={ "/stacks/" + data.Stack.Name + "/restart" } hx-swap="none" hx-headers={ fmt.Sprintf(`{"X-CSRF-Token":"%s"}`, data.PageData.CSRFToken) } hx-on::after-request="setTimeout(()=>location.reload(),500)" class="btn-secondary">
-						<i class="fas fa-redo mr-2"></i>Restart
+						<i aria-hidden="true" class="fas fa-redo mr-2"></i>Restart
 					</button>
 					<a href={ templ.SafeURL("/stacks/" + data.Stack.Name + "/edit") } class="btn-primary">
-						<i class="fas fa-edit mr-2"></i>Edit
+						<i aria-hidden="true" class="fas fa-edit mr-2"></i>Edit
 					</a>
 				</div>
 			</div>
@@ -75,21 +75,21 @@ templ Detail(data StackDetailData) {
 						:class="activeTab === 'services' ? 'border-primary-500 text-white' : 'border-transparent text-gray-400 hover:text-white'"
 						class="px-4 py-3 text-sm font-medium border-b-2 transition-colors -mb-px"
 					>
-						<i class="fas fa-cubes mr-2"></i>Services
+						<i aria-hidden="true" class="fas fa-cubes mr-2"></i>Services
 					</button>
 					<button
 						@click="activeTab = 'compose'"
 						:class="activeTab === 'compose' ? 'border-primary-500 text-white' : 'border-transparent text-gray-400 hover:text-white'"
 						class="px-4 py-3 text-sm font-medium border-b-2 transition-colors -mb-px"
 					>
-						<i class="fas fa-file-code mr-2"></i>Compose File
+						<i aria-hidden="true" class="fas fa-file-code mr-2"></i>Compose File
 					</button>
 					<button
 						@click="activeTab = 'versions'"
 						:class="activeTab === 'versions' ? 'border-primary-500 text-white' : 'border-transparent text-gray-400 hover:text-white'"
 						class="px-4 py-3 text-sm font-medium border-b-2 transition-colors -mb-px"
 					>
-						<i class="fas fa-history mr-2"></i>Version History
+						<i aria-hidden="true" class="fas fa-history mr-2"></i>Version History
 						if len(data.Versions) > 0 {
 							<span class="ml-2 px-2 py-0.5 text-xs rounded-full bg-dark-600 text-gray-400">
 								{ fmt.Sprintf("%d", len(data.Versions)) }
@@ -101,7 +101,7 @@ templ Detail(data StackDetailData) {
 						:class="activeTab === 'settings' ? 'border-primary-500 text-white' : 'border-transparent text-gray-400 hover:text-white'"
 						class="px-4 py-3 text-sm font-medium border-b-2 transition-colors -mb-px"
 					>
-						<i class="fas fa-cog mr-2"></i>Settings
+						<i aria-hidden="true" class="fas fa-cog mr-2"></i>Settings
 					</button>
 				</nav>
 			</div>
@@ -115,11 +115,11 @@ templ Detail(data StackDetailData) {
 					<table class="table">
 						<thead>
 							<tr>
-								<th>Service</th>
-								<th>Image</th>
-								<th>Status</th>
-								<th>Ports</th>
-								<th>Actions</th>
+								<th scope="col">Service</th>
+								<th scope="col">Image</th>
+								<th scope="col">Status</th>
+								<th scope="col">Ports</th>
+								<th scope="col">Actions</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -164,13 +164,13 @@ templ Detail(data StackDetailData) {
 							class="text-sm text-gray-400 hover:text-primary-400 transition-colors"
 							title="Save as new version"
 						>
-							<i class="fas fa-save mr-1"></i>Save Version
+							<i aria-hidden="true" class="fas fa-save mr-1"></i>Save Version
 						</button>
 						<button
 							onclick="navigator.clipboard.writeText(document.getElementById('compose-content').textContent)"
 							class="text-sm text-gray-400 hover:text-white"
 						>
-							<i class="fas fa-copy mr-1"></i>Copy
+							<i aria-hidden="true" class="fas fa-copy mr-1"></i>Copy
 						</button>
 					</div>
 				</div>
@@ -181,7 +181,7 @@ templ Detail(data StackDetailData) {
 			<div x-show="activeTab === 'versions'" x-cloak>
 				if len(data.Versions) == 0 {
 					<div class="card p-8 text-center">
-						<i class="fas fa-history text-4xl text-gray-400 mb-4"></i>
+						<i aria-hidden="true" class="fas fa-history text-4xl text-gray-400 mb-4"></i>
 						<p class="text-gray-400">No version history yet</p>
 						<p class="text-sm text-gray-500 mt-1">Click "Save Version" to create a snapshot of the current compose file</p>
 					</div>
@@ -237,20 +237,20 @@ templ Detail(data StackDetailData) {
 												class="text-sm text-gray-400 hover:text-primary-400"
 												title="Compare with another version"
 											>
-												<i class="fas fa-exchange-alt mr-1"></i>Compare
+												<i aria-hidden="true" class="fas fa-exchange-alt mr-1"></i>Compare
 											</button>
 											<button
 												@click="restoreVersion"
 												class="text-sm text-gray-400 hover:text-yellow-400"
 												title="Restore this version"
 											>
-												<i class="fas fa-undo mr-1"></i>Restore
+												<i aria-hidden="true" class="fas fa-undo mr-1"></i>Restore
 											</button>
 										</div>
 									</template>
 									<template x-if="diffMode">
 										<button @click="diffMode = false" class="text-sm text-gray-400 hover:text-white">
-											<i class="fas fa-times mr-1"></i>Close Diff
+											<i aria-hidden="true" class="fas fa-times mr-1"></i>Close Diff
 										</button>
 									</template>
 								</div>
@@ -264,7 +264,7 @@ templ Detail(data StackDetailData) {
 							></div>
 
 							<div x-show="!selectedVersion && !diffMode" class="p-8 text-center text-gray-500" x-cloak>
-								<i class="fas fa-mouse-pointer text-2xl mb-2"></i>
+								<i aria-hidden="true" class="fas fa-mouse-pointer text-2xl mb-2"></i>
 								<p>Select a version to preview</p>
 							</div>
 						</div>
@@ -281,7 +281,7 @@ templ Detail(data StackDetailData) {
 					</div>
 					if len(data.Services) == 0 {
 						<div class="p-8 text-center text-gray-400">
-							<i class="fas fa-cubes text-3xl mb-3"></i>
+							<i aria-hidden="true" class="fas fa-cubes text-3xl mb-3"></i>
 							<p>No services found in this stack</p>
 						</div>
 					} else {
@@ -292,7 +292,7 @@ templ Detail(data StackDetailData) {
 										<div class="flex items-center justify-between">
 											<div class="flex items-center gap-3">
 												<div class="w-10 h-10 rounded-lg bg-primary-500/10 flex items-center justify-center">
-													<i class="fas fa-cube text-primary-400"></i>
+													<i aria-hidden="true" class="fas fa-cube text-primary-400"></i>
 												</div>
 												<div>
 													<div class="flex items-center gap-2">
@@ -320,7 +320,7 @@ templ Detail(data StackDetailData) {
 													data-cid={ svc.ContainerID }
 													class="px-4 py-2 bg-dark-700 hover:bg-dark-600 text-gray-300 hover:text-white rounded-lg transition-colors text-sm"
 												>
-													<i class="fas fa-chevron-down mr-2 transition-transform"></i>Settings
+													<i aria-hidden="true" class="fas fa-chevron-down mr-2 transition-transform"></i>Settings
 												</button>
 											} else {
 												<span class="text-sm text-gray-500">Container not running</span>
@@ -331,7 +331,7 @@ templ Detail(data StackDetailData) {
 										<div data-panel="">
 											<div data-content="" class="hidden" id={ "settings-panel-" + svc.ContainerID }>
 												<div class="p-4 text-center text-gray-500 text-sm">
-													<i class="fas fa-spinner fa-spin mr-1"></i>Loading settings...
+													<i aria-hidden="true" class="fas fa-spinner fa-spin mr-1"></i>Loading settings...
 												</div>
 											</div>
 										</div>
@@ -358,7 +358,7 @@ templ Detail(data StackDetailData) {
 					<div class="p-6 space-y-4">
 						<div>
 							<label class="block text-sm text-gray-400 mb-2">Compare from</label>
-							<select x-model="compareFrom" class="w-full bg-dark-700 border border-dark-600 rounded-lg text-white px-3 py-2">
+							<select x-model="compareFrom" class="input-sm">
 								for _, v := range data.Versions {
 									<option value={ fmt.Sprintf("%d", v.Version) }>v{ fmt.Sprintf("%d", v.Version) } - { v.Comment }</option>
 								}
@@ -366,7 +366,7 @@ templ Detail(data StackDetailData) {
 						</div>
 						<div>
 							<label class="block text-sm text-gray-400 mb-2">Compare to</label>
-							<select x-model="compareTo" class="w-full bg-dark-700 border border-dark-600 rounded-lg text-white px-3 py-2">
+							<select x-model="compareTo" class="input-sm">
 								for _, v := range data.Versions {
 									<option value={ fmt.Sprintf("%d", v.Version) }>v{ fmt.Sprintf("%d", v.Version) } - { v.Comment }</option>
 								}
@@ -376,7 +376,7 @@ templ Detail(data StackDetailData) {
 						<div class="flex justify-end gap-3 pt-2">
 							<button @click="showCompareModal = false" class="px-4 py-2 text-gray-400 hover:text-white">Cancel</button>
 							<button @click="showDiff" class="bg-primary-500 hover:bg-primary-600 text-black font-medium px-4 py-2 rounded-lg">
-								<i class="fas fa-code-compare mr-2"></i>Compare
+								<i aria-hidden="true" class="fas fa-code-compare mr-2"></i>Compare
 							</button>
 						</div>
 					</div>

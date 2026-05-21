@@ -21,13 +21,13 @@ templ Orders(data OrderListData) {
 						<table class="table">
 							<thead>
 								<tr>
-									<th>Domain</th>
-									<th>Provider</th>
-									<th>State</th>
-									<th>Prop checks</th>
-									<th>Created</th>
-									<th>Completed</th>
-									<th></th>
+									<th scope="col">Domain</th>
+									<th scope="col">Provider</th>
+									<th scope="col">State</th>
+									<th scope="col">Prop checks</th>
+									<th scope="col">Created</th>
+									<th scope="col">Completed</th>
+									<th scope="col"></th>
 								</tr>
 							</thead>
 							<tbody>
@@ -61,7 +61,7 @@ templ Orders(data OrderListData) {
 				</div>
 			} else {
 				<div class="card p-8 text-center">
-					<i class="fas fa-certificate text-4xl text-gray-400 mb-4"></i>
+					<i aria-hidden="true" class="fas fa-certificate text-4xl text-gray-400 mb-4"></i>
 					<h3 class="text-lg font-medium text-white mb-2">No ACME orders yet</h3>
 					<p class="text-gray-400">The proxy module triggers DNS-01 orders when a host is configured to use one of the registered DNS providers for ACME challenges.</p>
 				</div>

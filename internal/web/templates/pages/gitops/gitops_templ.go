@@ -10,6 +10,7 @@ import templruntime "github.com/a-h/templ/runtime"
 
 import (
 	"fmt"
+	"github.com/fr4nsys/usulnet/internal/web/templates/components"
 	"github.com/fr4nsys/usulnet/internal/web/templates/layouts"
 )
 
@@ -103,7 +104,7 @@ func GitOps(data GitOpsData) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"space-y-6\"><!-- Header --><div class=\"flex items-center justify-between\"><div><h1 class=\"text-2xl font-display font-bold text-white\">GitOps Pipelines</h1><p class=\"text-gray-400 mt-1\">Automated deployments from Git repositories</p></div><button onclick=\"document.getElementById('createPipelineModal').classList.remove('hidden')\" class=\"btn-primary flex items-center gap-2\"><i class=\"fas fa-plus\"></i> New Pipeline</button></div><!-- Stats --><div class=\"grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"space-y-6\"><!-- Header --><div class=\"flex items-center justify-between\"><div><h1 class=\"text-2xl font-display font-bold text-white\">GitOps Pipelines</h1><p class=\"text-gray-400 mt-1\">Automated deployments from Git repositories</p></div><button onclick=\"document.getElementById('createPipelineModal').classList.remove('hidden')\" class=\"btn-primary flex items-center gap-2\"><i aria-hidden=\"true\" class=\"fas fa-plus\"></i> New Pipeline</button></div><!-- Stats --><div class=\"grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -138,33 +139,33 @@ func GitOps(data GitOpsData) templ.Component {
 			var templ_7745c5c3_Var3 string
 			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("{ tab: '%s' }", activeTab(data.ActiveTab)))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/gitops/gitops.templ`, Line: 91, Col: 72}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/gitops/gitops.templ`, Line: 92, Col: 72}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "\" class=\"space-y-4\"><div class=\"flex gap-1 border-b border-dark-600\"><button @click=\"tab = 'pipelines'\" :class=\"tab === 'pipelines' ? 'border-primary-500 text-white' : 'border-transparent text-gray-400 hover:text-gray-300'\" class=\"px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors\">Pipelines (")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "\" class=\"space-y-4\"><div class=\"flex gap-1 border-b border-dark-600\"><button @click=\"tab = 'pipelines'\" :class=\"tab === 'pipelines' ? 'border-primary-500 text-white' : 'border-transparent text-gray-400 hover:text-gray-300'\" class=\"tab-underline\">Pipelines (")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var4 string
 			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", len(data.Pipelines)))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/gitops/gitops.templ`, Line: 94, Col: 57}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/gitops/gitops.templ`, Line: 95, Col: 57}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, ")</button> <button @click=\"tab = 'deployments'\" :class=\"tab === 'deployments' ? 'border-primary-500 text-white' : 'border-transparent text-gray-400 hover:text-gray-300'\" class=\"px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors\">Deployment History (")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, ")</button> <button @click=\"tab = 'deployments'\" :class=\"tab === 'deployments' ? 'border-primary-500 text-white' : 'border-transparent text-gray-400 hover:text-gray-300'\" class=\"tab-underline\">Deployment History (")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var5 string
 			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", len(data.Deployments)))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/gitops/gitops.templ`, Line: 97, Col: 68}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/gitops/gitops.templ`, Line: 98, Col: 68}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 			if templ_7745c5c3_Err != nil {
@@ -175,12 +176,12 @@ func GitOps(data GitOpsData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			if len(data.Pipelines) == 0 {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<div class=\"card p-12 text-center\"><i class=\"fas fa-code-branch text-4xl text-gray-400 mb-4\"></i><h3 class=\"text-lg font-medium text-white mb-2\">No Pipelines Configured</h3><p class=\"text-gray-400 mb-4\">Create a pipeline to automatically deploy from Git repositories</p></div>")
+				templ_7745c5c3_Err = components.EmptyState("fa-code-branch", "No Pipelines Configured", "Create a pipeline to automatically deploy from Git repositories").Render(ctx, templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			} else {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "<div class=\"space-y-3\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<div class=\"space-y-3\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -190,108 +191,108 @@ func GitOps(data GitOpsData) templ.Component {
 						return templ_7745c5c3_Err
 					}
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "</div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "</div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "</div><!-- Deployments Tab --><div x-show=\"tab === 'deployments'\" x-cloak>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "</div><!-- Deployments Tab --><div x-show=\"tab === 'deployments'\" x-cloak>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			if len(data.Deployments) == 0 {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "<div class=\"card p-12 text-center\"><i class=\"fas fa-rocket text-4xl text-gray-400 mb-4\"></i><h3 class=\"text-lg font-medium text-white mb-2\">No Deployments Yet</h3><p class=\"text-gray-400\">Deployment history will appear here</p></div>")
+				templ_7745c5c3_Err = components.EmptyState("fa-rocket", "No Deployments Yet", "Deployment history will appear here").Render(ctx, templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			} else {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "<div class=\"card overflow-hidden\"><table class=\"w-full\"><thead><tr class=\"border-b border-dark-600\"><th class=\"text-left text-xs font-medium text-gray-400 uppercase px-4 py-3\">Pipeline</th><th class=\"text-left text-xs font-medium text-gray-400 uppercase px-4 py-3\">Commit</th><th class=\"text-left text-xs font-medium text-gray-400 uppercase px-4 py-3\">Action</th><th class=\"text-left text-xs font-medium text-gray-400 uppercase px-4 py-3\">Status</th><th class=\"text-left text-xs font-medium text-gray-400 uppercase px-4 py-3\">Duration</th><th class=\"text-left text-xs font-medium text-gray-400 uppercase px-4 py-3\">Triggered</th><th class=\"text-left text-xs font-medium text-gray-400 uppercase px-4 py-3\">Time</th></tr></thead> <tbody class=\"divide-y divide-dark-700\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "<div class=\"card overflow-hidden\"><table class=\"w-full\"><thead><tr class=\"border-b border-dark-600\"><th scope=\"col\" class=\"text-left text-xs font-medium text-gray-400 uppercase px-4 py-3\">Pipeline</th><th scope=\"col\" class=\"text-left text-xs font-medium text-gray-400 uppercase px-4 py-3\">Commit</th><th scope=\"col\" class=\"text-left text-xs font-medium text-gray-400 uppercase px-4 py-3\">Action</th><th scope=\"col\" class=\"text-left text-xs font-medium text-gray-400 uppercase px-4 py-3\">Status</th><th scope=\"col\" class=\"text-left text-xs font-medium text-gray-400 uppercase px-4 py-3\">Duration</th><th scope=\"col\" class=\"text-left text-xs font-medium text-gray-400 uppercase px-4 py-3\">Triggered</th><th scope=\"col\" class=\"text-left text-xs font-medium text-gray-400 uppercase px-4 py-3\">Time</th></tr></thead> <tbody class=\"divide-y divide-dark-700\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				for _, dep := range data.Deployments {
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "<tr class=\"hover:bg-dark-700/50\"><td class=\"px-4 py-3\"><div class=\"text-sm text-white\">")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "<tr class=\"hover:bg-dark-700/50\"><td class=\"px-4 py-3\"><div class=\"text-sm text-white\">")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
 					var templ_7745c5c3_Var6 string
 					templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(dep.PipelineName)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/gitops/gitops.templ`, Line: 144, Col: 62}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/gitops/gitops.templ`, Line: 137, Col: 62}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "</div><div class=\"text-xs text-gray-500\">")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "</div><div class=\"text-xs text-gray-500\">")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
 					var templ_7745c5c3_Var7 string
 					templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(dep.Repository)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/gitops/gitops.templ`, Line: 145, Col: 63}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/gitops/gitops.templ`, Line: 138, Col: 63}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "</div></td><td class=\"px-4 py-3\">")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "</div></td><td class=\"px-4 py-3\">")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
 					if dep.CommitSHA != "" {
-						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "<code class=\"text-xs text-primary-400 bg-dark-700 px-1.5 py-0.5 rounded\">")
+						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "<code class=\"text-xs text-primary-400 bg-dark-700 px-1.5 py-0.5 rounded\">")
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
 						var templ_7745c5c3_Var8 string
 						templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(dep.CommitSHA)
 						if templ_7745c5c3_Err != nil {
-							return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/gitops/gitops.templ`, Line: 149, Col: 101}
+							return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/gitops/gitops.templ`, Line: 142, Col: 101}
 						}
 						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
-						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "</code> ")
+						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "</code> ")
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
 					}
 					if dep.CommitMsg != "" {
-						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "<div class=\"text-xs text-gray-400 mt-0.5 truncate max-w-[200px]\">")
+						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "<div class=\"text-xs text-gray-400 mt-0.5 truncate max-w-[200px]\">")
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
 						var templ_7745c5c3_Var9 string
 						templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(dep.CommitMsg)
 						if templ_7745c5c3_Err != nil {
-							return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/gitops/gitops.templ`, Line: 152, Col: 93}
+							return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/gitops/gitops.templ`, Line: 145, Col: 93}
 						}
 						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
-						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "</div>")
+						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "</div>")
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "</td><td class=\"px-4 py-3 text-sm text-gray-300\">")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "</td><td class=\"px-4 py-3 text-sm text-gray-300\">")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
 					var templ_7745c5c3_Var10 string
 					templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(dep.Action)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/gitops/gitops.templ`, Line: 155, Col: 67}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/gitops/gitops.templ`, Line: 148, Col: 67}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 20, "</td><td class=\"px-4 py-3\">")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "</td><td class=\"px-4 py-3\">")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
@@ -299,56 +300,56 @@ func GitOps(data GitOpsData) templ.Component {
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 21, "</td><td class=\"px-4 py-3 text-sm text-gray-400\">")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "</td><td class=\"px-4 py-3 text-sm text-gray-400\">")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
 					var templ_7745c5c3_Var11 string
 					templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(dep.Duration)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/gitops/gitops.templ`, Line: 159, Col: 69}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/gitops/gitops.templ`, Line: 152, Col: 69}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 22, "</td><td class=\"px-4 py-3 text-sm text-gray-400\">")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 20, "</td><td class=\"px-4 py-3 text-sm text-gray-400\">")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
 					var templ_7745c5c3_Var12 string
 					templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(dep.TriggeredBy)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/gitops/gitops.templ`, Line: 160, Col: 72}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/gitops/gitops.templ`, Line: 153, Col: 72}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 23, "</td><td class=\"px-4 py-3 text-sm text-gray-400\">")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 21, "</td><td class=\"px-4 py-3 text-sm text-gray-400\">")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
 					var templ_7745c5c3_Var13 string
 					templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(dep.StartedAt)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/gitops/gitops.templ`, Line: 161, Col: 70}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/gitops/gitops.templ`, Line: 154, Col: 70}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 24, "</td></tr>")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 22, "</td></tr>")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 25, "</tbody></table></div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 23, "</tbody></table></div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 26, "</div></div><!-- Create Pipeline Modal -->")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 24, "</div></div><!-- Create Pipeline Modal -->")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -356,7 +357,7 @@ func GitOps(data GitOpsData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 27, "</div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 25, "</div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -391,7 +392,7 @@ func pipelineStat(label, value, icon, color string) templ.Component {
 			templ_7745c5c3_Var14 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 28, "<div class=\"card p-3 text-center\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 26, "<div class=\"card p-3 text-center\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -400,7 +401,7 @@ func pipelineStat(label, value, icon, color string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 29, "<i class=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 27, "<i class=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -413,33 +414,33 @@ func pipelineStat(label, value, icon, color string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 30, "\"></i><p class=\"text-xl font-bold text-white\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 28, "\"></i><p class=\"text-xl font-bold text-white\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var17 string
 		templ_7745c5c3_Var17, templ_7745c5c3_Err = templ.JoinStringErrs(value)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/gitops/gitops.templ`, Line: 180, Col: 49}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/gitops/gitops.templ`, Line: 173, Col: 49}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var17))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 31, "</p><p class=\"text-xs text-gray-400\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 29, "</p><p class=\"text-xs text-gray-400\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var18 string
 		templ_7745c5c3_Var18, templ_7745c5c3_Err = templ.JoinStringErrs(label)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/gitops/gitops.templ`, Line: 181, Col: 42}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/gitops/gitops.templ`, Line: 174, Col: 42}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var18))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 32, "</p></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 30, "</p></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -468,7 +469,7 @@ func pipelineCard(p PipelineView, csrfToken string) templ.Component {
 			templ_7745c5c3_Var19 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 33, "<div class=\"card p-4\"><div class=\"flex items-start justify-between\"><div class=\"flex items-start gap-3\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 31, "<div class=\"card p-4\"><div class=\"flex items-start justify-between\"><div class=\"flex items-start gap-3\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -477,7 +478,7 @@ func pipelineCard(p PipelineView, csrfToken string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 34, "<div class=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 32, "<div class=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -490,7 +491,7 @@ func pipelineCard(p PipelineView, csrfToken string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 35, "\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 33, "\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -499,7 +500,7 @@ func pipelineCard(p PipelineView, csrfToken string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 36, "<i class=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 34, "<i class=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -512,30 +513,30 @@ func pipelineCard(p PipelineView, csrfToken string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 37, "\"></i></div><div><div class=\"flex items-center gap-2\"><h3 class=\"font-medium text-white\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 35, "\"></i></div><div><div class=\"flex items-center gap-2\"><h3 class=\"font-medium text-white\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var24 string
 		templ_7745c5c3_Var24, templ_7745c5c3_Err = templ.JoinStringErrs(p.Name)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/gitops/gitops.templ`, Line: 194, Col: 49}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/gitops/gitops.templ`, Line: 187, Col: 49}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var24))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 38, "</h3>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 36, "</h3>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		if p.IsEnabled {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 39, "<span class=\"px-2 py-0.5 text-xs bg-green-500/20 text-green-400 rounded\">Active</span> ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 37, "<span class=\"px-2 py-0.5 text-xs bg-green-500/20 text-green-400 rounded\">Active</span> ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		} else {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 40, "<span class=\"px-2 py-0.5 text-xs bg-gray-500/20 text-gray-400 rounded\">Disabled</span> ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 38, "<span class=\"px-2 py-0.5 text-xs bg-gray-500/20 text-gray-400 rounded\">Disabled</span> ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -546,96 +547,115 @@ func pipelineCard(p PipelineView, csrfToken string) templ.Component {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 41, "</div><div class=\"flex items-center gap-2 mt-1 text-sm text-gray-400\"><span><i class=\"fas fa-code-branch mr-1\"></i>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 39, "</div><div class=\"flex items-center gap-2 mt-1 text-sm text-gray-400\"><span><i aria-hidden=\"true\" class=\"fas fa-code-branch mr-1\"></i>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var25 string
 		templ_7745c5c3_Var25, templ_7745c5c3_Err = templ.JoinStringErrs(p.Repository)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/gitops/gitops.templ`, Line: 205, Col: 65}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/gitops/gitops.templ`, Line: 198, Col: 84}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var25))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 42, "</span> ")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 40, "</span> ")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		if p.Branch != "" {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 43, "<span class=\"text-gray-400\">:</span> <span>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 41, "<span class=\"text-gray-400\">:</span> <span>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var26 string
 			templ_7745c5c3_Var26, templ_7745c5c3_Err = templ.JoinStringErrs(p.Branch)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/gitops/gitops.templ`, Line: 208, Col: 23}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/gitops/gitops.templ`, Line: 201, Col: 23}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var26))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 44, "</span>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 42, "</span>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 45, "</div><div class=\"flex items-center gap-4 mt-2 text-xs text-gray-500\"><span><i class=\"fas fa-bullseye mr-1\"></i>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 43, "</div><div class=\"flex items-center gap-4 mt-2 text-xs text-gray-500\"><span><i aria-hidden=\"true\" class=\"fas fa-bullseye mr-1\"></i>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var27 string
 		templ_7745c5c3_Var27, templ_7745c5c3_Err = templ.JoinStringErrs(p.TargetStack)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/gitops/gitops.templ`, Line: 212, Col: 63}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/gitops/gitops.templ`, Line: 205, Col: 82}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var27))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 46, "</span> <span><i class=\"fas fa-bolt mr-1\"></i>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 44, "</span> <span><i aria-hidden=\"true\" class=\"fas fa-bolt mr-1\"></i>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var28 string
 		templ_7745c5c3_Var28, templ_7745c5c3_Err = templ.JoinStringErrs(p.Action)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/gitops/gitops.templ`, Line: 213, Col: 54}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/gitops/gitops.templ`, Line: 206, Col: 73}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var28))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 47, "</span> <span><i class=\"fas fa-satellite-dish mr-1\"></i>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 45, "</span> <span><i aria-hidden=\"true\" class=\"fas fa-satellite-dish mr-1\"></i>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var29 string
 		templ_7745c5c3_Var29, templ_7745c5c3_Err = templ.JoinStringErrs(p.TriggerType)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/gitops/gitops.templ`, Line: 214, Col: 69}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/gitops/gitops.templ`, Line: 207, Col: 88}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var29))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 48, "</span> ")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 46, "</span> ")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		if p.DeployCount > 0 {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 49, "<span><i class=\"fas fa-rocket mr-1\"></i>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 47, "<span><i aria-hidden=\"true\" class=\"fas fa-rocket mr-1\"></i>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var30 string
 			templ_7745c5c3_Var30, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d deploys", p.DeployCount))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/gitops/gitops.templ`, Line: 216, Col: 89}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/gitops/gitops.templ`, Line: 209, Col: 108}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var30))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 48, "</span> ")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
+		if p.LastDeployAt != "" {
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 49, "<span><i aria-hidden=\"true\" class=\"fas fa-clock mr-1\"></i>Last: ")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var31 string
+			templ_7745c5c3_Var31, templ_7745c5c3_Err = templ.JoinStringErrs(p.LastDeployAt)
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/gitops/gitops.templ`, Line: 212, Col: 87}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var31))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -644,41 +664,48 @@ func pipelineCard(p PipelineView, csrfToken string) templ.Component {
 				return templ_7745c5c3_Err
 			}
 		}
-		if p.LastDeployAt != "" {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 51, "<span><i class=\"fas fa-clock mr-1\"></i>Last: ")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			var templ_7745c5c3_Var31 string
-			templ_7745c5c3_Var31, templ_7745c5c3_Err = templ.JoinStringErrs(p.LastDeployAt)
-			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/gitops/gitops.templ`, Line: 219, Col: 68}
-			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var31))
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 52, "</span> ")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-		}
 		if p.AutoRollback {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 53, "<span class=\"text-yellow-400\"><i class=\"fas fa-undo mr-1\"></i>Auto-rollback</span>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 51, "<span class=\"text-yellow-400\"><i aria-hidden=\"true\" class=\"fas fa-undo mr-1\"></i>Auto-rollback</span>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 54, "</div></div></div><div class=\"flex items-center gap-2\"><form method=\"POST\" action=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 52, "</div></div></div><div class=\"flex items-center gap-2\"><form method=\"POST\" action=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var32 templ.SafeURL
 		templ_7745c5c3_Var32, templ_7745c5c3_Err = templ.JoinURLErrs(templ.SafeURL("/gitops/pipelines/" + p.ID + "/deploy"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/gitops/gitops.templ`, Line: 228, Col: 87}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/gitops/gitops.templ`, Line: 221, Col: 87}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var32))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 53, "\"><input type=\"hidden\" name=\"csrf_token\" value=\"")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var33 string
+		templ_7745c5c3_Var33, templ_7745c5c3_Err = templ.JoinStringErrs(csrfToken)
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/gitops/gitops.templ`, Line: 222, Col: 61}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var33))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 54, "\"> <button type=\"submit\" class=\"p-2 text-gray-400 hover:text-green-400 transition-colors\" title=\"Deploy now\"><i aria-hidden=\"true\" class=\"fas fa-rocket\"></i></button></form><form method=\"POST\" action=\"")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var34 templ.SafeURL
+		templ_7745c5c3_Var34, templ_7745c5c3_Err = templ.JoinURLErrs(templ.SafeURL("/gitops/pipelines/" + p.ID + "/toggle"))
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/gitops/gitops.templ`, Line: 227, Col: 87}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var34))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -686,83 +713,57 @@ func pipelineCard(p PipelineView, csrfToken string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		var templ_7745c5c3_Var33 string
-		templ_7745c5c3_Var33, templ_7745c5c3_Err = templ.JoinStringErrs(csrfToken)
-		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/gitops/gitops.templ`, Line: 229, Col: 61}
-		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var33))
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 56, "\"> <button type=\"submit\" class=\"p-2 text-gray-400 hover:text-green-400 transition-colors\" title=\"Deploy now\"><i class=\"fas fa-rocket\"></i></button></form><form method=\"POST\" action=\"")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		var templ_7745c5c3_Var34 templ.SafeURL
-		templ_7745c5c3_Var34, templ_7745c5c3_Err = templ.JoinURLErrs(templ.SafeURL("/gitops/pipelines/" + p.ID + "/toggle"))
-		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/gitops/gitops.templ`, Line: 234, Col: 87}
-		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var34))
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 57, "\"><input type=\"hidden\" name=\"csrf_token\" value=\"")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
 		var templ_7745c5c3_Var35 string
 		templ_7745c5c3_Var35, templ_7745c5c3_Err = templ.JoinStringErrs(csrfToken)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/gitops/gitops.templ`, Line: 235, Col: 61}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/gitops/gitops.templ`, Line: 228, Col: 61}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var35))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 58, "\"> <button type=\"submit\" class=\"p-2 text-gray-400 hover:text-yellow-400 transition-colors\" title=\"Toggle\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 56, "\"> <button type=\"submit\" class=\"p-2 text-gray-400 hover:text-yellow-400 transition-colors\" title=\"Toggle\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		if p.IsEnabled {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 59, "<i class=\"fas fa-pause\"></i>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 57, "<i aria-hidden=\"true\" class=\"fas fa-pause\"></i>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		} else {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 60, "<i class=\"fas fa-play\"></i>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 58, "<i aria-hidden=\"true\" class=\"fas fa-play\"></i>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 61, "</button></form><form method=\"POST\" action=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 59, "</button></form><form method=\"POST\" action=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var36 templ.SafeURL
 		templ_7745c5c3_Var36, templ_7745c5c3_Err = templ.JoinURLErrs(templ.SafeURL("/gitops/pipelines/" + p.ID + "/delete"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/gitops/gitops.templ`, Line: 244, Col: 87}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/gitops/gitops.templ`, Line: 237, Col: 87}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var36))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 62, "\" onsubmit=\"return confirm('Delete this pipeline?')\"><input type=\"hidden\" name=\"csrf_token\" value=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 60, "\" onsubmit=\"return confirm('Delete this pipeline?')\"><input type=\"hidden\" name=\"csrf_token\" value=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var37 string
 		templ_7745c5c3_Var37, templ_7745c5c3_Err = templ.JoinStringErrs(csrfToken)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/gitops/gitops.templ`, Line: 245, Col: 61}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/gitops/gitops.templ`, Line: 238, Col: 61}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var37))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 63, "\"> <button type=\"submit\" class=\"p-2 text-gray-400 hover:text-red-400 transition-colors\" title=\"Delete\"><i class=\"fas fa-trash\"></i></button></form></div></div></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 61, "\"> <button type=\"submit\" class=\"p-2 text-gray-400 hover:text-red-400 transition-colors\" title=\"Delete\"><i aria-hidden=\"true\" class=\"fas fa-trash\"></i></button></form></div></div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -793,45 +794,45 @@ func deployStatus(status string) templ.Component {
 		ctx = templ.ClearChildren(ctx)
 		switch status {
 		case "success":
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 64, "<span class=\"px-2 py-0.5 text-xs bg-green-500/20 text-green-400 rounded flex items-center gap-1 w-fit\"><span class=\"w-1.5 h-1.5 rounded-full bg-green-400\"></span>Success</span>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 62, "<span class=\"px-2 py-0.5 text-xs bg-green-500/20 text-green-400 rounded flex items-center gap-1 w-fit\"><span class=\"w-1.5 h-1.5 rounded-full bg-green-400\"></span>Success</span>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		case "failed":
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 65, "<span class=\"px-2 py-0.5 text-xs bg-red-500/20 text-red-400 rounded flex items-center gap-1 w-fit\"><span class=\"w-1.5 h-1.5 rounded-full bg-red-400\"></span>Failed</span>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 63, "<span class=\"px-2 py-0.5 text-xs bg-red-500/20 text-red-400 rounded flex items-center gap-1 w-fit\"><span class=\"w-1.5 h-1.5 rounded-full bg-red-400\"></span>Failed</span>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		case "running":
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 66, "<span class=\"px-2 py-0.5 text-xs bg-blue-500/20 text-blue-400 rounded flex items-center gap-1 w-fit\"><span class=\"w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse\"></span>Running</span>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 64, "<span class=\"px-2 py-0.5 text-xs bg-blue-500/20 text-blue-400 rounded flex items-center gap-1 w-fit\"><span class=\"w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse\"></span>Running</span>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		case "pending":
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 67, "<span class=\"px-2 py-0.5 text-xs bg-yellow-500/20 text-yellow-400 rounded flex items-center gap-1 w-fit\"><span class=\"w-1.5 h-1.5 rounded-full bg-yellow-400\"></span>Pending</span>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 65, "<span class=\"px-2 py-0.5 text-xs bg-yellow-500/20 text-yellow-400 rounded flex items-center gap-1 w-fit\"><span class=\"w-1.5 h-1.5 rounded-full bg-yellow-400\"></span>Pending</span>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		case "rolled_back":
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 68, "<span class=\"px-2 py-0.5 text-xs bg-orange-500/20 text-orange-400 rounded flex items-center gap-1 w-fit\"><span class=\"w-1.5 h-1.5 rounded-full bg-orange-400\"></span>Rolled Back</span>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 66, "<span class=\"px-2 py-0.5 text-xs bg-orange-500/20 text-orange-400 rounded flex items-center gap-1 w-fit\"><span class=\"w-1.5 h-1.5 rounded-full bg-orange-400\"></span>Rolled Back</span>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		default:
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 69, "<span class=\"px-2 py-0.5 text-xs bg-gray-500/20 text-gray-400 rounded\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 67, "<span class=\"px-2 py-0.5 text-xs bg-gray-500/20 text-gray-400 rounded\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var39 string
 			templ_7745c5c3_Var39, templ_7745c5c3_Err = templ.JoinStringErrs(status)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/gitops/gitops.templ`, Line: 268, Col: 82}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/gitops/gitops.templ`, Line: 261, Col: 82}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var39))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 70, "</span>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 68, "</span>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -861,20 +862,20 @@ func createPipelineModal(csrfToken string) templ.Component {
 			templ_7745c5c3_Var40 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 71, "<div id=\"createPipelineModal\" class=\"hidden fixed inset-0 z-50 flex items-center justify-center bg-black/60\" x-data=\"{ triggerType: 'webhook' }\"><div class=\"bg-dark-800 rounded-xl shadow-xl border border-dark-600 w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto\"><div class=\"flex items-center justify-between p-6 border-b border-dark-600 sticky top-0 bg-dark-800 z-10\"><h2 class=\"text-lg font-display font-bold text-white\">Create GitOps Pipeline</h2><button onclick=\"document.getElementById('createPipelineModal').classList.add('hidden')\" class=\"text-gray-400 hover:text-white\"><i class=\"fas fa-times\"></i></button></div><form method=\"POST\" action=\"/gitops/pipelines\" class=\"p-6 space-y-4\"><input type=\"hidden\" name=\"csrf_token\" value=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 69, "<div id=\"createPipelineModal\" class=\"hidden fixed inset-0 z-50 flex items-center justify-center bg-black/60\" x-data=\"{ triggerType: 'webhook' }\"><div class=\"bg-dark-800 rounded-xl shadow-xl border border-dark-600 w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto\"><div class=\"flex items-center justify-between p-6 border-b border-dark-600 sticky top-0 bg-dark-800 z-10\"><h2 class=\"text-lg font-display font-bold text-white\">Create GitOps Pipeline</h2><button onclick=\"document.getElementById('createPipelineModal').classList.add('hidden')\" class=\"text-gray-400 hover:text-white\"><i aria-hidden=\"true\" class=\"fas fa-times\"></i></button></div><form method=\"POST\" action=\"/gitops/pipelines\" class=\"p-6 space-y-4\"><input type=\"hidden\" name=\"csrf_token\" value=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var41 string
 		templ_7745c5c3_Var41, templ_7745c5c3_Err = templ.JoinStringErrs(csrfToken)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/gitops/gitops.templ`, Line: 282, Col: 60}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/gitops/gitops.templ`, Line: 275, Col: 60}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var41))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 72, "\"><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Pipeline Name</label> <input type=\"text\" name=\"name\" required class=\"input w-full\" placeholder=\"e.g., Deploy frontend on push\"></div><div class=\"grid grid-cols-2 gap-4\"><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Provider</label> <select name=\"provider\" class=\"input w-full\"><option value=\"github\">GitHub</option> <option value=\"gitlab\">GitLab</option> <option value=\"gitea\">Gitea</option></select></div><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Action</label> <select name=\"action\" class=\"input w-full\"><option value=\"redeploy\">Redeploy Stack</option> <option value=\"pull_and_redeploy\">Pull Image & Redeploy</option> <option value=\"update_image\">Update Image Only</option></select></div></div><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Repository</label> <input type=\"text\" name=\"repository\" required class=\"input w-full\" placeholder=\"owner/repository\"></div><div class=\"grid grid-cols-2 gap-4\"><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Branch</label> <input type=\"text\" name=\"branch\" class=\"input w-full\" placeholder=\"main\" value=\"main\"></div><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Target Stack</label> <input type=\"text\" name=\"target_stack\" required class=\"input w-full\" placeholder=\"Stack name\"></div></div><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Target Service (optional)</label> <input type=\"text\" name=\"target_service\" class=\"input w-full\" placeholder=\"Leave empty for all services\"></div><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Trigger Type</label> <select name=\"trigger_type\" x-model=\"triggerType\" class=\"input w-full\"><option value=\"webhook\">Webhook (on push)</option> <option value=\"manual\">Manual only</option> <option value=\"schedule\">Scheduled</option></select></div><div x-show=\"triggerType === 'schedule'\" x-cloak><label class=\"block text-sm font-medium text-gray-300 mb-1\">Schedule (cron)</label> <select name=\"schedule\" class=\"input w-full\"><option value=\"\">No schedule</option> <option value=\"0 */6 * * *\">Every 6 hours</option> <option value=\"0 0 * * *\">Daily at midnight</option> <option value=\"0 0 * * 0\">Weekly (Sunday)</option></select></div><label class=\"flex items-center gap-2\"><input type=\"checkbox\" name=\"auto_rollback\" value=\"on\" class=\"form-checkbox rounded bg-dark-700 border-dark-500\"> <span class=\"text-sm text-gray-300\">Auto-rollback on failure</span></label><div class=\"flex justify-end gap-3 pt-4 border-t border-dark-600\"><button type=\"button\" onclick=\"document.getElementById('createPipelineModal').classList.add('hidden')\" class=\"btn-secondary\">Cancel</button> <button type=\"submit\" class=\"btn-primary\"><i class=\"fas fa-plus mr-2\"></i>Create Pipeline</button></div></form></div></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 70, "\"><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Pipeline Name</label> <input type=\"text\" name=\"name\" required class=\"input w-full\" placeholder=\"e.g., Deploy frontend on push\" aria-label=\"e.g., Deploy frontend on push\"></div><div class=\"grid grid-cols-2 gap-4\"><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Provider</label> <select name=\"provider\" class=\"input w-full\"><option value=\"github\">GitHub</option> <option value=\"gitlab\">GitLab</option> <option value=\"gitea\">Gitea</option></select></div><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Action</label> <select name=\"action\" class=\"input w-full\"><option value=\"redeploy\">Redeploy Stack</option> <option value=\"pull_and_redeploy\">Pull Image & Redeploy</option> <option value=\"update_image\">Update Image Only</option></select></div></div><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Repository</label> <input type=\"text\" name=\"repository\" required class=\"input w-full\" placeholder=\"owner/repository\" aria-label=\"owner/repository\"></div><div class=\"grid grid-cols-2 gap-4\"><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Branch</label> <input type=\"text\" name=\"branch\" class=\"input w-full\" placeholder=\"main\" aria-label=\"main\" value=\"main\"></div><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Target Stack</label> <input type=\"text\" name=\"target_stack\" required class=\"input w-full\" placeholder=\"Stack name\" aria-label=\"Stack name\"></div></div><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Target Service (optional)</label> <input type=\"text\" name=\"target_service\" class=\"input w-full\" placeholder=\"Leave empty for all services\" aria-label=\"Leave empty for all services\"></div><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Trigger Type</label> <select name=\"trigger_type\" x-model=\"triggerType\" class=\"input w-full\"><option value=\"webhook\">Webhook (on push)</option> <option value=\"manual\">Manual only</option> <option value=\"schedule\">Scheduled</option></select></div><div x-show=\"triggerType === 'schedule'\" x-cloak><label class=\"block text-sm font-medium text-gray-300 mb-1\">Schedule (cron)</label> <select name=\"schedule\" class=\"input w-full\"><option value=\"\">No schedule</option> <option value=\"0 */6 * * *\">Every 6 hours</option> <option value=\"0 0 * * *\">Daily at midnight</option> <option value=\"0 0 * * 0\">Weekly (Sunday)</option></select></div><label class=\"flex items-center gap-2\"><input type=\"checkbox\" name=\"auto_rollback\" value=\"on\" class=\"form-checkbox rounded bg-dark-700 border-dark-500\"> <span class=\"text-sm text-gray-300\">Auto-rollback on failure</span></label><div class=\"flex justify-end gap-3 pt-4 border-t border-dark-600\"><button type=\"button\" onclick=\"document.getElementById('createPipelineModal').classList.add('hidden')\" class=\"btn-secondary\">Cancel</button> <button type=\"submit\" class=\"btn-primary\"><i aria-hidden=\"true\" class=\"fas fa-plus mr-2\"></i>Create Pipeline</button></div></form></div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

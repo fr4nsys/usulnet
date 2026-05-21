@@ -33,17 +33,19 @@ func (app *Application) startAgent(ctx context.Context) error {
 	}
 
 	agentCfg := agentpkg.Config{
-		AgentID:     app.Config.Agent.ID,
-		Token:       app.Config.Agent.Token,
-		GatewayURL:  gatewayURL,
-		DockerHost:  "unix://" + dockerpkg.LocalSocketPath(),
-		Hostname:    app.Config.Agent.Name,
-		LogLevel:    app.Config.Logging.Level,
-		DataDir:     "/var/lib/usulnet-agent",
-		TLSEnabled:  app.Config.Agent.TLSEnabled,
-		TLSCertFile: app.Config.Agent.TLSCertFile,
-		TLSKeyFile:  app.Config.Agent.TLSKeyFile,
-		TLSCAFile:   app.Config.Agent.TLSCAFile,
+		AgentID:    app.Config.Agent.ID,
+		Token:      app.Config.Agent.Token,
+		GatewayURL: gatewayURL,
+		DockerHost: "unix://" + dockerpkg.LocalSocketPath(),
+		Hostname:   app.Config.Agent.Name,
+		LogLevel:   app.Config.Logging.Level,
+		DataDir:    "/var/lib/usulnet-agent",
+		TLS: agentpkg.TLSConfig{
+			Enabled:  app.Config.Agent.TLSEnabled,
+			CertFile: app.Config.Agent.TLSCertFile,
+			KeyFile:  app.Config.Agent.TLSKeyFile,
+			CAFile:   app.Config.Agent.TLSCAFile,
+		},
 	}
 
 	if agentCfg.Hostname == "" {

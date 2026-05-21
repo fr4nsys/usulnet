@@ -23,6 +23,7 @@ import (
 	"github.com/fr4nsys/usulnet/internal/repository/postgres"
 	reconconnectors "github.com/fr4nsys/usulnet/internal/services/recon/connectors"
 	hibpconnector "github.com/fr4nsys/usulnet/internal/services/recon/connectors/hibp"
+	shodanconnector "github.com/fr4nsys/usulnet/internal/services/recon/connectors/shodan"
 )
 
 // standaloneHostID is the well-known host ID used for the local Docker
@@ -145,6 +146,53 @@ func hibpKeySource(store reconconnectors.CredentialStore, key string) string {
 	// Load() returned the same string we got back; otherwise we fell
 	// through to the env var.
 	if os.Getenv("USULNET_RECON_HIBP_API_KEY") == key {
+		return "env"
+	}
+	return "db"
+}
+
+// resolveShodanKey returns the Shodan API key + the enabled flag for
+// the connector at boot. Lookup order mirrors resolveHIBPKey:
+//
+//  1. recon_connectors row (kind='shodan') decrypted via the
+//     CredentialStore — operator-managed via the API.
+//  2. USULNET_RECON_SHODAN_API_KEY environment variable — kept as a
+//     migration grace for installs that pre-supply the key from the
+//     environment rather than the UI.
+//
+// When neither yields a key the connector still registers (so the
+// /connectors API can render "not configured"), but Enabled is false
+// so HealthCheck returns ErrNoAPIKey without producing a 5xx.
+func resolveShodanKey(ctx context.Context, store reconconnectors.CredentialStore, log *logger.Logger) (string, bool) {
+	if store != nil {
+		if loader, ok := store.(interface {
+			Load(ctx context.Context, kind string) (map[string]string, bool, error)
+		}); ok {
+			creds, enabled, err := loader.Load(ctx, shodanconnector.Kind)
+			if err == nil {
+				if key := creds["api_key"]; key != "" {
+					return key, enabled
+				}
+			} else if !errors.Is(err, postgres.ErrConnectorNotFound) {
+				log.Warn("recon: load Shodan credentials failed", "error", err)
+			}
+		}
+	}
+	envKey := os.Getenv("USULNET_RECON_SHODAN_API_KEY")
+	return envKey, envKey != ""
+}
+
+// shodanKeySource returns a non-secret tag describing where the
+// Shodan key came from. Same contract as hibpKeySource — never logs
+// the key itself, only the source tag.
+func shodanKeySource(store reconconnectors.CredentialStore, key string) string {
+	if key == "" {
+		return "none"
+	}
+	if store == nil {
+		return "env"
+	}
+	if os.Getenv("USULNET_RECON_SHODAN_API_KEY") == key {
 		return "env"
 	}
 	return "db"

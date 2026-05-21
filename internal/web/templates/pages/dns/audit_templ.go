@@ -51,7 +51,7 @@ func Audit(data AuditPageData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<div class=\"card\"><div class=\"overflow-x-auto\"><table class=\"table\"><thead><tr><th>When</th><th>Action</th><th>Resource</th><th>Name</th><th>Details</th></tr></thead> <tbody>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<div class=\"card\"><div class=\"overflow-x-auto\"><table class=\"table\"><thead><tr><th scope=\"col\">When</th><th scope=\"col\">Action</th><th scope=\"col\">Resource</th><th scope=\"col\">Name</th><th scope=\"col\">Details</th></tr></thead> <tbody>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

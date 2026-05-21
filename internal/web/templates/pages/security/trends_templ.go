@@ -67,7 +67,7 @@ func Trends(data TrendsData) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"space-y-6\"><!-- Breadcrumb --><nav class=\"flex items-center gap-2 text-sm text-gray-400\"><a href=\"/security\" class=\"hover:text-primary-400 transition-colors\">Security</a> <i class=\"fas fa-chevron-right text-xs\"></i> <span class=\"text-white\">Trends</span></nav><!-- Header --><div class=\"flex items-center justify-between\"><div class=\"flex items-center gap-4\"><div class=\"w-10 h-10 rounded-lg bg-dark-700 flex items-center justify-center\"><i class=\"fas fa-chart-line text-lg text-primary-400\"></i></div><div><h1 class=\"text-2xl font-display font-bold text-white\">Security Trends</h1><p class=\"text-gray-400 mt-0.5\">Score history and improvement tracking</p></div></div><div class=\"flex items-center gap-3\"><a href=\"/security\" class=\"btn-secondary\"><i class=\"fas fa-arrow-left mr-2\"></i>Scanner</a> <a href=\"/security/report?format=html\" target=\"_blank\" class=\"btn-secondary\"><i class=\"fas fa-file-alt mr-2\"></i>HTML Report</a></div></div><!-- Summary Cards --><div class=\"grid grid-cols-1 md:grid-cols-4 gap-4\"><div class=\"card p-4\"><div class=\"flex items-center gap-2 mb-1\"><i class=\"fas fa-tachometer-alt text-primary-400 text-sm\"></i> <span class=\"text-xs text-gray-500 uppercase tracking-wider\">Avg Score</span></div><div class=\"text-3xl font-bold text-white\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"space-y-6\"><!-- Breadcrumb --><nav class=\"flex items-center gap-2 text-sm text-gray-400\"><a href=\"/security\" class=\"hover:text-primary-400 transition-colors\">Security</a> <i aria-hidden=\"true\" class=\"fas fa-chevron-right text-xs\"></i> <span class=\"text-white\">Trends</span></nav><!-- Header --><div class=\"flex items-center justify-between\"><div class=\"flex items-center gap-4\"><div class=\"w-10 h-10 rounded-lg bg-dark-700 flex items-center justify-center\"><i aria-hidden=\"true\" class=\"fas fa-chart-line text-lg text-primary-400\"></i></div><div><h1 class=\"text-2xl font-display font-bold text-white\">Security Trends</h1><p class=\"text-gray-400 mt-0.5\">Score history and improvement tracking</p></div></div><div class=\"flex items-center gap-3\"><a href=\"/security\" class=\"btn-secondary\"><i aria-hidden=\"true\" class=\"fas fa-arrow-left mr-2\"></i>Scanner</a> <a href=\"/security/report?format=html\" target=\"_blank\" class=\"btn-secondary\"><i aria-hidden=\"true\" class=\"fas fa-file-alt mr-2\"></i>HTML Report</a></div></div><!-- Summary Cards --><div class=\"grid grid-cols-1 md:grid-cols-4 gap-4\"><div class=\"card p-4\"><div class=\"flex items-center gap-2 mb-1\"><i aria-hidden=\"true\" class=\"fas fa-tachometer-alt text-primary-400 text-sm\"></i> <span class=\"text-xs text-gray-500 uppercase tracking-wider\">Avg Score</span></div><div class=\"text-3xl font-bold text-white\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -80,7 +80,7 @@ func Trends(data TrendsData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</div></div><div class=\"card p-4\"><div class=\"flex items-center gap-2 mb-1\"><i class=\"fas fa-award text-green-400 text-sm\"></i> <span class=\"text-xs text-gray-500 uppercase tracking-wider\">Grade A</span></div><div class=\"text-3xl font-bold text-green-400\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</div></div><div class=\"card p-4\"><div class=\"flex items-center gap-2 mb-1\"><i aria-hidden=\"true\" class=\"fas fa-award text-green-400 text-sm\"></i> <span class=\"text-xs text-gray-500 uppercase tracking-wider\">Grade A</span></div><div class=\"text-3xl font-bold text-green-400\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -93,7 +93,7 @@ func Trends(data TrendsData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</div></div><div class=\"card p-4\"><div class=\"flex items-center gap-2 mb-1\"><i class=\"fas fa-exclamation-circle text-red-400 text-sm\"></i> <span class=\"text-xs text-gray-500 uppercase tracking-wider\">Critical</span></div><div class=\"text-3xl font-bold text-red-400\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</div></div><div class=\"card p-4\"><div class=\"flex items-center gap-2 mb-1\"><i aria-hidden=\"true\" class=\"fas fa-exclamation-circle text-red-400 text-sm\"></i> <span class=\"text-xs text-gray-500 uppercase tracking-wider\">Critical</span></div><div class=\"text-3xl font-bold text-red-400\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -106,7 +106,7 @@ func Trends(data TrendsData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</div></div><div class=\"card p-4\"><div class=\"flex items-center gap-2 mb-1\"><i class=\"fas fa-cubes text-gray-400 text-sm\"></i> <span class=\"text-xs text-gray-500 uppercase tracking-wider\">Scanned</span></div><div class=\"text-3xl font-bold text-white\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</div></div><div class=\"card p-4\"><div class=\"flex items-center gap-2 mb-1\"><i aria-hidden=\"true\" class=\"fas fa-cubes text-gray-400 text-sm\"></i> <span class=\"text-xs text-gray-500 uppercase tracking-wider\">Scanned</span></div><div class=\"text-3xl font-bold text-white\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -119,14 +119,14 @@ func Trends(data TrendsData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "</div></div></div><!-- Score History Chart (CSS-based) --><div class=\"card\"><div class=\"px-5 py-4 border-b border-dark-700 flex items-center justify-between\"><h2 class=\"font-medium text-white\"><i class=\"fas fa-chart-bar text-gray-500 mr-2\"></i>Average Score History (")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "</div></div></div><!-- Score History Chart (CSS-based) --><div class=\"card\"><div class=\"px-5 py-4 border-b border-dark-700 flex items-center justify-between\"><h2 class=\"font-medium text-white\"><i aria-hidden=\"true\" class=\"fas fa-chart-bar text-gray-500 mr-2\"></i>Average Score History (")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var7 string
 			templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", data.Days))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/security/trends.templ`, Line: 96, Col: 110}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/security/trends.templ`, Line: 96, Col: 129}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 			if templ_7745c5c3_Err != nil {
@@ -334,12 +334,12 @@ func Trends(data TrendsData) templ.Component {
 					return templ_7745c5c3_Err
 				}
 			} else {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 27, "<div class=\"text-center text-gray-500 py-12\"><i class=\"fas fa-chart-line text-3xl mb-3 opacity-30\"></i><p class=\"text-sm\">No trend data yet. Run multiple scans over time to see trends.</p></div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 27, "<div class=\"text-center text-gray-500 py-12\"><i aria-hidden=\"true\" class=\"fas fa-chart-line text-3xl mb-3 opacity-30\"></i><p class=\"text-sm\">No trend data yet. Run multiple scans over time to see trends.</p></div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 28, "</div></div><!-- Container Trends Table --><div class=\"card\"><div class=\"px-5 py-4 border-b border-dark-700\"><h2 class=\"font-medium text-white\"><i class=\"fas fa-exchange-alt text-gray-500 mr-2\"></i>Container Score Changes</h2></div><div class=\"overflow-x-auto\"><table class=\"table\"><thead><tr><th>Container</th><th>Current Score</th><th>Grade</th><th>Previous Score</th><th>Change</th></tr></thead> <tbody>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 28, "</div></div><!-- Container Trends Table --><div class=\"card\"><div class=\"px-5 py-4 border-b border-dark-700\"><h2 class=\"font-medium text-white\"><i aria-hidden=\"true\" class=\"fas fa-exchange-alt text-gray-500 mr-2\"></i>Container Score Changes</h2></div><div class=\"overflow-x-auto\"><table class=\"table\"><thead><tr><th scope=\"col\">Container</th><th scope=\"col\">Current Score</th><th scope=\"col\">Grade</th><th scope=\"col\">Previous Score</th><th scope=\"col\">Change</th></tr></thead> <tbody>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -431,14 +431,14 @@ func Trends(data TrendsData) templ.Component {
 						return templ_7745c5c3_Err
 					}
 					if ct.Change > 0 {
-						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 37, "<span class=\"text-green-400\"><i class=\"fas fa-arrow-up mr-1\"></i>+")
+						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 37, "<span class=\"text-green-400\"><i aria-hidden=\"true\" class=\"fas fa-arrow-up mr-1\"></i>+")
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
 						var templ_7745c5c3_Var28 string
 						templ_7745c5c3_Var28, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", ct.Change))
 						if templ_7745c5c3_Err != nil {
-							return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/security/trends.templ`, Line: 185, Col: 108}
+							return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/security/trends.templ`, Line: 185, Col: 127}
 						}
 						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var28))
 						if templ_7745c5c3_Err != nil {
@@ -449,14 +449,14 @@ func Trends(data TrendsData) templ.Component {
 							return templ_7745c5c3_Err
 						}
 					} else if ct.Change < 0 {
-						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 39, "<span class=\"text-red-400\"><i class=\"fas fa-arrow-down mr-1\"></i>")
+						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 39, "<span class=\"text-red-400\"><i aria-hidden=\"true\" class=\"fas fa-arrow-down mr-1\"></i>")
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
 						var templ_7745c5c3_Var29 string
 						templ_7745c5c3_Var29, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", ct.Change))
 						if templ_7745c5c3_Err != nil {
-							return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/security/trends.templ`, Line: 187, Col: 107}
+							return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/security/trends.templ`, Line: 187, Col: 126}
 						}
 						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var29))
 						if templ_7745c5c3_Err != nil {

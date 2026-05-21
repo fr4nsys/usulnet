@@ -80,6 +80,7 @@ func (h *Handler) DNSProvidersTempl(w http.ResponseWriter, r *http.Request) {
 		PageData:     pageData,
 		Providers:    views,
 		Capabilities: capabilitiesToViews(svc.SupportedProviders()),
+		EmptyState:   EmptyStateCatalogDNS(),
 	}))
 }
 
@@ -110,19 +111,32 @@ func (h *Handler) DNSProviderNewTempl(w http.ResponseWriter, r *http.Request) {
 }
 
 // DNSProviderCreateTempl handles POST /dns.
+// dnsProviderWriteForm captures the core inputs shared between
+// provider create and update. The credential / config fields are
+// dynamic (their names depend on the selected provider_kind) and
+// stay read via collectCredentialsJSON / collectConfigMap after
+// BindForm has consumed the body.
+type dnsProviderWriteForm struct {
+	Name         string `form:"name" validate:"required"`
+	ProviderKind string `form:"provider_kind"`
+	Description  string `form:"description"`
+	Enabled      bool   `form:"enabled"`
+}
+
 func (h *Handler) DNSProviderCreateTempl(w http.ResponseWriter, r *http.Request) {
 	svc := h.requireDNSSvc(w, r)
 	if svc == nil {
 		return
 	}
-	if err := r.ParseForm(); err != nil {
-		http.Error(w, "Error parsing form", http.StatusBadRequest)
+	var form dnsProviderWriteForm
+	if msg := BindForm(r, &form); msg != "" {
+		http.Error(w, msg, http.StatusBadRequest)
 		return
 	}
 	hostID := h.getDNSHostID(r)
 	userID := h.dnsUserUUID(r)
 
-	kind := models.DNSProviderKind(r.FormValue("provider_kind"))
+	kind := models.DNSProviderKind(form.ProviderKind)
 	caps := capabilitiesToViews(svc.SupportedProviders())
 	selected := selectedCapability(caps, string(kind))
 
@@ -131,10 +145,10 @@ func (h *Handler) DNSProviderCreateTempl(w http.ResponseWriter, r *http.Request)
 
 	in := dnssvc.CreateProviderInput{
 		HostID:       hostID,
-		Name:         r.FormValue("name"),
+		Name:         form.Name,
 		ProviderKind: kind,
-		Description:  r.FormValue("description"),
-		Enabled:      r.FormValue("enabled") == "true" || r.FormValue("enabled") == "on",
+		Description:  form.Description,
+		Enabled:      form.Enabled,
 		Credentials:  creds,
 		Config:       cfg,
 	}
@@ -192,8 +206,9 @@ func (h *Handler) DNSProviderUpdateTempl(w http.ResponseWriter, r *http.Request)
 		h.RenderErrorTempl(w, r, http.StatusBadRequest, "Invalid ID", "Bad provider ID")
 		return
 	}
-	if err := r.ParseForm(); err != nil {
-		http.Error(w, "Error parsing form", http.StatusBadRequest)
+	var form dnsProviderWriteForm
+	if msg := BindForm(r, &form); msg != "" {
+		http.Error(w, msg, http.StatusBadRequest)
 		return
 	}
 	userID := h.dnsUserUUID(r)
@@ -212,9 +227,9 @@ func (h *Handler) DNSProviderUpdateTempl(w http.ResponseWriter, r *http.Request)
 	cfg := collectConfigMap(r, selected.ConfigFields)
 
 	in := dnssvc.UpdateProviderInput{
-		Name:        r.FormValue("name"),
-		Description: r.FormValue("description"),
-		Enabled:     r.FormValue("enabled") == "true" || r.FormValue("enabled") == "on",
+		Name:        form.Name,
+		Description: form.Description,
+		Enabled:     form.Enabled,
 		Credentials: creds,
 		Config:      cfg,
 	}
@@ -328,6 +343,16 @@ func (h *Handler) DNSRecordNewTempl(w http.ResponseWriter, r *http.Request) {
 	}))
 }
 
+// dnsRecordCreateForm captures the DNS record inputs. ttl defaults
+// to 300 after binding when zero (the original handler silently
+// substituted on a strconv failure).
+type dnsRecordCreateForm struct {
+	Name    string `form:"name" validate:"required"`
+	Type    string `form:"type" validate:"required"`
+	Content string `form:"content" validate:"required"`
+	TTL     int    `form:"ttl" validate:"gte=0"`
+}
+
 // DNSRecordCreateTempl handles POST /dns/{id}/records.
 func (h *Handler) DNSRecordCreateTempl(w http.ResponseWriter, r *http.Request) {
 	svc := h.requireDNSSvc(w, r)
@@ -339,18 +364,19 @@ func (h *Handler) DNSRecordCreateTempl(w http.ResponseWriter, r *http.Request) {
 		h.RenderErrorTempl(w, r, http.StatusBadRequest, "Invalid ID", "Bad provider ID")
 		return
 	}
-	if err := r.ParseForm(); err != nil {
-		http.Error(w, "Error parsing form", http.StatusBadRequest)
+	var form dnsRecordCreateForm
+	if msg := BindForm(r, &form); msg != "" {
+		http.Error(w, msg, http.StatusBadRequest)
 		return
 	}
-	ttl := 300
-	if v, convErr := strconv.Atoi(r.FormValue("ttl")); convErr == nil && v > 0 {
-		ttl = v
+	ttl := form.TTL
+	if ttl <= 0 {
+		ttl = 300
 	}
 	in := dnssvc.RecordInput{
-		Name:    r.FormValue("name"),
-		Type:    models.DNSRecordType(r.FormValue("type")),
-		Content: r.FormValue("content"),
+		Name:    form.Name,
+		Type:    models.DNSRecordType(form.Type),
+		Content: form.Content,
 		TTL:     ttl,
 	}
 	if _, err := svc.CreateRecord(r.Context(), providerID, in, h.dnsUserUUID(r)); err != nil {

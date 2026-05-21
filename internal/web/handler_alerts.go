@@ -8,7 +8,6 @@ import (
 	"context"
 	"log/slog"
 	"net/http"
-	"strconv"
 	"time"
 
 	"github.com/go-chi/chi/v5"
@@ -298,6 +297,24 @@ func (h *Handler) AlertEditTempl(w http.ResponseWriter, r *http.Request) {
 	h.renderTempl(w, r, alerts.Edit(data))
 }
 
+// alertCreateForm carries the inputs of the create-rule form. The
+// validation rules here cover what the original handler accepted
+// implicitly (empty name / metric / operator / severity would all
+// produce an unusable rule even though the handler did not reject
+// them); pre-existing behaviour for optional fields like
+// description / host_id is preserved.
+type alertCreateForm struct {
+	Name        string  `form:"name" validate:"required,min=1,max=200"`
+	Description string  `form:"description"`
+	Metric      string  `form:"metric" validate:"required"`
+	Operator    string  `form:"operator" validate:"required"`
+	Threshold   float64 `form:"threshold"`
+	Severity    string  `form:"severity" validate:"required"`
+	Duration    int     `form:"duration" validate:"gte=0"`
+	Cooldown    int     `form:"cooldown" validate:"gte=0"`
+	HostID      string  `form:"host_id" validate:"omitempty,uuid"`
+}
+
 func (h *Handler) AlertCreate(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
@@ -307,43 +324,29 @@ func (h *Handler) AlertCreate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := r.ParseForm(); err != nil {
-		slog.Error("Failed to parse form", "error", err)
+	var form alertCreateForm
+	if msg := BindForm(r, &form); msg != "" {
+		h.setFlash(w, r, "error", msg)
 		h.redirect(w, r, "/alerts")
 		return
 	}
 
-	name := r.FormValue("name")
-	description := r.FormValue("description")
-	metric := r.FormValue("metric")
-	operator := r.FormValue("operator")
-	thresholdStr := r.FormValue("threshold")
-	severity := r.FormValue("severity")
-	durationStr := r.FormValue("duration")
-	cooldownStr := r.FormValue("cooldown")
-	hostIDStr := r.FormValue("host_id")
-
-	threshold, _ := strconv.ParseFloat(thresholdStr, 64)
-	duration, _ := strconv.Atoi(durationStr)
-	cooldown, _ := strconv.Atoi(cooldownStr)
-
 	input := models.CreateAlertRuleInput{
-		Name:            name,
-		Description:     description,
-		Metric:          models.AlertMetric(metric),
-		Operator:        models.AlertOperator(operator),
-		Threshold:       threshold,
-		Severity:        models.AlertSeverity(severity),
-		DurationSeconds: duration,
-		CooldownSeconds: cooldown,
+		Name:            form.Name,
+		Description:     form.Description,
+		Metric:          models.AlertMetric(form.Metric),
+		Operator:        models.AlertOperator(form.Operator),
+		Threshold:       form.Threshold,
+		Severity:        models.AlertSeverity(form.Severity),
+		DurationSeconds: form.Duration,
+		CooldownSeconds: form.Cooldown,
 		IsEnabled:       true,
 	}
 
-	if hostIDStr != "" {
-		hostID, err := uuid.Parse(hostIDStr)
-		if err == nil {
-			input.HostID = &hostID
-		}
+	if form.HostID != "" {
+		// Validator already confirmed the UUID shape; parse cannot fail.
+		hostID, _ := uuid.Parse(form.HostID)
+		input.HostID = &hostID
 	}
 
 	var createdBy *uuid.UUID
@@ -355,14 +358,29 @@ func (h *Handler) AlertCreate(w http.ResponseWriter, r *http.Request) {
 
 	_, err := alertSvc.CreateRule(ctx, input, createdBy)
 	if err != nil {
-		slog.Error("Failed to create alert rule", "name", name, "error", err)
+		slog.Error("Failed to create alert rule", "name", form.Name, "error", err)
 		h.setFlash(w, r, "error", "Failed to create alert rule: "+err.Error())
 		h.redirect(w, r, "/alerts")
 		return
 	}
 
-	h.setFlash(w, r, "success", "Alert rule '"+name+"' created")
+	h.setFlash(w, r, "success", "Alert rule '"+form.Name+"' created")
 	h.redirect(w, r, "/alerts")
+}
+
+// alertUpdateForm mirrors alertCreateForm without the implicit
+// required fields — an update request is allowed to leave fields
+// blank and the original handler treated the empty values as "set
+// to empty". The UpdateRule service accepts pointers per field so
+// the existing PATCH-but-not-really semantics are preserved.
+type alertUpdateForm struct {
+	Name        string  `form:"name" validate:"max=200"`
+	Description string  `form:"description"`
+	Threshold   float64 `form:"threshold"`
+	Severity    string  `form:"severity"`
+	Duration    int     `form:"duration" validate:"gte=0"`
+	Cooldown    int     `form:"cooldown" validate:"gte=0"`
+	IsEnabled   bool    `form:"is_enabled"`
 }
 
 func (h *Handler) AlertUpdate(w http.ResponseWriter, r *http.Request) {
@@ -381,34 +399,22 @@ func (h *Handler) AlertUpdate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := r.ParseForm(); err != nil {
-		slog.Error("Failed to parse form", "error", err)
+	var form alertUpdateForm
+	if msg := BindForm(r, &form); msg != "" {
+		h.setFlash(w, r, "error", msg)
 		h.redirect(w, r, "/alerts/"+idStr)
 		return
 	}
 
-	name := r.FormValue("name")
-	description := r.FormValue("description")
-	thresholdStr := r.FormValue("threshold")
-	severity := r.FormValue("severity")
-	durationStr := r.FormValue("duration")
-	cooldownStr := r.FormValue("cooldown")
-	isEnabled := r.FormValue("is_enabled") == "on"
-
-	threshold, _ := strconv.ParseFloat(thresholdStr, 64)
-	duration, _ := strconv.Atoi(durationStr)
-	cooldown, _ := strconv.Atoi(cooldownStr)
-
-	severityVal := models.AlertSeverity(severity)
-
+	severityVal := models.AlertSeverity(form.Severity)
 	input := models.UpdateAlertRuleInput{
-		Name:            &name,
-		Description:     &description,
-		Threshold:       &threshold,
+		Name:            &form.Name,
+		Description:     &form.Description,
+		Threshold:       &form.Threshold,
 		Severity:        &severityVal,
-		DurationSeconds: &duration,
-		CooldownSeconds: &cooldown,
-		IsEnabled:       &isEnabled,
+		DurationSeconds: &form.Duration,
+		CooldownSeconds: &form.Cooldown,
+		IsEnabled:       &form.IsEnabled,
 	}
 
 	_, err = alertSvc.UpdateRule(ctx, ruleID, input)
@@ -536,6 +542,16 @@ func (h *Handler) AlertEventAck(w http.ResponseWriter, r *http.Request) {
 // Silence Operations
 // ============================================================================
 
+// alertSilenceCreateForm pins the inputs of the silence creation
+// form. Duration is one of the labelled buckets the template offers;
+// anything else falls back to 1h to preserve the original handler's
+// behaviour.
+type alertSilenceCreateForm struct {
+	HostID   string `form:"host_id" validate:"omitempty,uuid"`
+	Duration string `form:"duration"`
+	Reason   string `form:"reason"`
+}
+
 func (h *Handler) AlertSilenceCreate(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
@@ -545,20 +561,16 @@ func (h *Handler) AlertSilenceCreate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := r.ParseForm(); err != nil {
-		slog.Error("Failed to parse form", "error", err)
+	var form alertSilenceCreateForm
+	if msg := BindForm(r, &form); msg != "" {
+		slog.Error("Failed to parse silence form", "error", msg)
 		h.redirect(w, r, "/alerts?tab=silences")
 		return
 	}
 
-	hostIDStr := r.FormValue("host_id")
-	durationStr := r.FormValue("duration")
-	reason := r.FormValue("reason")
-
-	// Parse duration
 	now := time.Now()
 	var endsAt time.Time
-	switch durationStr {
+	switch form.Duration {
 	case "1h":
 		endsAt = now.Add(time.Hour)
 	case "4h":
@@ -574,16 +586,15 @@ func (h *Handler) AlertSilenceCreate(w http.ResponseWriter, r *http.Request) {
 	}
 
 	input := models.CreateAlertSilenceInput{
-		Reason:   reason,
+		Reason:   form.Reason,
 		StartsAt: now,
 		EndsAt:   endsAt,
 	}
 
-	if hostIDStr != "" {
-		hostID, err := uuid.Parse(hostIDStr)
-		if err == nil {
-			input.HostID = &hostID
-		}
+	if form.HostID != "" {
+		// Validator already confirmed the UUID shape; parse cannot fail.
+		hostID, _ := uuid.Parse(form.HostID)
+		input.HostID = &hostID
 	}
 
 	var createdBy *uuid.UUID

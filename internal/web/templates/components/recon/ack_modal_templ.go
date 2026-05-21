@@ -34,7 +34,7 @@ func AckModal(notice string) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div id=\"recon-ack-modal\" x-data=\"{ open: true }\" x-show=\"open\" x-cloak class=\"fixed inset-0 z-50 flex items-center justify-center bg-black/60\"><div class=\"bg-dark-800 border border-dark-600 rounded-lg max-w-xl w-full mx-4 shadow-xl\"><div class=\"px-5 py-4 border-b border-dark-600\"><h2 class=\"text-lg font-display font-semibold text-white\"><i class=\"fas fa-balance-scale mr-2 text-primary-400\"></i>Acknowledge Recon Module</h2></div><div class=\"px-5 py-4\"><p class=\"text-sm text-gray-300 whitespace-pre-line\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div id=\"recon-ack-modal\" x-data=\"{ open: true }\" x-show=\"open\" x-cloak class=\"fixed inset-0 z-50 flex items-center justify-center bg-black/60\"><div class=\"bg-dark-800 border border-dark-600 rounded-lg max-w-xl w-full mx-4 shadow-xl\"><div class=\"px-5 py-4 border-b border-dark-600\"><h2 class=\"text-lg font-display font-semibold text-white\"><i aria-hidden=\"true\" class=\"fas fa-balance-scale mr-2 text-primary-400\"></i>Acknowledge Recon Module</h2></div><div class=\"px-5 py-4\"><p class=\"text-sm text-gray-300 whitespace-pre-line\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

@@ -63,6 +63,16 @@ func (h *Handler) ProxySetupTempl(w http.ResponseWriter, r *http.Request) {
 }
 
 // ProxySetupSaveTempl handles POST /proxy/setup to create or update NPM connection.
+// proxySetupForm captures the NPM connection setup inputs.
+// Required-ness is enforced after binding because the "update an
+// existing connection" path accepts a partial form (the user only
+// rotates the fields they want to change).
+type proxySetupForm struct {
+	BaseURL       string `form:"base_url"`
+	AdminEmail    string `form:"admin_email"`
+	AdminPassword string `form:"admin_password"`
+}
+
 func (h *Handler) ProxySetupSaveTempl(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
@@ -71,14 +81,14 @@ func (h *Handler) ProxySetupSaveTempl(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := r.ParseForm(); err != nil {
-		http.Error(w, "Error parsing form", http.StatusBadRequest)
+	var form proxySetupForm
+	if msg := BindForm(r, &form); msg != "" {
+		http.Error(w, msg, http.StatusBadRequest)
 		return
 	}
-
-	baseURL := r.FormValue("base_url")
-	email := r.FormValue("admin_email")
-	password := r.FormValue("admin_password")
+	baseURL := form.BaseURL
+	email := form.AdminEmail
+	password := form.AdminPassword
 
 	user := GetUserFromContext(ctx)
 	userID := ""
@@ -230,6 +240,27 @@ func (h *Handler) ProxyNewTempl(w http.ResponseWriter, r *http.Request) {
 	h.renderTempl(w, r, proxy.New(data))
 }
 
+// proxyHostForm captures the inputs of the proxy-host create /
+// update form. forward_port is required > 0 — the underlying NPM
+// service rejects 0 anyway, so the validator catches it earlier
+// and keeps the operator out of an NPM error response.
+type proxyHostForm struct {
+	Domain                string `form:"domain" validate:"required"`
+	ForwardScheme         string `form:"forward_scheme"`
+	ForwardHost           string `form:"forward_host" validate:"required"`
+	ForwardPort           int    `form:"forward_port" validate:"required,gt=0,lte=65535"`
+	CertificateID         int    `form:"certificate_id" validate:"gte=0"`
+	SSLEnabled            bool   `form:"ssl_enabled"`
+	SSLForced             bool   `form:"ssl_forced"`
+	HSTSEnabled           bool   `form:"hsts_enabled"`
+	HSTSSubdomains        bool   `form:"hsts_subdomains"`
+	HTTP2Support          bool   `form:"http2_support"`
+	BlockExploits         bool   `form:"block_exploits"`
+	CachingEnabled        bool   `form:"caching_enabled"`
+	AllowWebsocketUpgrade bool   `form:"allow_websocket_upgrade"`
+	AdvancedConfig        string `form:"advanced_config"`
+}
+
 // ProxyHostCreateTempl handles POST /proxy/hosts to create a new proxy host.
 func (h *Handler) ProxyHostCreateTempl(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
@@ -239,56 +270,43 @@ func (h *Handler) ProxyHostCreateTempl(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := r.ParseForm(); err != nil {
-		http.Error(w, "Error parsing form", http.StatusBadRequest)
-		return
-	}
-
-	domain := r.FormValue("domain")
-	forwardHost := r.FormValue("forward_host")
-	forwardPort, _ := strconv.Atoi(r.FormValue("forward_port"))
-	sslEnabled := r.FormValue("ssl_enabled") == "true" || r.FormValue("ssl_enabled") == "on"
-	blockExploits := r.FormValue("block_exploits") == "true" || r.FormValue("block_exploits") == "on"
-
-	if domain == "" || forwardHost == "" || forwardPort == 0 {
+	var form proxyHostForm
+	if msg := BindForm(r, &form); msg != "" {
 		pageData := h.prepareTemplPageData(r, "New Proxy Host", "proxy")
 		data := proxy.NewData{
 			PageData:  pageData,
 			Connected: proxySvc.IsConnected(ctx),
-			Error:     "Domain, forward host, and forward port are required",
+			Error:     msg,
 		}
 		h.renderTempl(w, r, proxy.New(data))
 		return
 	}
 
-	// Determine forward scheme from SSL setting
-	forwardScheme := "http"
-	if r.FormValue("forward_scheme") != "" {
-		forwardScheme = r.FormValue("forward_scheme")
+	forwardScheme := form.ForwardScheme
+	if forwardScheme == "" {
+		forwardScheme = "http"
 	}
 
-	certID, _ := strconv.Atoi(r.FormValue("certificate_id"))
-
 	host := &ProxyHostView{
-		Domain:                domain,
+		Domain:                form.Domain,
 		ForwardScheme:         forwardScheme,
-		ForwardHost:           forwardHost,
-		ForwardPort:           forwardPort,
-		CertificateID:         certID,
-		SSLEnabled:            sslEnabled,
-		SSLForced:             r.FormValue("ssl_forced") == "on",
-		HSTSEnabled:           r.FormValue("hsts_enabled") == "on",
-		HSTSSubdomains:        r.FormValue("hsts_subdomains") == "on",
-		HTTP2Support:          r.FormValue("http2_support") == "on",
-		BlockExploits:         blockExploits,
-		CachingEnabled:        r.FormValue("caching_enabled") == "on",
-		AllowWebsocketUpgrade: r.FormValue("allow_websocket_upgrade") == "on",
-		AdvancedConfig:        r.FormValue("advanced_config"),
+		ForwardHost:           form.ForwardHost,
+		ForwardPort:           form.ForwardPort,
+		CertificateID:         form.CertificateID,
+		SSLEnabled:            form.SSLEnabled,
+		SSLForced:             form.SSLForced,
+		HSTSEnabled:           form.HSTSEnabled,
+		HSTSSubdomains:        form.HSTSSubdomains,
+		HTTP2Support:          form.HTTP2Support,
+		BlockExploits:         form.BlockExploits,
+		CachingEnabled:        form.CachingEnabled,
+		AllowWebsocketUpgrade: form.AllowWebsocketUpgrade,
+		AdvancedConfig:        form.AdvancedConfig,
 		Enabled:               true,
 	}
 
 	if err := proxySvc.CreateHost(ctx, host); err != nil {
-		slog.Error("Failed to create proxy host", "domain", domain, "error", err)
+		slog.Error("Failed to create proxy host", "domain", form.Domain, "error", err)
 		pageData := h.prepareTemplPageData(r, "New Proxy Host", "proxy")
 		data := proxy.NewData{
 			PageData:  pageData,
@@ -389,6 +407,16 @@ func (h *Handler) ProxyEditTempl(w http.ResponseWriter, r *http.Request) {
 }
 
 // ProxyHostUpdateTempl handles POST /proxy/hosts/{id} to update a proxy host.
+// proxyHostUpdateForm extends proxyHostForm with the two
+// Update-only fields: the `enabled` toggle (Create hardcodes it
+// to true) and the `_method` form-trampoline that lets HTML
+// forms emulate DELETE on the same endpoint.
+type proxyHostUpdateForm struct {
+	proxyHostForm
+	Enabled bool   `form:"enabled"`
+	Method  string `form:"_method"`
+}
+
 func (h *Handler) ProxyHostUpdateTempl(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	idStr := chi.URLParam(r, "id")
@@ -403,47 +431,40 @@ func (h *Handler) ProxyHostUpdateTempl(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := r.ParseForm(); err != nil {
-		http.Error(w, "Error parsing form", http.StatusBadRequest)
+	var form proxyHostUpdateForm
+	if msg := BindForm(r, &form); msg != "" {
+		http.Error(w, msg, http.StatusBadRequest)
 		return
 	}
 
 	// Check for _method=DELETE override
-	if r.FormValue("_method") == "DELETE" {
+	if form.Method == "DELETE" {
 		h.proxyHostDeleteByID(w, r, id)
 		return
 	}
 
-	domain := r.FormValue("domain")
-	forwardHost := r.FormValue("forward_host")
-	forwardPort, _ := strconv.Atoi(r.FormValue("forward_port"))
-	sslEnabled := r.FormValue("ssl_enabled") == "true" || r.FormValue("ssl_enabled") == "on"
-	enabled := r.FormValue("enabled") == "true" || r.FormValue("enabled") == "on"
-
-	forwardScheme := "http"
-	if r.FormValue("forward_scheme") != "" {
-		forwardScheme = r.FormValue("forward_scheme")
+	forwardScheme := form.ForwardScheme
+	if forwardScheme == "" {
+		forwardScheme = "http"
 	}
-
-	certID, _ := strconv.Atoi(r.FormValue("certificate_id"))
 
 	host := &ProxyHostView{
 		ID:                    id,
-		Domain:                domain,
+		Domain:                form.Domain,
 		ForwardScheme:         forwardScheme,
-		ForwardHost:           forwardHost,
-		ForwardPort:           forwardPort,
-		CertificateID:         certID,
-		SSLEnabled:            sslEnabled,
-		SSLForced:             r.FormValue("ssl_forced") == "on",
-		HSTSEnabled:           r.FormValue("hsts_enabled") == "on",
-		HSTSSubdomains:        r.FormValue("hsts_subdomains") == "on",
-		HTTP2Support:          r.FormValue("http2_support") == "on",
-		BlockExploits:         r.FormValue("block_exploits") == "on",
-		CachingEnabled:        r.FormValue("caching_enabled") == "on",
-		AllowWebsocketUpgrade: r.FormValue("allow_websocket_upgrade") == "on",
-		AdvancedConfig:        r.FormValue("advanced_config"),
-		Enabled:               enabled,
+		ForwardHost:           form.ForwardHost,
+		ForwardPort:           form.ForwardPort,
+		CertificateID:         form.CertificateID,
+		SSLEnabled:            form.SSLEnabled,
+		SSLForced:             form.SSLForced,
+		HSTSEnabled:           form.HSTSEnabled,
+		HSTSSubdomains:        form.HSTSSubdomains,
+		HTTP2Support:          form.HTTP2Support,
+		BlockExploits:         form.BlockExploits,
+		CachingEnabled:        form.CachingEnabled,
+		AllowWebsocketUpgrade: form.AllowWebsocketUpgrade,
+		AdvancedConfig:        form.AdvancedConfig,
+		Enabled:               form.Enabled,
 	}
 
 	if err := proxySvc.UpdateHost(ctx, host); err != nil {
@@ -454,11 +475,11 @@ func (h *Handler) ProxyHostUpdateTempl(w http.ResponseWriter, r *http.Request) {
 			Connected: proxySvc.IsConnected(ctx),
 			Host: proxy.ProxyHost{
 				ID:          idStr,
-				DomainName:  domain,
-				ForwardHost: forwardHost,
-				ForwardPort: forwardPort,
-				SSLEnabled:  sslEnabled,
-				Enabled:     enabled,
+				DomainName:  form.Domain,
+				ForwardHost: form.ForwardHost,
+				ForwardPort: form.ForwardPort,
+				SSLEnabled:  form.SSLEnabled,
+				Enabled:     form.Enabled,
 			},
 			Error: "Failed to update: " + err.Error(),
 		}

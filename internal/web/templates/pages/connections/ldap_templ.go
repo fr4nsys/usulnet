@@ -92,18 +92,18 @@ func LDAPConnectionsList(data LDAPConnectionsListData) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"space-y-6\"><!-- Header --><div class=\"flex items-center justify-between\"><div><h1 class=\"text-2xl font-display font-bold text-white\">LDAP Connections</h1><p class=\"text-gray-400 mt-1\">Browse and manage LDAP directories</p></div><button onclick=\"showNewLDAPModal()\" class=\"btn-primary\"><i class=\"fas fa-plus mr-2\"></i>New Connection</button></div><!-- Connection Cards --><div class=\"grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"space-y-6\"><!-- Header --><div class=\"flex items-center justify-between\"><div><h1 class=\"text-2xl font-display font-bold text-white\">LDAP Connections</h1><p class=\"text-gray-400 mt-1\">Browse and manage LDAP directories</p></div><button onclick=\"showNewLDAPModal()\" class=\"btn-primary\"><i aria-hidden=\"true\" class=\"fas fa-plus mr-2\"></i>New Connection</button></div><!-- Connection Cards --><div class=\"grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			if len(data.Connections) == 0 {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<div class=\"col-span-full card p-8 text-center\"><i class=\"fas fa-sitemap text-4xl text-gray-400 mb-4\"></i><p class=\"text-gray-400\">No LDAP connections configured</p><button onclick=\"showNewLDAPModal()\" class=\"btn-primary mt-4\"><i class=\"fas fa-plus mr-2\"></i>Add Connection</button></div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<div class=\"col-span-full card p-8 text-center\"><i aria-hidden=\"true\" class=\"fas fa-sitemap text-4xl text-gray-400 mb-4\"></i><p class=\"text-gray-400\">No LDAP connections configured</p><button onclick=\"showNewLDAPModal()\" class=\"btn-primary mt-4\"><i aria-hidden=\"true\" class=\"fas fa-plus mr-2\"></i>Add Connection</button></div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			}
 			for _, conn := range data.Connections {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<div class=\"card p-4 hover:border-primary-500/50 transition-colors\"><div class=\"flex items-start justify-between mb-3\"><div class=\"flex items-center gap-3\"><div class=\"w-10 h-10 rounded-lg bg-indigo-500/20 flex items-center justify-center\"><i class=\"fas fa-sitemap text-indigo-400\"></i></div><div><h3 class=\"text-white font-medium\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<div class=\"card p-4 hover:border-primary-500/50 transition-colors\"><div class=\"flex items-start justify-between mb-3\"><div class=\"flex items-center gap-3\"><div class=\"w-10 h-10 rounded-lg bg-indigo-500/20 flex items-center justify-center\"><i aria-hidden=\"true\" class=\"fas fa-sitemap text-indigo-400\"></i></div><div><h3 class=\"text-white font-medium\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -199,7 +199,7 @@ func LDAPConnectionsList(data LDAPConnectionsListData) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "\" class=\"p-2 text-gray-400 hover:text-white hover:bg-dark-600 rounded-lg\" title=\"Browse\"><i class=\"fas fa-folder-tree\"></i></a> <a href=\"")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "\" class=\"p-2 text-gray-400 hover:text-white hover:bg-dark-600 rounded-lg\" title=\"Browse\"><i aria-hidden=\"true\" class=\"fas fa-folder-tree\"></i></a> <a href=\"")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -212,7 +212,7 @@ func LDAPConnectionsList(data LDAPConnectionsListData) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "\" class=\"p-2 text-gray-400 hover:text-white hover:bg-dark-600 rounded-lg\" title=\"Search\"><i class=\"fas fa-search\"></i></a> ")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "\" class=\"p-2 text-gray-400 hover:text-white hover:bg-dark-600 rounded-lg\" title=\"Search\"><i aria-hidden=\"true\" class=\"fas fa-search\"></i></a> ")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -229,7 +229,7 @@ func LDAPConnectionsList(data LDAPConnectionsListData) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "\" class=\"p-2 text-gray-400 hover:text-white hover:bg-dark-600 rounded-lg\" title=\"Test Connection\"><i class=\"fas fa-plug\"></i></button> <a href=\"")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "\" class=\"p-2 text-gray-400 hover:text-white hover:bg-dark-600 rounded-lg\" title=\"Test Connection\"><i aria-hidden=\"true\" class=\"fas fa-plug\"></i></button> <a href=\"")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -242,7 +242,7 @@ func LDAPConnectionsList(data LDAPConnectionsListData) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "\" class=\"p-2 text-gray-400 hover:text-white hover:bg-dark-600 rounded-lg\" title=\"Settings\"><i class=\"fas fa-cog\"></i></a> ")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "\" class=\"p-2 text-gray-400 hover:text-white hover:bg-dark-600 rounded-lg\" title=\"Settings\"><i aria-hidden=\"true\" class=\"fas fa-cog\"></i></a> ")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -259,12 +259,12 @@ func LDAPConnectionsList(data LDAPConnectionsListData) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 20, "\" class=\"p-2 text-gray-400 hover:text-red-400 hover:bg-dark-600 rounded-lg\" title=\"Delete\"><i class=\"fas fa-trash\"></i></button></div></div></div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 20, "\" class=\"p-2 text-gray-400 hover:text-red-400 hover:bg-dark-600 rounded-lg\" title=\"Delete\"><i aria-hidden=\"true\" class=\"fas fa-trash\"></i></button></div></div></div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 21, "</div></div><!-- New LDAP Connection Modal --> <div id=\"new-ldap-modal\" class=\"hidden fixed inset-0 z-50 overflow-y-auto\"><div class=\"flex min-h-screen items-center justify-center p-4\"><div class=\"fixed inset-0 bg-black/60\" onclick=\"hideNewLDAPModal()\"></div><div class=\"relative card w-full max-w-lg p-6\"><h3 class=\"text-lg font-semibold text-white mb-4\"><i class=\"fas fa-sitemap text-indigo-400 mr-2\"></i>New LDAP Connection</h3><form action=\"/connections/ldap\" method=\"POST\"><input type=\"hidden\" name=\"csrf_token\" value=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 21, "</div></div><!-- New LDAP Connection Modal --> <div id=\"new-ldap-modal\" class=\"hidden fixed inset-0 z-50 overflow-y-auto\"><div class=\"flex min-h-screen items-center justify-center p-4\"><div class=\"fixed inset-0 bg-black/60\" onclick=\"hideNewLDAPModal()\"></div><div class=\"relative card w-full max-w-lg p-6\"><h3 class=\"text-lg font-semibold text-white mb-4\"><i aria-hidden=\"true\" class=\"fas fa-sitemap text-indigo-400 mr-2\"></i>New LDAP Connection</h3><form action=\"/connections/ldap\" method=\"POST\"><input type=\"hidden\" name=\"csrf_token\" value=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -277,7 +277,7 @@ func LDAPConnectionsList(data LDAPConnectionsListData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 22, "\"><div class=\"space-y-4\"><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Connection Name</label> <input type=\"text\" name=\"name\" required class=\"input w-full\" placeholder=\"Active Directory\"></div><div class=\"grid grid-cols-3 gap-4\"><div class=\"col-span-2\"><label class=\"block text-sm font-medium text-gray-300 mb-1\">Host</label> <input type=\"text\" name=\"host\" required class=\"input w-full\" placeholder=\"ldap.example.com\"></div><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Port</label> <input type=\"number\" name=\"port\" required class=\"input w-full\" value=\"389\"></div></div><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Base DN</label> <input type=\"text\" name=\"base_dn\" required class=\"input w-full\" placeholder=\"dc=example,dc=com\"></div><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Bind DN (Admin)</label> <input type=\"text\" name=\"bind_dn\" class=\"input w-full\" placeholder=\"cn=admin,dc=example,dc=com\"></div><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Bind Password</label> <input type=\"password\" name=\"bind_password\" class=\"input w-full\"></div><div class=\"flex items-center gap-6\"><label class=\"flex items-center gap-2 cursor-pointer\"><input type=\"checkbox\" name=\"use_ssl\" class=\"rounded border-dark-600 bg-dark-700 text-primary-500\"> <span class=\"text-sm text-gray-300\">Use LDAPS (SSL)</span></label> <label class=\"flex items-center gap-2 cursor-pointer\"><input type=\"checkbox\" name=\"use_tls\" class=\"rounded border-dark-600 bg-dark-700 text-primary-500\"> <span class=\"text-sm text-gray-300\">Use StartTLS</span></label></div></div><div class=\"flex justify-end gap-3 mt-6\"><button type=\"button\" onclick=\"hideNewLDAPModal()\" class=\"btn-ghost\">Cancel</button> <button type=\"submit\" class=\"btn-primary\"><i class=\"fas fa-plus mr-2\"></i>Create Connection</button></div></form></div></div></div><script>\n\t\tfunction showNewLDAPModal() {\n\t\t\tdocument.getElementById('new-ldap-modal').classList.remove('hidden');\n\t\t}\n\t\tfunction hideNewLDAPModal() {\n\t\t\tdocument.getElementById('new-ldap-modal').classList.add('hidden');\n\t\t}\n\t\tfunction testLDAP(id) {\n\t\t\tfetch(`/connections/ldap/${id}/test`, { method: 'POST' })\n\t\t\t\t.then(r => r.json())\n\t\t\t\t.then(data => {\n\t\t\t\t\tif (data.success) {\n\t\t\t\t\t\talert('Connection successful!');\n\t\t\t\t\t} else {\n\t\t\t\t\t\talert('Connection failed: ' + data.error);\n\t\t\t\t\t}\n\t\t\t\t})\n\t\t\t\t.catch(err => { console.error('Connection test failed:', err); });\n\t\t}\n\t\t</script>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 22, "\"><div class=\"space-y-4\"><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Connection Name</label> <input type=\"text\" name=\"name\" required class=\"input w-full\" placeholder=\"Active Directory\" aria-label=\"Active Directory\"></div><div class=\"grid grid-cols-3 gap-4\"><div class=\"col-span-2\"><label class=\"block text-sm font-medium text-gray-300 mb-1\">Host</label> <input type=\"text\" name=\"host\" required class=\"input w-full\" placeholder=\"ldap.example.com\" aria-label=\"ldap.example.com\"></div><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Port</label> <input type=\"number\" name=\"port\" required class=\"input w-full\" value=\"389\"></div></div><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Base DN</label> <input type=\"text\" name=\"base_dn\" required class=\"input w-full\" placeholder=\"dc=example,dc=com\" aria-label=\"dc=example,dc=com\"></div><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Bind DN (Admin)</label> <input type=\"text\" name=\"bind_dn\" class=\"input w-full\" placeholder=\"cn=admin,dc=example,dc=com\" aria-label=\"cn=admin,dc=example,dc=com\"></div><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Bind Password</label> <input type=\"password\" name=\"bind_password\" class=\"input w-full\"></div><div class=\"flex items-center gap-6\"><label class=\"flex items-center gap-2 cursor-pointer\"><input type=\"checkbox\" name=\"use_ssl\" class=\"rounded border-dark-600 bg-dark-700 text-primary-500\"> <span class=\"text-sm text-gray-300\">Use LDAPS (SSL)</span></label> <label class=\"flex items-center gap-2 cursor-pointer\"><input type=\"checkbox\" name=\"use_tls\" class=\"rounded border-dark-600 bg-dark-700 text-primary-500\"> <span class=\"text-sm text-gray-300\">Use StartTLS</span></label></div></div><div class=\"flex justify-end gap-3 mt-6\"><button type=\"button\" onclick=\"hideNewLDAPModal()\" class=\"btn-ghost\">Cancel</button> <button type=\"submit\" class=\"btn-primary\"><i aria-hidden=\"true\" class=\"fas fa-plus mr-2\"></i>Create Connection</button></div></form></div></div></div><script>\n\t\tfunction showNewLDAPModal() {\n\t\t\tdocument.getElementById('new-ldap-modal').classList.remove('hidden');\n\t\t}\n\t\tfunction hideNewLDAPModal() {\n\t\t\tdocument.getElementById('new-ldap-modal').classList.add('hidden');\n\t\t}\n\t\tfunction testLDAP(id) {\n\t\t\tfetch(`/connections/ldap/${id}/test`, { method: 'POST' })\n\t\t\t\t.then(r => r.json())\n\t\t\t\t.then(data => {\n\t\t\t\t\tif (data.success) {\n\t\t\t\t\t\talert('Connection successful!');\n\t\t\t\t\t} else {\n\t\t\t\t\t\talert('Connection failed: ' + data.error);\n\t\t\t\t\t}\n\t\t\t\t})\n\t\t\t\t.catch(err => { console.error('Connection test failed:', err); });\n\t\t}\n\t\t</script>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -351,7 +351,7 @@ func LDAPBrowser(data LDAPBrowserData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 25, "\"><!-- Sidebar: Tree view --><div class=\"w-80 bg-dark-800 border-r border-dark-600 flex flex-col\"><div class=\"p-4 border-b border-dark-600\"><div class=\"flex items-center gap-3 mb-3\"><a href=\"/connections/ldap\" class=\"text-gray-400 hover:text-white\"><i class=\"fas fa-arrow-left\"></i></a><h2 class=\"text-white font-medium truncate\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 25, "\"><!-- Sidebar: Tree view --><div class=\"w-80 bg-dark-800 border-r border-dark-600 flex flex-col\"><div class=\"p-4 border-b border-dark-600\"><div class=\"flex items-center gap-3 mb-3\"><a href=\"/connections/ldap\" class=\"text-gray-400 hover:text-white\"><i aria-hidden=\"true\" class=\"fas fa-arrow-left\"></i></a><h2 class=\"text-white font-medium truncate\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -364,7 +364,7 @@ func LDAPBrowser(data LDAPBrowserData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 26, "</h2></div><!-- Search --><div class=\"relative\"><input type=\"text\" placeholder=\"Search entries...\" class=\"input w-full text-sm pl-8\" x-model=\"searchQuery\" @keyup.enter=\"doSearch()\"> <i class=\"fas fa-search absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-500 text-xs\"></i></div></div><!-- Tree --><div class=\"flex-1 overflow-y-auto py-2\"><!-- Base DN --><div class=\"px-2\"><div class=\"flex items-center gap-1 px-2 py-1.5 text-gray-300 hover:bg-dark-700 rounded cursor-pointer\" @click=\"loadEntries('')\"><i class=\"fas fa-sitemap text-indigo-400 text-xs w-4\"></i> <span class=\"text-sm truncate\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 26, "</h2></div><!-- Search --><div class=\"relative\"><input type=\"text\" placeholder=\"Search entries...\" class=\"input w-full text-sm pl-8\" x-model=\"searchQuery\" @keyup.enter=\"doSearch()\" aria-label=\"Search entries...\"> <i aria-hidden=\"true\" class=\"fas fa-search absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-500 text-xs\"></i></div></div><!-- Tree --><div class=\"flex-1 overflow-y-auto py-2\"><!-- Base DN --><div class=\"px-2\"><div class=\"flex items-center gap-1 px-2 py-1.5 text-gray-300 hover:bg-dark-700 rounded cursor-pointer\" @click=\"loadEntries('')\"><i aria-hidden=\"true\" class=\"fas fa-sitemap text-indigo-400 text-xs w-4\"></i> <span class=\"text-sm truncate\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -422,7 +422,7 @@ func LDAPBrowser(data LDAPBrowserData) templ.Component {
 					return templ_7745c5c3_Err
 				}
 				if entry.HasChildren {
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 32, "<i class=\"fas fa-caret-right text-gray-500 text-xs w-4\"></i> ")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 32, "<i aria-hidden=\"true\" class=\"fas fa-caret-right text-gray-500 text-xs w-4\"></i> ")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
@@ -501,12 +501,12 @@ func LDAPBrowser(data LDAPBrowserData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			if !data.WriteEnabled {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 42, "<span class=\"flex items-center gap-1.5 px-2 py-1 bg-blue-500/10 text-blue-400 text-xs rounded\"><i class=\"fas fa-lock\"></i> Read-Only</span> ")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 42, "<span class=\"flex items-center gap-1.5 px-2 py-1 bg-blue-500/10 text-blue-400 text-xs rounded\"><i aria-hidden=\"true\" class=\"fas fa-lock\"></i> Read-Only</span> ")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			} else {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 43, "<span class=\"flex items-center gap-1.5 px-2 py-1 bg-red-500/10 text-red-400 text-xs rounded\"><i class=\"fas fa-exclamation-triangle\"></i> Write Enabled</span> ")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 43, "<span class=\"flex items-center gap-1.5 px-2 py-1 bg-red-500/10 text-red-400 text-xs rounded\"><i aria-hidden=\"true\" class=\"fas fa-exclamation-triangle\"></i> Write Enabled</span> ")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -524,7 +524,7 @@ func LDAPBrowser(data LDAPBrowserData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 45, "\" class=\"btn-ghost text-sm\"><i class=\"fas fa-search mr-1\"></i>Advanced Search</a> <button @click=\"showSettingsModal = true\" class=\"btn-ghost text-sm\"><i class=\"fas fa-cog mr-1\"></i>Settings</button></div></div><!-- Entry Details -->")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 45, "\" class=\"btn-ghost text-sm\"><i aria-hidden=\"true\" class=\"fas fa-search mr-1\"></i>Advanced Search</a> <button @click=\"showSettingsModal = true\" class=\"btn-ghost text-sm\"><i aria-hidden=\"true\" class=\"fas fa-cog mr-1\"></i>Settings</button></div></div><!-- Entry Details -->")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -669,7 +669,7 @@ func LDAPBrowser(data LDAPBrowserData) templ.Component {
 						return templ_7745c5c3_Err
 					}
 					if data.WriteEnabled {
-						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 64, "<button class=\"text-gray-500 hover:text-white p-1\" title=\"Edit\"><i class=\"fas fa-edit text-xs\"></i></button>")
+						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 64, "<button class=\"text-gray-500 hover:text-white p-1\" title=\"Edit\"><i aria-hidden=\"true\" class=\"fas fa-edit text-xs\"></i></button>")
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
@@ -684,7 +684,7 @@ func LDAPBrowser(data LDAPBrowserData) templ.Component {
 					return templ_7745c5c3_Err
 				}
 				if data.WriteEnabled {
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 67, "<div class=\"mt-4 flex items-center gap-2\"><button @click=\"showAddAttributeModal = true\" class=\"btn-ghost text-sm\"><i class=\"fas fa-plus mr-1\"></i>Add Attribute</button> <button @click=\"confirmDelete()\" class=\"btn-ghost text-sm text-red-400 hover:text-red-300\"><i class=\"fas fa-trash mr-1\"></i>Delete Entry</button></div>")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 67, "<div class=\"mt-4 flex items-center gap-2\"><button @click=\"showAddAttributeModal = true\" class=\"btn-ghost text-sm\"><i aria-hidden=\"true\" class=\"fas fa-plus mr-1\"></i>Add Attribute</button> <button @click=\"confirmDelete()\" class=\"btn-ghost text-sm text-red-400 hover:text-red-300\"><i aria-hidden=\"true\" class=\"fas fa-trash mr-1\"></i>Delete Entry</button></div>")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
@@ -694,12 +694,12 @@ func LDAPBrowser(data LDAPBrowserData) templ.Component {
 					return templ_7745c5c3_Err
 				}
 			} else {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 69, "<div class=\"flex-1 flex items-center justify-center\"><div class=\"text-center\"><i class=\"fas fa-sitemap text-4xl text-gray-400 mb-4\"></i><p class=\"text-gray-400\">Select an entry from the tree to view details</p></div></div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 69, "<div class=\"flex-1 flex items-center justify-center\"><div class=\"text-center\"><i aria-hidden=\"true\" class=\"fas fa-sitemap text-4xl text-gray-400 mb-4\"></i><p class=\"text-gray-400\">Select an entry from the tree to view details</p></div></div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 70, "</div><!-- Settings Modal (Danger Zone) --><div x-show=\"showSettingsModal\" x-cloak class=\"fixed inset-0 z-50 overflow-y-auto\"><div class=\"flex min-h-screen items-center justify-center p-4\"><div class=\"fixed inset-0 bg-black/60\" @click=\"showSettingsModal = false\"></div><div class=\"relative card w-full max-w-md p-6\"><h3 class=\"text-lg font-semibold text-white mb-4\"><i class=\"fas fa-cog text-gray-400 mr-2\"></i>Browser Settings</h3><!-- Danger Zone --><div class=\"border border-red-500/30 rounded-lg p-4 bg-red-500/5 mb-4\"><h4 class=\"text-red-400 font-medium flex items-center gap-2 mb-2\"><i class=\"fas fa-exclamation-triangle\"></i> Danger Zone</h4><p class=\"text-gray-400 text-sm mb-3\">Enabling write mode allows you to modify LDAP entries and attributes. Incorrect changes can cause <strong class=\"text-red-400\">authentication failures</strong>, <strong class=\"text-red-400\">access control issues</strong>, or <strong class=\"text-red-400\">directory corruption</strong>.</p><div class=\"flex items-center justify-between p-3 bg-dark-800 rounded-lg\"><div><p class=\"text-white text-sm font-medium\">Enable Write Mode</p><p class=\"text-gray-500 text-xs\">Allow ADD, MODIFY, DELETE operations</p></div><label class=\"relative inline-flex items-center cursor-pointer\"><input type=\"checkbox\" x-model=\"writeEnabled\" class=\"sr-only peer\" @change=\"toggleWriteMode()\"><div class=\"w-11 h-6 bg-dark-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-red-500\"></div></label></div><div x-show=\"writeEnabled\" class=\"mt-3 p-3 bg-red-500/10 border border-red-500/20 rounded-lg\"><p class=\"text-red-400 text-xs flex items-center gap-2\"><i class=\"fas fa-shield-alt\"></i> Write mode is now enabled. Changes affect production directory!</p></div></div><!-- Other settings --><div class=\"space-y-3\"><div class=\"flex items-center justify-between\"><span class=\"text-gray-300 text-sm\">Page size (entries)</span> <select x-model=\"pageSize\" class=\"input text-sm w-24\"><option value=\"50\">50</option> <option value=\"100\">100</option> <option value=\"250\">250</option> <option value=\"500\">500</option></select></div><div class=\"flex items-center justify-between\"><span class=\"text-gray-300 text-sm\">Show operational attributes</span> <label class=\"relative inline-flex items-center cursor-pointer\"><input type=\"checkbox\" x-model=\"showOperational\" class=\"sr-only peer\"><div class=\"w-9 h-5 bg-dark-600 rounded-full peer peer-checked:bg-primary-500 peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all\"></div></label></div></div><div class=\"flex justify-end mt-6\"><button @click=\"showSettingsModal = false\" class=\"btn-primary\">Done</button></div></div></div></div></div><script>\n\t\tfunction ldapBrowser() {\n\t\t\treturn {\n\t\t\t\tshowSettingsModal: false,\n\t\t\t\tshowAddAttributeModal: false,\n\t\t\t\twriteEnabled: false,\n\t\t\t\tpageSize: 100,\n\t\t\t\tshowOperational: false,\n\t\t\t\tsearchQuery: '',\n\t\t\t\tconnID: '',\n\n\t\t\t\tinit() {\n\t\t\t\t\tthis.writeEnabled = this.$el.dataset.writeEnabled === 'true';\n\t\t\t\t\tthis.connID = this.$el.dataset.connId || '';\n\t\t\t\t},\n\n\t\t\t\ttoggleWriteMode() {\n\t\t\t\t\tfetch(`/connections/ldap/${this.connID}/write-mode`, {\n\t\t\t\t\t\tmethod: 'POST',\n\t\t\t\t\t\theaders: { 'Content-Type': 'application/json' },\n\t\t\t\t\t\tbody: JSON.stringify({ enabled: this.writeEnabled })\n\t\t\t\t\t}).then(() => {\n\t\t\t\t\t\tlocation.reload();\n\t\t\t\t\t});\n\t\t\t\t},\n\n\t\t\t\tloadEntries(dn) {\n\t\t\t\t\twindow.location.href = `/connections/ldap/${this.connID}?dn=${encodeURIComponent(dn)}`;\n\t\t\t\t},\n\n\t\t\t\tselectEntry(dn) {\n\t\t\t\t\twindow.location.href = `/connections/ldap/${this.connID}?entry=${encodeURIComponent(dn)}`;\n\t\t\t\t},\n\n\t\t\t\tdoSearch() {\n\t\t\t\t\tif (!this.searchQuery.trim()) return;\n\t\t\t\t\twindow.location.href = `/connections/ldap/${this.connID}/search?q=${encodeURIComponent(this.searchQuery)}`;\n\t\t\t\t},\n\n\t\t\t\tconfirmDelete() {\n\t\t\t\t\tif (confirm('Delete this entry? This action cannot be undone and may affect authentication and access control.')) {\n\t\t\t\t\t\t// Delete logic\n\t\t\t\t\t}\n\t\t\t\t}\n\t\t\t};\n\t\t}\n\t\t</script>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 70, "</div><!-- Settings Modal (Danger Zone) --><div x-show=\"showSettingsModal\" x-cloak class=\"fixed inset-0 z-50 overflow-y-auto\"><div class=\"flex min-h-screen items-center justify-center p-4\"><div class=\"fixed inset-0 bg-black/60\" @click=\"showSettingsModal = false\"></div><div class=\"relative card w-full max-w-md p-6\"><h3 class=\"text-lg font-semibold text-white mb-4\"><i aria-hidden=\"true\" class=\"fas fa-cog text-gray-400 mr-2\"></i>Browser Settings</h3><!-- Danger Zone --><div class=\"border border-red-500/30 rounded-lg p-4 bg-red-500/5 mb-4\"><h4 class=\"text-red-400 font-medium flex items-center gap-2 mb-2\"><i aria-hidden=\"true\" class=\"fas fa-exclamation-triangle\"></i> Danger Zone</h4><p class=\"text-gray-400 text-sm mb-3\">Enabling write mode allows you to modify LDAP entries and attributes. Incorrect changes can cause <strong class=\"text-red-400\">authentication failures</strong>, <strong class=\"text-red-400\">access control issues</strong>, or <strong class=\"text-red-400\">directory corruption</strong>.</p><div class=\"flex items-center justify-between p-3 bg-dark-800 rounded-lg\"><div><p class=\"text-white text-sm font-medium\">Enable Write Mode</p><p class=\"text-gray-500 text-xs\">Allow ADD, MODIFY, DELETE operations</p></div><label class=\"relative inline-flex items-center cursor-pointer\"><input type=\"checkbox\" x-model=\"writeEnabled\" class=\"sr-only peer\" @change=\"toggleWriteMode()\"><div class=\"w-11 h-6 bg-dark-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-red-500\"></div></label></div><div x-show=\"writeEnabled\" class=\"mt-3 p-3 bg-red-500/10 border border-red-500/20 rounded-lg\"><p class=\"text-red-400 text-xs flex items-center gap-2\"><i aria-hidden=\"true\" class=\"fas fa-shield-alt\"></i> Write mode is now enabled. Changes affect production directory!</p></div></div><!-- Other settings --><div class=\"space-y-3\"><div class=\"flex items-center justify-between\"><span class=\"text-gray-300 text-sm\">Page size (entries)</span> <select x-model=\"pageSize\" class=\"input text-sm w-24\"><option value=\"50\">50</option> <option value=\"100\">100</option> <option value=\"250\">250</option> <option value=\"500\">500</option></select></div><div class=\"flex items-center justify-between\"><span class=\"text-gray-300 text-sm\">Show operational attributes</span> <label class=\"relative inline-flex items-center cursor-pointer\"><input type=\"checkbox\" x-model=\"showOperational\" class=\"sr-only peer\"><div class=\"w-9 h-5 bg-dark-600 rounded-full peer peer-checked:bg-primary-500 peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all\"></div></label></div></div><div class=\"flex justify-end mt-6\"><button @click=\"showSettingsModal = false\" class=\"btn-primary\">Done</button></div></div></div></div></div><script>\n\t\tfunction ldapBrowser() {\n\t\t\treturn {\n\t\t\t\tshowSettingsModal: false,\n\t\t\t\tshowAddAttributeModal: false,\n\t\t\t\twriteEnabled: false,\n\t\t\t\tpageSize: 100,\n\t\t\t\tshowOperational: false,\n\t\t\t\tsearchQuery: '',\n\t\t\t\tconnID: '',\n\n\t\t\t\tinit() {\n\t\t\t\t\tthis.writeEnabled = this.$el.dataset.writeEnabled === 'true';\n\t\t\t\t\tthis.connID = this.$el.dataset.connId || '';\n\t\t\t\t},\n\n\t\t\t\ttoggleWriteMode() {\n\t\t\t\t\tfetch(`/connections/ldap/${this.connID}/write-mode`, {\n\t\t\t\t\t\tmethod: 'POST',\n\t\t\t\t\t\theaders: { 'Content-Type': 'application/json' },\n\t\t\t\t\t\tbody: JSON.stringify({ enabled: this.writeEnabled })\n\t\t\t\t\t}).then(() => {\n\t\t\t\t\t\tlocation.reload();\n\t\t\t\t\t});\n\t\t\t\t},\n\n\t\t\t\tloadEntries(dn) {\n\t\t\t\t\twindow.location.href = `/connections/ldap/${this.connID}?dn=${encodeURIComponent(dn)}`;\n\t\t\t\t},\n\n\t\t\t\tselectEntry(dn) {\n\t\t\t\t\twindow.location.href = `/connections/ldap/${this.connID}?entry=${encodeURIComponent(dn)}`;\n\t\t\t\t},\n\n\t\t\t\tdoSearch() {\n\t\t\t\t\tif (!this.searchQuery.trim()) return;\n\t\t\t\t\twindow.location.href = `/connections/ldap/${this.connID}/search?q=${encodeURIComponent(this.searchQuery)}`;\n\t\t\t\t},\n\n\t\t\t\tconfirmDelete() {\n\t\t\t\t\tif (confirm('Delete this entry? This action cannot be undone and may affect authentication and access control.')) {\n\t\t\t\t\t\t// Delete logic\n\t\t\t\t\t}\n\t\t\t\t}\n\t\t\t};\n\t\t}\n\t\t</script>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -840,7 +840,7 @@ func LDAPConnectionSettings(data LDAPConnectionSettingsData) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 71, "<div class=\"max-w-2xl mx-auto space-y-6\"><!-- Header --><div class=\"flex items-center gap-4\"><a href=\"/connections/ldap\" class=\"p-2 text-gray-400 hover:text-white hover:bg-dark-700 rounded-lg\"><i class=\"fas fa-arrow-left\"></i></a><div class=\"flex-1\"><div class=\"flex items-center gap-3\"><h1 class=\"text-2xl font-display font-bold text-white\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 71, "<div class=\"max-w-2xl mx-auto space-y-6\"><!-- Header --><div class=\"flex items-center gap-4\"><a href=\"/connections/ldap\" class=\"p-2 text-gray-400 hover:text-white hover:bg-dark-700 rounded-lg\"><i aria-hidden=\"true\" class=\"fas fa-arrow-left\"></i></a><div class=\"flex-1\"><div class=\"flex items-center gap-3\"><h1 class=\"text-2xl font-display font-bold text-white\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -907,7 +907,7 @@ func LDAPConnectionSettings(data LDAPConnectionSettingsData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 78, "\" class=\"card p-4 flex items-center gap-3 hover:bg-dark-700/50 transition-colors\"><div class=\"w-10 h-10 bg-indigo-500/10 rounded-lg flex items-center justify-center\"><i class=\"fas fa-folder-tree text-indigo-400\"></i></div><div><p class=\"text-white font-medium\">Browse</p><p class=\"text-xs text-gray-400\">Directory tree</p></div></a> <a href=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 78, "\" class=\"card p-4 flex items-center gap-3 hover:bg-dark-700/50 transition-colors\"><div class=\"w-10 h-10 bg-indigo-500/10 rounded-lg flex items-center justify-center\"><i aria-hidden=\"true\" class=\"fas fa-folder-tree text-indigo-400\"></i></div><div><p class=\"text-white font-medium\">Browse</p><p class=\"text-xs text-gray-400\">Directory tree</p></div></a> <a href=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -920,7 +920,7 @@ func LDAPConnectionSettings(data LDAPConnectionSettingsData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 79, "\" class=\"card p-4 flex items-center gap-3 hover:bg-dark-700/50 transition-colors\"><div class=\"w-10 h-10 bg-blue-500/10 rounded-lg flex items-center justify-center\"><i class=\"fas fa-search text-blue-400\"></i></div><div><p class=\"text-white font-medium\">Search</p><p class=\"text-xs text-gray-400\">Advanced search</p></div></a> ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 79, "\" class=\"card p-4 flex items-center gap-3 hover:bg-dark-700/50 transition-colors\"><div class=\"w-10 h-10 bg-blue-500/10 rounded-lg flex items-center justify-center\"><i aria-hidden=\"true\" class=\"fas fa-search text-blue-400\"></i></div><div><p class=\"text-white font-medium\">Search</p><p class=\"text-xs text-gray-400\">Advanced search</p></div></a> ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -937,7 +937,7 @@ func LDAPConnectionSettings(data LDAPConnectionSettingsData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 81, "\"><div class=\"w-10 h-10 bg-green-500/10 rounded-lg flex items-center justify-center\"><i class=\"fas fa-plug text-green-400\"></i></div><div><p class=\"text-white font-medium\">Test</p><p class=\"text-xs text-gray-400\">Verify connection</p></div></button></div><!-- Edit Form --><form method=\"POST\" action=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 81, "\"><div class=\"w-10 h-10 bg-green-500/10 rounded-lg flex items-center justify-center\"><i aria-hidden=\"true\" class=\"fas fa-plug text-green-400\"></i></div><div><p class=\"text-white font-medium\">Test</p><p class=\"text-xs text-gray-400\">Verify connection</p></div></button></div><!-- Edit Form --><form method=\"POST\" action=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -1028,7 +1028,7 @@ func LDAPConnectionSettings(data LDAPConnectionSettingsData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 88, "\"></div><div><label for=\"bind_password\" class=\"block text-sm font-medium text-gray-300 mb-1\">Bind Password</label> <input type=\"password\" id=\"bind_password\" name=\"bind_password\" class=\"input w-full\" placeholder=\"Leave blank to keep current\"></div><div class=\"flex items-center gap-6\"><label class=\"flex items-center gap-2 cursor-pointer\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 88, "\"></div><div><label for=\"bind_password\" class=\"block text-sm font-medium text-gray-300 mb-1\">Bind Password</label> <input type=\"password\" id=\"bind_password\" name=\"bind_password\" class=\"input w-full\" placeholder=\"Leave blank to keep current\" aria-label=\"Leave blank to keep current\"></div><div class=\"flex items-center gap-6\"><label class=\"flex items-center gap-2 cursor-pointer\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -1058,7 +1058,7 @@ func LDAPConnectionSettings(data LDAPConnectionSettingsData) templ.Component {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 94, "<span class=\"text-sm text-gray-300\">Use StartTLS</span></label> <label class=\"flex items-center gap-2 cursor-pointer\"><input type=\"checkbox\" name=\"skip_tls_verify\" class=\"rounded border-dark-600 bg-dark-700 text-primary-500\"> <span class=\"text-sm text-gray-300\">Skip TLS verify</span></label></div></div><!-- Submit --><div class=\"flex justify-end gap-3\"><a href=\"/connections/ldap\" class=\"btn-secondary\">Cancel</a> <button type=\"submit\" class=\"btn-primary\"><i class=\"fas fa-save mr-2\"></i>Save Changes</button></div></form><!-- Connection Info --><div class=\"card p-6\"><h2 class=\"text-lg font-medium text-white mb-4\">Connection Info</h2><dl class=\"grid grid-cols-2 gap-4 text-sm\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 94, "<span class=\"text-sm text-gray-300\">Use StartTLS</span></label> <label class=\"flex items-center gap-2 cursor-pointer\"><input type=\"checkbox\" name=\"skip_tls_verify\" class=\"rounded border-dark-600 bg-dark-700 text-primary-500\"> <span class=\"text-sm text-gray-300\">Skip TLS verify</span></label></div></div><!-- Submit --><div class=\"flex justify-end gap-3\"><a href=\"/connections/ldap\" class=\"btn-secondary\">Cancel</a> <button type=\"submit\" class=\"btn-primary\"><i aria-hidden=\"true\" class=\"fas fa-save mr-2\"></i>Save Changes</button></div></form><!-- Connection Info --><div class=\"card p-6\"><h2 class=\"text-lg font-medium text-white mb-4\">Connection Info</h2><dl class=\"grid grid-cols-2 gap-4 text-sm\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -1094,7 +1094,7 @@ func LDAPConnectionSettings(data LDAPConnectionSettingsData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 98, "</dd></div></dl></div><!-- Danger Zone --><div class=\"card border-red-500/30 p-6\"><h2 class=\"text-lg font-medium text-red-400 mb-4\"><i class=\"fas fa-exclamation-triangle mr-2\"></i>Danger Zone</h2><div class=\"flex items-center justify-between p-4 bg-red-500/5 border border-red-500/20 rounded-lg\"><div><p class=\"text-white font-medium\">Delete this connection</p><p class=\"text-gray-400 text-sm\">Permanently remove this LDAP connection and all its settings.</p></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 98, "</dd></div></dl></div><!-- Danger Zone --><div class=\"card border-red-500/30 p-6\"><h2 class=\"text-lg font-medium text-red-400 mb-4\"><i aria-hidden=\"true\" class=\"fas fa-exclamation-triangle mr-2\"></i>Danger Zone</h2><div class=\"flex items-center justify-between p-4 bg-red-500/5 border border-red-500/20 rounded-lg\"><div><p class=\"text-white font-medium\">Delete this connection</p><p class=\"text-gray-400 text-sm\">Permanently remove this LDAP connection and all its settings.</p></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -1111,7 +1111,7 @@ func LDAPConnectionSettings(data LDAPConnectionSettingsData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 100, "\" class=\"px-4 py-2 bg-red-500/10 text-red-400 hover:bg-red-500/20 rounded-lg transition-colors text-sm font-medium\"><i class=\"fas fa-trash mr-2\"></i>Delete</button></div></div></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 100, "\" class=\"px-4 py-2 bg-red-500/10 text-red-400 hover:bg-red-500/20 rounded-lg transition-colors text-sm font-medium\"><i aria-hidden=\"true\" class=\"fas fa-trash mr-2\"></i>Delete</button></div></div></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

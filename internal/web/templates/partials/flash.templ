@@ -12,10 +12,11 @@ templ Flash(flashType, message string) {
 		x-transition:leave-end="opacity-0 transform -translate-y-2"
 		x-init="setTimeout(() => show = false, 5000)"
 		class={ "mb-6 p-4 rounded-lg border flex items-start gap-3", flashClass(flashType) }
+		role="alert"
 	>
-		<i class={ "fas mt-0.5", flashIcon(flashType) }></i>
+		<i class={ "fas mt-0.5", flashIcon(flashType) } aria-hidden="true"></i>
 		<span class="flex-1 text-sm">{ message }</span>
-		<button @click="show = false" class="text-current opacity-60 hover:opacity-100 transition-opacity">
+		<button @click="show = false" aria-label="Dismiss message" class="text-current opacity-60 hover:opacity-100 transition-opacity">
 			<i class="fas fa-times"></i>
 		</button>
 	</div>

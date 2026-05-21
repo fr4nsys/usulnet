@@ -38,7 +38,7 @@ templ ContainerDetail(data ContainerDetailData) {
 				<div>
 					<div class="flex items-center gap-2 text-sm text-gray-500 mb-1">
 						<a href="/monitoring" class="hover:text-gray-300 transition-colors">Monitoring</a>
-						<i class="fas fa-chevron-right text-[10px]"></i>
+						<i aria-hidden="true" class="fas fa-chevron-right text-[10px]"></i>
 						<span class="text-gray-300">{ data.Container.Name }</span>
 					</div>
 					<div class="flex items-center gap-3">
@@ -57,24 +57,24 @@ templ ContainerDetail(data ContainerDetailData) {
 					</div>
 					<a href={ templ.SafeURL(fmt.Sprintf("/containers/%s", data.Container.ID)) }
 						class="px-3 py-1.5 bg-dark-700 hover:bg-dark-600 text-gray-300 rounded-lg transition-colors text-sm font-medium">
-						<i class="fas fa-cube mr-1.5"></i>Container
+						<i aria-hidden="true" class="fas fa-cube mr-1.5"></i>Container
 					</a>
 					<a href={ templ.SafeURL(fmt.Sprintf("/containers/%s/logs", data.Container.ID)) }
 						class="px-3 py-1.5 bg-dark-700 hover:bg-dark-600 text-gray-300 rounded-lg transition-colors text-sm font-medium">
-						<i class="fas fa-file-alt mr-1.5"></i>Logs
+						<i aria-hidden="true" class="fas fa-file-alt mr-1.5"></i>Logs
 					</a>
 				</div>
 			</div>
 
 			<!-- Summary Cards -->
 			<div class="grid grid-cols-2 lg:grid-cols-5 gap-4">
-				<div class="bg-dark-800 rounded-xl border border-dark-600 p-4">
+				<div class="card p-4">
 					<span class="text-xs text-gray-500 font-medium uppercase tracking-wider">CPU</span>
 					<div id="card-cpu" class={ "text-xl font-display font-bold mt-1", cpuColor(data.Container.CPUPercent) }>
 						{ fmt.Sprintf("%.2f%%", data.Container.CPUPercent) }
 					</div>
 				</div>
-				<div class="bg-dark-800 rounded-xl border border-dark-600 p-4">
+				<div class="card p-4">
 					<span class="text-xs text-gray-500 font-medium uppercase tracking-wider">Memory</span>
 					<div class="mt-1">
 						<span id="card-mem" class={ "text-xl font-display font-bold", cpuColor(data.Container.MemPercent) }>
@@ -83,19 +83,19 @@ templ ContainerDetail(data ContainerDetailData) {
 						<span class="text-xs text-gray-500 ml-1">/ { formatBytes(data.Container.MemLimit) }</span>
 					</div>
 				</div>
-				<div class="bg-dark-800 rounded-xl border border-dark-600 p-4">
+				<div class="card p-4">
 					<span class="text-xs text-gray-500 font-medium uppercase tracking-wider">Network Rx</span>
 					<div id="card-netrx" class="text-xl font-display font-bold text-gray-300 mt-1">
 						{ formatBytes(data.Container.NetRx) }
 					</div>
 				</div>
-				<div class="bg-dark-800 rounded-xl border border-dark-600 p-4">
+				<div class="card p-4">
 					<span class="text-xs text-gray-500 font-medium uppercase tracking-wider">Network Tx</span>
 					<div id="card-nettx" class="text-xl font-display font-bold text-gray-300 mt-1">
 						{ formatBytes(data.Container.NetTx) }
 					</div>
 				</div>
-				<div class="bg-dark-800 rounded-xl border border-dark-600 p-4">
+				<div class="card p-4">
 					<span class="text-xs text-gray-500 font-medium uppercase tracking-wider">PIDs</span>
 					<div id="card-pids" class="text-xl font-display font-bold text-gray-300 mt-1">
 						{ fmt.Sprintf("%d", data.Container.PIDs) }
@@ -105,7 +105,7 @@ templ ContainerDetail(data ContainerDetailData) {
 
 			<!-- Charts: CPU + Memory -->
 			<div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-				<div class="bg-dark-800 rounded-xl border border-dark-600 p-4">
+				<div class="card p-4">
 					<div class="flex items-center justify-between mb-3">
 						<h2 class="text-sm font-semibold text-white">CPU Usage</h2>
 						<span id="chart-cpu-label" class="text-xs text-gray-400"></span>
@@ -114,7 +114,7 @@ templ ContainerDetail(data ContainerDetailData) {
 						<canvas id="chart-cpu"></canvas>
 					</div>
 				</div>
-				<div class="bg-dark-800 rounded-xl border border-dark-600 p-4">
+				<div class="card p-4">
 					<div class="flex items-center justify-between mb-3">
 						<h2 class="text-sm font-semibold text-white">Memory Usage</h2>
 						<span id="chart-mem-label" class="text-xs text-gray-400"></span>
@@ -127,7 +127,7 @@ templ ContainerDetail(data ContainerDetailData) {
 
 			<!-- Charts: Network + Block I/O -->
 			<div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-				<div class="bg-dark-800 rounded-xl border border-dark-600 p-4">
+				<div class="card p-4">
 					<div class="flex items-center justify-between mb-3">
 						<h2 class="text-sm font-semibold text-white">Network I/O</h2>
 						<span id="chart-net-label" class="text-xs text-gray-400"></span>
@@ -136,7 +136,7 @@ templ ContainerDetail(data ContainerDetailData) {
 						<canvas id="chart-net"></canvas>
 					</div>
 				</div>
-				<div class="bg-dark-800 rounded-xl border border-dark-600 p-4">
+				<div class="card p-4">
 					<div class="flex items-center justify-between mb-3">
 						<h2 class="text-sm font-semibold text-white">Block I/O</h2>
 						<span id="chart-blk-label" class="text-xs text-gray-400"></span>
@@ -149,7 +149,7 @@ templ ContainerDetail(data ContainerDetailData) {
 
 			<!-- Process List -->
 			if len(data.Processes) > 0 {
-				<div class="bg-dark-800 rounded-xl border border-dark-600 overflow-hidden">
+				<div class="card overflow-hidden">
 					<div class="px-4 py-3 border-b border-dark-600">
 						<h2 class="text-sm font-semibold text-white">Processes</h2>
 					</div>
@@ -157,13 +157,13 @@ templ ContainerDetail(data ContainerDetailData) {
 						<table class="w-full text-sm">
 							<thead>
 								<tr class="text-xs text-gray-500 uppercase tracking-wider border-b border-dark-700">
-									<th class="px-4 py-2 text-left font-medium">PID</th>
-									<th class="px-4 py-2 text-left font-medium">User</th>
-									<th class="px-4 py-2 text-right font-medium">CPU %</th>
-									<th class="px-4 py-2 text-right font-medium">MEM %</th>
-									<th class="px-4 py-2 text-right font-medium">VSZ</th>
-									<th class="px-4 py-2 text-right font-medium">RSS</th>
-									<th class="px-4 py-2 text-left font-medium">Command</th>
+									<th scope="col" class="px-4 py-2 text-left font-medium">PID</th>
+									<th scope="col" class="px-4 py-2 text-left font-medium">User</th>
+									<th scope="col" class="px-4 py-2 text-right font-medium">CPU %</th>
+									<th scope="col" class="px-4 py-2 text-right font-medium">MEM %</th>
+									<th scope="col" class="px-4 py-2 text-right font-medium">VSZ</th>
+									<th scope="col" class="px-4 py-2 text-right font-medium">RSS</th>
+									<th scope="col" class="px-4 py-2 text-left font-medium">Command</th>
 								</tr>
 							</thead>
 							<tbody id="process-table">

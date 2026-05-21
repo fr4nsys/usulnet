@@ -22,7 +22,7 @@ templ Edit(data EditData) {
 			<div class="max-w-3xl">
 				<div class="flex items-center gap-3 mb-6">
 					<a href="/firewall" class="text-gray-400 hover:text-white">
-						<i class="fas fa-arrow-left"></i>
+						<i aria-hidden="true" class="fas fa-arrow-left"></i>
 					</a>
 					<h2 class="text-xl font-display font-bold text-white">Edit Rule: { data.Rule.Name }</h2>
 				</div>
@@ -70,11 +70,11 @@ templ Edit(data EditData) {
 					<div class="grid grid-cols-2 gap-4">
 						<div>
 							<label class="block text-sm font-medium text-gray-300 mb-1">Source (IP/CIDR)</label>
-							<input type="text" name="source" value={ data.Rule.Source } placeholder="any" class="w-full bg-dark-800 border border-dark-600 text-white font-mono rounded-lg px-3 py-2 focus:ring-2 focus:ring-accent-500 focus:border-transparent"/>
+							<input type="text" name="source" value={ data.Rule.Source } placeholder="any" aria-label="any" class="w-full bg-dark-800 border border-dark-600 text-white font-mono rounded-lg px-3 py-2 focus:ring-2 focus:ring-accent-500 focus:border-transparent"/>
 						</div>
 						<div>
 							<label class="block text-sm font-medium text-gray-300 mb-1">Destination (IP/CIDR)</label>
-							<input type="text" name="destination" value={ data.Rule.Destination } placeholder="any" class="w-full bg-dark-800 border border-dark-600 text-white font-mono rounded-lg px-3 py-2 focus:ring-2 focus:ring-accent-500 focus:border-transparent"/>
+							<input type="text" name="destination" value={ data.Rule.Destination } placeholder="any" aria-label="any" class="w-full bg-dark-800 border border-dark-600 text-white font-mono rounded-lg px-3 py-2 focus:ring-2 focus:ring-accent-500 focus:border-transparent"/>
 						</div>
 					</div>
 
@@ -110,7 +110,7 @@ templ Edit(data EditData) {
 
 					<div>
 						<label class="block text-sm font-medium text-gray-300 mb-1">Interface</label>
-						<input type="text" name="interface_name" value={ data.Rule.InterfaceName } placeholder="eth0, docker0, etc." class="w-full bg-dark-800 border border-dark-600 text-white rounded-lg px-3 py-2 focus:ring-2 focus:ring-accent-500 focus:border-transparent"/>
+						<input type="text" name="interface_name" value={ data.Rule.InterfaceName } placeholder="eth0, docker0, etc." aria-label="eth0, docker0, etc." class="w-full bg-dark-800 border border-dark-600 text-white rounded-lg px-3 py-2 focus:ring-2 focus:ring-accent-500 focus:border-transparent"/>
 					</div>
 
 					<div class="grid grid-cols-2 gap-4">
@@ -136,7 +136,7 @@ templ Edit(data EditData) {
 
 					<div class="flex gap-2 pt-4">
 						<button type="submit" class="btn btn-primary">
-							<i class="fas fa-save mr-1"></i> Save Changes
+							<i aria-hidden="true" class="fas fa-save mr-1"></i> Save Changes
 						</button>
 						<a href="/firewall" class="btn btn-secondary">Cancel</a>
 					</div>

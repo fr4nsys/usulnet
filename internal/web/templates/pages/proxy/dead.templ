@@ -29,9 +29,9 @@ templ DeadList(data DeadListData) {
 				</div>
 				<div class="flex items-center gap-2">
 					if data.Connected {
-						<span class="badge badge-success"><i class="fas fa-link mr-1"></i>Connected</span>
+						<span class="badge badge-success"><i aria-hidden="true" class="fas fa-link mr-1"></i>Connected</span>
 						<a href="/proxy/dead-hosts/new" class="btn-primary">
-							<i class="fas fa-plus mr-2"></i>New 404 Host
+							<i aria-hidden="true" class="fas fa-plus mr-2"></i>New 404 Host
 						</a>
 					}
 				</div>
@@ -46,10 +46,10 @@ templ DeadList(data DeadListData) {
 							<table class="table">
 								<thead>
 									<tr>
-										<th>Domains</th>
-										<th>SSL</th>
-										<th>Status</th>
-										<th>Actions</th>
+										<th scope="col">Domains</th>
+										<th scope="col">SSL</th>
+										<th scope="col">Status</th>
+										<th scope="col">Actions</th>
 									</tr>
 								</thead>
 								<tbody>
@@ -85,18 +85,18 @@ templ DeadList(data DeadListData) {
 					</div>
 				} else {
 					<div class="card p-8 text-center">
-						<i class="fas fa-ban text-4xl text-gray-400 mb-4"></i>
+						<i aria-hidden="true" class="fas fa-ban text-4xl text-gray-400 mb-4"></i>
 						<h3 class="text-lg font-medium text-white mb-2">No 404 hosts</h3>
 						<p class="text-gray-400 mb-4">Block domains by serving a 404 page</p>
-						<a href="/proxy/dead-hosts/new" class="btn-primary"><i class="fas fa-plus mr-2"></i>New 404 Host</a>
+						<a href="/proxy/dead-hosts/new" class="btn-primary"><i aria-hidden="true" class="fas fa-plus mr-2"></i>New 404 Host</a>
 					</div>
 				}
 			} else {
 				<div class="card p-8 text-center">
-					<i class="fas fa-plug text-4xl text-gray-400 mb-4"></i>
+					<i aria-hidden="true" class="fas fa-plug text-4xl text-gray-400 mb-4"></i>
 					<h3 class="text-lg font-medium text-white mb-2">NPM Not Connected</h3>
 					<p class="text-gray-400 mb-4">Connect to NPM first.</p>
-					<a href="/proxy/setup" class="btn-primary"><i class="fas fa-link mr-2"></i>Setup Connection</a>
+					<a href="/proxy/setup" class="btn-primary"><i aria-hidden="true" class="fas fa-link mr-2"></i>Setup Connection</a>
 				</div>
 			}
 		</div>
@@ -114,7 +114,7 @@ templ DeadForm(data DeadFormData) {
 		<div class="max-w-2xl mx-auto space-y-6">
 			<div class="flex items-center gap-4">
 				<a href="/proxy/dead-hosts" class="p-2 text-gray-400 hover:text-white hover:bg-dark-700 rounded-lg">
-					<i class="fas fa-arrow-left"></i>
+					<i aria-hidden="true" class="fas fa-arrow-left"></i>
 				</a>
 				<div>
 					<h1 class="text-2xl font-display font-bold text-white">New 404 Host</h1>
@@ -124,7 +124,7 @@ templ DeadForm(data DeadFormData) {
 
 			if data.Error != "" {
 				<div class="bg-red-500/10 border border-red-500/20 rounded-lg p-4 text-red-400">
-					<i class="fas fa-exclamation-triangle mr-2"></i>{ data.Error }
+					<i aria-hidden="true" class="fas fa-exclamation-triangle mr-2"></i>{ data.Error }
 				</div>
 			}
 
@@ -135,6 +135,7 @@ templ DeadForm(data DeadFormData) {
 					<input type="text" name="domain_names" required
 						placeholder="blocked.example.com"
 						class="input w-full"
+						aria-label="Domain Names"
 					/>
 					<p class="text-xs text-gray-500 mt-1">Comma-separated. These domains will return a 404.</p>
 				</div>
@@ -165,7 +166,7 @@ templ DeadForm(data DeadFormData) {
 				<div class="flex items-center justify-end gap-3">
 					<a href="/proxy/dead-hosts" class="btn-secondary">Cancel</a>
 					<button type="submit" class="btn-primary">
-						<i class="fas fa-plus mr-2"></i>Create 404 Host
+						<i aria-hidden="true" class="fas fa-plus mr-2"></i>Create 404 Host
 					</button>
 				</div>
 			</form>

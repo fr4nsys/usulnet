@@ -280,6 +280,13 @@ func (h *Handler) ReconConnectorsTempl(w http.ResponseWriter, r *http.Request) {
 			})
 		}
 	}
+	for _, g := range svc.ListSandboxTools(r.Context()) {
+		group := recontmpl.SandboxToolGroup{Category: g.Category}
+		for _, name := range g.Tools {
+			group.Tools = append(group.Tools, recontmpl.SandboxToolView{Name: name})
+		}
+		data.SandboxTools = append(data.SandboxTools, group)
+	}
 	h.renderTempl(w, r, recontmpl.Connectors(data))
 }
 

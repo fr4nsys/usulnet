@@ -174,7 +174,7 @@ templ NotificationChannels(data NotificationChannelsData) {
 			<div class="flex items-center justify-between">
 				<div>
 					<h1 class="text-2xl font-bold text-white">
-						<i class="fas fa-bell mr-2 text-primary-400"></i>
+						<i aria-hidden="true" class="fas fa-bell mr-2 text-primary-400"></i>
 						Notification Channels
 					</h1>
 					<p class="text-gray-400 mt-1">Configure where notifications are sent</p>
@@ -183,7 +183,7 @@ templ NotificationChannels(data NotificationChannelsData) {
 					@click="openAdd()"
 					class="flex items-center gap-2 bg-primary-500 hover:bg-primary-600 text-black font-medium px-4 py-2 rounded-lg transition-colors"
 				>
-					<i class="fas fa-plus"></i>
+					<i aria-hidden="true" class="fas fa-plus"></i>
 					Add Channel
 				</button>
 			</div>
@@ -192,14 +192,14 @@ templ NotificationChannels(data NotificationChannelsData) {
 			<div class="bg-dark-800 border border-dark-700 rounded-xl overflow-hidden">
 				if len(data.Channels) == 0 {
 					<div class="flex flex-col items-center justify-center py-16 text-gray-500">
-						<i class="fas fa-bell-slash text-4xl mb-4"></i>
+						<i aria-hidden="true" class="fas fa-bell-slash text-4xl mb-4"></i>
 						<p class="text-lg">No notification channels configured</p>
 						<p class="text-sm mt-1">Add a channel to start receiving notifications</p>
 						<button
 							@click="openAdd()"
 							class="mt-4 flex items-center gap-2 bg-primary-500 hover:bg-primary-600 text-black font-medium px-4 py-2 rounded-lg transition-colors"
 						>
-							<i class="fas fa-plus"></i>
+							<i aria-hidden="true" class="fas fa-plus"></i>
 							Add Your First Channel
 						</button>
 					</div>
@@ -217,12 +217,12 @@ templ NotificationChannels(data NotificationChannelsData) {
 											<span class="text-xs text-gray-500 px-1.5 py-0.5 rounded bg-dark-600 capitalize">{ ch.Type }</span>
 											if ch.Enabled {
 												<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs bg-green-500/10 text-green-400">
-													<i class="fas fa-check-circle text-[10px]"></i>
+													<i aria-hidden="true" class="fas fa-check-circle text-[10px]"></i>
 													Active
 												</span>
 											} else {
 												<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs bg-gray-500/10 text-gray-400">
-													<i class="fas fa-pause-circle text-[10px]"></i>
+													<i aria-hidden="true" class="fas fa-pause-circle text-[10px]"></i>
 													Disabled
 												</span>
 											}
@@ -236,14 +236,14 @@ templ NotificationChannels(data NotificationChannelsData) {
 										class="text-gray-400 hover:text-primary-400 transition-colors p-2"
 										title="Test channel"
 									>
-										<i class="fas fa-paper-plane"></i>
+										<i aria-hidden="true" class="fas fa-paper-plane"></i>
 									</button>
 									<a
 										href={ templ.SafeURL(fmt.Sprintf("/admin/notifications/channels/%s/edit", ch.Name)) }
 										class="text-gray-400 hover:text-white transition-colors p-2"
 										title="Edit channel"
 									>
-										<i class="fas fa-edit"></i>
+										<i aria-hidden="true" class="fas fa-edit"></i>
 									</a>
 									<form method="post" action={ templ.SafeURL(fmt.Sprintf("/admin/notifications/channels/%s/delete", ch.Name)) } class="inline">
 										<input type="hidden" name="csrf_token" value={ data.PageData.CSRFToken }/>
@@ -253,7 +253,7 @@ templ NotificationChannels(data NotificationChannelsData) {
 											title="Delete channel"
 											onclick="return confirm('Delete this notification channel?')"
 										>
-											<i class="fas fa-trash"></i>
+											<i aria-hidden="true" class="fas fa-trash"></i>
 										</button>
 									</form>
 								</div>
@@ -300,11 +300,11 @@ templ NotificationChannels(data NotificationChannelsData) {
 				>
 					<div class="px-6 py-4 border-b border-dark-700 flex items-center justify-between">
 						<h3 class="text-lg font-medium text-white">
-							<i class="fas mr-2 text-primary-400" :class="editMode ? 'fa-edit' : 'fa-plus'"></i>
+							<i aria-hidden="true" class="fas mr-2 text-primary-400" :class="editMode ? 'fa-edit' : 'fa-plus'"></i>
 							<span x-text="editMode ? 'Edit Channel' : 'Add Channel'"></span>
 						</h3>
 						<button @click="showModal = false" class="text-gray-400 hover:text-white">
-							<i class="fas fa-times"></i>
+							<i aria-hidden="true" class="fas fa-times"></i>
 						</button>
 					</div>
 
@@ -351,6 +351,7 @@ templ NotificationChannels(data NotificationChannelsData) {
 								required
 								x-bind:readonly="editMode"
 								maxlength="20"
+								aria-label="Name"
 							/>
 							<p class="text-xs text-gray-600 mt-1">Max 20 characters, must be unique</p>
 						</div>
@@ -362,31 +363,31 @@ templ NotificationChannels(data NotificationChannelsData) {
 								<div class="grid grid-cols-3 gap-3">
 									<div class="col-span-2">
 										<label class="block text-sm font-medium text-gray-400 mb-1">SMTP Host</label>
-										<input type="text" name="email_host" x-model="s.host" placeholder="smtp.example.com" class="w-full bg-dark-700 border border-dark-600 rounded-lg text-white px-3 py-2 text-sm" required/>
+										<input type="text" name="email_host" x-model="s.host" placeholder="smtp.example.com" aria-label="smtp.example.com" class="input-sm" required/>
 									</div>
 									<div>
 										<label class="block text-sm font-medium text-gray-400 mb-1">Port</label>
-										<input type="number" name="email_port" x-model="s.port" placeholder="587" class="w-full bg-dark-700 border border-dark-600 rounded-lg text-white px-3 py-2 text-sm"/>
+										<input type="number" name="email_port" x-model="s.port" placeholder="587" aria-label="587" class="input-sm"/>
 									</div>
 								</div>
 								<div class="grid grid-cols-2 gap-3">
 									<div>
 										<label class="block text-sm font-medium text-gray-400 mb-1">Username</label>
-										<input type="text" name="email_username" x-model="s.username" placeholder="user@example.com" class="w-full bg-dark-700 border border-dark-600 rounded-lg text-white px-3 py-2 text-sm"/>
+										<input type="text" name="email_username" x-model="s.username" placeholder="user@example.com" aria-label="user@example.com" class="input-sm"/>
 									</div>
 									<div>
 										<label class="block text-sm font-medium text-gray-400 mb-1">Password</label>
-										<input type="password" name="email_password" x-model="s.password" placeholder="••••••••" class="w-full bg-dark-700 border border-dark-600 rounded-lg text-white px-3 py-2 text-sm"/>
+										<input type="password" name="email_password" x-model="s.password" placeholder="••••••••" aria-label="••••••••" class="input-sm"/>
 									</div>
 								</div>
 								<div class="grid grid-cols-2 gap-3">
 									<div>
 										<label class="block text-sm font-medium text-gray-400 mb-1">From Address</label>
-										<input type="email" name="email_from" x-model="s.from_address" placeholder="alerts@example.com" class="w-full bg-dark-700 border border-dark-600 rounded-lg text-white px-3 py-2 text-sm" required/>
+										<input type="email" name="email_from" x-model="s.from_address" placeholder="alerts@example.com" aria-label="alerts@example.com" class="input-sm" required/>
 									</div>
 									<div>
 										<label class="block text-sm font-medium text-gray-400 mb-1">From Name</label>
-										<input type="text" name="email_from_name" x-model="s.from_name" placeholder="usulnet Alerts" class="w-full bg-dark-700 border border-dark-600 rounded-lg text-white px-3 py-2 text-sm"/>
+										<input type="text" name="email_from_name" x-model="s.from_name" placeholder="usulnet Alerts" aria-label="usulnet Alerts" class="input-sm"/>
 									</div>
 								</div>
 								<div class="flex items-center gap-6">
@@ -401,7 +402,7 @@ templ NotificationChannels(data NotificationChannelsData) {
 								</div>
 								<div>
 									<label class="block text-sm font-medium text-gray-400 mb-1">Recipients (comma-separated)</label>
-									<input type="text" name="email_recipients" x-model="s.to_addresses" placeholder="admin@example.com, ops@example.com" class="w-full bg-dark-700 border border-dark-600 rounded-lg text-white px-3 py-2 text-sm" required/>
+									<input type="text" name="email_recipients" x-model="s.to_addresses" placeholder="admin@example.com, ops@example.com" aria-label="admin@example.com, ops@example.com" class="input-sm" required/>
 								</div>
 							</div>
 						</template>
@@ -412,11 +413,11 @@ templ NotificationChannels(data NotificationChannelsData) {
 								<p class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Slack Configuration</p>
 								<div>
 									<label class="block text-sm font-medium text-gray-400 mb-1">Webhook URL</label>
-									<input type="url" name="slack_webhook" x-model="s.webhook_url" placeholder="https://hooks.slack.com/services/..." class="w-full bg-dark-700 border border-dark-600 rounded-lg text-white px-3 py-2 text-sm font-mono" required/>
+									<input type="url" name="slack_webhook" x-model="s.webhook_url" placeholder="https://hooks.slack.com/services/..." aria-label="https://hooks.slack.com/services/..." class="input-sm font-mono" required/>
 								</div>
 								<div>
 									<label class="block text-sm font-medium text-gray-400 mb-1">Channel (optional)</label>
-									<input type="text" name="slack_channel" x-model="s.channel" placeholder="#alerts" class="w-full bg-dark-700 border border-dark-600 rounded-lg text-white px-3 py-2 text-sm"/>
+									<input type="text" name="slack_channel" x-model="s.channel" placeholder="#alerts" aria-label="#alerts" class="input-sm"/>
 								</div>
 							</div>
 						</template>
@@ -427,7 +428,7 @@ templ NotificationChannels(data NotificationChannelsData) {
 								<p class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Discord Configuration</p>
 								<div>
 									<label class="block text-sm font-medium text-gray-400 mb-1">Webhook URL</label>
-									<input type="url" name="discord_webhook" x-model="s.webhook_url" placeholder="https://discord.com/api/webhooks/..." class="w-full bg-dark-700 border border-dark-600 rounded-lg text-white px-3 py-2 text-sm font-mono" required/>
+									<input type="url" name="discord_webhook" x-model="s.webhook_url" placeholder="https://discord.com/api/webhooks/..." aria-label="https://discord.com/api/webhooks/..." class="input-sm font-mono" required/>
 								</div>
 							</div>
 						</template>
@@ -438,11 +439,11 @@ templ NotificationChannels(data NotificationChannelsData) {
 								<p class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Telegram Configuration</p>
 								<div>
 									<label class="block text-sm font-medium text-gray-400 mb-1">Bot Token</label>
-									<input type="text" name="telegram_token" x-model="s.bot_token" placeholder="123456:ABC-DEF..." class="w-full bg-dark-700 border border-dark-600 rounded-lg text-white px-3 py-2 text-sm font-mono" required/>
+									<input type="text" name="telegram_token" x-model="s.bot_token" placeholder="123456:ABC-DEF..." aria-label="123456:ABC-DEF..." class="input-sm font-mono" required/>
 								</div>
 								<div>
 									<label class="block text-sm font-medium text-gray-400 mb-1">Chat ID</label>
-									<input type="text" name="telegram_chat_id" x-model="s.chat_ids" placeholder="-1001234567890" class="w-full bg-dark-700 border border-dark-600 rounded-lg text-white px-3 py-2 text-sm font-mono" required/>
+									<input type="text" name="telegram_chat_id" x-model="s.chat_ids" placeholder="-1001234567890" aria-label="-1001234567890" class="input-sm font-mono" required/>
 								</div>
 							</div>
 						</template>
@@ -453,19 +454,19 @@ templ NotificationChannels(data NotificationChannelsData) {
 								<p class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Webhook Configuration</p>
 								<div>
 									<label class="block text-sm font-medium text-gray-400 mb-1">URL</label>
-									<input type="url" name="webhook_url" x-model="s.url" placeholder="https://example.com/webhook" class="w-full bg-dark-700 border border-dark-600 rounded-lg text-white px-3 py-2 text-sm font-mono" required/>
+									<input type="url" name="webhook_url" x-model="s.url" placeholder="https://example.com/webhook" aria-label="https://example.com/webhook" class="input-sm font-mono" required/>
 								</div>
 								<div class="grid grid-cols-2 gap-3">
 									<div>
 										<label class="block text-sm font-medium text-gray-400 mb-1">Method</label>
-										<select name="webhook_method" x-model="s.method" class="w-full bg-dark-700 border border-dark-600 rounded-lg text-white px-3 py-2 text-sm">
+										<select name="webhook_method" x-model="s.method" class="input-sm">
 											<option value="POST">POST</option>
 											<option value="PUT">PUT</option>
 										</select>
 									</div>
 									<div>
 										<label class="block text-sm font-medium text-gray-400 mb-1">Auth Type</label>
-										<select name="webhook_auth_type" x-model="s.auth_type" class="w-full bg-dark-700 border border-dark-600 rounded-lg text-white px-3 py-2 text-sm">
+										<select name="webhook_auth_type" x-model="s.auth_type" class="input-sm">
 											<option value="">None</option>
 											<option value="bearer">Bearer Token</option>
 											<option value="basic">Basic Auth</option>
@@ -476,24 +477,24 @@ templ NotificationChannels(data NotificationChannelsData) {
 								<template x-if="s.auth_type === 'bearer' || s.auth_type === 'hmac'">
 									<div>
 										<label class="block text-sm font-medium text-gray-400 mb-1" x-text="s.auth_type === 'hmac' ? 'HMAC Secret' : 'Bearer Token'"></label>
-										<input type="password" name="webhook_auth_token" x-model="s.auth_token" placeholder="Token or secret" class="w-full bg-dark-700 border border-dark-600 rounded-lg text-white px-3 py-2 text-sm font-mono"/>
+										<input type="password" name="webhook_auth_token" x-model="s.auth_token" placeholder="Token or secret" aria-label="Token or secret" class="input-sm font-mono"/>
 									</div>
 								</template>
 								<template x-if="s.auth_type === 'basic'">
 									<div class="grid grid-cols-2 gap-3">
 										<div>
 											<label class="block text-sm font-medium text-gray-400 mb-1">Username</label>
-											<input type="text" name="webhook_auth_username" x-model="s.auth_username" class="w-full bg-dark-700 border border-dark-600 rounded-lg text-white px-3 py-2 text-sm"/>
+											<input type="text" name="webhook_auth_username" x-model="s.auth_username" class="input-sm"/>
 										</div>
 										<div>
 											<label class="block text-sm font-medium text-gray-400 mb-1">Password</label>
-											<input type="password" name="webhook_auth_password" x-model="s.auth_password" class="w-full bg-dark-700 border border-dark-600 rounded-lg text-white px-3 py-2 text-sm"/>
+											<input type="password" name="webhook_auth_password" x-model="s.auth_password" class="input-sm"/>
 										</div>
 									</div>
 								</template>
 								<div>
 									<label class="block text-sm font-medium text-gray-400 mb-1">Custom Headers (JSON, optional)</label>
-									<textarea name="webhook_headers" x-model="s.headers_json" placeholder='{"X-Custom": "value"}' rows="2" class="w-full bg-dark-700 border border-dark-600 rounded-lg text-white px-3 py-2 text-sm font-mono"></textarea>
+									<textarea name="webhook_headers" x-model="s.headers_json" placeholder='{"X-Custom": "value"}' rows="2" class="input-sm font-mono"></textarea>
 								</div>
 							</div>
 						</template>
@@ -504,11 +505,11 @@ templ NotificationChannels(data NotificationChannelsData) {
 								<p class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Gotify Configuration</p>
 								<div>
 									<label class="block text-sm font-medium text-gray-400 mb-1">Server URL</label>
-									<input type="url" name="gotify_server_url" x-model="s.server_url" placeholder="https://gotify.example.com" class="w-full bg-dark-700 border border-dark-600 rounded-lg text-white px-3 py-2 text-sm font-mono" required/>
+									<input type="url" name="gotify_server_url" x-model="s.server_url" placeholder="https://gotify.example.com" aria-label="https://gotify.example.com" class="input-sm font-mono" required/>
 								</div>
 								<div>
 									<label class="block text-sm font-medium text-gray-400 mb-1">App Token</label>
-									<input type="password" name="gotify_app_token" x-model="s.app_token" placeholder="A..." class="w-full bg-dark-700 border border-dark-600 rounded-lg text-white px-3 py-2 text-sm font-mono" required/>
+									<input type="password" name="gotify_app_token" x-model="s.app_token" placeholder="A..." aria-label="A..." class="input-sm font-mono" required/>
 								</div>
 							</div>
 						</template>
@@ -519,15 +520,15 @@ templ NotificationChannels(data NotificationChannelsData) {
 								<p class="text-xs font-semibold text-gray-500 uppercase tracking-wide">ntfy Configuration</p>
 								<div>
 									<label class="block text-sm font-medium text-gray-400 mb-1">Server URL (optional, default: ntfy.sh)</label>
-									<input type="url" name="ntfy_server_url" x-model="s.server_url" placeholder="https://ntfy.sh" class="w-full bg-dark-700 border border-dark-600 rounded-lg text-white px-3 py-2 text-sm font-mono"/>
+									<input type="url" name="ntfy_server_url" x-model="s.server_url" placeholder="https://ntfy.sh" aria-label="https://ntfy.sh" class="input-sm font-mono"/>
 								</div>
 								<div>
 									<label class="block text-sm font-medium text-gray-400 mb-1">Topic</label>
-									<input type="text" name="ntfy_topic" x-model="s.topic" placeholder="usulnet-alerts" class="w-full bg-dark-700 border border-dark-600 rounded-lg text-white px-3 py-2 text-sm" required/>
+									<input type="text" name="ntfy_topic" x-model="s.topic" placeholder="usulnet-alerts" aria-label="usulnet-alerts" class="input-sm" required/>
 								</div>
 								<div>
 									<label class="block text-sm font-medium text-gray-400 mb-1">Access Token (optional)</label>
-									<input type="password" name="ntfy_access_token" x-model="s.access_token" placeholder="tk_..." class="w-full bg-dark-700 border border-dark-600 rounded-lg text-white px-3 py-2 text-sm font-mono"/>
+									<input type="password" name="ntfy_access_token" x-model="s.access_token" placeholder="tk_..." aria-label="tk_..." class="input-sm font-mono"/>
 								</div>
 							</div>
 						</template>
@@ -538,11 +539,11 @@ templ NotificationChannels(data NotificationChannelsData) {
 								<p class="text-xs font-semibold text-gray-500 uppercase tracking-wide">PagerDuty Configuration</p>
 								<div>
 									<label class="block text-sm font-medium text-gray-400 mb-1">Integration/Routing Key</label>
-									<input type="password" name="pagerduty_routing_key" x-model="s.routing_key" placeholder="Events API v2 integration key" class="w-full bg-dark-700 border border-dark-600 rounded-lg text-white px-3 py-2 text-sm font-mono" required/>
+									<input type="password" name="pagerduty_routing_key" x-model="s.routing_key" placeholder="Events API v2 integration key" aria-label="Events API v2 integration key" class="input-sm font-mono" required/>
 								</div>
 								<div>
 									<label class="block text-sm font-medium text-gray-400 mb-1">Component (optional)</label>
-									<input type="text" name="pagerduty_component" x-model="s.component" placeholder="usulnet" class="w-full bg-dark-700 border border-dark-600 rounded-lg text-white px-3 py-2 text-sm"/>
+									<input type="text" name="pagerduty_component" x-model="s.component" placeholder="usulnet" aria-label="usulnet" class="input-sm"/>
 								</div>
 							</div>
 						</template>
@@ -553,11 +554,11 @@ templ NotificationChannels(data NotificationChannelsData) {
 								<p class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Opsgenie Configuration</p>
 								<div>
 									<label class="block text-sm font-medium text-gray-400 mb-1">API Key (GenieKey)</label>
-									<input type="password" name="opsgenie_api_key" x-model="s.api_key" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" class="w-full bg-dark-700 border border-dark-600 rounded-lg text-white px-3 py-2 text-sm font-mono" required/>
+									<input type="password" name="opsgenie_api_key" x-model="s.api_key" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" aria-label="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" class="input-sm font-mono" required/>
 								</div>
 								<div>
 									<label class="block text-sm font-medium text-gray-400 mb-1">API Base URL (optional, for EU)</label>
-									<input type="url" name="opsgenie_api_base_url" x-model="s.api_base_url" placeholder="https://api.eu.opsgenie.com" class="w-full bg-dark-700 border border-dark-600 rounded-lg text-white px-3 py-2 text-sm font-mono"/>
+									<input type="url" name="opsgenie_api_base_url" x-model="s.api_base_url" placeholder="https://api.eu.opsgenie.com" aria-label="https://api.eu.opsgenie.com" class="input-sm font-mono"/>
 								</div>
 							</div>
 						</template>
@@ -598,7 +599,7 @@ templ NotificationChannels(data NotificationChannelsData) {
 								type="submit"
 								class="flex items-center gap-2 bg-primary-500 hover:bg-primary-600 text-black font-medium px-4 py-2 rounded-lg transition-colors"
 							>
-								<i class="fas fa-save"></i>
+								<i aria-hidden="true" class="fas fa-save"></i>
 								<span x-text="editMode ? 'Update Channel' : 'Save Channel'"></span>
 							</button>
 						</div>
@@ -620,7 +621,7 @@ templ NotificationChannels(data NotificationChannelsData) {
 					<i :class="testResult?.success ? 'fas fa-check-circle' : 'fas fa-times-circle'"></i>
 					<span x-text="testResult?.message"></span>
 					<button @click="testResult = null" class="ml-2 opacity-60 hover:opacity-100">
-						<i class="fas fa-times"></i>
+						<i aria-hidden="true" class="fas fa-times"></i>
 					</button>
 				</div>
 			</div>

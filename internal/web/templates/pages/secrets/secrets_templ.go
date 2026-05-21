@@ -83,7 +83,7 @@ func Secrets(data SecretsData) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"space-y-6\"><!-- Header --><div class=\"flex items-center justify-between\"><div><h1 class=\"text-2xl font-display font-bold text-white\">Secret Management</h1><p class=\"text-gray-400 mt-1\">Securely manage credentials, API keys, certificates, and tokens</p></div><button onclick=\"document.getElementById('createSecretModal').classList.remove('hidden')\" class=\"btn-primary flex items-center gap-2\"><i class=\"fas fa-plus\"></i> New Secret</button></div><!-- Stats --><div class=\"grid grid-cols-2 md:grid-cols-5 gap-4\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"space-y-6\"><!-- Header --><div class=\"flex items-center justify-between\"><div><h1 class=\"text-2xl font-display font-bold text-white\">Secret Management</h1><p class=\"text-gray-400 mt-1\">Securely manage credentials, API keys, certificates, and tokens</p></div><button onclick=\"document.getElementById('createSecretModal').classList.remove('hidden')\" class=\"btn-primary flex items-center gap-2\"><i aria-hidden=\"true\" class=\"fas fa-plus\"></i> New Secret</button></div><!-- Stats --><div class=\"grid grid-cols-2 md:grid-cols-5 gap-4\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -112,7 +112,7 @@ func Secrets(data SecretsData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			if data.Stats.ExpiredCount > 0 {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<div class=\"card border-l-4 border-l-red-500 p-4\"><div class=\"flex items-center gap-3\"><i class=\"fas fa-exclamation-circle text-red-400\"></i><div><h3 class=\"text-sm font-medium text-red-400\">Expired Secrets</h3><p class=\"text-xs text-gray-400 mt-0.5\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<div class=\"card border-l-4 border-l-red-500 p-4\"><div class=\"flex items-center gap-3\"><i aria-hidden=\"true\" class=\"fas fa-exclamation-circle text-red-400\"></i><div><h3 class=\"text-sm font-medium text-red-400\">Expired Secrets</h3><p class=\"text-xs text-gray-400 mt-0.5\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -131,7 +131,7 @@ func Secrets(data SecretsData) templ.Component {
 				}
 			}
 			if data.Stats.ExpiringSoon > 0 {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<div class=\"card border-l-4 border-l-yellow-500 p-4\"><div class=\"flex items-center gap-3\"><i class=\"fas fa-clock text-yellow-400\"></i><div><h3 class=\"text-sm font-medium text-yellow-400\">Secrets Expiring Soon</h3><p class=\"text-xs text-gray-400 mt-0.5\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<div class=\"card border-l-4 border-l-yellow-500 p-4\"><div class=\"flex items-center gap-3\"><i aria-hidden=\"true\" class=\"fas fa-clock text-yellow-400\"></i><div><h3 class=\"text-sm font-medium text-yellow-400\">Secrets Expiring Soon</h3><p class=\"text-xs text-gray-400 mt-0.5\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -154,7 +154,7 @@ func Secrets(data SecretsData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			if len(data.Secrets) == 0 {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "<div class=\"card p-12 text-center\"><i class=\"fas fa-key text-4xl text-gray-400 mb-4\"></i><h3 class=\"text-lg font-medium text-white mb-2\">No Secrets</h3><p class=\"text-gray-400 mb-4\">Securely store credentials, API keys, and certificates for your containers</p></div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "<div class=\"card p-12 text-center\"><i aria-hidden=\"true\" class=\"fas fa-key text-4xl text-gray-400 mb-4\"></i><h3 class=\"text-lg font-medium text-white mb-2\">No Secrets</h3><p class=\"text-gray-400 mb-4\">Securely store credentials, API keys, and certificates for your containers</p></div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -419,12 +419,12 @@ func secretCard(s SecretView, csrfToken string) templ.Component {
 			}
 		}
 		if s.IsExpired {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 29, "<span class=\"px-2 py-0.5 text-xs bg-red-500/20 text-red-400 rounded flex items-center gap-1\"><i class=\"fas fa-exclamation-circle text-[10px]\"></i>Expired</span>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 29, "<span class=\"px-2 py-0.5 text-xs bg-red-500/20 text-red-400 rounded flex items-center gap-1\"><i aria-hidden=\"true\" class=\"fas fa-exclamation-circle text-[10px]\"></i>Expired</span>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		} else if s.IsExpiringSoon {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 30, "<span class=\"px-2 py-0.5 text-xs bg-yellow-500/20 text-yellow-400 rounded flex items-center gap-1\"><i class=\"fas fa-clock text-[10px]\"></i>Expiring Soon</span>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 30, "<span class=\"px-2 py-0.5 text-xs bg-yellow-500/20 text-yellow-400 rounded flex items-center gap-1\"><i aria-hidden=\"true\" class=\"fas fa-clock text-[10px]\"></i>Expiring Soon</span>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -470,14 +470,14 @@ func secretCard(s SecretView, csrfToken string) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		if s.LinkedCount > 0 {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 36, "<span><i class=\"fas fa-link mr-1\"></i>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 36, "<span><i aria-hidden=\"true\" class=\"fas fa-link mr-1\"></i>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var23 string
 			templ_7745c5c3_Var23, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d container(s)", s.LinkedCount))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/secrets/secrets.templ`, Line: 148, Col: 92}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/secrets/secrets.templ`, Line: 148, Col: 111}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var23))
 			if templ_7745c5c3_Err != nil {
@@ -489,14 +489,14 @@ func secretCard(s SecretView, csrfToken string) templ.Component {
 			}
 		}
 		if s.IsRotatable {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 38, "<span><i class=\"fas fa-sync-alt mr-1\"></i>Rotation: ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 38, "<span><i aria-hidden=\"true\" class=\"fas fa-sync-alt mr-1\"></i>Rotation: ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var24 string
 			templ_7745c5c3_Var24, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d days", s.RotationDays))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/secrets/secrets.templ`, Line: 151, Col: 99}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/secrets/secrets.templ`, Line: 151, Col: 118}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var24))
 			if templ_7745c5c3_Err != nil {
@@ -508,14 +508,14 @@ func secretCard(s SecretView, csrfToken string) templ.Component {
 			}
 		}
 		if s.LastRotatedAt != "" {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 40, "<span><i class=\"fas fa-history mr-1\"></i>Rotated: ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 40, "<span><i aria-hidden=\"true\" class=\"fas fa-history mr-1\"></i>Rotated: ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var25 string
 			templ_7745c5c3_Var25, templ_7745c5c3_Err = templ.JoinStringErrs(s.LastRotatedAt)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/secrets/secrets.templ`, Line: 154, Col: 74}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/secrets/secrets.templ`, Line: 154, Col: 93}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var25))
 			if templ_7745c5c3_Err != nil {
@@ -527,14 +527,14 @@ func secretCard(s SecretView, csrfToken string) templ.Component {
 			}
 		}
 		if s.ExpiresAt != "" {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 42, "<span><i class=\"fas fa-calendar mr-1\"></i>Expires: ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 42, "<span><i aria-hidden=\"true\" class=\"fas fa-calendar mr-1\"></i>Expires: ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var26 string
 			templ_7745c5c3_Var26, templ_7745c5c3_Err = templ.JoinStringErrs(s.ExpiresAt)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/secrets/secrets.templ`, Line: 157, Col: 71}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/secrets/secrets.templ`, Line: 157, Col: 90}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var26))
 			if templ_7745c5c3_Err != nil {
@@ -545,14 +545,14 @@ func secretCard(s SecretView, csrfToken string) templ.Component {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 44, "<span><i class=\"fas fa-user mr-1\"></i>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 44, "<span><i aria-hidden=\"true\" class=\"fas fa-user mr-1\"></i>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var27 string
 		templ_7745c5c3_Var27, templ_7745c5c3_Err = templ.JoinStringErrs(s.CreatedBy)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/secrets/secrets.templ`, Line: 159, Col: 57}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/secrets/secrets.templ`, Line: 159, Col: 76}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var27))
 		if templ_7745c5c3_Err != nil {
@@ -589,7 +589,7 @@ func secretCard(s SecretView, csrfToken string) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 48, "\"> <button type=\"submit\" class=\"p-2 text-gray-400 hover:text-blue-400 transition-colors\" title=\"Rotate secret\"><i class=\"fas fa-sync-alt\"></i></button></form>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 48, "\"> <button type=\"submit\" class=\"p-2 text-gray-400 hover:text-blue-400 transition-colors\" title=\"Rotate secret\"><i aria-hidden=\"true\" class=\"fas fa-sync-alt\"></i></button></form>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -620,7 +620,7 @@ func secretCard(s SecretView, csrfToken string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 51, "\"> <button type=\"submit\" class=\"p-2 text-gray-400 hover:text-red-400 transition-colors\" title=\"Delete\"><i class=\"fas fa-trash\"></i></button></form></div></div></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 51, "\"> <button type=\"submit\" class=\"p-2 text-gray-400 hover:text-red-400 transition-colors\" title=\"Delete\"><i aria-hidden=\"true\" class=\"fas fa-trash\"></i></button></form></div></div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -649,7 +649,7 @@ func createSecretModal(csrfToken string) templ.Component {
 			templ_7745c5c3_Var32 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 52, "<div id=\"createSecretModal\" class=\"hidden fixed inset-0 z-50 flex items-center justify-center bg-black/60\" x-data=\"{ secType: 'password', scope: 'global' }\"><div class=\"bg-dark-800 rounded-xl shadow-xl border border-dark-600 w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto\"><div class=\"flex items-center justify-between p-6 border-b border-dark-600 sticky top-0 bg-dark-800 z-10\"><h2 class=\"text-lg font-display font-bold text-white\">Add Secret</h2><button onclick=\"document.getElementById('createSecretModal').classList.add('hidden')\" class=\"text-gray-400 hover:text-white\"><i class=\"fas fa-times\"></i></button></div><form method=\"POST\" action=\"/secrets\" class=\"p-6 space-y-4\"><input type=\"hidden\" name=\"csrf_token\" value=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 52, "<div id=\"createSecretModal\" class=\"hidden fixed inset-0 z-50 flex items-center justify-center bg-black/60\" x-data=\"{ secType: 'password', scope: 'global' }\"><div class=\"bg-dark-800 rounded-xl shadow-xl border border-dark-600 w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto\"><div class=\"flex items-center justify-between p-6 border-b border-dark-600 sticky top-0 bg-dark-800 z-10\"><h2 class=\"text-lg font-display font-bold text-white\">Add Secret</h2><button onclick=\"document.getElementById('createSecretModal').classList.add('hidden')\" class=\"text-gray-400 hover:text-white\"><i aria-hidden=\"true\" class=\"fas fa-times\"></i></button></div><form method=\"POST\" action=\"/secrets\" class=\"p-6 space-y-4\"><input type=\"hidden\" name=\"csrf_token\" value=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -662,7 +662,7 @@ func createSecretModal(csrfToken string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 53, "\"><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Secret Name</label> <input type=\"text\" name=\"name\" required class=\"input w-full\" placeholder=\"e.g., db-password, api-key-stripe\"></div><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Description</label> <textarea name=\"description\" rows=\"2\" class=\"input w-full\" placeholder=\"What this secret is used for\"></textarea></div><div class=\"grid grid-cols-2 gap-4\"><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Type</label> <select name=\"type\" x-model=\"secType\" class=\"input w-full\"><option value=\"password\">Password</option> <option value=\"api_key\">API Key</option> <option value=\"token\">Token</option> <option value=\"certificate\">Certificate</option> <option value=\"ssh_key\">SSH Key</option> <option value=\"generic\">Generic</option></select></div><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Scope</label> <select name=\"scope\" x-model=\"scope\" class=\"input w-full\"><option value=\"global\">Global</option> <option value=\"stack\">Stack</option> <option value=\"container\">Container</option></select></div></div><div x-show=\"scope !== 'global'\" x-cloak><label class=\"block text-sm font-medium text-gray-300 mb-1\">Target (stack/container name)</label> <input type=\"text\" name=\"scope_target\" class=\"input w-full\" placeholder=\"Enter target name\"></div><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Secret Value</label><div x-show=\"secType === 'certificate' || secType === 'ssh_key'\" x-cloak><textarea name=\"value_long\" rows=\"6\" class=\"input w-full font-mono text-sm\" placeholder=\"Paste certificate or key content\"></textarea></div><div x-show=\"secType !== 'certificate' && secType !== 'ssh_key'\"><input type=\"password\" name=\"value\" class=\"input w-full font-mono\" placeholder=\"Enter secret value\"></div></div><div class=\"grid grid-cols-2 gap-4\"><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Rotation Period (days)</label> <input type=\"number\" name=\"rotation_days\" min=\"0\" max=\"365\" value=\"0\" class=\"input w-full\" placeholder=\"0 = no rotation\"><p class=\"text-xs text-gray-500 mt-1\">Set to 0 to disable auto-rotation</p></div><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Expires In (days)</label> <input type=\"number\" name=\"expires_in_days\" min=\"0\" max=\"3650\" value=\"0\" class=\"input w-full\" placeholder=\"0 = no expiry\"><p class=\"text-xs text-gray-500 mt-1\">Set to 0 for no expiration</p></div></div><div class=\"flex justify-end gap-3 pt-4 border-t border-dark-600\"><button type=\"button\" onclick=\"document.getElementById('createSecretModal').classList.add('hidden')\" class=\"btn-secondary\">Cancel</button> <button type=\"submit\" class=\"btn-primary\"><i class=\"fas fa-lock mr-2\"></i>Save Secret</button></div></form></div></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 53, "\"><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Secret Name</label> <input type=\"text\" name=\"name\" required class=\"input w-full\" placeholder=\"e.g., db-password, api-key-stripe\" aria-label=\"e.g., db-password, api-key-stripe\"></div><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Description</label> <textarea name=\"description\" rows=\"2\" class=\"input w-full\" placeholder=\"What this secret is used for\"></textarea></div><div class=\"grid grid-cols-2 gap-4\"><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Type</label> <select name=\"type\" x-model=\"secType\" class=\"input w-full\"><option value=\"password\">Password</option> <option value=\"api_key\">API Key</option> <option value=\"token\">Token</option> <option value=\"certificate\">Certificate</option> <option value=\"ssh_key\">SSH Key</option> <option value=\"generic\">Generic</option></select></div><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Scope</label> <select name=\"scope\" x-model=\"scope\" class=\"input w-full\"><option value=\"global\">Global</option> <option value=\"stack\">Stack</option> <option value=\"container\">Container</option></select></div></div><div x-show=\"scope !== 'global'\" x-cloak><label class=\"block text-sm font-medium text-gray-300 mb-1\">Target (stack/container name)</label> <input type=\"text\" name=\"scope_target\" class=\"input w-full\" placeholder=\"Enter target name\" aria-label=\"Enter target name\"></div><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Secret Value</label><div x-show=\"secType === 'certificate' || secType === 'ssh_key'\" x-cloak><textarea name=\"value_long\" rows=\"6\" class=\"input w-full font-mono text-sm\" placeholder=\"Paste certificate or key content\"></textarea></div><div x-show=\"secType !== 'certificate' && secType !== 'ssh_key'\"><input type=\"password\" name=\"value\" class=\"input w-full font-mono\" placeholder=\"Enter secret value\" aria-label=\"Enter secret value\"></div></div><div class=\"grid grid-cols-2 gap-4\"><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Rotation Period (days)</label> <input type=\"number\" name=\"rotation_days\" min=\"0\" max=\"365\" value=\"0\" class=\"input w-full\" placeholder=\"0 = no rotation\" aria-label=\"0 = no rotation\"><p class=\"text-xs text-gray-500 mt-1\">Set to 0 to disable auto-rotation</p></div><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Expires In (days)</label> <input type=\"number\" name=\"expires_in_days\" min=\"0\" max=\"3650\" value=\"0\" class=\"input w-full\" placeholder=\"0 = no expiry\" aria-label=\"0 = no expiry\"><p class=\"text-xs text-gray-500 mt-1\">Set to 0 for no expiration</p></div></div><div class=\"flex justify-end gap-3 pt-4 border-t border-dark-600\"><button type=\"button\" onclick=\"document.getElementById('createSecretModal').classList.add('hidden')\" class=\"btn-secondary\">Cancel</button> <button type=\"submit\" class=\"btn-primary\"><i aria-hidden=\"true\" class=\"fas fa-lock mr-2\"></i>Save Secret</button></div></form></div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

@@ -24,7 +24,7 @@ templ Detail(data DetailData) {
 				<div class="flex items-center justify-between mb-6">
 					<div class="flex items-center gap-3">
 						<a href="/firewall" class="text-gray-400 hover:text-white">
-							<i class="fas fa-arrow-left"></i>
+							<i aria-hidden="true" class="fas fa-arrow-left"></i>
 						</a>
 						<h2 class="text-xl font-display font-bold text-white">{ data.Rule.Name }</h2>
 						if data.Rule.Enabled {
@@ -40,14 +40,14 @@ templ Detail(data DetailData) {
 					</div>
 					<div class="flex items-center gap-2">
 						<a href={ templ.SafeURL(fmt.Sprintf("/firewall/%s/edit", data.Rule.ID)) } class="btn btn-secondary">
-							<i class="fas fa-edit mr-1"></i> Edit
+							<i aria-hidden="true" class="fas fa-edit mr-1"></i> Edit
 						</a>
 						<button
 							hx-delete={ fmt.Sprintf("/firewall/%s", data.Rule.ID) }
 							hx-confirm="Delete this firewall rule?"
 							class="btn btn-danger"
 						>
-							<i class="fas fa-trash mr-1"></i> Delete
+							<i aria-hidden="true" class="fas fa-trash mr-1"></i> Delete
 						</button>
 					</div>
 				</div>

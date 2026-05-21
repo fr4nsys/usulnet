@@ -2,6 +2,7 @@ package backups
 
 import (
 	"fmt"
+	"github.com/fr4nsys/usulnet/internal/web/templates/components"
 	"github.com/fr4nsys/usulnet/internal/web/templates/layouts"
 )
 
@@ -15,6 +16,7 @@ type BackupsData struct {
 	WarningMessage string
 	FilterType     string
 	FilterStatus   string
+	EmptyState     components.EmptyStateData
 }
 
 type BackupStats struct {
@@ -50,13 +52,13 @@ templ List(data BackupsData) {
 				if data.WarningMessage == "" {
 					<div class="flex items-center gap-2">
 						<a href="/backups/schedules" class="btn-secondary">
-							<i class="fas fa-calendar-alt mr-2"></i>Schedules
+							<i aria-hidden="true" class="fas fa-calendar-alt mr-2"></i>Schedules
 							if data.ScheduleCount > 0 {
 								<span class="ml-1 bg-dark-600 text-gray-300 px-1.5 py-0.5 rounded-full text-xs">{ fmt.Sprintf("%d", data.ScheduleCount) }</span>
 							}
 						</a>
 						<a href="/backups/new" class="btn-primary">
-							<i class="fas fa-plus mr-2"></i>New Backup
+							<i aria-hidden="true" class="fas fa-plus mr-2"></i>New Backup
 						</a>
 					</div>
 				}
@@ -64,7 +66,7 @@ templ List(data BackupsData) {
 
 			if data.WarningMessage != "" {
 				<div class="bg-yellow-900/30 border border-yellow-700 rounded-lg p-4 flex items-start gap-3">
-					<i class="fas fa-exclamation-triangle text-yellow-400 mt-0.5"></i>
+					<i aria-hidden="true" class="fas fa-exclamation-triangle text-yellow-400 mt-0.5"></i>
 					<div>
 						<p class="text-yellow-300 font-medium">Service Unavailable</p>
 						<p class="text-yellow-400/80 text-sm mt-1">{ data.WarningMessage }</p>
@@ -126,33 +128,30 @@ templ List(data BackupsData) {
 			}
 
 			<!-- Backups List -->
+			if len(data.Backups) == 0 && data.FilterType == "" && data.FilterStatus == "" {
+				@components.EmptyStateCTAs(data.EmptyState)
+			} else {
 			<div class="card">
 				<div class="overflow-x-auto">
 					<table class="table">
 						<thead>
 							<tr>
-								<th>Target</th>
-								<th>Type</th>
-								<th>Size</th>
-								<th>Trigger</th>
-								<th>Status</th>
-								<th>Created</th>
-								<th>Actions</th>
+								<th scope="col">Target</th>
+								<th scope="col">Type</th>
+								<th scope="col">Size</th>
+								<th scope="col">Trigger</th>
+								<th scope="col">Status</th>
+								<th scope="col">Created</th>
+								<th scope="col">Actions</th>
 							</tr>
 						</thead>
 						<tbody>
 							if len(data.Backups) == 0 {
 								<tr>
 									<td colspan="7" class="text-center text-gray-500 py-8">
-										<i class="fas fa-archive text-3xl mb-3 block"></i>
-										<p>No backups found</p>
-										if data.FilterType != "" || data.FilterStatus != "" {
-											<p class="text-sm mt-1">Try adjusting your filters</p>
-										} else {
-											<p class="text-sm mt-1">
-												<a href="/backups/new" class="text-primary-400 hover:text-primary-300">Create your first backup</a>
-											</p>
-										}
+										<i aria-hidden="true" class="fas fa-archive text-3xl mb-3 block"></i>
+										<p>No backups match your filters</p>
+										<p class="text-sm mt-1">Try clearing them with <a href="/backups" class="text-primary-400 hover:text-primary-300">All</a>.</p>
 									</td>
 								</tr>
 							}
@@ -179,30 +178,30 @@ templ List(data BackupsData) {
 											{ backup.Status }
 										</span>
 										if backup.Encrypted {
-											<i class="fas fa-lock text-gray-500 ml-1 text-xs" title="Encrypted"></i>
+											<i aria-hidden="true" class="fas fa-lock text-gray-500 ml-1 text-xs" title="Encrypted"></i>
 										}
 									</td>
 									<td class="text-gray-400 text-sm">{ backup.CreatedAt }</td>
 									<td>
 										<div class="flex items-center gap-2">
 											<a href={ templ.SafeURL("/backups/" + backup.ID) } class="text-gray-400 hover:text-white text-sm" title="Details">
-												<i class="fas fa-eye"></i>
+												<i aria-hidden="true" class="fas fa-eye"></i>
 											</a>
 											if backup.Status == "completed" {
 												<form method="POST" action={ templ.SafeURL("/backups/" + backup.ID + "/restore") } class="inline">
 													<input type="hidden" name="csrf_token" value={ data.PageData.CSRFToken }/>
 													<button type="submit" class="text-primary-400 hover:text-primary-300 text-sm" title="Restore" onclick="return confirm('Restore this backup? Current data will be replaced.')">
-														<i class="fas fa-undo"></i>
+														<i aria-hidden="true" class="fas fa-undo"></i>
 													</button>
 												</form>
 												<a href={ templ.SafeURL("/backups/" + backup.ID + "/download") } class="text-gray-400 hover:text-white text-sm" title="Download">
-													<i class="fas fa-download"></i>
+													<i aria-hidden="true" class="fas fa-download"></i>
 												</a>
 											}
 											<form method="POST" action={ templ.SafeURL("/backups/" + backup.ID + "/delete") } class="inline">
 												<input type="hidden" name="csrf_token" value={ data.PageData.CSRFToken }/>
 												<button type="submit" class="text-red-400 hover:text-red-300 text-sm" title="Delete" onclick="return confirm('Delete this backup?')">
-													<i class="fas fa-trash"></i>
+													<i aria-hidden="true" class="fas fa-trash"></i>
 												</button>
 											</form>
 										</div>
@@ -213,6 +212,7 @@ templ List(data BackupsData) {
 					</table>
 				</div>
 			</div>
+			}
 		</div>
 	}
 }

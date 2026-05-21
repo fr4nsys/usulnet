@@ -100,12 +100,12 @@ func ScansList(data ScansListData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			if len(data.Scans) == 0 {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "<div class=\"card p-12 text-center\"><i class=\"fas fa-radar text-4xl text-gray-500 mb-4\"></i><h3 class=\"text-lg font-medium text-white mb-2\">No Scans</h3><p class=\"text-gray-400\">Scans started from a target page will appear here.</p></div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "<div class=\"card p-12 text-center\"><i aria-hidden=\"true\" class=\"fas fa-radar text-4xl text-gray-500 mb-4\"></i><h3 class=\"text-lg font-medium text-white mb-2\">No Scans</h3><p class=\"text-gray-400\">Scans started from a target page will appear here.</p></div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			} else {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "<div class=\"card overflow-hidden\"><table class=\"w-full text-sm\"><thead class=\"bg-dark-800 text-gray-400 text-xs uppercase tracking-wide\"><tr><th class=\"text-left px-4 py-3\">Status</th><th class=\"text-left px-4 py-3\">Target</th><th class=\"text-left px-4 py-3\">Engine</th><th class=\"text-left px-4 py-3\">Started</th><th class=\"text-left px-4 py-3\">Duration</th><th class=\"text-left px-4 py-3\">Progress</th><th class=\"text-right px-4 py-3\">Actions</th></tr></thead> <tbody class=\"divide-y divide-dark-700\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "<div class=\"card overflow-hidden\"><table class=\"w-full text-sm\"><thead class=\"bg-dark-800 text-gray-400 text-xs uppercase tracking-wide\"><tr><th scope=\"col\" class=\"text-left px-4 py-3\">Status</th><th scope=\"col\" class=\"text-left px-4 py-3\">Target</th><th scope=\"col\" class=\"text-left px-4 py-3\">Engine</th><th scope=\"col\" class=\"text-left px-4 py-3\">Started</th><th scope=\"col\" class=\"text-left px-4 py-3\">Duration</th><th scope=\"col\" class=\"text-left px-4 py-3\">Progress</th><th scope=\"col\" class=\"text-right px-4 py-3\">Actions</th></tr></thead> <tbody class=\"divide-y divide-dark-700\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -304,7 +304,7 @@ func scanListRow(s ScanView) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 29, "\" class=\"text-gray-400 hover:text-primary-400\"><i class=\"fas fa-eye\"></i></a></td></tr>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 29, "\" class=\"text-gray-400 hover:text-primary-400\"><i aria-hidden=\"true\" class=\"fas fa-eye\"></i></a></td></tr>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

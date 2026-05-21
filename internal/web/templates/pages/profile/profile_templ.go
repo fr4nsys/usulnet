@@ -203,12 +203,12 @@ func Profile(data ProfilePageData) templ.Component {
 					return templ_7745c5c3_Err
 				}
 				if data.FlashType == "success" {
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "<i class=\"fas fa-check-circle\"></i> ")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "<i aria-hidden=\"true\" class=\"fas fa-check-circle\"></i> ")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
 				} else {
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "<i class=\"fas fa-exclamation-circle\"></i> ")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "<i aria-hidden=\"true\" class=\"fas fa-exclamation-circle\"></i> ")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
@@ -222,7 +222,7 @@ func Profile(data ProfilePageData) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, " <button onclick=\"this.parentElement.remove()\" class=\"ml-auto text-current opacity-60 hover:opacity-100\"><i class=\"fas fa-times\"></i></button></div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, " <button onclick=\"this.parentElement.remove()\" class=\"ml-auto text-current opacity-60 hover:opacity-100\"><i aria-hidden=\"true\" class=\"fas fa-times\"></i></button></div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -403,7 +403,7 @@ func profileInfoTab(data ProfilePageData) templ.Component {
 			templ_7745c5c3_Var16 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 22, "<div class=\"grid grid-cols-1 lg:grid-cols-3 gap-6\"><!-- Main form --><div class=\"lg:col-span-2\"><form hx-post=\"/profile\" hx-swap=\"none\" class=\"bg-dark-800 rounded-xl border border-dark-600 p-6 space-y-5\"><input type=\"hidden\" name=\"csrf_token\" value=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 22, "<div class=\"grid grid-cols-1 lg:grid-cols-3 gap-6\"><!-- Main form --><div class=\"lg:col-span-2\"><form hx-post=\"/profile\" hx-swap=\"none\" class=\"card p-6 space-y-5\"><input type=\"hidden\" name=\"csrf_token\" value=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -429,7 +429,7 @@ func profileInfoTab(data ProfilePageData) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 24, "\" class=\"w-full px-3.5 py-2 rounded-lg bg-dark-700 border border-dark-500 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500 text-sm\"></div><div><label class=\"block text-sm font-medium text-gray-300 mb-1.5\">Email</label> <input type=\"email\" name=\"email\" value=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 24, "\" class=\"w-full px-3.5 py-2 rounded-lg bg-dark-700 border border-dark-500 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500 text-sm\" aria-label=\"Username\"></div><div><label class=\"block text-sm font-medium text-gray-300 mb-1.5\">Email</label> <input type=\"email\" name=\"email\" value=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -442,7 +442,7 @@ func profileInfoTab(data ProfilePageData) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 25, "\" class=\"w-full px-3.5 py-2 rounded-lg bg-dark-700 border border-dark-500 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500 text-sm\"></div><div><label class=\"block text-sm font-medium text-gray-300 mb-1.5\">Role</label><div class=\"px-3.5 py-2 rounded-lg bg-dark-900 border border-dark-600 text-gray-400 text-sm capitalize cursor-not-allowed\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 25, "\" class=\"w-full px-3.5 py-2 rounded-lg bg-dark-700 border border-dark-500 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500 text-sm\" aria-label=\"Email\"></div><div><label class=\"block text-sm font-medium text-gray-300 mb-1.5\">Role</label><div class=\"px-3.5 py-2 rounded-lg bg-dark-900 border border-dark-600 text-gray-400 text-sm capitalize cursor-not-allowed\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -455,7 +455,7 @@ func profileInfoTab(data ProfilePageData) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 26, "</div><p class=\"text-xs text-gray-500 mt-1\">Role can only be changed by an administrator.</p></div><div class=\"pt-2\"><button type=\"submit\" class=\"px-4 py-2 text-sm font-medium text-white bg-primary-500 hover:bg-primary-600 rounded-lg transition-colors\">Save Changes</button></div></form></div><!-- Activity sidebar --><div class=\"space-y-4\"><div class=\"bg-dark-800 rounded-xl border border-dark-600 p-5\"><h3 class=\"text-sm font-semibold text-white mb-3\">Activity</h3><dl class=\"space-y-3 text-sm\"><div><dt class=\"text-gray-500\">Member Since</dt><dd class=\"text-gray-300 mt-0.5\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 26, "</div><p class=\"text-xs text-gray-500 mt-1\">Role can only be changed by an administrator.</p></div><div class=\"pt-2\"><button type=\"submit\" class=\"px-4 py-2 text-sm font-medium text-white bg-primary-500 hover:bg-primary-600 rounded-lg transition-colors\">Save Changes</button></div></form></div><!-- Activity sidebar --><div class=\"space-y-4\"><div class=\"card p-5\"><h3 class=\"text-sm font-semibold text-white mb-3\">Activity</h3><dl class=\"space-y-3 text-sm\"><div><dt class=\"text-gray-500\">Member Since</dt><dd class=\"text-gray-300 mt-0.5\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -501,7 +501,7 @@ func profileInfoTab(data ProfilePageData) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 30, "</dd></div></dl></div><!-- Danger zone --><div class=\"bg-dark-800 rounded-xl border border-red-500/20 p-5\"><h3 class=\"text-sm font-semibold text-red-400 mb-3\">Danger Zone</h3><p class=\"text-xs text-gray-400 mb-3\">Export your data or delete your account. These actions cannot be undone.</p><div class=\"space-y-2\"><button hx-post=\"/profile/export\" hx-swap=\"none\" class=\"w-full px-3 py-1.5 text-xs font-medium text-gray-300 bg-dark-700 hover:bg-dark-600 rounded-lg transition-colors border border-dark-500\"><i class=\"fas fa-download mr-1.5\"></i>Export Data</button> <button hx-delete=\"/profile\" hx-confirm=\"This will permanently delete your account. Type your username to confirm.\" hx-swap=\"none\" class=\"w-full px-3 py-1.5 text-xs font-medium text-red-400 bg-red-500/10 hover:bg-red-500/20 rounded-lg transition-colors border border-red-500/20\"><i class=\"fas fa-trash-alt mr-1.5\"></i>Delete Account</button></div></div></div></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 30, "</dd></div></dl></div><!-- Danger zone --><div class=\"bg-dark-800 rounded-xl border border-red-500/20 p-5\"><h3 class=\"text-sm font-semibold text-red-400 mb-3\">Danger Zone</h3><p class=\"text-xs text-gray-400 mb-3\">Export your data or delete your account. These actions cannot be undone.</p><div class=\"space-y-2\"><button hx-post=\"/profile/export\" hx-swap=\"none\" class=\"w-full px-3 py-1.5 text-xs font-medium text-gray-300 bg-dark-700 hover:bg-dark-600 rounded-lg transition-colors border border-dark-500\"><i aria-hidden=\"true\" class=\"fas fa-download mr-1.5\"></i>Export Data</button> <button hx-delete=\"/profile\" hx-confirm=\"This will permanently delete your account. Type your username to confirm.\" hx-swap=\"none\" class=\"w-full px-3 py-1.5 text-xs font-medium text-red-400 bg-red-500/10 hover:bg-red-500/20 rounded-lg transition-colors border border-red-500/20\"><i aria-hidden=\"true\" class=\"fas fa-trash-alt mr-1.5\"></i>Delete Account</button></div></div></div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -546,7 +546,7 @@ func preferencesTab(data ProfilePageData) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 32, "\"><!-- Appearance --><div class=\"bg-dark-800 rounded-xl border border-dark-600 p-6\"><h2 class=\"text-base font-semibold text-white mb-5\">Appearance</h2><div class=\"grid grid-cols-1 md:grid-cols-2 gap-5\"><div><label class=\"block text-sm font-medium text-gray-300 mb-1.5\">Theme</label><div class=\"grid grid-cols-3 gap-2\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 32, "\"><!-- Appearance --><div class=\"card p-6\"><h2 class=\"text-base font-semibold text-white mb-5\">Appearance</h2><div class=\"grid grid-cols-1 md:grid-cols-2 gap-5\"><div><label class=\"block text-sm font-medium text-gray-300 mb-1.5\">Theme</label><div class=\"grid grid-cols-3 gap-2\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -608,7 +608,7 @@ func preferencesTab(data ProfilePageData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 39, "</select></div></div></div><!-- Regional --><div class=\"bg-dark-800 rounded-xl border border-dark-600 p-6\"><h2 class=\"text-base font-semibold text-white mb-5\">Regional</h2><div class=\"grid grid-cols-1 md:grid-cols-3 gap-5\"><div><label class=\"block text-sm font-medium text-gray-300 mb-1.5\">Timezone</label> <select name=\"timezone\" class=\"w-full px-3.5 py-2 rounded-lg bg-dark-700 border border-dark-500 text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/50\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 39, "</select></div></div></div><!-- Regional --><div class=\"card p-6\"><h2 class=\"text-base font-semibold text-white mb-5\">Regional</h2><div class=\"grid grid-cols-1 md:grid-cols-3 gap-5\"><div><label class=\"block text-sm font-medium text-gray-300 mb-1.5\">Timezone</label> <select name=\"timezone\" class=\"w-full px-3.5 py-2 rounded-lg bg-dark-700 border border-dark-500 text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/50\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -690,7 +690,7 @@ func preferencesTab(data ProfilePageData) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 47, "</select></div></div></div><!-- Dashboard & UI --><div class=\"bg-dark-800 rounded-xl border border-dark-600 p-6\"><h2 class=\"text-base font-semibold text-white mb-5\">Dashboard &amp; UI</h2><div class=\"grid grid-cols-1 md:grid-cols-2 gap-5\"><div><label class=\"block text-sm font-medium text-gray-300 mb-1.5\">Container View</label><div class=\"grid grid-cols-2 gap-2\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 47, "</select></div></div></div><!-- Dashboard & UI --><div class=\"card p-6\"><h2 class=\"text-base font-semibold text-white mb-5\">Dashboard &amp; UI</h2><div class=\"grid grid-cols-1 md:grid-cols-2 gap-5\"><div><label class=\"block text-sm font-medium text-gray-300 mb-1.5\">Container View</label><div class=\"grid grid-cols-2 gap-2\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -784,7 +784,7 @@ func preferencesTab(data ProfilePageData) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 60, "</div></div></div><!-- Notifications --><div class=\"bg-dark-800 rounded-xl border border-dark-600 p-6\"><h2 class=\"text-base font-semibold text-white mb-5\">Notifications</h2><div class=\"grid grid-cols-1 md:grid-cols-2 gap-4\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 60, "</div></div></div><!-- Notifications --><div class=\"card p-6\"><h2 class=\"text-base font-semibold text-white mb-5\">Notifications</h2><div class=\"grid grid-cols-1 md:grid-cols-2 gap-4\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -804,7 +804,7 @@ func preferencesTab(data ProfilePageData) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 61, "</div></div><!-- Editor --><div class=\"bg-dark-800 rounded-xl border border-dark-600 p-6\"><h2 class=\"text-base font-semibold text-white mb-5\">Editor</h2><div class=\"grid grid-cols-1 md:grid-cols-3 gap-5\"><div><label class=\"block text-sm font-medium text-gray-300 mb-1.5\">Default Editor</label><div class=\"grid grid-cols-2 gap-2\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 61, "</div></div><!-- Editor --><div class=\"card p-6\"><h2 class=\"text-base font-semibold text-white mb-5\">Editor</h2><div class=\"grid grid-cols-1 md:grid-cols-3 gap-5\"><div><label class=\"block text-sm font-medium text-gray-300 mb-1.5\">Default Editor</label><div class=\"grid grid-cols-2 gap-2\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -842,7 +842,7 @@ func preferencesTab(data ProfilePageData) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 64, "\" oninput=\"document.getElementById('fs-val').textContent=this.value+'px'\" class=\"flex-1 h-1.5 bg-dark-600 rounded-lg appearance-none cursor-pointer accent-primary-500\"> <span id=\"fs-val\" class=\"text-sm text-gray-400 w-10 text-right font-mono\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 64, "\" oninput=\"document.getElementById('fs-val').textContent=this.value+'px'\" class=\"flex-1 h-1.5 bg-dark-600 rounded-lg appearance-none cursor-pointer accent-primary-500\" aria-label=\"Font Size\"> <span id=\"fs-val\" class=\"text-sm text-gray-400 w-10 text-right font-mono\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -885,7 +885,7 @@ func preferencesTab(data ProfilePageData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 71, ">8 spaces</option></select></div></div></div><!-- Save --><div class=\"flex items-center justify-between\"><button type=\"submit\" class=\"px-5 py-2.5 text-sm font-medium text-white bg-primary-500 hover:bg-primary-600 rounded-lg transition-colors\"><i class=\"fas fa-save mr-2\"></i>Save Preferences</button> <button type=\"button\" hx-post=\"/profile/preferences/reset\" hx-confirm=\"Reset all preferences to defaults?\" class=\"px-4 py-2 text-sm font-medium text-gray-400 hover:text-gray-200 bg-dark-700 hover:bg-dark-600 rounded-lg transition-colors\">Reset to Defaults</button></div></form>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 71, ">8 spaces</option></select></div></div></div><!-- Save --><div class=\"flex items-center justify-between\"><button type=\"submit\" class=\"px-5 py-2.5 text-sm font-medium text-white bg-primary-500 hover:bg-primary-600 rounded-lg transition-colors\"><i aria-hidden=\"true\" class=\"fas fa-save mr-2\"></i>Save Preferences</button> <button type=\"button\" hx-post=\"/profile/preferences/reset\" hx-confirm=\"Reset all preferences to defaults?\" class=\"px-4 py-2 text-sm font-medium text-gray-400 hover:text-gray-200 bg-dark-700 hover:bg-dark-600 rounded-lg transition-colors\">Reset to Defaults</button></div></form>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -917,7 +917,7 @@ func securityTab(data ProfilePageData) templ.Component {
 			templ_7745c5c3_Var33 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 72, "<div class=\"space-y-6\"><!-- Change Password --><form hx-post=\"/profile/password\" hx-swap=\"none\" class=\"bg-dark-800 rounded-xl border border-dark-600 p-6 space-y-5\"><input type=\"hidden\" name=\"csrf_token\" value=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 72, "<div class=\"space-y-6\"><!-- Change Password --><form hx-post=\"/profile/password\" hx-swap=\"none\" class=\"card p-6 space-y-5\"><input type=\"hidden\" name=\"csrf_token\" value=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -930,7 +930,7 @@ func securityTab(data ProfilePageData) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 73, "\"><h2 class=\"text-base font-semibold text-white\">Change Password</h2><div><label class=\"block text-sm font-medium text-gray-300 mb-1.5\">Current Password</label> <input type=\"password\" name=\"current_password\" required autocomplete=\"current-password\" class=\"w-full px-3.5 py-2 rounded-lg bg-dark-700 border border-dark-500 text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/50\"></div><div class=\"grid grid-cols-1 md:grid-cols-2 gap-5\"><div><label class=\"block text-sm font-medium text-gray-300 mb-1.5\">New Password</label> <input type=\"password\" name=\"new_password\" required minlength=\"8\" autocomplete=\"new-password\" class=\"w-full px-3.5 py-2 rounded-lg bg-dark-700 border border-dark-500 text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/50\"><p class=\"text-xs text-gray-500 mt-1\">Minimum 8 characters.</p></div><div><label class=\"block text-sm font-medium text-gray-300 mb-1.5\">Confirm New Password</label> <input type=\"password\" name=\"confirm_password\" required minlength=\"8\" autocomplete=\"new-password\" class=\"w-full px-3.5 py-2 rounded-lg bg-dark-700 border border-dark-500 text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/50\"></div></div><button type=\"submit\" class=\"px-4 py-2 text-sm font-medium text-white bg-primary-500 hover:bg-primary-600 rounded-lg transition-colors\">Update Password</button></form><!-- Active Sessions --><div class=\"bg-dark-800 rounded-xl border border-dark-600 overflow-hidden\"><div class=\"px-6 py-4 border-b border-dark-600 flex items-center justify-between\"><h2 class=\"text-base font-semibold text-white\">Active Sessions</h2><button hx-delete=\"/profile/sessions\" hx-confirm=\"Revoke all sessions except the current one?\" class=\"px-3 py-1.5 text-xs font-medium text-red-400 bg-red-500/10 hover:bg-red-500/20 rounded-lg transition-colors border border-red-500/20\">Revoke All Others</button></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 73, "\"><h2 class=\"text-base font-semibold text-white\">Change Password</h2><div><label class=\"block text-sm font-medium text-gray-300 mb-1.5\">Current Password</label> <input type=\"password\" name=\"current_password\" required autocomplete=\"current-password\" class=\"w-full px-3.5 py-2 rounded-lg bg-dark-700 border border-dark-500 text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/50\" aria-label=\"Current Password\"></div><div class=\"grid grid-cols-1 md:grid-cols-2 gap-5\"><div><label class=\"block text-sm font-medium text-gray-300 mb-1.5\">New Password</label> <input type=\"password\" name=\"new_password\" required minlength=\"8\" autocomplete=\"new-password\" class=\"w-full px-3.5 py-2 rounded-lg bg-dark-700 border border-dark-500 text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/50\" aria-label=\"New Password\"><p class=\"text-xs text-gray-500 mt-1\">Minimum 8 characters.</p></div><div><label class=\"block text-sm font-medium text-gray-300 mb-1.5\">Confirm New Password</label> <input type=\"password\" name=\"confirm_password\" required minlength=\"8\" autocomplete=\"new-password\" class=\"w-full px-3.5 py-2 rounded-lg bg-dark-700 border border-dark-500 text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary-500/50\" aria-label=\"Confirm New Password\"></div></div><button type=\"submit\" class=\"px-4 py-2 text-sm font-medium text-white bg-primary-500 hover:bg-primary-600 rounded-lg transition-colors\">Update Password</button></form><!-- Active Sessions --><div class=\"card overflow-hidden\"><div class=\"px-6 py-4 border-b border-dark-600 flex items-center justify-between\"><h2 class=\"text-base font-semibold text-white\">Active Sessions</h2><button hx-delete=\"/profile/sessions\" hx-confirm=\"Revoke all sessions except the current one?\" class=\"px-3 py-1.5 text-xs font-medium text-red-400 bg-red-500/10 hover:bg-red-500/20 rounded-lg transition-colors border border-red-500/20\">Revoke All Others</button></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -964,7 +964,7 @@ func securityTab(data ProfilePageData) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 77, "\"><i class=\"fas fa-globe\"></i></div><div><div class=\"text-sm text-gray-200 flex items-center gap-2\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 77, "\"><i aria-hidden=\"true\" class=\"fas fa-globe\"></i></div><div><div class=\"text-sm text-gray-200 flex items-center gap-2\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -1044,7 +1044,7 @@ func securityTab(data ProfilePageData) templ.Component {
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 85, "\" hx-swap=\"outerHTML\" hx-target=\"closest div\" class=\"p-1.5 text-gray-500 hover:text-red-400 hover:bg-red-500/10 rounded transition-colors\" title=\"Revoke\"><i class=\"fas fa-times text-xs\"></i></button>")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 85, "\" hx-swap=\"outerHTML\" hx-target=\"closest div\" class=\"p-1.5 text-gray-500 hover:text-red-400 hover:bg-red-500/10 rounded transition-colors\" title=\"Revoke\"><i aria-hidden=\"true\" class=\"fas fa-times text-xs\"></i></button>")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
@@ -1064,7 +1064,7 @@ func securityTab(data ProfilePageData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 89, "</div><!-- Two-Factor Authentication (placeholder) --><div class=\"bg-dark-800 rounded-xl border border-dark-600 p-6\"><div class=\"flex items-center justify-between\"><div><h2 class=\"text-base font-semibold text-white\">Two-Factor Authentication</h2><p class=\"text-sm text-gray-400 mt-1\">Add an extra layer of security to your account.</p></div><span class=\"px-2.5 py-1 text-xs font-medium text-yellow-400 bg-yellow-900/30 rounded-lg border border-yellow-800/50\">Planned</span></div></div></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 89, "</div><!-- Two-Factor Authentication (placeholder) --><div class=\"card p-6\"><div class=\"flex items-center justify-between\"><div><h2 class=\"text-base font-semibold text-white\">Two-Factor Authentication</h2><p class=\"text-sm text-gray-400 mt-1\">Add an extra layer of security to your account.</p></div><span class=\"px-2.5 py-1 text-xs font-medium text-yellow-400 bg-yellow-900/30 rounded-lg border border-yellow-800/50\">Planned</span></div></div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

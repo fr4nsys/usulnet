@@ -33,6 +33,7 @@ import (
 	logaggsvc "github.com/fr4nsys/usulnet/internal/services/logagg"
 	manifestsvc "github.com/fr4nsys/usulnet/internal/services/manifest"
 	metricssvc "github.com/fr4nsys/usulnet/internal/services/metrics"
+	onboardingsvc "github.com/fr4nsys/usulnet/internal/services/onboarding"
 	monitoringsvc "github.com/fr4nsys/usulnet/internal/services/monitoring"
 	opasvc "github.com/fr4nsys/usulnet/internal/services/opa"
 	proxysvc "github.com/fr4nsys/usulnet/internal/services/proxy"
@@ -95,6 +96,10 @@ func (app *Application) initWeb(ctx context.Context, ic *initContext) error {
 		DNSService:            ic.dnsService,          // v26.5.1 — DNS provider plugins (session-10)
 		CalendarService:       ic.calendarService,     // v26.5.1 — operations calendar (session-11)
 		MarketplaceService:    ic.marketplaceService,  // v26.5.1 — curated marketplace (session-12)
+		EgressService:         ic.egressService,       // v26.5.2 — L7 egress forward proxy
+		EgressListenAddr:      ic.egressListenAddr,    // v26.5.2 — listener addr for info panel
+		YARAService:           ic.yaraService,         // v26.5.2 — one-shot YARA scanner
+		YARAToolkitImage:      ic.yaraToolkitImage,    // v26.5.2 — toolkit image for the info panel
 	}
 
 	// Session store (reused later for the session repo adapter).
@@ -539,6 +544,16 @@ func (app *Application) initWeb(ctx context.Context, ic *initContext) error {
 	hdlDeps.UserRepo = &webUserRepoAdapter{repo: ic.userRepo}
 	app.Logger.Info("User repository adapter enabled for web handler")
 
+	// First-run onboarding wizard (v26.5.2 session 04b). The service
+	// reads its flag once on boot; the wizard middleware caches via
+	// IsCompleted() so every request after onboarding finishes pays
+	// only an atomic load.
+	systemStateRepo := postgres.NewSystemStateRepository(app.DB)
+	onboardingSvcInst := onboardingsvc.NewService(context.Background(), systemStateRepo, app.Logger)
+	hdlDeps.OnboardingSvc = onboardingSvcInst
+	app.Logger.Info("Onboarding service enabled for web handler",
+		"completed", onboardingSvcInst.IsCompleted())
+
 	if redisSessionStore != nil {
 		hdlDeps.SessionRepo = &webSessionRepoAdapter{redisStore: redisSessionStore}
 		app.Logger.Info("Session repository adapter enabled for web handler")
@@ -876,10 +891,18 @@ func (app *Application) initWeb(ctx context.Context, ic *initContext) error {
 	}
 
 	// Expose the recon/metadata feature flag and acknowledgement recorder to
-	// the web layer. The concrete recon.Service / metadata.Service
-	// implementations are still TBD: when they land, populate
-	// regDeps.ReconService / regDeps.MetadataService here.
+	// the web layer. Wire the concrete recon.Service / metadata.Service
+	// implementations built above so the /recon/* and /recon/metadata
+	// pages render instead of 404-ing.
 	regDeps.ReconEnabled = app.Config.Recon.Enabled
+	if reconModule != nil {
+		if reconModule.Service != nil {
+			regDeps.ReconService = reconModule.Service
+		}
+		if reconModule.MetadataFullService != nil {
+			regDeps.MetadataService = reconModule.MetadataFullService
+		}
+	}
 	if app.reconAckStore != nil {
 		regDeps.ReconAck = app.reconAckStore
 	}

@@ -50,7 +50,7 @@ func Pull(data PullImageData) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"max-w-lg mx-auto space-y-6\"><div class=\"flex items-center gap-4\"><a href=\"/images\" class=\"p-2 text-gray-400 hover:text-white hover:bg-dark-700 rounded-lg\"><i class=\"fas fa-arrow-left\"></i></a><div><h1 class=\"text-2xl font-display font-bold text-white\">Pull Image</h1><p class=\"text-gray-400 text-sm mt-1\">Download a Docker image from a registry</p></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"max-w-lg mx-auto space-y-6\"><div class=\"flex items-center gap-4\"><a href=\"/images\" class=\"p-2 text-gray-400 hover:text-white hover:bg-dark-700 rounded-lg\"><i aria-hidden=\"true\" class=\"fas fa-arrow-left\"></i></a><div><h1 class=\"text-2xl font-display font-bold text-white\">Pull Image</h1><p class=\"text-gray-400 text-sm mt-1\">Download a Docker image from a registry</p></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -71,7 +71,7 @@ func Pull(data PullImageData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "\"><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Image Reference</label> <input type=\"text\" name=\"reference\" required class=\"input\" placeholder=\"e.g. nginx:latest, ubuntu:22.04, ghcr.io/org/image:tag\" autofocus><p class=\"text-xs text-gray-500 mt-2\">Format: <code class=\"text-gray-400\">registry/image:tag</code>. If no tag is specified, <code class=\"text-gray-400\">latest</code> will be used.</p></div><div class=\"flex justify-end gap-3 pt-4\"><a href=\"/images\" class=\"btn-secondary\">Cancel</a> <button type=\"submit\" class=\"btn-primary\"><i class=\"fas fa-download mr-2\"></i>Pull Image</button></div></form></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "\"><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Image Reference</label> <input type=\"text\" name=\"reference\" required class=\"input\" placeholder=\"e.g. nginx:latest, ubuntu:22.04, ghcr.io/org/image:tag\" autofocus aria-label=\"Image Reference\"><p class=\"text-xs text-gray-500 mt-2\">Format: <code class=\"text-gray-400\">registry/image:tag</code>. If no tag is specified, <code class=\"text-gray-400\">latest</code> will be used.</p></div><div class=\"flex justify-end gap-3 pt-4\"><a href=\"/images\" class=\"btn-secondary\">Cancel</a> <button type=\"submit\" class=\"btn-primary\"><i aria-hidden=\"true\" class=\"fas fa-download mr-2\"></i>Pull Image</button></div></form></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

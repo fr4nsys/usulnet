@@ -22,6 +22,7 @@ import (
 
 	"github.com/spf13/cobra"
 
+	"github.com/fr4nsys/usulnet/cmd/usulnet/internal/apiclient"
 	"github.com/fr4nsys/usulnet/internal/docker"
 	"github.com/fr4nsys/usulnet/internal/pkg/logger"
 	"github.com/fr4nsys/usulnet/internal/services/metadata"
@@ -50,6 +51,8 @@ Two execution modes:
   local  (default when no server is configured)  — run the toolkit container
                                                   directly against the host
                                                   Docker daemon.`,
+	Args: cobra.NoArgs,
+	Run:  func(cmd *cobra.Command, args []string) { _ = cmd.Help() },
 }
 
 // flags shared by every meta subcommand
@@ -73,7 +76,18 @@ var metaScanRecursive bool
 var metaExtractCmd = &cobra.Command{
 	Use:   "extract <path>",
 	Short: "Print the metadata for one file as JSON / YAML / table",
-	Args:  cobra.ExactArgs(1),
+	Long: `Extract EXIF / PDF / OLE metadata for a single file.
+
+Runs server-mode (POST /api/v1/metadata/jobs) when --server or
+$USULNET_API_URL is set; otherwise local mode runs the
+recon-toolkit container against the host Docker daemon.
+
+Use --output json|yaml for scripts; the default table format only
+includes the exiftool sub-map.`,
+	Example: `  usulnet meta extract photo.jpg
+  usulnet meta extract photo.jpg --output json
+  usulnet meta extract doc.pdf --server https://usulnet.local --token $USULNET_API_TOKEN`,
+	Args: cobra.ExactArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		if err := validateOutputFormat(); err != nil {
 			return err
@@ -89,7 +103,18 @@ var metaExtractCmd = &cobra.Command{
 var metaStripCmd = &cobra.Command{
 	Use:   "strip <path>",
 	Short: "Write a cleaned copy of the file (default: <path>.stripped)",
-	Args:  cobra.ExactArgs(1),
+	Long: `Strip metadata using mat2 / exiftool.
+
+The cleaned copy is written to <path>.stripped unless --output-file
+is given. Runs in server mode if --server / $USULNET_API_URL is
+set, otherwise against the local Docker daemon.
+
+A short summary line ("stripped: <input> -> <output> (<bytes>)") is
+printed on success.`,
+	Example: `  usulnet meta strip photo.jpg
+  usulnet meta strip photo.jpg -o cleaned.jpg
+  usulnet meta strip doc.pdf --server https://usulnet.local`,
+	Args: cobra.ExactArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		path := args[0]
 		if useServerMode() {
@@ -102,7 +127,18 @@ var metaStripCmd = &cobra.Command{
 var metaScanCmd = &cobra.Command{
 	Use:   "scan <dir>",
 	Short: "Extract metadata for every file under <dir> (recurse with --recursive)",
-	Args:  cobra.ExactArgs(1),
+	Long: `Walk a directory and extract metadata for every file.
+
+Per-file failures are reported but do not abort the run. If any
+file fails, the command exits 2 after printing the full report
+(per docs/recon.md §8).
+
+By default only the immediate children of <dir> are processed; use
+--recursive to descend into sub-directories.`,
+	Example: `  usulnet meta scan ./photos
+  usulnet meta scan ./photos --recursive
+  usulnet meta scan ./photos --recursive --output json`,
+	Args: cobra.ExactArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		if err := validateOutputFormat(); err != nil {
 			return err
@@ -133,14 +169,10 @@ func runServerExtract(cmd *cobra.Command, paths []string) error {
 	if err != nil {
 		return err
 	}
-	if outputFormat == "json" || outputFormat == "yaml" {
-		return writeOutput(cmd, job)
-	}
-	rows := []tableRow{
-		{"JOB", "STATUS", "ARTIFACTS"},
-		{job.ID, job.Status, fmt.Sprintf("%d", job.ArtifactCount)},
-	}
-	return writeOutput(cmd, rows)
+	return writeView(cmd, job,
+		[]string{"JOB", "STATUS", "ARTIFACTS"},
+		[][]string{{job.ID, job.Status, fmt.Sprintf("%d", job.ArtifactCount)}},
+	)
 }
 
 // runServerStrip POSTs the file with mode=strip, then downloads the cleaned
@@ -165,12 +197,12 @@ func runServerStrip(cmd *cobra.Command, path, outputPath string) error {
 	if err := downloadStream(cmd.Context(), client, streamPath, outputPath); err != nil {
 		return err
 	}
-	_, _ = fmt.Fprintf(cmd.OutOrStdout(), "stripped: %s -> %s\n", path, outputPath)
+	infof(cmd, "stripped: %s -> %s\n", path, outputPath)
 	return nil
 }
 
 // postMetaJob uploads `paths` as a multipart body to /api/v1/metadata/jobs.
-func postMetaJob(ctx context.Context, client *apiClient, mode string, paths []string) (*metaJobResp, error) {
+func postMetaJob(ctx context.Context, client *apiclient.Client, mode string, paths []string) (*metaJobResp, error) {
 	var buf bytes.Buffer
 	w := multipart.NewWriter(&buf)
 	if err := w.WriteField("mode", mode); err != nil {
@@ -196,23 +228,24 @@ func postMetaJob(ctx context.Context, client *apiClient, mode string, paths []st
 		return nil, err
 	}
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost,
-		client.baseURL+"/api/v1/metadata/jobs", &buf)
+	req, err := client.NewRequest(ctx, http.MethodPost, "/api/v1/metadata/jobs", &buf)
 	if err != nil {
 		return nil, err
 	}
 	req.Header.Set("Content-Type", w.FormDataContentType())
-	if client.token != "" {
-		req.Header.Set("Authorization", "Bearer "+client.token)
-	}
-	resp, err := client.hc.Do(req)
+	resp, err := client.HTTPClient().Do(req)
 	if err != nil {
-		return nil, &infraError{msg: fmt.Sprintf("api: %v", err), code: exitServerUnreach}
+		return nil, &apiclient.ErrNetwork{Op: "POST /api/v1/metadata/jobs", Err: err}
 	}
 	defer func() { _ = resp.Body.Close() }()
 	if resp.StatusCode >= 400 {
 		body, _ := io.ReadAll(io.LimitReader(resp.Body, 4096))
-		return nil, fmt.Errorf("api POST /metadata/jobs: %s: %s", resp.Status, bytes.TrimSpace(body))
+		return nil, &apiclient.ErrStatus{
+			Method: http.MethodPost,
+			Path:   "/api/v1/metadata/jobs",
+			Status: resp.Status,
+			Body:   bytes.TrimSpace(body),
+		}
 	}
 	var out metaJobResp
 	if err := json.NewDecoder(resp.Body).Decode(&out); err != nil {
@@ -221,21 +254,18 @@ func postMetaJob(ctx context.Context, client *apiClient, mode string, paths []st
 	return &out, nil
 }
 
-func downloadStream(ctx context.Context, client *apiClient, path, outputPath string) error {
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, client.baseURL+path, nil)
+func downloadStream(ctx context.Context, client *apiclient.Client, path, outputPath string) error {
+	req, err := client.NewRequest(ctx, http.MethodGet, path, nil)
 	if err != nil {
 		return err
 	}
-	if client.token != "" {
-		req.Header.Set("Authorization", "Bearer "+client.token)
-	}
-	resp, err := client.hc.Do(req)
+	resp, err := client.HTTPClient().Do(req)
 	if err != nil {
-		return &infraError{msg: fmt.Sprintf("api: %v", err), code: exitServerUnreach}
+		return &apiclient.ErrNetwork{Op: "GET " + path, Err: err}
 	}
 	defer func() { _ = resp.Body.Close() }()
 	if resp.StatusCode >= 400 {
-		return fmt.Errorf("api GET %s: %s", path, resp.Status)
+		return &apiclient.ErrStatus{Method: http.MethodGet, Path: path, Status: resp.Status}
 	}
 	f, err := os.Create(outputPath) // #nosec G304 -- user-supplied CLI path
 	if err != nil {
@@ -358,18 +388,14 @@ func runLocalExtract(cmd *cobra.Command, path string) error {
 		"mime":     detectMIME(abs),
 		"metadata": out,
 	}
-	if outputFormat == "json" || outputFormat == "yaml" {
-		return writeOutput(cmd, doc)
-	}
-	rows := []tableRow{
-		{"FIELD", "VALUE"},
+	rows := [][]string{
 		{"path", abs},
 		{"mime", detectMIME(abs)},
 	}
 	for k, v := range flattenMetadata(out) {
-		rows = append(rows, tableRow{k, fmt.Sprintf("%v", v)})
+		rows = append(rows, []string{k, fmt.Sprintf("%v", v)})
 	}
-	return writeOutput(cmd, rows)
+	return writeView(cmd, doc, []string{"FIELD", "VALUE"}, rows)
 }
 
 // runLocalStrip runs mat2 against the supplied path and copies the cleaned
@@ -413,7 +439,7 @@ func runLocalStrip(cmd *cobra.Command, path, outputPath string) error {
 			return &infraError{msg: fmt.Sprintf("rename: %v", err), code: exitInfra}
 		}
 	}
-	_, _ = fmt.Fprintf(cmd.OutOrStdout(), "stripped: %s -> %s (%d bytes)\n", abs, absOut, res.SizeBytes)
+	infof(cmd, "stripped: %s -> %s (%d bytes)\n", abs, absOut, res.SizeBytes)
 	return nil
 }
 
@@ -463,22 +489,16 @@ func runLocalScan(cmd *cobra.Command, paths []string) error {
 		results = append(results, fileReport{Path: abs, MIME: detectMIME(abs), Metadata: out})
 	}
 
-	if outputFormat == "json" || outputFormat == "yaml" {
-		if err := writeOutput(cmd, results); err != nil {
-			return err
+	rows := make([][]string, 0, len(results))
+	for _, r := range results {
+		status := "ok"
+		if r.Error != "" {
+			status = "error: " + r.Error
 		}
-	} else {
-		rows := []tableRow{{"PATH", "MIME", "STATUS"}}
-		for _, r := range results {
-			status := "ok"
-			if r.Error != "" {
-				status = "error: " + r.Error
-			}
-			rows = append(rows, tableRow{r.Path, r.MIME, status})
-		}
-		if err := writeOutput(cmd, rows); err != nil {
-			return err
-		}
+		rows = append(rows, []string{r.Path, r.MIME, status})
+	}
+	if err := writeView(cmd, results, []string{"PATH", "MIME", "STATUS"}, rows); err != nil {
+		return err
 	}
 
 	if failures > 0 {
@@ -513,8 +533,8 @@ func useServerMode() bool {
 
 // metaClient resolves the apiClient used by server-mode meta commands.
 // It honors --server / --token then falls back to environment.
-func metaClient() (*apiClient, error) {
-	return newAPIClient(apiClientOptions{
+func metaClient() (*apiclient.Client, error) {
+	return apiclient.New(apiclient.Options{
 		BaseURL: metaServerURL,
 		Token:   metaServerTok,
 	})
@@ -621,8 +641,10 @@ func init() {
 	metaCmd.PersistentFlags().StringVar(&metaToolkitImg, "image", "", "toolkit image (local mode only; default $USULNET_RECON_TOOLKIT_IMAGE)")
 	metaCmd.PersistentFlags().StringVar(&metaTimeout, "timeout", "", "container timeout (e.g. 30s)")
 
-	// strip flags
-	metaStripCmd.Flags().StringVarP(&metaStripOutput, "output", "o", "", "output path for cleaned file (default <input>.stripped)")
+	// strip flags. The flag is --output-file (not --output) so it doesn't
+	// shadow the global --output table|json|yaml format flag declared on
+	// rootCmd. The -o short form is preserved.
+	metaStripCmd.Flags().StringVarP(&metaStripOutput, "output-file", "o", "", "output path for cleaned file (default <input>.stripped)")
 
 	// scan flags
 	metaScanCmd.Flags().BoolVarP(&metaScanRecursive, "recursive", "r", false, "recurse into subdirectories")

@@ -1,0 +1,199 @@
+# Weekly rebuild of the recon-toolkit image so BlackArch packages stay
+# current under `pacman -Syu`.
+#
+# - Cron: every Monday 04:00 UTC.
+# - Manual: workflow_dispatch for ad-hoc triggers (e.g. after a CVE
+#   advisory affecting one of the bundled tools).
+#
+# Acceptance gates:
+#   1. `docker build` succeeds on linux/amd64.
+#   2. `recon-toolkit-smoke` inside the freshly built image exits 0
+#      (each declared tool answers --help / --version).
+#   3. Compressed image size is below CEILING_BYTES.
+#
+# If any gate fails the workflow does NOT push — the prior pinned
+# digest in internal/services/recon/images.go stays in effect.
+#
+# On success the workflow pushes to GHCR with two tags and opens a PR
+# that bumps the pinned digest in internal/services/recon/images.go.
+
+name: recon-toolkit-weekly
+
+on:
+  schedule:
+    # Mondays at 04:00 UTC. Avoids European trading hours so a botched
+    # rebuild isn't anyone's first coffee.
+    - cron: "0 4 * * 1"
+  workflow_dispatch:
+  # Re-validate the Dockerfile + smoke script on any PR that touches
+  # them, but do NOT push — fork tokens cannot publish to the canonical
+  # ghcr.io/fr4nsys namespace.
+  pull_request:
+    paths:
+      - "images/recon-toolkit/**"
+      - ".github/workflows/recon-toolkit-weekly.yml"
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE: ghcr.io/fr4nsys/usulnet-recon-toolkit
+  # 2 GB compressed is the session budget; ceiling at 2.5 GB. The
+  # workflow fails before push when the compressed image crosses the
+  # ceiling so a human prunes the tools list.
+  CEILING_BYTES: "2684354560"   # 2.5 GiB
+
+permissions:
+  contents: read
+  packages: write
+  pull-requests: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    outputs:
+      digest: ${{ steps.push.outputs.digest }}
+      build_date: ${{ steps.meta.outputs.build_date }}
+      tag_dated: ${{ steps.meta.outputs.tag_dated }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Log in to GHCR
+        if: github.event_name != 'pull_request'
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Compute tags
+        id: meta
+        run: |
+          build_date=$(date -u +%Y-%m-%d)
+          echo "build_date=${build_date}" >> "$GITHUB_OUTPUT"
+          echo "tag_dated=${IMAGE}:blackarch-${build_date}" >> "$GITHUB_OUTPUT"
+
+      - name: Set up Buildx
+        uses: docker/setup-buildx-action@v3
+
+      # On PR: validate the Dockerfile builds (push=false, no load
+      # needed). Matches the build-recon-images.yml/spiderfoot pattern
+      # that successfully validates on PR without registry credentials.
+      #
+      # On cron / workflow_dispatch: build, load locally for the smoke
+      # gate, then push the multi-tagged result.
+      - name: Build (validate on PR; load for smoke on main/cron)
+        id: build_load
+        if: github.event_name == 'pull_request'
+        uses: docker/build-push-action@v6
+        with:
+          context: images/recon-toolkit
+          platforms: linux/amd64
+          build-args: |
+            BUILD_DATE=${{ steps.meta.outputs.build_date }}
+          push: false
+          tags: usulnet-recon-toolkit:smoke
+          provenance: false
+
+      - name: Build + load (cron / dispatch)
+        id: build_for_smoke
+        if: github.event_name != 'pull_request'
+        uses: docker/build-push-action@v6
+        with:
+          context: images/recon-toolkit
+          platforms: linux/amd64
+          build-args: |
+            BUILD_DATE=${{ steps.meta.outputs.build_date }}
+          push: false
+          load: true
+          tags: usulnet-recon-toolkit:smoke
+          provenance: false
+
+      # Smoke + size gates only run when we actually have the image in
+      # the local engine (cron / dispatch). PR runs validate the build
+      # alone — the cron pass right after merge picks up the gates.
+      - name: Smoke test (every declared tool responds)
+        if: github.event_name != 'pull_request'
+        run: |
+          set -euo pipefail
+          docker run --rm \
+            --entrypoint /usr/local/bin/recon-toolkit-smoke \
+            usulnet-recon-toolkit:smoke
+
+      - name: Size budget check
+        if: github.event_name != 'pull_request'
+        run: |
+          set -euo pipefail
+          size=$(docker save usulnet-recon-toolkit:smoke | gzip | wc -c)
+          ceiling=${CEILING_BYTES}
+          echo "Compressed image size: ${size} bytes (ceiling ${ceiling})"
+          if [ "$size" -gt "$ceiling" ]; then
+            echo "FAIL: image exceeds the ${ceiling}-byte ceiling."
+            echo "Prune images/recon-toolkit/tools.list or strip more aggressively."
+            exit 1
+          fi
+
+      - name: Push tags
+        id: push
+        if: github.event_name != 'pull_request'
+        uses: docker/build-push-action@v6
+        with:
+          context: images/recon-toolkit
+          platforms: linux/amd64
+          build-args: |
+            BUILD_DATE=${{ steps.meta.outputs.build_date }}
+          push: true
+          tags: |
+            ${{ env.IMAGE }}:latest
+            ${{ steps.meta.outputs.tag_dated }}
+          provenance: false
+
+  bump-digest:
+    # Only run on cron or manual dispatch — PRs cannot push, so there is
+    # nothing to bump.
+    if: github.event_name != 'pull_request' && needs.build.outputs.digest != ''
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Update images.go
+        env:
+          TOOLKIT_DIGEST: ${{ needs.build.outputs.digest }}
+        run: |
+          set -eu
+          file=internal/services/recon/images.go
+          python3 - "$file" "$TOOLKIT_DIGEST" <<'PY'
+          import re, sys
+          path, toolkit = sys.argv[1], sys.argv[2]
+          src = open(path).read()
+          src = re.sub(
+              r'(ToolkitImageDigest\s*=\s*")sha256:[0-9a-f]{64}(")',
+              r'\g<1>' + toolkit + r'\g<2>',
+              src,
+          )
+          open(path, "w").write(src)
+          PY
+
+      - name: Open PR with digest bump
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "chore(recon-toolkit): bump pinned image digest"
+          title: "chore(recon-toolkit): bump pinned image digest (${{ needs.build.outputs.build_date }})"
+          body: |
+            Automated PR opened by `recon-toolkit-weekly.yml`.
+
+            The weekly rebuild of `images/recon-toolkit/` succeeded and
+            pushed `${{ needs.build.outputs.tag_dated }}`. This PR pins
+            `ToolkitImageDigest` in `internal/services/recon/images.go`
+            to the new digest so the Go binary tracks the exact image
+            it should pull.
+
+            - digest: `${{ needs.build.outputs.digest }}`
+            - build date: `${{ needs.build.outputs.build_date }}`
+          branch: chore/recon-toolkit-digest-bump
+          base: main
+          delete-branch: true
+          add-paths: |
+            internal/services/recon/images.go

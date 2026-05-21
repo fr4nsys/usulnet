@@ -567,45 +567,21 @@ func (s *Service) List(ctx context.Context, opts postgres.HostListOptions) ([]*m
 }
 
 // ListSummaries retrieves host summaries with metrics.
+//
+// For installs with many hosts the per-host client.Info() round-trip
+// is the dominant cost. The enrichment loop is fanned out across a
+// pool of goroutines, capped at hostInfoFanoutCap, so an install with
+// N online hosts pays max(latency) instead of N × latency. Each
+// goroutine writes only to its own *HostSummary pointer — there is
+// no shared state to race on — and errors from any one host are
+// dropped on the floor exactly as the previous sequential loop did.
 func (s *Service) ListSummaries(ctx context.Context) ([]*models.HostSummary, error) {
 	if s.repo != nil {
 		summaries, err := s.repo.GetHostSummaries(ctx)
 		if err != nil {
 			return nil, err
 		}
-		// Enrich with live Docker data for online hosts
-		for _, summary := range summaries {
-			if summary.Status != models.HostStatusOnline {
-				continue
-			}
-			client, ok := s.clientPool.Get(summary.ID.String())
-			if !ok {
-				continue
-			}
-			info, err := client.Info(ctx)
-			if err != nil {
-				continue
-			}
-			summary.ContainerCount = info.Containers
-			summary.RunningCount = info.ContainersRunning
-			if summary.DockerVersion == nil || *summary.DockerVersion == "" {
-				summary.DockerVersion = &info.ServerVersion
-			}
-			if summary.TotalCPUs == nil || *summary.TotalCPUs == 0 {
-				summary.TotalCPUs = &info.NCPU
-			}
-			if summary.TotalMemory == nil || *summary.TotalMemory == 0 {
-				summary.TotalMemory = &info.MemTotal
-			}
-			if summary.OSType == nil || *summary.OSType == "" {
-				summary.OSType = &info.OSType
-			}
-			if summary.Architecture == nil || *summary.Architecture == "" {
-				summary.Architecture = &info.Architecture
-			}
-			now := time.Now()
-			summary.LastSeenAt = &now
-		}
+		s.enrichSummariesParallel(ctx, summaries)
 		return summaries, nil
 	}
 
@@ -1160,4 +1136,65 @@ func (s *Service) IsOnline(ctx context.Context, hostID uuid.UUID) bool {
 // GetOnlineHosts returns all online host IDs.
 func (s *Service) GetOnlineHosts() []string {
 	return s.clientPool.Hosts()
+}
+
+// hostInfoFanoutCap bounds the parallel goroutines that ListSummaries
+// uses to dial each online host's Docker daemon. 16 lets a small
+// install run every probe in parallel (the typical case) while
+// preventing a 100-host install from opening 100 simultaneous Docker
+// API connections.
+const hostInfoFanoutCap = 16
+
+// enrichSummariesParallel fans out the per-host client.Info() probes
+// across a bounded pool of goroutines and writes the result back into
+// each summary pointer. Each goroutine writes only to the summary it
+// was given — no shared state — so no locking is needed beyond the
+// WaitGroup. Errors are dropped on the floor (mirroring the previous
+// sequential loop's `continue` behaviour); the failed host's summary
+// keeps whatever the repo returned.
+func (s *Service) enrichSummariesParallel(ctx context.Context, summaries []*models.HostSummary) {
+	if len(summaries) == 0 {
+		return
+	}
+	sem := make(chan struct{}, hostInfoFanoutCap)
+	var wg sync.WaitGroup
+	for _, summary := range summaries {
+		if summary == nil || summary.Status != models.HostStatusOnline {
+			continue
+		}
+		client, ok := s.clientPool.Get(summary.ID.String())
+		if !ok {
+			continue
+		}
+		wg.Add(1)
+		sem <- struct{}{}
+		go func(sm *models.HostSummary, cl *docker.Client) {
+			defer wg.Done()
+			defer func() { <-sem }()
+			info, err := cl.Info(ctx)
+			if err != nil {
+				return
+			}
+			sm.ContainerCount = info.Containers
+			sm.RunningCount = info.ContainersRunning
+			if sm.DockerVersion == nil || *sm.DockerVersion == "" {
+				sm.DockerVersion = &info.ServerVersion
+			}
+			if sm.TotalCPUs == nil || *sm.TotalCPUs == 0 {
+				sm.TotalCPUs = &info.NCPU
+			}
+			if sm.TotalMemory == nil || *sm.TotalMemory == 0 {
+				sm.TotalMemory = &info.MemTotal
+			}
+			if sm.OSType == nil || *sm.OSType == "" {
+				sm.OSType = &info.OSType
+			}
+			if sm.Architecture == nil || *sm.Architecture == "" {
+				sm.Architecture = &info.Architecture
+			}
+			now := time.Now()
+			sm.LastSeenAt = &now
+		}(summary, client)
+	}
+	wg.Wait()
 }

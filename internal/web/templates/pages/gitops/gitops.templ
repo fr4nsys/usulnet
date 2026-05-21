@@ -2,6 +2,7 @@ package gitops
 
 import (
 	"fmt"
+	"github.com/fr4nsys/usulnet/internal/web/templates/components"
 	"github.com/fr4nsys/usulnet/internal/web/templates/layouts"
 )
 
@@ -72,7 +73,7 @@ templ GitOps(data GitOpsData) {
 					<p class="text-gray-400 mt-1">Automated deployments from Git repositories</p>
 				</div>
 				<button onclick="document.getElementById('createPipelineModal').classList.remove('hidden')" class="btn-primary flex items-center gap-2">
-					<i class="fas fa-plus"></i>
+					<i aria-hidden="true" class="fas fa-plus"></i>
 					New Pipeline
 				</button>
 			</div>
@@ -90,10 +91,10 @@ templ GitOps(data GitOpsData) {
 			<!-- Tabs -->
 			<div x-data={ fmt.Sprintf("{ tab: '%s' }", activeTab(data.ActiveTab)) } class="space-y-4">
 				<div class="flex gap-1 border-b border-dark-600">
-					<button @click="tab = 'pipelines'" :class="tab === 'pipelines' ? 'border-primary-500 text-white' : 'border-transparent text-gray-400 hover:text-gray-300'" class="px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors">
+					<button @click="tab = 'pipelines'" :class="tab === 'pipelines' ? 'border-primary-500 text-white' : 'border-transparent text-gray-400 hover:text-gray-300'" class="tab-underline">
 						Pipelines ({ fmt.Sprintf("%d", len(data.Pipelines)) })
 					</button>
-					<button @click="tab = 'deployments'" :class="tab === 'deployments' ? 'border-primary-500 text-white' : 'border-transparent text-gray-400 hover:text-gray-300'" class="px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors">
+					<button @click="tab = 'deployments'" :class="tab === 'deployments' ? 'border-primary-500 text-white' : 'border-transparent text-gray-400 hover:text-gray-300'" class="tab-underline">
 						Deployment History ({ fmt.Sprintf("%d", len(data.Deployments)) })
 					</button>
 				</div>
@@ -101,11 +102,7 @@ templ GitOps(data GitOpsData) {
 				<!-- Pipelines Tab -->
 				<div x-show="tab === 'pipelines'" x-cloak>
 					if len(data.Pipelines) == 0 {
-						<div class="card p-12 text-center">
-							<i class="fas fa-code-branch text-4xl text-gray-400 mb-4"></i>
-							<h3 class="text-lg font-medium text-white mb-2">No Pipelines Configured</h3>
-							<p class="text-gray-400 mb-4">Create a pipeline to automatically deploy from Git repositories</p>
-						</div>
+						@components.EmptyState("fa-code-branch", "No Pipelines Configured", "Create a pipeline to automatically deploy from Git repositories")
 					} else {
 						<div class="space-y-3">
 							for _, pipeline := range data.Pipelines {
@@ -118,23 +115,19 @@ templ GitOps(data GitOpsData) {
 				<!-- Deployments Tab -->
 				<div x-show="tab === 'deployments'" x-cloak>
 					if len(data.Deployments) == 0 {
-						<div class="card p-12 text-center">
-							<i class="fas fa-rocket text-4xl text-gray-400 mb-4"></i>
-							<h3 class="text-lg font-medium text-white mb-2">No Deployments Yet</h3>
-							<p class="text-gray-400">Deployment history will appear here</p>
-						</div>
+						@components.EmptyState("fa-rocket", "No Deployments Yet", "Deployment history will appear here")
 					} else {
 						<div class="card overflow-hidden">
 							<table class="w-full">
 								<thead>
 									<tr class="border-b border-dark-600">
-										<th class="text-left text-xs font-medium text-gray-400 uppercase px-4 py-3">Pipeline</th>
-										<th class="text-left text-xs font-medium text-gray-400 uppercase px-4 py-3">Commit</th>
-										<th class="text-left text-xs font-medium text-gray-400 uppercase px-4 py-3">Action</th>
-										<th class="text-left text-xs font-medium text-gray-400 uppercase px-4 py-3">Status</th>
-										<th class="text-left text-xs font-medium text-gray-400 uppercase px-4 py-3">Duration</th>
-										<th class="text-left text-xs font-medium text-gray-400 uppercase px-4 py-3">Triggered</th>
-										<th class="text-left text-xs font-medium text-gray-400 uppercase px-4 py-3">Time</th>
+										<th scope="col" class="text-left text-xs font-medium text-gray-400 uppercase px-4 py-3">Pipeline</th>
+										<th scope="col" class="text-left text-xs font-medium text-gray-400 uppercase px-4 py-3">Commit</th>
+										<th scope="col" class="text-left text-xs font-medium text-gray-400 uppercase px-4 py-3">Action</th>
+										<th scope="col" class="text-left text-xs font-medium text-gray-400 uppercase px-4 py-3">Status</th>
+										<th scope="col" class="text-left text-xs font-medium text-gray-400 uppercase px-4 py-3">Duration</th>
+										<th scope="col" class="text-left text-xs font-medium text-gray-400 uppercase px-4 py-3">Triggered</th>
+										<th scope="col" class="text-left text-xs font-medium text-gray-400 uppercase px-4 py-3">Time</th>
 									</tr>
 								</thead>
 								<tbody class="divide-y divide-dark-700">
@@ -202,24 +195,24 @@ templ pipelineCard(p PipelineView, csrfToken string) {
 						}
 					</div>
 					<div class="flex items-center gap-2 mt-1 text-sm text-gray-400">
-						<span><i class="fas fa-code-branch mr-1"></i>{ p.Repository }</span>
+						<span><i aria-hidden="true" class="fas fa-code-branch mr-1"></i>{ p.Repository }</span>
 						if p.Branch != "" {
 							<span class="text-gray-400">:</span>
 							<span>{ p.Branch }</span>
 						}
 					</div>
 					<div class="flex items-center gap-4 mt-2 text-xs text-gray-500">
-						<span><i class="fas fa-bullseye mr-1"></i>{ p.TargetStack }</span>
-						<span><i class="fas fa-bolt mr-1"></i>{ p.Action }</span>
-						<span><i class="fas fa-satellite-dish mr-1"></i>{ p.TriggerType }</span>
+						<span><i aria-hidden="true" class="fas fa-bullseye mr-1"></i>{ p.TargetStack }</span>
+						<span><i aria-hidden="true" class="fas fa-bolt mr-1"></i>{ p.Action }</span>
+						<span><i aria-hidden="true" class="fas fa-satellite-dish mr-1"></i>{ p.TriggerType }</span>
 						if p.DeployCount > 0 {
-							<span><i class="fas fa-rocket mr-1"></i>{ fmt.Sprintf("%d deploys", p.DeployCount) }</span>
+							<span><i aria-hidden="true" class="fas fa-rocket mr-1"></i>{ fmt.Sprintf("%d deploys", p.DeployCount) }</span>
 						}
 						if p.LastDeployAt != "" {
-							<span><i class="fas fa-clock mr-1"></i>Last: { p.LastDeployAt }</span>
+							<span><i aria-hidden="true" class="fas fa-clock mr-1"></i>Last: { p.LastDeployAt }</span>
 						}
 						if p.AutoRollback {
-							<span class="text-yellow-400"><i class="fas fa-undo mr-1"></i>Auto-rollback</span>
+							<span class="text-yellow-400"><i aria-hidden="true" class="fas fa-undo mr-1"></i>Auto-rollback</span>
 						}
 					</div>
 				</div>
@@ -228,23 +221,23 @@ templ pipelineCard(p PipelineView, csrfToken string) {
 				<form method="POST" action={ templ.SafeURL("/gitops/pipelines/" + p.ID + "/deploy") }>
 					<input type="hidden" name="csrf_token" value={ csrfToken }/>
 					<button type="submit" class="p-2 text-gray-400 hover:text-green-400 transition-colors" title="Deploy now">
-						<i class="fas fa-rocket"></i>
+						<i aria-hidden="true" class="fas fa-rocket"></i>
 					</button>
 				</form>
 				<form method="POST" action={ templ.SafeURL("/gitops/pipelines/" + p.ID + "/toggle") }>
 					<input type="hidden" name="csrf_token" value={ csrfToken }/>
 					<button type="submit" class="p-2 text-gray-400 hover:text-yellow-400 transition-colors" title="Toggle">
 						if p.IsEnabled {
-							<i class="fas fa-pause"></i>
+							<i aria-hidden="true" class="fas fa-pause"></i>
 						} else {
-							<i class="fas fa-play"></i>
+							<i aria-hidden="true" class="fas fa-play"></i>
 						}
 					</button>
 				</form>
 				<form method="POST" action={ templ.SafeURL("/gitops/pipelines/" + p.ID + "/delete") } onsubmit="return confirm('Delete this pipeline?')">
 					<input type="hidden" name="csrf_token" value={ csrfToken }/>
 					<button type="submit" class="p-2 text-gray-400 hover:text-red-400 transition-colors" title="Delete">
-						<i class="fas fa-trash"></i>
+						<i aria-hidden="true" class="fas fa-trash"></i>
 					</button>
 				</form>
 			</div>
@@ -275,7 +268,7 @@ templ createPipelineModal(csrfToken string) {
 			<div class="flex items-center justify-between p-6 border-b border-dark-600 sticky top-0 bg-dark-800 z-10">
 				<h2 class="text-lg font-display font-bold text-white">Create GitOps Pipeline</h2>
 				<button onclick="document.getElementById('createPipelineModal').classList.add('hidden')" class="text-gray-400 hover:text-white">
-					<i class="fas fa-times"></i>
+					<i aria-hidden="true" class="fas fa-times"></i>
 				</button>
 			</div>
 			<form method="POST" action="/gitops/pipelines" class="p-6 space-y-4">
@@ -283,7 +276,7 @@ templ createPipelineModal(csrfToken string) {
 
 				<div>
 					<label class="block text-sm font-medium text-gray-300 mb-1">Pipeline Name</label>
-					<input type="text" name="name" required class="input w-full" placeholder="e.g., Deploy frontend on push"/>
+					<input type="text" name="name" required class="input w-full" placeholder="e.g., Deploy frontend on push" aria-label="e.g., Deploy frontend on push"/>
 				</div>
 
 				<div class="grid grid-cols-2 gap-4">
@@ -307,23 +300,23 @@ templ createPipelineModal(csrfToken string) {
 
 				<div>
 					<label class="block text-sm font-medium text-gray-300 mb-1">Repository</label>
-					<input type="text" name="repository" required class="input w-full" placeholder="owner/repository"/>
+					<input type="text" name="repository" required class="input w-full" placeholder="owner/repository" aria-label="owner/repository"/>
 				</div>
 
 				<div class="grid grid-cols-2 gap-4">
 					<div>
 						<label class="block text-sm font-medium text-gray-300 mb-1">Branch</label>
-						<input type="text" name="branch" class="input w-full" placeholder="main" value="main"/>
+						<input type="text" name="branch" class="input w-full" placeholder="main" aria-label="main" value="main"/>
 					</div>
 					<div>
 						<label class="block text-sm font-medium text-gray-300 mb-1">Target Stack</label>
-						<input type="text" name="target_stack" required class="input w-full" placeholder="Stack name"/>
+						<input type="text" name="target_stack" required class="input w-full" placeholder="Stack name" aria-label="Stack name"/>
 					</div>
 				</div>
 
 				<div>
 					<label class="block text-sm font-medium text-gray-300 mb-1">Target Service (optional)</label>
-					<input type="text" name="target_service" class="input w-full" placeholder="Leave empty for all services"/>
+					<input type="text" name="target_service" class="input w-full" placeholder="Leave empty for all services" aria-label="Leave empty for all services"/>
 				</div>
 
 				<div>
@@ -353,7 +346,7 @@ templ createPipelineModal(csrfToken string) {
 				<div class="flex justify-end gap-3 pt-4 border-t border-dark-600">
 					<button type="button" onclick="document.getElementById('createPipelineModal').classList.add('hidden')" class="btn-secondary">Cancel</button>
 					<button type="submit" class="btn-primary">
-						<i class="fas fa-plus mr-2"></i>Create Pipeline
+						<i aria-hidden="true" class="fas fa-plus mr-2"></i>Create Pipeline
 					</button>
 				</div>
 			</form>

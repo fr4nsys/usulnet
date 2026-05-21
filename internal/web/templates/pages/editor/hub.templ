@@ -46,7 +46,7 @@ templ Hub(data HubData) {
 			<div class="flex items-center justify-between">
 				<div>
 					<h1 class="text-2xl font-display font-bold text-white">
-						<i class="fas fa-edit text-blue-400 mr-2"></i>Editor
+						<i aria-hidden="true" class="fas fa-edit text-blue-400 mr-2"></i>Editor
 					</h1>
 					<p class="text-gray-400 mt-1">Edit files from git repositories or open a scratch pad</p>
 				</div>
@@ -58,7 +58,7 @@ templ Hub(data HubData) {
 				<a href="/editor/monaco" class="card p-6 hover:border-blue-500/50 transition-colors group cursor-pointer">
 					<div class="flex items-center gap-4">
 						<div class="w-12 h-12 rounded-xl bg-blue-500/10 flex items-center justify-center">
-							<i class="fas fa-file-code text-blue-400 text-xl"></i>
+							<i aria-hidden="true" class="fas fa-file-code text-blue-400 text-xl"></i>
 						</div>
 						<div>
 							<h3 class="font-semibold text-white group-hover:text-blue-400 transition-colors">Monaco Editor</h3>
@@ -71,7 +71,7 @@ templ Hub(data HubData) {
 				<a href="/editor/nvim" class="card p-6 hover:border-green-500/50 transition-colors group cursor-pointer">
 					<div class="flex items-center gap-4">
 						<div class="w-12 h-12 rounded-xl bg-green-500/10 flex items-center justify-center">
-							<i class="fas fa-terminal text-green-400 text-xl"></i>
+							<i aria-hidden="true" class="fas fa-terminal text-green-400 text-xl"></i>
 						</div>
 						<div>
 							<h3 class="font-semibold text-white group-hover:text-green-400 transition-colors">Neovim Terminal</h3>
@@ -84,7 +84,7 @@ templ Hub(data HubData) {
 				<a href="/integrations/gitea" class="card p-6 hover:border-purple-500/50 transition-colors group cursor-pointer">
 					<div class="flex items-center gap-4">
 						<div class="w-12 h-12 rounded-xl bg-purple-500/10 flex items-center justify-center">
-							<i class="fas fa-code-branch text-purple-400 text-xl"></i>
+							<i aria-hidden="true" class="fas fa-code-branch text-purple-400 text-xl"></i>
 						</div>
 						<div>
 							<h3 class="font-semibold text-white group-hover:text-purple-400 transition-colors">Repositories</h3>
@@ -98,13 +98,13 @@ templ Hub(data HubData) {
 			<div class="card">
 				<div class="p-4 border-b border-gray-700/50 flex items-center justify-between">
 					<h2 class="text-lg font-semibold text-white">
-						<i class="fas fa-file-alt text-yellow-400 mr-2"></i>Saved Snippets
+						<i aria-hidden="true" class="fas fa-file-alt text-yellow-400 mr-2"></i>Saved Snippets
 					</h2>
 					<button
 						onclick="document.getElementById('new-snippet-modal').classList.remove('hidden')"
 						class="btn-sm bg-yellow-500/10 text-yellow-400 hover:bg-yellow-500/20"
 					>
-						<i class="fas fa-plus mr-1"></i>New Snippet
+						<i aria-hidden="true" class="fas fa-plus mr-1"></i>New Snippet
 					</button>
 				</div>
 				if len(data.Snippets) > 0 {
@@ -132,14 +132,14 @@ templ Hub(data HubData) {
 									hx-confirm="Delete this snippet?"
 									class="opacity-0 group-hover:opacity-100 text-red-400 hover:text-red-300 p-2 transition-opacity"
 								>
-									<i class="fas fa-trash-alt"></i>
+									<i aria-hidden="true" class="fas fa-trash-alt"></i>
 								</button>
 							</div>
 						}
 					</div>
 				} else {
 					<div class="p-8 text-center">
-						<i class="fas fa-file-alt text-4xl text-gray-400 mb-3"></i>
+						<i aria-hidden="true" class="fas fa-file-alt text-4xl text-gray-400 mb-3"></i>
 						<p class="text-gray-400">No saved snippets</p>
 						<p class="text-sm text-gray-500 mt-1">Create snippets to save code for later</p>
 					</div>
@@ -150,25 +150,25 @@ templ Hub(data HubData) {
 			<div id="new-snippet-modal" class="hidden fixed inset-0 z-50 overflow-y-auto">
 				<div class="fixed inset-0 bg-black/50" onclick="document.getElementById('new-snippet-modal').classList.add('hidden')"></div>
 				<div class="relative min-h-screen flex items-center justify-center p-4">
-					<div class="relative bg-dark-800 rounded-xl border border-dark-600 max-w-md w-full p-6">
+					<div class="relative card max-w-md w-full p-6">
 						<div class="flex items-center justify-between mb-6">
 							<h2 class="text-xl font-display font-bold text-white">New Snippet</h2>
 							<button
 								onclick="document.getElementById('new-snippet-modal').classList.add('hidden')"
 								class="text-gray-400 hover:text-white"
 							>
-								<i class="fas fa-times"></i>
+								<i aria-hidden="true" class="fas fa-times"></i>
 							</button>
 						</div>
 						<form action="/api/snippets" method="POST" class="space-y-4">
 							<input type="hidden" name="csrf_token" value={ data.PageData.CSRFToken }/>
 							<div>
 								<label class="block text-sm font-medium text-gray-300 mb-2">Name</label>
-								<input type="text" name="name" required class="input" placeholder="my-snippet"/>
+								<input type="text" name="name" required class="input" placeholder="my-snippet" aria-label="my-snippet"/>
 							</div>
 							<div>
 								<label class="block text-sm font-medium text-gray-300 mb-2">File Path</label>
-								<input type="text" name="path" required class="input" placeholder="scripts/example.sh"/>
+								<input type="text" name="path" required class="input" placeholder="scripts/example.sh" aria-label="scripts/example.sh"/>
 							</div>
 							<div>
 								<label class="block text-sm font-medium text-gray-300 mb-2">Language</label>
@@ -200,7 +200,7 @@ templ Hub(data HubData) {
 				<div class="card">
 					<div class="p-4 border-b border-gray-700/50">
 						<h2 class="text-lg font-semibold text-white">
-							<i class="fas fa-plug text-green-400 mr-2"></i>Connected Providers
+							<i aria-hidden="true" class="fas fa-plug text-green-400 mr-2"></i>Connected Providers
 						</h2>
 					</div>
 					<div class="divide-y divide-gray-700/50">
@@ -222,7 +222,7 @@ templ Hub(data HubData) {
 				</div>
 			} else {
 				<div class="card p-8 text-center">
-					<i class="fas fa-plug text-4xl text-gray-400 mb-3"></i>
+					<i aria-hidden="true" class="fas fa-plug text-4xl text-gray-400 mb-3"></i>
 					<p class="text-gray-400">No git providers connected</p>
 					<p class="text-sm text-gray-500 mt-1">
 						<a href="/integrations/gitea" class="text-blue-400 hover:text-blue-300">Add a connection</a> to browse remote repositories

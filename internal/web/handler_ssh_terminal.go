@@ -77,13 +77,16 @@ func (h *Handler) WSSSHExec(w http.ResponseWriter, r *http.Request) {
 	}
 	defer ws.Close()
 
-	// Write mutex to prevent concurrent WebSocket writes (stdout + stderr goroutines)
+	// Write mutex to prevent concurrent WebSocket writes (stdout + stderr goroutines).
+	// Encoding goes through the shared wsJSONEncoderPool (ws_json_pool.go) so the
+	// hot stdout/stderr loops avoid the per-frame json.Marshal that ws.WriteJSON
+	// would otherwise pay.
 	var wsMu sync.Mutex
 	writeSSH := func(msg SSHTerminalMessage) error {
 		wsMu.Lock()
 		defer wsMu.Unlock()
 		ws.SetWriteDeadline(time.Now().Add(10 * time.Second))
-		return ws.WriteJSON(msg)
+		return writeWSJSON(ws, msg)
 	}
 
 	clientIP := r.RemoteAddr

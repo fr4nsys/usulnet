@@ -429,3 +429,136 @@ func TestSetRepository(t *testing.T) {
 	svc := newStandaloneService()
 	svc.SetRepository(nil)
 }
+
+// ---------------------------------------------------------------------------
+// Tests: enrichSummariesParallel — guard paths only
+//
+// The fan-out itself opens Docker API connections per host, which
+// isn't available in a unit test environment. These tests pin the
+// pre-fan-out filtering — empty slice, nil pointers, offline status,
+// missing client — that the function uses to skip work before
+// touching any Docker client. A test that exercises the actual
+// goroutine fan-out belongs in an integration tier (build tag e2e)
+// where the test environment provides a real Docker daemon.
+// ---------------------------------------------------------------------------
+
+func TestEnrichSummariesParallel_EmptyInput(t *testing.T) {
+	svc := newStandaloneService()
+	// Must return immediately without panic; len == 0 path.
+	svc.enrichSummariesParallel(context.Background(), nil)
+	svc.enrichSummariesParallel(context.Background(), []*models.HostSummary{})
+}
+
+func TestEnrichSummariesParallel_NilSummaryEntries(t *testing.T) {
+	svc := newStandaloneService()
+	// Mixed slice with nil entries — the per-entry guard skips them.
+	// No panic = pass.
+	summaries := []*models.HostSummary{nil, nil}
+	svc.enrichSummariesParallel(context.Background(), summaries)
+}
+
+func TestEnrichSummariesParallel_SkipsOfflineHosts(t *testing.T) {
+	svc := newStandaloneService()
+	offline := &models.HostSummary{
+		Host: models.Host{
+			ID:     uuid.New(),
+			Status: models.HostStatusOffline,
+		},
+	}
+	connecting := &models.HostSummary{
+		Host: models.Host{
+			ID:     uuid.New(),
+			Status: models.HostStatusConnecting,
+		},
+	}
+	summaries := []*models.HostSummary{offline, connecting}
+
+	svc.enrichSummariesParallel(context.Background(), summaries)
+
+	// Neither summary should have been enriched — every "live" field stays at
+	// its zero value because no Info() call was issued.
+	for i, s := range summaries {
+		if s.DockerVersion != nil {
+			t.Errorf("summary[%d] (%s): DockerVersion enriched on non-online host", i, s.Status)
+		}
+		if s.ContainerCount != 0 {
+			t.Errorf("summary[%d] (%s): ContainerCount=%d, want 0", i, s.Status, s.ContainerCount)
+		}
+		if s.LastSeenAt != nil {
+			t.Errorf("summary[%d] (%s): LastSeenAt enriched on non-online host", i, s.Status)
+		}
+	}
+}
+
+func TestEnrichSummariesParallel_OnlineButNoClientInPool(t *testing.T) {
+	svc := newStandaloneService()
+	// The clientPool from NewStandaloneService is empty — any UUID we ask
+	// for will return (nil, false), so the per-host goroutine never
+	// launches and the summary is untouched.
+	summary := &models.HostSummary{
+		Host: models.Host{
+			ID:     uuid.New(),
+			Status: models.HostStatusOnline,
+		},
+	}
+	summaries := []*models.HostSummary{summary}
+
+	svc.enrichSummariesParallel(context.Background(), summaries)
+
+	if summary.DockerVersion != nil {
+		t.Errorf("DockerVersion enriched even though no client was in the pool")
+	}
+	if summary.ContainerCount != 0 {
+		t.Errorf("ContainerCount=%d, want 0 (no client to enrich from)", summary.ContainerCount)
+	}
+	if summary.LastSeenAt != nil {
+		t.Errorf("LastSeenAt enriched even though no client was in the pool")
+	}
+}
+
+// TestListSummaries_StandaloneEmpty pins the standalone (no-repo) path
+// of Service.ListSummaries: with an empty client pool the function
+// must return an empty slice and no error. This is the dashboard's
+// cold-start state on a fresh standalone install before any host has
+// registered through RegisterClient.
+func TestListSummaries_StandaloneEmpty(t *testing.T) {
+	svc := newStandaloneService()
+	summaries, err := svc.ListSummaries(context.Background())
+	if err != nil {
+		t.Fatalf("ListSummaries: %v", err)
+	}
+	if len(summaries) != 0 {
+		t.Errorf("expected 0 summaries with empty client pool, got %d", len(summaries))
+	}
+}
+
+// TestEnrichSummariesParallel_MixedStatuses combines all three guard
+// paths in one call: a nil entry, an offline entry, and an online entry
+// with no client. None should produce enrichment side-effects, and the
+// function must return without deadlock or panic.
+func TestEnrichSummariesParallel_MixedStatuses(t *testing.T) {
+	svc := newStandaloneService()
+	online := &models.HostSummary{
+		Host: models.Host{ID: uuid.New(), Status: models.HostStatusOnline},
+	}
+	offline := &models.HostSummary{
+		Host: models.Host{ID: uuid.New(), Status: models.HostStatusOffline},
+	}
+	summaries := []*models.HostSummary{nil, offline, online}
+
+	done := make(chan struct{})
+	go func() {
+		svc.enrichSummariesParallel(context.Background(), summaries)
+		close(done)
+	}()
+	select {
+	case <-done:
+		// Pass: returned without blocking.
+	case <-time.After(2 * time.Second):
+		t.Fatal("enrichSummariesParallel blocked — semaphore or WaitGroup deadlock?")
+	}
+
+	if online.DockerVersion != nil || offline.DockerVersion != nil {
+		t.Errorf("no enrichment expected without a real client in the pool")
+	}
+}

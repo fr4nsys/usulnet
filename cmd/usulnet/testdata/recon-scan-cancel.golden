@@ -1,13 +1,22 @@
-Cancel a running or queued scan
+Request cancellation of a running or queued scan.
+
+A finished scan (completed|failed|canceled) is left as-is; the
+server responds 204 in both cases. Prints "canceled <id>" on
+success.
 
 Usage:
   usulnet recon scan cancel <scan-id> [flags]
+
+Examples:
+  usulnet recon scan cancel aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa
 
 Flags:
   -h, --help   help for cancel
 
 Global Flags:
   -c, --config string   config file path (default: /etc/usulnet/config.yaml or ./config.yaml)
+      --json            shortcut for --output json (overrides --output)
       --output string   output format: table|json|yaml (default "table")
+  -q, --quiet           suppress informational output (errors and primary data still print)
       --server string   usulnet API URL (default $USULNET_API_URL)
       --token string    API token (default $USULNET_API_TOKEN)

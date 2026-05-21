@@ -118,6 +118,7 @@ func (h *Handler) MarketplaceListTempl(w http.ResponseWriter, r *http.Request) {
 		Query:      query,
 		Category:   category,
 		Total:      total,
+		EmptyState: EmptyStateCatalogMarketplace(),
 	}
 	_ = mktpl.List(data).Render(ctx, w)
 }
@@ -206,12 +207,20 @@ func (h *Handler) MarketplaceInstallTempl(w http.ResponseWriter, r *http.Request
 }
 
 // MarketplaceInstallCreateTempl handles the install form submission.
+// marketplaceInstallForm captures the "core" install inputs. The
+// per-app dynamic config (field_*) fields stay read via the r.Form
+// loop below because their names depend on the selected app.
+type marketplaceInstallForm struct {
+	Name string `form:"name"`
+}
+
 func (h *Handler) MarketplaceInstallCreateTempl(w http.ResponseWriter, r *http.Request) {
 	svc := h.requireMarketplaceSvc(w, r)
 	if svc == nil {
 		return
 	}
-	if err := r.ParseForm(); err != nil {
+	var form marketplaceInstallForm
+	if BindForm(r, &form) != "" {
 		http.Redirect(w, r, "/marketplace", http.StatusSeeOther)
 		return
 	}
@@ -224,7 +233,7 @@ func (h *Handler) MarketplaceInstallCreateTempl(w http.ResponseWriter, r *http.R
 	}
 
 	hostID := h.marketplaceHostID(r)
-	name := strings.TrimSpace(r.FormValue("name"))
+	name := form.Name
 	if name == "" {
 		name = app.Slug
 	}
@@ -341,20 +350,37 @@ func (h *Handler) MarketplaceSubmitTempl(w http.ResponseWriter, r *http.Request)
 	_ = mktpl.Submit(data).Render(r.Context(), w)
 }
 
+// marketplaceSubmitForm captures the submit-app inputs. Tags is a
+// comma-separated string in the textarea; it is split into a slice
+// after binding.
+type marketplaceSubmitForm struct {
+	Name            string `form:"name" validate:"required"`
+	Description     string `form:"description"`
+	LongDescription string `form:"long_description"`
+	Category        string `form:"category"`
+	ComposeTemplate string `form:"compose_template"`
+	Version         string `form:"version"`
+	License         string `form:"license"`
+	Website         string `form:"website"`
+	Source          string `form:"source"`
+	Tags            string `form:"tags"`
+}
+
 // MarketplaceSubmitCreateTempl handles the submit app form submission.
 func (h *Handler) MarketplaceSubmitCreateTempl(w http.ResponseWriter, r *http.Request) {
 	svc := h.requireMarketplaceSvc(w, r)
 	if svc == nil {
 		return
 	}
-	if err := r.ParseForm(); err != nil {
+	var form marketplaceSubmitForm
+	if BindForm(r, &form) != "" {
 		http.Redirect(w, r, "/marketplace", http.StatusSeeOther)
 		return
 	}
 
 	var tags []string
-	if t := r.FormValue("tags"); t != "" {
-		for _, tag := range strings.Split(t, ",") {
+	if form.Tags != "" {
+		for _, tag := range strings.Split(form.Tags, ",") {
 			tag = strings.TrimSpace(tag)
 			if tag != "" {
 				tags = append(tags, tag)
@@ -363,15 +389,15 @@ func (h *Handler) MarketplaceSubmitCreateTempl(w http.ResponseWriter, r *http.Re
 	}
 
 	app := &models.MarketplaceApp{
-		Name:            strings.TrimSpace(r.FormValue("name")),
-		Description:     strings.TrimSpace(r.FormValue("description")),
-		LongDescription: strings.TrimSpace(r.FormValue("long_description")),
-		Category:        models.MarketplaceAppCategory(r.FormValue("category")),
-		ComposeTemplate: r.FormValue("compose_template"),
-		Version:         strings.TrimSpace(r.FormValue("version")),
-		License:         strings.TrimSpace(r.FormValue("license")),
-		Website:         strings.TrimSpace(r.FormValue("website")),
-		Source:          strings.TrimSpace(r.FormValue("source")),
+		Name:            form.Name,
+		Description:     form.Description,
+		LongDescription: form.LongDescription,
+		Category:        models.MarketplaceAppCategory(form.Category),
+		ComposeTemplate: form.ComposeTemplate,
+		Version:         form.Version,
+		License:         form.License,
+		Website:         form.Website,
+		Source:          form.Source,
 		Tags:            tags,
 		CreatedBy:       h.marketplaceUserUUID(r),
 	}
@@ -414,13 +440,23 @@ func (h *Handler) MarketplaceReviewTempl(w http.ResponseWriter, r *http.Request)
 	_ = mktpl.Review(data).Render(r.Context(), w)
 }
 
+// marketplaceReviewForm captures the leave-a-review inputs.
+// rating is the 1–5 star numeric; title / comment carry the
+// user's prose.
+type marketplaceReviewForm struct {
+	Rating  int    `form:"rating" validate:"gte=0,lte=5"`
+	Title   string `form:"title"`
+	Comment string `form:"comment"`
+}
+
 // MarketplaceReviewCreateTempl handles the review form submission.
 func (h *Handler) MarketplaceReviewCreateTempl(w http.ResponseWriter, r *http.Request) {
 	svc := h.requireMarketplaceSvc(w, r)
 	if svc == nil {
 		return
 	}
-	if err := r.ParseForm(); err != nil {
+	var form marketplaceReviewForm
+	if BindForm(r, &form) != "" {
 		http.Redirect(w, r, "/marketplace", http.StatusSeeOther)
 		return
 	}
@@ -435,13 +471,12 @@ func (h *Handler) MarketplaceReviewCreateTempl(w http.ResponseWriter, r *http.Re
 		h.RenderErrorTempl(w, r, http.StatusUnauthorized, "Sign-in required", "You must sign in to review apps.")
 		return
 	}
-	rating, _ := strconv.Atoi(r.FormValue("rating"))
 	review := &models.MarketplaceReview{
 		AppID:   app.ID,
 		UserID:  *userID,
-		Rating:  rating,
-		Title:   strings.TrimSpace(r.FormValue("title")),
-		Comment: strings.TrimSpace(r.FormValue("comment")),
+		Rating:  form.Rating,
+		Title:   form.Title,
+		Comment: form.Comment,
 	}
 	if err := svc.AddReview(r.Context(), review); err != nil {
 		pageData := h.prepareTemplPageData(r, "Review "+app.Name, "marketplace")

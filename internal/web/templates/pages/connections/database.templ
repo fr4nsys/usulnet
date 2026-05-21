@@ -80,7 +80,7 @@ templ DatabaseConnectionsList(data DatabaseConnectionsListData) {
 					<p class="text-gray-400 mt-1">Manage database connections for browsing and querying</p>
 				</div>
 				<button onclick="showNewConnectionModal()" class="btn-primary">
-					<i class="fas fa-plus mr-2"></i>New Connection
+					<i aria-hidden="true" class="fas fa-plus mr-2"></i>New Connection
 				</button>
 			</div>
 
@@ -88,10 +88,10 @@ templ DatabaseConnectionsList(data DatabaseConnectionsListData) {
 			<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
 				if len(data.Connections) == 0 {
 					<div class="col-span-full card p-8 text-center">
-						<i class="fas fa-database text-4xl text-gray-400 mb-4"></i>
+						<i aria-hidden="true" class="fas fa-database text-4xl text-gray-400 mb-4"></i>
 						<p class="text-gray-400">No database connections configured</p>
 						<button onclick="showNewConnectionModal()" class="btn-primary mt-4">
-							<i class="fas fa-plus mr-2"></i>Add Connection
+							<i aria-hidden="true" class="fas fa-plus mr-2"></i>Add Connection
 						</button>
 					</div>
 				}
@@ -126,17 +126,17 @@ templ DatabaseConnectionsList(data DatabaseConnectionsListData) {
 								<a href={ templ.SafeURL(fmt.Sprintf("/connections/database/%s", conn.ID)) }
 									class="p-2 text-gray-400 hover:text-white hover:bg-dark-600 rounded-lg"
 									title="Browse">
-									<i class="fas fa-table"></i>
+									<i aria-hidden="true" class="fas fa-table"></i>
 								</a>
 								<a href={ templ.SafeURL(fmt.Sprintf("/connections/database/%s/query", conn.ID)) }
 									class="p-2 text-gray-400 hover:text-white hover:bg-dark-600 rounded-lg"
 									title="Query">
-									<i class="fas fa-terminal"></i>
+									<i aria-hidden="true" class="fas fa-terminal"></i>
 								</a>
 								<button onclick={ testDbConnection(conn.ID) }
 									class="p-2 text-gray-400 hover:text-white hover:bg-dark-600 rounded-lg"
 									title="Test Connection">
-									<i class="fas fa-plug"></i>
+									<i aria-hidden="true" class="fas fa-plug"></i>
 								</button>
 							</div>
 						</div>
@@ -151,7 +151,7 @@ templ DatabaseConnectionsList(data DatabaseConnectionsListData) {
 				<div class="fixed inset-0 bg-black/60" onclick="hideNewConnectionModal()"></div>
 				<div class="relative card w-full max-w-lg p-6">
 					<h3 class="text-lg font-semibold text-white mb-4">
-						<i class="fas fa-database text-primary-400 mr-2"></i>New Database Connection
+						<i aria-hidden="true" class="fas fa-database text-primary-400 mr-2"></i>New Database Connection
 					</h3>
 					<form action="/connections/database" method="POST">
 						<input type="hidden" name="csrf_token" value={ data.PageData.CSRFToken }/>
@@ -159,7 +159,7 @@ templ DatabaseConnectionsList(data DatabaseConnectionsListData) {
 						<div class="space-y-4">
 							<div>
 								<label class="block text-sm font-medium text-gray-300 mb-1">Connection Name</label>
-								<input type="text" name="name" required class="input w-full" placeholder="My Database"/>
+								<input type="text" name="name" required class="input w-full" placeholder="My Database" aria-label="My Database"/>
 							</div>
 
 							<div>
@@ -168,21 +168,21 @@ templ DatabaseConnectionsList(data DatabaseConnectionsListData) {
 									<label class="cursor-pointer">
 										<input type="radio" name="type" value="postgres" class="hidden peer" checked/>
 										<div class="p-3 rounded-lg border border-dark-600 text-center peer-checked:border-blue-500 peer-checked:bg-blue-500/10 hover:border-blue-500/50 transition-colors">
-											<i class="fas fa-database text-blue-400"></i>
+											<i aria-hidden="true" class="fas fa-database text-blue-400"></i>
 											<p class="text-xs text-gray-400 mt-1">PostgreSQL</p>
 										</div>
 									</label>
 									<label class="cursor-pointer">
 										<input type="radio" name="type" value="mysql" class="hidden peer"/>
 										<div class="p-3 rounded-lg border border-dark-600 text-center peer-checked:border-orange-500 peer-checked:bg-orange-500/10 hover:border-orange-500/50 transition-colors">
-											<i class="fas fa-database text-orange-400"></i>
+											<i aria-hidden="true" class="fas fa-database text-orange-400"></i>
 											<p class="text-xs text-gray-400 mt-1">MySQL</p>
 										</div>
 									</label>
 									<label class="cursor-pointer">
 										<input type="radio" name="type" value="mariadb" class="hidden peer"/>
 										<div class="p-3 rounded-lg border border-dark-600 text-center peer-checked:border-sky-500 peer-checked:bg-sky-500/10 hover:border-sky-500/50 transition-colors">
-											<i class="fas fa-database text-sky-400"></i>
+											<i aria-hidden="true" class="fas fa-database text-sky-400"></i>
 											<p class="text-xs text-gray-400 mt-1">MariaDB</p>
 										</div>
 									</label>
@@ -192,23 +192,23 @@ templ DatabaseConnectionsList(data DatabaseConnectionsListData) {
 							<div class="grid grid-cols-3 gap-4">
 								<div class="col-span-2">
 									<label class="block text-sm font-medium text-gray-300 mb-1">Host</label>
-									<input type="text" name="host" required class="input w-full" placeholder="localhost"/>
+									<input type="text" name="host" required class="input w-full" placeholder="localhost" aria-label="localhost"/>
 								</div>
 								<div>
 									<label class="block text-sm font-medium text-gray-300 mb-1">Port</label>
-									<input type="number" name="port" required class="input w-full" placeholder="5432"/>
+									<input type="number" name="port" required class="input w-full" placeholder="5432" aria-label="5432"/>
 								</div>
 							</div>
 
 							<div>
 								<label class="block text-sm font-medium text-gray-300 mb-1">Database Name</label>
-								<input type="text" name="database" required class="input w-full" placeholder="mydb"/>
+								<input type="text" name="database" required class="input w-full" placeholder="mydb" aria-label="mydb"/>
 							</div>
 
 							<div class="grid grid-cols-2 gap-4">
 								<div>
 									<label class="block text-sm font-medium text-gray-300 mb-1">Username</label>
-									<input type="text" name="username" class="input w-full" placeholder="postgres"/>
+									<input type="text" name="username" class="input w-full" placeholder="postgres" aria-label="postgres"/>
 								</div>
 								<div>
 									<label class="block text-sm font-medium text-gray-300 mb-1">Password</label>
@@ -225,7 +225,7 @@ templ DatabaseConnectionsList(data DatabaseConnectionsListData) {
 						<div class="flex justify-end gap-3 mt-6">
 							<button type="button" onclick="hideNewConnectionModal()" class="btn-ghost">Cancel</button>
 							<button type="submit" class="btn-primary">
-								<i class="fas fa-plus mr-2"></i>Create Connection
+								<i aria-hidden="true" class="fas fa-plus mr-2"></i>Create Connection
 							</button>
 						</div>
 					</form>
@@ -265,23 +265,23 @@ templ DatabaseBrowser(data DatabaseBrowserData) {
 				<div class="p-4 border-b border-dark-600">
 					<div class="flex items-center gap-3 mb-3">
 						<a href="/connections/database" class="text-gray-400 hover:text-white">
-							<i class="fas fa-arrow-left"></i>
+							<i aria-hidden="true" class="fas fa-arrow-left"></i>
 						</a>
 						<h2 class="text-white font-medium truncate">{ data.Connection.Name }</h2>
 					</div>
 					<input type="text" placeholder="Filter tables..."
 						class="input w-full text-sm"
 						x-model="tableFilter"
-						@input="filterTables()"/>
+						@input="filterTables()" aria-label="Filter tables..."/>
 				</div>
 				<div class="flex-1 overflow-y-auto">
 					for _, table := range data.Tables {
 						<a href={ templ.SafeURL(fmt.Sprintf("/connections/database/%s?table=%s", data.Connection.ID, table.Name)) }
 							class={ "flex items-center gap-2 px-4 py-2 text-sm hover:bg-dark-700 transition-colors", tableClass(table.Name, data.CurrentTable) }>
 							if table.Type == "view" {
-								<i class="fas fa-eye text-purple-400 text-xs"></i>
+								<i aria-hidden="true" class="fas fa-eye text-purple-400 text-xs"></i>
 							} else {
-								<i class="fas fa-table text-blue-400 text-xs"></i>
+								<i aria-hidden="true" class="fas fa-table text-blue-400 text-xs"></i>
 							}
 							<span class="truncate">{ table.Name }</span>
 							<span class="text-gray-500 text-xs ml-auto">{ fmt.Sprintf("%d", table.RowCount) }</span>
@@ -306,21 +306,21 @@ templ DatabaseBrowser(data DatabaseBrowserData) {
 						<!-- Read-only indicator -->
 						if !data.WriteEnabled {
 							<span class="flex items-center gap-1.5 px-2 py-1 bg-blue-500/10 text-blue-400 text-xs rounded">
-								<i class="fas fa-lock"></i>
+								<i aria-hidden="true" class="fas fa-lock"></i>
 								Read-Only
 							</span>
 						} else {
 							<span class="flex items-center gap-1.5 px-2 py-1 bg-red-500/10 text-red-400 text-xs rounded">
-								<i class="fas fa-exclamation-triangle"></i>
+								<i aria-hidden="true" class="fas fa-exclamation-triangle"></i>
 								Write Enabled
 							</span>
 						}
 						<a href={ templ.SafeURL(fmt.Sprintf("/connections/database/%s/query", data.Connection.ID)) }
 							class="btn-ghost text-sm">
-							<i class="fas fa-terminal mr-1"></i>Query
+							<i aria-hidden="true" class="fas fa-terminal mr-1"></i>Query
 						</a>
 						<button @click="showWriteModal = true" class="btn-ghost text-sm">
-							<i class="fas fa-cog mr-1"></i>Settings
+							<i aria-hidden="true" class="fas fa-cog mr-1"></i>Settings
 						</button>
 					</div>
 				</div>
@@ -332,10 +332,10 @@ templ DatabaseBrowser(data DatabaseBrowserData) {
 							<thead class="bg-dark-900 sticky top-0">
 								<tr>
 									for _, col := range data.Columns {
-										<th class="px-3 py-2 text-left text-xs font-medium text-gray-400 uppercase tracking-wider whitespace-nowrap">
+										<th scope="col" class="px-3 py-2 text-left text-xs font-medium text-gray-400 uppercase tracking-wider whitespace-nowrap">
 											<div class="flex items-center gap-1">
 												if col.PrimaryKey {
-													<i class="fas fa-key text-yellow-400 text-[10px]"></i>
+													<i aria-hidden="true" class="fas fa-key text-yellow-400 text-[10px]"></i>
 												}
 												{ col.Name }
 												<span class="text-gray-400 font-normal">{ col.Type }</span>
@@ -367,13 +367,13 @@ templ DatabaseBrowser(data DatabaseBrowserData) {
 							if data.Page > 1 {
 								<a href={ templ.SafeURL(fmt.Sprintf("/connections/database/%s?table=%s&page=%d", data.Connection.ID, data.CurrentTable, data.Page-1)) }
 									class="btn-ghost text-sm">
-									<i class="fas fa-chevron-left mr-1"></i>Previous
+									<i aria-hidden="true" class="fas fa-chevron-left mr-1"></i>Previous
 								</a>
 							}
 							if data.Page < data.TotalPages {
 								<a href={ templ.SafeURL(fmt.Sprintf("/connections/database/%s?table=%s&page=%d", data.Connection.ID, data.CurrentTable, data.Page+1)) }
 									class="btn-ghost text-sm">
-									Next<i class="fas fa-chevron-right ml-1"></i>
+									Next<i aria-hidden="true" class="fas fa-chevron-right ml-1"></i>
 								</a>
 							}
 						</div>
@@ -381,7 +381,7 @@ templ DatabaseBrowser(data DatabaseBrowserData) {
 				} else {
 					<div class="flex-1 flex items-center justify-center">
 						<div class="text-center">
-							<i class="fas fa-table text-4xl text-gray-400 mb-4"></i>
+							<i aria-hidden="true" class="fas fa-table text-4xl text-gray-400 mb-4"></i>
 							<p class="text-gray-400">Select a table from the sidebar to view data</p>
 						</div>
 					</div>
@@ -394,13 +394,13 @@ templ DatabaseBrowser(data DatabaseBrowserData) {
 					<div class="fixed inset-0 bg-black/60" @click="showWriteModal = false"></div>
 					<div class="relative card w-full max-w-md p-6">
 						<h3 class="text-lg font-semibold text-white mb-4">
-							<i class="fas fa-cog text-gray-400 mr-2"></i>Browser Settings
+							<i aria-hidden="true" class="fas fa-cog text-gray-400 mr-2"></i>Browser Settings
 						</h3>
 
 						<!-- Danger Zone -->
 						<div class="border border-red-500/30 rounded-lg p-4 bg-red-500/5 mb-4">
 							<h4 class="text-red-400 font-medium flex items-center gap-2 mb-2">
-								<i class="fas fa-exclamation-triangle"></i>
+								<i aria-hidden="true" class="fas fa-exclamation-triangle"></i>
 								Danger Zone
 							</h4>
 							<p class="text-gray-400 text-sm mb-3">
@@ -422,7 +422,7 @@ templ DatabaseBrowser(data DatabaseBrowserData) {
 
 							<div x-show="writeEnabled" class="mt-3 p-3 bg-red-500/10 border border-red-500/20 rounded-lg">
 								<p class="text-red-400 text-xs flex items-center gap-2">
-									<i class="fas fa-shield-alt"></i>
+									<i aria-hidden="true" class="fas fa-shield-alt"></i>
 									Write mode is now enabled. Be careful with your queries!
 								</p>
 							</div>

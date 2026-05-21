@@ -65,7 +65,7 @@ func Edit(data EditData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<div class=\"max-w-3xl\"><div class=\"flex items-center gap-3 mb-6\"><a href=\"/firewall\" class=\"text-gray-400 hover:text-white\"><i class=\"fas fa-arrow-left\"></i></a><h2 class=\"text-xl font-display font-bold text-white\">Edit Rule: ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<div class=\"max-w-3xl\"><div class=\"flex items-center gap-3 mb-6\"><a href=\"/firewall\" class=\"text-gray-400 hover:text-white\"><i aria-hidden=\"true\" class=\"fas fa-arrow-left\"></i></a><h2 class=\"text-xl font-display font-bold text-white\">Edit Rule: ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -246,7 +246,7 @@ func Edit(data EditData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 27, "\" placeholder=\"any\" class=\"w-full bg-dark-800 border border-dark-600 text-white font-mono rounded-lg px-3 py-2 focus:ring-2 focus:ring-accent-500 focus:border-transparent\"></div><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Destination (IP/CIDR)</label> <input type=\"text\" name=\"destination\" value=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 27, "\" placeholder=\"any\" aria-label=\"any\" class=\"w-full bg-dark-800 border border-dark-600 text-white font-mono rounded-lg px-3 py-2 focus:ring-2 focus:ring-accent-500 focus:border-transparent\"></div><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Destination (IP/CIDR)</label> <input type=\"text\" name=\"destination\" value=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -259,7 +259,7 @@ func Edit(data EditData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 28, "\" placeholder=\"any\" class=\"w-full bg-dark-800 border border-dark-600 text-white font-mono rounded-lg px-3 py-2 focus:ring-2 focus:ring-accent-500 focus:border-transparent\"></div></div><div class=\"grid grid-cols-2 gap-4\"><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Source Port</label> <input type=\"text\" name=\"src_port\" value=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 28, "\" placeholder=\"any\" aria-label=\"any\" class=\"w-full bg-dark-800 border border-dark-600 text-white font-mono rounded-lg px-3 py-2 focus:ring-2 focus:ring-accent-500 focus:border-transparent\"></div></div><div class=\"grid grid-cols-2 gap-4\"><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Source Port</label> <input type=\"text\" name=\"src_port\" value=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -358,7 +358,7 @@ func Edit(data EditData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 43, "\" placeholder=\"eth0, docker0, etc.\" class=\"w-full bg-dark-800 border border-dark-600 text-white rounded-lg px-3 py-2 focus:ring-2 focus:ring-accent-500 focus:border-transparent\"></div><div class=\"grid grid-cols-2 gap-4\"><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Container ID</label> <input type=\"text\" name=\"container_id\" value=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 43, "\" placeholder=\"eth0, docker0, etc.\" aria-label=\"eth0, docker0, etc.\" class=\"w-full bg-dark-800 border border-dark-600 text-white rounded-lg px-3 py-2 focus:ring-2 focus:ring-accent-500 focus:border-transparent\"></div><div class=\"grid grid-cols-2 gap-4\"><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Container ID</label> <input type=\"text\" name=\"container_id\" value=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -407,7 +407,7 @@ func Edit(data EditData) templ.Component {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 48, " class=\"rounded bg-dark-800 border-dark-600 text-primary-500 focus:ring-primary-500\"> <label for=\"enabled\" class=\"text-sm text-gray-300\">Enable this rule</label></div><div class=\"flex gap-2 pt-4\"><button type=\"submit\" class=\"btn btn-primary\"><i class=\"fas fa-save mr-1\"></i> Save Changes</button> <a href=\"/firewall\" class=\"btn btn-secondary\">Cancel</a></div></form></div></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 48, " class=\"rounded bg-dark-800 border-dark-600 text-primary-500 focus:ring-primary-500\"> <label for=\"enabled\" class=\"text-sm text-gray-300\">Enable this rule</label></div><div class=\"flex gap-2 pt-4\"><button type=\"submit\" class=\"btn btn-primary\"><i aria-hidden=\"true\" class=\"fas fa-save mr-1\"></i> Save Changes</button> <a href=\"/firewall\" class=\"btn btn-secondary\">Cancel</a></div></form></div></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

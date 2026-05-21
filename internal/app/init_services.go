@@ -23,7 +23,11 @@ import (
 	dnssvc "github.com/fr4nsys/usulnet/internal/services/dns"
 	dnsproviders "github.com/fr4nsys/usulnet/internal/services/dns/providers"
 	dockerconfigsvc "github.com/fr4nsys/usulnet/internal/services/dockerconfig"
+	egresssvc "github.com/fr4nsys/usulnet/internal/services/egress"
 	firewallsvc "github.com/fr4nsys/usulnet/internal/services/firewall"
+	reconpkg "github.com/fr4nsys/usulnet/internal/services/recon"
+	reconsandbox "github.com/fr4nsys/usulnet/internal/services/recon/sandbox"
+	yarasvc "github.com/fr4nsys/usulnet/internal/services/yara"
 	imagebuildersvc "github.com/fr4nsys/usulnet/internal/services/imagebuilder"
 	marketplacesvc "github.com/fr4nsys/usulnet/internal/services/marketplace"
 	notificationsvc "github.com/fr4nsys/usulnet/internal/services/notification"
@@ -612,6 +616,72 @@ func (app *Application) initServices(ctx context.Context, ic *initContext) error
 
 		ic.marketplaceService = marketplaceService
 		app.Logger.Info("Marketplace service initialized")
+	}
+
+	// =========================================================================
+	// L7 EGRESS FILTER (v26.5.2 — in-process pure-Go forward proxy)
+	//
+	// Two layers, each with its own lifecycle:
+	//
+	//   - Service: policy CRUD + Evaluate. Wired unconditionally so the
+	//     web UI / API can manage policies even before the listener is
+	//     turned on (operators commonly pre-configure rules first).
+	//   - Proxy listener: opt-in via cfg.EgressProxy.Enabled. The
+	//     listener takes a port from the host so the operator picks
+	//     when to flip it. If the bind fails we log a warning and
+	//     continue with the service alive but enforcement offline.
+	// =========================================================================
+	{
+		policyRepo := postgres.NewEgressPolicyRepository(app.DB, app.Logger)
+		auditRepo := postgres.NewEgressAuditRepository(app.DB, app.Logger)
+		egressService := egresssvc.NewService(policyRepo, auditRepo, app.Logger)
+		ic.egressService = egressService
+		app.Logger.Info("Egress service initialized")
+
+		if app.Config.EgressProxy.Enabled {
+			proxy := egresssvc.NewProxy(egresssvc.ProxyConfig{
+				ListenAddr: app.Config.EgressProxy.ListenAddr,
+				HostID:     ic.defaultHostID,
+			}, egressService, app.Logger)
+			if err := proxy.Start(ctx); err != nil {
+				app.Logger.Warn("Egress proxy listener disabled", "error", err)
+			} else {
+				ic.egressProxy = proxy
+				ic.egressListenAddr = proxy.Addr()
+				app.egressProxy = proxy
+				app.Logger.Info("Egress proxy listening", "addr", proxy.Addr())
+			}
+		}
+	}
+
+	// =========================================================================
+	// YARA SCANNER (v26.5.2 — subprocess to recon-toolkit container)
+	//
+	// One-shot scans against host files or container paths. The
+	// underlying launcher is the recon sandbox launcher (read-only
+	// rootfs, dropped caps, no-network, non-root UID, resource caps).
+	// Wired unconditionally when the docker client is available so the
+	// web UI can render even before any scan runs. If the docker
+	// client is nil (master mode without a local engine) the service
+	// stays nil and /scan/yara renders an "unavailable" page.
+	// =========================================================================
+	if ic.dockerClient != nil {
+		launcher, lerr := reconsandbox.NewLauncher(ic.dockerClient, reconsandbox.Config{
+			NetworkName: "usulnet-yara-sandbox",
+		}, app.Logger)
+		if lerr != nil {
+			app.Logger.Warn("YARA scanner launcher init failed", "error", lerr)
+		} else {
+			image := reconpkg.ToolkitImage()
+			yaraService, yerr := yarasvc.NewService(launcher, ic.dockerClient, image, 0, app.Logger)
+			if yerr != nil {
+				app.Logger.Warn("YARA scanner service init failed", "error", yerr)
+			} else {
+				ic.yaraService = yaraService
+				ic.yaraToolkitImage = image
+				app.Logger.Info("YARA scanner initialized", "toolkit_image", image)
+			}
+		}
 	}
 
 	return nil

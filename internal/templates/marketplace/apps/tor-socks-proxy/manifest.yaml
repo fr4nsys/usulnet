@@ -1,0 +1,54 @@
+slug: tor-socks-proxy
+name: Tor SOCKS proxy
+description: Tor daemon exposing a SOCKS5 proxy port — anonymize outbound HTTP for scans, recon, or scraping.
+long_description: |
+  A standalone Tor client packaged as a container. It opens one SOCKS5
+  listener on the configured port; point any HTTP / HTTPS / SOCKS-aware
+  client at it to route requests through the Tor network. Useful for
+  privacy-conscious recon scans, scrapers that need anonymity, or for
+  reaching .onion services from your other usulnet workloads.
+
+  Image: docker.io/peterdavehello/tor-socks-proxy (BSD-3-Clause —
+  Tor itself ships under the modified BSD license maintained by the
+  Tor Project). The container is stateless; no persistent volumes
+  required. Tor consensus state and the entry guard list live in the
+  container's ephemeral filesystem and are rebuilt on restart — a
+  paranoid operator who wants fresh circuits on every reboot gets
+  that for free.
+
+  Operator note: the SOCKS port is bound to the Docker host by
+  default, which is fine if usulnet's other containers will dial it
+  by host IP. If you want to keep the proxy strictly intra-host,
+  attach the container to a dedicated Docker network and reach it
+  by container name from the same network — no host port binding
+  needed.
+category: networking
+icon: fa-mask
+icon_color: "#7d3c98"
+version: "0.4.8"
+manifest_version: 1
+website: https://www.torproject.org/
+source: https://github.com/PeterDaveHello/tor-socks-proxy
+author: usulnet contributors
+license: BSD-3-Clause
+tags:
+  - tor
+  - privacy
+  - anonymity
+  - proxy
+min_memory_mb: 64
+min_cpu_cores: 0.1
+is_official: true
+is_verified: true
+featured: false
+fields:
+  - key: SOCKS_PORT
+    label: SOCKS5 port
+    description: |
+      Host port for the SOCKS5 listener. Other containers (or
+      anything on the LAN) dial this address. Default 9150 to avoid
+      clashing with system Tor on 9050.
+    type: text
+    default: "9150"
+    required: true
+    placeholder: "9150"

@@ -361,6 +361,7 @@ func (h *Handler) BackupsTempl(w http.ResponseWriter, r *http.Request) {
 		WarningMessage: warningMsg,
 		FilterType:     filterType,
 		FilterStatus:   filterStatus,
+		EmptyState:     EmptyStateCatalogBackups(),
 	}
 	h.renderTempl(w, r, backups.List(data))
 }
@@ -770,6 +771,7 @@ func (h *Handler) ProxyTempl(w http.ResponseWriter, r *http.Request) {
 		PageData:   pageData,
 		Connected:  connected,
 		ProxyHosts: proxyHosts,
+		EmptyState: EmptyStateCatalogProxy(),
 	}
 	h.renderTempl(w, r, proxy.List(data))
 }
@@ -1429,28 +1431,77 @@ func (h *Handler) ContainerNewTempl(w http.ResponseWriter, r *http.Request) {
 	h.renderTempl(w, r, containers.New(data))
 }
 
+// containerCreateForm captures the container-create inputs. The
+// ports[] and volumes[] slice fields use the array-style HTML name
+// that the corresponding template emits — `form` tag keys must
+// match the bracketed identifiers verbatim.
+type containerCreateForm struct {
+	Name          string   `form:"name" validate:"required"`
+	Image         string   `form:"image" validate:"required"`
+	Ports         []string `form:"ports[]"`
+	Environment   string   `form:"environment"`
+	Volumes       []string `form:"volumes[]"`
+	Network       string   `form:"network"`
+	Command       string   `form:"command"`
+	RestartPolicy string   `form:"restart"`
+	Privileged    bool     `form:"privileged"`
+	AutoRemove    bool     `form:"auto_remove"`
+}
+
 func (h *Handler) ContainerCreateSubmit(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
-	if err := r.ParseForm(); err != nil {
-		http.Error(w, "Error parsing form", http.StatusBadRequest)
+	var form containerCreateForm
+	if msg := BindForm(r, &form); msg != "" {
+		pageData := h.prepareTemplPageData(r, "Create Container", "containers")
+		var imageNames []string
+		if imgList, err := h.services.Images().List(ctx); err == nil {
+			for _, img := range imgList {
+				if img.PrimaryTag != "" {
+					imageNames = append(imageNames, img.PrimaryTag)
+				}
+			}
+		}
+		var networkNames []string
+		if netList, err := h.services.Networks().List(ctx); err == nil {
+			for _, net := range netList {
+				networkNames = append(networkNames, net.Name)
+			}
+		}
+		var volumeNames []string
+		if volList, err := h.services.Volumes().List(ctx); err == nil {
+			for _, vol := range volList {
+				volumeNames = append(volumeNames, vol.Name)
+			}
+		}
+		data := containers.ContainerNewData{
+			PageData: pageData,
+			Error:    msg,
+			Images:   imageNames,
+			Networks: networkNames,
+			Volumes:  volumeNames,
+		}
+		h.renderTempl(w, r, containers.New(data))
 		return
 	}
 
 	input := &ContainerCreateInput{
-		Name:          r.FormValue("name"),
-		Image:         r.FormValue("image"),
-		Ports:         r.Form["ports[]"],
-		Environment:   r.FormValue("environment"),
-		Volumes:       r.Form["volumes[]"],
-		Network:       r.FormValue("network"),
-		Command:       r.FormValue("command"),
-		RestartPolicy: r.FormValue("restart"),
-		Privileged:    r.FormValue("privileged") == "on",
-		AutoRemove:    r.FormValue("auto_remove") == "on",
+		Name:          form.Name,
+		Image:         form.Image,
+		Ports:         form.Ports,
+		Environment:   form.Environment,
+		Volumes:       form.Volumes,
+		Network:       form.Network,
+		Command:       form.Command,
+		RestartPolicy: form.RestartPolicy,
+		Privileged:    form.Privileged,
+		AutoRemove:    form.AutoRemove,
 	}
 
-	// Validate required fields
+	// Belt-and-suspenders: the validator already rejects empty
+	// Name / Image, but keep the explicit early-return so the
+	// "Name and image are required" template path stays
+	// reachable if a future refactor relaxes the validator.
 	if input.Name == "" || input.Image == "" {
 		pageData := h.prepareTemplPageData(r, "Create Container", "containers")
 		var imageNames []string

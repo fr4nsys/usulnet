@@ -1,13 +1,21 @@
-Show one scan's current status
+Fetch the current status, engine, and timestamps for a
+single scan by ID. Status is one of pending|running|completed|
+failed|canceled.
 
 Usage:
   usulnet recon scan status <scan-id> [flags]
+
+Examples:
+  usulnet recon scan status aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa
+  usulnet recon scan status <scan-id> --output json
 
 Flags:
   -h, --help   help for status
 
 Global Flags:
   -c, --config string   config file path (default: /etc/usulnet/config.yaml or ./config.yaml)
+      --json            shortcut for --output json (overrides --output)
       --output string   output format: table|json|yaml (default "table")
+  -q, --quiet           suppress informational output (errors and primary data still print)
       --server string   usulnet API URL (default $USULNET_API_URL)
       --token string    API token (default $USULNET_API_TOKEN)

@@ -1,13 +1,23 @@
-List recent scans
+Print recent scans across every target.
+
+Default output is a table; use --output json|yaml for scripts.
+The server's own filtering parameters are not exposed here yet —
+use "recon findings list --target" to narrow further.
 
 Usage:
   usulnet recon scan list [flags]
+
+Examples:
+  usulnet recon scan list
+  usulnet recon scan list --output json
 
 Flags:
   -h, --help   help for list
 
 Global Flags:
   -c, --config string   config file path (default: /etc/usulnet/config.yaml or ./config.yaml)
+      --json            shortcut for --output json (overrides --output)
       --output string   output format: table|json|yaml (default "table")
+  -q, --quiet           suppress informational output (errors and primary data still print)
       --server string   usulnet API URL (default $USULNET_API_URL)
       --token string    API token (default $USULNET_API_TOKEN)

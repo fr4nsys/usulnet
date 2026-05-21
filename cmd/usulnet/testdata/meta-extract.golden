@@ -1,7 +1,19 @@
-Print the metadata for one file as JSON / YAML / table
+Extract EXIF / PDF / OLE metadata for a single file.
+
+Runs server-mode (POST /api/v1/metadata/jobs) when --server or
+$USULNET_API_URL is set; otherwise local mode runs the
+recon-toolkit container against the host Docker daemon.
+
+Use --output json|yaml for scripts; the default table format only
+includes the exiftool sub-map.
 
 Usage:
   usulnet meta extract <path> [flags]
+
+Examples:
+  usulnet meta extract photo.jpg
+  usulnet meta extract photo.jpg --output json
+  usulnet meta extract doc.pdf --server https://usulnet.local --token $USULNET_API_TOKEN
 
 Flags:
   -h, --help   help for extract
@@ -9,7 +21,9 @@ Flags:
 Global Flags:
   -c, --config string    config file path (default: /etc/usulnet/config.yaml or ./config.yaml)
       --image string     toolkit image (local mode only; default $USULNET_RECON_TOOLKIT_IMAGE)
+      --json             shortcut for --output json (overrides --output)
       --output string    output format: table|json|yaml (default "table")
+  -q, --quiet            suppress informational output (errors and primary data still print)
       --server string    usulnet API URL (forces server mode; default $USULNET_API_URL)
       --timeout string   container timeout (e.g. 30s)
       --token string     API token (default $USULNET_API_TOKEN)

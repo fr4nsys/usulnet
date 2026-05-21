@@ -27,11 +27,11 @@ templ Login(data LoginData) {
 				</div>
 
 				<!-- Login Card -->
-				<div class="bg-dark-800 rounded-xl border border-dark-600 shadow-xl p-8">
+				<div class="card shadow-xl p-8">
 					<!-- Error Message -->
 					if data.Error != "" {
 						<div class="mb-6 p-4 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-sm flex items-start gap-3">
-							<i class="fas fa-exclamation-circle mt-0.5"></i>
+							<i aria-hidden="true" class="fas fa-exclamation-circle mt-0.5"></i>
 							<span>{ data.Error }</span>
 						</div>
 					}
@@ -50,7 +50,7 @@ templ Login(data LoginData) {
 							</label>
 							<div class="relative">
 								<div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-									<i class="fas fa-user text-gray-500"></i>
+									<i aria-hidden="true" class="fas fa-user text-gray-500"></i>
 								</div>
 								<input 
 									type="text" 
@@ -73,7 +73,7 @@ templ Login(data LoginData) {
 							</label>
 							<div class="relative" x-data="{ show: false }">
 								<div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-									<i class="fas fa-lock text-gray-500"></i>
+									<i aria-hidden="true" class="fas fa-lock text-gray-500"></i>
 								</div>
 								<input 
 									type="password"
@@ -90,7 +90,7 @@ templ Login(data LoginData) {
 									@click="show = !show"
 									class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-primary-400 transition-colors"
 								>
-									<i class="fas" :class="show ? 'fa-eye-slash' : 'fa-eye'"></i>
+									<i aria-hidden="true" class="fas" :class="show ? 'fa-eye-slash' : 'fa-eye'"></i>
 								</button>
 							</div>
 						</div>
@@ -112,7 +112,7 @@ templ Login(data LoginData) {
 							type="submit"
 							class="w-full py-3 px-4 bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-black font-medium rounded-lg shadow-lg shadow-primary-500/25 hover:shadow-primary-500/40 transition-all duration-200 flex items-center justify-center gap-2"
 						>
-							<i class="fas fa-sign-in-alt"></i>
+							<i aria-hidden="true" class="fas fa-sign-in-alt"></i>
 							Sign In
 						</button>
 					</form>
@@ -134,7 +134,7 @@ templ Login(data LoginData) {
 									href="/login/ldap"
 									class="w-full py-3 px-4 bg-dark-700 hover:bg-dark-600 text-gray-300 font-medium rounded-lg border border-dark-600 transition-colors flex items-center justify-center gap-2"
 								>
-									<i class="fas fa-sitemap"></i>
+									<i aria-hidden="true" class="fas fa-sitemap"></i>
 									Sign in with LDAP
 								</a>
 							}
@@ -144,7 +144,7 @@ templ Login(data LoginData) {
 									href="/login/oauth"
 									class="w-full py-3 px-4 bg-dark-700 hover:bg-dark-600 text-gray-300 font-medium rounded-lg border border-dark-600 transition-colors flex items-center justify-center gap-2"
 								>
-									<i class="fab fa-openid"></i>
+									<i aria-hidden="true" class="fab fa-openid"></i>
 									Sign in with { oauthProviderName(data.OAuthProvider) }
 								</a>
 							}
@@ -159,7 +159,7 @@ templ Login(data LoginData) {
 					</p>
 					<p class="text-xs text-gray-400">
 						<a href="https://github.com/fr4nsys/usulnet" target="_blank" rel="noopener" class="hover:text-primary-400 transition-colors">
-							<i class="fab fa-github mr-1"></i>GitHub
+							<i aria-hidden="true" class="fab fa-github mr-1"></i>GitHub
 						</a>
 						<span class="mx-1">·</span>
 						<a href="https://www.gnu.org/licenses/agpl-3.0.html" target="_blank" rel="noopener" class="hover:text-primary-400 transition-colors">

@@ -90,7 +90,7 @@ func ContainerTemplates(data ContainerTemplatesData) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"space-y-6\"><!-- Header --><div class=\"flex items-center justify-between\"><div><h1 class=\"text-2xl font-display font-bold text-white\">Container Templates</h1><p class=\"text-gray-400 mt-1\">Reusable container configurations for quick deployment</p></div><button onclick=\"document.getElementById('createTemplateModal').classList.remove('hidden')\" class=\"btn-primary flex items-center gap-2\"><i class=\"fas fa-plus\"></i> New Template</button></div><!-- Stats --><div class=\"grid grid-cols-2 md:grid-cols-4 gap-4\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"space-y-6\"><!-- Header --><div class=\"flex items-center justify-between\"><div><h1 class=\"text-2xl font-display font-bold text-white\">Container Templates</h1><p class=\"text-gray-400 mt-1\">Reusable container configurations for quick deployment</p></div><button onclick=\"document.getElementById('createTemplateModal').classList.remove('hidden')\" class=\"btn-primary flex items-center gap-2\"><i aria-hidden=\"true\" class=\"fas fa-plus\"></i> New Template</button></div><!-- Stats --><div class=\"grid grid-cols-2 md:grid-cols-4 gap-4\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -169,7 +169,7 @@ func ContainerTemplates(data ContainerTemplatesData) templ.Component {
 					return templ_7745c5c3_Err
 				}
 				if len(data.Templates) == 0 {
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "<div class=\"card p-12 text-center\"><i class=\"fas fa-box-open text-4xl text-gray-400 mb-4\"></i><h3 class=\"text-lg font-medium text-white mb-2\">No Container Templates</h3><p class=\"text-gray-400 mb-4\">Create reusable container configurations for quick deployment</p></div>")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "<div class=\"card p-12 text-center\"><i aria-hidden=\"true\" class=\"fas fa-box-open text-4xl text-gray-400 mb-4\"></i><h3 class=\"text-lg font-medium text-white mb-2\">No Container Templates</h3><p class=\"text-gray-400 mb-4\">Create reusable container configurations for quick deployment</p></div>")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
@@ -216,7 +216,7 @@ func ContainerTemplates(data ContainerTemplatesData) templ.Component {
 				}
 			} else {
 				if len(data.Templates) == 0 {
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "<div class=\"card p-12 text-center\"><i class=\"fas fa-box-open text-4xl text-gray-400 mb-4\"></i><h3 class=\"text-lg font-medium text-white mb-2\">No Container Templates</h3><p class=\"text-gray-400 mb-4\">Create reusable container configurations for quick deployment</p></div>")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "<div class=\"card p-12 text-center\"><i aria-hidden=\"true\" class=\"fas fa-box-open text-4xl text-gray-400 mb-4\"></i><h3 class=\"text-lg font-medium text-white mb-2\">No Container Templates</h3><p class=\"text-gray-400 mb-4\">Create reusable container configurations for quick deployment</p></div>")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
@@ -460,7 +460,7 @@ func templateCard(tmpl ContainerTemplateView, csrfToken string) templ.Component 
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 37, "<div class=\"space-y-2 mb-3 flex-1\"><div class=\"flex items-center gap-2 text-xs text-gray-500\"><i class=\"fas fa-docker\"></i> <span class=\"text-gray-300\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 37, "<div class=\"space-y-2 mb-3 flex-1\"><div class=\"flex items-center gap-2 text-xs text-gray-500\"><i aria-hidden=\"true\" class=\"fas fa-docker\"></i> <span class=\"text-gray-300\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -491,7 +491,7 @@ func templateCard(tmpl ContainerTemplateView, csrfToken string) templ.Component 
 			return templ_7745c5c3_Err
 		}
 		if len(tmpl.Ports) > 0 {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 40, "<div class=\"flex items-center gap-2 text-xs text-gray-500\"><i class=\"fas fa-network-wired\"></i> <span class=\"text-gray-300\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 40, "<div class=\"flex items-center gap-2 text-xs text-gray-500\"><i aria-hidden=\"true\" class=\"fas fa-network-wired\"></i> <span class=\"text-gray-300\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -527,7 +527,7 @@ func templateCard(tmpl ContainerTemplateView, csrfToken string) templ.Component 
 			}
 		}
 		if len(tmpl.Volumes) > 0 {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 43, "<div class=\"flex items-center gap-2 text-xs text-gray-500\"><i class=\"fas fa-hdd\"></i> <span class=\"text-gray-300\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 43, "<div class=\"flex items-center gap-2 text-xs text-gray-500\"><i aria-hidden=\"true\" class=\"fas fa-hdd\"></i> <span class=\"text-gray-300\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -546,7 +546,7 @@ func templateCard(tmpl ContainerTemplateView, csrfToken string) templ.Component 
 			}
 		}
 		if len(tmpl.EnvVars) > 0 {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 45, "<div class=\"flex items-center gap-2 text-xs text-gray-500\"><i class=\"fas fa-cog\"></i> <span class=\"text-gray-300\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 45, "<div class=\"flex items-center gap-2 text-xs text-gray-500\"><i aria-hidden=\"true\" class=\"fas fa-cog\"></i> <span class=\"text-gray-300\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -564,27 +564,27 @@ func templateCard(tmpl ContainerTemplateView, csrfToken string) templ.Component 
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 47, "</div><div class=\"flex items-center justify-between pt-3 border-t border-dark-600\"><div class=\"flex items-center gap-2 text-xs text-gray-500\"><span><i class=\"fas fa-rocket mr-1\"></i>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 47, "</div><div class=\"flex items-center justify-between pt-3 border-t border-dark-600\"><div class=\"flex items-center gap-2 text-xs text-gray-500\"><span><i aria-hidden=\"true\" class=\"fas fa-rocket mr-1\"></i>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var26 string
 		templ_7745c5c3_Var26, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d deploys", tmpl.UsageCount))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/templates/templates.templ`, Line: 190, Col: 88}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/templates/templates.templ`, Line: 190, Col: 107}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var26))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 48, "</span> <span><i class=\"fas fa-clock mr-1\"></i>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 48, "</span> <span><i aria-hidden=\"true\" class=\"fas fa-clock mr-1\"></i>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var27 string
 		templ_7745c5c3_Var27, templ_7745c5c3_Err = templ.JoinStringErrs(tmpl.CreatedAt)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/templates/templates.templ`, Line: 191, Col: 59}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/templates/templates.templ`, Line: 191, Col: 78}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var27))
 		if templ_7745c5c3_Err != nil {
@@ -616,7 +616,7 @@ func templateCard(tmpl ContainerTemplateView, csrfToken string) templ.Component 
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 51, "\"> <button type=\"submit\" class=\"p-1.5 text-gray-400 hover:text-green-400 transition-colors\" title=\"Deploy\"><i class=\"fas fa-play text-sm\"></i></button></form><form method=\"POST\" action=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 51, "\"> <button type=\"submit\" class=\"p-1.5 text-gray-400 hover:text-green-400 transition-colors\" title=\"Deploy\"><i aria-hidden=\"true\" class=\"fas fa-play text-sm\"></i></button></form><form method=\"POST\" action=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -642,7 +642,7 @@ func templateCard(tmpl ContainerTemplateView, csrfToken string) templ.Component 
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 53, "\"> <button type=\"submit\" class=\"p-1.5 text-gray-400 hover:text-red-400 transition-colors\" title=\"Delete\"><i class=\"fas fa-trash text-sm\"></i></button></form></div></div></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 53, "\"> <button type=\"submit\" class=\"p-1.5 text-gray-400 hover:text-red-400 transition-colors\" title=\"Delete\"><i aria-hidden=\"true\" class=\"fas fa-trash text-sm\"></i></button></form></div></div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -671,7 +671,7 @@ func createTemplateModal(csrfToken string) templ.Component {
 			templ_7745c5c3_Var32 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 54, "<div id=\"createTemplateModal\" class=\"hidden fixed inset-0 z-50 flex items-center justify-center bg-black/60\"><div class=\"bg-dark-800 rounded-xl shadow-xl border border-dark-600 w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto\"><div class=\"flex items-center justify-between p-6 border-b border-dark-600 sticky top-0 bg-dark-800 z-10\"><h2 class=\"text-lg font-display font-bold text-white\">Create Container Template</h2><button onclick=\"document.getElementById('createTemplateModal').classList.add('hidden')\" class=\"text-gray-400 hover:text-white\"><i class=\"fas fa-times\"></i></button></div><form method=\"POST\" action=\"/container-templates\" class=\"p-6 space-y-4\"><input type=\"hidden\" name=\"csrf_token\" value=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 54, "<div id=\"createTemplateModal\" class=\"hidden fixed inset-0 z-50 flex items-center justify-center bg-black/60\"><div class=\"bg-dark-800 rounded-xl shadow-xl border border-dark-600 w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto\"><div class=\"flex items-center justify-between p-6 border-b border-dark-600 sticky top-0 bg-dark-800 z-10\"><h2 class=\"text-lg font-display font-bold text-white\">Create Container Template</h2><button onclick=\"document.getElementById('createTemplateModal').classList.add('hidden')\" class=\"text-gray-400 hover:text-white\"><i aria-hidden=\"true\" class=\"fas fa-times\"></i></button></div><form method=\"POST\" action=\"/container-templates\" class=\"p-6 space-y-4\"><input type=\"hidden\" name=\"csrf_token\" value=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -684,7 +684,7 @@ func createTemplateModal(csrfToken string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 55, "\"><div class=\"grid grid-cols-2 gap-4\"><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Template Name</label> <input type=\"text\" name=\"name\" required class=\"input w-full\" placeholder=\"e.g., Nginx Reverse Proxy\"></div><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Category</label> <select name=\"category\" class=\"input w-full\"><option value=\"web\">Web Server</option> <option value=\"database\">Database</option> <option value=\"cache\">Cache</option> <option value=\"monitoring\">Monitoring</option> <option value=\"devtools\">Dev Tools</option> <option value=\"storage\">Storage</option> <option value=\"messaging\">Messaging</option> <option value=\"other\">Other</option></select></div></div><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Description</label> <textarea name=\"description\" rows=\"2\" class=\"input w-full\" placeholder=\"Brief description of this template\"></textarea></div><div class=\"grid grid-cols-2 gap-4\"><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Docker Image</label> <input type=\"text\" name=\"image\" required class=\"input w-full\" placeholder=\"e.g., nginx\"></div><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Tag</label> <input type=\"text\" name=\"tag\" class=\"input w-full\" placeholder=\"latest\" value=\"latest\"></div></div><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Ports <span class=\"text-xs text-gray-500\">(one per line, e.g., 8080:80)</span></label> <textarea name=\"ports\" rows=\"2\" class=\"input w-full font-mono text-sm\" placeholder=\"8080:80&#10;8443:443\"></textarea></div><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Volumes <span class=\"text-xs text-gray-500\">(one per line, e.g., /data:/var/lib/data)</span></label> <textarea name=\"volumes\" rows=\"2\" class=\"input w-full font-mono text-sm\" placeholder=\"/host/path:/container/path\"></textarea></div><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Environment Variables <span class=\"text-xs text-gray-500\">(KEY=VALUE, one per line)</span></label> <textarea name=\"env_vars\" rows=\"3\" class=\"input w-full font-mono text-sm\" placeholder=\"MYSQL_ROOT_PASSWORD=secret&#10;MYSQL_DATABASE=mydb\"></textarea></div><div class=\"grid grid-cols-2 gap-4\"><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Network</label> <input type=\"text\" name=\"network\" class=\"input w-full\" placeholder=\"default (optional)\"></div><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Restart Policy</label> <select name=\"restart_policy\" class=\"input w-full\"><option value=\"unless-stopped\">Unless Stopped</option> <option value=\"always\">Always</option> <option value=\"on-failure\">On Failure</option> <option value=\"no\">No</option></select></div></div><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Command (optional)</label> <input type=\"text\" name=\"command\" class=\"input w-full font-mono text-sm\" placeholder=\"Custom command override\"></div><label class=\"flex items-center gap-2\"><input type=\"checkbox\" name=\"is_public\" value=\"on\" checked class=\"form-checkbox rounded bg-dark-700 border-dark-500\"> <span class=\"text-sm text-gray-300\">Make template available to all users</span></label><div class=\"flex justify-end gap-3 pt-4 border-t border-dark-600\"><button type=\"button\" onclick=\"document.getElementById('createTemplateModal').classList.add('hidden')\" class=\"btn-secondary\">Cancel</button> <button type=\"submit\" class=\"btn-primary\"><i class=\"fas fa-plus mr-2\"></i>Create Template</button></div></form></div></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 55, "\"><div class=\"grid grid-cols-2 gap-4\"><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Template Name</label> <input type=\"text\" name=\"name\" required class=\"input w-full\" placeholder=\"e.g., Nginx Reverse Proxy\" aria-label=\"e.g., Nginx Reverse Proxy\"></div><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Category</label> <select name=\"category\" class=\"input w-full\"><option value=\"web\">Web Server</option> <option value=\"database\">Database</option> <option value=\"cache\">Cache</option> <option value=\"monitoring\">Monitoring</option> <option value=\"devtools\">Dev Tools</option> <option value=\"storage\">Storage</option> <option value=\"messaging\">Messaging</option> <option value=\"other\">Other</option></select></div></div><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Description</label> <textarea name=\"description\" rows=\"2\" class=\"input w-full\" placeholder=\"Brief description of this template\"></textarea></div><div class=\"grid grid-cols-2 gap-4\"><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Docker Image</label> <input type=\"text\" name=\"image\" required class=\"input w-full\" placeholder=\"e.g., nginx\" aria-label=\"e.g., nginx\"></div><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Tag</label> <input type=\"text\" name=\"tag\" class=\"input w-full\" placeholder=\"latest\" aria-label=\"latest\" value=\"latest\"></div></div><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Ports <span class=\"text-xs text-gray-500\">(one per line, e.g., 8080:80)</span></label> <textarea name=\"ports\" rows=\"2\" class=\"input w-full font-mono text-sm\" placeholder=\"8080:80&#10;8443:443\"></textarea></div><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Volumes <span class=\"text-xs text-gray-500\">(one per line, e.g., /data:/var/lib/data)</span></label> <textarea name=\"volumes\" rows=\"2\" class=\"input w-full font-mono text-sm\" placeholder=\"/host/path:/container/path\"></textarea></div><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Environment Variables <span class=\"text-xs text-gray-500\">(KEY=VALUE, one per line)</span></label> <textarea name=\"env_vars\" rows=\"3\" class=\"input w-full font-mono text-sm\" placeholder=\"MYSQL_ROOT_PASSWORD=secret&#10;MYSQL_DATABASE=mydb\"></textarea></div><div class=\"grid grid-cols-2 gap-4\"><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Network</label> <input type=\"text\" name=\"network\" class=\"input w-full\" placeholder=\"default (optional)\" aria-label=\"default (optional)\"></div><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Restart Policy</label> <select name=\"restart_policy\" class=\"input w-full\"><option value=\"unless-stopped\">Unless Stopped</option> <option value=\"always\">Always</option> <option value=\"on-failure\">On Failure</option> <option value=\"no\">No</option></select></div></div><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Command (optional)</label> <input type=\"text\" name=\"command\" class=\"input w-full font-mono text-sm\" placeholder=\"Custom command override\" aria-label=\"Custom command override\"></div><label class=\"flex items-center gap-2\"><input type=\"checkbox\" name=\"is_public\" value=\"on\" checked class=\"form-checkbox rounded bg-dark-700 border-dark-500\"> <span class=\"text-sm text-gray-300\">Make template available to all users</span></label><div class=\"flex justify-end gap-3 pt-4 border-t border-dark-600\"><button type=\"button\" onclick=\"document.getElementById('createTemplateModal').classList.add('hidden')\" class=\"btn-secondary\">Cancel</button> <button type=\"submit\" class=\"btn-primary\"><i aria-hidden=\"true\" class=\"fas fa-plus mr-2\"></i>Create Template</button></div></form></div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

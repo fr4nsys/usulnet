@@ -453,6 +453,27 @@ Or use the agent profile in Docker Compose:
 docker compose --profile agent up -d
 ```
 
+**Pre-flight validation.** Before restarting an agent against an
+updated config, run `validate-config` to surface typos or missing
+required fields without bringing the agent up:
+
+```bash
+# Binary install
+usulnet-agent validate-config --config /etc/usulnet-agent/config.yaml
+
+# Docker install (one-shot validation against a mounted config)
+docker run --rm \
+  -v /etc/usulnet-agent/config.yaml:/app/config.yaml:ro \
+  usulnet/usulnet-agent:latest \
+  validate-config --config /app/config.yaml
+```
+
+`validate-config` exits 0 only when a startable config can be
+assembled (the required field today is `token`). Fail the deploy if
+validation does not exit 0. See [Recommended Deploy
+Workflow](agents.md#recommended-deploy-workflow) in the agent guide
+for the full procedure.
+
 > For detailed agent configuration, see [Agent Configuration Guide](agents.md).
 
 ---

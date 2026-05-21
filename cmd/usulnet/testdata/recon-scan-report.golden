@@ -1,7 +1,16 @@
-Download a scan report (--format json|csv|pdf, default json)
+Download a completed scan's report.
+
+The body is streamed to stdout — redirect to a file with
+"> report.<ext>". Format is selected with --format (json|csv|pdf,
+default json).
 
 Usage:
   usulnet recon scan report <scan-id> [flags]
+
+Examples:
+  usulnet recon scan report <scan-id> > report.json
+  usulnet recon scan report <scan-id> --format csv > report.csv
+  usulnet recon scan report <scan-id> --format pdf > report.pdf
 
 Flags:
       --format string   report format: json|csv|pdf (default "json")
@@ -9,6 +18,8 @@ Flags:
 
 Global Flags:
   -c, --config string   config file path (default: /etc/usulnet/config.yaml or ./config.yaml)
+      --json            shortcut for --output json (overrides --output)
       --output string   output format: table|json|yaml (default "table")
+  -q, --quiet           suppress informational output (errors and primary data still print)
       --server string   usulnet API URL (default $USULNET_API_URL)
       --token string    API token (default $USULNET_API_TOKEN)

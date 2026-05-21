@@ -11,6 +11,7 @@ import templruntime "github.com/a-h/templ/runtime"
 import (
 	"fmt"
 
+	"github.com/fr4nsys/usulnet/internal/web/templates/components"
 	"github.com/fr4nsys/usulnet/internal/web/templates/layouts"
 )
 
@@ -47,7 +48,7 @@ func ProviderList(data ProviderListData) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"space-y-6\"><div class=\"flex items-center justify-between\"><div><h1 class=\"text-2xl font-display font-bold text-white\">DNS Providers</h1><p class=\"text-gray-400 mt-1\">Configure provider plugins for ACME DNS-01 and proxy record management.</p></div><a href=\"/dns/new\" class=\"btn-primary\"><i class=\"fas fa-plus mr-2\"></i>Add provider</a></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"space-y-6\"><div class=\"flex items-center justify-between\"><div><h1 class=\"text-2xl font-display font-bold text-white\">DNS Providers</h1><p class=\"text-gray-400 mt-1\">Configure provider plugins for ACME DNS-01 and proxy record management.</p></div><a href=\"/dns/new\" class=\"btn-primary\"><i aria-hidden=\"true\" class=\"fas fa-plus mr-2\"></i>Add provider</a></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -56,7 +57,7 @@ func ProviderList(data ProviderListData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			if len(data.Providers) > 0 {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<div class=\"card\"><div class=\"overflow-x-auto\"><table class=\"table\"><thead><tr><th>Name</th><th>Kind</th><th>Records</th><th>State</th><th>Created</th><th class=\"text-right\">Actions</th></tr></thead> <tbody>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<div class=\"card\"><div class=\"overflow-x-auto\"><table class=\"table\"><thead><tr><th scope=\"col\">Name</th><th scope=\"col\">Kind</th><th scope=\"col\">Records</th><th scope=\"col\">State</th><th scope=\"col\">Created</th><th scope=\"col\" class=\"text-right\">Actions</th></tr></thead> <tbody>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -68,7 +69,7 @@ func ProviderList(data ProviderListData) templ.Component {
 					var templ_7745c5c3_Var3 templ.SafeURL
 					templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinURLErrs(templ.SafeURL(fmt.Sprintf("/dns/%s", p.ID)))
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/dns/list.templ`, Line: 42, Col: 64}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/dns/list.templ`, Line: 43, Col: 64}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 					if templ_7745c5c3_Err != nil {
@@ -81,7 +82,7 @@ func ProviderList(data ProviderListData) templ.Component {
 					var templ_7745c5c3_Var4 string
 					templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(p.Name)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/dns/list.templ`, Line: 42, Col: 117}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/dns/list.templ`, Line: 43, Col: 117}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 					if templ_7745c5c3_Err != nil {
@@ -99,7 +100,7 @@ func ProviderList(data ProviderListData) templ.Component {
 						var templ_7745c5c3_Var5 string
 						templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(p.Description)
 						if templ_7745c5c3_Err != nil {
-							return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/dns/list.templ`, Line: 44, Col: 67}
+							return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/dns/list.templ`, Line: 45, Col: 67}
 						}
 						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 						if templ_7745c5c3_Err != nil {
@@ -117,7 +118,7 @@ func ProviderList(data ProviderListData) templ.Component {
 					var templ_7745c5c3_Var6 string
 					templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(p.KindLabel)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/dns/list.templ`, Line: 47, Col: 63}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/dns/list.templ`, Line: 48, Col: 63}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 					if templ_7745c5c3_Err != nil {
@@ -130,7 +131,7 @@ func ProviderList(data ProviderListData) templ.Component {
 					var templ_7745c5c3_Var7 string
 					templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", p.RecordCount))
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/dns/list.templ`, Line: 48, Col: 84}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/dns/list.templ`, Line: 49, Col: 84}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 					if templ_7745c5c3_Err != nil {
@@ -158,7 +159,7 @@ func ProviderList(data ProviderListData) templ.Component {
 					var templ_7745c5c3_Var8 string
 					templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(p.CreatedAt)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/dns/list.templ`, Line: 56, Col: 63}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/dns/list.templ`, Line: 57, Col: 63}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 					if templ_7745c5c3_Err != nil {
@@ -171,7 +172,7 @@ func ProviderList(data ProviderListData) templ.Component {
 					var templ_7745c5c3_Var9 templ.SafeURL
 					templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinURLErrs(templ.SafeURL(fmt.Sprintf("/dns/%s/edit", p.ID)))
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/dns/list.templ`, Line: 59, Col: 70}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/dns/list.templ`, Line: 60, Col: 70}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 					if templ_7745c5c3_Err != nil {
@@ -184,7 +185,7 @@ func ProviderList(data ProviderListData) templ.Component {
 					var templ_7745c5c3_Var10 templ.SafeURL
 					templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinURLErrs(templ.SafeURL(fmt.Sprintf("/dns/%s/delete", p.ID)))
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/dns/list.templ`, Line: 60, Col: 91}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/dns/list.templ`, Line: 61, Col: 91}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 					if templ_7745c5c3_Err != nil {
@@ -197,7 +198,7 @@ func ProviderList(data ProviderListData) templ.Component {
 					var templ_7745c5c3_Var11 string
 					templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(data.PageData.CSRFToken)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/dns/list.templ`, Line: 61, Col: 83}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/dns/list.templ`, Line: 62, Col: 83}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 					if templ_7745c5c3_Err != nil {
@@ -213,12 +214,12 @@ func ProviderList(data ProviderListData) templ.Component {
 					return templ_7745c5c3_Err
 				}
 			} else {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "<div class=\"card p-8 text-center\"><i class=\"fas fa-cloud text-4xl text-gray-400 mb-4\"></i><h3 class=\"text-lg font-medium text-white mb-2\">No DNS providers configured</h3><p class=\"text-gray-400 mb-4\">Attach a Cloudflare, Route 53, DigitalOcean, or RFC 2136 provider to enable ACME DNS-01 challenges and record automation.</p><a href=\"/dns/new\" class=\"btn-primary\"><i class=\"fas fa-plus mr-2\"></i>Add provider</a></div>")
+				templ_7745c5c3_Err = components.EmptyStateCTAs(data.EmptyState).Render(ctx, templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 20, "</div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "</div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

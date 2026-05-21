@@ -109,7 +109,7 @@ func Lifecycle(data LifecycleData) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"space-y-6\"><!-- Header --><div class=\"flex items-center justify-between\"><div><h1 class=\"text-2xl font-display font-bold text-white\">Lifecycle Policies</h1><p class=\"text-gray-400 mt-1\">Automated cleanup rules for containers, images, volumes, and networks</p></div><button onclick=\"document.getElementById('createPolicyModal').classList.remove('hidden')\" class=\"btn-primary flex items-center gap-2\"><i class=\"fas fa-plus\"></i> New Policy</button></div><!-- Stats Grid --><div class=\"grid grid-cols-2 md:grid-cols-4 gap-4\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"space-y-6\"><!-- Header --><div class=\"flex items-center justify-between\"><div><h1 class=\"text-2xl font-display font-bold text-white\">Lifecycle Policies</h1><p class=\"text-gray-400 mt-1\">Automated cleanup rules for containers, images, volumes, and networks</p></div><button onclick=\"document.getElementById('createPolicyModal').classList.remove('hidden')\" class=\"btn-primary flex items-center gap-2\"><i aria-hidden=\"true\" class=\"fas fa-plus\"></i> New Policy</button></div><!-- Stats Grid --><div class=\"grid grid-cols-2 md:grid-cols-4 gap-4\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -134,7 +134,7 @@ func Lifecycle(data LifecycleData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			if data.Stats.DanglingImages > 0 || data.Stats.StoppedContainers > 0 || data.Stats.UnusedVolumes > 0 || data.Stats.UnusedNetworks > 0 {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<div class=\"card p-4\"><h3 class=\"text-sm font-medium text-yellow-400 mb-3\"><i class=\"fas fa-exclamation-triangle mr-2\"></i>Resources Available for Cleanup</h3><div class=\"grid grid-cols-2 md:grid-cols-4 gap-3\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<div class=\"card p-4\"><h3 class=\"text-sm font-medium text-yellow-400 mb-3\"><i aria-hidden=\"true\" class=\"fas fa-exclamation-triangle mr-2\"></i>Resources Available for Cleanup</h3><div class=\"grid grid-cols-2 md:grid-cols-4 gap-3\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -167,7 +167,7 @@ func Lifecycle(data LifecycleData) templ.Component {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<!-- Tabs --><div x-data=\"{ tab: 'policies' }\" class=\"space-y-4\"><div class=\"flex gap-1 border-b border-dark-600\"><button @click=\"tab = 'policies'\" :class=\"tab === 'policies' ? 'border-primary-500 text-white' : 'border-transparent text-gray-400 hover:text-gray-300'\" class=\"px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors\">Policies (")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<!-- Tabs --><div x-data=\"{ tab: 'policies' }\" class=\"space-y-4\"><div class=\"flex gap-1 border-b border-dark-600\"><button @click=\"tab = 'policies'\" :class=\"tab === 'policies' ? 'border-primary-500 text-white' : 'border-transparent text-gray-400 hover:text-gray-300'\" class=\"tab-underline\">Policies (")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -180,7 +180,7 @@ func Lifecycle(data LifecycleData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, ")</button> <button @click=\"tab = 'history'\" :class=\"tab === 'history' ? 'border-primary-500 text-white' : 'border-transparent text-gray-400 hover:text-gray-300'\" class=\"px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors\">Cleanup History (")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, ")</button> <button @click=\"tab = 'history'\" :class=\"tab === 'history' ? 'border-primary-500 text-white' : 'border-transparent text-gray-400 hover:text-gray-300'\" class=\"tab-underline\">Cleanup History (")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -198,7 +198,7 @@ func Lifecycle(data LifecycleData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			if len(data.Policies) == 0 {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "<div class=\"card p-12 text-center\"><i class=\"fas fa-recycle text-4xl text-gray-400 mb-4\"></i><h3 class=\"text-lg font-medium text-white mb-2\">No Lifecycle Policies</h3><p class=\"text-gray-400 mb-4\">Create policies to automatically clean up unused Docker resources</p></div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "<div class=\"card p-12 text-center\"><i aria-hidden=\"true\" class=\"fas fa-recycle text-4xl text-gray-400 mb-4\"></i><h3 class=\"text-lg font-medium text-white mb-2\">No Lifecycle Policies</h3><p class=\"text-gray-400 mb-4\">Create policies to automatically clean up unused Docker resources</p></div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -223,12 +223,12 @@ func Lifecycle(data LifecycleData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			if len(data.History) == 0 {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "<div class=\"card p-12 text-center\"><i class=\"fas fa-history text-4xl text-gray-400 mb-4\"></i><h3 class=\"text-lg font-medium text-white mb-2\">No Cleanup History</h3><p class=\"text-gray-400\">History will appear after policies execute</p></div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "<div class=\"card p-12 text-center\"><i aria-hidden=\"true\" class=\"fas fa-history text-4xl text-gray-400 mb-4\"></i><h3 class=\"text-lg font-medium text-white mb-2\">No Cleanup History</h3><p class=\"text-gray-400\">History will appear after policies execute</p></div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			} else {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "<div class=\"card overflow-hidden\"><table class=\"w-full\"><thead><tr class=\"border-b border-dark-600\"><th class=\"text-left text-xs font-medium text-gray-400 uppercase px-4 py-3\">Policy</th><th class=\"text-left text-xs font-medium text-gray-400 uppercase px-4 py-3\">Resource</th><th class=\"text-left text-xs font-medium text-gray-400 uppercase px-4 py-3\">Items</th><th class=\"text-left text-xs font-medium text-gray-400 uppercase px-4 py-3\">Space</th><th class=\"text-left text-xs font-medium text-gray-400 uppercase px-4 py-3\">Status</th><th class=\"text-left text-xs font-medium text-gray-400 uppercase px-4 py-3\">Executed</th></tr></thead> <tbody class=\"divide-y divide-dark-700\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "<div class=\"card overflow-hidden\"><table class=\"w-full\"><thead><tr class=\"border-b border-dark-600\"><th scope=\"col\" class=\"text-left text-xs font-medium text-gray-400 uppercase px-4 py-3\">Policy</th><th scope=\"col\" class=\"text-left text-xs font-medium text-gray-400 uppercase px-4 py-3\">Resource</th><th scope=\"col\" class=\"text-left text-xs font-medium text-gray-400 uppercase px-4 py-3\">Items</th><th scope=\"col\" class=\"text-left text-xs font-medium text-gray-400 uppercase px-4 py-3\">Space</th><th scope=\"col\" class=\"text-left text-xs font-medium text-gray-400 uppercase px-4 py-3\">Status</th><th scope=\"col\" class=\"text-left text-xs font-medium text-gray-400 uppercase px-4 py-3\">Executed</th></tr></thead> <tbody class=\"divide-y divide-dark-700\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -634,14 +634,14 @@ func policyCard(policy PolicyView, csrfToken string) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		if policy.Schedule != "" {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 48, "<span><i class=\"fas fa-clock mr-1\"></i>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 48, "<span><i aria-hidden=\"true\" class=\"fas fa-clock mr-1\"></i>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var28 string
 			templ_7745c5c3_Var28, templ_7745c5c3_Err = templ.JoinStringErrs(policy.Schedule)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/lifecycle/lifecycle.templ`, Line: 240, Col: 63}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/lifecycle/lifecycle.templ`, Line: 240, Col: 82}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var28))
 			if templ_7745c5c3_Err != nil {
@@ -653,14 +653,14 @@ func policyCard(policy PolicyView, csrfToken string) templ.Component {
 			}
 		}
 		if policy.Conditions.MaxAgeDays > 0 {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 50, "<span><i class=\"fas fa-calendar mr-1\"></i>Max age: ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 50, "<span><i aria-hidden=\"true\" class=\"fas fa-calendar mr-1\"></i>Max age: ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var29 string
 			templ_7745c5c3_Var29, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", policy.Conditions.MaxAgeDays))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/lifecycle/lifecycle.templ`, Line: 243, Col: 107}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/lifecycle/lifecycle.templ`, Line: 243, Col: 126}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var29))
 			if templ_7745c5c3_Err != nil {
@@ -672,14 +672,14 @@ func policyCard(policy PolicyView, csrfToken string) templ.Component {
 			}
 		}
 		if policy.Conditions.KeepLatest > 0 {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 52, "<span><i class=\"fas fa-layer-group mr-1\"></i>Keep latest: ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 52, "<span><i aria-hidden=\"true\" class=\"fas fa-layer-group mr-1\"></i>Keep latest: ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var30 string
 			templ_7745c5c3_Var30, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", policy.Conditions.KeepLatest))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/lifecycle/lifecycle.templ`, Line: 246, Col: 114}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/lifecycle/lifecycle.templ`, Line: 246, Col: 133}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var30))
 			if templ_7745c5c3_Err != nil {
@@ -691,26 +691,26 @@ func policyCard(policy PolicyView, csrfToken string) templ.Component {
 			}
 		}
 		if policy.Conditions.OnlyDangling {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 54, "<span><i class=\"fas fa-unlink mr-1\"></i>Dangling only</span> ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 54, "<span><i aria-hidden=\"true\" class=\"fas fa-unlink mr-1\"></i>Dangling only</span> ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		}
 		if policy.Conditions.OnlyUnused {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 55, "<span><i class=\"fas fa-ban mr-1\"></i>Unused only</span> ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 55, "<span><i aria-hidden=\"true\" class=\"fas fa-ban mr-1\"></i>Unused only</span> ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		}
 		if policy.LastExecutedAt != "" {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 56, "<span><i class=\"fas fa-check mr-1\"></i>Last: ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 56, "<span><i aria-hidden=\"true\" class=\"fas fa-check mr-1\"></i>Last: ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var31 string
 			templ_7745c5c3_Var31, templ_7745c5c3_Err = templ.JoinStringErrs(policy.LastExecutedAt)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/lifecycle/lifecycle.templ`, Line: 255, Col: 75}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/lifecycle/lifecycle.templ`, Line: 255, Col: 94}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var31))
 			if templ_7745c5c3_Err != nil {
@@ -747,7 +747,7 @@ func policyCard(policy PolicyView, csrfToken string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 60, "\"> <button type=\"submit\" class=\"p-2 text-gray-400 hover:text-primary-400 transition-colors\" title=\"Execute now\"><i class=\"fas fa-play\"></i></button></form><form method=\"POST\" action=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 60, "\"> <button type=\"submit\" class=\"p-2 text-gray-400 hover:text-primary-400 transition-colors\" title=\"Execute now\"><i aria-hidden=\"true\" class=\"fas fa-play\"></i></button></form><form method=\"POST\" action=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -778,12 +778,12 @@ func policyCard(policy PolicyView, csrfToken string) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		if policy.IsEnabled {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 63, "<i class=\"fas fa-pause\"></i>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 63, "<i aria-hidden=\"true\" class=\"fas fa-pause\"></i>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		} else {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 64, "<i class=\"fas fa-play-circle\"></i>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 64, "<i aria-hidden=\"true\" class=\"fas fa-play-circle\"></i>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -814,7 +814,7 @@ func policyCard(policy PolicyView, csrfToken string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 67, "\"> <button type=\"submit\" class=\"p-2 text-gray-400 hover:text-red-400 transition-colors\" title=\"Delete\"><i class=\"fas fa-trash\"></i></button></form></div></div></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 67, "\"> <button type=\"submit\" class=\"p-2 text-gray-400 hover:text-red-400 transition-colors\" title=\"Delete\"><i aria-hidden=\"true\" class=\"fas fa-trash\"></i></button></form></div></div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -843,7 +843,7 @@ func createPolicyModal(csrfToken string) templ.Component {
 			templ_7745c5c3_Var38 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 68, "<div id=\"createPolicyModal\" class=\"hidden fixed inset-0 z-50 flex items-center justify-center bg-black/60\" x-data=\"{ resourceType: 'image', showAdvanced: false }\"><div class=\"bg-dark-800 rounded-xl shadow-xl border border-dark-600 w-full max-w-lg mx-4\"><div class=\"flex items-center justify-between p-6 border-b border-dark-600\"><h2 class=\"text-lg font-display font-bold text-white\">Create Lifecycle Policy</h2><button onclick=\"document.getElementById('createPolicyModal').classList.add('hidden')\" class=\"text-gray-400 hover:text-white\"><i class=\"fas fa-times\"></i></button></div><form method=\"POST\" action=\"/lifecycle/policies\" class=\"p-6 space-y-4\"><input type=\"hidden\" name=\"csrf_token\" value=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 68, "<div id=\"createPolicyModal\" class=\"hidden fixed inset-0 z-50 flex items-center justify-center bg-black/60\" x-data=\"{ resourceType: 'image', showAdvanced: false }\"><div class=\"bg-dark-800 rounded-xl shadow-xl border border-dark-600 w-full max-w-lg mx-4\"><div class=\"flex items-center justify-between p-6 border-b border-dark-600\"><h2 class=\"text-lg font-display font-bold text-white\">Create Lifecycle Policy</h2><button onclick=\"document.getElementById('createPolicyModal').classList.add('hidden')\" class=\"text-gray-400 hover:text-white\"><i aria-hidden=\"true\" class=\"fas fa-times\"></i></button></div><form method=\"POST\" action=\"/lifecycle/policies\" class=\"p-6 space-y-4\"><input type=\"hidden\" name=\"csrf_token\" value=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -856,7 +856,7 @@ func createPolicyModal(csrfToken string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 69, "\"><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Policy Name</label> <input type=\"text\" name=\"name\" required class=\"input w-full\" placeholder=\"e.g., Prune dangling images weekly\"></div><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Description</label> <input type=\"text\" name=\"description\" class=\"input w-full\" placeholder=\"Optional description\"></div><div class=\"grid grid-cols-2 gap-4\"><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Resource Type</label> <select name=\"resource_type\" x-model=\"resourceType\" class=\"input w-full\"><option value=\"image\">Images</option> <option value=\"container\">Containers</option> <option value=\"volume\">Volumes</option> <option value=\"network\">Networks</option></select></div><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Action</label> <select name=\"action\" class=\"input w-full\"><option value=\"prune\">Prune (remove unused)</option> <option value=\"remove\">Remove (force delete)</option></select></div></div><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Schedule (cron)</label> <select name=\"schedule\" class=\"input w-full\"><option value=\"0 3 * * *\">Daily at 3 AM</option> <option value=\"0 3 * * 0\">Weekly (Sunday 3 AM)</option> <option value=\"0 3 1 * *\">Monthly (1st at 3 AM)</option> <option value=\"0 */6 * * *\">Every 6 hours</option> <option value=\"0 */12 * * *\">Every 12 hours</option></select></div><!-- Conditions based on resource type --><div class=\"space-y-3\"><div x-show=\"resourceType === 'image'\" class=\"space-y-3\"><label class=\"flex items-center gap-2\"><input type=\"checkbox\" name=\"only_dangling\" value=\"on\" checked class=\"form-checkbox rounded bg-dark-700 border-dark-500\"> <span class=\"text-sm text-gray-300\">Only dangling (untagged) images</span></label></div><div x-show=\"resourceType === 'container'\" class=\"space-y-3\"><label class=\"flex items-center gap-2\"><input type=\"checkbox\" name=\"only_stopped\" value=\"on\" checked class=\"form-checkbox rounded bg-dark-700 border-dark-500\"> <span class=\"text-sm text-gray-300\">Only stopped containers</span></label></div><div x-show=\"resourceType === 'volume' || resourceType === 'network'\" class=\"space-y-3\"><label class=\"flex items-center gap-2\"><input type=\"checkbox\" name=\"only_unused\" value=\"on\" checked class=\"form-checkbox rounded bg-dark-700 border-dark-500\"> <span class=\"text-sm text-gray-300\">Only unused (no containers attached)</span></label></div></div><button type=\"button\" @click=\"showAdvanced = !showAdvanced\" class=\"text-sm text-primary-400 hover:text-primary-300\"><i class=\"fas fa-cog mr-1\"></i> <span x-text=\"showAdvanced ? 'Hide advanced' : 'Show advanced options'\"></span></button><div x-show=\"showAdvanced\" x-cloak class=\"space-y-3 border-t border-dark-600 pt-3\"><div class=\"grid grid-cols-2 gap-4\"><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Max Age (days)</label> <input type=\"number\" name=\"max_age_days\" value=\"0\" min=\"0\" class=\"input w-full\" placeholder=\"0 = no limit\"></div><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Keep Latest N</label> <input type=\"number\" name=\"keep_latest\" value=\"0\" min=\"0\" class=\"input w-full\" placeholder=\"0 = no limit\"></div></div><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Exclude Labels (comma-separated)</label> <input type=\"text\" name=\"exclude_labels\" class=\"input w-full\" placeholder=\"e.g., keep=true,protected\"></div><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Include Labels (comma-separated)</label> <input type=\"text\" name=\"include_labels\" class=\"input w-full\" placeholder=\"e.g., temp=true,disposable\"></div></div><div class=\"flex justify-end gap-3 pt-4 border-t border-dark-600\"><button type=\"button\" onclick=\"document.getElementById('createPolicyModal').classList.add('hidden')\" class=\"btn-secondary\">Cancel</button> <button type=\"submit\" class=\"btn-primary\"><i class=\"fas fa-plus mr-2\"></i>Create Policy</button></div></form></div></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 69, "\"><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Policy Name</label> <input type=\"text\" name=\"name\" required class=\"input w-full\" placeholder=\"e.g., Prune dangling images weekly\" aria-label=\"e.g., Prune dangling images weekly\"></div><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Description</label> <input type=\"text\" name=\"description\" class=\"input w-full\" placeholder=\"Optional description\" aria-label=\"Optional description\"></div><div class=\"grid grid-cols-2 gap-4\"><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Resource Type</label> <select name=\"resource_type\" x-model=\"resourceType\" class=\"input w-full\"><option value=\"image\">Images</option> <option value=\"container\">Containers</option> <option value=\"volume\">Volumes</option> <option value=\"network\">Networks</option></select></div><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Action</label> <select name=\"action\" class=\"input w-full\"><option value=\"prune\">Prune (remove unused)</option> <option value=\"remove\">Remove (force delete)</option></select></div></div><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Schedule (cron)</label> <select name=\"schedule\" class=\"input w-full\"><option value=\"0 3 * * *\">Daily at 3 AM</option> <option value=\"0 3 * * 0\">Weekly (Sunday 3 AM)</option> <option value=\"0 3 1 * *\">Monthly (1st at 3 AM)</option> <option value=\"0 */6 * * *\">Every 6 hours</option> <option value=\"0 */12 * * *\">Every 12 hours</option></select></div><!-- Conditions based on resource type --><div class=\"space-y-3\"><div x-show=\"resourceType === 'image'\" class=\"space-y-3\"><label class=\"flex items-center gap-2\"><input type=\"checkbox\" name=\"only_dangling\" value=\"on\" checked class=\"form-checkbox rounded bg-dark-700 border-dark-500\"> <span class=\"text-sm text-gray-300\">Only dangling (untagged) images</span></label></div><div x-show=\"resourceType === 'container'\" class=\"space-y-3\"><label class=\"flex items-center gap-2\"><input type=\"checkbox\" name=\"only_stopped\" value=\"on\" checked class=\"form-checkbox rounded bg-dark-700 border-dark-500\"> <span class=\"text-sm text-gray-300\">Only stopped containers</span></label></div><div x-show=\"resourceType === 'volume' || resourceType === 'network'\" class=\"space-y-3\"><label class=\"flex items-center gap-2\"><input type=\"checkbox\" name=\"only_unused\" value=\"on\" checked class=\"form-checkbox rounded bg-dark-700 border-dark-500\"> <span class=\"text-sm text-gray-300\">Only unused (no containers attached)</span></label></div></div><button type=\"button\" @click=\"showAdvanced = !showAdvanced\" class=\"text-sm text-primary-400 hover:text-primary-300\"><i aria-hidden=\"true\" class=\"fas fa-cog mr-1\"></i> <span x-text=\"showAdvanced ? 'Hide advanced' : 'Show advanced options'\"></span></button><div x-show=\"showAdvanced\" x-cloak class=\"space-y-3 border-t border-dark-600 pt-3\"><div class=\"grid grid-cols-2 gap-4\"><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Max Age (days)</label> <input type=\"number\" name=\"max_age_days\" value=\"0\" min=\"0\" class=\"input w-full\" placeholder=\"0 = no limit\" aria-label=\"0 = no limit\"></div><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Keep Latest N</label> <input type=\"number\" name=\"keep_latest\" value=\"0\" min=\"0\" class=\"input w-full\" placeholder=\"0 = no limit\" aria-label=\"0 = no limit\"></div></div><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Exclude Labels (comma-separated)</label> <input type=\"text\" name=\"exclude_labels\" class=\"input w-full\" placeholder=\"e.g., keep=true,protected\" aria-label=\"e.g., keep=true,protected\"></div><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Include Labels (comma-separated)</label> <input type=\"text\" name=\"include_labels\" class=\"input w-full\" placeholder=\"e.g., temp=true,disposable\" aria-label=\"e.g., temp=true,disposable\"></div></div><div class=\"flex justify-end gap-3 pt-4 border-t border-dark-600\"><button type=\"button\" onclick=\"document.getElementById('createPolicyModal').classList.add('hidden')\" class=\"btn-secondary\">Cancel</button> <button type=\"submit\" class=\"btn-primary\"><i aria-hidden=\"true\" class=\"fas fa-plus mr-2\"></i>Create Policy</button></div></form></div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

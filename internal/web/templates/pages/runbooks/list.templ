@@ -84,7 +84,7 @@ templ List(data RunbooksData) {
 								<div class="grid grid-cols-2 gap-4">
 									<div>
 										<label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Name</label>
-										<input type="text" name="name" required x-model="rb.name" placeholder="e.g., Restart Web Stack" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white sm:text-sm"/>
+										<input type="text" name="name" required x-model="rb.name" placeholder="e.g., Restart Web Stack" aria-label="e.g., Restart Web Stack" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white sm:text-sm"/>
 									</div>
 									<div>
 										<label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Category</label>
@@ -119,7 +119,7 @@ templ List(data RunbooksData) {
 												</div>
 												<div class="grid grid-cols-3 gap-2 mb-2">
 													<div>
-														<input type="text" x-model="step.name" placeholder="Step name" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:bg-gray-600 dark:border-gray-500 dark:text-white text-xs"/>
+														<input type="text" x-model="step.name" placeholder="Step name" aria-label="Step name" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:bg-gray-600 dark:border-gray-500 dark:text-white text-xs"/>
 													</div>
 													<div>
 														<select x-model="step.type" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:bg-gray-600 dark:border-gray-500 dark:text-white text-xs">
@@ -141,7 +141,7 @@ templ List(data RunbooksData) {
 												<!-- Docker Action config -->
 												<template x-if="step.type === 'command' || step.type === 'docker_exec'">
 													<div class="grid grid-cols-2 gap-2">
-														<input type="text" x-model="step.config.container_id" placeholder="Container ID" class="block w-full rounded-md border-gray-300 shadow-sm dark:bg-gray-600 dark:border-gray-500 dark:text-white text-xs"/>
+														<input type="text" x-model="step.config.container_id" placeholder="Container ID" aria-label="Container ID" class="block w-full rounded-md border-gray-300 shadow-sm dark:bg-gray-600 dark:border-gray-500 dark:text-white text-xs"/>
 														<select x-model="step.config.action" class="block w-full rounded-md border-gray-300 shadow-sm dark:bg-gray-600 dark:border-gray-500 dark:text-white text-xs">
 															<option value="restart">Restart</option>
 															<option value="start">Start</option>
@@ -159,15 +159,15 @@ templ List(data RunbooksData) {
 																<option value="PUT">PUT</option>
 																<option value="DELETE">DELETE</option>
 															</select>
-															<input type="text" x-model="step.config.url" placeholder="https://..." class="col-span-3 block w-full rounded-md border-gray-300 shadow-sm dark:bg-gray-600 dark:border-gray-500 dark:text-white text-xs font-mono"/>
+															<input type="text" x-model="step.config.url" placeholder="https://..." aria-label="https://..." class="col-span-3 block w-full rounded-md border-gray-300 shadow-sm dark:bg-gray-600 dark:border-gray-500 dark:text-white text-xs font-mono"/>
 														</div>
-														<input type="text" x-model="step.config.auth_header" placeholder="Authorization header (optional)" class="block w-full rounded-md border-gray-300 shadow-sm dark:bg-gray-600 dark:border-gray-500 dark:text-white text-xs"/>
+														<input type="text" x-model="step.config.auth_header" placeholder="Authorization header (optional)" aria-label="Authorization header (optional)" class="block w-full rounded-md border-gray-300 shadow-sm dark:bg-gray-600 dark:border-gray-500 dark:text-white text-xs"/>
 													</div>
 												</template>
 												<!-- Wait config -->
 												<template x-if="step.type === 'wait'">
 													<div>
-														<input type="number" x-model.number="step.timeout" min="1" max="60" placeholder="Seconds to wait" class="block w-full rounded-md border-gray-300 shadow-sm dark:bg-gray-600 dark:border-gray-500 dark:text-white text-xs"/>
+														<input type="number" x-model.number="step.timeout" min="1" max="60" placeholder="Seconds to wait" aria-label="Seconds to wait" class="block w-full rounded-md border-gray-300 shadow-sm dark:bg-gray-600 dark:border-gray-500 dark:text-white text-xs"/>
 													</div>
 												</template>
 												<!-- Condition config -->
@@ -182,7 +182,7 @@ templ List(data RunbooksData) {
 														</select>
 														<template x-if="step.config.condition_type === 'container_status'">
 															<div class="grid grid-cols-2 gap-2">
-																<input type="text" x-model="step.config.container_id" placeholder="Container ID" class="block w-full rounded-md border-gray-300 shadow-sm dark:bg-gray-600 dark:border-gray-500 dark:text-white text-xs"/>
+																<input type="text" x-model="step.config.container_id" placeholder="Container ID" aria-label="Container ID" class="block w-full rounded-md border-gray-300 shadow-sm dark:bg-gray-600 dark:border-gray-500 dark:text-white text-xs"/>
 																<select x-model="step.config.expected_status" class="block w-full rounded-md border-gray-300 shadow-sm dark:bg-gray-600 dark:border-gray-500 dark:text-white text-xs">
 																	<option value="running">Running</option>
 																	<option value="stopped">Stopped</option>
@@ -192,20 +192,20 @@ templ List(data RunbooksData) {
 														</template>
 														<template x-if="step.config.condition_type === 'http_health'">
 															<div class="grid grid-cols-2 gap-2">
-																<input type="text" x-model="step.config.url" placeholder="URL to check" class="block w-full rounded-md border-gray-300 shadow-sm dark:bg-gray-600 dark:border-gray-500 dark:text-white text-xs"/>
-																<input type="number" x-model.number="step.config.expected_status" placeholder="Expected status (e.g. 200)" class="block w-full rounded-md border-gray-300 shadow-sm dark:bg-gray-600 dark:border-gray-500 dark:text-white text-xs"/>
+																<input type="text" x-model="step.config.url" placeholder="URL to check" aria-label="URL to check" class="block w-full rounded-md border-gray-300 shadow-sm dark:bg-gray-600 dark:border-gray-500 dark:text-white text-xs"/>
+																<input type="number" x-model.number="step.config.expected_status" placeholder="Expected status (e.g. 200)" aria-label="Expected status (e.g. 200)" class="block w-full rounded-md border-gray-300 shadow-sm dark:bg-gray-600 dark:border-gray-500 dark:text-white text-xs"/>
 															</div>
 														</template>
 														<template x-if="step.config.condition_type === 'dns_resolve'">
 															<div class="grid grid-cols-2 gap-2">
-																<input type="text" x-model="step.config.hostname" placeholder="Hostname to resolve" class="block w-full rounded-md border-gray-300 shadow-sm dark:bg-gray-600 dark:border-gray-500 dark:text-white text-xs"/>
-																<input type="text" x-model="step.config.expected_ip" placeholder="Expected IP (optional)" class="block w-full rounded-md border-gray-300 shadow-sm dark:bg-gray-600 dark:border-gray-500 dark:text-white text-xs"/>
+																<input type="text" x-model="step.config.hostname" placeholder="Hostname to resolve" aria-label="Hostname to resolve" class="block w-full rounded-md border-gray-300 shadow-sm dark:bg-gray-600 dark:border-gray-500 dark:text-white text-xs"/>
+																<input type="text" x-model="step.config.expected_ip" placeholder="Expected IP (optional)" aria-label="Expected IP (optional)" class="block w-full rounded-md border-gray-300 shadow-sm dark:bg-gray-600 dark:border-gray-500 dark:text-white text-xs"/>
 															</div>
 														</template>
 														<template x-if="step.config.condition_type === 'metric_threshold'">
 															<div class="space-y-2">
 																<div class="grid grid-cols-2 gap-2">
-																	<input type="text" x-model="step.config.metric" placeholder="Metric name" class="block w-full rounded-md border-gray-300 shadow-sm dark:bg-gray-600 dark:border-gray-500 dark:text-white text-xs"/>
+																	<input type="text" x-model="step.config.metric" placeholder="Metric name" aria-label="Metric name" class="block w-full rounded-md border-gray-300 shadow-sm dark:bg-gray-600 dark:border-gray-500 dark:text-white text-xs"/>
 																	<select x-model="step.config.operator" class="block w-full rounded-md border-gray-300 shadow-sm dark:bg-gray-600 dark:border-gray-500 dark:text-white text-xs">
 																		<option value="gt">Greater than</option>
 																		<option value="gte">Greater than or equal</option>
@@ -215,8 +215,8 @@ templ List(data RunbooksData) {
 																	</select>
 																</div>
 																<div class="grid grid-cols-2 gap-2">
-																	<input type="number" x-model.number="step.config.threshold" placeholder="Threshold" class="block w-full rounded-md border-gray-300 shadow-sm dark:bg-gray-600 dark:border-gray-500 dark:text-white text-xs"/>
-																	<input type="number" x-model.number="step.config.value" placeholder="Current value" class="block w-full rounded-md border-gray-300 shadow-sm dark:bg-gray-600 dark:border-gray-500 dark:text-white text-xs"/>
+																	<input type="number" x-model.number="step.config.threshold" placeholder="Threshold" aria-label="Threshold" class="block w-full rounded-md border-gray-300 shadow-sm dark:bg-gray-600 dark:border-gray-500 dark:text-white text-xs"/>
+																	<input type="number" x-model.number="step.config.value" placeholder="Current value" aria-label="Current value" class="block w-full rounded-md border-gray-300 shadow-sm dark:bg-gray-600 dark:border-gray-500 dark:text-white text-xs"/>
 																</div>
 															</div>
 														</template>
@@ -225,8 +225,8 @@ templ List(data RunbooksData) {
 												<!-- Notify config -->
 												<template x-if="step.type === 'notify'">
 													<div class="grid grid-cols-2 gap-2">
-														<input type="text" x-model="step.config.channel" placeholder="Channel name" class="block w-full rounded-md border-gray-300 shadow-sm dark:bg-gray-600 dark:border-gray-500 dark:text-white text-xs"/>
-														<input type="text" x-model="step.config.message" placeholder="Message" class="block w-full rounded-md border-gray-300 shadow-sm dark:bg-gray-600 dark:border-gray-500 dark:text-white text-xs"/>
+														<input type="text" x-model="step.config.channel" placeholder="Channel name" aria-label="Channel name" class="block w-full rounded-md border-gray-300 shadow-sm dark:bg-gray-600 dark:border-gray-500 dark:text-white text-xs"/>
+														<input type="text" x-model="step.config.message" placeholder="Message" aria-label="Message" class="block w-full rounded-md border-gray-300 shadow-sm dark:bg-gray-600 dark:border-gray-500 dark:text-white text-xs"/>
 													</div>
 												</template>
 												<!-- Approval config -->
@@ -363,12 +363,12 @@ templ executionsTable(data RunbooksData) {
 			<table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
 				<thead class="bg-gray-50 dark:bg-gray-900">
 					<tr>
-						<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Runbook</th>
-						<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Status</th>
-						<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Trigger</th>
-						<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Duration</th>
-						<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Started</th>
-						<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Finished</th>
+						<th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Runbook</th>
+						<th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Status</th>
+						<th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Trigger</th>
+						<th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Duration</th>
+						<th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Started</th>
+						<th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Finished</th>
 					</tr>
 				</thead>
 				<tbody class="divide-y divide-gray-200 dark:divide-gray-700">

@@ -13,7 +13,7 @@ templ TargetDetail(data TargetDetailData) {
 			<div class="flex items-center justify-between">
 				<div>
 					<a href="/recon/targets" class="text-xs text-primary-400 hover:underline">
-						<i class="fas fa-chevron-left mr-1"></i>Back to targets
+						<i aria-hidden="true" class="fas fa-chevron-left mr-1"></i>Back to targets
 					</a>
 					<h1 class="text-2xl font-display font-bold text-white mt-1">{ data.Target.Value }</h1>
 					<p class="text-gray-400 mt-1">
@@ -28,7 +28,7 @@ templ TargetDetail(data TargetDetailData) {
 						hx-post={ "/recon/targets/" + data.Target.ID + "/scan" }
 						hx-confirm="Start a new scan against this target?"
 					>
-						<i class="fas fa-play mr-2"></i>Start Scan
+						<i aria-hidden="true" class="fas fa-play mr-2"></i>Start Scan
 					</button>
 				</div>
 			</div>
@@ -38,21 +38,21 @@ templ TargetDetail(data TargetDetailData) {
 				<h2 class="text-lg font-display font-semibold text-white mb-3">Ownership</h2>
 				if data.Target.OwnershipOK {
 					<p class="text-sm text-green-400">
-						<i class="fas fa-check-circle mr-1"></i>Ownership verified via { data.Target.OwnershipMethod }.
+						<i aria-hidden="true" class="fas fa-check-circle mr-1"></i>Ownership verified via { data.Target.OwnershipMethod }.
 					</p>
 				} else {
 					<p class="text-sm text-yellow-400 mb-3">
-						<i class="fas fa-exclamation-triangle mr-1"></i>Ownership must be verified before scans can run.
+						<i aria-hidden="true" class="fas fa-exclamation-triangle mr-1"></i>Ownership must be verified before scans can run.
 					</p>
 				}
 				if len(data.OwnershipProofs) > 0 {
 					<table class="w-full text-sm mt-3">
 						<thead class="text-xs uppercase tracking-wide text-gray-400">
 							<tr>
-								<th class="text-left py-2">Method</th>
-								<th class="text-left py-2">Status</th>
-								<th class="text-left py-2">Challenge</th>
-								<th class="text-left py-2">Verified</th>
+								<th scope="col" class="text-left py-2">Method</th>
+								<th scope="col" class="text-left py-2">Status</th>
+								<th scope="col" class="text-left py-2">Challenge</th>
+								<th scope="col" class="text-left py-2">Verified</th>
 							</tr>
 						</thead>
 						<tbody class="divide-y divide-dark-700">

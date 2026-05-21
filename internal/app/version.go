@@ -16,13 +16,28 @@ var (
 	BuildTime = "unknown"
 )
 
-// PrintVersion prints version information to stdout
-func PrintVersion() {
-	fmt.Printf("usulnet %s\n", Version)
-	fmt.Printf("  Commit:     %s\n", Commit)
-	fmt.Printf("  Built:      %s\n", BuildTime)
-	fmt.Printf("  Go version: %s\n", runtime.Version())
-	fmt.Printf("  OS/Arch:    %s/%s\n", runtime.GOOS, runtime.GOARCH)
+// PrintVersion prints version information to stdout. It returns an error so
+// callers using cobra.Command.RunE can propagate failures to the root error
+// handler; the current implementation writes to os.Stdout via fmt.Printf,
+// which never returns an error in practice, but the typed return future-proofs
+// the contract against a writer that does.
+func PrintVersion() error {
+	if _, err := fmt.Printf("usulnet %s\n", Version); err != nil {
+		return err
+	}
+	if _, err := fmt.Printf("  Commit:     %s\n", Commit); err != nil {
+		return err
+	}
+	if _, err := fmt.Printf("  Built:      %s\n", BuildTime); err != nil {
+		return err
+	}
+	if _, err := fmt.Printf("  Go version: %s\n", runtime.Version()); err != nil {
+		return err
+	}
+	if _, err := fmt.Printf("  OS/Arch:    %s/%s\n", runtime.GOOS, runtime.GOARCH); err != nil {
+		return err
+	}
+	return nil
 }
 
 // GetVersionInfo returns version information as a map

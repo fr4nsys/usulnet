@@ -95,7 +95,7 @@ func ImageDetail(data ImageDetailData) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"mb-6\"><div class=\"flex items-center gap-4\"><a href=\"/images\" class=\"text-gray-400 hover:text-white\"><i class=\"fas fa-arrow-left\"></i></a><div class=\"w-12 h-12 rounded-lg bg-purple-500/20 flex items-center justify-center\"><i class=\"fas fa-layer-group text-purple-400 text-xl\"></i></div><div><h1 class=\"text-2xl font-bold font-display text-white\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"mb-6\"><div class=\"flex items-center gap-4\"><a href=\"/images\" class=\"text-gray-400 hover:text-white\"><i aria-hidden=\"true\" class=\"fas fa-arrow-left\"></i></a><div class=\"w-12 h-12 rounded-lg bg-purple-500/20 flex items-center justify-center\"><i aria-hidden=\"true\" class=\"fas fa-layer-group text-purple-400 text-xl\"></i></div><div><h1 class=\"text-2xl font-bold font-display text-white\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -151,7 +151,7 @@ func ImageDetail(data ImageDetailData) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "\" hx-confirm=\"Are you sure you want to delete this image?\" class=\"px-4 py-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-lg\"><i class=\"fas fa-trash mr-2\"></i>Delete</button>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "\" hx-confirm=\"Are you sure you want to delete this image?\" class=\"px-4 py-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-lg\"><i aria-hidden=\"true\" class=\"fas fa-trash mr-2\"></i>Delete</button>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -224,7 +224,7 @@ func ImageDetail(data ImageDetailData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "\"><i class=\"fas fa-info-circle\"></i> <span>Overview</span></a> ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "\"><i aria-hidden=\"true\" class=\"fas fa-info-circle\"></i> <span>Overview</span></a> ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -259,7 +259,7 @@ func ImageDetail(data ImageDetailData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "\"><i class=\"fas fa-cog\"></i> <span>Config</span></a> ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "\"><i aria-hidden=\"true\" class=\"fas fa-cog\"></i> <span>Config</span></a> ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -294,7 +294,7 @@ func ImageDetail(data ImageDetailData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 20, "\"><i class=\"fas fa-history\"></i> <span>History</span></a> ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 20, "\"><i aria-hidden=\"true\" class=\"fas fa-history\"></i> <span>History</span></a> ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -329,7 +329,7 @@ func ImageDetail(data ImageDetailData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 23, "\"><i class=\"fas fa-tags\"></i> <span>Labels</span></a></nav></div><!-- Tab Content --> <div class=\"bg-dark-800 rounded-xl border border-dark-600 p-6\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 23, "\"><i aria-hidden=\"true\" class=\"fas fa-tags\"></i> <span>Labels</span></a></nav></div><!-- Tab Content --> <div class=\"card p-6\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

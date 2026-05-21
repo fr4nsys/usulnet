@@ -92,7 +92,7 @@ templ VulnManagement(data VulnMgmtData) {
 				<form method="POST" action="/vulnerabilities/scan">
 					<input type="hidden" name="csrf_token" value={ data.PageData.CSRFToken }/>
 					<button type="submit" class="btn-primary flex items-center gap-2">
-						<i class="fas fa-radar"></i>
+						<i aria-hidden="true" class="fas fa-radar"></i>
 						Scan All Containers
 					</button>
 				</form>
@@ -102,7 +102,7 @@ templ VulnManagement(data VulnMgmtData) {
 			if !data.TrivyAvailable {
 				<div class="card border-l-4 border-l-yellow-500 p-4">
 					<div class="flex items-center gap-3">
-						<i class="fas fa-exclamation-triangle text-yellow-400"></i>
+						<i aria-hidden="true" class="fas fa-exclamation-triangle text-yellow-400"></i>
 						<div>
 							<h3 class="text-sm font-medium text-yellow-400">CVE Scanner Unavailable</h3>
 							<p class="text-xs text-gray-400 mt-0.5">Trivy is not installed or not reachable. Install Trivy to enable full vulnerability management.</p>
@@ -115,7 +115,7 @@ templ VulnManagement(data VulnMgmtData) {
 			if !data.HasTrackedData && len(data.Vulnerabilities) > 0 {
 				<div class="card border-l-4 border-l-blue-500 p-4">
 					<div class="flex items-center gap-3">
-						<i class="fas fa-info-circle text-blue-400"></i>
+						<i aria-hidden="true" class="fas fa-info-circle text-blue-400"></i>
 						<div>
 							<h3 class="text-sm font-medium text-blue-400">Showing Security Scan Results</h3>
 							<p class="text-xs text-gray-400 mt-0.5">Click <strong>Scan All Containers</strong> to import CVEs into the tracking system with SLA deadlines and assignment.</p>
@@ -140,7 +140,7 @@ templ VulnManagement(data VulnMgmtData) {
 			if data.Stats.SLABreached > 0 {
 				<div class="card border-l-4 border-l-red-500 p-4">
 					<div class="flex items-center gap-3">
-						<i class="fas fa-exclamation-triangle text-red-400"></i>
+						<i aria-hidden="true" class="fas fa-exclamation-triangle text-red-400"></i>
 						<div>
 							<h3 class="text-sm font-medium text-red-400">SLA Violations</h3>
 							<p class="text-xs text-gray-400 mt-0.5">{ fmt.Sprintf("%d vulnerability(ies) have exceeded their remediation SLA deadline", data.Stats.SLABreached) }</p>
@@ -152,14 +152,14 @@ templ VulnManagement(data VulnMgmtData) {
 			<!-- Tabs -->
 			<div x-data={ fmt.Sprintf("{ tab: '%s' }", vulnActiveTab(data.ActiveTab)) } class="space-y-4">
 				<div class="flex gap-1 border-b border-dark-600">
-					<button @click="tab = 'vulnerabilities'" :class="tab === 'vulnerabilities' ? 'border-primary-500 text-white' : 'border-transparent text-gray-400 hover:text-gray-300'" class="px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors">
+					<button @click="tab = 'vulnerabilities'" :class="tab === 'vulnerabilities' ? 'border-primary-500 text-white' : 'border-transparent text-gray-400 hover:text-gray-300'" class="tab-underline">
 						Vulnerabilities ({ fmt.Sprintf("%d", len(data.Vulnerabilities)) })
 					</button>
-					<button @click="tab = 'containers'" :class="tab === 'containers' ? 'border-primary-500 text-white' : 'border-transparent text-gray-400 hover:text-gray-300'" class="px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors">
+					<button @click="tab = 'containers'" :class="tab === 'containers' ? 'border-primary-500 text-white' : 'border-transparent text-gray-400 hover:text-gray-300'" class="tab-underline">
 						Container Risk ({ fmt.Sprintf("%d", len(data.Containers)) })
 					</button>
 					if data.HasTrackedData {
-						<button @click="tab = 'dashboard'" :class="tab === 'dashboard' ? 'border-primary-500 text-white' : 'border-transparent text-gray-400 hover:text-gray-300'" class="px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors">
+						<button @click="tab = 'dashboard'" :class="tab === 'dashboard' ? 'border-primary-500 text-white' : 'border-transparent text-gray-400 hover:text-gray-300'" class="tab-underline">
 							Dashboard
 						</button>
 					}
@@ -169,7 +169,7 @@ templ VulnManagement(data VulnMgmtData) {
 				<div x-show="tab === 'vulnerabilities'" x-cloak>
 					if len(data.Vulnerabilities) == 0 {
 						<div class="card p-12 text-center">
-							<i class="fas fa-shield-alt text-4xl text-green-600 mb-4"></i>
+							<i aria-hidden="true" class="fas fa-shield-alt text-4xl text-green-600 mb-4"></i>
 							<h3 class="text-lg font-medium text-white mb-2">No Vulnerabilities Found</h3>
 							<p class="text-gray-400">Run a scan to check for container vulnerabilities</p>
 						</div>
@@ -186,7 +186,7 @@ templ VulnManagement(data VulnMgmtData) {
 				<div x-show="tab === 'containers'" x-cloak>
 					if len(data.Containers) == 0 {
 						<div class="card p-12 text-center">
-							<i class="fas fa-box text-4xl text-gray-400 mb-4"></i>
+							<i aria-hidden="true" class="fas fa-box text-4xl text-gray-400 mb-4"></i>
 							<h3 class="text-lg font-medium text-white mb-2">No Container Data</h3>
 							<p class="text-gray-400">Run a vulnerability scan to assess container risk</p>
 						</div>
@@ -195,15 +195,15 @@ templ VulnManagement(data VulnMgmtData) {
 							<table class="w-full">
 								<thead>
 									<tr class="border-b border-dark-600">
-										<th class="text-left text-xs font-medium text-gray-400 uppercase px-4 py-3">Container</th>
-										<th class="text-left text-xs font-medium text-gray-400 uppercase px-4 py-3">Image</th>
-										<th class="text-center text-xs font-medium text-gray-400 uppercase px-4 py-3">Critical</th>
-										<th class="text-center text-xs font-medium text-gray-400 uppercase px-4 py-3">High</th>
-										<th class="text-center text-xs font-medium text-gray-400 uppercase px-4 py-3">Medium</th>
-										<th class="text-center text-xs font-medium text-gray-400 uppercase px-4 py-3">Low</th>
-										<th class="text-center text-xs font-medium text-gray-400 uppercase px-4 py-3">Total</th>
-										<th class="text-left text-xs font-medium text-gray-400 uppercase px-4 py-3">Risk</th>
-										<th class="text-left text-xs font-medium text-gray-400 uppercase px-4 py-3">Last Scan</th>
+										<th scope="col" class="text-left text-xs font-medium text-gray-400 uppercase px-4 py-3">Container</th>
+										<th scope="col" class="text-left text-xs font-medium text-gray-400 uppercase px-4 py-3">Image</th>
+										<th scope="col" class="text-center text-xs font-medium text-gray-400 uppercase px-4 py-3">Critical</th>
+										<th scope="col" class="text-center text-xs font-medium text-gray-400 uppercase px-4 py-3">High</th>
+										<th scope="col" class="text-center text-xs font-medium text-gray-400 uppercase px-4 py-3">Medium</th>
+										<th scope="col" class="text-center text-xs font-medium text-gray-400 uppercase px-4 py-3">Low</th>
+										<th scope="col" class="text-center text-xs font-medium text-gray-400 uppercase px-4 py-3">Total</th>
+										<th scope="col" class="text-left text-xs font-medium text-gray-400 uppercase px-4 py-3">Risk</th>
+										<th scope="col" class="text-left text-xs font-medium text-gray-400 uppercase px-4 py-3">Last Scan</th>
 									</tr>
 								</thead>
 								<tbody class="divide-y divide-dark-700">
@@ -335,10 +335,10 @@ templ VulnManagement(data VulnMgmtData) {
 									<table class="w-full text-xs">
 										<thead>
 											<tr class="border-b border-dark-600">
-												<th class="text-left text-gray-400 px-2 py-1">Week</th>
-												<th class="text-right text-gray-400 px-2 py-1">Opened</th>
-												<th class="text-right text-gray-400 px-2 py-1">Resolved</th>
-												<th class="text-left text-gray-400 px-4 py-1">Ratio</th>
+												<th scope="col" class="text-left text-gray-400 px-2 py-1">Week</th>
+												<th scope="col" class="text-right text-gray-400 px-2 py-1">Opened</th>
+												<th scope="col" class="text-right text-gray-400 px-2 py-1">Resolved</th>
+												<th scope="col" class="text-left text-gray-400 px-4 py-1">Ratio</th>
 											</tr>
 										</thead>
 										<tbody class="divide-y divide-dark-700">
@@ -398,7 +398,7 @@ templ vulnCard(v VulnerabilityView, csrfToken string, tracked bool, users []Vuln
 						@vulnPriority(v.Priority)
 						@vulnStatusBadge(v.Status)
 						if v.SLABreached {
-							<span class="px-2 py-0.5 text-xs bg-red-500/20 text-red-400 rounded flex items-center gap-1"><i class="fas fa-clock text-[10px]"></i>SLA Breached</span>
+							<span class="px-2 py-0.5 text-xs bg-red-500/20 text-red-400 rounded flex items-center gap-1"><i aria-hidden="true" class="fas fa-clock text-[10px]"></i>SLA Breached</span>
 						}
 					</div>
 					<h3 class="font-medium text-white mt-1">{ v.Title }</h3>
@@ -407,23 +407,23 @@ templ vulnCard(v VulnerabilityView, csrfToken string, tracked bool, users []Vuln
 					}
 					<div class="flex items-center gap-4 mt-2 text-xs text-gray-500 flex-wrap">
 						if v.Package != "" {
-							<span><i class="fas fa-cube mr-1"></i>{ v.Package }: { v.InstalledVer }</span>
+							<span><i aria-hidden="true" class="fas fa-cube mr-1"></i>{ v.Package }: { v.InstalledVer }</span>
 						}
 						if v.FixedVer != "" {
-							<span class="text-green-400"><i class="fas fa-arrow-up mr-1"></i>Fix: { v.FixedVer }</span>
+							<span class="text-green-400"><i aria-hidden="true" class="fas fa-arrow-up mr-1"></i>Fix: { v.FixedVer }</span>
 						}
-						<span><i class="fas fa-box mr-1"></i>{ fmt.Sprintf("%d container(s)", v.ContainerCount) }</span>
+						<span><i aria-hidden="true" class="fas fa-box mr-1"></i>{ fmt.Sprintf("%d container(s)", v.ContainerCount) }</span>
 						if v.SLADeadline != "" {
-							<span><i class="fas fa-calendar mr-1"></i>SLA: { v.SLADeadline }</span>
+							<span><i aria-hidden="true" class="fas fa-calendar mr-1"></i>SLA: { v.SLADeadline }</span>
 						}
 						if v.Assignee != "" {
-							<span class="text-primary-400"><i class="fas fa-user mr-1"></i>{ v.Assignee }</span>
+							<span class="text-primary-400"><i aria-hidden="true" class="fas fa-user mr-1"></i>{ v.Assignee }</span>
 						} else if tracked {
-							<button @click="showAssign = !showAssign" class="text-gray-500 hover:text-primary-400 transition-colors"><i class="fas fa-user-plus mr-1"></i>Assign</button>
+							<button @click="showAssign = !showAssign" class="text-gray-500 hover:text-primary-400 transition-colors"><i aria-hidden="true" class="fas fa-user-plus mr-1"></i>Assign</button>
 						}
-						<span><i class="fas fa-clock mr-1"></i>{ v.DetectedAt }</span>
+						<span><i aria-hidden="true" class="fas fa-clock mr-1"></i>{ v.DetectedAt }</span>
 						if v.ResolvedAt != "" {
-							<span class="text-green-400"><i class="fas fa-check mr-1"></i>{ v.ResolvedAt }</span>
+							<span class="text-green-400"><i aria-hidden="true" class="fas fa-check mr-1"></i>{ v.ResolvedAt }</span>
 						}
 					</div>
 					<!-- Resolution notes (if resolved) -->
@@ -439,23 +439,23 @@ templ vulnCard(v VulnerabilityView, csrfToken string, tracked bool, users []Vuln
 					<form method="POST" action={ templ.SafeURL("/vulnerabilities/" + v.ID + "/acknowledge") }>
 						<input type="hidden" name="csrf_token" value={ csrfToken }/>
 						<button type="submit" class="p-2 text-gray-400 hover:text-yellow-400 transition-colors" title="Start working">
-							<i class="fas fa-play"></i>
+							<i aria-hidden="true" class="fas fa-play"></i>
 						</button>
 					</form>
 				}
 				if tracked && v.Status != "resolved" && v.Status != "accepted_risk" {
 					<button @click="showResolve = !showResolve" class="p-2 text-gray-400 hover:text-green-400 transition-colors" title="Resolve with evidence">
-						<i class="fas fa-check-double"></i>
+						<i aria-hidden="true" class="fas fa-check-double"></i>
 					</button>
 					<form method="POST" action={ templ.SafeURL("/vulnerabilities/" + v.ID + "/accept") }>
 						<input type="hidden" name="csrf_token" value={ csrfToken }/>
 						<button type="submit" class="p-2 text-gray-400 hover:text-blue-400 transition-colors" title="Accept risk">
-							<i class="fas fa-thumbs-up"></i>
+							<i aria-hidden="true" class="fas fa-thumbs-up"></i>
 						</button>
 					</form>
 					if len(users) > 0 {
 						<button @click="showAssign = !showAssign" class="p-2 text-gray-400 hover:text-primary-400 transition-colors" title="Assign">
-							<i class="fas fa-user-tag"></i>
+							<i aria-hidden="true" class="fas fa-user-tag"></i>
 						</button>
 					}
 				}

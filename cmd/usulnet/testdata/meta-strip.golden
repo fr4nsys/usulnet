@@ -1,15 +1,30 @@
-Write a cleaned copy of the file (default: <path>.stripped)
+Strip metadata using mat2 / exiftool.
+
+The cleaned copy is written to <path>.stripped unless --output-file
+is given. Runs in server mode if --server / $USULNET_API_URL is
+set, otherwise against the local Docker daemon.
+
+A short summary line ("stripped: <input> -> <output> (<bytes>)") is
+printed on success.
 
 Usage:
   usulnet meta strip <path> [flags]
 
+Examples:
+  usulnet meta strip photo.jpg
+  usulnet meta strip photo.jpg -o cleaned.jpg
+  usulnet meta strip doc.pdf --server https://usulnet.local
+
 Flags:
-  -h, --help            help for strip
-  -o, --output string   output path for cleaned file (default <input>.stripped)
+  -h, --help                 help for strip
+  -o, --output-file string   output path for cleaned file (default <input>.stripped)
 
 Global Flags:
   -c, --config string    config file path (default: /etc/usulnet/config.yaml or ./config.yaml)
       --image string     toolkit image (local mode only; default $USULNET_RECON_TOOLKIT_IMAGE)
+      --json             shortcut for --output json (overrides --output)
+      --output string    output format: table|json|yaml (default "table")
+  -q, --quiet            suppress informational output (errors and primary data still print)
       --server string    usulnet API URL (forces server mode; default $USULNET_API_URL)
       --timeout string   container timeout (e.g. 30s)
       --token string     API token (default $USULNET_API_TOKEN)

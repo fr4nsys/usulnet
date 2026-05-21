@@ -107,7 +107,7 @@ func ImagesList(data ImagesListData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, " total)</p></div><div class=\"flex items-center gap-3\"><a href=\"/images/pull\" class=\"px-4 py-2 bg-dark-700 hover:bg-dark-600 text-gray-300 rounded-lg transition-colors\"><i class=\"fas fa-download mr-2\"></i> Pull Image</a> <button hx-post=\"/images/prune\" hx-confirm=\"Remove all unused images? This cannot be undone.\" hx-swap=\"none\" class=\"px-4 py-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-lg transition-colors\"><i class=\"fas fa-broom mr-2\"></i> Prune</button></div></div><!-- Filters --> <div class=\"bg-dark-800 rounded-xl border border-dark-600 p-4 mb-6\"><div class=\"flex flex-col md:flex-row gap-4\"><!-- Search --><div class=\"flex-1\"><div class=\"relative\"><input type=\"search\" name=\"search\" placeholder=\"Search images...\" value=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, " total)</p></div><div class=\"flex items-center gap-3\"><a href=\"/images/pull\" class=\"px-4 py-2 bg-dark-700 hover:bg-dark-600 text-gray-300 rounded-lg transition-colors\"><i aria-hidden=\"true\" class=\"fas fa-download mr-2\"></i> Pull Image</a> <button hx-post=\"/images/prune\" hx-confirm=\"Remove all unused images? This cannot be undone.\" hx-swap=\"none\" class=\"px-4 py-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-lg transition-colors\"><i aria-hidden=\"true\" class=\"fas fa-broom mr-2\"></i> Prune</button></div></div><!-- Filters --> <div class=\"card p-4 mb-6\"><div class=\"flex flex-col md:flex-row gap-4\"><!-- Search --><div class=\"flex-1\"><div class=\"relative\"><input type=\"search\" name=\"search\" placeholder=\"Search images...\" value=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -120,7 +120,7 @@ func ImagesList(data ImagesListData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "\" class=\"w-full pl-10 pr-4 py-2 bg-dark-700 border border-dark-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500/50\" hx-get=\"/images\" hx-trigger=\"keyup changed delay:300ms\" hx-target=\"#image-table\" hx-select=\"#image-table\" hx-push-url=\"true\"> <i class=\"fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-500\"></i></div></div><!-- In Use Filter --><div class=\"w-full md:w-40\"><select name=\"in_use\" class=\"w-full px-4 py-2 bg-dark-700 border border-dark-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-primary-500/50 appearance-none\" hx-get=\"/images\" hx-trigger=\"change\" hx-target=\"#image-table\" hx-select=\"#image-table\" hx-push-url=\"true\"><option value=\"\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "\" class=\"w-full pl-10 pr-4 py-2 bg-dark-700 border border-dark-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500/50\" hx-get=\"/images\" hx-trigger=\"keyup changed delay:300ms\" hx-target=\"#image-table\" hx-select=\"#image-table\" hx-push-url=\"true\" aria-label=\"Search images...\"> <i aria-hidden=\"true\" class=\"fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-500\"></i></div></div><!-- In Use Filter --><div class=\"w-full md:w-40\"><select name=\"in_use\" class=\"w-full px-4 py-2 bg-dark-700 border border-dark-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-primary-500/50 appearance-none\" hx-get=\"/images\" hx-trigger=\"change\" hx-target=\"#image-table\" hx-select=\"#image-table\" hx-push-url=\"true\"><option value=\"\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -180,7 +180,7 @@ func ImagesList(data ImagesListData) templ.Component {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, ">Tagged</option></select></div></div></div><!-- Images Table --> <div id=\"image-table\" class=\"bg-dark-800 rounded-xl border border-dark-600 overflow-hidden\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, ">Tagged</option></select></div></div></div><!-- Images Table --> <div id=\"image-table\" class=\"card overflow-hidden\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -345,14 +345,14 @@ func imageRow(img Image) templ.Component {
 			templ_7745c5c3_Var8 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 24, "<tr class=\"hover:bg-dark-700/50 transition-colors group\"><td class=\"px-4 py-3\"><div class=\"flex items-center gap-3\"><div class=\"w-10 h-10 rounded-lg bg-blue-500/20 flex items-center justify-center flex-shrink-0\"><i class=\"fas fa-layer-group text-blue-400\"></i></div><div><a href=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 24, "<tr class=\"hover:bg-dark-700/50 transition-colors group\"><td class=\"px-4 py-3\"><div class=\"flex items-center gap-3\"><div class=\"w-10 h-10 rounded-lg bg-blue-500/20 flex items-center justify-center flex-shrink-0\"><i aria-hidden=\"true\" class=\"fas fa-layer-group text-blue-400\"></i></div><div><a href=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var9 templ.SafeURL
 		templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinURLErrs(templ.SafeURL("/images/" + img.ID))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/images/list.templ`, Line: 176, Col: 49}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/images/list.templ`, Line: 177, Col: 49}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 		if templ_7745c5c3_Err != nil {
@@ -365,7 +365,7 @@ func imageRow(img Image) templ.Component {
 		var templ_7745c5c3_Var10 string
 		templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(img.PrimaryTag)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/images/list.templ`, Line: 177, Col: 22}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/images/list.templ`, Line: 178, Col: 22}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 		if templ_7745c5c3_Err != nil {
@@ -378,7 +378,7 @@ func imageRow(img Image) templ.Component {
 		var templ_7745c5c3_Var11 string
 		templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(img.ShortID)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/images/list.templ`, Line: 179, Col: 61}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/images/list.templ`, Line: 180, Col: 61}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 		if templ_7745c5c3_Err != nil {
@@ -397,7 +397,7 @@ func imageRow(img Image) templ.Component {
 				var templ_7745c5c3_Var12 string
 				templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(tag)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/images/list.templ`, Line: 188, Col: 12}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/images/list.templ`, Line: 189, Col: 12}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
 				if templ_7745c5c3_Err != nil {
@@ -417,7 +417,7 @@ func imageRow(img Image) templ.Component {
 			var templ_7745c5c3_Var13 string
 			templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", len(img.Tags)-3))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/images/list.templ`, Line: 194, Col: 43}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/images/list.templ`, Line: 195, Col: 43}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
 			if templ_7745c5c3_Err != nil {
@@ -441,7 +441,7 @@ func imageRow(img Image) templ.Component {
 		var templ_7745c5c3_Var14 string
 		templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.JoinStringErrs(img.SizeHuman)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/images/list.templ`, Line: 203, Col: 18}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/images/list.templ`, Line: 204, Col: 18}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var14))
 		if templ_7745c5c3_Err != nil {
@@ -454,7 +454,7 @@ func imageRow(img Image) templ.Component {
 		var templ_7745c5c3_Var15 string
 		templ_7745c5c3_Var15, templ_7745c5c3_Err = templ.JoinStringErrs(img.CreatedAgo)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/images/list.templ`, Line: 206, Col: 19}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/images/list.templ`, Line: 207, Col: 19}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var15))
 		if templ_7745c5c3_Err != nil {
@@ -472,7 +472,7 @@ func imageRow(img Image) templ.Component {
 			var templ_7745c5c3_Var16 string
 			templ_7745c5c3_Var16, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", img.Containers))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/images/list.templ`, Line: 212, Col: 40}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/images/list.templ`, Line: 213, Col: 40}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var16))
 			if templ_7745c5c3_Err != nil {
@@ -495,13 +495,13 @@ func imageRow(img Image) templ.Component {
 		var templ_7745c5c3_Var17 templ.SafeURL
 		templ_7745c5c3_Var17, templ_7745c5c3_Err = templ.JoinURLErrs(templ.SafeURL("/images/" + img.ID))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/images/list.templ`, Line: 221, Col: 46}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/images/list.templ`, Line: 222, Col: 46}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var17))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 40, "\" class=\"p-2 text-gray-400 hover:text-primary-400 hover:bg-primary-500/10 rounded-lg transition-colors\" title=\"Details\"><i class=\"fas fa-info-circle text-sm\"></i></a> ")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 40, "\" class=\"p-2 text-gray-400 hover:text-primary-400 hover:bg-primary-500/10 rounded-lg transition-colors\" title=\"Details\"><i aria-hidden=\"true\" class=\"fas fa-info-circle text-sm\"></i></a> ")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -513,13 +513,13 @@ func imageRow(img Image) templ.Component {
 			var templ_7745c5c3_Var18 string
 			templ_7745c5c3_Var18, templ_7745c5c3_Err = templ.JoinStringErrs("/images/" + img.ID + "/remove")
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/images/list.templ`, Line: 229, Col: 47}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/images/list.templ`, Line: 230, Col: 47}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var18))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 42, "\" hx-confirm=\"Remove this image?\" hx-swap=\"none\" class=\"p-2 text-gray-400 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors\" title=\"Remove\"><i class=\"fas fa-trash text-sm\"></i></button>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 42, "\" hx-confirm=\"Remove this image?\" hx-swap=\"none\" class=\"p-2 text-gray-400 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors\" title=\"Remove\"><i aria-hidden=\"true\" class=\"fas fa-trash text-sm\"></i></button>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

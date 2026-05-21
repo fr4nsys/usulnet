@@ -38,7 +38,7 @@ templ Form(data FormData) {
 
 			if data.Error != "" {
 				<div class="rounded-md bg-red-500/10 border border-red-500/30 px-4 py-3 text-red-300 text-sm">
-					<i class="fas fa-exclamation-circle mr-2"></i>{ data.Error }
+					<i aria-hidden="true" class="fas fa-exclamation-circle mr-2"></i>{ data.Error }
 				</div>
 			}
 
@@ -89,11 +89,11 @@ templ Form(data FormData) {
 				<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 					<div>
 						<label class="block text-sm font-medium text-gray-200 mb-1">Location</label>
-						<input type="text" name="location" value={ data.Location } maxlength="255" class="input w-full" placeholder="optional"/>
+						<input type="text" name="location" value={ data.Location } maxlength="255" class="input w-full" placeholder="optional" aria-label="optional"/>
 					</div>
 					<div>
 						<label class="block text-sm font-medium text-gray-200 mb-1">URL</label>
-						<input type="url" name="url" value={ data.URL } maxlength="2048" class="input w-full" placeholder="https://..."/>
+						<input type="url" name="url" value={ data.URL } maxlength="2048" class="input w-full" placeholder="https://..." aria-label="https://..."/>
 					</div>
 				</div>
 

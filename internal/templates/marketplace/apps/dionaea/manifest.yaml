@@ -1,0 +1,72 @@
+slug: dionaea
+name: Dionaea
+description: Low-interaction multi-protocol honeypot that captures malware samples dropped on FTP, SMB, MSSQL, and MySQL.
+long_description: |
+  Dionaea is a multi-protocol low-interaction honeypot maintained by
+  the Honeynet Project. It emulates FTP, HTTP, SMB, MSSQL, MySQL,
+  TFTP, and a few others well enough to convince automated attackers
+  to upload their payload. The dropped binaries are written to a
+  per-host volume and the protocol traffic is captured to logs that
+  downstream SIEMs can replay.
+
+  Image: docker.io/dinotools/dionaea (GPL-2.0-or-later). The image
+  is community-maintained — pin and audit before exposing publicly.
+  As with any honeypot, only the honeypot ports should be reachable
+  from untrusted networks; the operator-facing volume mount is for
+  intel collection and must NOT be public.
+category: security
+icon: fa-bug
+icon_color: "#a93226"
+version: "0.11.0"
+manifest_version: 1
+website: https://github.com/DinoTools/dionaea
+source: https://github.com/DinoTools/dionaea
+author: usulnet contributors
+license: GPL-2.0-or-later
+tags:
+  - honeypot
+  - malware-collection
+  - ftp
+  - smb
+  - threat-intel
+min_memory_mb: 256
+min_cpu_cores: 0.25
+is_official: true
+is_verified: false
+featured: false
+fields:
+  - key: FTP_PORT
+    label: FTP honeypot port
+    description: Host port for the fake FTP service.
+    type: text
+    default: "21"
+    required: true
+    placeholder: "21"
+  - key: HTTP_PORT
+    label: HTTP honeypot port
+    description: Host port for the fake HTTP service.
+    type: text
+    default: "8080"
+    required: true
+    placeholder: "8080"
+  - key: SMB_PORT
+    label: SMB honeypot port
+    description: Host port for the fake SMB service (445 canonical).
+    type: text
+    default: "445"
+    required: true
+    placeholder: "445"
+  - key: MSSQL_PORT
+    label: MSSQL honeypot port
+    description: Host port for the fake Microsoft SQL Server service.
+    type: text
+    default: "1433"
+    required: true
+    placeholder: "1433"
+  - key: MYSQL_PORT
+    label: MySQL honeypot port
+    description: Host port for the fake MySQL service.
+    type: text
+    default: "3306"
+    required: true
+    placeholder: "3306"

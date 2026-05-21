@@ -91,7 +91,7 @@ func List(data UsersData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</p></div><a href=\"/users/new\" class=\"btn-primary\"><i class=\"fas fa-plus mr-2\"></i>New User</a></div><!-- Stats Cards --><div class=\"grid grid-cols-2 md:grid-cols-4 gap-4\"><div class=\"card p-4\"><div class=\"text-2xl font-bold text-white\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</p></div><a href=\"/users/new\" class=\"btn-primary\"><i aria-hidden=\"true\" class=\"fas fa-plus mr-2\"></i>New User</a></div><!-- Stats Cards --><div class=\"grid grid-cols-2 md:grid-cols-4 gap-4\"><div class=\"card p-4\"><div class=\"text-2xl font-bold text-white\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -237,7 +237,7 @@ func List(data UsersData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "\">LDAP</a></div><!-- Users Table --><div class=\"card\"><div class=\"overflow-x-auto\"><table class=\"table\"><thead><tr><th>User</th><th>Source</th><th>Role</th><th>Status</th><th>Last Login</th><th>Created</th><th>Actions</th></tr></thead> <tbody>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "\">LDAP</a></div><!-- Users Table --><div class=\"card\"><div class=\"overflow-x-auto\"><table class=\"table\"><thead><tr><th scope=\"col\">User</th><th scope=\"col\">Source</th><th scope=\"col\">Role</th><th scope=\"col\">Status</th><th scope=\"col\">Last Login</th><th scope=\"col\">Created</th><th scope=\"col\">Actions</th></tr></thead> <tbody>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -355,12 +355,12 @@ func List(data UsersData) templ.Component {
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 28, "\"><i class=\"fas fa-sitemap mr-1 text-xs\"></i>LDAP</span>")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 28, "\"><i aria-hidden=\"true\" class=\"fas fa-sitemap mr-1 text-xs\"></i>LDAP</span>")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
 				} else {
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 29, "<span class=\"badge bg-gray-500/20 text-gray-400\"><i class=\"fas fa-key mr-1 text-xs\"></i>Local</span>")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 29, "<span class=\"badge bg-gray-500/20 text-gray-400\"><i aria-hidden=\"true\" class=\"fas fa-key mr-1 text-xs\"></i>Local</span>")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
@@ -405,7 +405,7 @@ func List(data UsersData) templ.Component {
 					return templ_7745c5c3_Err
 				}
 				if user.IsLocked {
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 34, "<span class=\"badge bg-red-500/20 text-red-400 border border-red-500/30\"><i class=\"fas fa-lock mr-1 text-xs\"></i>Locked</span>")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 34, "<span class=\"badge bg-red-500/20 text-red-400 border border-red-500/30\"><i aria-hidden=\"true\" class=\"fas fa-lock mr-1 text-xs\"></i>Locked</span>")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
@@ -616,7 +616,7 @@ func New(data UserNewData) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 52, "<div class=\"max-w-lg mx-auto space-y-6\"><div class=\"flex items-center gap-4\"><a href=\"/users\" class=\"p-2 text-gray-400 hover:text-white hover:bg-dark-700 rounded-lg\"><i class=\"fas fa-arrow-left\"></i></a><h1 class=\"text-2xl font-display font-bold text-white\">New User</h1></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 52, "<div class=\"max-w-lg mx-auto space-y-6\"><div class=\"flex items-center gap-4\"><a href=\"/users\" class=\"p-2 text-gray-400 hover:text-white hover:bg-dark-700 rounded-lg\"><i aria-hidden=\"true\" class=\"fas fa-arrow-left\"></i></a><h1 class=\"text-2xl font-display font-bold text-white\">New User</h1></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -652,7 +652,7 @@ func New(data UserNewData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 56, "\"><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Username</label> <input type=\"text\" name=\"username\" required minlength=\"3\" maxlength=\"50\" class=\"input\" placeholder=\"e.g. jsmith\"></div><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Email</label> <input type=\"email\" name=\"email\" class=\"input\" placeholder=\"Optional\"></div><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Password</label> <input type=\"password\" name=\"password\" required minlength=\"8\" class=\"input\"><p class=\"text-xs text-gray-500 mt-1\">Minimum 8 characters</p></div><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Role</label> <select name=\"role\" class=\"input\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 56, "\"><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Username</label> <input type=\"text\" name=\"username\" required minlength=\"3\" maxlength=\"50\" class=\"input\" placeholder=\"e.g. jsmith\" aria-label=\"e.g. jsmith\"></div><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Email</label> <input type=\"email\" name=\"email\" class=\"input\" placeholder=\"Optional\" aria-label=\"Optional\"></div><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Password</label> <input type=\"password\" name=\"password\" required minlength=\"8\" class=\"input\"><p class=\"text-xs text-gray-500 mt-1\">Minimum 8 characters</p></div><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Role</label> <select name=\"role\" class=\"input\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -761,7 +761,7 @@ func Edit(data UserEditData) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 63, "<div class=\"max-w-lg mx-auto space-y-6\"><div class=\"flex items-center gap-4\"><a href=\"/users\" class=\"p-2 text-gray-400 hover:text-white hover:bg-dark-700 rounded-lg\"><i class=\"fas fa-arrow-left\"></i></a><div><h1 class=\"text-2xl font-display font-bold text-white\">Edit User</h1><p class=\"text-gray-400 text-sm\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 63, "<div class=\"max-w-lg mx-auto space-y-6\"><div class=\"flex items-center gap-4\"><a href=\"/users\" class=\"p-2 text-gray-400 hover:text-white hover:bg-dark-700 rounded-lg\"><i aria-hidden=\"true\" class=\"fas fa-arrow-left\"></i></a><div><h1 class=\"text-2xl font-display font-bold text-white\">Edit User</h1><p class=\"text-gray-400 text-sm\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -895,7 +895,7 @@ func Edit(data UserEditData) templ.Component {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 77, "</select></div><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">New Password</label> <input type=\"password\" name=\"password\" minlength=\"8\" class=\"input\" placeholder=\"Leave blank to keep current\"></div><div class=\"flex justify-end gap-3 pt-4\"><a href=\"/users\" class=\"btn-secondary\">Cancel</a> <button type=\"submit\" class=\"btn-primary\">Save Changes</button></div></form></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 77, "</select></div><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">New Password</label> <input type=\"password\" name=\"password\" minlength=\"8\" class=\"input\" placeholder=\"Leave blank to keep current\" aria-label=\"Leave blank to keep current\"></div><div class=\"flex justify-end gap-3 pt-4\"><a href=\"/users\" class=\"btn-secondary\">Cancel</a> <button type=\"submit\" class=\"btn-primary\">Save Changes</button></div></form></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

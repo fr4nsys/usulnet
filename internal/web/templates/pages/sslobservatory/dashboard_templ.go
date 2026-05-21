@@ -78,7 +78,7 @@ func Dashboard(data DashboardData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "\"> <button type=\"submit\" class=\"btn btn-warning\" onclick=\"return confirm('Scan all enabled targets?')\"><i class=\"fas fa-sync-alt mr-2\"></i>Scan All</button></form><a href=\"/ssl/targets/new\" class=\"btn-primary\"><i class=\"fas fa-plus mr-2\"></i>Add Target</a></div></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "\"> <button type=\"submit\" class=\"btn btn-warning\" onclick=\"return confirm('Scan all enabled targets?')\"><i aria-hidden=\"true\" class=\"fas fa-sync-alt mr-2\"></i>Scan All</button></form><a href=\"/ssl/targets/new\" class=\"btn-primary\"><i aria-hidden=\"true\" class=\"fas fa-plus mr-2\"></i>Add Target</a></div></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -99,7 +99,7 @@ func Dashboard(data DashboardData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</p></div><div class=\"text-primary-400\"><i class=\"fas fa-crosshairs text-2xl\"></i></div></div></div><div class=\"card p-4\"><div class=\"flex items-center justify-between\"><div><p class=\"text-sm text-gray-400\">Expiring Soon</p><p class=\"text-2xl font-bold text-yellow-400\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</p></div><div class=\"text-primary-400\"><i aria-hidden=\"true\" class=\"fas fa-crosshairs text-2xl\"></i></div></div></div><div class=\"card p-4\"><div class=\"flex items-center justify-between\"><div><p class=\"text-sm text-gray-400\">Expiring Soon</p><p class=\"text-2xl font-bold text-yellow-400\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -112,7 +112,7 @@ func Dashboard(data DashboardData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "</p></div><div class=\"text-yellow-400\"><i class=\"fas fa-exclamation-triangle text-2xl\"></i></div></div></div><div class=\"card p-4\"><div class=\"flex items-center justify-between\"><div><p class=\"text-sm text-gray-400\">Grade Distribution</p><div class=\"flex items-center gap-1 mt-1\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "</p></div><div class=\"text-yellow-400\"><i aria-hidden=\"true\" class=\"fas fa-exclamation-triangle text-2xl\"></i></div></div></div><div class=\"card p-4\"><div class=\"flex items-center justify-between\"><div><p class=\"text-sm text-gray-400\">Grade Distribution</p><div class=\"flex items-center gap-1 mt-1\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -147,7 +147,7 @@ func Dashboard(data DashboardData) templ.Component {
 					}
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "</div></div><div class=\"text-green-400\"><i class=\"fas fa-chart-bar text-2xl\"></i></div></div></div></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "</div></div><div class=\"text-green-400\"><i aria-hidden=\"true\" class=\"fas fa-chart-bar text-2xl\"></i></div></div></div></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -175,7 +175,7 @@ func Dashboard(data DashboardData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			if len(data.ExpiringSoon) > 0 {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "<div class=\"card\"><div class=\"p-4 border-b border-dark-700\"><h3 class=\"text-lg font-semibold text-white\"><i class=\"fas fa-exclamation-triangle text-yellow-400 mr-2\"></i>Certificates Expiring Soon</h3></div><div class=\"overflow-x-auto\"><table class=\"table\"><thead><tr><th>Target</th><th>Hostname</th><th>Common Name</th><th>Expires At</th><th>Days Left</th><th>Grade</th></tr></thead> <tbody>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "<div class=\"card\"><div class=\"p-4 border-b border-dark-700\"><h3 class=\"text-lg font-semibold text-white\"><i aria-hidden=\"true\" class=\"fas fa-exclamation-triangle text-yellow-400 mr-2\"></i>Certificates Expiring Soon</h3></div><div class=\"overflow-x-auto\"><table class=\"table\"><thead><tr><th scope=\"col\">Target</th><th scope=\"col\">Hostname</th><th scope=\"col\">Common Name</th><th scope=\"col\">Expires At</th><th scope=\"col\">Days Left</th><th scope=\"col\">Grade</th></tr></thead> <tbody>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -323,7 +323,7 @@ func Dashboard(data DashboardData) templ.Component {
 				}
 			}
 			if data.TotalTargets == 0 {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 29, "<div class=\"card p-8 text-center\"><i class=\"fas fa-lock text-4xl text-gray-400 mb-4\"></i><h3 class=\"text-lg font-medium text-white mb-2\">No SSL targets configured</h3><p class=\"text-gray-400 mb-4\">Add your first SSL target to start monitoring certificate health</p><a href=\"/ssl/targets/new\" class=\"btn-primary\"><i class=\"fas fa-plus mr-2\"></i>Add Target</a></div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 29, "<div class=\"card p-8 text-center\"><i aria-hidden=\"true\" class=\"fas fa-lock text-4xl text-gray-400 mb-4\"></i><h3 class=\"text-lg font-medium text-white mb-2\">No SSL targets configured</h3><p class=\"text-gray-400 mb-4\">Add your first SSL target to start monitoring certificate health</p><a href=\"/ssl/targets/new\" class=\"btn-primary\"><i aria-hidden=\"true\" class=\"fas fa-plus mr-2\"></i>Add Target</a></div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}

@@ -62,7 +62,7 @@ templ RDPConnectionsList(data RDPConnectionsListData) {
 					href="/connections/rdp/new"
 					class="inline-flex items-center px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors"
 				>
-					<i class="fas fa-plus mr-2"></i>
+					<i aria-hidden="true" class="fas fa-plus mr-2"></i>
 					New Connection
 				</a>
 			</div>
@@ -71,14 +71,14 @@ templ RDPConnectionsList(data RDPConnectionsListData) {
 			if len(data.Connections) == 0 {
 				<div class="bg-dark-800 rounded-lg border border-dark-700 p-12 text-center">
 					<div class="w-16 h-16 bg-dark-700 rounded-full flex items-center justify-center mx-auto mb-4">
-						<i class="fas fa-desktop text-2xl text-gray-500"></i>
+						<i aria-hidden="true" class="fas fa-desktop text-2xl text-gray-500"></i>
 					</div>
 					<h3 class="text-lg font-medium text-white mb-2">No RDP Connections</h3>
 					<p class="text-gray-400 mb-6 max-w-sm mx-auto">
 						Create your first Remote Desktop connection to access Windows servers directly from your browser.
 					</p>
 					<a href="/connections/rdp/new" class="inline-flex items-center px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors">
-						<i class="fas fa-plus mr-2"></i>New Connection
+						<i aria-hidden="true" class="fas fa-plus mr-2"></i>New Connection
 					</a>
 				</div>
 			} else {
@@ -109,14 +109,14 @@ templ RDPConnectionCard(conn RDPConnectionData) {
 					class="p-2 text-gray-400 hover:text-primary-400 hover:bg-dark-700 rounded-lg transition-colors"
 					title="Open Remote Desktop"
 				>
-					<i class="fas fa-desktop text-lg"></i>
+					<i aria-hidden="true" class="fas fa-desktop text-lg"></i>
 				</a>
 				<a
 					href={ templ.SafeURL(fmt.Sprintf("/connections/rdp/%s", conn.ID)) }
 					class="p-2 text-gray-400 hover:text-gray-200 hover:bg-dark-700 rounded-lg transition-colors"
 					title="Settings"
 				>
-					<i class="fas fa-cog"></i>
+					<i aria-hidden="true" class="fas fa-cog"></i>
 				</a>
 			</div>
 		</div>
@@ -125,7 +125,7 @@ templ RDPConnectionCard(conn RDPConnectionData) {
 		<div class="mt-4 space-y-2 text-sm">
 			if conn.Username != "" {
 				<div class="flex items-center text-gray-400">
-					<i class="fas fa-user w-4 mr-2 text-center"></i>
+					<i aria-hidden="true" class="fas fa-user w-4 mr-2 text-center"></i>
 					<span>
 						if conn.Domain != "" {
 							{ conn.Domain }\{ conn.Username }
@@ -137,19 +137,19 @@ templ RDPConnectionCard(conn RDPConnectionData) {
 			}
 			if conn.Resolution != "" {
 				<div class="flex items-center text-gray-400">
-					<i class="fas fa-expand-arrows-alt w-4 mr-2 text-center"></i>
+					<i aria-hidden="true" class="fas fa-expand-arrows-alt w-4 mr-2 text-center"></i>
 					<span>{ conn.Resolution }</span>
 				</div>
 			}
 			if conn.Security != "" && conn.Security != "any" {
 				<div class="flex items-center text-gray-400">
-					<i class="fas fa-lock w-4 mr-2 text-center"></i>
+					<i aria-hidden="true" class="fas fa-lock w-4 mr-2 text-center"></i>
 					<span>{ rdpSecurityLabel(conn.Security) }</span>
 				</div>
 			}
 			if conn.LastUsed != "" {
 				<div class="flex items-center text-gray-500">
-					<i class="fas fa-clock w-4 mr-2 text-center"></i>
+					<i aria-hidden="true" class="fas fa-clock w-4 mr-2 text-center"></i>
 					<span>Last used { conn.LastUsed }</span>
 				</div>
 			}
@@ -192,7 +192,7 @@ templ RDPConnectionNew(data RDPConnectionNewData) {
 			<!-- Header -->
 			<div class="flex items-center gap-4">
 				<a href="/connections/rdp" class="p-2 text-gray-400 hover:text-white hover:bg-dark-700 rounded-lg">
-					<i class="fas fa-arrow-left"></i>
+					<i aria-hidden="true" class="fas fa-arrow-left"></i>
 				</a>
 				<div>
 					<h1 class="text-2xl font-display font-bold text-white">New RDP Connection</h1>
@@ -209,34 +209,34 @@ templ RDPConnectionNew(data RDPConnectionNewData) {
 
 					<div>
 						<label for="name" class="block text-sm font-medium text-gray-300 mb-1">Connection Name</label>
-						<input type="text" id="name" name="name" required class="input w-full" placeholder="My Windows Server"/>
+						<input type="text" id="name" name="name" required class="input w-full" placeholder="My Windows Server" aria-label="My Windows Server"/>
 					</div>
 
 					<div class="grid grid-cols-2 gap-4">
 						<div>
 							<label for="host" class="block text-sm font-medium text-gray-300 mb-1">Host</label>
-							<input type="text" id="host" name="host" required class="input w-full" placeholder="192.168.1.100"/>
+							<input type="text" id="host" name="host" required class="input w-full" placeholder="192.168.1.100" aria-label="192.168.1.100"/>
 						</div>
 						<div>
 							<label for="port" class="block text-sm font-medium text-gray-300 mb-1">Port</label>
-							<input type="number" id="port" name="port" value="3389" class="input w-full" placeholder="3389"/>
+							<input type="number" id="port" name="port" value="3389" class="input w-full" placeholder="3389" aria-label="3389"/>
 						</div>
 					</div>
 
 					<div class="grid grid-cols-2 gap-4">
 						<div>
 							<label for="username" class="block text-sm font-medium text-gray-300 mb-1">Username</label>
-							<input type="text" id="username" name="username" class="input w-full" placeholder="Administrator"/>
+							<input type="text" id="username" name="username" class="input w-full" placeholder="Administrator" aria-label="Administrator"/>
 						</div>
 						<div>
 							<label for="domain" class="block text-sm font-medium text-gray-300 mb-1">Domain (optional)</label>
-							<input type="text" id="domain" name="domain" class="input w-full" placeholder="WORKGROUP"/>
+							<input type="text" id="domain" name="domain" class="input w-full" placeholder="WORKGROUP" aria-label="WORKGROUP"/>
 						</div>
 					</div>
 
 					<div>
 						<label for="password" class="block text-sm font-medium text-gray-300 mb-1">Password</label>
-						<input type="password" id="password" name="password" class="input w-full" placeholder="Enter password"/>
+						<input type="password" id="password" name="password" class="input w-full" placeholder="Enter password" aria-label="Enter password"/>
 						<p class="text-xs text-gray-500 mt-1">Stored encrypted. Leave blank to be prompted on each connection.</p>
 					</div>
 				</div>
@@ -295,7 +295,7 @@ templ RDPConnectionNew(data RDPConnectionNewData) {
 
 					<div>
 						<label for="tags" class="block text-sm font-medium text-gray-300 mb-1">Tags (comma separated)</label>
-						<input type="text" id="tags" name="tags" class="input w-full" placeholder="production, windows, dc"/>
+						<input type="text" id="tags" name="tags" class="input w-full" placeholder="production, windows, dc" aria-label="production, windows, dc"/>
 					</div>
 				</div>
 
@@ -303,7 +303,7 @@ templ RDPConnectionNew(data RDPConnectionNewData) {
 				<div class="flex justify-end gap-3">
 					<a href="/connections/rdp" class="btn-secondary">Cancel</a>
 					<button type="submit" class="btn-primary">
-						<i class="fas fa-plus mr-2"></i>Create Connection
+						<i aria-hidden="true" class="fas fa-plus mr-2"></i>Create Connection
 					</button>
 				</div>
 			</form>
@@ -318,7 +318,7 @@ templ RDPConnectionDetail(data RDPConnectionDetailData) {
 			<!-- Header -->
 			<div class="flex items-center gap-4">
 				<a href="/connections/rdp" class="p-2 text-gray-400 hover:text-white hover:bg-dark-700 rounded-lg">
-					<i class="fas fa-arrow-left"></i>
+					<i aria-hidden="true" class="fas fa-arrow-left"></i>
 				</a>
 				<div class="flex-1">
 					<div class="flex items-center gap-3">
@@ -338,7 +338,7 @@ templ RDPConnectionDetail(data RDPConnectionDetailData) {
 					class="card p-4 flex items-center gap-3 hover:bg-dark-700/50 transition-colors"
 				>
 					<div class="w-10 h-10 bg-green-500/10 rounded-lg flex items-center justify-center">
-						<i class="fas fa-desktop text-green-400"></i>
+						<i aria-hidden="true" class="fas fa-desktop text-green-400"></i>
 					</div>
 					<div>
 						<p class="text-white font-medium">Open Session</p>
@@ -352,7 +352,7 @@ templ RDPConnectionDetail(data RDPConnectionDetailData) {
 					hx-swap="innerHTML"
 				>
 					<div class="w-10 h-10 bg-blue-500/10 rounded-lg flex items-center justify-center">
-						<i class="fas fa-plug text-blue-400"></i>
+						<i aria-hidden="true" class="fas fa-plug text-blue-400"></i>
 					</div>
 					<div>
 						<p class="text-white font-medium">Test Connection</p>
@@ -365,7 +365,7 @@ templ RDPConnectionDetail(data RDPConnectionDetailData) {
 					download
 				>
 					<div class="w-10 h-10 bg-primary-500/10 rounded-lg flex items-center justify-center">
-						<i class="fas fa-download text-primary-400"></i>
+						<i aria-hidden="true" class="fas fa-download text-primary-400"></i>
 					</div>
 					<div>
 						<p class="text-white font-medium">Download .rdp</p>
@@ -413,7 +413,7 @@ templ RDPConnectionDetail(data RDPConnectionDetailData) {
 
 					<div>
 						<label for="password" class="block text-sm font-medium text-gray-300 mb-1">Password</label>
-						<input type="password" id="password" name="password" class="input w-full" placeholder="Leave blank to keep current"/>
+						<input type="password" id="password" name="password" class="input w-full" placeholder="Leave blank to keep current" aria-label="Leave blank to keep current"/>
 					</div>
 				</div>
 
@@ -467,12 +467,12 @@ templ RDPConnectionDetail(data RDPConnectionDetailData) {
 						hx-delete={ fmt.Sprintf("/connections/rdp/%s", data.Connection.ID) }
 						hx-confirm={ fmt.Sprintf("Delete connection '%s'? This cannot be undone.", data.Connection.Name) }
 					>
-						<i class="fas fa-trash mr-1"></i>Delete Connection
+						<i aria-hidden="true" class="fas fa-trash mr-1"></i>Delete Connection
 					</button>
 					<div class="flex gap-3">
 						<a href="/connections/rdp" class="btn-secondary">Cancel</a>
 						<button type="submit" class="btn-primary">
-							<i class="fas fa-save mr-2"></i>Save Changes
+							<i aria-hidden="true" class="fas fa-save mr-2"></i>Save Changes
 						</button>
 					</div>
 				</div>
@@ -508,9 +508,9 @@ templ RDPSession(data RDPSessionData) {
 		<!-- Breadcrumb -->
 		<nav class="flex items-center gap-2 text-sm text-gray-400 mb-4">
 			<a href="/connections/rdp" class="hover:text-primary-400 transition-colors">RDP Connections</a>
-			<i class="fas fa-chevron-right text-xs"></i>
+			<i aria-hidden="true" class="fas fa-chevron-right text-xs"></i>
 			<a href={ templ.SafeURL("/connections/rdp/" + data.Connection.ID) } class="hover:text-primary-400 transition-colors">{ data.Connection.Name }</a>
-			<i class="fas fa-chevron-right text-xs"></i>
+			<i aria-hidden="true" class="fas fa-chevron-right text-xs"></i>
 			<span class="text-white">Session</span>
 		</nav>
 
@@ -518,7 +518,7 @@ templ RDPSession(data RDPSessionData) {
 		<div class="flex items-center justify-between mb-6">
 			<div class="flex items-center gap-4">
 				<div class="w-10 h-10 rounded-lg bg-dark-700 flex items-center justify-center">
-					<i class="fas fa-desktop text-lg text-primary-400"></i>
+					<i aria-hidden="true" class="fas fa-desktop text-lg text-primary-400"></i>
 				</div>
 				<div>
 					<h1 class="text-2xl font-bold font-display text-white">Remote Desktop</h1>
@@ -532,23 +532,23 @@ templ RDPSession(data RDPSessionData) {
 			</div>
 			<div class="flex items-center gap-2">
 				<a href={ templ.SafeURL("/connections/rdp/" + data.Connection.ID) } class="px-4 py-2 bg-dark-700 hover:bg-dark-600 text-gray-300 rounded-lg transition-colors">
-					<i class="fas fa-arrow-left mr-2"></i>Back
+					<i aria-hidden="true" class="fas fa-arrow-left mr-2"></i>Back
 				</a>
 				<a
 					href={ templ.SafeURL(fmt.Sprintf("/connections/rdp/%s/download", data.Connection.ID)) }
 					class="px-4 py-2 bg-dark-700 hover:bg-dark-600 text-gray-300 rounded-lg transition-colors"
 					download
 				>
-					<i class="fas fa-download mr-2"></i>.rdp File
+					<i aria-hidden="true" class="fas fa-download mr-2"></i>.rdp File
 				</a>
 			</div>
 		</div>
 
 		if !data.GuacdEnabled {
 			<!-- Guacd not enabled message -->
-			<div class="bg-dark-800 rounded-xl border border-dark-600 p-8 text-center">
+			<div class="card p-8 text-center">
 				<div class="w-16 h-16 bg-yellow-500/10 rounded-full flex items-center justify-center mx-auto mb-4">
-					<i class="fas fa-exclamation-triangle text-2xl text-yellow-400"></i>
+					<i aria-hidden="true" class="fas fa-exclamation-triangle text-2xl text-yellow-400"></i>
 				</div>
 				<h3 class="text-lg font-medium text-white mb-2">Web RDP Not Configured</h3>
 				<p class="text-gray-400 mb-4 max-w-lg mx-auto">
@@ -566,7 +566,7 @@ templ RDPSession(data RDPSessionData) {
 					class="inline-flex items-center px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors"
 					download
 				>
-					<i class="fas fa-download mr-2"></i>Download .rdp File Instead
+					<i aria-hidden="true" class="fas fa-download mr-2"></i>Download .rdp File Instead
 				</a>
 			</div>
 		} else {
@@ -753,7 +753,7 @@ templ RDPSession(data RDPSessionData) {
 				x-data="rdpSession()"
 				data-conn-id={ data.Connection.ID }
 				data-conn-name={ data.Connection.Name }
-				class="bg-dark-800 rounded-xl border border-dark-600 overflow-hidden"
+				class="card overflow-hidden"
 			>
 				<!-- Session Header -->
 				<div class="flex items-center justify-between px-4 py-3 border-b border-dark-600 bg-dark-850">
@@ -777,7 +777,7 @@ templ RDPSession(data RDPSessionData) {
 							Disconnected
 						</span>
 						<span x-show="connecting" class="flex items-center gap-1.5 text-xs text-yellow-400">
-							<i class="fas fa-spinner fa-spin"></i>
+							<i aria-hidden="true" class="fas fa-spinner fa-spin"></i>
 							Connecting...
 						</span>
 						<button
@@ -785,21 +785,21 @@ templ RDPSession(data RDPSessionData) {
 							class="p-2 text-gray-400 hover:text-white hover:bg-dark-600 rounded-lg transition-colors"
 							title="Reconnect"
 						>
-							<i class="fas fa-redo"></i>
+							<i aria-hidden="true" class="fas fa-redo"></i>
 						</button>
 						<button
 							@click="toggleFullscreen()"
 							class="p-2 text-gray-400 hover:text-white hover:bg-dark-600 rounded-lg transition-colors"
 							title="Fullscreen"
 						>
-							<i class="fas fa-expand"></i>
+							<i aria-hidden="true" class="fas fa-expand"></i>
 						</button>
 						<button
 							@click="sendCtrlAltDel()"
 							class="p-2 text-gray-400 hover:text-white hover:bg-dark-600 rounded-lg transition-colors"
 							title="Send Ctrl+Alt+Del"
 						>
-							<i class="fas fa-keyboard"></i>
+							<i aria-hidden="true" class="fas fa-keyboard"></i>
 						</button>
 					</div>
 				</div>
@@ -814,14 +814,14 @@ templ RDPSession(data RDPSessionData) {
 					<!-- Loading overlay -->
 					<div x-show="connecting" x-cloak class="absolute inset-0 flex items-center justify-center bg-dark-900/80 z-10">
 						<div class="text-center">
-							<i class="fas fa-spinner fa-spin text-3xl text-primary-400 mb-4"></i>
+							<i aria-hidden="true" class="fas fa-spinner fa-spin text-3xl text-primary-400 mb-4"></i>
 							<p class="text-gray-400">Connecting to remote desktop...</p>
 						</div>
 					</div>
 					<!-- Error overlay -->
 					<div x-show="errorMsg" x-cloak class="absolute inset-0 flex items-center justify-center bg-dark-900/80 z-10">
 						<div class="text-center">
-							<i class="fas fa-exclamation-circle text-3xl text-red-400 mb-4"></i>
+							<i aria-hidden="true" class="fas fa-exclamation-circle text-3xl text-red-400 mb-4"></i>
 							<p class="text-red-400 mb-2" x-text="errorMsg"></p>
 							<button @click="reconnect()" class="px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors">
 								Reconnect

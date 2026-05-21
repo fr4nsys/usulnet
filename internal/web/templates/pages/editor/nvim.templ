@@ -32,17 +32,17 @@ templ Nvim(data NvimData) {
 					if data.RepoID != "" {
 						<a href={ templ.SafeURL(fmt.Sprintf("/integrations/gitea/repos/%s?ref=%s", data.RepoID, data.Ref)) }
 							class="text-gray-400 hover:text-white transition-colors" title="Back to repo">
-							<i class="fas fa-arrow-left"></i>
+							<i aria-hidden="true" class="fas fa-arrow-left"></i>
 						</a>
 					} else {
 						<a href="/editor"
 							class="text-gray-400 hover:text-white transition-colors" title="Back to editor">
-							<i class="fas fa-arrow-left"></i>
+							<i aria-hidden="true" class="fas fa-arrow-left"></i>
 						</a>
 					}
 					<!-- File info -->
 					<div class="flex items-center gap-2 min-w-0">
-						<i class="fas fa-terminal text-green-400"></i>
+						<i aria-hidden="true" class="fas fa-terminal text-green-400"></i>
 						if data.FilePath != "" {
 							<span class="text-sm text-white font-medium truncate">{ data.FilePath }</span>
 						} else {
@@ -50,7 +50,7 @@ templ Nvim(data NvimData) {
 						}
 						if data.Ref != "" {
 							<span class="text-xs px-1.5 py-0.5 rounded bg-gray-700 text-gray-400 whitespace-nowrap">
-								<i class="fas fa-code-branch mr-1"></i>{ data.Ref }
+								<i aria-hidden="true" class="fas fa-code-branch mr-1"></i>{ data.Ref }
 							</span>
 						}
 						<span class="text-xs px-1.5 py-0.5 rounded bg-green-500/10 text-green-400">
@@ -61,27 +61,27 @@ templ Nvim(data NvimData) {
 				<div class="flex items-center gap-2">
 					<!-- Connection status -->
 					<span id="nvim-status" class="text-xs text-gray-500">
-						<i class="fas fa-circle text-yellow-400 text-[6px] mr-1"></i>Connecting...
+						<i aria-hidden="true" class="fas fa-circle text-yellow-400 text-[6px] mr-1"></i>Connecting...
 					</span>
 					<!-- Open in Monaco -->
 					if data.RepoID != "" {
 						<a href={ templ.SafeURL(fmt.Sprintf("/editor/monaco?repo=%s&file=%s&ref=%s", data.RepoID, data.FilePath, data.Ref)) }
 							class="btn-ghost text-sm" title="Open in Monaco">
-							<i class="fas fa-edit mr-1"></i>Monaco
+							<i aria-hidden="true" class="fas fa-edit mr-1"></i>Monaco
 						</a>
 					} else {
 						<a href="/editor/monaco"
 							class="btn-ghost text-sm" title="Open Monaco">
-							<i class="fas fa-edit mr-1"></i>Monaco
+							<i aria-hidden="true" class="fas fa-edit mr-1"></i>Monaco
 						</a>
 					}
 					<!-- Fullscreen -->
 					<button onclick="toggleFullscreen()" class="btn-ghost text-sm" title="Fullscreen (F11)">
-						<i class="fas fa-expand"></i>
+						<i aria-hidden="true" class="fas fa-expand"></i>
 					</button>
 					<!-- Reconnect -->
 					<button onclick="reconnectNvim()" class="btn-ghost text-sm" title="Reconnect">
-						<i class="fas fa-redo"></i>
+						<i aria-hidden="true" class="fas fa-redo"></i>
 					</button>
 				</div>
 			</div>
@@ -199,7 +199,7 @@ templ Nvim(data NvimData) {
 
 		function connectNvim() {
 			var statusEl = document.getElementById('nvim-status');
-			statusEl.innerHTML = '<i class="fas fa-circle text-yellow-400 text-[6px] mr-1"></i>Connecting...';
+			statusEl.innerHTML = '<i aria-hidden="true" class="fas fa-circle text-yellow-400 text-[6px] mr-1"></i>Connecting...';
 
 			var cols = term ? term.cols : 120;
 			var rows = term ? term.rows : 40;
@@ -214,7 +214,7 @@ templ Nvim(data NvimData) {
 			ws = new WebSocket(url);
 
 			ws.onopen = function() {
-				statusEl.innerHTML = '<i class="fas fa-circle text-green-400 text-[6px] mr-1"></i>Connected';
+				statusEl.innerHTML = '<i aria-hidden="true" class="fas fa-circle text-green-400 text-[6px] mr-1"></i>Connected';
 				term.focus();
 			};
 
@@ -224,22 +224,22 @@ templ Nvim(data NvimData) {
 					term.write(msg.data);
 				} else if (msg.type === 'committed') {
 					// nvim :w triggered a commit
-					statusEl.innerHTML = '<i class="fas fa-check text-green-400 mr-1"></i>Committed';
+					statusEl.innerHTML = '<i aria-hidden="true" class="fas fa-check text-green-400 mr-1"></i>Committed';
 					setTimeout(function() {
-						statusEl.innerHTML = '<i class="fas fa-circle text-green-400 text-[6px] mr-1"></i>Connected';
+						statusEl.innerHTML = '<i aria-hidden="true" class="fas fa-circle text-green-400 text-[6px] mr-1"></i>Connected';
 					}, 2000);
 				} else if (msg.type === 'error') {
-					statusEl.innerHTML = '<i class="fas fa-exclamation-triangle text-red-400 mr-1"></i>' + escapeHtml(msg.data);
+					statusEl.innerHTML = '<i aria-hidden="true" class="fas fa-exclamation-triangle text-red-400 mr-1"></i>' + escapeHtml(msg.data);
 				}
 			};
 
 			ws.onclose = function() {
-				statusEl.innerHTML = '<i class="fas fa-circle text-red-400 text-[6px] mr-1"></i>Disconnected';
+				statusEl.innerHTML = '<i aria-hidden="true" class="fas fa-circle text-red-400 text-[6px] mr-1"></i>Disconnected';
 				term.write('\r\n\x1b[90m[nvim session ended]\x1b[0m\r\n');
 			};
 
 			ws.onerror = function() {
-				statusEl.innerHTML = '<i class="fas fa-circle text-red-400 text-[6px] mr-1"></i>Error';
+				statusEl.innerHTML = '<i aria-hidden="true" class="fas fa-circle text-red-400 text-[6px] mr-1"></i>Error';
 			};
 		}
 

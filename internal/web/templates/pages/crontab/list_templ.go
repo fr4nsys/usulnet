@@ -16,13 +16,15 @@ import templruntime "github.com/a-h/templ/runtime"
 
 import (
 	"fmt"
+	"github.com/fr4nsys/usulnet/internal/web/templates/components"
 	"github.com/fr4nsys/usulnet/internal/web/templates/layouts"
 )
 
 type ListData struct {
-	PageData layouts.PageData
-	Entries  []EntryView
-	Stats    StatsView
+	PageData   layouts.PageData
+	Entries    []EntryView
+	Stats      StatsView
+	EmptyState components.EmptyStateData
 }
 
 type EntryView struct {
@@ -104,7 +106,7 @@ func List(data ListData) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"space-y-6\"><div class=\"flex items-center justify-between\"><div><h1 class=\"text-2xl font-display font-bold text-white\">Crontab Manager</h1><p class=\"text-gray-400 mt-1\">Schedule and manage cron jobs</p></div><div class=\"flex items-center gap-2\"><a href=\"/crontab/new\" class=\"btn-primary\"><i class=\"fas fa-plus mr-2\"></i>New Cron Job</a></div></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"space-y-6\"><div class=\"flex items-center justify-between\"><div><h1 class=\"text-2xl font-display font-bold text-white\">Crontab Manager</h1><p class=\"text-gray-400 mt-1\">Schedule and manage cron jobs</p></div><div class=\"flex items-center gap-2\"><a href=\"/crontab/new\" class=\"btn-primary\"><i aria-hidden=\"true\" class=\"fas fa-plus mr-2\"></i>New Cron Job</a></div></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -119,69 +121,69 @@ func List(data ListData) templ.Component {
 			var templ_7745c5c3_Var3 string
 			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", data.Stats.Total))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/crontab/list.templ`, Line: 86, Col: 85}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/crontab/list.templ`, Line: 88, Col: 85}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</p></div><div class=\"text-primary-400\"><i class=\"fas fa-clock text-2xl\"></i></div></div></div><div class=\"card p-4\"><div class=\"flex items-center justify-between\"><div><p class=\"text-sm text-gray-400\">Enabled</p><p class=\"text-2xl font-bold text-green-400\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</p></div><div class=\"text-primary-400\"><i aria-hidden=\"true\" class=\"fas fa-clock text-2xl\"></i></div></div></div><div class=\"card p-4\"><div class=\"flex items-center justify-between\"><div><p class=\"text-sm text-gray-400\">Enabled</p><p class=\"text-2xl font-bold text-green-400\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var4 string
 			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", data.Stats.Enabled))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/crontab/list.templ`, Line: 97, Col: 91}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/crontab/list.templ`, Line: 99, Col: 91}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</p></div><div class=\"text-green-400\"><i class=\"fas fa-check-circle text-2xl\"></i></div></div></div><div class=\"card p-4\"><div class=\"flex items-center justify-between\"><div><p class=\"text-sm text-gray-400\">Disabled</p><p class=\"text-2xl font-bold text-gray-400\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</p></div><div class=\"text-green-400\"><i aria-hidden=\"true\" class=\"fas fa-check-circle text-2xl\"></i></div></div></div><div class=\"card p-4\"><div class=\"flex items-center justify-between\"><div><p class=\"text-sm text-gray-400\">Disabled</p><p class=\"text-2xl font-bold text-gray-400\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var5 string
 			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", data.Stats.Disabled))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/crontab/list.templ`, Line: 108, Col: 91}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/crontab/list.templ`, Line: 110, Col: 91}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "</p></div><div class=\"text-gray-400\"><i class=\"fas fa-pause-circle text-2xl\"></i></div></div></div><div class=\"card p-4\"><div class=\"flex items-center justify-between\"><div><p class=\"text-sm text-gray-400\">Running</p><p class=\"text-2xl font-bold text-blue-400\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "</p></div><div class=\"text-gray-400\"><i aria-hidden=\"true\" class=\"fas fa-pause-circle text-2xl\"></i></div></div></div><div class=\"card p-4\"><div class=\"flex items-center justify-between\"><div><p class=\"text-sm text-gray-400\">Running</p><p class=\"text-2xl font-bold text-blue-400\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var6 string
 			templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", data.Stats.Running))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/crontab/list.templ`, Line: 119, Col: 90}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/crontab/list.templ`, Line: 121, Col: 90}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "</p></div><div class=\"text-blue-400\"><i class=\"fas fa-spinner text-2xl\"></i></div></div></div></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "</p></div><div class=\"text-blue-400\"><i aria-hidden=\"true\" class=\"fas fa-spinner text-2xl\"></i></div></div></div></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			if len(data.Entries) > 0 {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "<div class=\"card\"><div class=\"overflow-x-auto\"><table class=\"table\"><thead><tr><th>Name</th><th>Schedule</th><th>Type</th><th>Command</th><th>Status</th><th>Runs</th><th>Last Run</th><th>Next Run</th><th>Actions</th></tr></thead> <tbody>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "<div class=\"card\"><div class=\"overflow-x-auto\"><table class=\"table\"><thead><tr><th scope=\"col\">Name</th><th scope=\"col\">Schedule</th><th scope=\"col\">Type</th><th scope=\"col\">Command</th><th scope=\"col\">Status</th><th scope=\"col\">Runs</th><th scope=\"col\">Last Run</th><th scope=\"col\">Next Run</th><th scope=\"col\">Actions</th></tr></thead> <tbody>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				for _, entry := range data.Entries {
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "<tr><td><div class=\"flex items-center gap-2\"><i class=\"fas fa-clock text-primary-400\"></i> <a href=\"")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "<tr><td><div class=\"flex items-center gap-2\"><i aria-hidden=\"true\" class=\"fas fa-clock text-primary-400\"></i> <a href=\"")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
 					var templ_7745c5c3_Var7 templ.SafeURL
 					templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinURLErrs(templ.SafeURL(fmt.Sprintf("/crontab/%s", entry.ID)))
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/crontab/list.templ`, Line: 151, Col: 73}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/crontab/list.templ`, Line: 153, Col: 73}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 					if templ_7745c5c3_Err != nil {
@@ -194,7 +196,7 @@ func List(data ListData) templ.Component {
 					var templ_7745c5c3_Var8 string
 					templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(entry.Name)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/crontab/list.templ`, Line: 152, Col: 25}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/crontab/list.templ`, Line: 154, Col: 25}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 					if templ_7745c5c3_Err != nil {
@@ -207,7 +209,7 @@ func List(data ListData) templ.Component {
 					var templ_7745c5c3_Var9 string
 					templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(entry.Schedule)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/crontab/list.templ`, Line: 157, Col: 73}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/crontab/list.templ`, Line: 159, Col: 73}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 					if templ_7745c5c3_Err != nil {
@@ -228,7 +230,7 @@ func List(data ListData) templ.Component {
 					var templ_7745c5c3_Var10 string
 					templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(entry.Command)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/crontab/list.templ`, Line: 163, Col: 78}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/crontab/list.templ`, Line: 165, Col: 78}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 					if templ_7745c5c3_Err != nil {
@@ -241,7 +243,7 @@ func List(data ListData) templ.Component {
 					var templ_7745c5c3_Var11 string
 					templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(truncateCmd(entry.Command, 40))
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/crontab/list.templ`, Line: 163, Col: 113}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/crontab/list.templ`, Line: 165, Col: 113}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 					if templ_7745c5c3_Err != nil {
@@ -269,7 +271,7 @@ func List(data ListData) templ.Component {
 					var templ_7745c5c3_Var12 string
 					templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", entry.RunCount))
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/crontab/list.templ`, Line: 174, Col: 47}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/crontab/list.templ`, Line: 176, Col: 47}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
 					if templ_7745c5c3_Err != nil {
@@ -287,7 +289,7 @@ func List(data ListData) templ.Component {
 						var templ_7745c5c3_Var13 string
 						templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", entry.FailCount))
 						if templ_7745c5c3_Err != nil {
-							return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/crontab/list.templ`, Line: 176, Col: 78}
+							return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/crontab/list.templ`, Line: 178, Col: 78}
 						}
 						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
 						if templ_7745c5c3_Err != nil {
@@ -310,7 +312,7 @@ func List(data ListData) templ.Component {
 						var templ_7745c5c3_Var14 string
 						templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.JoinStringErrs(*entry.LastRunAt)
 						if templ_7745c5c3_Err != nil {
-							return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/crontab/list.templ`, Line: 183, Col: 59}
+							return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/crontab/list.templ`, Line: 185, Col: 59}
 						}
 						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var14))
 						if templ_7745c5c3_Err != nil {
@@ -322,12 +324,12 @@ func List(data ListData) templ.Component {
 						}
 						if entry.LastRunStatus != nil {
 							if *entry.LastRunStatus == "success" {
-								templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 24, "<span class=\"text-green-400 ml-1\"><i class=\"fas fa-check\"></i></span>")
+								templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 24, "<span class=\"text-green-400 ml-1\"><i aria-hidden=\"true\" class=\"fas fa-check\"></i></span>")
 								if templ_7745c5c3_Err != nil {
 									return templ_7745c5c3_Err
 								}
 							} else {
-								templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 25, "<span class=\"text-red-400 ml-1\"><i class=\"fas fa-times\"></i></span>")
+								templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 25, "<span class=\"text-red-400 ml-1\"><i aria-hidden=\"true\" class=\"fas fa-times\"></i></span>")
 								if templ_7745c5c3_Err != nil {
 									return templ_7745c5c3_Err
 								}
@@ -355,7 +357,7 @@ func List(data ListData) templ.Component {
 						var templ_7745c5c3_Var15 string
 						templ_7745c5c3_Var15, templ_7745c5c3_Err = templ.JoinStringErrs(*entry.NextRunAt)
 						if templ_7745c5c3_Err != nil {
-							return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/crontab/list.templ`, Line: 198, Col: 66}
+							return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/crontab/list.templ`, Line: 200, Col: 66}
 						}
 						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var15))
 						if templ_7745c5c3_Err != nil {
@@ -378,7 +380,7 @@ func List(data ListData) templ.Component {
 					var templ_7745c5c3_Var16 templ.SafeURL
 					templ_7745c5c3_Var16, templ_7745c5c3_Err = templ.JoinURLErrs(templ.SafeURL(fmt.Sprintf("/crontab/%s", entry.ID)))
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/crontab/list.templ`, Line: 205, Col: 73}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/crontab/list.templ`, Line: 207, Col: 73}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var16))
 					if templ_7745c5c3_Err != nil {
@@ -391,7 +393,7 @@ func List(data ListData) templ.Component {
 					var templ_7745c5c3_Var17 templ.SafeURL
 					templ_7745c5c3_Var17, templ_7745c5c3_Err = templ.JoinURLErrs(templ.SafeURL(fmt.Sprintf("/crontab/%s/edit", entry.ID)))
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/crontab/list.templ`, Line: 208, Col: 78}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/crontab/list.templ`, Line: 210, Col: 78}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var17))
 					if templ_7745c5c3_Err != nil {
@@ -404,7 +406,7 @@ func List(data ListData) templ.Component {
 					var templ_7745c5c3_Var18 string
 					templ_7745c5c3_Var18, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("/crontab/%s", entry.ID))
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/crontab/list.templ`, Line: 212, Col: 61}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/crontab/list.templ`, Line: 214, Col: 61}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var18))
 					if templ_7745c5c3_Err != nil {
@@ -421,12 +423,12 @@ func List(data ListData) templ.Component {
 				}
 			}
 			if len(data.Entries) == 0 {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 37, "<div class=\"card p-8 text-center\"><i class=\"fas fa-clock text-4xl text-gray-400 mb-4\"></i><h3 class=\"text-lg font-medium text-white mb-2\">No cron jobs</h3><p class=\"text-gray-400 mb-4\">Create your first cron job to get started with scheduled tasks</p><a href=\"/crontab/new\" class=\"btn-primary\"><i class=\"fas fa-plus mr-2\"></i>New Cron Job</a></div>")
+				templ_7745c5c3_Err = components.EmptyStateCTAs(data.EmptyState).Render(ctx, templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 38, "</div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 37, "</div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -462,35 +464,35 @@ func commandTypeBadge(cmdType string) templ.Component {
 		}
 		ctx = templ.ClearChildren(ctx)
 		if cmdType == "shell" {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 39, "<span class=\"inline-flex items-center gap-1 text-xs bg-green-500/10 text-green-400 px-2 py-0.5 rounded\"><i class=\"fas fa-terminal\"></i> Shell</span>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 38, "<span class=\"inline-flex items-center gap-1 text-xs bg-green-500/10 text-green-400 px-2 py-0.5 rounded\"><i aria-hidden=\"true\" class=\"fas fa-terminal\"></i> Shell</span>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		} else if cmdType == "docker" {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 40, "<span class=\"inline-flex items-center gap-1 text-xs bg-blue-500/10 text-blue-400 px-2 py-0.5 rounded\"><i class=\"fab fa-docker\"></i> Docker</span>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 39, "<span class=\"inline-flex items-center gap-1 text-xs bg-blue-500/10 text-blue-400 px-2 py-0.5 rounded\"><i aria-hidden=\"true\" class=\"fab fa-docker\"></i> Docker</span>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		} else if cmdType == "http" {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 41, "<span class=\"inline-flex items-center gap-1 text-xs bg-purple-500/10 text-purple-400 px-2 py-0.5 rounded\"><i class=\"fas fa-globe\"></i> HTTP</span>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 40, "<span class=\"inline-flex items-center gap-1 text-xs bg-purple-500/10 text-purple-400 px-2 py-0.5 rounded\"><i aria-hidden=\"true\" class=\"fas fa-globe\"></i> HTTP</span>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		} else {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 42, "<span class=\"inline-flex items-center gap-1 text-xs bg-gray-500/10 text-gray-400 px-2 py-0.5 rounded\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 41, "<span class=\"inline-flex items-center gap-1 text-xs bg-gray-500/10 text-gray-400 px-2 py-0.5 rounded\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var20 string
 			templ_7745c5c3_Var20, templ_7745c5c3_Err = templ.JoinStringErrs(cmdType)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/crontab/list.templ`, Line: 259, Col: 12}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/crontab/list.templ`, Line: 254, Col: 12}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var20))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 43, "</span>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 42, "</span>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

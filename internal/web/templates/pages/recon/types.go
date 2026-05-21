@@ -71,8 +71,22 @@ type ScanDetailData struct {
 
 // ConnectorsData backs /recon/connectors.
 type ConnectorsData struct {
-	PageData   layouts.PageData
-	Connectors []ConnectorView
+	PageData     layouts.PageData
+	Connectors   []ConnectorView
+	SandboxTools []SandboxToolGroup
+}
+
+// SandboxToolGroup is one labelled group on the /recon/connectors
+// "Sandbox tools" panel.
+type SandboxToolGroup struct {
+	Category string
+	Tools    []SandboxToolView
+}
+
+// SandboxToolView is one tool advertised inside the recon-toolkit
+// sandbox image.
+type SandboxToolView struct {
+	Name string
 }
 
 // ReportsData backs /recon/reports.

@@ -121,7 +121,7 @@ func Dependencies(data DependencyData) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"space-y-6\"><!-- Header --><div class=\"flex items-center justify-between\"><div><h1 class=\"text-2xl font-display font-bold text-white\">Dependency Graph</h1><p class=\"text-gray-400 mt-1\">Visualize relationships between containers, networks, volumes, and images</p></div><a href=\"/topology\" class=\"btn-secondary flex items-center gap-2\"><i class=\"fas fa-project-diagram\"></i> Network Topology</a></div><!-- Stats --><div class=\"grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-3\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"space-y-6\"><!-- Header --><div class=\"flex items-center justify-between\"><div><h1 class=\"text-2xl font-display font-bold text-white\">Dependency Graph</h1><p class=\"text-gray-400 mt-1\">Visualize relationships between containers, networks, volumes, and images</p></div><a href=\"/topology\" class=\"btn-secondary flex items-center gap-2\"><i aria-hidden=\"true\" class=\"fas fa-project-diagram\"></i> Network Topology</a></div><!-- Stats --><div class=\"grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-3\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -162,14 +162,14 @@ func Dependencies(data DependencyData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			if len(data.Warnings) > 0 {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<div class=\"card p-4\"><h3 class=\"text-sm font-medium text-yellow-400 mb-3\"><i class=\"fas fa-exclamation-triangle mr-2\"></i>Dependency Warnings (")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<div class=\"card p-4\"><h3 class=\"text-sm font-medium text-yellow-400 mb-3\"><i aria-hidden=\"true\" class=\"fas fa-exclamation-triangle mr-2\"></i>Dependency Warnings (")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var3 string
 				templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", len(data.Warnings)))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/dependencies/dependencies.templ`, Line: 114, Col: 114}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/dependencies/dependencies.templ`, Line: 114, Col: 133}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 				if templ_7745c5c3_Err != nil {
@@ -237,7 +237,7 @@ func Dependencies(data DependencyData) templ.Component {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "<!-- Tabs --><div x-data=\"{ tab: 'graph' }\" class=\"space-y-4\"><div class=\"flex gap-1 border-b border-dark-600\"><button @click=\"tab = 'graph'\" :class=\"tab === 'graph' ? 'border-primary-500 text-white' : 'border-transparent text-gray-400 hover:text-gray-300'\" class=\"px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors\">Dependency Map</button> <button @click=\"tab = 'containers'\" :class=\"tab === 'containers' ? 'border-primary-500 text-white' : 'border-transparent text-gray-400 hover:text-gray-300'\" class=\"px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors\">Containers (")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "<!-- Tabs --><div x-data=\"{ tab: 'graph' }\" class=\"space-y-4\"><div class=\"flex gap-1 border-b border-dark-600\"><button @click=\"tab = 'graph'\" :class=\"tab === 'graph' ? 'border-primary-500 text-white' : 'border-transparent text-gray-400 hover:text-gray-300'\" class=\"tab-underline\">Dependency Map</button> <button @click=\"tab = 'containers'\" :class=\"tab === 'containers' ? 'border-primary-500 text-white' : 'border-transparent text-gray-400 hover:text-gray-300'\" class=\"tab-underline\">Containers (")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -250,7 +250,7 @@ func Dependencies(data DependencyData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, ")</button> <button @click=\"tab = 'networks'\" :class=\"tab === 'networks' ? 'border-primary-500 text-white' : 'border-transparent text-gray-400 hover:text-gray-300'\" class=\"px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors\">Networks (")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, ")</button> <button @click=\"tab = 'networks'\" :class=\"tab === 'networks' ? 'border-primary-500 text-white' : 'border-transparent text-gray-400 hover:text-gray-300'\" class=\"tab-underline\">Networks (")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -263,7 +263,7 @@ func Dependencies(data DependencyData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, ")</button> <button @click=\"tab = 'volumes'\" :class=\"tab === 'volumes' ? 'border-primary-500 text-white' : 'border-transparent text-gray-400 hover:text-gray-300'\" class=\"px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors\">Volumes (")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, ")</button> <button @click=\"tab = 'volumes'\" :class=\"tab === 'volumes' ? 'border-primary-500 text-white' : 'border-transparent text-gray-400 hover:text-gray-300'\" class=\"tab-underline\">Volumes (")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -276,7 +276,7 @@ func Dependencies(data DependencyData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, ")</button> <button @click=\"tab = 'images'\" :class=\"tab === 'images' ? 'border-primary-500 text-white' : 'border-transparent text-gray-400 hover:text-gray-300'\" class=\"px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors\">Images (")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, ")</button> <button @click=\"tab = 'images'\" :class=\"tab === 'images' ? 'border-primary-500 text-white' : 'border-transparent text-gray-400 hover:text-gray-300'\" class=\"tab-underline\">Images (")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -306,7 +306,7 @@ func Dependencies(data DependencyData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			if data.Stats.IsolatedContainers > 0 {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "<div class=\"card p-4 border border-yellow-500/30\"><h3 class=\"text-sm font-medium text-yellow-400 mb-3\"><i class=\"fas fa-unlink mr-2\"></i>Isolated Containers (no network)</h3><div class=\"flex flex-wrap gap-2\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "<div class=\"card p-4 border border-yellow-500/30\"><h3 class=\"text-sm font-medium text-yellow-400 mb-3\"><i aria-hidden=\"true\" class=\"fas fa-unlink mr-2\"></i>Isolated Containers (no network)</h3><div class=\"flex flex-wrap gap-2\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -323,7 +323,7 @@ func Dependencies(data DependencyData) templ.Component {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "</div><!-- Sidebar - Volumes & Images --><div class=\"space-y-4\"><!-- Shared Volumes --><div class=\"card p-4\"><h3 class=\"font-medium text-white mb-3\"><i class=\"fas fa-database text-purple-400 mr-2\"></i>Volumes</h3><div class=\"space-y-2\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "</div><!-- Sidebar - Volumes & Images --><div class=\"space-y-4\"><!-- Shared Volumes --><div class=\"card p-4\"><h3 class=\"font-medium text-white mb-3\"><i aria-hidden=\"true\" class=\"fas fa-database text-purple-400 mr-2\"></i>Volumes</h3><div class=\"space-y-2\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -426,7 +426,7 @@ func Dependencies(data DependencyData) templ.Component {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 33, "</div></div><!-- Images --><div class=\"card p-4\"><h3 class=\"font-medium text-white mb-3\"><i class=\"fas fa-layer-group text-cyan-400 mr-2\"></i>Images</h3><div class=\"space-y-2\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 33, "</div></div><!-- Images --><div class=\"card p-4\"><h3 class=\"font-medium text-white mb-3\"><i aria-hidden=\"true\" class=\"fas fa-layer-group text-cyan-400 mr-2\"></i>Images</h3><div class=\"space-y-2\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -509,7 +509,7 @@ func Dependencies(data DependencyData) templ.Component {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 43, "</div></div></div></div></div><!-- Containers Tab --><div x-show=\"tab === 'containers'\" x-cloak><div class=\"card overflow-hidden\"><table class=\"w-full\"><thead><tr class=\"border-b border-dark-600\"><th class=\"text-left text-xs font-medium text-gray-400 uppercase px-4 py-3\">Container</th><th class=\"text-left text-xs font-medium text-gray-400 uppercase px-4 py-3\">Image</th><th class=\"text-left text-xs font-medium text-gray-400 uppercase px-4 py-3\">State</th><th class=\"text-left text-xs font-medium text-gray-400 uppercase px-4 py-3\">Networks</th><th class=\"text-left text-xs font-medium text-gray-400 uppercase px-4 py-3\">Volumes</th><th class=\"text-left text-xs font-medium text-gray-400 uppercase px-4 py-3\">Dependencies</th></tr></thead> <tbody class=\"divide-y divide-dark-700\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 43, "</div></div></div></div></div><!-- Containers Tab --><div x-show=\"tab === 'containers'\" x-cloak><div class=\"card overflow-hidden\"><table class=\"w-full\"><thead><tr class=\"border-b border-dark-600\"><th scope=\"col\" class=\"text-left text-xs font-medium text-gray-400 uppercase px-4 py-3\">Container</th><th scope=\"col\" class=\"text-left text-xs font-medium text-gray-400 uppercase px-4 py-3\">Image</th><th scope=\"col\" class=\"text-left text-xs font-medium text-gray-400 uppercase px-4 py-3\">State</th><th scope=\"col\" class=\"text-left text-xs font-medium text-gray-400 uppercase px-4 py-3\">Networks</th><th scope=\"col\" class=\"text-left text-xs font-medium text-gray-400 uppercase px-4 py-3\">Volumes</th><th scope=\"col\" class=\"text-left text-xs font-medium text-gray-400 uppercase px-4 py-3\">Dependencies</th></tr></thead> <tbody class=\"divide-y divide-dark-700\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -642,7 +642,7 @@ func Dependencies(data DependencyData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			for _, net := range data.Networks {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 59, "<div class=\"card p-4\"><div class=\"flex items-center justify-between mb-3\"><div class=\"flex items-center gap-3\"><div class=\"w-10 h-10 rounded-lg bg-blue-500/20 flex items-center justify-center\"><i class=\"fas fa-network-wired text-blue-400\"></i></div><div><div class=\"flex items-center gap-2\"><a href=\"")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 59, "<div class=\"card p-4\"><div class=\"flex items-center justify-between mb-3\"><div class=\"flex items-center gap-3\"><div class=\"w-10 h-10 rounded-lg bg-blue-500/20 flex items-center justify-center\"><i aria-hidden=\"true\" class=\"fas fa-network-wired text-blue-400\"></i></div><div><div class=\"flex items-center gap-2\"><a href=\"")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -778,7 +778,7 @@ func Dependencies(data DependencyData) templ.Component {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 75, "</div></div><!-- Volumes Tab --><div x-show=\"tab === 'volumes'\" x-cloak><div class=\"card overflow-hidden\"><table class=\"w-full\"><thead><tr class=\"border-b border-dark-600\"><th class=\"text-left text-xs font-medium text-gray-400 uppercase px-4 py-3\">Volume</th><th class=\"text-left text-xs font-medium text-gray-400 uppercase px-4 py-3\">Driver</th><th class=\"text-left text-xs font-medium text-gray-400 uppercase px-4 py-3\">Size</th><th class=\"text-left text-xs font-medium text-gray-400 uppercase px-4 py-3\">Status</th><th class=\"text-left text-xs font-medium text-gray-400 uppercase px-4 py-3\">Used By</th></tr></thead> <tbody class=\"divide-y divide-dark-700\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 75, "</div></div><!-- Volumes Tab --><div x-show=\"tab === 'volumes'\" x-cloak><div class=\"card overflow-hidden\"><table class=\"w-full\"><thead><tr class=\"border-b border-dark-600\"><th scope=\"col\" class=\"text-left text-xs font-medium text-gray-400 uppercase px-4 py-3\">Volume</th><th scope=\"col\" class=\"text-left text-xs font-medium text-gray-400 uppercase px-4 py-3\">Driver</th><th scope=\"col\" class=\"text-left text-xs font-medium text-gray-400 uppercase px-4 py-3\">Size</th><th scope=\"col\" class=\"text-left text-xs font-medium text-gray-400 uppercase px-4 py-3\">Status</th><th scope=\"col\" class=\"text-left text-xs font-medium text-gray-400 uppercase px-4 py-3\">Used By</th></tr></thead> <tbody class=\"divide-y divide-dark-700\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -884,7 +884,7 @@ func Dependencies(data DependencyData) templ.Component {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 88, "</tbody></table></div></div><!-- Images Tab --><div x-show=\"tab === 'images'\" x-cloak><div class=\"card overflow-hidden\"><table class=\"w-full\"><thead><tr class=\"border-b border-dark-600\"><th class=\"text-left text-xs font-medium text-gray-400 uppercase px-4 py-3\">Image</th><th class=\"text-left text-xs font-medium text-gray-400 uppercase px-4 py-3\">Size</th><th class=\"text-left text-xs font-medium text-gray-400 uppercase px-4 py-3\">Containers</th><th class=\"text-left text-xs font-medium text-gray-400 uppercase px-4 py-3\">Status</th></tr></thead> <tbody class=\"divide-y divide-dark-700\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 88, "</tbody></table></div></div><!-- Images Tab --><div x-show=\"tab === 'images'\" x-cloak><div class=\"card overflow-hidden\"><table class=\"w-full\"><thead><tr class=\"border-b border-dark-600\"><th scope=\"col\" class=\"text-left text-xs font-medium text-gray-400 uppercase px-4 py-3\">Image</th><th scope=\"col\" class=\"text-left text-xs font-medium text-gray-400 uppercase px-4 py-3\">Size</th><th scope=\"col\" class=\"text-left text-xs font-medium text-gray-400 uppercase px-4 py-3\">Containers</th><th scope=\"col\" class=\"text-left text-xs font-medium text-gray-400 uppercase px-4 py-3\">Status</th></tr></thead> <tbody class=\"divide-y divide-dark-700\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -1243,14 +1243,14 @@ func containerChip(c ContainerDep) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			if len(c.Volumes) > 0 {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 117, "<span class=\"text-xs text-purple-400\"><i class=\"fas fa-database mr-0.5\"></i>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 117, "<span class=\"text-xs text-purple-400\"><i aria-hidden=\"true\" class=\"fas fa-database mr-0.5\"></i>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var57 string
 				templ_7745c5c3_Var57, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d vol", len(c.Volumes)))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/dependencies/dependencies.templ`, Line: 463, Col: 83}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/dependencies/dependencies.templ`, Line: 463, Col: 102}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var57))
 				if templ_7745c5c3_Err != nil {
@@ -1262,14 +1262,14 @@ func containerChip(c ContainerDep) templ.Component {
 				}
 			}
 			if len(c.Ports) > 0 {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 119, "<span class=\"text-xs text-cyan-400\"><i class=\"fas fa-plug mr-0.5\"></i>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 119, "<span class=\"text-xs text-cyan-400\"><i aria-hidden=\"true\" class=\"fas fa-plug mr-0.5\"></i>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var58 string
 				templ_7745c5c3_Var58, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d port", len(c.Ports)))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/dependencies/dependencies.templ`, Line: 468, Col: 78}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/dependencies/dependencies.templ`, Line: 468, Col: 97}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var58))
 				if templ_7745c5c3_Err != nil {

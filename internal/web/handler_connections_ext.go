@@ -135,6 +135,19 @@ func (h *Handler) SSHTunnelsTempl(w http.ResponseWriter, r *http.Request) {
 }
 
 // SSHTunnelCreate creates a new SSH tunnel.
+// sshTunnelCreateForm captures the tunnel-create inputs. local_host
+// and remote_host get sensible defaults after binding (127.0.0.1 /
+// localhost); the port validators enforce the well-known TCP range
+// up front so the operator gets a precise error instead of a
+// service-level "invalid local port" later.
+type sshTunnelCreateForm struct {
+	Type       string `form:"type" validate:"required"`
+	LocalHost  string `form:"local_host"`
+	LocalPort  int    `form:"local_port" validate:"required,gte=1,lte=65535"`
+	RemoteHost string `form:"remote_host"`
+	RemotePort int    `form:"remote_port" validate:"gte=0,lte=65535"`
+}
+
 func (h *Handler) SSHTunnelCreate(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	connIDStr := chi.URLParam(r, "id")
@@ -164,44 +177,29 @@ func (h *Handler) SSHTunnelCreate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Parse form data
-	if err := r.ParseForm(); err != nil {
-		h.jsonError(w, "invalid form data", http.StatusBadRequest)
+	var form sshTunnelCreateForm
+	if msg := BindForm(r, &form); msg != "" {
+		h.jsonError(w, msg, http.StatusBadRequest)
 		return
 	}
 
-	tunnelType := r.FormValue("type")
-	localHost := r.FormValue("local_host")
+	localHost := form.LocalHost
 	if localHost == "" {
 		localHost = "127.0.0.1"
 	}
-
-	localPort := 0
-	if lp := r.FormValue("local_port"); lp != "" {
-		if _, err := fmt.Sscanf(lp, "%d", &localPort); err != nil || localPort < 1 || localPort > 65535 {
-			h.jsonError(w, "invalid local port", http.StatusBadRequest)
-			return
-		}
-	}
-
-	remoteHost := r.FormValue("remote_host")
+	remoteHost := form.RemoteHost
 	if remoteHost == "" {
 		remoteHost = "localhost"
-	}
-
-	remotePort := 0
-	if rp := r.FormValue("remote_port"); rp != "" {
-		fmt.Sscanf(rp, "%d", &remotePort)
 	}
 
 	// Create tunnel
 	input := models.CreateSSHTunnelInput{
 		ConnectionID: connID,
-		Type:         models.SSHTunnelType(tunnelType),
+		Type:         models.SSHTunnelType(form.Type),
 		LocalHost:    localHost,
-		LocalPort:    localPort,
+		LocalPort:    form.LocalPort,
 		RemoteHost:   remoteHost,
-		RemotePort:   remotePort,
+		RemotePort:   form.RemotePort,
 	}
 
 	tunnel, err := svc.CreateTunnel(ctx, input, userID)
@@ -303,6 +301,20 @@ func (h *Handler) DatabaseConnectionsTempl(w http.ResponseWriter, r *http.Reques
 }
 
 // DatabaseConnectionCreate creates a new database connection.
+// databaseConnectionCreateForm captures the create-connection
+// inputs. Port defaults to the type's well-known port after
+// binding when blank (or 0).
+type databaseConnectionCreateForm struct {
+	Name     string `form:"name" validate:"required"`
+	Type     string `form:"type" validate:"required"`
+	Host     string `form:"host" validate:"required"`
+	Port     int    `form:"port" validate:"gte=0,lte=65535"`
+	Database string `form:"database"`
+	Username string `form:"username"`
+	Password string `form:"password"`
+	SSL      bool   `form:"ssl"`
+}
+
 func (h *Handler) DatabaseConnectionCreate(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	userData := h.getUserData(r)
@@ -323,31 +335,27 @@ func (h *Handler) DatabaseConnectionCreate(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	if err := r.ParseForm(); err != nil {
-		http.Error(w, "Invalid form data", http.StatusBadRequest)
+	var form databaseConnectionCreateForm
+	if msg := BindForm(r, &form); msg != "" {
+		h.setFlash(w, r, "error", msg)
+		http.Redirect(w, r, "/connections/database/new", http.StatusSeeOther)
 		return
 	}
 
-	port, _ := strconv.Atoi(r.FormValue("port"))
+	port := form.Port
 	if port == 0 {
-		port = models.GetDefaultPort(models.DatabaseType(r.FormValue("type")))
+		port = models.GetDefaultPort(models.DatabaseType(form.Type))
 	}
 
 	input := models.CreateDatabaseConnectionInput{
-		Name:     r.FormValue("name"),
-		Type:     models.DatabaseType(r.FormValue("type")),
-		Host:     r.FormValue("host"),
+		Name:     form.Name,
+		Type:     models.DatabaseType(form.Type),
+		Host:     form.Host,
 		Port:     port,
-		Database: r.FormValue("database"),
-		Username: r.FormValue("username"),
-		Password: r.FormValue("password"),
-		SSL:      r.FormValue("ssl") == "on" || r.FormValue("ssl") == "true",
-	}
-
-	if input.Name == "" || input.Host == "" {
-		h.setFlash(w, r, "error", "Name and host are required")
-		http.Redirect(w, r, "/connections/database/new", http.StatusSeeOther)
-		return
+		Database: form.Database,
+		Username: form.Username,
+		Password: form.Password,
+		SSL:      form.SSL,
 	}
 
 	_, err = h.databaseService.CreateConnection(ctx, input, userID)
@@ -672,6 +680,20 @@ func (h *Handler) LDAPConnectionsTempl(w http.ResponseWriter, r *http.Request) {
 }
 
 // LDAPConnectionCreate creates a new LDAP connection.
+// ldapBrowserConnectionForm captures the LDAP-browser create
+// connection inputs. Port defaults to 389 after binding when 0.
+type ldapBrowserConnectionForm struct {
+	Name          string `form:"name" validate:"required"`
+	Host          string `form:"host" validate:"required"`
+	Port          int    `form:"port" validate:"gte=0,lte=65535"`
+	UseTLS        bool   `form:"use_tls"`
+	StartTLS      bool   `form:"start_tls"`
+	SkipTLSVerify bool   `form:"skip_tls_verify"`
+	BindDN        string `form:"bind_dn"`
+	BindPassword  string `form:"bind_password"`
+	BaseDN        string `form:"base_dn"`
+}
+
 func (h *Handler) LDAPConnectionCreate(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	userData := h.getUserData(r)
@@ -692,32 +714,28 @@ func (h *Handler) LDAPConnectionCreate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := r.ParseForm(); err != nil {
-		http.Error(w, "Invalid form data", http.StatusBadRequest)
+	var form ldapBrowserConnectionForm
+	if msg := BindForm(r, &form); msg != "" {
+		h.setFlash(w, r, "error", msg)
+		http.Redirect(w, r, "/connections/ldap/new", http.StatusSeeOther)
 		return
 	}
 
-	port, _ := strconv.Atoi(r.FormValue("port"))
+	port := form.Port
 	if port == 0 {
 		port = 389
 	}
 
 	input := models.CreateLDAPConnectionInput{
-		Name:          r.FormValue("name"),
-		Host:          r.FormValue("host"),
+		Name:          form.Name,
+		Host:          form.Host,
 		Port:          port,
-		UseTLS:        r.FormValue("use_tls") == "on" || r.FormValue("use_tls") == "true",
-		StartTLS:      r.FormValue("start_tls") == "on" || r.FormValue("start_tls") == "true",
-		SkipTLSVerify: r.FormValue("skip_tls_verify") == "on" || r.FormValue("skip_tls_verify") == "true",
-		BindDN:        r.FormValue("bind_dn"),
-		BindPassword:  r.FormValue("bind_password"),
-		BaseDN:        r.FormValue("base_dn"),
-	}
-
-	if input.Name == "" || input.Host == "" {
-		h.setFlash(w, r, "error", "Name and host are required")
-		http.Redirect(w, r, "/connections/ldap/new", http.StatusSeeOther)
-		return
+		UseTLS:        form.UseTLS,
+		StartTLS:      form.StartTLS,
+		SkipTLSVerify: form.SkipTLSVerify,
+		BindDN:        form.BindDN,
+		BindPassword:  form.BindPassword,
+		BaseDN:        form.BaseDN,
 	}
 
 	_, err = h.ldapBrowserService.CreateConnection(ctx, input, userID)
@@ -977,6 +995,22 @@ func (h *Handler) RDPConnectionNewTempl(w http.ResponseWriter, r *http.Request) 
 }
 
 // RDPConnectionCreate creates a new RDP connection.
+// rdpConnectionCreateForm captures the RDP-create inputs. Port
+// defaults to 3389 after binding when 0. Tags is a
+// comma-separated string trimmed into a slice below.
+type rdpConnectionCreateForm struct {
+	Name       string `form:"name" validate:"required"`
+	Host       string `form:"host" validate:"required"`
+	Port       int    `form:"port" validate:"gte=0,lte=65535"`
+	Username   string `form:"username"`
+	Domain     string `form:"domain"`
+	Password   string `form:"password"`
+	Resolution string `form:"resolution"`
+	ColorDepth string `form:"color_depth"`
+	Security   string `form:"security"`
+	Tags       string `form:"tags"`
+}
+
 func (h *Handler) RDPConnectionCreate(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	userData := h.getUserData(r)
@@ -999,42 +1033,37 @@ func (h *Handler) RDPConnectionCreate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := r.ParseForm(); err != nil {
-		h.setFlash(w, r, "error", "Invalid form data")
+	var form rdpConnectionCreateForm
+	if msg := BindForm(r, &form); msg != "" {
+		h.setFlash(w, r, "error", msg)
 		http.Redirect(w, r, "/connections/rdp/new", http.StatusSeeOther)
 		return
 	}
 
-	port, _ := strconv.Atoi(r.FormValue("port"))
+	port := form.Port
 	if port == 0 {
 		port = 3389
 	}
 
 	input := models.CreateRDPConnectionInput{
-		Name:       r.FormValue("name"),
-		Host:       r.FormValue("host"),
+		Name:       form.Name,
+		Host:       form.Host,
 		Port:       port,
-		Username:   r.FormValue("username"),
-		Domain:     r.FormValue("domain"),
-		Password:   r.FormValue("password"),
-		Resolution: r.FormValue("resolution"),
-		ColorDepth: r.FormValue("color_depth"),
-		Security:   models.RDPSecurityMode(r.FormValue("security")),
+		Username:   form.Username,
+		Domain:     form.Domain,
+		Password:   form.Password,
+		Resolution: form.Resolution,
+		ColorDepth: form.ColorDepth,
+		Security:   models.RDPSecurityMode(form.Security),
 	}
 
-	if tags := r.FormValue("tags"); tags != "" {
-		for _, t := range strings.Split(tags, ",") {
+	if form.Tags != "" {
+		for _, t := range strings.Split(form.Tags, ",") {
 			t = strings.TrimSpace(t)
 			if t != "" {
 				input.Tags = append(input.Tags, t)
 			}
 		}
-	}
-
-	if input.Name == "" || input.Host == "" {
-		h.setFlash(w, r, "error", "Name and host are required")
-		http.Redirect(w, r, "/connections/rdp/new", http.StatusSeeOther)
-		return
 	}
 
 	_, err = h.rdpService.CreateConnection(ctx, input, userID)

@@ -30,27 +30,27 @@ templ PullRequestsList(data PRListData) {
 			<!-- Breadcrumb -->
 			<div class="flex items-center gap-2 text-sm text-gray-400">
 				<a href="/integrations/gitea" class="hover:text-white transition-colors">
-					<i class="fas fa-code-branch mr-1"></i>Gitea
+					<i aria-hidden="true" class="fas fa-code-branch mr-1"></i>Gitea
 				</a>
-				<i class="fas fa-chevron-right text-xs"></i>
+				<i aria-hidden="true" class="fas fa-chevron-right text-xs"></i>
 				<a href={ templ.SafeURL(fmt.Sprintf("/integrations/gitea/repos/%s", data.Repo.ID)) } class="hover:text-white transition-colors">
 					{ data.Repo.FullName }
 				</a>
-				<i class="fas fa-chevron-right text-xs"></i>
+				<i aria-hidden="true" class="fas fa-chevron-right text-xs"></i>
 				<span class="text-white">Pull Requests</span>
 			</div>
 
 			<!-- Header -->
 			<div class="flex items-center justify-between">
 				<div class="flex items-center gap-3">
-					<i class="fas fa-code-pull-request text-2xl text-green-400"></i>
+					<i aria-hidden="true" class="fas fa-code-pull-request text-2xl text-green-400"></i>
 					<div>
 						<h1 class="text-2xl font-display font-bold text-white">Pull Requests</h1>
 						<p class="text-gray-400 text-sm">{ data.Repo.FullName }</p>
 					</div>
 				</div>
 				<button onclick="openCreatePRModal()" class="btn-primary">
-					<i class="fas fa-plus mr-2"></i>New Pull Request
+					<i aria-hidden="true" class="fas fa-plus mr-2"></i>New Pull Request
 				</button>
 			</div>
 
@@ -62,14 +62,14 @@ templ PullRequestsList(data PRListData) {
 				<div class="flex rounded-lg overflow-hidden border border-gray-700">
 					<a href={ templ.SafeURL(fmt.Sprintf("/integrations/gitea/repos/%s/pulls?state=open", data.Repo.ID)) }
 						class={ "px-4 py-2 text-sm", stateTabClass(data.State, "open") }>
-						<i class="fas fa-circle-dot mr-1"></i>Open
+						<i aria-hidden="true" class="fas fa-circle-dot mr-1"></i>Open
 						if data.OpenCount > 0 {
 							<span class="ml-1 bg-gray-600 px-1.5 py-0.5 rounded-full text-xs">{ fmt.Sprintf("%d", data.OpenCount) }</span>
 						}
 					</a>
 					<a href={ templ.SafeURL(fmt.Sprintf("/integrations/gitea/repos/%s/pulls?state=closed", data.Repo.ID)) }
 						class={ "px-4 py-2 text-sm border-l border-gray-700", stateTabClass(data.State, "closed") }>
-						<i class="fas fa-check mr-1"></i>Closed
+						<i aria-hidden="true" class="fas fa-check mr-1"></i>Closed
 						if data.ClosedCount > 0 {
 							<span class="ml-1 bg-gray-600 px-1.5 py-0.5 rounded-full text-xs">{ fmt.Sprintf("%d", data.ClosedCount) }</span>
 						}
@@ -81,7 +81,7 @@ templ PullRequestsList(data PRListData) {
 			<div class="card">
 				if len(data.PRs) == 0 {
 					<div class="text-center py-12 text-gray-400">
-						<i class="fas fa-code-pull-request text-4xl mb-4"></i>
+						<i aria-hidden="true" class="fas fa-code-pull-request text-4xl mb-4"></i>
 						<p class="text-lg">No pull requests found</p>
 						<p class="text-sm mt-2">Create a pull request to propose changes</p>
 					</div>
@@ -124,14 +124,14 @@ templ prRow(pr PRItem, repoID string) {
 				<span>·</span>
 				<span class="text-xs">
 					<code class="bg-gray-700 px-1.5 py-0.5 rounded">{ pr.HeadRef }</code>
-					<i class="fas fa-arrow-right mx-1"></i>
+					<i aria-hidden="true" class="fas fa-arrow-right mx-1"></i>
 					<code class="bg-gray-700 px-1.5 py-0.5 rounded">{ pr.BaseRef }</code>
 				</span>
 			</div>
 		</div>
 		<div class="flex items-center gap-4 text-sm text-gray-400">
 			if pr.Comments > 0 {
-				<span><i class="fas fa-comment mr-1"></i>{ fmt.Sprintf("%d", pr.Comments) }</span>
+				<span><i aria-hidden="true" class="fas fa-comment mr-1"></i>{ fmt.Sprintf("%d", pr.Comments) }</span>
 			}
 		</div>
 	</div>
@@ -156,18 +156,18 @@ templ repoTabNav(repo RepoDetail, active string, openIssues, openPRs int) {
 		<nav class="flex gap-1" aria-label="Repository tabs">
 			<a href={ templ.SafeURL(fmt.Sprintf("/integrations/gitea/repos/%s", repo.ID)) }
 				class={ "px-4 py-2 text-sm font-medium rounded-t-lg transition-colors", tabClass(active, "code") }>
-				<i class="fas fa-code mr-2"></i>Code
+				<i aria-hidden="true" class="fas fa-code mr-2"></i>Code
 			</a>
 			<a href={ templ.SafeURL(fmt.Sprintf("/integrations/gitea/repos/%s/pulls?state=open", repo.ID)) }
 				class={ "px-4 py-2 text-sm font-medium rounded-t-lg transition-colors flex items-center gap-2", tabClass(active, "pulls") }>
-				<i class="fas fa-code-pull-request"></i>Pull Requests
+				<i aria-hidden="true" class="fas fa-code-pull-request"></i>Pull Requests
 				if openPRs > 0 {
 					<span class="bg-gray-700 text-xs px-1.5 py-0.5 rounded-full">{ fmt.Sprintf("%d", openPRs) }</span>
 				}
 			</a>
 			<a href={ templ.SafeURL(fmt.Sprintf("/integrations/gitea/repos/%s/issues?state=open", repo.ID)) }
 				class={ "px-4 py-2 text-sm font-medium rounded-t-lg transition-colors flex items-center gap-2", tabClass(active, "issues") }>
-				<i class="fas fa-circle-exclamation"></i>Issues
+				<i aria-hidden="true" class="fas fa-circle-exclamation"></i>Issues
 				if openIssues > 0 {
 					<span class="bg-gray-700 text-xs px-1.5 py-0.5 rounded-full">{ fmt.Sprintf("%d", openIssues) }</span>
 				}
@@ -187,14 +187,14 @@ templ createPRModal(data PRListData) {
 	<div id="create-pr-modal" class="fixed inset-0 bg-black/60 z-50 hidden items-center justify-center">
 		<div class="bg-gray-800 rounded-xl border border-gray-700 p-6 w-full max-w-lg mx-4">
 			<h3 class="text-lg font-semibold text-white mb-4">
-				<i class="fas fa-code-pull-request mr-2 text-green-400"></i>New Pull Request
+				<i aria-hidden="true" class="fas fa-code-pull-request mr-2 text-green-400"></i>New Pull Request
 			</h3>
 			<form id="create-pr-form" class="space-y-4">
 				<input type="hidden" name="csrf_token" value={ data.CSRFToken }/>
 				<div>
 					<label class="block text-sm text-gray-400 mb-1">Title</label>
 					<input type="text" name="title" required placeholder="What does this PR do?"
-						class="w-full px-3 py-2 bg-gray-900 border border-gray-600 rounded-lg text-white focus:border-blue-500"/>
+						class="w-full px-3 py-2 bg-gray-900 border border-gray-600 rounded-lg text-white focus:border-blue-500" aria-label="Title"/>
 				</div>
 				<div class="grid grid-cols-2 gap-4">
 					<div>
@@ -237,16 +237,16 @@ templ prDetailModalPartial() {
 		<div class="bg-gray-800 rounded-xl border border-gray-700 p-6 w-full max-w-3xl mx-4 max-h-[85vh] flex flex-col">
 			<div class="flex items-center justify-between mb-4">
 				<h3 class="text-lg font-semibold text-white">
-					<i class="fas fa-code-pull-request mr-2 text-green-400"></i>
+					<i aria-hidden="true" class="fas fa-code-pull-request mr-2 text-green-400"></i>
 					<span id="pr-detail-title">Pull Request</span>
 				</h3>
 				<button onclick="closeModal('pr-detail-modal')" class="text-gray-400 hover:text-white">
-					<i class="fas fa-times"></i>
+					<i aria-hidden="true" class="fas fa-times"></i>
 				</button>
 			</div>
 			<div id="pr-detail-content" class="flex-1 overflow-y-auto">
 				<div class="text-center py-8 text-gray-400">
-					<i class="fas fa-spinner fa-spin text-2xl"></i>
+					<i aria-hidden="true" class="fas fa-spinner fa-spin text-2xl"></i>
 				</div>
 			</div>
 		</div>
@@ -306,7 +306,7 @@ templ prScripts(data PRListData) {
 		// View PR detail
 		async function viewPR(number) {
 			openModal('pr-detail-modal');
-			document.getElementById('pr-detail-content').innerHTML = '<div class="text-center py-8"><i class="fas fa-spinner fa-spin text-2xl text-gray-400"></i></div>';
+			document.getElementById('pr-detail-content').innerHTML = '<div class="text-center py-8"><i aria-hidden="true" class="fas fa-spinner fa-spin text-2xl text-gray-400"></i></div>';
 
 			try {
 				const resp = await fetch(`/integrations/gitea/repos/${prRepoID}/pulls/${number}`);
@@ -322,17 +322,17 @@ templ prScripts(data PRListData) {
 							<\/span>
 							<span class="text-gray-400 text-sm">${escapeHtml(pr.user?.login)} wants to merge<\/span>
 							<code class="text-xs bg-gray-700 px-2 py-0.5 rounded">${escapeHtml(pr.head?.ref)}<\/code>
-							<i class="fas fa-arrow-right text-gray-500 text-xs"><\/i>
+							<i aria-hidden="true" class="fas fa-arrow-right text-gray-500 text-xs"><\/i>
 							<code class="text-xs bg-gray-700 px-2 py-0.5 rounded">${escapeHtml(pr.base?.ref)}<\/code>
 						<\/div>
 						${pr.body ? `<div class="bg-gray-900 p-4 rounded-lg text-gray-300 text-sm whitespace-pre-wrap">${escapeHtml(pr.body)}<\/div>` : ''}
 						<div class="flex items-center gap-4 pt-4 border-t border-gray-700">
 							<a href="${escapeHtml(pr.html_url)}" target="_blank" class="btn-ghost text-sm">
-								<i class="fas fa-external-link-alt mr-2"><\/i>View in Gitea
+								<i aria-hidden="true" class="fas fa-external-link-alt mr-2"><\/i>View in Gitea
 							<\/a>
 							${pr.mergeable && pr.state === 'open' && !pr.merged ? `
 								<button onclick="mergePR(${pr.number})" class="btn-primary text-sm">
-									<i class="fas fa-code-merge mr-2"><\/i>Merge
+									<i aria-hidden="true" class="fas fa-code-merge mr-2"><\/i>Merge
 								<\/button>
 							` : ''}
 						<\/div>

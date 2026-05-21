@@ -16,6 +16,7 @@ import templruntime "github.com/a-h/templ/runtime"
 
 import (
 	"fmt"
+	"github.com/fr4nsys/usulnet/internal/web/templates/components"
 	"github.com/fr4nsys/usulnet/internal/web/templates/layouts"
 )
 
@@ -280,7 +281,7 @@ func Drift(data DriftData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			if len(data.Detections) == 0 {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 37, "<div class=\"card p-12 text-center\"><i class=\"fas fa-check-circle text-4xl text-green-400 mb-4\"></i><h3 class=\"text-lg font-medium text-white mb-2\">No Drift Detected</h3><p class=\"text-gray-400\">Configuration drift detections will appear here when changes are found.</p></div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 37, "<div class=\"card p-12 text-center\"><i aria-hidden=\"true\" class=\"fas fa-check-circle text-4xl text-green-400 mb-4\"></i><h3 class=\"text-lg font-medium text-white mb-2\">No Drift Detected</h3><p class=\"text-gray-400\">Configuration drift detections will appear here when changes are found.</p></div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -317,13 +318,13 @@ func Drift(data DriftData) templ.Component {
 					var templ_7745c5c3_Var3 templ.SafeURL
 					templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinURLErrs(templ.SafeURL(driftPaginationURL(data, data.CurrentPage-1)))
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/drift/drift.templ`, Line: 124, Col: 75}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/drift/drift.templ`, Line: 125, Col: 75}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 43, "\" class=\"btn-secondary text-sm\"><i class=\"fas fa-chevron-left mr-1\"></i>Prev</a> ")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 43, "\" class=\"btn-secondary text-sm\"><i aria-hidden=\"true\" class=\"fas fa-chevron-left mr-1\"></i>Prev</a> ")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
@@ -335,7 +336,7 @@ func Drift(data DriftData) templ.Component {
 				var templ_7745c5c3_Var4 string
 				templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", data.CurrentPage))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/drift/drift.templ`, Line: 129, Col: 48}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/drift/drift.templ`, Line: 130, Col: 48}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 				if templ_7745c5c3_Err != nil {
@@ -348,7 +349,7 @@ func Drift(data DriftData) templ.Component {
 				var templ_7745c5c3_Var5 string
 				templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", data.TotalPages))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/drift/drift.templ`, Line: 129, Col: 90}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/drift/drift.templ`, Line: 130, Col: 90}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 				if templ_7745c5c3_Err != nil {
@@ -366,13 +367,13 @@ func Drift(data DriftData) templ.Component {
 					var templ_7745c5c3_Var6 templ.SafeURL
 					templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinURLErrs(templ.SafeURL(driftPaginationURL(data, data.CurrentPage+1)))
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/drift/drift.templ`, Line: 132, Col: 75}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/drift/drift.templ`, Line: 133, Col: 75}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 48, "\" class=\"btn-secondary text-sm\">Next<i class=\"fas fa-chevron-right ml-1\"></i></a>")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 48, "\" class=\"btn-secondary text-sm\">Next<i aria-hidden=\"true\" class=\"fas fa-chevron-right ml-1\"></i></a>")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
@@ -382,7 +383,7 @@ func Drift(data DriftData) templ.Component {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 50, "<!-- Diff Modal --><div x-show=\"showDiffs\" x-cloak class=\"fixed inset-0 z-50 flex items-center justify-center bg-black/60\" @click.self=\"showDiffs = false; diffsData = []\"><div class=\"bg-dark-800 rounded-lg shadow-xl max-w-4xl w-full mx-4 max-h-[80vh] flex flex-col\"><div class=\"flex items-center justify-between p-4 border-b border-dark-600\"><h3 class=\"text-lg font-medium text-white\">Drift Diffs</h3><button @click=\"showDiffs = false; diffsData = []\" class=\"text-gray-400 hover:text-white\"><i class=\"fas fa-times\"></i></button></div><div class=\"p-4 overflow-auto flex-1\"><template x-if=\"diffsData.length > 0\"><table class=\"w-full text-sm\"><thead><tr class=\"text-left text-gray-400 border-b border-dark-600\"><th class=\"pb-2 pr-3\">Type</th><th class=\"pb-2 pr-3\">Field</th><th class=\"pb-2 pr-3\">Old Value</th><th class=\"pb-2\">New Value</th></tr></thead> <tbody><template x-for=\"diff in diffsData\" :key=\"diff.field\"><tr class=\"border-b border-dark-700\"><td class=\"py-2 pr-3\"><span class=\"px-2 py-0.5 text-xs bg-dark-600 text-gray-300 rounded\" x-text=\"diff.type\"></span></td><td class=\"py-2 pr-3 font-mono text-xs text-white\" x-text=\"diff.field\"></td><td class=\"py-2 pr-3\"><span class=\"font-mono text-xs text-red-400 break-all\" x-text=\"diff.old_value || '(none)'\"></span></td><td class=\"py-2\"><span class=\"font-mono text-xs text-green-400 break-all\" x-text=\"diff.new_value || '(none)'\"></span></td></tr></template></tbody></table></template><template x-if=\"diffsData.length === 0\"><div class=\"text-center py-8 text-gray-400\">No diff data available.</div></template></div></div></div></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 50, "<!-- Diff Modal --><div x-show=\"showDiffs\" x-cloak class=\"fixed inset-0 z-50 flex items-center justify-center bg-black/60\" @click.self=\"showDiffs = false; diffsData = []\"><div class=\"bg-dark-800 rounded-lg shadow-xl max-w-4xl w-full mx-4 max-h-[80vh] flex flex-col\"><div class=\"flex items-center justify-between p-4 border-b border-dark-600\"><h3 class=\"text-lg font-medium text-white\">Drift Diffs</h3><button @click=\"showDiffs = false; diffsData = []\" class=\"text-gray-400 hover:text-white\"><i aria-hidden=\"true\" class=\"fas fa-times\"></i></button></div><div class=\"p-4 overflow-auto flex-1\"><template x-if=\"diffsData.length > 0\"><table class=\"w-full text-sm\"><thead><tr class=\"text-left text-gray-400 border-b border-dark-600\"><th scope=\"col\" class=\"pb-2 pr-3\">Type</th><th scope=\"col\" class=\"pb-2 pr-3\">Field</th><th scope=\"col\" class=\"pb-2 pr-3\">Old Value</th><th scope=\"col\" class=\"pb-2\">New Value</th></tr></thead> <tbody><template x-for=\"diff in diffsData\" :key=\"diff.field\"><tr class=\"border-b border-dark-700\"><td class=\"py-2 pr-3\"><span class=\"px-2 py-0.5 text-xs bg-dark-600 text-gray-300 rounded\" x-text=\"diff.type\"></span></td><td class=\"py-2 pr-3 font-mono text-xs text-white\" x-text=\"diff.field\"></td><td class=\"py-2 pr-3\"><span class=\"font-mono text-xs text-red-400 break-all\" x-text=\"diff.old_value || '(none)'\"></span></td><td class=\"py-2\"><span class=\"font-mono text-xs text-green-400 break-all\" x-text=\"diff.new_value || '(none)'\"></span></td></tr></template></tbody></table></template><template x-if=\"diffsData.length === 0\"><div class=\"text-center py-8 text-gray-400\">No diff data available.</div></template></div></div></div></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -446,7 +447,7 @@ func driftStat(label, value, icon, color string) templ.Component {
 		var templ_7745c5c3_Var10 string
 		templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(value)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/drift/drift.templ`, Line: 188, Col: 49}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/drift/drift.templ`, Line: 189, Col: 49}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 		if templ_7745c5c3_Err != nil {
@@ -459,7 +460,7 @@ func driftStat(label, value, icon, color string) templ.Component {
 		var templ_7745c5c3_Var11 string
 		templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(label)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/drift/drift.templ`, Line: 189, Col: 42}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/drift/drift.templ`, Line: 190, Col: 42}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 		if templ_7745c5c3_Err != nil {
@@ -550,7 +551,7 @@ func driftRow(d DriftView) templ.Component {
 			var templ_7745c5c3_Var17 string
 			templ_7745c5c3_Var17, templ_7745c5c3_Err = templ.JoinStringErrs(d.ResourceName)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/drift/drift.templ`, Line: 203, Col: 66}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/drift/drift.templ`, Line: 204, Col: 66}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var17))
 			if templ_7745c5c3_Err != nil {
@@ -568,7 +569,7 @@ func driftRow(d DriftView) templ.Component {
 			var templ_7745c5c3_Var18 string
 			templ_7745c5c3_Var18, templ_7745c5c3_Err = templ.JoinStringErrs(d.ResourceID)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/drift/drift.templ`, Line: 205, Col: 64}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/drift/drift.templ`, Line: 206, Col: 64}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var18))
 			if templ_7745c5c3_Err != nil {
@@ -583,12 +584,20 @@ func driftRow(d DriftView) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		var templ_7745c5c3_Var19 = []any{driftSeverityBadge(d.Severity), "px-2 py-0.5 text-xs rounded"}
+		templ_7745c5c3_Err = components.Chip(driftSeverityTone(d.Severity), d.Severity).Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 66, "<!-- Status badge -->")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var19 = []any{driftStatusBadge(d.Status), "px-2 py-0.5 text-xs rounded"}
 		templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var19...)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 66, "<span class=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 67, "<span class=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -601,182 +610,147 @@ func driftRow(d DriftView) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 67, "\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 68, "\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var21 string
-		templ_7745c5c3_Var21, templ_7745c5c3_Err = templ.JoinStringErrs(d.Severity)
+		templ_7745c5c3_Var21, templ_7745c5c3_Err = templ.JoinStringErrs(d.Status)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/drift/drift.templ`, Line: 208, Col: 94}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/drift/drift.templ`, Line: 211, Col: 88}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var21))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 68, "</span><!-- Status badge -->")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 69, "</span><!-- Resource type badge --><span class=\"px-2 py-0.5 text-xs bg-dark-600 text-gray-300 rounded\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		var templ_7745c5c3_Var22 = []any{driftStatusBadge(d.Status), "px-2 py-0.5 text-xs rounded"}
-		templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var22...)
+		var templ_7745c5c3_Var22 string
+		templ_7745c5c3_Var22, templ_7745c5c3_Err = templ.JoinStringErrs(d.ResourceType)
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/drift/drift.templ`, Line: 213, Col: 88}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var22))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 69, "<span class=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 70, "</span><!-- Diff count badge --><span class=\"px-2 py-0.5 text-xs bg-dark-600 text-gray-300 rounded\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var23 string
-		templ_7745c5c3_Var23, templ_7745c5c3_Err = templ.JoinStringErrs(templ.CSSClasses(templ_7745c5c3_Var22).String())
+		templ_7745c5c3_Var23, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", d.DiffCount))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/drift/drift.templ`, Line: 1, Col: 0}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/drift/drift.templ`, Line: 216, Col: 37}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var23))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 70, "\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 71, " ")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var24 string
-		templ_7745c5c3_Var24, templ_7745c5c3_Err = templ.JoinStringErrs(d.Status)
+		templ_7745c5c3_Var24, templ_7745c5c3_Err = templ.JoinStringErrs(diffLabel(d.DiffCount))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/drift/drift.templ`, Line: 210, Col: 88}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/drift/drift.templ`, Line: 216, Col: 64}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var24))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 71, "</span><!-- Resource type badge --><span class=\"px-2 py-0.5 text-xs bg-dark-600 text-gray-300 rounded\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 72, "</span></div><div class=\"flex items-center gap-3 mt-1 text-xs text-gray-500\"><span title=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var25 string
-		templ_7745c5c3_Var25, templ_7745c5c3_Err = templ.JoinStringErrs(d.ResourceType)
+		templ_7745c5c3_Var25, templ_7745c5c3_Err = templ.JoinStringErrs(d.DetectedAtFull)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/drift/drift.templ`, Line: 212, Col: 88}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/drift/drift.templ`, Line: 220, Col: 34}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var25))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 72, "</span><!-- Diff count badge --><span class=\"px-2 py-0.5 text-xs bg-dark-600 text-gray-300 rounded\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 73, "\"><i aria-hidden=\"true\" class=\"fas fa-clock mr-1\"></i>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var26 string
-		templ_7745c5c3_Var26, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", d.DiffCount))
+		templ_7745c5c3_Var26, templ_7745c5c3_Err = templ.JoinStringErrs(d.DetectedAt)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/drift/drift.templ`, Line: 215, Col: 37}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/drift/drift.templ`, Line: 220, Col: 103}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var26))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 73, " ")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 74, "</span> <span><i aria-hidden=\"true\" class=\"fas fa-fingerprint mr-1\"></i>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var27 string
-		templ_7745c5c3_Var27, templ_7745c5c3_Err = templ.JoinStringErrs(diffLabel(d.DiffCount))
+		templ_7745c5c3_Var27, templ_7745c5c3_Err = templ.JoinStringErrs(d.ResourceID)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/drift/drift.templ`, Line: 215, Col: 64}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/drift/drift.templ`, Line: 221, Col: 82}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var27))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 74, "</span></div><div class=\"flex items-center gap-3 mt-1 text-xs text-gray-500\"><span title=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 75, "</span></div></div><!-- Actions --><div class=\"flex items-center gap-1 flex-shrink-0\"><button @click=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var28 string
-		templ_7745c5c3_Var28, templ_7745c5c3_Err = templ.JoinStringErrs(d.DetectedAtFull)
+		templ_7745c5c3_Var28, templ_7745c5c3_Err = templ.JoinStringErrs(driftViewDiffsExpr(d.DiffsJSON))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/drift/drift.templ`, Line: 219, Col: 34}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/drift/drift.templ`, Line: 226, Col: 51}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var28))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 75, "\"><i class=\"fas fa-clock mr-1\"></i>")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		var templ_7745c5c3_Var29 string
-		templ_7745c5c3_Var29, templ_7745c5c3_Err = templ.JoinStringErrs(d.DetectedAt)
-		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/drift/drift.templ`, Line: 219, Col: 84}
-		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var29))
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 76, "</span> <span><i class=\"fas fa-fingerprint mr-1\"></i>")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		var templ_7745c5c3_Var30 string
-		templ_7745c5c3_Var30, templ_7745c5c3_Err = templ.JoinStringErrs(d.ResourceID)
-		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/drift/drift.templ`, Line: 220, Col: 63}
-		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var30))
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 77, "</span></div></div><!-- Actions --><div class=\"flex items-center gap-1 flex-shrink-0\"><button @click=\"")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		var templ_7745c5c3_Var31 string
-		templ_7745c5c3_Var31, templ_7745c5c3_Err = templ.JoinStringErrs(driftViewDiffsExpr(d.DiffsJSON))
-		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/drift/drift.templ`, Line: 225, Col: 51}
-		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var31))
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 78, "\" class=\"p-1.5 text-gray-400 hover:text-primary-400 transition-colors\" title=\"View Diffs\"><i class=\"fas fa-code-compare text-sm\"></i></button> ")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 76, "\" class=\"p-1.5 text-gray-400 hover:text-primary-400 transition-colors\" title=\"View Diffs\"><i aria-hidden=\"true\" class=\"fas fa-code-compare text-sm\"></i></button> ")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		if d.Status == "open" {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 79, "<form method=\"POST\" action=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 77, "<form method=\"POST\" action=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var32 templ.SafeURL
-			templ_7745c5c3_Var32, templ_7745c5c3_Err = templ.JoinURLErrs(templ.SafeURL(fmt.Sprintf("/drift/%s/accept", d.ID)))
+			var templ_7745c5c3_Var29 templ.SafeURL
+			templ_7745c5c3_Var29, templ_7745c5c3_Err = templ.JoinURLErrs(templ.SafeURL(fmt.Sprintf("/drift/%s/accept", d.ID)))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/drift/drift.templ`, Line: 229, Col: 85}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/drift/drift.templ`, Line: 230, Col: 85}
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var32))
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 80, "\" class=\"inline\"><button type=\"submit\" class=\"p-1.5 text-gray-400 hover:text-green-400 transition-colors\" title=\"Accept drift\"><i class=\"fas fa-check text-sm\"></i></button></form><form method=\"POST\" action=\"")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var29))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var33 templ.SafeURL
-			templ_7745c5c3_Var33, templ_7745c5c3_Err = templ.JoinURLErrs(templ.SafeURL(fmt.Sprintf("/drift/%s/remediate", d.ID)))
-			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/drift/drift.templ`, Line: 234, Col: 88}
-			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var33))
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 78, "\" class=\"inline\"><button type=\"submit\" class=\"p-1.5 text-gray-400 hover:text-green-400 transition-colors\" title=\"Accept drift\"><i aria-hidden=\"true\" class=\"fas fa-check text-sm\"></i></button></form><form method=\"POST\" action=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 81, "\" class=\"inline\"><button type=\"submit\" class=\"p-1.5 text-gray-400 hover:text-yellow-400 transition-colors\" title=\"Remediate drift\"><i class=\"fas fa-wrench text-sm\"></i></button></form>")
+			var templ_7745c5c3_Var30 templ.SafeURL
+			templ_7745c5c3_Var30, templ_7745c5c3_Err = templ.JoinURLErrs(templ.SafeURL(fmt.Sprintf("/drift/%s/remediate", d.ID)))
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/drift/drift.templ`, Line: 235, Col: 88}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var30))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 79, "\" class=\"inline\"><button type=\"submit\" class=\"p-1.5 text-gray-400 hover:text-yellow-400 transition-colors\" title=\"Remediate drift\"><i aria-hidden=\"true\" class=\"fas fa-wrench text-sm\"></i></button></form>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 82, "</div></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 80, "</div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -801,16 +775,21 @@ func driftStatColor(color string) string {
 	}
 }
 
-func driftSeverityBadge(severity string) string {
+// driftSeverityTone maps drift's severity vocabulary (critical /
+// warning / info / …) to the shared components.Tone. Note that
+// drift uses "warning" rather than the recon "high"/"medium"
+// ladder, so we map it explicitly here rather than going through
+// components.SeverityToTone.
+func driftSeverityTone(severity string) components.Tone {
 	switch severity {
 	case "critical":
-		return "bg-red-500/20 text-red-400"
+		return components.ToneCritical
 	case "warning":
-		return "bg-yellow-500/20 text-yellow-400"
+		return components.ToneWarning
 	case "info":
-		return "bg-blue-500/20 text-blue-400"
+		return components.ToneInfo
 	default:
-		return "bg-gray-500/20 text-gray-400"
+		return components.ToneNeutral
 	}
 }
 

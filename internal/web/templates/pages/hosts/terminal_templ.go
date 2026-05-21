@@ -54,7 +54,7 @@ func HostTerminal(data HostTerminalData) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<nav class=\"flex items-center gap-2 text-sm text-gray-400 mb-4\"><a href=\"/nodes\" class=\"hover:text-primary-400 transition-colors\">Nodes</a> <i class=\"fas fa-chevron-right text-xs\"></i> <a href=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<nav class=\"flex items-center gap-2 text-sm text-gray-400 mb-4\"><a href=\"/nodes\" class=\"hover:text-primary-400 transition-colors\">Nodes</a> <i aria-hidden=\"true\" class=\"fas fa-chevron-right text-xs\"></i> <a href=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -80,7 +80,7 @@ func HostTerminal(data HostTerminalData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</a> <i class=\"fas fa-chevron-right text-xs\"></i> <span class=\"text-white\">Terminal</span></nav><div class=\"flex items-center justify-between mb-6\"><div class=\"flex items-center gap-4\"><div class=\"w-10 h-10 rounded-lg bg-dark-700 flex items-center justify-center\"><i class=\"fas fa-terminal text-lg text-primary-400\"></i></div><div><h1 class=\"text-2xl font-bold font-display text-white\">Node Terminal</h1><p class=\"text-gray-400 text-sm\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</a> <i aria-hidden=\"true\" class=\"fas fa-chevron-right text-xs\"></i> <span class=\"text-white\">Terminal</span></nav><div class=\"flex items-center justify-between mb-6\"><div class=\"flex items-center gap-4\"><div class=\"w-10 h-10 rounded-lg bg-dark-700 flex items-center justify-center\"><i aria-hidden=\"true\" class=\"fas fa-terminal text-lg text-primary-400\"></i></div><div><h1 class=\"text-2xl font-bold font-display text-white\">Node Terminal</h1><p class=\"text-gray-400 text-sm\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -119,17 +119,17 @@ func HostTerminal(data HostTerminalData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "\" class=\"px-4 py-2 bg-dark-700 hover:bg-dark-600 text-gray-300 rounded-lg transition-colors\"><i class=\"fas fa-arrow-left mr-2\"></i>Back</a></div></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "\" class=\"px-4 py-2 bg-dark-700 hover:bg-dark-600 text-gray-300 rounded-lg transition-colors\"><i aria-hidden=\"true\" class=\"fas fa-arrow-left mr-2\"></i>Back</a></div></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			if !data.Ready {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "<div class=\"bg-yellow-500/10 border border-yellow-500/20 rounded-xl p-6 text-center\"><i class=\"fas fa-exclamation-triangle text-4xl text-yellow-400 mb-4\"></i><h2 class=\"text-lg font-semibold text-white mb-2\">Host PID Namespace Not Available</h2><p class=\"text-gray-400 mb-4\">The usulnet container needs <span class=\"text-primary-400 font-mono\">pid: host</span> in docker-compose.yml to access the host terminal.</p><p class=\"text-gray-400 mb-2\">Add the following to your docker-compose.yml service:</p><div class=\"bg-dark-900 rounded-lg p-4 text-left max-w-lg mx-auto mb-4 font-mono text-sm text-gray-300\"><p>pid: host</p><p>cap_add:</p><p class=\"pl-4\">- SYS_PTRACE</p><p class=\"pl-4\">- SYS_ADMIN</p></div><p class=\"text-gray-500 text-sm\">After updating docker-compose, recreate the container.</p></div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "<div class=\"bg-yellow-500/10 border border-yellow-500/20 rounded-xl p-6 text-center\"><i aria-hidden=\"true\" class=\"fas fa-exclamation-triangle text-4xl text-yellow-400 mb-4\"></i><h2 class=\"text-lg font-semibold text-white mb-2\">Host PID Namespace Not Available</h2><p class=\"text-gray-400 mb-4\">The usulnet container needs <span class=\"text-primary-400 font-mono\">pid: host</span> in docker-compose.yml to access the host terminal.</p><p class=\"text-gray-400 mb-2\">Add the following to your docker-compose.yml service:</p><div class=\"bg-dark-900 rounded-lg p-4 text-left max-w-lg mx-auto mb-4 font-mono text-sm text-gray-300\"><p>pid: host</p><p>cap_add:</p><p class=\"pl-4\">- SYS_PTRACE</p><p class=\"pl-4\">- SYS_ADMIN</p></div><p class=\"text-gray-500 text-sm\">After updating docker-compose, recreate the container.</p></div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			} else {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "<div class=\"bg-dark-700/50 border border-dark-600 rounded-lg px-4 py-3 mb-4 flex items-center gap-3\"><i class=\"fas fa-shield-alt text-primary-400\"></i> <span class=\"text-sm text-gray-400\">Session as <span class=\"text-white font-medium\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "<div class=\"bg-dark-700/50 border border-dark-600 rounded-lg px-4 py-3 mb-4 flex items-center gap-3\"><i aria-hidden=\"true\" class=\"fas fa-shield-alt text-primary-400\"></i> <span class=\"text-sm text-gray-400\">Session as <span class=\"text-white font-medium\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -155,7 +155,7 @@ func HostTerminal(data HostTerminalData) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "\" class=\"bg-dark-800 rounded-xl border border-dark-600 overflow-hidden\"><div class=\"flex items-center justify-between px-4 py-3 border-b border-dark-600 bg-dark-850\"><div class=\"flex items-center gap-3\"><div class=\"flex items-center gap-1.5\"><span class=\"w-3 h-3 rounded-full bg-red-500\"></span> <span class=\"w-3 h-3 rounded-full bg-yellow-500\"></span> <span class=\"w-3 h-3 rounded-full bg-green-500\"></span></div><span class=\"text-sm text-gray-400\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "\" class=\"card overflow-hidden\"><div class=\"flex items-center justify-between px-4 py-3 border-b border-dark-600 bg-dark-850\"><div class=\"flex items-center gap-3\"><div class=\"flex items-center gap-1.5\"><span class=\"w-3 h-3 rounded-full bg-red-500\"></span> <span class=\"w-3 h-3 rounded-full bg-yellow-500\"></span> <span class=\"w-3 h-3 rounded-full bg-green-500\"></span></div><span class=\"text-sm text-gray-400\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -181,7 +181,7 @@ func HostTerminal(data HostTerminalData) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "</span></div><div class=\"flex items-center gap-2\"><span x-show=\"connected\" class=\"flex items-center gap-1.5 text-xs text-green-400\"><span class=\"w-2 h-2 bg-green-500 rounded-full animate-pulse\"></span> Connected</span> <span x-show=\"!connected && !connecting\" class=\"flex items-center gap-1.5 text-xs text-red-400\"><span class=\"w-2 h-2 bg-red-500 rounded-full\"></span> Disconnected</span> <span x-show=\"connecting\" class=\"flex items-center gap-1.5 text-xs text-yellow-400\"><i class=\"fas fa-spinner fa-spin\"></i> Connecting...</span> <button @click=\"reconnect()\" class=\"p-2 text-gray-400 hover:text-white hover:bg-dark-600 rounded-lg transition-colors\" title=\"Reconnect\"><i class=\"fas fa-redo\"></i></button> <button @click=\"toggleFullscreen()\" class=\"p-2 text-gray-400 hover:text-white hover:bg-dark-600 rounded-lg transition-colors\" title=\"Fullscreen\"><i class=\"fas fa-expand\"></i></button></div></div><div x-ref=\"terminalContainer\" id=\"terminal\" class=\"h-[500px]\"></div></div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "</span></div><div class=\"flex items-center gap-2\"><span x-show=\"connected\" class=\"flex items-center gap-1.5 text-xs text-green-400\"><span class=\"w-2 h-2 bg-green-500 rounded-full animate-pulse\"></span> Connected</span> <span x-show=\"!connected && !connecting\" class=\"flex items-center gap-1.5 text-xs text-red-400\"><span class=\"w-2 h-2 bg-red-500 rounded-full\"></span> Disconnected</span> <span x-show=\"connecting\" class=\"flex items-center gap-1.5 text-xs text-yellow-400\"><i aria-hidden=\"true\" class=\"fas fa-spinner fa-spin\"></i> Connecting...</span> <button @click=\"reconnect()\" class=\"p-2 text-gray-400 hover:text-white hover:bg-dark-600 rounded-lg transition-colors\" title=\"Reconnect\"><i aria-hidden=\"true\" class=\"fas fa-redo\"></i></button> <button @click=\"toggleFullscreen()\" class=\"p-2 text-gray-400 hover:text-white hover:bg-dark-600 rounded-lg transition-colors\" title=\"Fullscreen\"><i aria-hidden=\"true\" class=\"fas fa-expand\"></i></button></div></div><div x-ref=\"terminalContainer\" id=\"terminal\" class=\"h-[500px]\"></div></div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}

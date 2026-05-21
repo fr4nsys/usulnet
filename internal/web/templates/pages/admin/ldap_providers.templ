@@ -46,7 +46,7 @@ templ LDAPProvidersList(data LDAPProvidersData) {
 					onclick="showNewProviderModal()"
 					class="btn-primary"
 				>
-					<i class="fas fa-plus mr-2"></i>Add Provider
+					<i aria-hidden="true" class="fas fa-plus mr-2"></i>Add Provider
 				</button>
 			</div>
 
@@ -72,20 +72,20 @@ templ LDAPProvidersList(data LDAPProvidersData) {
 					<table class="table">
 						<thead>
 							<tr>
-								<th>Provider</th>
-								<th>Host</th>
-								<th>Base DN</th>
-								<th>Security</th>
-								<th>Default Role</th>
-								<th>Status</th>
-								<th>Actions</th>
+								<th scope="col">Provider</th>
+								<th scope="col">Host</th>
+								<th scope="col">Base DN</th>
+								<th scope="col">Security</th>
+								<th scope="col">Default Role</th>
+								<th scope="col">Status</th>
+								<th scope="col">Actions</th>
 							</tr>
 						</thead>
 						<tbody>
 							if len(data.Providers) == 0 {
 								<tr>
 									<td colspan="7" class="text-center text-gray-500 py-8">
-										<i class="fas fa-sitemap text-4xl mb-3 block"></i>
+										<i aria-hidden="true" class="fas fa-sitemap text-4xl mb-3 block"></i>
 										No LDAP providers configured yet
 									</td>
 								</tr>
@@ -95,7 +95,7 @@ templ LDAPProvidersList(data LDAPProvidersData) {
 									<td>
 										<div class="flex items-center gap-3">
 											<div class="w-8 h-8 rounded-lg bg-blue-500/20 flex items-center justify-center">
-												<i class="fas fa-sitemap text-blue-400"></i>
+												<i aria-hidden="true" class="fas fa-sitemap text-blue-400"></i>
 											</div>
 											<div>
 												<div class="font-medium text-white">{ provider.Name }</div>
@@ -187,7 +187,7 @@ templ LDAPProvidersList(data LDAPProvidersData) {
 				<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
 					<div class="flex items-start gap-3 p-3 bg-dark-700 rounded-lg">
 						<div class="w-10 h-10 rounded-lg bg-blue-500/20 flex items-center justify-center shrink-0">
-							<i class="fas fa-sitemap text-blue-400"></i>
+							<i aria-hidden="true" class="fas fa-sitemap text-blue-400"></i>
 						</div>
 						<div>
 							<div class="font-medium text-white">LDAP/OpenLDAP</div>
@@ -196,7 +196,7 @@ templ LDAPProvidersList(data LDAPProvidersData) {
 					</div>
 					<div class="flex items-start gap-3 p-3 bg-dark-700 rounded-lg">
 						<div class="w-10 h-10 rounded-lg bg-blue-600/20 flex items-center justify-center shrink-0">
-							<i class="fab fa-microsoft text-blue-500"></i>
+							<i aria-hidden="true" class="fab fa-microsoft text-blue-500"></i>
 						</div>
 						<div>
 							<div class="font-medium text-white">Active Directory</div>
@@ -205,7 +205,7 @@ templ LDAPProvidersList(data LDAPProvidersData) {
 					</div>
 					<div class="flex items-start gap-3 p-3 bg-dark-700 rounded-lg">
 						<div class="w-10 h-10 rounded-lg bg-green-500/20 flex items-center justify-center shrink-0">
-							<i class="fas fa-users text-green-400"></i>
+							<i aria-hidden="true" class="fas fa-users text-green-400"></i>
 						</div>
 						<div>
 							<div class="font-medium text-white">Group Mapping</div>
@@ -228,7 +228,7 @@ templ LDAPProvidersList(data LDAPProvidersData) {
 					<div class="grid grid-cols-2 gap-4">
 						<div>
 							<label class="block text-sm font-medium text-gray-300 mb-2">Provider Name</label>
-							<input type="text" name="name" required class="input" placeholder="e.g. Corporate AD"/>
+							<input type="text" name="name" required class="input" placeholder="e.g. Corporate AD" aria-label="e.g. Corporate AD"/>
 						</div>
 						<div>
 							<label class="block text-sm font-medium text-gray-300 mb-2">Default Role</label>
@@ -246,7 +246,7 @@ templ LDAPProvidersList(data LDAPProvidersData) {
 						<div class="grid grid-cols-3 gap-4">
 							<div class="col-span-2">
 								<label class="block text-sm font-medium text-gray-300 mb-2">Host</label>
-								<input type="text" name="host" required class="input" placeholder="ldap.example.com"/>
+								<input type="text" name="host" required class="input" placeholder="ldap.example.com" aria-label="ldap.example.com"/>
 							</div>
 							<div>
 								<label class="block text-sm font-medium text-gray-300 mb-2">Port</label>
@@ -275,11 +275,11 @@ templ LDAPProvidersList(data LDAPProvidersData) {
 						<div class="space-y-4">
 							<div>
 								<label class="block text-sm font-medium text-gray-300 mb-2">Bind DN</label>
-								<input type="text" name="bind_dn" required class="input" placeholder="cn=admin,dc=example,dc=com"/>
+								<input type="text" name="bind_dn" required class="input" placeholder="cn=admin,dc=example,dc=com" aria-label="cn=admin,dc=example,dc=com"/>
 							</div>
 							<div>
 								<label class="block text-sm font-medium text-gray-300 mb-2">Bind Password</label>
-								<input type="password" name="bind_password" required class="input" placeholder="LDAP bind password"/>
+								<input type="password" name="bind_password" required class="input" placeholder="LDAP bind password" aria-label="LDAP bind password"/>
 							</div>
 						</div>
 					</div>
@@ -290,21 +290,21 @@ templ LDAPProvidersList(data LDAPProvidersData) {
 						<div class="space-y-4">
 							<div>
 								<label class="block text-sm font-medium text-gray-300 mb-2">Base DN</label>
-								<input type="text" name="base_dn" required class="input" placeholder="dc=example,dc=com"/>
+								<input type="text" name="base_dn" required class="input" placeholder="dc=example,dc=com" aria-label="dc=example,dc=com"/>
 							</div>
 							<div>
 								<label class="block text-sm font-medium text-gray-300 mb-2">User Filter</label>
-								<input type="text" name="user_filter" class="input" value="(&(objectClass=person)(uid=%s))" placeholder="(&(objectClass=person)(uid=%s))"/>
+								<input type="text" name="user_filter" class="input" value="(&(objectClass=person)(uid=%s))" placeholder="(&(objectClass=person)(uid=%s))" aria-label="(&(objectClass=person)(uid=%s))"/>
 								<p class="text-xs text-gray-500 mt-1">%s will be replaced with the username</p>
 							</div>
 							<div class="grid grid-cols-2 gap-4">
 								<div>
 									<label class="block text-sm font-medium text-gray-300 mb-2">Username Attribute</label>
-									<input type="text" name="username_attr" class="input" value="uid" placeholder="uid"/>
+									<input type="text" name="username_attr" class="input" value="uid" placeholder="uid" aria-label="uid"/>
 								</div>
 								<div>
 									<label class="block text-sm font-medium text-gray-300 mb-2">Email Attribute</label>
-									<input type="text" name="email_attr" class="input" value="mail" placeholder="mail"/>
+									<input type="text" name="email_attr" class="input" value="mail" placeholder="mail" aria-label="mail"/>
 								</div>
 							</div>
 						</div>
@@ -313,24 +313,24 @@ templ LDAPProvidersList(data LDAPProvidersData) {
 					<!-- Group Mapping -->
 					<details class="bg-dark-700 rounded-lg">
 						<summary class="p-4 cursor-pointer text-gray-300 hover:text-white">
-							<i class="fas fa-users-cog mr-2"></i>Group Role Mapping (optional)
+							<i aria-hidden="true" class="fas fa-users-cog mr-2"></i>Group Role Mapping (optional)
 						</summary>
 						<div class="p-4 pt-0 space-y-4">
 							<div>
 								<label class="block text-sm font-medium text-gray-300 mb-2">Group Filter</label>
-								<input type="text" name="group_filter" class="input" placeholder="(objectClass=groupOfNames)"/>
+								<input type="text" name="group_filter" class="input" placeholder="(objectClass=groupOfNames)" aria-label="(objectClass=groupOfNames)"/>
 							</div>
 							<div>
 								<label class="block text-sm font-medium text-gray-300 mb-2">Group Attribute</label>
-								<input type="text" name="group_attr" class="input" value="memberOf" placeholder="memberOf"/>
+								<input type="text" name="group_attr" class="input" value="memberOf" placeholder="memberOf" aria-label="memberOf"/>
 							</div>
 							<div>
 								<label class="block text-sm font-medium text-gray-300 mb-2">Admin Group</label>
-								<input type="text" name="admin_group" class="input" placeholder="CN=Admins,OU=Groups,DC=example,DC=com"/>
+								<input type="text" name="admin_group" class="input" placeholder="CN=Admins,OU=Groups,DC=example,DC=com" aria-label="CN=Admins,OU=Groups,DC=example,DC=com"/>
 							</div>
 							<div>
 								<label class="block text-sm font-medium text-gray-300 mb-2">Operator Group</label>
-								<input type="text" name="operator_group" class="input" placeholder="CN=Operators,OU=Groups,DC=example,DC=com"/>
+								<input type="text" name="operator_group" class="input" placeholder="CN=Operators,OU=Groups,DC=example,DC=com" aria-label="CN=Operators,OU=Groups,DC=example,DC=com"/>
 							</div>
 						</div>
 					</details>
@@ -431,7 +431,7 @@ templ LDAPProviderEdit(data LDAPProviderEditData) {
 		<div class="max-w-2xl mx-auto space-y-6">
 			<div class="flex items-center gap-4">
 				<a href="/admin/ldap" class="p-2 text-gray-400 hover:text-white hover:bg-dark-700 rounded-lg">
-					<i class="fas fa-arrow-left"></i>
+					<i aria-hidden="true" class="fas fa-arrow-left"></i>
 				</a>
 				<div>
 					<h1 class="text-2xl font-display font-bold text-white">Edit LDAP Provider</h1>
@@ -502,7 +502,7 @@ templ LDAPProviderEdit(data LDAPProviderEditData) {
 						</div>
 						<div>
 							<label class="block text-sm font-medium text-gray-300 mb-2">Bind Password</label>
-							<input type="password" name="bind_password" class="input" placeholder="Leave blank to keep current"/>
+							<input type="password" name="bind_password" class="input" placeholder="Leave blank to keep current" aria-label="Leave blank to keep current"/>
 						</div>
 					</div>
 				</div>
@@ -536,7 +536,7 @@ templ LDAPProviderEdit(data LDAPProviderEditData) {
 				<!-- Group Mapping -->
 				<details class="bg-dark-700 rounded-lg" open?={ data.Provider.AdminGroup != "" || data.Provider.OperatorGroup != "" }>
 					<summary class="p-4 cursor-pointer text-gray-300 hover:text-white">
-						<i class="fas fa-users-cog mr-2"></i>Group Role Mapping
+						<i aria-hidden="true" class="fas fa-users-cog mr-2"></i>Group Role Mapping
 					</summary>
 					<div class="p-4 pt-0 space-y-4">
 						<div>
@@ -583,7 +583,7 @@ templ LDAPProviderEdit(data LDAPProviderEditData) {
 						hx-swap="none"
 						class="btn-secondary"
 					>
-						<i class="fas fa-plug mr-2"></i>Test
+						<i aria-hidden="true" class="fas fa-plug mr-2"></i>Test
 					</button>
 				</div>
 			</div>

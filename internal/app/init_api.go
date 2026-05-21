@@ -14,6 +14,7 @@ import (
 	"github.com/fr4nsys/usulnet/internal/repository/postgres"
 	reconconnectors "github.com/fr4nsys/usulnet/internal/services/recon/connectors"
 	hibpconnector "github.com/fr4nsys/usulnet/internal/services/recon/connectors/hibp"
+	shodanconnector "github.com/fr4nsys/usulnet/internal/services/recon/connectors/shodan"
 	registrysvc "github.com/fr4nsys/usulnet/internal/services/registry"
 	usersvc "github.com/fr4nsys/usulnet/internal/services/user"
 )
@@ -157,6 +158,12 @@ func (app *Application) initAPI(ctx context.Context, ic *initContext) error {
 			app.Logger,
 		)
 	}
+	if ic.egressService != nil {
+		apiHandlers.Egress = handlers.NewEgressHandler(ic.egressService, app.Logger)
+	}
+	if ic.yaraService != nil {
+		apiHandlers.YARA = handlers.NewYARAHandler(ic.yaraService, app.Logger)
+	}
 
 	if ic.licenseProvider != nil {
 		apiHandlers.User.SetLicenseProvider(ic.licenseProvider)
@@ -228,6 +235,19 @@ func (app *Application) initAPI(ctx context.Context, ic *initContext) error {
 				} else {
 					app.Logger.Info("recon: HIBP connector registered",
 						"key_source", hibpKeySource(credStore, hibpKey),
+					)
+				}
+			}
+			if app.Config.Recon.Connectors.Shodan.Enabled {
+				shodanKey, shodanKeyEnabled := resolveShodanKey(ctx, credStore, app.Logger)
+				if err := reg.Register(shodanconnector.New(shodanconnector.Config{
+					APIKey:  shodanKey,
+					Enabled: shodanKeyEnabled,
+				}, app.Logger)); err != nil {
+					app.Logger.Warn("recon: Shodan connector registration failed", "error", err)
+				} else {
+					app.Logger.Info("recon: Shodan connector registered",
+						"key_source", shodanKeySource(credStore, shodanKey),
 					)
 				}
 			}

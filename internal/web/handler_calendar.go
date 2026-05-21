@@ -6,7 +6,6 @@ package web
 
 import (
 	"net/http"
-	"strings"
 	"time"
 
 	"github.com/go-chi/chi/v5"
@@ -114,6 +113,7 @@ func (h *Handler) CalendarListTempl(w http.ResponseWriter, r *http.Request) {
 		RangeFrom:  rangeFrom.Format("2006-01-02"),
 		RangeTo:    rangeTo.Format("2006-01-02"),
 		Sources:    svc.Sources(),
+		EmptyState: EmptyStateCatalogCalendar(),
 	}))
 }
 
@@ -323,28 +323,40 @@ func eventToView(e *models.CalendarEvent) calendartpl.EventView {
 	}
 }
 
+// calendarEventForm is the structured DTO BindForm decodes the
+// calendar event form into. The fields mirror calendartpl.FormData
+// — that template type carries UI-only slots (Mode / Error /
+// PageData) which the handlers populate before render, so the DTO
+// stays focused on the user-supplied fields only.
+type calendarEventForm struct {
+	Kind        string `form:"kind" validate:"required"`
+	Title       string `form:"title" validate:"required"`
+	Description string `form:"description"`
+	Location    string `form:"location"`
+	URL         string `form:"url"`
+	StartsAt    string `form:"starts_at" validate:"required,datetime=2006-01-02T15:04"`
+	EndsAt      string `form:"ends_at" validate:"required,datetime=2006-01-02T15:04"`
+	AllDay      bool   `form:"all_day"`
+}
+
 func parseEventForm(r *http.Request) (calendartpl.FormData, error) {
+	var dto calendarEventForm
+	msg := BindForm(r, &dto)
+	// Build the template payload regardless of validation outcome so
+	// the caller can re-render the form with the user's input
+	// preserved alongside the error message.
 	form := calendartpl.FormData{
-		Kind:        r.FormValue("kind"),
-		Title:       strings.TrimSpace(r.FormValue("title")),
-		Description: r.FormValue("description"),
-		Location:    r.FormValue("location"),
-		URL:         r.FormValue("url"),
-		StartsAt:    r.FormValue("starts_at"),
-		EndsAt:      r.FormValue("ends_at"),
-		AllDay:      r.FormValue("all_day") == "on" || r.FormValue("all_day") == "true",
+		Kind:        dto.Kind,
+		Title:       dto.Title,
+		Description: dto.Description,
+		Location:    dto.Location,
+		URL:         dto.URL,
+		StartsAt:    dto.StartsAt,
+		EndsAt:      dto.EndsAt,
+		AllDay:      dto.AllDay,
 	}
-	if form.Title == "" {
-		return form, errFormTitleRequired
-	}
-	if form.Kind == "" {
-		return form, errFormKindRequired
-	}
-	if _, err := time.Parse("2006-01-02T15:04", form.StartsAt); err != nil {
-		return form, errFormStartsInvalid
-	}
-	if _, err := time.Parse("2006-01-02T15:04", form.EndsAt); err != nil {
-		return form, errFormEndsInvalid
+	if msg != "" {
+		return form, formErr(msg)
 	}
 	return form, nil
 }
@@ -355,13 +367,6 @@ func parseEventForm(r *http.Request) (calendartpl.FormData, error) {
 type formErr string
 
 func (e formErr) Error() string { return string(e) }
-
-var (
-	errFormTitleRequired = formErr("Title is required.")
-	errFormKindRequired  = formErr("Kind is required.")
-	errFormStartsInvalid = formErr("Starts at must be a valid date/time.")
-	errFormEndsInvalid   = formErr("Ends at must be a valid date/time.")
-)
 
 func mustParseDatetimeLocal(s string) time.Time {
 	t, err := time.Parse("2006-01-02T15:04", s)

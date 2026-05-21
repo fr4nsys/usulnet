@@ -286,6 +286,19 @@ func (r *AlertRepository) UpdateEvent(ctx context.Context, event *models.AlertEv
 	return err
 }
 
+// ResolveActiveEvents flips every firing event for the given rule to the
+// resolved state in one UPDATE. Replaces the per-event UpdateEvent loop
+// the AlertService used when a rule first goes back below threshold.
+func (r *AlertRepository) ResolveActiveEvents(ctx context.Context, ruleID uuid.UUID, resolvedAt time.Time) error {
+	_, err := r.db.Exec(ctx, `
+		UPDATE alert_events
+		SET state = $1, resolved_at = $2
+		WHERE alert_id = $3 AND state = $4`,
+		models.AlertStateResolved, resolvedAt, ruleID, models.AlertStateFiring,
+	)
+	return err
+}
+
 // ListEvents lists alert events with filtering.
 func (r *AlertRepository) ListEvents(ctx context.Context, opts models.AlertEventListOptions) ([]*models.AlertEvent, int64, error) {
 	query := `SELECT id, alert_id, host_id, container_id, state, value, threshold, message, labels,

@@ -124,7 +124,7 @@ func AuditList(data AuditListData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			if data.Connected {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<span class=\"badge badge-success\"><i class=\"fas fa-link mr-1\"></i>Connected</span>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<span class=\"badge badge-success\"><i aria-hidden=\"true\" class=\"fas fa-link mr-1\"></i>Connected</span>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -206,7 +206,7 @@ func AuditList(data AuditListData) templ.Component {
 					return templ_7745c5c3_Err
 				}
 				if len(data.Logs) > 0 {
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "<div class=\"card\"><div class=\"overflow-x-auto\"><table class=\"table\"><thead><tr><th>Time</th><th>Operation</th><th>Resource</th><th>Name</th><th>User</th></tr></thead> <tbody>")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "<div class=\"card\"><div class=\"overflow-x-auto\"><table class=\"table\"><thead><tr><th scope=\"col\">Time</th><th scope=\"col\">Operation</th><th scope=\"col\">Resource</th><th scope=\"col\">Name</th><th scope=\"col\">User</th></tr></thead> <tbody>")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
@@ -375,7 +375,7 @@ func AuditList(data AuditListData) templ.Component {
 							if templ_7745c5c3_Err != nil {
 								return templ_7745c5c3_Err
 							}
-							templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 33, "\" class=\"btn-secondary text-sm\"><i class=\"fas fa-chevron-left mr-1\"></i>Previous</a> ")
+							templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 33, "\" class=\"btn-secondary text-sm\"><i aria-hidden=\"true\" class=\"fas fa-chevron-left mr-1\"></i>Previous</a> ")
 							if templ_7745c5c3_Err != nil {
 								return templ_7745c5c3_Err
 							}
@@ -424,7 +424,7 @@ func AuditList(data AuditListData) templ.Component {
 							if templ_7745c5c3_Err != nil {
 								return templ_7745c5c3_Err
 							}
-							templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 38, "\" class=\"btn-secondary text-sm\">Next<i class=\"fas fa-chevron-right ml-1\"></i></a>")
+							templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 38, "\" class=\"btn-secondary text-sm\">Next<i aria-hidden=\"true\" class=\"fas fa-chevron-right ml-1\"></i></a>")
 							if templ_7745c5c3_Err != nil {
 								return templ_7745c5c3_Err
 							}
@@ -435,13 +435,13 @@ func AuditList(data AuditListData) templ.Component {
 						}
 					}
 				} else {
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 40, "<div class=\"card p-8 text-center\"><i class=\"fas fa-history text-4xl text-gray-400 mb-4\"></i><h3 class=\"text-lg font-medium text-white mb-2\">No audit entries</h3><p class=\"text-gray-400\">Operations on proxy resources will appear here.</p></div>")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 40, "<div class=\"card p-8 text-center\"><i aria-hidden=\"true\" class=\"fas fa-history text-4xl text-gray-400 mb-4\"></i><h3 class=\"text-lg font-medium text-white mb-2\">No audit entries</h3><p class=\"text-gray-400\">Operations on proxy resources will appear here.</p></div>")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
 				}
 			} else {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 41, "<div class=\"card p-8 text-center\"><i class=\"fas fa-plug text-4xl text-gray-400 mb-4\"></i><h3 class=\"text-lg font-medium text-white mb-2\">NPM Not Connected</h3><p class=\"text-gray-400 mb-4\">Connect to NPM first.</p><a href=\"/proxy/setup\" class=\"btn-primary\"><i class=\"fas fa-link mr-2\"></i>Setup Connection</a></div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 41, "<div class=\"card p-8 text-center\"><i aria-hidden=\"true\" class=\"fas fa-plug text-4xl text-gray-400 mb-4\"></i><h3 class=\"text-lg font-medium text-white mb-2\">NPM Not Connected</h3><p class=\"text-gray-400 mb-4\">Connect to NPM first.</p><a href=\"/proxy/setup\" class=\"btn-primary\"><i aria-hidden=\"true\" class=\"fas fa-link mr-2\"></i>Setup Connection</a></div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}

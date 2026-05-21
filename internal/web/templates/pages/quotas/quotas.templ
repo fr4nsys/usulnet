@@ -92,7 +92,7 @@ templ Quotas(data QuotasData) {
 					onclick="document.getElementById('createQuotaModal').classList.remove('hidden')"
 					class="btn-primary flex items-center gap-2"
 				>
-					<i class="fas fa-plus"></i>
+					<i aria-hidden="true" class="fas fa-plus"></i>
 					New Quota
 				</button>
 			</div>
@@ -101,7 +101,7 @@ templ Quotas(data QuotasData) {
 			if len(data.Alerts) > 0 {
 				<div class="card border-l-4 border-l-red-500 p-4">
 					<h3 class="text-sm font-medium text-red-400 mb-3">
-						<i class="fas fa-exclamation-circle mr-2"></i>Quota Alerts ({ fmt.Sprintf("%d", len(data.Alerts)) })
+						<i aria-hidden="true" class="fas fa-exclamation-circle mr-2"></i>Quota Alerts ({ fmt.Sprintf("%d", len(data.Alerts)) })
 					</h3>
 					<div class="space-y-2">
 						for _, alert := range data.Alerts {
@@ -138,7 +138,7 @@ templ Quotas(data QuotasData) {
 			<!-- Quotas List -->
 			if len(data.Quotas) == 0 {
 				<div class="card p-12 text-center">
-					<i class="fas fa-tachometer-alt text-4xl text-gray-400 mb-4"></i>
+					<i aria-hidden="true" class="fas fa-tachometer-alt text-4xl text-gray-400 mb-4"></i>
 					<h3 class="text-lg font-medium text-white mb-2">No Resource Quotas</h3>
 					<p class="text-gray-400 mb-4">Set limits to prevent resource exhaustion on your Docker hosts</p>
 				</div>
@@ -209,16 +209,16 @@ templ quotaCard(quota QuotaView, csrfToken string) {
 					<input type="hidden" name="csrf_token" value={ csrfToken }/>
 					<button type="submit" class="p-2 text-gray-400 hover:text-yellow-400 transition-colors" title="Toggle">
 						if quota.IsEnabled {
-							<i class="fas fa-pause"></i>
+							<i aria-hidden="true" class="fas fa-pause"></i>
 						} else {
-							<i class="fas fa-play"></i>
+							<i aria-hidden="true" class="fas fa-play"></i>
 						}
 					</button>
 				</form>
 				<form method="POST" action={ templ.SafeURL("/quotas/" + quota.ID + "/delete") } onsubmit="return confirm('Delete this quota?')">
 					<input type="hidden" name="csrf_token" value={ csrfToken }/>
 					<button type="submit" class="p-2 text-gray-400 hover:text-red-400 transition-colors" title="Delete">
-						<i class="fas fa-trash"></i>
+						<i aria-hidden="true" class="fas fa-trash"></i>
 					</button>
 				</form>
 			</div>
@@ -232,7 +232,7 @@ templ createQuotaModal(csrfToken string, hosts []HostBasic) {
 			<div class="flex items-center justify-between p-6 border-b border-dark-600">
 				<h2 class="text-lg font-display font-bold text-white">Create Resource Quota</h2>
 				<button onclick="document.getElementById('createQuotaModal').classList.add('hidden')" class="text-gray-400 hover:text-white">
-					<i class="fas fa-times"></i>
+					<i aria-hidden="true" class="fas fa-times"></i>
 				</button>
 			</div>
 			<form method="POST" action="/quotas" class="p-6 space-y-4" x-data="{ resourceType: 'memory' }">
@@ -240,7 +240,7 @@ templ createQuotaModal(csrfToken string, hosts []HostBasic) {
 
 				<div>
 					<label class="block text-sm font-medium text-gray-300 mb-1">Quota Name</label>
-					<input type="text" name="name" required class="input w-full" placeholder="e.g., Production memory limit"/>
+					<input type="text" name="name" required class="input w-full" placeholder="e.g., Production memory limit" aria-label="e.g., Production memory limit"/>
 				</div>
 
 				<div class="grid grid-cols-2 gap-4">
@@ -271,7 +271,7 @@ templ createQuotaModal(csrfToken string, hosts []HostBasic) {
 						Limit
 						<span class="text-xs text-gray-500 ml-1" x-text="resourceType === 'memory' || resourceType === 'disk' ? '(MB)' : resourceType === 'cpu' ? '(cores)' : '(count)'"></span>
 					</label>
-					<input type="number" name="limit_value" required min="1" class="input w-full" placeholder="Enter limit value"/>
+					<input type="number" name="limit_value" required min="1" class="input w-full" placeholder="Enter limit value" aria-label="Enter limit value"/>
 				</div>
 
 				<div>
@@ -283,7 +283,7 @@ templ createQuotaModal(csrfToken string, hosts []HostBasic) {
 				<div class="flex justify-end gap-3 pt-4 border-t border-dark-600">
 					<button type="button" onclick="document.getElementById('createQuotaModal').classList.add('hidden')" class="btn-secondary">Cancel</button>
 					<button type="submit" class="btn-primary">
-						<i class="fas fa-plus mr-2"></i>Create Quota
+						<i aria-hidden="true" class="fas fa-plus mr-2"></i>Create Quota
 					</button>
 				</div>
 			</form>

@@ -79,7 +79,7 @@ func Detail(data DetailData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<div class=\"flex items-center justify-between\"><div class=\"flex items-center gap-3\"><a href=\"/crontab\" class=\"text-gray-400 hover:text-white\"><i class=\"fas fa-arrow-left\"></i></a><div><h1 class=\"text-2xl font-display font-bold text-white\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<div class=\"flex items-center justify-between\"><div class=\"flex items-center gap-3\"><a href=\"/crontab\" class=\"text-gray-400 hover:text-white\"><i aria-hidden=\"true\" class=\"fas fa-arrow-left\"></i></a><div><h1 class=\"text-2xl font-display font-bold text-white\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -120,12 +120,12 @@ func Detail(data DetailData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			if data.Entry.Enabled {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "<span class=\"badge badge-success\"><i class=\"fas fa-check-circle mr-1\"></i>Enabled</span>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "<span class=\"badge badge-success\"><i aria-hidden=\"true\" class=\"fas fa-check-circle mr-1\"></i>Enabled</span>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			} else {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "<span class=\"badge badge-danger\"><i class=\"fas fa-pause-circle mr-1\"></i>Disabled</span>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "<span class=\"badge badge-danger\"><i aria-hidden=\"true\" class=\"fas fa-pause-circle mr-1\"></i>Disabled</span>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -156,7 +156,7 @@ func Detail(data DetailData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "\"> <button type=\"submit\" class=\"btn btn-sm bg-blue-500/10 text-blue-400 hover:bg-blue-500/20 border border-blue-500/20\"><i class=\"fas fa-play mr-1\"></i>Run Now</button></form><a href=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "\"> <button type=\"submit\" class=\"btn btn-sm bg-blue-500/10 text-blue-400 hover:bg-blue-500/20 border border-blue-500/20\"><i aria-hidden=\"true\" class=\"fas fa-play mr-1\"></i>Run Now</button></form><a href=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -169,7 +169,7 @@ func Detail(data DetailData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "\" class=\"btn btn-sm btn-secondary\"><i class=\"fas fa-edit mr-1\"></i>Edit</a> <button hx-delete=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "\" class=\"btn btn-sm btn-secondary\"><i aria-hidden=\"true\" class=\"fas fa-edit mr-1\"></i>Edit</a> <button hx-delete=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -182,7 +182,7 @@ func Detail(data DetailData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "\" hx-confirm=\"Delete this cron job and all its execution history?\" class=\"btn btn-sm bg-red-500/10 text-red-400 hover:bg-red-500/20 border border-red-500/20\"><i class=\"fas fa-trash mr-1\"></i>Delete</button></div></div><div class=\"card p-6\"><h3 class=\"text-lg font-display font-bold text-white mb-4\"><i class=\"fas fa-info-circle mr-2\"></i>Job Details</h3><div class=\"bg-dark-800 border border-dark-700 rounded-lg divide-y divide-dark-700\"><div class=\"p-4 flex justify-between\"><span class=\"text-gray-400\">Schedule</span> <span class=\"text-white font-mono\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "\" hx-confirm=\"Delete this cron job and all its execution history?\" class=\"btn btn-sm bg-red-500/10 text-red-400 hover:bg-red-500/20 border border-red-500/20\"><i aria-hidden=\"true\" class=\"fas fa-trash mr-1\"></i>Delete</button></div></div><div class=\"card p-6\"><h3 class=\"text-lg font-display font-bold text-white mb-4\"><i aria-hidden=\"true\" class=\"fas fa-info-circle mr-2\"></i>Job Details</h3><div class=\"bg-dark-800 border border-dark-700 rounded-lg divide-y divide-dark-700\"><div class=\"p-4 flex justify-between\"><span class=\"text-gray-400\">Schedule</span> <span class=\"text-white font-mono\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -423,7 +423,7 @@ func Detail(data DetailData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 42, "</span></div></div></div><div class=\"card p-6\"><div class=\"flex items-center justify-between\"><div><h3 class=\"text-lg font-display font-bold text-white\"><i class=\"fas fa-toggle-on mr-2\"></i>Quick Actions</h3><p class=\"text-sm text-gray-400 mt-1\">Enable or disable this cron job</p></div><form method=\"POST\" action=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 42, "</span></div></div></div><div class=\"card p-6\"><div class=\"flex items-center justify-between\"><div><h3 class=\"text-lg font-display font-bold text-white\"><i aria-hidden=\"true\" class=\"fas fa-toggle-on mr-2\"></i>Quick Actions</h3><p class=\"text-sm text-gray-400 mt-1\">Enable or disable this cron job</p></div><form method=\"POST\" action=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -454,17 +454,17 @@ func Detail(data DetailData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			if data.Entry.Enabled {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 45, "<input type=\"hidden\" name=\"enabled\" value=\"false\"> <button type=\"submit\" class=\"btn btn-sm bg-red-500/10 text-red-400 hover:bg-red-500/20 border border-red-500/20\"><i class=\"fas fa-pause mr-1\"></i>Disable</button>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 45, "<input type=\"hidden\" name=\"enabled\" value=\"false\"> <button type=\"submit\" class=\"btn btn-sm bg-red-500/10 text-red-400 hover:bg-red-500/20 border border-red-500/20\"><i aria-hidden=\"true\" class=\"fas fa-pause mr-1\"></i>Disable</button>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			} else {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 46, "<input type=\"hidden\" name=\"enabled\" value=\"true\"> <button type=\"submit\" class=\"btn btn-sm bg-green-500/10 text-green-400 hover:bg-green-500/20 border border-green-500/20\"><i class=\"fas fa-play mr-1\"></i>Enable</button>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 46, "<input type=\"hidden\" name=\"enabled\" value=\"true\"> <button type=\"submit\" class=\"btn btn-sm bg-green-500/10 text-green-400 hover:bg-green-500/20 border border-green-500/20\"><i aria-hidden=\"true\" class=\"fas fa-play mr-1\"></i>Enable</button>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 47, "</form></div></div><div class=\"card p-6\"><div class=\"flex items-center justify-between mb-4\"><h3 class=\"text-lg font-display font-bold text-white\"><i class=\"fas fa-history mr-2\"></i>Execution History ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 47, "</form></div></div><div class=\"card p-6\"><div class=\"flex items-center justify-between mb-4\"><h3 class=\"text-lg font-display font-bold text-white\"><i aria-hidden=\"true\" class=\"fas fa-history mr-2\"></i>Execution History ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -497,7 +497,7 @@ func Detail(data DetailData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			if len(data.Executions) > 0 {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 52, "<div class=\"overflow-x-auto\"><table class=\"table\"><thead><tr><th>Status</th><th>Started</th><th>Duration</th><th>Exit Code</th><th>Output</th></tr></thead> <tbody>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 52, "<div class=\"overflow-x-auto\"><table class=\"table\"><thead><tr><th scope=\"col\">Status</th><th scope=\"col\">Started</th><th scope=\"col\">Duration</th><th scope=\"col\">Exit Code</th><th scope=\"col\">Output</th></tr></thead> <tbody>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -688,12 +688,12 @@ func Detail(data DetailData) templ.Component {
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
-						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 77, "\" class=\"text-primary-400 hover:text-primary-300\"><i class=\"fas fa-arrow-left mr-1\"></i>Previous</a> ")
+						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 77, "\" class=\"text-primary-400 hover:text-primary-300\"><i aria-hidden=\"true\" class=\"fas fa-arrow-left mr-1\"></i>Previous</a> ")
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
 					} else {
-						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 78, "<span class=\"text-gray-500\"><i class=\"fas fa-arrow-left mr-1\"></i>Previous</span> ")
+						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 78, "<span class=\"text-gray-500\"><i aria-hidden=\"true\" class=\"fas fa-arrow-left mr-1\"></i>Previous</span> ")
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
@@ -742,12 +742,12 @@ func Detail(data DetailData) templ.Component {
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
-						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 83, "\" class=\"text-primary-400 hover:text-primary-300\">Next<i class=\"fas fa-arrow-right ml-1\"></i></a>")
+						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 83, "\" class=\"text-primary-400 hover:text-primary-300\">Next<i aria-hidden=\"true\" class=\"fas fa-arrow-right ml-1\"></i></a>")
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
 					} else {
-						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 84, "<span class=\"text-gray-500\">Next<i class=\"fas fa-arrow-right ml-1\"></i></span>")
+						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 84, "<span class=\"text-gray-500\">Next<i aria-hidden=\"true\" class=\"fas fa-arrow-right ml-1\"></i></span>")
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
@@ -758,7 +758,7 @@ func Detail(data DetailData) templ.Component {
 					}
 				}
 			} else {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 86, "<div class=\"text-center py-8\"><i class=\"fas fa-history text-3xl text-gray-400 mb-3\"></i><p class=\"text-gray-400\">No executions yet</p></div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 86, "<div class=\"text-center py-8\"><i aria-hidden=\"true\" class=\"fas fa-history text-3xl text-gray-400 mb-3\"></i><p class=\"text-gray-400\">No executions yet</p></div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}

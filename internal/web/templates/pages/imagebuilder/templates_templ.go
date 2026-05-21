@@ -68,7 +68,7 @@ func TemplateList(data TemplateListData) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"space-y-6\"><!-- Header --><div class=\"flex items-center justify-between\"><div><h1 class=\"text-2xl font-display font-bold text-white\">Dockerfile Templates</h1><p class=\"text-gray-400 mt-1\">Reusable Dockerfile templates for common patterns</p></div><a href=\"/image-builder/templates/new\" class=\"btn-primary\"><i class=\"fas fa-plus mr-2\"></i>New Template</a></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"space-y-6\"><!-- Header --><div class=\"flex items-center justify-between\"><div><h1 class=\"text-2xl font-display font-bold text-white\">Dockerfile Templates</h1><p class=\"text-gray-400 mt-1\">Reusable Dockerfile templates for common patterns</p></div><a href=\"/image-builder/templates/new\" class=\"btn-primary\"><i aria-hidden=\"true\" class=\"fas fa-plus mr-2\"></i>New Template</a></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -199,7 +199,7 @@ func TemplateList(data TemplateListData) templ.Component {
 				}
 			}
 			if len(data.Templates) == 0 {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "<div class=\"card p-8 text-center\"><i class=\"fas fa-file-code text-4xl text-gray-400 mb-4\"></i><h3 class=\"text-lg font-medium text-white mb-2\">No templates</h3><p class=\"text-gray-400 mb-4\">Create reusable Dockerfile templates for your builds</p><a href=\"/image-builder/templates/new\" class=\"btn-primary\"><i class=\"fas fa-plus mr-2\"></i>New Template</a></div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "<div class=\"card p-8 text-center\"><i aria-hidden=\"true\" class=\"fas fa-file-code text-4xl text-gray-400 mb-4\"></i><h3 class=\"text-lg font-medium text-white mb-2\">No templates</h3><p class=\"text-gray-400 mb-4\">Create reusable Dockerfile templates for your builds</p><a href=\"/image-builder/templates/new\" class=\"btn-primary\"><i aria-hidden=\"true\" class=\"fas fa-plus mr-2\"></i>New Template</a></div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}

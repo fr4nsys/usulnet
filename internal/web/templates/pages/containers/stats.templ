@@ -17,9 +17,9 @@ templ ContainerStats(data ContainerStatsData) {
 		<!-- Breadcrumb -->
 		<nav class="flex items-center gap-2 text-sm text-gray-400 mb-4">
 			<a href="/containers" class="hover:text-primary-400 transition-colors">Containers</a>
-			<i class="fas fa-chevron-right text-xs"></i>
+			<i aria-hidden="true" class="fas fa-chevron-right text-xs"></i>
 			<a href={ templ.SafeURL("/containers/" + data.ContainerID) } class="hover:text-primary-400 transition-colors">{ data.Name }</a>
-			<i class="fas fa-chevron-right text-xs"></i>
+			<i aria-hidden="true" class="fas fa-chevron-right text-xs"></i>
 			<span class="text-white">Stats</span>
 		</nav>
 
@@ -27,7 +27,7 @@ templ ContainerStats(data ContainerStatsData) {
 		<div class="flex items-center justify-between mb-6">
 			<div class="flex items-center gap-4">
 				<div class={ "w-10 h-10 rounded-lg flex items-center justify-center", stateIconBg(data.State) }>
-					<i class="fas fa-chart-line text-lg text-gray-300"></i>
+					<i aria-hidden="true" class="fas fa-chart-line text-lg text-gray-300"></i>
 				</div>
 				<div>
 					<h1 class="text-2xl font-bold font-display text-white">Resource Stats</h1>
@@ -35,13 +35,13 @@ templ ContainerStats(data ContainerStatsData) {
 				</div>
 			</div>
 			<a href={ templ.SafeURL("/containers/" + data.ContainerID) } class="px-4 py-2 bg-dark-700 hover:bg-dark-600 text-gray-300 rounded-lg transition-colors">
-				<i class="fas fa-arrow-left mr-2"></i>Back
+				<i aria-hidden="true" class="fas fa-arrow-left mr-2"></i>Back
 			</a>
 		</div>
 
 		if data.State != "running" {
 			<div class="bg-yellow-500/10 border border-yellow-500/30 rounded-xl p-6 text-center">
-				<i class="fas fa-exclamation-triangle text-3xl text-yellow-400 mb-3"></i>
+				<i aria-hidden="true" class="fas fa-exclamation-triangle text-3xl text-yellow-400 mb-3"></i>
 				<p class="text-yellow-300 font-medium">Container is not running</p>
 				<p class="text-gray-400 text-sm mt-1">Stats are only available for running containers.</p>
 			</div>
@@ -57,7 +57,7 @@ templ ContainerStats(data ContainerStatsData) {
 					<div class="bg-dark-800 border border-dark-600 rounded-xl p-4">
 						<div class="flex items-center justify-between mb-2">
 							<span class="text-gray-400 text-sm">CPU Usage</span>
-							<i class="fas fa-microchip text-blue-400"></i>
+							<i aria-hidden="true" class="fas fa-microchip text-blue-400"></i>
 						</div>
 						<div class="text-2xl font-bold text-white" x-text="cpuPercent.toFixed(2) + '%'">-</div>
 						<div class="mt-2 bg-dark-700 rounded-full h-2">
@@ -69,7 +69,7 @@ templ ContainerStats(data ContainerStatsData) {
 					<div class="bg-dark-800 border border-dark-600 rounded-xl p-4">
 						<div class="flex items-center justify-between mb-2">
 							<span class="text-gray-400 text-sm">Memory</span>
-							<i class="fas fa-memory text-green-400"></i>
+							<i aria-hidden="true" class="fas fa-memory text-green-400"></i>
 						</div>
 						<div class="text-2xl font-bold text-white" x-text="formatBytes(memoryUsage)">-</div>
 						<div class="text-xs text-gray-500 mt-1" x-text="'/ ' + formatBytes(memoryLimit) + ' (' + memoryPct.toFixed(1) + '%)'"></div>
@@ -84,7 +84,7 @@ templ ContainerStats(data ContainerStatsData) {
 					<div class="bg-dark-800 border border-dark-600 rounded-xl p-4">
 						<div class="flex items-center justify-between mb-2">
 							<span class="text-gray-400 text-sm">Network I/O</span>
-							<i class="fas fa-network-wired text-purple-400"></i>
+							<i aria-hidden="true" class="fas fa-network-wired text-purple-400"></i>
 						</div>
 						<div class="flex items-center gap-3">
 							<div>
@@ -102,7 +102,7 @@ templ ContainerStats(data ContainerStatsData) {
 					<div class="bg-dark-800 border border-dark-600 rounded-xl p-4">
 						<div class="flex items-center justify-between mb-2">
 							<span class="text-gray-400 text-sm">Block I/O &middot; PIDs</span>
-							<i class="fas fa-hdd text-orange-400"></i>
+							<i aria-hidden="true" class="fas fa-hdd text-orange-400"></i>
 						</div>
 						<div class="flex items-center gap-3">
 							<div>

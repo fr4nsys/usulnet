@@ -98,12 +98,13 @@ func (h *Handler) ImageBuilderListTempl(w http.ResponseWriter, r *http.Request) 
 	}
 
 	data := ibtpl.ListData{
-		PageData: pageData,
-		Builds:   views,
-		Stats:    statsView,
-		Total:    total,
-		Page:     page,
-		PageSize: pageSize,
+		PageData:   pageData,
+		Builds:     views,
+		Stats:      statsView,
+		Total:      total,
+		Page:       page,
+		PageSize:   pageSize,
+		EmptyState: EmptyStateCatalogImageBuilder(),
 	}
 
 	h.renderTempl(w, r, ibtpl.List(data))
@@ -191,49 +192,48 @@ func (h *Handler) ImageBuilderNewTempl(w http.ResponseWriter, r *http.Request) {
 }
 
 // ImageBuilderCreateTempl handles POST /image-builder — starts a new build.
+// imageBuilderCreateForm captures the start-build inputs. Tag and
+// Dockerfile are the only required fields; the rest are optional
+// build options (platform, target, no-cache, pull).
+type imageBuilderCreateForm struct {
+	Name        string `form:"name"`
+	Tag         string `form:"tag" validate:"required"`
+	Dockerfile  string `form:"dockerfile" validate:"required"`
+	ContextPath string `form:"context_path"`
+	Platform    string `form:"platform"`
+	Target      string `form:"target"`
+	NoCache     bool   `form:"no_cache"`
+	Pull        bool   `form:"pull"`
+}
+
 func (h *Handler) ImageBuilderCreateTempl(w http.ResponseWriter, r *http.Request) {
 	svc := h.requireImageBuilderSvc(w, r)
 	if svc == nil {
 		return
 	}
-	if err := r.ParseForm(); err != nil {
-		http.Error(w, "Error parsing form", http.StatusBadRequest)
-		return
-	}
-
-	hostID := h.getIBHostID(r)
-
-	name := r.FormValue("name")
-	tag := r.FormValue("tag")
-	dockerfile := r.FormValue("dockerfile")
-	contextPath := r.FormValue("context_path")
-	platform := r.FormValue("platform")
-	target := r.FormValue("target")
-	noCache := r.FormValue("no_cache") == "true"
-	pull := r.FormValue("pull") == "true"
-
-	if tag == "" || dockerfile == "" {
+	var form imageBuilderCreateForm
+	if msg := BindForm(r, &form); msg != "" {
 		pageData := h.prepareTemplPageData(r, "New Image Build", "image-builder")
 		h.renderTempl(w, r, ibtpl.NewBuild(ibtpl.NewBuildData{
 			PageData: pageData,
-			Error:    "Tag and Dockerfile are required.",
+			Error:    msg,
 		}))
 		return
 	}
 
-	tags := []string{tag}
+	hostID := h.getIBHostID(r)
 	userID := h.imageBuilderUserUUID(r)
 
 	if _, err := svc.StartBuild(r.Context(), imagebuildersvc.StartBuildOptions{
 		HostID:      hostID,
-		Name:        name,
-		Tags:        tags,
-		Dockerfile:  dockerfile,
-		ContextPath: contextPath,
-		NoCache:     noCache,
-		Pull:        pull,
-		Platform:    platform,
-		Target:      target,
+		Name:        form.Name,
+		Tags:        []string{form.Tag},
+		Dockerfile:  form.Dockerfile,
+		ContextPath: form.ContextPath,
+		NoCache:     form.NoCache,
+		Pull:        form.Pull,
+		Platform:    form.Platform,
+		Target:      form.Target,
 		UserID:      userID,
 	}); err != nil {
 		pageData := h.prepareTemplPageData(r, "New Image Build", "image-builder")
@@ -297,34 +297,35 @@ func (h *Handler) ImageBuilderTemplateNewTempl(w http.ResponseWriter, r *http.Re
 	h.renderTempl(w, r, ibtpl.TemplateNew(ibtpl.TemplateNewData{PageData: pageData}))
 }
 
+// imageBuilderTemplateForm captures the Dockerfile template
+// inputs.
+type imageBuilderTemplateForm struct {
+	Name        string `form:"name" validate:"required"`
+	Description string `form:"description"`
+	Category    string `form:"category"`
+	Dockerfile  string `form:"dockerfile" validate:"required"`
+}
+
 // ImageBuilderTemplateCreateTempl handles POST /image-builder/templates.
 func (h *Handler) ImageBuilderTemplateCreateTempl(w http.ResponseWriter, r *http.Request) {
 	svc := h.requireImageBuilderSvc(w, r)
 	if svc == nil {
 		return
 	}
-	if err := r.ParseForm(); err != nil {
-		http.Error(w, "Error parsing form", http.StatusBadRequest)
-		return
-	}
-
-	hostID := h.getIBHostID(r)
-	name := r.FormValue("name")
-	description := r.FormValue("description")
-	category := r.FormValue("category")
-	dockerfile := r.FormValue("dockerfile")
-	userID := h.imageBuilderUserUUID(r)
-
-	if name == "" || dockerfile == "" {
+	var form imageBuilderTemplateForm
+	if msg := BindForm(r, &form); msg != "" {
 		pageData := h.prepareTemplPageData(r, "New Dockerfile Template", "image-builder")
 		h.renderTempl(w, r, ibtpl.TemplateNew(ibtpl.TemplateNewData{
 			PageData: pageData,
-			Error:    "Name and Dockerfile are required.",
+			Error:    msg,
 		}))
 		return
 	}
 
-	if _, err := svc.CreateTemplate(r.Context(), hostID, name, description, category, dockerfile, userID); err != nil {
+	hostID := h.getIBHostID(r)
+	userID := h.imageBuilderUserUUID(r)
+
+	if _, err := svc.CreateTemplate(r.Context(), hostID, form.Name, form.Description, form.Category, form.Dockerfile, userID); err != nil {
 		pageData := h.prepareTemplPageData(r, "New Dockerfile Template", "image-builder")
 		h.renderTempl(w, r, ibtpl.TemplateNew(ibtpl.TemplateNewData{
 			PageData: pageData,

@@ -21,6 +21,7 @@ import (
 	"github.com/fr4nsys/usulnet/internal/pkg/logger"
 	"github.com/fr4nsys/usulnet/internal/repository/postgres"
 	"github.com/fr4nsys/usulnet/internal/services/container"
+	"github.com/fr4nsys/usulnet/internal/services/forensics"
 )
 
 // ContainerHandler handles container-related HTTP requests.
@@ -87,6 +88,9 @@ func (h *ContainerHandler) Routes() chi.Router {
 				r.Post("/kill", h.KillContainer)
 				r.Post("/recreate", h.RecreateContainer)
 				r.Post("/exec", h.ExecCreate)
+				// /forensics is a download endpoint; behind operator
+				// because it exec's commands inside the container.
+				r.Get("/forensics", h.ContainerForensics)
 				r.Put("/copy/*", h.CopyToContainer)
 				r.Put("/resources", h.UpdateResources)
 				r.Post("/commit", h.CommitContainer)
@@ -1847,4 +1851,46 @@ func (h *ContainerHandler) DownloadContainerFile(w http.ResponseWriter, r *http.
 	}
 
 	io.Copy(w, reader)
+}
+
+// ContainerForensics produces an incident-response snapshot of the
+// running container and streams it as an uncompressed tarball.
+//
+// GET /api/v1/containers/{hostID}/{containerID}/forensics
+//
+// Behind RequireOperator because the snapshot exec's commands inside
+// the container (same trust level as /exec). Output is a tarball
+// containing one file per probe — see internal/services/forensics
+// for the probe set and the truncation policy.
+func (h *ContainerHandler) ContainerForensics(w http.ResponseWriter, r *http.Request) {
+	hostID, err := h.URLParamUUID(r, "hostID")
+	if err != nil {
+		h.HandleError(w, err)
+		return
+	}
+
+	containerID := h.URLParam(r, "containerID")
+	if containerID == "" {
+		h.BadRequest(w, "containerID is required")
+		return
+	}
+
+	dockerClient, err := h.containerService.GetDockerClient(r.Context(), hostID)
+	if err != nil {
+		h.HandleError(w, err)
+		return
+	}
+
+	svc := forensics.NewService(dockerClient, h.Logger())
+	body, err := svc.Snapshot(r.Context(), containerID)
+	if err != nil {
+		h.HandleError(w, err)
+		return
+	}
+
+	filename := "forensics-" + containerID + "-" + time.Now().UTC().Format("20060102T150405Z") + ".tar"
+	w.Header().Set("Content-Type", "application/x-tar")
+	w.Header().Set("Content-Disposition", "attachment; filename=\""+filename+"\"")
+	w.Header().Set("Content-Length", strconv.Itoa(len(body)))
+	_, _ = w.Write(body)
 }

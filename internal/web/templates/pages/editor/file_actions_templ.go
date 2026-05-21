@@ -52,7 +52,7 @@ func FileEditButtons(repoID, filePath, ref string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "\" class=\"px-2 py-0.5 text-xs rounded bg-blue-500/10 text-blue-400 hover:bg-blue-500/20 transition-colors\" title=\"Edit in Monaco (quick edit)\"><i class=\"fas fa-edit mr-1\"></i>Edit</a> <a href=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "\" class=\"px-2 py-0.5 text-xs rounded bg-blue-500/10 text-blue-400 hover:bg-blue-500/20 transition-colors\" title=\"Edit in Monaco (quick edit)\"><i aria-hidden=\"true\" class=\"fas fa-edit mr-1\"></i>Edit</a> <a href=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -65,7 +65,7 @@ func FileEditButtons(repoID, filePath, ref string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "\" class=\"px-2 py-0.5 text-xs rounded bg-green-500/10 text-green-400 hover:bg-green-500/20 transition-colors\" title=\"Edit in Neovim (full editor)\"><i class=\"fas fa-terminal mr-1\"></i>nvim</a></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "\" class=\"px-2 py-0.5 text-xs rounded bg-green-500/10 text-green-400 hover:bg-green-500/20 transition-colors\" title=\"Edit in Neovim (full editor)\"><i aria-hidden=\"true\" class=\"fas fa-terminal mr-1\"></i>nvim</a></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

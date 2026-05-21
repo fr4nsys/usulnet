@@ -35,7 +35,7 @@ func EmptyState(title, message, ctaLabel, ctaHref string) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"card p-12 text-center\"><i class=\"fas fa-shield-alt text-5xl text-gray-600 mb-4\"></i><h3 class=\"text-lg font-semibold text-white mb-2\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"card p-12 text-center\"><i aria-hidden=\"true\" class=\"fas fa-shield-alt text-5xl text-gray-600 mb-4\"></i><h3 class=\"text-lg font-semibold text-white mb-2\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -79,14 +79,14 @@ func EmptyState(title, message, ctaLabel, ctaHref string) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "\" class=\"btn-primary inline-block\"><i class=\"fas fa-plus mr-2\"></i>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "\" class=\"btn-primary inline-block\"><i aria-hidden=\"true\" class=\"fas fa-plus mr-2\"></i>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var5 string
 			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(ctaLabel)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/rollback/empty.templ`, Line: 14, Col: 46}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/rollback/empty.templ`, Line: 14, Col: 65}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 			if templ_7745c5c3_Err != nil {

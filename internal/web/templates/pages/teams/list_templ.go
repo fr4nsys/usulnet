@@ -101,7 +101,7 @@ func List(data TeamsData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</p></div><a href=\"/teams/new\" class=\"btn-primary\"><i class=\"fas fa-plus mr-2\"></i>New Team</a></div><!-- Stats Cards --><div class=\"grid grid-cols-2 md:grid-cols-4 gap-4\"><div class=\"card p-4\"><div class=\"text-2xl font-bold text-white\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</p></div><a href=\"/teams/new\" class=\"btn-primary\"><i aria-hidden=\"true\" class=\"fas fa-plus mr-2\"></i>New Team</a></div><!-- Stats Cards --><div class=\"grid grid-cols-2 md:grid-cols-4 gap-4\"><div class=\"card p-4\"><div class=\"text-2xl font-bold text-white\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -153,12 +153,12 @@ func List(data TeamsData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "</div><div class=\"text-sm text-gray-400\">Total Members</div></div></div><!-- Teams Table --><div class=\"card\"><div class=\"overflow-x-auto\"><table class=\"table\"><thead><tr><th>Team</th><th>Members</th><th>Permissions</th><th>Created</th><th>Actions</th></tr></thead> <tbody>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "</div><div class=\"text-sm text-gray-400\">Total Members</div></div></div><!-- Teams Table --><div class=\"card\"><div class=\"overflow-x-auto\"><table class=\"table\"><thead><tr><th scope=\"col\">Team</th><th scope=\"col\">Members</th><th scope=\"col\">Permissions</th><th scope=\"col\">Created</th><th scope=\"col\">Actions</th></tr></thead> <tbody>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			if len(data.Teams) == 0 {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "<tr><td colspan=\"5\" class=\"text-center text-gray-500 py-8\"><div class=\"flex flex-col items-center gap-3\"><div class=\"w-12 h-12 rounded-full bg-primary-500/10 flex items-center justify-center\"><i class=\"fas fa-users-cog text-xl text-primary-400\"></i></div><p>No teams created yet</p><a href=\"/teams/new\" class=\"text-primary-400 hover:text-primary-300 text-sm\">Create your first team</a></div></td></tr>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "<tr><td colspan=\"5\" class=\"text-center text-gray-500 py-8\"><div class=\"flex flex-col items-center gap-3\"><div class=\"w-12 h-12 rounded-full bg-primary-500/10 flex items-center justify-center\"><i aria-hidden=\"true\" class=\"fas fa-users-cog text-xl text-primary-400\"></i></div><p>No teams created yet</p><a href=\"/teams/new\" class=\"text-primary-400 hover:text-primary-300 text-sm\">Create your first team</a></div></td></tr>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -248,7 +248,7 @@ func List(data TeamsData) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "\"><i class=\"fas fa-users mr-1 text-xs\"></i> ")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "\"><i aria-hidden=\"true\" class=\"fas fa-users mr-1 text-xs\"></i> ")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -283,7 +283,7 @@ func List(data TeamsData) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "\"><i class=\"fas fa-lock mr-1 text-xs\"></i> ")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "\"><i aria-hidden=\"true\" class=\"fas fa-lock mr-1 text-xs\"></i> ")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -366,7 +366,7 @@ func List(data TeamsData) templ.Component {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 26, "</tbody></table></div></div><!-- Info about scoping --><div class=\"card p-4 border border-blue-500/20\"><div class=\"flex gap-3\"><i class=\"fas fa-info-circle text-blue-400 mt-0.5\"></i><div class=\"text-sm text-gray-400\"><p class=\"text-blue-400 font-medium mb-1\">Resource Scoping</p><p>Teams use an opt-in model: unassigned resources are visible to all users. Only resources explicitly granted to a team become restricted to that team's members. Admins always see everything.</p></div></div></div></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 26, "</tbody></table></div></div><!-- Info about scoping --><div class=\"card p-4 border border-blue-500/20\"><div class=\"flex gap-3\"><i aria-hidden=\"true\" class=\"fas fa-info-circle text-blue-400 mt-0.5\"></i><div class=\"text-sm text-gray-400\"><p class=\"text-blue-400 font-medium mb-1\">Resource Scoping</p><p>Teams use an opt-in model: unassigned resources are visible to all users. Only resources explicitly granted to a team become restricted to that team's members. Admins always see everything.</p></div></div></div></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -416,7 +416,7 @@ func New(data TeamNewData) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 27, "<div class=\"max-w-lg mx-auto space-y-6\"><div class=\"flex items-center gap-4\"><a href=\"/teams\" class=\"p-2 text-gray-400 hover:text-white hover:bg-dark-700 rounded-lg\"><i class=\"fas fa-arrow-left\"></i></a><h1 class=\"text-2xl font-display font-bold text-white\">New Team</h1></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 27, "<div class=\"max-w-lg mx-auto space-y-6\"><div class=\"flex items-center gap-4\"><a href=\"/teams\" class=\"p-2 text-gray-400 hover:text-white hover:bg-dark-700 rounded-lg\"><i aria-hidden=\"true\" class=\"fas fa-arrow-left\"></i></a><h1 class=\"text-2xl font-display font-bold text-white\">New Team</h1></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -452,7 +452,7 @@ func New(data TeamNewData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 31, "\"><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Team Name</label> <input type=\"text\" name=\"name\" required minlength=\"2\" maxlength=\"100\" class=\"input\" placeholder=\"e.g. Backend Team\"></div><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Description</label> <textarea name=\"description\" rows=\"3\" class=\"input\" placeholder=\"Optional description of the team's purpose\"></textarea></div><div class=\"flex justify-end gap-3 pt-4\"><a href=\"/teams\" class=\"btn-secondary\">Cancel</a> <button type=\"submit\" class=\"btn-primary\">Create Team</button></div></form></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 31, "\"><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Team Name</label> <input type=\"text\" name=\"name\" required minlength=\"2\" maxlength=\"100\" class=\"input\" placeholder=\"e.g. Backend Team\" aria-label=\"e.g. Backend Team\"></div><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Description</label> <textarea name=\"description\" rows=\"3\" class=\"input\" placeholder=\"Optional description of the team's purpose\"></textarea></div><div class=\"flex justify-end gap-3 pt-4\"><a href=\"/teams\" class=\"btn-secondary\">Cancel</a> <button type=\"submit\" class=\"btn-primary\">Create Team</button></div></form></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -515,7 +515,7 @@ func Edit(data TeamEditData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 33, "\" class=\"p-2 text-gray-400 hover:text-white hover:bg-dark-700 rounded-lg\"><i class=\"fas fa-arrow-left\"></i></a><div><h1 class=\"text-2xl font-display font-bold text-white\">Edit Team</h1><p class=\"text-gray-400 text-sm\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 33, "\" class=\"p-2 text-gray-400 hover:text-white hover:bg-dark-700 rounded-lg\"><i aria-hidden=\"true\" class=\"fas fa-arrow-left\"></i></a><div><h1 class=\"text-2xl font-display font-bold text-white\">Edit Team</h1><p class=\"text-gray-400 text-sm\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -642,7 +642,7 @@ func Edit(data TeamEditData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 44, "\" class=\"px-4 py-2 text-sm font-medium text-red-400 border border-red-500/30 rounded-lg hover:bg-red-500/10 transition-colors\"><i class=\"fas fa-trash mr-2\"></i>Delete Team</button></div></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 44, "\" class=\"px-4 py-2 text-sm font-medium text-red-400 border border-red-500/30 rounded-lg hover:bg-red-500/10 transition-colors\"><i aria-hidden=\"true\" class=\"fas fa-trash mr-2\"></i>Delete Team</button></div></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

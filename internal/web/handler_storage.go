@@ -227,6 +227,39 @@ func (h *Handler) StorageAuditTempl(w http.ResponseWriter, r *http.Request) {
 
 // StorageCreateConnection handles POST /storage/connections.
 // Supports multiple storage types: s3, azure, gcs, b2, sftp, local.
+// storageCreateConnectionForm pins the union of every storage
+// provider's create-connection fields. storage_type drives a
+// switch over the per-backend fields below; the validator
+// constrains storage_type to the known set so an unknown value
+// is rejected at the binding layer rather than after seven
+// FormValue reads.
+type storageCreateConnectionForm struct {
+	StorageType      string `form:"storage_type" validate:"omitempty,oneof=s3 azure gcs b2 sftp local"`
+	Name             string `form:"name" validate:"required"`
+	IsDefault        bool   `form:"is_default"`
+	Endpoint         string `form:"endpoint"`
+	Region           string `form:"region"`
+	AccessKey        string `form:"access_key"`
+	SecretKey        string `form:"secret_key"`
+	UsePathStyle     bool   `form:"use_path_style"`
+	UseSSL           bool   `form:"use_ssl"`
+	AzureAccountName string `form:"azure_account_name"`
+	AzureAccountKey  string `form:"azure_account_key"`
+	AzureContainer   string `form:"azure_container"`
+	GCSProjectID     string `form:"gcs_project_id"`
+	GCSBucket        string `form:"gcs_bucket"`
+	GCSCredentials   string `form:"gcs_credentials"`
+	B2KeyID          string `form:"b2_key_id"`
+	B2AppKey         string `form:"b2_app_key"`
+	B2Bucket         string `form:"b2_bucket"`
+	SFTPHost         string `form:"sftp_host"`
+	SFTPPort         string `form:"sftp_port"`
+	SFTPUsername     string `form:"sftp_username"`
+	SFTPPassword     string `form:"sftp_password"`
+	SFTPPath         string `form:"sftp_path"`
+	LocalPath        string `form:"local_path"`
+}
+
 func (h *Handler) StorageCreateConnection(w http.ResponseWriter, r *http.Request) {
 	svc := h.services.Storage()
 	if svc == nil {
@@ -234,51 +267,38 @@ func (h *Handler) StorageCreateConnection(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	storageType := r.FormValue("storage_type")
+	var form storageCreateConnectionForm
+	if msg := BindForm(r, &form); msg != "" {
+		h.setFlash(w, r, "error", msg)
+		http.Redirect(w, r, "/storage", http.StatusSeeOther)
+		return
+	}
+
+	storageType := form.StorageType
 	if storageType == "" {
 		storageType = "s3"
 	}
-	name := r.FormValue("name")
-	isDefault := r.FormValue("is_default") == "on"
 	userID := h.getCurrentUsername(r)
 
 	var err error
 	switch storageType {
 	case "s3":
-		endpoint := r.FormValue("endpoint")
-		region := r.FormValue("region")
-		accessKey := r.FormValue("access_key")
-		secretKey := r.FormValue("secret_key")
-		usePathStyle := r.FormValue("use_path_style") == "on"
-		useSSL := r.FormValue("use_ssl") == "on"
-		_, err = svc.CreateConnection(r.Context(), name, endpoint, region, accessKey, secretKey, usePathStyle, useSSL, isDefault, userID)
+		_, err = svc.CreateConnection(r.Context(), form.Name, form.Endpoint, form.Region, form.AccessKey, form.SecretKey, form.UsePathStyle, form.UseSSL, form.IsDefault, userID)
 	case "azure":
-		accountName := r.FormValue("azure_account_name")
-		accountKey := r.FormValue("azure_account_key")
-		container := r.FormValue("azure_container")
-		_, err = svc.CreateConnection(r.Context(), name, accountName, container, accountKey, "", false, true, isDefault, userID)
+		_, err = svc.CreateConnection(r.Context(), form.Name, form.AzureAccountName, form.AzureContainer, form.AzureAccountKey, "", false, true, form.IsDefault, userID)
 	case "gcs":
-		projectID := r.FormValue("gcs_project_id")
-		bucket := r.FormValue("gcs_bucket")
-		credentials := r.FormValue("gcs_credentials")
-		_, err = svc.CreateConnection(r.Context(), name, projectID, bucket, credentials, "", false, true, isDefault, userID)
+		_, err = svc.CreateConnection(r.Context(), form.Name, form.GCSProjectID, form.GCSBucket, form.GCSCredentials, "", false, true, form.IsDefault, userID)
 	case "b2":
-		keyID := r.FormValue("b2_key_id")
-		appKey := r.FormValue("b2_app_key")
-		bucket := r.FormValue("b2_bucket")
-		_, err = svc.CreateConnection(r.Context(), name, bucket, "", keyID, appKey, false, true, isDefault, userID)
+		_, err = svc.CreateConnection(r.Context(), form.Name, form.B2Bucket, "", form.B2KeyID, form.B2AppKey, false, true, form.IsDefault, userID)
 	case "sftp":
-		host := r.FormValue("sftp_host")
-		port := r.FormValue("sftp_port")
-		username := r.FormValue("sftp_username")
-		password := r.FormValue("sftp_password")
-		remotePath := r.FormValue("sftp_path")
-		endpoint := host + ":" + port
-		_, err = svc.CreateConnection(r.Context(), name, endpoint, remotePath, username, password, false, false, isDefault, userID)
+		endpoint := form.SFTPHost + ":" + form.SFTPPort
+		_, err = svc.CreateConnection(r.Context(), form.Name, endpoint, form.SFTPPath, form.SFTPUsername, form.SFTPPassword, false, false, form.IsDefault, userID)
 	case "local":
-		localPath := r.FormValue("local_path")
-		_, err = svc.CreateConnection(r.Context(), name, "localhost", localPath, "", "", false, false, isDefault, userID)
+		_, err = svc.CreateConnection(r.Context(), form.Name, "localhost", form.LocalPath, "", "", false, false, form.IsDefault, userID)
 	default:
+		// The validator's oneof already rejects unknown values, but
+		// keep the explicit guard as a belt-and-suspenders fallback
+		// in case the enum gains a member without an arm here.
 		h.setFlash(w, r, "error", "Unknown storage type: "+storageType)
 		http.Redirect(w, r, "/storage", http.StatusSeeOther)
 		return
@@ -293,6 +313,22 @@ func (h *Handler) StorageCreateConnection(w http.ResponseWriter, r *http.Request
 	http.Redirect(w, r, "/storage", http.StatusSeeOther)
 }
 
+// storageUpdateConnectionForm captures the storage-connection PATCH
+// inputs. Every field is a pointer so the service can distinguish
+// "absent in form → leave alone" from "present in form → overwrite".
+// String pointers go through nilIfEmpty so the previous behaviour
+// (a present-but-empty input is treated as absent) is preserved.
+type storageUpdateConnectionForm struct {
+	Name         *string `form:"name"`
+	Endpoint     *string `form:"endpoint"`
+	Region       *string `form:"region"`
+	AccessKey    *string `form:"access_key"`
+	SecretKey    *string `form:"secret_key"`
+	UsePathStyle *bool   `form:"use_path_style"`
+	UseSSL       *bool   `form:"use_ssl"`
+	IsDefault    *bool   `form:"is_default"`
+}
+
 // StorageUpdateConnection handles POST /storage/{connID}/update.
 func (h *Handler) StorageUpdateConnection(w http.ResponseWriter, r *http.Request) {
 	svc := h.services.Storage()
@@ -304,39 +340,21 @@ func (h *Handler) StorageUpdateConnection(w http.ResponseWriter, r *http.Request
 	connID := chi.URLParam(r, "connID")
 	userID := h.getCurrentUsername(r)
 
-	// Read form values — nil pointers mean "don't change this field"
-	var name, endpoint, region, accessKey, secretKey *string
-	var usePathStyle, useSSL, isDefault *bool
-
-	if v := r.FormValue("name"); v != "" {
-		name = &v
-	}
-	if v := r.FormValue("endpoint"); v != "" {
-		endpoint = &v
-	}
-	if v := r.FormValue("region"); v != "" {
-		region = &v
-	}
-	if v := r.FormValue("access_key"); v != "" {
-		accessKey = &v
-	}
-	if v := r.FormValue("secret_key"); v != "" {
-		secretKey = &v
-	}
-	if r.FormValue("use_path_style") != "" {
-		b := r.FormValue("use_path_style") == "on"
-		usePathStyle = &b
-	}
-	if r.FormValue("use_ssl") != "" {
-		b := r.FormValue("use_ssl") == "on"
-		useSSL = &b
-	}
-	if r.FormValue("is_default") != "" {
-		b := r.FormValue("is_default") == "on"
-		isDefault = &b
+	var form storageUpdateConnectionForm
+	if msg := BindForm(r, &form); msg != "" {
+		h.setFlash(w, r, "error", msg)
+		http.Redirect(w, r, "/storage", http.StatusSeeOther)
+		return
 	}
 
-	if err := svc.UpdateConnection(r.Context(), connID, name, endpoint, region, accessKey, secretKey, usePathStyle, useSSL, isDefault, userID); err != nil {
+	if err := svc.UpdateConnection(r.Context(), connID,
+		nilIfEmpty(form.Name),
+		nilIfEmpty(form.Endpoint),
+		nilIfEmpty(form.Region),
+		nilIfEmpty(form.AccessKey),
+		nilIfEmpty(form.SecretKey),
+		form.UsePathStyle, form.UseSSL, form.IsDefault,
+		userID); err != nil {
 		h.setFlash(w, r, "error", "Failed to update connection: "+err.Error())
 	} else {
 		h.setFlash(w, r, "success", "Connection updated successfully")
@@ -384,6 +402,14 @@ func (h *Handler) StorageTestConnection(w http.ResponseWriter, r *http.Request) 
 	http.Redirect(w, r, "/storage/"+connID+"/buckets", http.StatusSeeOther)
 }
 
+// storageCreateBucketForm captures the bucket-create inputs.
+type storageCreateBucketForm struct {
+	Name       string `form:"name" validate:"required"`
+	Region     string `form:"region"`
+	IsPublic   bool   `form:"is_public"`
+	Versioning bool   `form:"versioning"`
+}
+
 // StorageCreateBucket handles POST /storage/{connID}/buckets.
 func (h *Handler) StorageCreateBucket(w http.ResponseWriter, r *http.Request) {
 	svc := h.services.Storage()
@@ -393,16 +419,18 @@ func (h *Handler) StorageCreateBucket(w http.ResponseWriter, r *http.Request) {
 	}
 
 	connID := chi.URLParam(r, "connID")
-	name := r.FormValue("name")
-	region := r.FormValue("region")
-	isPublic := r.FormValue("is_public") == "on"
-	versioning := r.FormValue("versioning") == "on"
+	var form storageCreateBucketForm
+	if msg := BindForm(r, &form); msg != "" {
+		h.setFlash(w, r, "error", msg)
+		http.Redirect(w, r, "/storage/"+connID+"/buckets", http.StatusSeeOther)
+		return
+	}
 	userID := h.getCurrentUsername(r)
 
-	if err := svc.CreateBucket(r.Context(), connID, name, region, isPublic, versioning, userID); err != nil {
+	if err := svc.CreateBucket(r.Context(), connID, form.Name, form.Region, form.IsPublic, form.Versioning, userID); err != nil {
 		h.setFlash(w, r, "error", "Failed to create bucket: "+err.Error())
 	} else {
-		h.setFlash(w, r, "success", "Bucket '"+name+"' created")
+		h.setFlash(w, r, "success", "Bucket '"+form.Name+"' created")
 	}
 
 	http.Redirect(w, r, "/storage/"+connID+"/buckets", http.StatusSeeOther)
@@ -481,9 +509,18 @@ func (h *Handler) StorageDeleteObject(w http.ResponseWriter, r *http.Request) {
 
 	connID := chi.URLParam(r, "connID")
 	bucket := chi.URLParam(r, "bucket")
-	key := r.FormValue("key")
 	prefix := r.URL.Query().Get("prefix")
 	userID := h.getCurrentUsername(r)
+
+	var deleteForm struct {
+		Key string `form:"key" validate:"required"`
+	}
+	if msg := BindForm(r, &deleteForm); msg != "" {
+		h.setFlash(w, r, "error", msg)
+		http.Redirect(w, r, buildBrowserURL(connID, bucket, prefix), http.StatusSeeOther)
+		return
+	}
+	key := deleteForm.Key
 
 	if err := svc.DeleteObject(r.Context(), connID, bucket, key, userID); err != nil {
 		h.setFlash(w, r, "error", "Delete failed: "+err.Error())
@@ -505,8 +542,17 @@ func (h *Handler) StorageCreateFolder(w http.ResponseWriter, r *http.Request) {
 	connID := chi.URLParam(r, "connID")
 	bucket := chi.URLParam(r, "bucket")
 	prefix := r.URL.Query().Get("prefix")
-	folderName := r.FormValue("folder_name")
 	userID := h.getCurrentUsername(r)
+
+	var folderForm struct {
+		FolderName string `form:"folder_name" validate:"required"`
+	}
+	if msg := BindForm(r, &folderForm); msg != "" {
+		h.setFlash(w, r, "error", msg)
+		http.Redirect(w, r, buildBrowserURL(connID, bucket, prefix), http.StatusSeeOther)
+		return
+	}
+	folderName := folderForm.FolderName
 
 	fullPrefix := prefix + folderName
 	if err := svc.CreateFolder(r.Context(), connID, bucket, fullPrefix, userID); err != nil {

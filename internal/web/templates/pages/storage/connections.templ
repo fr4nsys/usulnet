@@ -100,7 +100,7 @@ templ ConnectionsList(data StorageListData) {
 					onclick="document.getElementById('create-modal').classList.remove('hidden')"
 					class="btn-primary"
 				>
-					<i class="fas fa-plus mr-2"></i>Add Connection
+					<i aria-hidden="true" class="fas fa-plus mr-2"></i>Add Connection
 				</button>
 			</div>
 
@@ -108,7 +108,7 @@ templ ConnectionsList(data StorageListData) {
 				<!-- Empty state -->
 				<div class="card p-12 text-center">
 					<div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-primary-500/10 flex items-center justify-center">
-						<i class="fas fa-cloud text-2xl text-primary-400"></i>
+						<i aria-hidden="true" class="fas fa-cloud text-2xl text-primary-400"></i>
 					</div>
 					<h3 class="text-lg font-medium text-white mb-2">No storage connections</h3>
 					<p class="text-gray-400 mb-6">Add a MinIO or S3-compatible storage endpoint to manage buckets and objects.</p>
@@ -116,7 +116,7 @@ templ ConnectionsList(data StorageListData) {
 						onclick="document.getElementById('create-modal').classList.remove('hidden')"
 						class="btn-primary"
 					>
-						<i class="fas fa-plus mr-2"></i>Add Connection
+						<i aria-hidden="true" class="fas fa-plus mr-2"></i>Add Connection
 					</button>
 				</div>
 			} else {
@@ -174,35 +174,35 @@ templ connectionCard(conn StorageConnectionData, csrfToken string) {
 
 		<div class="flex items-center gap-2 text-xs text-gray-500 mb-4">
 			<span class="flex items-center gap-1">
-				<i class="fas fa-globe-americas"></i>{ conn.Region }
+				<i aria-hidden="true" class="fas fa-globe-americas"></i>{ conn.Region }
 			</span>
 			if conn.UseSSL {
 				<span class="flex items-center gap-1 text-green-400">
-					<i class="fas fa-lock"></i>SSL
+					<i aria-hidden="true" class="fas fa-lock"></i>SSL
 				</span>
 			}
 			if conn.StatusMsg != "" {
 				<span class="text-red-400 truncate" title={ conn.StatusMsg }>
-					<i class="fas fa-exclamation-triangle mr-1"></i>{ conn.StatusMsg }
+					<i aria-hidden="true" class="fas fa-exclamation-triangle mr-1"></i>{ conn.StatusMsg }
 				</span>
 			}
 		</div>
 
 		<div class="flex items-center gap-2">
 			<a href={ templ.SafeURL("/storage/" + conn.ID + "/buckets") } class="btn-primary text-xs flex-1 text-center">
-				<i class="fas fa-folder-open mr-1"></i>Buckets
+				<i aria-hidden="true" class="fas fa-folder-open mr-1"></i>Buckets
 			</a>
 			<form method="POST" action={ templ.SafeURL("/storage/" + conn.ID + "/test") }>
 				<input type="hidden" name="csrf_token" value={ csrfToken }/>
 				<button type="submit" class="btn-secondary text-xs" title="Test connection">
-					<i class="fas fa-plug"></i>
+					<i aria-hidden="true" class="fas fa-plug"></i>
 				</button>
 			</form>
 			<form method="POST" action={ templ.SafeURL("/storage/" + conn.ID + "/delete") }
 				onsubmit="return confirm('Delete this connection and remove all tracking data?')">
 				<input type="hidden" name="csrf_token" value={ csrfToken }/>
 				<button type="submit" class="btn-danger text-xs" title="Delete">
-					<i class="fas fa-trash"></i>
+					<i aria-hidden="true" class="fas fa-trash"></i>
 				</button>
 			</form>
 		</div>
@@ -215,7 +215,7 @@ templ createConnectionModal(csrfToken string) {
 			<div class="flex items-center justify-between mb-6">
 				<h2 class="text-lg font-display font-bold text-white">New Storage Connection</h2>
 				<button onclick="document.getElementById('create-modal').classList.add('hidden')" class="text-gray-400 hover:text-white">
-					<i class="fas fa-times"></i>
+					<i aria-hidden="true" class="fas fa-times"></i>
 				</button>
 			</div>
 
@@ -236,7 +236,7 @@ templ createConnectionModal(csrfToken string) {
 
 				<div>
 					<label class="label">Connection Name</label>
-					<input type="text" name="name" required placeholder="My Storage" class="input"/>
+					<input type="text" name="name" required placeholder="My Storage" aria-label="My Storage" class="input"/>
 				</div>
 
 				<!-- S3 Fields -->
@@ -244,7 +244,7 @@ templ createConnectionModal(csrfToken string) {
 					<div class="grid grid-cols-2 gap-4">
 						<div>
 							<label class="label">Endpoint</label>
-							<input type="text" name="endpoint" placeholder="minio:9000" class="input"/>
+							<input type="text" name="endpoint" placeholder="minio:9000" aria-label="minio:9000" class="input"/>
 						</div>
 						<div>
 							<label class="label">Region</label>
@@ -277,7 +277,7 @@ templ createConnectionModal(csrfToken string) {
 				<div x-show="storageType === 'azure'" class="space-y-4">
 					<div>
 						<label class="label">Account Name</label>
-						<input type="text" name="azure_account_name" placeholder="mystorageaccount" class="input"/>
+						<input type="text" name="azure_account_name" placeholder="mystorageaccount" aria-label="mystorageaccount" class="input"/>
 					</div>
 					<div>
 						<label class="label">Account Key</label>
@@ -285,7 +285,7 @@ templ createConnectionModal(csrfToken string) {
 					</div>
 					<div>
 						<label class="label">Container Name</label>
-						<input type="text" name="azure_container" placeholder="backups" class="input"/>
+						<input type="text" name="azure_container" placeholder="backups" aria-label="backups" class="input"/>
 					</div>
 				</div>
 
@@ -293,11 +293,11 @@ templ createConnectionModal(csrfToken string) {
 				<div x-show="storageType === 'gcs'" class="space-y-4">
 					<div>
 						<label class="label">Project ID</label>
-						<input type="text" name="gcs_project_id" placeholder="my-project-123" class="input"/>
+						<input type="text" name="gcs_project_id" placeholder="my-project-123" aria-label="my-project-123" class="input"/>
 					</div>
 					<div>
 						<label class="label">Bucket Name</label>
-						<input type="text" name="gcs_bucket" placeholder="my-bucket" class="input"/>
+						<input type="text" name="gcs_bucket" placeholder="my-bucket" aria-label="my-bucket" class="input"/>
 					</div>
 					<div>
 						<label class="label">Service Account JSON Key</label>
@@ -317,7 +317,7 @@ templ createConnectionModal(csrfToken string) {
 					</div>
 					<div>
 						<label class="label">Bucket Name</label>
-						<input type="text" name="b2_bucket" placeholder="my-backups" class="input"/>
+						<input type="text" name="b2_bucket" placeholder="my-backups" aria-label="my-backups" class="input"/>
 					</div>
 				</div>
 
@@ -326,7 +326,7 @@ templ createConnectionModal(csrfToken string) {
 					<div class="grid grid-cols-2 gap-4">
 						<div>
 							<label class="label">Host</label>
-							<input type="text" name="sftp_host" placeholder="192.168.1.100" class="input"/>
+							<input type="text" name="sftp_host" placeholder="192.168.1.100" aria-label="192.168.1.100" class="input"/>
 						</div>
 						<div>
 							<label class="label">Port</label>
@@ -345,7 +345,7 @@ templ createConnectionModal(csrfToken string) {
 					</div>
 					<div>
 						<label class="label">Remote Path</label>
-						<input type="text" name="sftp_path" placeholder="/backups" class="input"/>
+						<input type="text" name="sftp_path" placeholder="/backups" aria-label="/backups" class="input"/>
 					</div>
 					<div>
 						<label class="label">SSH Key (optional)</label>
@@ -357,7 +357,7 @@ templ createConnectionModal(csrfToken string) {
 				<div x-show="storageType === 'local'" class="space-y-4">
 					<div>
 						<label class="label">Local Path</label>
-						<input type="text" name="local_path" placeholder="/data/backups" class="input"/>
+						<input type="text" name="local_path" placeholder="/data/backups" aria-label="/data/backups" class="input"/>
 						<p class="text-gray-500 text-xs mt-1">Absolute path on the server filesystem</p>
 					</div>
 				</div>
@@ -369,7 +369,7 @@ templ createConnectionModal(csrfToken string) {
 
 				<div class="flex items-center gap-3 pt-2">
 					<button type="submit" class="btn-primary flex-1">
-						<i class="fas fa-plus mr-2"></i>Create Connection
+						<i aria-hidden="true" class="fas fa-plus mr-2"></i>Create Connection
 					</button>
 					<button type="button" onclick="document.getElementById('create-modal').classList.add('hidden')" class="btn-secondary">
 						Cancel

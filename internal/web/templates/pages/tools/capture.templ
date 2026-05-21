@@ -60,7 +60,7 @@ templ PacketCapture(data PacketCaptureData) {
 			<div class="flex items-center justify-between">
 				<div>
 					<h1 class="text-2xl font-display font-bold text-white">
-						<i class="fas fa-satellite-dish text-primary-400 mr-2"></i>Network Packet Capture
+						<i aria-hidden="true" class="fas fa-satellite-dish text-primary-400 mr-2"></i>Network Packet Capture
 					</h1>
 					<p class="text-gray-400 mt-1">Capture and analyze network traffic using tcpdump</p>
 				</div>
@@ -68,7 +68,7 @@ templ PacketCapture(data PacketCaptureData) {
 					onclick="document.getElementById('new-capture-modal').classList.remove('hidden')"
 					class="btn-primary"
 				>
-					<i class="fas fa-play mr-2"></i>New Capture
+					<i aria-hidden="true" class="fas fa-play mr-2"></i>New Capture
 				</button>
 			</div>
 
@@ -77,7 +77,7 @@ templ PacketCapture(data PacketCaptureData) {
 				<div class="card p-4">
 					<div class="flex items-center gap-3">
 						<div class="w-10 h-10 rounded-lg bg-green-500/10 flex items-center justify-center">
-							<i class="fas fa-network-wired text-green-400"></i>
+							<i aria-hidden="true" class="fas fa-network-wired text-green-400"></i>
 						</div>
 						<div>
 							<div class="text-2xl font-bold text-white">{ fmt.Sprintf("%d", len(data.Interfaces)) }</div>
@@ -88,7 +88,7 @@ templ PacketCapture(data PacketCaptureData) {
 				<div class="card p-4">
 					<div class="flex items-center gap-3">
 						<div class="w-10 h-10 rounded-lg bg-blue-500/10 flex items-center justify-center">
-							<i class="fas fa-play-circle text-blue-400"></i>
+							<i aria-hidden="true" class="fas fa-play-circle text-blue-400"></i>
 						</div>
 						<div>
 							<div class="text-2xl font-bold text-white">{ fmt.Sprintf("%d", countActive(data.Captures)) }</div>
@@ -99,7 +99,7 @@ templ PacketCapture(data PacketCaptureData) {
 				<div class="card p-4">
 					<div class="flex items-center gap-3">
 						<div class="w-10 h-10 rounded-lg bg-purple-500/10 flex items-center justify-center">
-							<i class="fas fa-database text-purple-400"></i>
+							<i aria-hidden="true" class="fas fa-database text-purple-400"></i>
 						</div>
 						<div>
 							<div class="text-2xl font-bold text-white">{ fmt.Sprintf("%d", len(data.Captures)) }</div>
@@ -110,7 +110,7 @@ templ PacketCapture(data PacketCaptureData) {
 				<div class="card p-4">
 					<div class="flex items-center gap-3">
 						<div class="w-10 h-10 rounded-lg bg-yellow-500/10 flex items-center justify-center">
-							<i class="fas fa-hdd text-yellow-400"></i>
+							<i aria-hidden="true" class="fas fa-hdd text-yellow-400"></i>
 						</div>
 						<div>
 							<div class="text-2xl font-bold text-white">{ totalSize(data.Captures) }</div>
@@ -128,13 +128,13 @@ templ PacketCapture(data PacketCaptureData) {
 					<div class="card">
 						<div class="p-4 border-b border-dark-600">
 							<h2 class="font-semibold text-white">
-								<i class="fas fa-ethernet text-primary-400 mr-2"></i>Network Interfaces
+								<i aria-hidden="true" class="fas fa-ethernet text-primary-400 mr-2"></i>Network Interfaces
 							</h2>
 						</div>
 						<div class="divide-y divide-dark-600">
 							if len(data.Interfaces) == 0 {
 								<div class="p-6 text-center text-gray-500">
-									<i class="fas fa-network-wired text-2xl mb-2"></i>
+									<i aria-hidden="true" class="fas fa-network-wired text-2xl mb-2"></i>
 									<p class="text-sm">No interfaces detected</p>
 								</div>
 							}
@@ -149,7 +149,7 @@ templ PacketCapture(data PacketCaptureData) {
 										@click={ "$store.capture.start('" + iface.Name + "')" }
 										class="text-primary-400 hover:text-primary-300 text-sm"
 									>
-										<i class="fas fa-play"></i>
+										<i aria-hidden="true" class="fas fa-play"></i>
 									</button>
 								</div>
 							}
@@ -160,13 +160,13 @@ templ PacketCapture(data PacketCaptureData) {
 					<div class="card">
 						<div class="p-4 border-b border-dark-600">
 							<h2 class="font-semibold text-white">
-								<i class="fas fa-history text-primary-400 mr-2"></i>Capture Sessions
+								<i aria-hidden="true" class="fas fa-history text-primary-400 mr-2"></i>Capture Sessions
 							</h2>
 						</div>
 						<div class="divide-y divide-dark-600 max-h-[400px] overflow-y-auto">
 							if len(data.Captures) == 0 {
 								<div class="p-6 text-center text-gray-500">
-									<i class="fas fa-inbox text-2xl mb-2"></i>
+									<i aria-hidden="true" class="fas fa-inbox text-2xl mb-2"></i>
 									<p class="text-sm">No captures yet</p>
 								</div>
 							}
@@ -216,14 +216,14 @@ templ PacketCapture(data PacketCaptureData) {
 											hx-target="body"
 											class="btn-sm bg-red-500/10 text-red-400 hover:bg-red-500/20"
 										>
-											<i class="fas fa-stop mr-1"></i>Stop
+											<i aria-hidden="true" class="fas fa-stop mr-1"></i>Stop
 										</button>
 									} else {
 										<a
 											href={ templ.SafeURL("/tools/capture/" + data.Active.ID + "/download") }
 											class="btn-sm bg-blue-500/10 text-blue-400 hover:bg-blue-500/20"
 										>
-											<i class="fas fa-download mr-1"></i>Download PCAP
+											<i aria-hidden="true" class="fas fa-download mr-1"></i>Download PCAP
 										</a>
 										<button
 											hx-delete={ "/tools/capture/" + data.Active.ID }
@@ -231,7 +231,7 @@ templ PacketCapture(data PacketCaptureData) {
 											hx-confirm="Delete this capture?"
 											class="btn-sm bg-red-500/10 text-red-400 hover:bg-red-500/20"
 										>
-											<i class="fas fa-trash mr-1"></i>Delete
+											<i aria-hidden="true" class="fas fa-trash mr-1"></i>Delete
 										</button>
 									}
 								</div>
@@ -269,12 +269,12 @@ templ PacketCapture(data PacketCaptureData) {
 							>
 								if data.Active.Status == "running" {
 									<div class="p-4 flex items-center gap-2 text-green-400">
-										<i class="fas fa-circle animate-pulse text-xs"></i>
+										<i aria-hidden="true" class="fas fa-circle animate-pulse text-xs"></i>
 										<span>Live capture monitoring active</span>
 									</div>
 								} else {
 									<div class="p-4 text-center text-gray-500">
-										<i class="fas fa-check-circle text-2xl mb-2"></i>
+										<i aria-hidden="true" class="fas fa-check-circle text-2xl mb-2"></i>
 										<p>Capture { data.Active.Status }</p>
 									</div>
 								}
@@ -286,14 +286,14 @@ templ PacketCapture(data PacketCaptureData) {
 								<div class="p-4 border-t border-dark-600" x-data={ "{ analysis: null, loading: false, error: '', analyzeUrl: '/tools/capture/" + data.Active.ID + "/analyze' }" }>
 									<div class="flex items-center justify-between mb-3">
 										<h3 class="text-lg font-medium text-white">
-											<i class="fas fa-magnifying-glass-chart text-primary-400 mr-2"></i>PCAP Analysis
+											<i aria-hidden="true" class="fas fa-magnifying-glass-chart text-primary-400 mr-2"></i>PCAP Analysis
 										</h3>
 										<button
 											@click="loading = true; error = ''; fetch(analyzeUrl).then(r => r.json()).then(d => { analysis = d; loading = false; }).catch(e => { error = e.message; loading = false; })"
 											class="btn-primary text-sm"
 											:disabled="loading"
 										>
-											<i class="fas fa-magnifying-glass-chart mr-1"></i>
+											<i aria-hidden="true" class="fas fa-magnifying-glass-chart mr-1"></i>
 											<span x-text="loading ? 'Analyzing...' : 'Analyze'"></span>
 										</button>
 									</div>
@@ -322,10 +322,10 @@ templ PacketCapture(data PacketCaptureData) {
 												<table class="w-full text-sm">
 													<thead>
 														<tr class="text-left text-gray-400 border-b border-dark-600">
-															<th class="pb-2 pr-3">IP Address</th>
-															<th class="pb-2 pr-3">Packets (src)</th>
-															<th class="pb-2 pr-3">Packets (dst)</th>
-															<th class="pb-2">Total</th>
+															<th scope="col" class="pb-2 pr-3">IP Address</th>
+															<th scope="col" class="pb-2 pr-3">Packets (src)</th>
+															<th scope="col" class="pb-2 pr-3">Packets (dst)</th>
+															<th scope="col" class="pb-2">Total</th>
 														</tr>
 													</thead>
 													<tbody>
@@ -347,9 +347,9 @@ templ PacketCapture(data PacketCaptureData) {
 												<table class="w-full text-sm">
 													<thead>
 														<tr class="text-left text-gray-400 border-b border-dark-600">
-															<th class="pb-2 pr-3">Protocol</th>
-															<th class="pb-2 pr-3">Count</th>
-															<th class="pb-2">%</th>
+															<th scope="col" class="pb-2 pr-3">Protocol</th>
+															<th scope="col" class="pb-2 pr-3">Count</th>
+															<th scope="col" class="pb-2">%</th>
 														</tr>
 													</thead>
 													<tbody>
@@ -370,10 +370,10 @@ templ PacketCapture(data PacketCaptureData) {
 												<table class="w-full text-sm">
 													<thead>
 														<tr class="text-left text-gray-400 border-b border-dark-600">
-															<th class="pb-2 pr-3">Source</th>
-															<th class="pb-2 pr-3">Destination</th>
-															<th class="pb-2 pr-3">Protocol</th>
-															<th class="pb-2">Packets</th>
+															<th scope="col" class="pb-2 pr-3">Source</th>
+															<th scope="col" class="pb-2 pr-3">Destination</th>
+															<th scope="col" class="pb-2 pr-3">Protocol</th>
+															<th scope="col" class="pb-2">Packets</th>
 														</tr>
 													</thead>
 													<tbody>
@@ -400,14 +400,14 @@ templ PacketCapture(data PacketCaptureData) {
 					} else {
 						<!-- No Active Capture -->
 						<div class="card p-12 text-center">
-							<i class="fas fa-satellite-dish text-6xl text-gray-400 mb-4"></i>
+							<i aria-hidden="true" class="fas fa-satellite-dish text-6xl text-gray-400 mb-4"></i>
 							<h2 class="text-xl font-semibold text-white mb-2">Network Packet Capture</h2>
 							<p class="text-gray-400 mb-6">Capture and analyze network traffic in real-time</p>
 							<button
 								onclick="document.getElementById('new-capture-modal').classList.remove('hidden')"
 								class="btn-primary"
 							>
-								<i class="fas fa-play mr-2"></i>Start New Capture
+								<i aria-hidden="true" class="fas fa-play mr-2"></i>Start New Capture
 							</button>
 						</div>
 					}
@@ -418,7 +418,7 @@ templ PacketCapture(data PacketCaptureData) {
 			<div class="card">
 				<div class="p-4 border-b border-dark-600">
 					<h2 class="font-semibold text-white">
-						<i class="fas fa-filter text-primary-400 mr-2"></i>Common Capture Filters
+						<i aria-hidden="true" class="fas fa-filter text-primary-400 mr-2"></i>Common Capture Filters
 					</h2>
 				</div>
 				<div class="p-4">
@@ -478,7 +478,7 @@ templ PacketCapture(data PacketCaptureData) {
 												div.textContent = str;
 												return div.innerHTML;
 											}
-											logDiv.innerHTML = '<div class="p-4 text-center text-yellow-400"><i class="fas fa-check-circle mr-2"></i>' + escapeHtml(msg.message || 'Capture finished') + '</div>';
+											logDiv.innerHTML = '<div class="p-4 text-center text-yellow-400"><i aria-hidden="true" class="fas fa-check-circle mr-2"></i>' + escapeHtml(msg.message || 'Capture finished') + '</div>';
 										}
 										setTimeout(function() { location.reload(); }, 2000);
 									}
@@ -491,10 +491,10 @@ templ PacketCapture(data PacketCaptureData) {
 									const delay = Math.min(30000, 1000 * Math.pow(2, this._reconnectAttempts));
 									this._reconnectAttempts++;
 									const delaySec = delay * 0.001;
-									logDiv.innerHTML += '<div class="p-2 text-yellow-400 text-xs"><i class="fas fa-sync-alt mr-1"></i>Stream disconnected — reconnecting in ' + delaySec + 's... (attempt ' + this._reconnectAttempts + ' of 5)</div>';
+									logDiv.innerHTML += '<div class="p-2 text-yellow-400 text-xs"><i aria-hidden="true" class="fas fa-sync-alt mr-1"></i>Stream disconnected — reconnecting in ' + delaySec + 's... (attempt ' + this._reconnectAttempts + ' of 5)</div>';
 									setTimeout(() => this.connectWS(captureId), delay);
 								} else if (!graceful && this._reconnectAttempts >= 5 && logDiv && !logDiv.innerHTML.includes('finished')) {
-									logDiv.innerHTML += '<div class="p-2 text-red-400 text-xs"><i class="fas fa-times-circle mr-1"></i>Stream disconnected — max reconnect attempts reached.</div>';
+									logDiv.innerHTML += '<div class="p-2 text-red-400 text-xs"><i aria-hidden="true" class="fas fa-times-circle mr-1"></i>Stream disconnected — max reconnect attempts reached.</div>';
 								} else if (logDiv && !logDiv.innerHTML.includes('finished')) {
 									logDiv.innerHTML += '<div class="p-2 text-gray-500 text-xs">Stream disconnected</div>';
 								}
@@ -532,14 +532,14 @@ templ newCaptureModal(csrfToken string, interfaces []NetworkInterface) {
 	<div id="new-capture-modal" class="hidden fixed inset-0 z-50 overflow-y-auto">
 		<div class="fixed inset-0 bg-black/50" onclick="document.getElementById('new-capture-modal').classList.add('hidden')"></div>
 		<div class="relative min-h-screen flex items-center justify-center p-4">
-			<div class="relative bg-dark-800 rounded-xl border border-dark-600 max-w-lg w-full p-6">
+			<div class="relative card max-w-lg w-full p-6">
 				<div class="flex items-center justify-between mb-6">
 					<h2 class="text-xl font-display font-bold text-white">New Packet Capture</h2>
 					<button
 						onclick="document.getElementById('new-capture-modal').classList.add('hidden')"
 						class="text-gray-400 hover:text-white"
 					>
-						<i class="fas fa-times"></i>
+						<i aria-hidden="true" class="fas fa-times"></i>
 					</button>
 				</div>
 
@@ -548,7 +548,7 @@ templ newCaptureModal(csrfToken string, interfaces []NetworkInterface) {
 
 					<div>
 						<label class="block text-sm font-medium text-gray-300 mb-2">Capture Name</label>
-						<input type="text" name="name" required class="input" placeholder="e.g. Debug HTTP Traffic"/>
+						<input type="text" name="name" required class="input" placeholder="e.g. Debug HTTP Traffic" aria-label="e.g. Debug HTTP Traffic"/>
 					</div>
 
 					<div>
@@ -564,18 +564,18 @@ templ newCaptureModal(csrfToken string, interfaces []NetworkInterface) {
 
 					<div>
 						<label class="block text-sm font-medium text-gray-300 mb-2">Capture Filter (BPF)</label>
-						<input type="text" id="capture-filter" name="filter" class="input font-mono" placeholder="e.g. tcp port 80"/>
+						<input type="text" id="capture-filter" name="filter" class="input font-mono" placeholder="e.g. tcp port 80" aria-label="e.g. tcp port 80"/>
 						<p class="text-xs text-gray-500 mt-1">Leave empty to capture all traffic</p>
 					</div>
 
 					<div class="grid grid-cols-2 gap-4">
 						<div>
 							<label class="block text-sm font-medium text-gray-300 mb-2">Max Packets</label>
-							<input type="number" name="max_packets" class="input" placeholder="0 (unlimited)" min="0"/>
+							<input type="number" name="max_packets" class="input" placeholder="0 (unlimited)" aria-label="0 (unlimited)" min="0"/>
 						</div>
 						<div>
 							<label class="block text-sm font-medium text-gray-300 mb-2">Max Duration (seconds)</label>
-							<input type="number" name="max_duration" class="input" placeholder="0 (unlimited)" min="0"/>
+							<input type="number" name="max_duration" class="input" placeholder="0 (unlimited)" aria-label="0 (unlimited)" min="0"/>
 						</div>
 					</div>
 
@@ -588,7 +588,7 @@ templ newCaptureModal(csrfToken string, interfaces []NetworkInterface) {
 							Cancel
 						</button>
 						<button type="submit" class="btn-primary">
-							<i class="fas fa-play mr-2"></i>Start Capture
+							<i aria-hidden="true" class="fas fa-play mr-2"></i>Start Capture
 						</button>
 					</div>
 				</form>

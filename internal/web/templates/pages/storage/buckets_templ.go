@@ -45,7 +45,7 @@ func BucketsList(data StorageBucketsData) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"space-y-6\"><!-- Breadcrumb --><div class=\"flex items-center gap-2 text-sm text-gray-400\"><a href=\"/storage\" class=\"hover:text-primary-400 transition-colors\">Storage</a> <i class=\"fas fa-chevron-right text-xs text-gray-400\"></i> <span class=\"text-white\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"space-y-6\"><!-- Breadcrumb --><div class=\"flex items-center gap-2 text-sm text-gray-400\"><a href=\"/storage\" class=\"hover:text-primary-400 transition-colors\">Storage</a> <i aria-hidden=\"true\" class=\"fas fa-chevron-right text-xs text-gray-400\"></i> <span class=\"text-white\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -58,14 +58,14 @@ func BucketsList(data StorageBucketsData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</span></div><!-- Header --><div class=\"flex items-center justify-between\"><div><h1 class=\"text-2xl font-display font-bold text-white\"><i class=\"fas fa-folder-open text-primary-400 mr-2\"></i>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</span></div><!-- Header --><div class=\"flex items-center justify-between\"><div><h1 class=\"text-2xl font-display font-bold text-white\"><i aria-hidden=\"true\" class=\"fas fa-folder-open text-primary-400 mr-2\"></i>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var4 string
 			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(data.Connection.Name)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/storage/buckets.templ`, Line: 21, Col: 84}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/storage/buckets.templ`, Line: 21, Col: 103}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 			if templ_7745c5c3_Err != nil {
@@ -110,17 +110,17 @@ func BucketsList(data StorageBucketsData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "\" class=\"btn-secondary text-sm\"><i class=\"fas fa-history mr-2\"></i>Audit Log</a> <button onclick=\"document.getElementById('create-bucket-modal').classList.remove('hidden')\" class=\"btn-primary text-sm\"><i class=\"fas fa-plus mr-2\"></i>Create Bucket</button></div></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "\" class=\"btn-secondary text-sm\"><i aria-hidden=\"true\" class=\"fas fa-history mr-2\"></i>Audit Log</a> <button onclick=\"document.getElementById('create-bucket-modal').classList.remove('hidden')\" class=\"btn-primary text-sm\"><i aria-hidden=\"true\" class=\"fas fa-plus mr-2\"></i>Create Bucket</button></div></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			if len(data.Buckets) == 0 {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "<div class=\"card p-12 text-center\"><div class=\"w-16 h-16 mx-auto mb-4 rounded-2xl bg-primary-500/10 flex items-center justify-center\"><i class=\"fas fa-bucket text-2xl text-primary-400\"></i></div><h3 class=\"text-lg font-medium text-white mb-2\">No buckets yet</h3><p class=\"text-gray-400 mb-6\">Create a bucket to start storing objects.</p><button onclick=\"document.getElementById('create-bucket-modal').classList.remove('hidden')\" class=\"btn-primary\"><i class=\"fas fa-plus mr-2\"></i>Create Bucket</button></div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "<div class=\"card p-12 text-center\"><div class=\"w-16 h-16 mx-auto mb-4 rounded-2xl bg-primary-500/10 flex items-center justify-center\"><i aria-hidden=\"true\" class=\"fas fa-bucket text-2xl text-primary-400\"></i></div><h3 class=\"text-lg font-medium text-white mb-2\">No buckets yet</h3><p class=\"text-gray-400 mb-6\">Create a bucket to start storing objects.</p><button onclick=\"document.getElementById('create-bucket-modal').classList.remove('hidden')\" class=\"btn-primary\"><i aria-hidden=\"true\" class=\"fas fa-plus mr-2\"></i>Create Bucket</button></div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			} else {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "<!-- Buckets table --> <div class=\"card overflow-hidden\"><table class=\"w-full\"><thead><tr class=\"border-b border-dark-600\"><th class=\"text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider\">Name</th><th class=\"text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider\">Region</th><th class=\"text-right px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider\">Objects</th><th class=\"text-right px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider\">Size</th><th class=\"text-center px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider\">Flags</th><th class=\"text-right px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider\">Actions</th></tr></thead> <tbody class=\"divide-y divide-dark-700\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "<!-- Buckets table --> <div class=\"card overflow-hidden\"><table class=\"w-full\"><thead><tr class=\"border-b border-dark-600\"><th scope=\"col\" class=\"text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider\">Name</th><th scope=\"col\" class=\"text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider\">Region</th><th scope=\"col\" class=\"text-right px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider\">Objects</th><th scope=\"col\" class=\"text-right px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider\">Size</th><th scope=\"col\" class=\"text-center px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider\">Flags</th><th scope=\"col\" class=\"text-right px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider\">Actions</th></tr></thead> <tbody class=\"divide-y divide-dark-700\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -187,14 +187,14 @@ func bucketRow(connID string, b StorageBucketData, csrfToken string) templ.Compo
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "\" class=\"font-medium text-primary-400 hover:text-primary-300 transition-colors\"><i class=\"fas fa-archive mr-2 text-gray-500\"></i>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "\" class=\"font-medium text-primary-400 hover:text-primary-300 transition-colors\"><i aria-hidden=\"true\" class=\"fas fa-archive mr-2 text-gray-500\"></i>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var10 string
 		templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(b.Name)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/storage/buckets.templ`, Line: 79, Col: 61}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/storage/buckets.templ`, Line: 79, Col: 80}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 		if templ_7745c5c3_Err != nil {
@@ -268,7 +268,7 @@ func bucketRow(connID string, b StorageBucketData, csrfToken string) templ.Compo
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 20, "\" class=\"btn-secondary text-xs\"><i class=\"fas fa-folder-open\"></i></a><form method=\"POST\" action=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 20, "\" class=\"btn-secondary text-xs\"><i aria-hidden=\"true\" class=\"fas fa-folder-open\"></i></a><form method=\"POST\" action=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -294,7 +294,7 @@ func bucketRow(connID string, b StorageBucketData, csrfToken string) templ.Compo
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 22, "\"> <button type=\"submit\" class=\"btn-danger text-xs\"><i class=\"fas fa-trash\"></i></button></form></div></td></tr>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 22, "\"> <button type=\"submit\" class=\"btn-danger text-xs\"><i aria-hidden=\"true\" class=\"fas fa-trash\"></i></button></form></div></td></tr>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -323,7 +323,7 @@ func createBucketModal(connID, defaultRegion, csrfToken string) templ.Component 
 			templ_7745c5c3_Var17 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 23, "<div id=\"create-bucket-modal\" class=\"hidden fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm\"><div class=\"card w-full max-w-md mx-4 p-6\"><div class=\"flex items-center justify-between mb-6\"><h2 class=\"text-lg font-display font-bold text-white\">Create Bucket</h2><button onclick=\"document.getElementById('create-bucket-modal').classList.add('hidden')\" class=\"text-gray-400 hover:text-white\"><i class=\"fas fa-times\"></i></button></div><form method=\"POST\" action=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 23, "<div id=\"create-bucket-modal\" class=\"hidden fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm\"><div class=\"card w-full max-w-md mx-4 p-6\"><div class=\"flex items-center justify-between mb-6\"><h2 class=\"text-lg font-display font-bold text-white\">Create Bucket</h2><button onclick=\"document.getElementById('create-bucket-modal').classList.add('hidden')\" class=\"text-gray-400 hover:text-white\"><i aria-hidden=\"true\" class=\"fas fa-times\"></i></button></div><form method=\"POST\" action=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -349,7 +349,7 @@ func createBucketModal(connID, defaultRegion, csrfToken string) templ.Component 
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 25, "\"><div><label class=\"label\">Bucket Name</label> <input type=\"text\" name=\"name\" required pattern=\"[a-z0-9][a-z0-9.-]{1,61}[a-z0-9]\" placeholder=\"my-bucket\" class=\"input\"><p class=\"text-xs text-gray-500 mt-1\">Lowercase, 3-63 chars, no underscores</p></div><div><label class=\"label\">Region</label> <input type=\"text\" name=\"region\" value=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 25, "\"><div><label class=\"label\">Bucket Name</label> <input type=\"text\" name=\"name\" required pattern=\"[a-z0-9][a-z0-9.-]{1,61}[a-z0-9]\" placeholder=\"my-bucket\" aria-label=\"my-bucket\" class=\"input\"><p class=\"text-xs text-gray-500 mt-1\">Lowercase, 3-63 chars, no underscores</p></div><div><label class=\"label\">Region</label> <input type=\"text\" name=\"region\" value=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

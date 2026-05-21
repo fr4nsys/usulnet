@@ -96,12 +96,12 @@ func RDPConnectionsList(data RDPConnectionsListData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<!-- Header --><div class=\"flex items-center justify-between\"><div><h1 class=\"text-2xl font-display font-bold text-white\">RDP Connections</h1><p class=\"text-gray-400 mt-1\">Manage Remote Desktop connections to Windows servers</p></div><a href=\"/connections/rdp/new\" class=\"inline-flex items-center px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors\"><i class=\"fas fa-plus mr-2\"></i> New Connection</a></div><!-- Connections Grid -->")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<!-- Header --><div class=\"flex items-center justify-between\"><div><h1 class=\"text-2xl font-display font-bold text-white\">RDP Connections</h1><p class=\"text-gray-400 mt-1\">Manage Remote Desktop connections to Windows servers</p></div><a href=\"/connections/rdp/new\" class=\"inline-flex items-center px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors\"><i aria-hidden=\"true\" class=\"fas fa-plus mr-2\"></i> New Connection</a></div><!-- Connections Grid -->")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			if len(data.Connections) == 0 {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<div class=\"bg-dark-800 rounded-lg border border-dark-700 p-12 text-center\"><div class=\"w-16 h-16 bg-dark-700 rounded-full flex items-center justify-center mx-auto mb-4\"><i class=\"fas fa-desktop text-2xl text-gray-500\"></i></div><h3 class=\"text-lg font-medium text-white mb-2\">No RDP Connections</h3><p class=\"text-gray-400 mb-6 max-w-sm mx-auto\">Create your first Remote Desktop connection to access Windows servers directly from your browser.</p><a href=\"/connections/rdp/new\" class=\"inline-flex items-center px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors\"><i class=\"fas fa-plus mr-2\"></i>New Connection</a></div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<div class=\"bg-dark-800 rounded-lg border border-dark-700 p-12 text-center\"><div class=\"w-16 h-16 bg-dark-700 rounded-full flex items-center justify-center mx-auto mb-4\"><i aria-hidden=\"true\" class=\"fas fa-desktop text-2xl text-gray-500\"></i></div><h3 class=\"text-lg font-medium text-white mb-2\">No RDP Connections</h3><p class=\"text-gray-400 mb-6 max-w-sm mx-auto\">Create your first Remote Desktop connection to access Windows servers directly from your browser.</p><a href=\"/connections/rdp/new\" class=\"inline-flex items-center px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors\"><i aria-hidden=\"true\" class=\"fas fa-plus mr-2\"></i>New Connection</a></div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -218,7 +218,7 @@ func RDPConnectionCard(conn RDPConnectionData) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "\" class=\"p-2 text-gray-400 hover:text-primary-400 hover:bg-dark-700 rounded-lg transition-colors\" title=\"Open Remote Desktop\"><i class=\"fas fa-desktop text-lg\"></i></a> <a href=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "\" class=\"p-2 text-gray-400 hover:text-primary-400 hover:bg-dark-700 rounded-lg transition-colors\" title=\"Open Remote Desktop\"><i aria-hidden=\"true\" class=\"fas fa-desktop text-lg\"></i></a> <a href=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -231,12 +231,12 @@ func RDPConnectionCard(conn RDPConnectionData) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "\" class=\"p-2 text-gray-400 hover:text-gray-200 hover:bg-dark-700 rounded-lg transition-colors\" title=\"Settings\"><i class=\"fas fa-cog\"></i></a></div></div><!-- Connection Info --><div class=\"mt-4 space-y-2 text-sm\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "\" class=\"p-2 text-gray-400 hover:text-gray-200 hover:bg-dark-700 rounded-lg transition-colors\" title=\"Settings\"><i aria-hidden=\"true\" class=\"fas fa-cog\"></i></a></div></div><!-- Connection Info --><div class=\"mt-4 space-y-2 text-sm\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		if conn.Username != "" {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "<div class=\"flex items-center text-gray-400\"><i class=\"fas fa-user w-4 mr-2 text-center\"></i> <span>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "<div class=\"flex items-center text-gray-400\"><i aria-hidden=\"true\" class=\"fas fa-user w-4 mr-2 text-center\"></i> <span>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -280,7 +280,7 @@ func RDPConnectionCard(conn RDPConnectionData) templ.Component {
 			}
 		}
 		if conn.Resolution != "" {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "<div class=\"flex items-center text-gray-400\"><i class=\"fas fa-expand-arrows-alt w-4 mr-2 text-center\"></i> <span>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "<div class=\"flex items-center text-gray-400\"><i aria-hidden=\"true\" class=\"fas fa-expand-arrows-alt w-4 mr-2 text-center\"></i> <span>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -299,7 +299,7 @@ func RDPConnectionCard(conn RDPConnectionData) templ.Component {
 			}
 		}
 		if conn.Security != "" && conn.Security != "any" {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "<div class=\"flex items-center text-gray-400\"><i class=\"fas fa-lock w-4 mr-2 text-center\"></i> <span>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "<div class=\"flex items-center text-gray-400\"><i aria-hidden=\"true\" class=\"fas fa-lock w-4 mr-2 text-center\"></i> <span>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -318,7 +318,7 @@ func RDPConnectionCard(conn RDPConnectionData) templ.Component {
 			}
 		}
 		if conn.LastUsed != "" {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 21, "<div class=\"flex items-center text-gray-500\"><i class=\"fas fa-clock w-4 mr-2 text-center\"></i> <span>Last used ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 21, "<div class=\"flex items-center text-gray-500\"><i aria-hidden=\"true\" class=\"fas fa-clock w-4 mr-2 text-center\"></i> <span>Last used ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -450,7 +450,7 @@ func RDPConnectionNew(data RDPConnectionNewData) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 32, "<div class=\"max-w-2xl mx-auto space-y-6\"><!-- Header --><div class=\"flex items-center gap-4\"><a href=\"/connections/rdp\" class=\"p-2 text-gray-400 hover:text-white hover:bg-dark-700 rounded-lg\"><i class=\"fas fa-arrow-left\"></i></a><div><h1 class=\"text-2xl font-display font-bold text-white\">New RDP Connection</h1><p class=\"text-gray-400 mt-1\">Configure a Remote Desktop connection</p></div></div><form method=\"POST\" action=\"/connections/rdp\" class=\"space-y-6\"><input type=\"hidden\" name=\"csrf_token\" value=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 32, "<div class=\"max-w-2xl mx-auto space-y-6\"><!-- Header --><div class=\"flex items-center gap-4\"><a href=\"/connections/rdp\" class=\"p-2 text-gray-400 hover:text-white hover:bg-dark-700 rounded-lg\"><i aria-hidden=\"true\" class=\"fas fa-arrow-left\"></i></a><div><h1 class=\"text-2xl font-display font-bold text-white\">New RDP Connection</h1><p class=\"text-gray-400 mt-1\">Configure a Remote Desktop connection</p></div></div><form method=\"POST\" action=\"/connections/rdp\" class=\"space-y-6\"><input type=\"hidden\" name=\"csrf_token\" value=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -463,7 +463,7 @@ func RDPConnectionNew(data RDPConnectionNewData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 33, "\"><!-- Basic Settings --><div class=\"card p-6 space-y-4\"><h2 class=\"text-lg font-medium text-white\">Connection Details</h2><div><label for=\"name\" class=\"block text-sm font-medium text-gray-300 mb-1\">Connection Name</label> <input type=\"text\" id=\"name\" name=\"name\" required class=\"input w-full\" placeholder=\"My Windows Server\"></div><div class=\"grid grid-cols-2 gap-4\"><div><label for=\"host\" class=\"block text-sm font-medium text-gray-300 mb-1\">Host</label> <input type=\"text\" id=\"host\" name=\"host\" required class=\"input w-full\" placeholder=\"192.168.1.100\"></div><div><label for=\"port\" class=\"block text-sm font-medium text-gray-300 mb-1\">Port</label> <input type=\"number\" id=\"port\" name=\"port\" value=\"3389\" class=\"input w-full\" placeholder=\"3389\"></div></div><div class=\"grid grid-cols-2 gap-4\"><div><label for=\"username\" class=\"block text-sm font-medium text-gray-300 mb-1\">Username</label> <input type=\"text\" id=\"username\" name=\"username\" class=\"input w-full\" placeholder=\"Administrator\"></div><div><label for=\"domain\" class=\"block text-sm font-medium text-gray-300 mb-1\">Domain (optional)</label> <input type=\"text\" id=\"domain\" name=\"domain\" class=\"input w-full\" placeholder=\"WORKGROUP\"></div></div><div><label for=\"password\" class=\"block text-sm font-medium text-gray-300 mb-1\">Password</label> <input type=\"password\" id=\"password\" name=\"password\" class=\"input w-full\" placeholder=\"Enter password\"><p class=\"text-xs text-gray-500 mt-1\">Stored encrypted. Leave blank to be prompted on each connection.</p></div></div><!-- Display Settings --><div class=\"card p-6 space-y-4\"><h2 class=\"text-lg font-medium text-white\">Display Settings</h2><div class=\"grid grid-cols-2 gap-4\"><div><label for=\"resolution\" class=\"block text-sm font-medium text-gray-300 mb-1\">Resolution</label> <select id=\"resolution\" name=\"resolution\" class=\"input w-full\"><option value=\"1920x1080\" selected>1920 x 1080 (Full HD)</option> <option value=\"1600x900\">1600 x 900</option> <option value=\"1366x768\">1366 x 768</option> <option value=\"1280x720\">1280 x 720 (HD)</option> <option value=\"1024x768\">1024 x 768</option> <option value=\"auto\">Auto (fit browser)</option></select></div><div><label for=\"color_depth\" class=\"block text-sm font-medium text-gray-300 mb-1\">Color Depth</label> <select id=\"color_depth\" name=\"color_depth\" class=\"input w-full\"><option value=\"32\" selected>32-bit (True Color)</option> <option value=\"24\">24-bit</option> <option value=\"16\">16-bit (High Color)</option></select></div></div></div><!-- Security Settings --><div class=\"card p-6 space-y-4\"><h2 class=\"text-lg font-medium text-white\">Security</h2><div><label for=\"security\" class=\"block text-sm font-medium text-gray-300 mb-1\">Security Mode</label> <select id=\"security\" name=\"security\" class=\"input w-full\"><option value=\"any\" selected>Any (auto-negotiate)</option> <option value=\"nla\">NLA (Network Level Authentication)</option> <option value=\"tls\">TLS</option> <option value=\"rdp\">RDP (legacy)</option></select><p class=\"text-xs text-gray-500 mt-1\">NLA is recommended for best security. Use \"Any\" if unsure.</p></div><div class=\"flex items-center gap-3\"><input type=\"checkbox\" id=\"ignore_cert\" name=\"ignore_cert\" class=\"rounded border-dark-600 bg-dark-700 text-primary-500 focus:ring-primary-500\"> <label for=\"ignore_cert\" class=\"text-sm text-gray-300\">Ignore certificate errors (self-signed certs)</label></div></div><!-- Tags --><div class=\"card p-6 space-y-4\"><h2 class=\"text-lg font-medium text-white\">Organization</h2><div><label for=\"tags\" class=\"block text-sm font-medium text-gray-300 mb-1\">Tags (comma separated)</label> <input type=\"text\" id=\"tags\" name=\"tags\" class=\"input w-full\" placeholder=\"production, windows, dc\"></div></div><!-- Submit --><div class=\"flex justify-end gap-3\"><a href=\"/connections/rdp\" class=\"btn-secondary\">Cancel</a> <button type=\"submit\" class=\"btn-primary\"><i class=\"fas fa-plus mr-2\"></i>Create Connection</button></div></form></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 33, "\"><!-- Basic Settings --><div class=\"card p-6 space-y-4\"><h2 class=\"text-lg font-medium text-white\">Connection Details</h2><div><label for=\"name\" class=\"block text-sm font-medium text-gray-300 mb-1\">Connection Name</label> <input type=\"text\" id=\"name\" name=\"name\" required class=\"input w-full\" placeholder=\"My Windows Server\" aria-label=\"My Windows Server\"></div><div class=\"grid grid-cols-2 gap-4\"><div><label for=\"host\" class=\"block text-sm font-medium text-gray-300 mb-1\">Host</label> <input type=\"text\" id=\"host\" name=\"host\" required class=\"input w-full\" placeholder=\"192.168.1.100\" aria-label=\"192.168.1.100\"></div><div><label for=\"port\" class=\"block text-sm font-medium text-gray-300 mb-1\">Port</label> <input type=\"number\" id=\"port\" name=\"port\" value=\"3389\" class=\"input w-full\" placeholder=\"3389\" aria-label=\"3389\"></div></div><div class=\"grid grid-cols-2 gap-4\"><div><label for=\"username\" class=\"block text-sm font-medium text-gray-300 mb-1\">Username</label> <input type=\"text\" id=\"username\" name=\"username\" class=\"input w-full\" placeholder=\"Administrator\" aria-label=\"Administrator\"></div><div><label for=\"domain\" class=\"block text-sm font-medium text-gray-300 mb-1\">Domain (optional)</label> <input type=\"text\" id=\"domain\" name=\"domain\" class=\"input w-full\" placeholder=\"WORKGROUP\" aria-label=\"WORKGROUP\"></div></div><div><label for=\"password\" class=\"block text-sm font-medium text-gray-300 mb-1\">Password</label> <input type=\"password\" id=\"password\" name=\"password\" class=\"input w-full\" placeholder=\"Enter password\" aria-label=\"Enter password\"><p class=\"text-xs text-gray-500 mt-1\">Stored encrypted. Leave blank to be prompted on each connection.</p></div></div><!-- Display Settings --><div class=\"card p-6 space-y-4\"><h2 class=\"text-lg font-medium text-white\">Display Settings</h2><div class=\"grid grid-cols-2 gap-4\"><div><label for=\"resolution\" class=\"block text-sm font-medium text-gray-300 mb-1\">Resolution</label> <select id=\"resolution\" name=\"resolution\" class=\"input w-full\"><option value=\"1920x1080\" selected>1920 x 1080 (Full HD)</option> <option value=\"1600x900\">1600 x 900</option> <option value=\"1366x768\">1366 x 768</option> <option value=\"1280x720\">1280 x 720 (HD)</option> <option value=\"1024x768\">1024 x 768</option> <option value=\"auto\">Auto (fit browser)</option></select></div><div><label for=\"color_depth\" class=\"block text-sm font-medium text-gray-300 mb-1\">Color Depth</label> <select id=\"color_depth\" name=\"color_depth\" class=\"input w-full\"><option value=\"32\" selected>32-bit (True Color)</option> <option value=\"24\">24-bit</option> <option value=\"16\">16-bit (High Color)</option></select></div></div></div><!-- Security Settings --><div class=\"card p-6 space-y-4\"><h2 class=\"text-lg font-medium text-white\">Security</h2><div><label for=\"security\" class=\"block text-sm font-medium text-gray-300 mb-1\">Security Mode</label> <select id=\"security\" name=\"security\" class=\"input w-full\"><option value=\"any\" selected>Any (auto-negotiate)</option> <option value=\"nla\">NLA (Network Level Authentication)</option> <option value=\"tls\">TLS</option> <option value=\"rdp\">RDP (legacy)</option></select><p class=\"text-xs text-gray-500 mt-1\">NLA is recommended for best security. Use \"Any\" if unsure.</p></div><div class=\"flex items-center gap-3\"><input type=\"checkbox\" id=\"ignore_cert\" name=\"ignore_cert\" class=\"rounded border-dark-600 bg-dark-700 text-primary-500 focus:ring-primary-500\"> <label for=\"ignore_cert\" class=\"text-sm text-gray-300\">Ignore certificate errors (self-signed certs)</label></div></div><!-- Tags --><div class=\"card p-6 space-y-4\"><h2 class=\"text-lg font-medium text-white\">Organization</h2><div><label for=\"tags\" class=\"block text-sm font-medium text-gray-300 mb-1\">Tags (comma separated)</label> <input type=\"text\" id=\"tags\" name=\"tags\" class=\"input w-full\" placeholder=\"production, windows, dc\" aria-label=\"production, windows, dc\"></div></div><!-- Submit --><div class=\"flex justify-end gap-3\"><a href=\"/connections/rdp\" class=\"btn-secondary\">Cancel</a> <button type=\"submit\" class=\"btn-primary\"><i aria-hidden=\"true\" class=\"fas fa-plus mr-2\"></i>Create Connection</button></div></form></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -511,7 +511,7 @@ func RDPConnectionDetail(data RDPConnectionDetailData) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 34, "<div class=\"max-w-2xl mx-auto space-y-6\"><!-- Header --><div class=\"flex items-center gap-4\"><a href=\"/connections/rdp\" class=\"p-2 text-gray-400 hover:text-white hover:bg-dark-700 rounded-lg\"><i class=\"fas fa-arrow-left\"></i></a><div class=\"flex-1\"><div class=\"flex items-center gap-3\"><h1 class=\"text-2xl font-display font-bold text-white\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 34, "<div class=\"max-w-2xl mx-auto space-y-6\"><!-- Header --><div class=\"flex items-center gap-4\"><a href=\"/connections/rdp\" class=\"p-2 text-gray-400 hover:text-white hover:bg-dark-700 rounded-lg\"><i aria-hidden=\"true\" class=\"fas fa-arrow-left\"></i></a><div class=\"flex-1\"><div class=\"flex items-center gap-3\"><h1 class=\"text-2xl font-display font-bold text-white\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -585,7 +585,7 @@ func RDPConnectionDetail(data RDPConnectionDetailData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 40, "\" class=\"card p-4 flex items-center gap-3 hover:bg-dark-700/50 transition-colors\"><div class=\"w-10 h-10 bg-green-500/10 rounded-lg flex items-center justify-center\"><i class=\"fas fa-desktop text-green-400\"></i></div><div><p class=\"text-white font-medium\">Open Session</p><p class=\"text-xs text-gray-400\">Web Remote Desktop</p></div></a> <button class=\"card p-4 flex items-center gap-3 hover:bg-dark-700/50 transition-colors text-left\" hx-post=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 40, "\" class=\"card p-4 flex items-center gap-3 hover:bg-dark-700/50 transition-colors\"><div class=\"w-10 h-10 bg-green-500/10 rounded-lg flex items-center justify-center\"><i aria-hidden=\"true\" class=\"fas fa-desktop text-green-400\"></i></div><div><p class=\"text-white font-medium\">Open Session</p><p class=\"text-xs text-gray-400\">Web Remote Desktop</p></div></a> <button class=\"card p-4 flex items-center gap-3 hover:bg-dark-700/50 transition-colors text-left\" hx-post=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -598,7 +598,7 @@ func RDPConnectionDetail(data RDPConnectionDetailData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 41, "\" hx-target=\"#test-result\" hx-swap=\"innerHTML\"><div class=\"w-10 h-10 bg-blue-500/10 rounded-lg flex items-center justify-center\"><i class=\"fas fa-plug text-blue-400\"></i></div><div><p class=\"text-white font-medium\">Test Connection</p><p class=\"text-xs text-gray-400\">Verify RDP is reachable</p></div></button> <a href=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 41, "\" hx-target=\"#test-result\" hx-swap=\"innerHTML\"><div class=\"w-10 h-10 bg-blue-500/10 rounded-lg flex items-center justify-center\"><i aria-hidden=\"true\" class=\"fas fa-plug text-blue-400\"></i></div><div><p class=\"text-white font-medium\">Test Connection</p><p class=\"text-xs text-gray-400\">Verify RDP is reachable</p></div></button> <a href=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -611,7 +611,7 @@ func RDPConnectionDetail(data RDPConnectionDetailData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 42, "\" class=\"card p-4 flex items-center gap-3 hover:bg-dark-700/50 transition-colors\" download><div class=\"w-10 h-10 bg-primary-500/10 rounded-lg flex items-center justify-center\"><i class=\"fas fa-download text-primary-400\"></i></div><div><p class=\"text-white font-medium\">Download .rdp</p><p class=\"text-xs text-gray-400\">Native client file</p></div></a></div><!-- Test result --><div id=\"test-result\"></div><!-- Edit Form --><form method=\"POST\" action=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 42, "\" class=\"card p-4 flex items-center gap-3 hover:bg-dark-700/50 transition-colors\" download><div class=\"w-10 h-10 bg-primary-500/10 rounded-lg flex items-center justify-center\"><i aria-hidden=\"true\" class=\"fas fa-download text-primary-400\"></i></div><div><p class=\"text-white font-medium\">Download .rdp</p><p class=\"text-xs text-gray-400\">Native client file</p></div></a></div><!-- Test result --><div id=\"test-result\"></div><!-- Edit Form --><form method=\"POST\" action=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -702,7 +702,7 @@ func RDPConnectionDetail(data RDPConnectionDetailData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 49, "\"></div></div><div><label for=\"password\" class=\"block text-sm font-medium text-gray-300 mb-1\">Password</label> <input type=\"password\" id=\"password\" name=\"password\" class=\"input w-full\" placeholder=\"Leave blank to keep current\"></div></div><!-- Display Settings --><div class=\"card p-6 space-y-4\"><h2 class=\"text-lg font-medium text-white\">Display Settings</h2><div class=\"grid grid-cols-2 gap-4\"><div><label for=\"resolution\" class=\"block text-sm font-medium text-gray-300 mb-1\">Resolution</label> <select id=\"resolution\" name=\"resolution\" class=\"input w-full\"><option value=\"1920x1080\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 49, "\"></div></div><div><label for=\"password\" class=\"block text-sm font-medium text-gray-300 mb-1\">Password</label> <input type=\"password\" id=\"password\" name=\"password\" class=\"input w-full\" placeholder=\"Leave blank to keep current\" aria-label=\"Leave blank to keep current\"></div></div><!-- Display Settings --><div class=\"card p-6 space-y-4\"><h2 class=\"text-lg font-medium text-white\">Display Settings</h2><div class=\"grid grid-cols-2 gap-4\"><div><label for=\"resolution\" class=\"block text-sm font-medium text-gray-300 mb-1\">Resolution</label> <select id=\"resolution\" name=\"resolution\" class=\"input w-full\"><option value=\"1920x1080\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -858,7 +858,7 @@ func RDPConnectionDetail(data RDPConnectionDetailData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 77, "\"><i class=\"fas fa-trash mr-1\"></i>Delete Connection</button><div class=\"flex gap-3\"><a href=\"/connections/rdp\" class=\"btn-secondary\">Cancel</a> <button type=\"submit\" class=\"btn-primary\"><i class=\"fas fa-save mr-2\"></i>Save Changes</button></div></div></form><!-- Connection Info --><div class=\"card p-6\"><h2 class=\"text-lg font-medium text-white mb-4\">Connection Info</h2><dl class=\"grid grid-cols-2 gap-4 text-sm\"><div><dt class=\"text-gray-500\">Created</dt><dd class=\"text-gray-300\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 77, "\"><i aria-hidden=\"true\" class=\"fas fa-trash mr-1\"></i>Delete Connection</button><div class=\"flex gap-3\"><a href=\"/connections/rdp\" class=\"btn-secondary\">Cancel</a> <button type=\"submit\" class=\"btn-primary\"><i aria-hidden=\"true\" class=\"fas fa-save mr-2\"></i>Save Changes</button></div></div></form><!-- Connection Info --><div class=\"card p-6\"><h2 class=\"text-lg font-medium text-white mb-4\">Connection Info</h2><dl class=\"grid grid-cols-2 gap-4 text-sm\"><div><dt class=\"text-gray-500\">Created</dt><dd class=\"text-gray-300\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -955,7 +955,7 @@ func RDPSession(data RDPSessionData) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 83, "<!-- Breadcrumb --> <nav class=\"flex items-center gap-2 text-sm text-gray-400 mb-4\"><a href=\"/connections/rdp\" class=\"hover:text-primary-400 transition-colors\">RDP Connections</a> <i class=\"fas fa-chevron-right text-xs\"></i> <a href=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 83, "<!-- Breadcrumb --> <nav class=\"flex items-center gap-2 text-sm text-gray-400 mb-4\"><a href=\"/connections/rdp\" class=\"hover:text-primary-400 transition-colors\">RDP Connections</a> <i aria-hidden=\"true\" class=\"fas fa-chevron-right text-xs\"></i> <a href=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -981,7 +981,7 @@ func RDPSession(data RDPSessionData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 85, "</a> <i class=\"fas fa-chevron-right text-xs\"></i> <span class=\"text-white\">Session</span></nav><!-- Header --> <div class=\"flex items-center justify-between mb-6\"><div class=\"flex items-center gap-4\"><div class=\"w-10 h-10 rounded-lg bg-dark-700 flex items-center justify-center\"><i class=\"fas fa-desktop text-lg text-primary-400\"></i></div><div><h1 class=\"text-2xl font-bold font-display text-white\">Remote Desktop</h1><p class=\"text-gray-400 text-sm\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 85, "</a> <i aria-hidden=\"true\" class=\"fas fa-chevron-right text-xs\"></i> <span class=\"text-white\">Session</span></nav><!-- Header --> <div class=\"flex items-center justify-between mb-6\"><div class=\"flex items-center gap-4\"><div class=\"w-10 h-10 rounded-lg bg-dark-700 flex items-center justify-center\"><i aria-hidden=\"true\" class=\"fas fa-desktop text-lg text-primary-400\"></i></div><div><h1 class=\"text-2xl font-bold font-display text-white\">Remote Desktop</h1><p class=\"text-gray-400 text-sm\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -1043,7 +1043,7 @@ func RDPSession(data RDPSessionData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 91, "\" class=\"px-4 py-2 bg-dark-700 hover:bg-dark-600 text-gray-300 rounded-lg transition-colors\"><i class=\"fas fa-arrow-left mr-2\"></i>Back</a> <a href=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 91, "\" class=\"px-4 py-2 bg-dark-700 hover:bg-dark-600 text-gray-300 rounded-lg transition-colors\"><i aria-hidden=\"true\" class=\"fas fa-arrow-left mr-2\"></i>Back</a> <a href=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -1056,12 +1056,12 @@ func RDPSession(data RDPSessionData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 92, "\" class=\"px-4 py-2 bg-dark-700 hover:bg-dark-600 text-gray-300 rounded-lg transition-colors\" download><i class=\"fas fa-download mr-2\"></i>.rdp File</a></div></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 92, "\" class=\"px-4 py-2 bg-dark-700 hover:bg-dark-600 text-gray-300 rounded-lg transition-colors\" download><i aria-hidden=\"true\" class=\"fas fa-download mr-2\"></i>.rdp File</a></div></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			if !data.GuacdEnabled {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 93, "<!-- Guacd not enabled message --> <div class=\"bg-dark-800 rounded-xl border border-dark-600 p-8 text-center\"><div class=\"w-16 h-16 bg-yellow-500/10 rounded-full flex items-center justify-center mx-auto mb-4\"><i class=\"fas fa-exclamation-triangle text-2xl text-yellow-400\"></i></div><h3 class=\"text-lg font-medium text-white mb-2\">Web RDP Not Configured</h3><p class=\"text-gray-400 mb-4 max-w-lg mx-auto\">Web-based Remote Desktop requires Apache Guacamole daemon (guacd). Add guacd to your Docker Compose configuration and set <code class=\"text-primary-400\">GUACD_ENABLED=true</code>.</p><div class=\"bg-dark-700 rounded-lg p-4 max-w-md mx-auto text-left mb-6\"><p class=\"text-gray-400 text-xs mb-2\">docker-compose.yml:</p><pre class=\"text-gray-300 text-sm\"><code>guacd: image: guacamole/guacd:latest restart: unless-stopped</code></pre></div><a href=\"")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 93, "<!-- Guacd not enabled message --> <div class=\"card p-8 text-center\"><div class=\"w-16 h-16 bg-yellow-500/10 rounded-full flex items-center justify-center mx-auto mb-4\"><i aria-hidden=\"true\" class=\"fas fa-exclamation-triangle text-2xl text-yellow-400\"></i></div><h3 class=\"text-lg font-medium text-white mb-2\">Web RDP Not Configured</h3><p class=\"text-gray-400 mb-4 max-w-lg mx-auto\">Web-based Remote Desktop requires Apache Guacamole daemon (guacd). Add guacd to your Docker Compose configuration and set <code class=\"text-primary-400\">GUACD_ENABLED=true</code>.</p><div class=\"bg-dark-700 rounded-lg p-4 max-w-md mx-auto text-left mb-6\"><p class=\"text-gray-400 text-xs mb-2\">docker-compose.yml:</p><pre class=\"text-gray-300 text-sm\"><code>guacd: image: guacamole/guacd:latest restart: unless-stopped</code></pre></div><a href=\"")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -1074,7 +1074,7 @@ func RDPSession(data RDPSessionData) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 94, "\" class=\"inline-flex items-center px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors\" download><i class=\"fas fa-download mr-2\"></i>Download .rdp File Instead</a></div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 94, "\" class=\"inline-flex items-center px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors\" download><i aria-hidden=\"true\" class=\"fas fa-download mr-2\"></i>Download .rdp File Instead</a></div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -1105,7 +1105,7 @@ func RDPSession(data RDPSessionData) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 97, "\" class=\"bg-dark-800 rounded-xl border border-dark-600 overflow-hidden\"><!-- Session Header --><div class=\"flex items-center justify-between px-4 py-3 border-b border-dark-600 bg-dark-850\"><div class=\"flex items-center gap-3\"><div class=\"flex items-center gap-1.5\"><span class=\"w-3 h-3 rounded-full bg-red-500\"></span> <span class=\"w-3 h-3 rounded-full bg-yellow-500\"></span> <span class=\"w-3 h-3 rounded-full bg-green-500\"></span></div><span class=\"text-sm text-gray-400\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 97, "\" class=\"card overflow-hidden\"><!-- Session Header --><div class=\"flex items-center justify-between px-4 py-3 border-b border-dark-600 bg-dark-850\"><div class=\"flex items-center gap-3\"><div class=\"flex items-center gap-1.5\"><span class=\"w-3 h-3 rounded-full bg-red-500\"></span> <span class=\"w-3 h-3 rounded-full bg-yellow-500\"></span> <span class=\"w-3 h-3 rounded-full bg-green-500\"></span></div><span class=\"text-sm text-gray-400\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -1131,7 +1131,7 @@ func RDPSession(data RDPSessionData) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 99, "</span></div><div class=\"flex items-center gap-2\"><span x-show=\"connected\" class=\"flex items-center gap-1.5 text-xs text-green-400\"><span class=\"w-2 h-2 bg-green-500 rounded-full animate-pulse\"></span> Connected</span> <span x-show=\"!connected && !connecting\" class=\"flex items-center gap-1.5 text-xs text-red-400\"><span class=\"w-2 h-2 bg-red-500 rounded-full\"></span> Disconnected</span> <span x-show=\"connecting\" class=\"flex items-center gap-1.5 text-xs text-yellow-400\"><i class=\"fas fa-spinner fa-spin\"></i> Connecting...</span> <button @click=\"reconnect()\" class=\"p-2 text-gray-400 hover:text-white hover:bg-dark-600 rounded-lg transition-colors\" title=\"Reconnect\"><i class=\"fas fa-redo\"></i></button> <button @click=\"toggleFullscreen()\" class=\"p-2 text-gray-400 hover:text-white hover:bg-dark-600 rounded-lg transition-colors\" title=\"Fullscreen\"><i class=\"fas fa-expand\"></i></button> <button @click=\"sendCtrlAltDel()\" class=\"p-2 text-gray-400 hover:text-white hover:bg-dark-600 rounded-lg transition-colors\" title=\"Send Ctrl+Alt+Del\"><i class=\"fas fa-keyboard\"></i></button></div></div><!-- RDP Display --><div x-ref=\"rdpDisplay\" id=\"rdp-display\" class=\"relative\" style=\"min-height: 500px; background: #000;\"><!-- Loading overlay --><div x-show=\"connecting\" x-cloak class=\"absolute inset-0 flex items-center justify-center bg-dark-900/80 z-10\"><div class=\"text-center\"><i class=\"fas fa-spinner fa-spin text-3xl text-primary-400 mb-4\"></i><p class=\"text-gray-400\">Connecting to remote desktop...</p></div></div><!-- Error overlay --><div x-show=\"errorMsg\" x-cloak class=\"absolute inset-0 flex items-center justify-center bg-dark-900/80 z-10\"><div class=\"text-center\"><i class=\"fas fa-exclamation-circle text-3xl text-red-400 mb-4\"></i><p class=\"text-red-400 mb-2\" x-text=\"errorMsg\"></p><button @click=\"reconnect()\" class=\"px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors\">Reconnect</button></div></div></div></div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 99, "</span></div><div class=\"flex items-center gap-2\"><span x-show=\"connected\" class=\"flex items-center gap-1.5 text-xs text-green-400\"><span class=\"w-2 h-2 bg-green-500 rounded-full animate-pulse\"></span> Connected</span> <span x-show=\"!connected && !connecting\" class=\"flex items-center gap-1.5 text-xs text-red-400\"><span class=\"w-2 h-2 bg-red-500 rounded-full\"></span> Disconnected</span> <span x-show=\"connecting\" class=\"flex items-center gap-1.5 text-xs text-yellow-400\"><i aria-hidden=\"true\" class=\"fas fa-spinner fa-spin\"></i> Connecting...</span> <button @click=\"reconnect()\" class=\"p-2 text-gray-400 hover:text-white hover:bg-dark-600 rounded-lg transition-colors\" title=\"Reconnect\"><i aria-hidden=\"true\" class=\"fas fa-redo\"></i></button> <button @click=\"toggleFullscreen()\" class=\"p-2 text-gray-400 hover:text-white hover:bg-dark-600 rounded-lg transition-colors\" title=\"Fullscreen\"><i aria-hidden=\"true\" class=\"fas fa-expand\"></i></button> <button @click=\"sendCtrlAltDel()\" class=\"p-2 text-gray-400 hover:text-white hover:bg-dark-600 rounded-lg transition-colors\" title=\"Send Ctrl+Alt+Del\"><i aria-hidden=\"true\" class=\"fas fa-keyboard\"></i></button></div></div><!-- RDP Display --><div x-ref=\"rdpDisplay\" id=\"rdp-display\" class=\"relative\" style=\"min-height: 500px; background: #000;\"><!-- Loading overlay --><div x-show=\"connecting\" x-cloak class=\"absolute inset-0 flex items-center justify-center bg-dark-900/80 z-10\"><div class=\"text-center\"><i aria-hidden=\"true\" class=\"fas fa-spinner fa-spin text-3xl text-primary-400 mb-4\"></i><p class=\"text-gray-400\">Connecting to remote desktop...</p></div></div><!-- Error overlay --><div x-show=\"errorMsg\" x-cloak class=\"absolute inset-0 flex items-center justify-center bg-dark-900/80 z-10\"><div class=\"text-center\"><i aria-hidden=\"true\" class=\"fas fa-exclamation-circle text-3xl text-red-400 mb-4\"></i><p class=\"text-red-400 mb-2\" x-text=\"errorMsg\"></p><button @click=\"reconnect()\" class=\"px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors\">Reconnect</button></div></div></div></div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}

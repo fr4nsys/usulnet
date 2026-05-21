@@ -1,0 +1,55 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+# Copyright (c) 2024-2026 usulnet contributors
+#
+# Tool manifest for the usulnet recon-toolkit sandbox image.
+#
+# One package per line. Lines starting with `#` are comments. Whitespace
+# is trimmed. The Dockerfile feeds this into `pacman -S` after the
+# archlinux-keyring refresh.
+#
+# Initial v26.5.2 landing scope: arch core + extra packages only.
+# Python OSINT tools (holehe, h8mail, oletools, pdfid) live in a venv
+# under /opt/venv and are installed by the Dockerfile via pip — they
+# are NOT listed here because pacman does not manage them.
+#
+# Categories are advisory — the entrypoint dispatcher and the smoke
+# test treat the list as a flat set. Keep additions alphabetised
+# within each category so the diff stays readable.
+#
+# The catalogue published at /recon/connectors is rendered from this
+# file via internal/services/recon/sandboxtools/catalog.go (embedded at
+# build time). Both must agree; the catalog test asserts every entry
+# here either appears in the catalog or is annotated `# nocatalog` on
+# the same line for explicit suppression.
+
+# ---------------------------------------------------------------------------
+# category: metadata
+# Required by the Go-side metadata extractor / stripper / forensics
+# wrappers (internal/services/metadata, internal/services/recon/engine/toolkit).
+# Removing any of these breaks existing scan kinds — bump the wrapper
+# first.
+# ---------------------------------------------------------------------------
+mat2                    # metadata anonymisation toolkit (extra)
+perl-image-exiftool     # exiftool — metadata extractor (extra)
+yara                    # malware rule engine (extra)
+
+# ---------------------------------------------------------------------------
+# category: runtime
+# Required by the python OSINT tools installed in /opt/venv via pip
+# (holehe, h8mail, oletools, pdfid). The venv reuses these.
+# ---------------------------------------------------------------------------
+python                  # nocatalog — interpreter for venv
+python-pip              # nocatalog — bootstrap pip into the venv
+
+# ---------------------------------------------------------------------------
+# category: support
+# Base utilities the entrypoint and helper scripts rely on. These come
+# from the arch core/extra repos.
+# ---------------------------------------------------------------------------
+ca-certificates         # nocatalog
+coreutils               # nocatalog
+curl                    # nocatalog
+file                    # nocatalog
+jq                      # nocatalog
+shadow                  # nocatalog — useradd/groupadd
+which                   # nocatalog

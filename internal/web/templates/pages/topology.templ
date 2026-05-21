@@ -49,7 +49,7 @@ templ Topology(data TopologyData) {
 							<div class="flex items-center justify-between mb-4">
 								<div class="flex items-center gap-3">
 									<div class="w-10 h-10 rounded-lg bg-primary-500/20 flex items-center justify-center">
-										<i class="fas fa-network-wired text-primary-400"></i>
+										<i aria-hidden="true" class="fas fa-network-wired text-primary-400"></i>
 									</div>
 									<div>
 										<h3 class="font-medium text-white">{ network.Name }</h3>
@@ -75,7 +75,7 @@ templ Topology(data TopologyData) {
 									</div>
 								</div>
 								<a href={ templ.SafeURL("/networks/" + network.ID) } class="text-gray-400 hover:text-white">
-									<i class="fas fa-external-link-alt"></i>
+									<i aria-hidden="true" class="fas fa-external-link-alt"></i>
 								</a>
 							</div>
 

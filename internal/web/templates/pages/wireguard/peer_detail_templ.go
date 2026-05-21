@@ -91,7 +91,7 @@ func PeerDetail(data PeerDetailData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "\" onsubmit=\"return confirm('Delete this peer?');\"><button type=\"submit\" class=\"px-3 py-2 bg-red-600/20 hover:bg-red-600/30 text-red-400 rounded-lg transition-colors text-sm\"><i class=\"fas fa-trash mr-1\"></i>Delete</button></form></div><div class=\"bg-dark-700 rounded-lg border border-dark-600 p-4 mb-6 space-y-3\"><div class=\"grid grid-cols-2 gap-4\"><div><p class=\"text-xs text-gray-500\">Public Key</p><p class=\"text-sm font-mono text-gray-300 break-all\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "\" onsubmit=\"return confirm('Delete this peer?');\"><button type=\"submit\" class=\"px-3 py-2 bg-red-600/20 hover:bg-red-600/30 text-red-400 rounded-lg transition-colors text-sm\"><i aria-hidden=\"true\" class=\"fas fa-trash mr-1\"></i>Delete</button></form></div><div class=\"bg-dark-700 rounded-lg border border-dark-600 p-4 mb-6 space-y-3\"><div class=\"grid grid-cols-2 gap-4\"><div><p class=\"text-xs text-gray-500\">Public Key</p><p class=\"text-sm font-mono text-gray-300 break-all\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -170,12 +170,12 @@ func PeerDetail(data PeerDetailData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "\" class=\"px-3 py-2 bg-primary-600 hover:bg-primary-700 text-black font-medium rounded-lg transition-colors text-sm\"><i class=\"fas fa-qrcode mr-1\"></i>Issue QR token</button><template x-if=\"cfg\"><div class=\"mt-4 space-y-3\"><p class=\"text-xs text-gray-500\" x-text=\"'Expires at ' + expires\"></p><div id=\"wg-qr\" class=\"inline-block bg-white p-2 rounded\"></div><pre class=\"bg-dark-800 rounded-lg p-4 text-xs text-gray-300 font-mono overflow-x-auto\" x-text=\"cfg\"></pre></div></template><template x-if=\"err\"><div class=\"mt-4 text-sm text-red-400\" x-text=\"err\"></div></template></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "\" class=\"px-3 py-2 bg-primary-600 hover:bg-primary-700 text-black font-medium rounded-lg transition-colors text-sm\"><i aria-hidden=\"true\" class=\"fas fa-qrcode mr-1\"></i>Issue QR token</button><template x-if=\"cfg\"><div class=\"mt-4 space-y-3\"><p class=\"text-xs text-gray-500\" x-text=\"'Expires at ' + expires\"></p><div id=\"wg-qr\" class=\"inline-block bg-white p-2 rounded\"></div><pre class=\"bg-dark-800 rounded-lg p-4 text-xs text-gray-300 font-mono overflow-x-auto\" x-text=\"cfg\"></pre></div></template><template x-if=\"err\"><div class=\"mt-4 text-sm text-red-400\" x-text=\"err\"></div></template></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			if len(data.MeshLinks) > 0 {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "<div class=\"bg-dark-700 rounded-lg border border-dark-600 p-4\"><h3 class=\"text-sm font-semibold text-white mb-3\">Mesh propagation</h3><table class=\"w-full text-sm\"><thead><tr class=\"text-xs text-gray-500 uppercase tracking-wide border-b border-dark-600\"><th class=\"text-left p-2\">Agent</th><th class=\"text-left p-2\">Status</th><th class=\"text-left p-2\">Applied at</th><th class=\"text-left p-2\">Last error</th></tr></thead> <tbody>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "<div class=\"bg-dark-700 rounded-lg border border-dark-600 p-4\"><h3 class=\"text-sm font-semibold text-white mb-3\">Mesh propagation</h3><table class=\"w-full text-sm\"><thead><tr class=\"text-xs text-gray-500 uppercase tracking-wide border-b border-dark-600\"><th scope=\"col\" class=\"text-left p-2\">Agent</th><th scope=\"col\" class=\"text-left p-2\">Status</th><th scope=\"col\" class=\"text-left p-2\">Applied at</th><th scope=\"col\" class=\"text-left p-2\">Last error</th></tr></thead> <tbody>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}

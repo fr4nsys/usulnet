@@ -1,13 +1,22 @@
-List recon profiles
+Print every available scan profile.
+
+Output columns: ID, NAME, KIND, TARGET_TYPES (comma-separated).
+Pass the profile name (or UUID) to "recon scan start --profile".
 
 Usage:
   usulnet recon profile list [flags]
+
+Examples:
+  usulnet recon profile list
+  usulnet recon profile list --output json
 
 Flags:
   -h, --help   help for list
 
 Global Flags:
   -c, --config string   config file path (default: /etc/usulnet/config.yaml or ./config.yaml)
+      --json            shortcut for --output json (overrides --output)
       --output string   output format: table|json|yaml (default "table")
+  -q, --quiet           suppress informational output (errors and primary data still print)
       --server string   usulnet API URL (default $USULNET_API_URL)
       --token string    API token (default $USULNET_API_TOKEN)

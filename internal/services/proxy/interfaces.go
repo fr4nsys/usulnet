@@ -82,6 +82,7 @@ type DeadHostRepository interface {
 // LocationRepository defines persistence for per-host path routes.
 type LocationRepository interface {
 	ListByHost(ctx context.Context, proxyHostID uuid.UUID) ([]models.ProxyLocation, error)
+	ListAllGrouped(ctx context.Context) (map[uuid.UUID][]models.ProxyLocation, error)
 	ReplaceForHost(ctx context.Context, proxyHostID uuid.UUID, locations []models.ProxyLocation) error
 }
 

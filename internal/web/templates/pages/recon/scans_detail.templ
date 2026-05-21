@@ -12,7 +12,7 @@ templ ScanDetail(data ScanDetailData) {
 		<div class="space-y-6">
 			<div>
 				<a href="/recon/scans" class="text-xs text-primary-400 hover:underline">
-					<i class="fas fa-chevron-left mr-1"></i>Back to scans
+					<i aria-hidden="true" class="fas fa-chevron-left mr-1"></i>Back to scans
 				</a>
 				<div class="flex items-center justify-between mt-1">
 					<div>
@@ -29,7 +29,7 @@ templ ScanDetail(data ScanDetailData) {
 							hx-delete={ "/recon/scans/" + data.Scan.ID }
 							hx-confirm="Cancel this scan?"
 						>
-							<i class="fas fa-stop mr-2"></i>Cancel
+							<i aria-hidden="true" class="fas fa-stop mr-2"></i>Cancel
 						</button>
 					}
 				</div>

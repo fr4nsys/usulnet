@@ -12,6 +12,7 @@ import (
 	"fmt"
 	"log/slog"
 	"net/http"
+	"net/url"
 	"sort"
 	"strconv"
 	"strings"
@@ -206,21 +207,31 @@ func (h *Handler) TOTPVerifyPageTempl(w http.ResponseWriter, r *http.Request) {
 }
 
 // TOTPVerifySubmit handles TOTP code verification during login.
+// totpVerifyForm captures the TOTP verification inputs. token is
+// optional in the form (a cookie fallback covers older sessions);
+// validation enforces "at least one of token + code" after binding.
+type totpVerifyForm struct {
+	Token     string `form:"totp_token"`
+	Code      string `form:"totp_code"`
+	ReturnURL string `form:"return_url"`
+}
+
 func (h *Handler) TOTPVerifySubmit(w http.ResponseWriter, r *http.Request) {
-	if err := r.ParseForm(); err != nil {
-		h.redirect(w, r, "/login?error=Invalid+form+data")
+	var form totpVerifyForm
+	if msg := BindForm(r, &form); msg != "" {
+		h.redirect(w, r, "/login?error="+url.QueryEscape(msg))
 		return
 	}
 
 	// Read token from form (hidden field) or cookie fallback
-	token := r.FormValue("totp_token")
+	token := form.Token
 	if token == "" {
 		if cookie, err := r.Cookie("totp_pending"); err == nil {
 			token = cookie.Value
 		}
 	}
-	code := r.FormValue("totp_code")
-	returnURL := r.FormValue("return_url")
+	code := form.Code
+	returnURL := form.ReturnURL
 
 	if token == "" || code == "" {
 		h.redirect(w, r, "/login?error=Invalid+request")
@@ -323,10 +334,19 @@ func (h *Handler) TOTPSetupPageTempl(w http.ResponseWriter, r *http.Request) {
 	h.renderTempl(w, r, pages.TOTPSetup(data))
 }
 
+// totpCodeForm is a single-field DTO shared by the enable and
+// disable handlers. The code is required by the underlying TOTP
+// service; the validator catches the empty case ahead of time so
+// the operator sees a precise "please enter a code" prompt.
+type totpCodeForm struct {
+	Code string `form:"totp_code" validate:"required"`
+}
+
 // TOTPVerifySetupSubmit handles verifying the first TOTP code to enable 2FA.
 func (h *Handler) TOTPVerifySetupSubmit(w http.ResponseWriter, r *http.Request) {
-	if err := r.ParseForm(); err != nil {
-		h.redirect(w, r, "/settings/totp?error=Invalid+form+data")
+	var form totpCodeForm
+	if BindForm(r, &form) != "" {
+		h.redirect(w, r, "/settings/totp?error=Please+enter+a+code")
 		return
 	}
 
@@ -337,13 +357,7 @@ func (h *Handler) TOTPVerifySetupSubmit(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	code := r.FormValue("totp_code")
-	if code == "" {
-		h.redirect(w, r, "/settings/totp?error=Please+enter+a+code")
-		return
-	}
-
-	if err := h.services.Users().VerifyAndEnableTOTP(ctx, user.ID, code); err != nil {
+	if err := h.services.Users().VerifyAndEnableTOTP(ctx, user.ID, form.Code); err != nil {
 		h.redirect(w, r, "/settings/totp?error=Invalid+code.+Make+sure+your+authenticator+app+is+synced")
 		return
 	}
@@ -353,8 +367,9 @@ func (h *Handler) TOTPVerifySetupSubmit(w http.ResponseWriter, r *http.Request) 
 
 // TOTPDisableSubmit handles disabling 2FA.
 func (h *Handler) TOTPDisableSubmit(w http.ResponseWriter, r *http.Request) {
-	if err := r.ParseForm(); err != nil {
-		h.redirect(w, r, "/settings/totp?error=Invalid+form+data")
+	var form totpCodeForm
+	if BindForm(r, &form) != "" {
+		h.redirect(w, r, "/settings/totp?error=Please+enter+your+current+TOTP+code")
 		return
 	}
 
@@ -365,13 +380,7 @@ func (h *Handler) TOTPDisableSubmit(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	code := r.FormValue("totp_code")
-	if code == "" {
-		h.redirect(w, r, "/settings/totp?error=Please+enter+your+current+TOTP+code")
-		return
-	}
-
-	if err := h.services.Users().DisableTOTP(ctx, user.ID, code); err != nil {
+	if err := h.services.Users().DisableTOTP(ctx, user.ID, form.Code); err != nil {
 		h.redirect(w, r, "/settings/totp?error=Invalid+code.+Cannot+disable+2FA")
 		return
 	}
@@ -779,13 +788,38 @@ func (h *Handler) ContainerSettingsTempl(w http.ResponseWriter, r *http.Request)
 	h.renderTempl(w, r, containers.ContainerSettings(settingsData))
 }
 
+// containerSettingsForm captures the scalar inputs of the container
+// settings update form. The five *_json hidden fields are
+// JSON-encoded arrays whose shape (per-entry struct) varies, so
+// they stay as raw strings here and are decoded with
+// json.Unmarshal below — BindForm only handles flat form fields.
+type containerSettingsForm struct {
+	Image         string  `form:"image"`
+	Tag           string  `form:"tag"`
+	Name          string  `form:"name"`
+	Hostname      string  `form:"hostname"`
+	Command       string  `form:"command"`
+	NetworkMode   string  `form:"network_mode"`
+	RestartPolicy string  `form:"restart_policy"`
+	Privileged    bool    `form:"privileged"`
+	MemoryLimit   int64   `form:"memory_limit" validate:"gte=0"`
+	CPUShares     int64   `form:"cpu_shares" validate:"gte=0"`
+	NanoCPUsFloat float64 `form:"nano_cpus" validate:"gte=0"`
+	PortsJSON     string  `form:"ports_json"`
+	VolumesJSON   string  `form:"volumes_json"`
+	EnvJSON       string  `form:"env_json"`
+	DevicesJSON   string  `form:"devices_json"`
+	CapsJSON      string  `form:"caps_json"`
+}
+
 // ContainerSettingsUpdate handles the POST to save container settings.
 func (h *Handler) ContainerSettingsUpdate(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	id := chi.URLParam(r, "id")
 
-	if err := r.ParseForm(); err != nil {
-		http.Error(w, "Error parsing form", http.StatusBadRequest)
+	var form containerSettingsForm
+	if msg := BindForm(r, &form); msg != "" {
+		http.Error(w, msg, http.StatusBadRequest)
 		return
 	}
 
@@ -797,27 +831,22 @@ func (h *Handler) ContainerSettingsUpdate(w http.ResponseWriter, r *http.Request
 	}
 	wasRunning := container.State == "running"
 
-	// Parse form fields
-	image := r.FormValue("image")
-	tag := r.FormValue("tag")
+	tag := form.Tag
 	if tag == "" {
 		tag = "latest"
 	}
-	fullImage := image + ":" + tag
+	fullImage := form.Image + ":" + tag
 
-	name := r.FormValue("name")
-	hostname := r.FormValue("hostname")
-	command := r.FormValue("command")
-	networkMode := r.FormValue("network_mode")
-	restartPolicy := r.FormValue("restart_policy")
-	privileged := r.FormValue("privileged") == "true"
+	name := form.Name
+	hostname := form.Hostname
+	command := form.Command
+	networkMode := form.NetworkMode
+	restartPolicy := form.RestartPolicy
+	privileged := form.Privileged
 
-	// Resource limits
-	memoryMB, _ := strconv.ParseInt(r.FormValue("memory_limit"), 10, 64)
-	memoryBytes := memoryMB * 1024 * 1024
-	cpuShares, _ := strconv.ParseInt(r.FormValue("cpu_shares"), 10, 64)
-	nanoCPUsFloat, _ := strconv.ParseFloat(r.FormValue("nano_cpus"), 64)
-	nanoCPUs := int64(nanoCPUsFloat * 1e9)
+	memoryBytes := form.MemoryLimit * 1024 * 1024
+	cpuShares := form.CPUShares
+	nanoCPUs := int64(form.NanoCPUsFloat * 1e9)
 
 	// Parse JSON arrays from hidden fields
 	var ports []struct {
@@ -825,8 +854,8 @@ func (h *Handler) ContainerSettingsUpdate(w http.ResponseWriter, r *http.Request
 		Container string `json:"container"`
 		Protocol  string `json:"protocol"`
 	}
-	if portsJSON := r.FormValue("ports_json"); portsJSON != "" {
-		if err := json.Unmarshal([]byte(portsJSON), &ports); err != nil {
+	if form.PortsJSON != "" {
+		if err := json.Unmarshal([]byte(form.PortsJSON), &ports); err != nil {
 			h.logger.Warn("invalid ports JSON in container settings", "error", err)
 		}
 	}
@@ -836,8 +865,8 @@ func (h *Handler) ContainerSettingsUpdate(w http.ResponseWriter, r *http.Request
 		Container string `json:"container"`
 		RW        bool   `json:"rw"`
 	}
-	if volJSON := r.FormValue("volumes_json"); volJSON != "" {
-		if err := json.Unmarshal([]byte(volJSON), &volumes); err != nil {
+	if form.VolumesJSON != "" {
+		if err := json.Unmarshal([]byte(form.VolumesJSON), &volumes); err != nil {
 			h.logger.Warn("invalid volumes JSON in container settings", "error", err)
 		}
 	}
@@ -846,8 +875,8 @@ func (h *Handler) ContainerSettingsUpdate(w http.ResponseWriter, r *http.Request
 		Key   string `json:"key"`
 		Value string `json:"value"`
 	}
-	if envJSON := r.FormValue("env_json"); envJSON != "" {
-		if err := json.Unmarshal([]byte(envJSON), &envVars); err != nil {
+	if form.EnvJSON != "" {
+		if err := json.Unmarshal([]byte(form.EnvJSON), &envVars); err != nil {
 			h.logger.Warn("invalid env JSON in container settings", "error", err)
 		}
 	}
@@ -856,8 +885,8 @@ func (h *Handler) ContainerSettingsUpdate(w http.ResponseWriter, r *http.Request
 		Host      string `json:"host"`
 		Container string `json:"container"`
 	}
-	if devJSON := r.FormValue("devices_json"); devJSON != "" {
-		if err := json.Unmarshal([]byte(devJSON), &devices); err != nil {
+	if form.DevicesJSON != "" {
+		if err := json.Unmarshal([]byte(form.DevicesJSON), &devices); err != nil {
 			h.logger.Warn("invalid devices JSON in container settings", "error", err)
 		}
 	}
@@ -865,8 +894,8 @@ func (h *Handler) ContainerSettingsUpdate(w http.ResponseWriter, r *http.Request
 	var caps []struct {
 		Value string `json:"value"`
 	}
-	if capsJSON := r.FormValue("caps_json"); capsJSON != "" {
-		if err := json.Unmarshal([]byte(capsJSON), &caps); err != nil {
+	if form.CapsJSON != "" {
+		if err := json.Unmarshal([]byte(form.CapsJSON), &caps); err != nil {
 			h.logger.Warn("invalid capabilities JSON in container settings", "error", err)
 		}
 	}

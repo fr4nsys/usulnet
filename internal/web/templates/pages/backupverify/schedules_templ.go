@@ -68,7 +68,7 @@ func ScheduleList(data ScheduleListData) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"space-y-6\"><div class=\"flex items-center justify-between\"><div><h1 class=\"text-2xl font-display font-bold text-white\">Verification Schedules</h1><p class=\"text-gray-400 mt-1\">Automated backup verification policies</p></div><a href=\"/backup-verify/schedules/new\" class=\"btn-primary\"><i class=\"fas fa-plus mr-2\"></i>New Schedule</a></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"space-y-6\"><div class=\"flex items-center justify-between\"><div><h1 class=\"text-2xl font-display font-bold text-white\">Verification Schedules</h1><p class=\"text-gray-400 mt-1\">Automated backup verification policies</p></div><a href=\"/backup-verify/schedules/new\" class=\"btn-primary\"><i aria-hidden=\"true\" class=\"fas fa-plus mr-2\"></i>New Schedule</a></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -77,7 +77,7 @@ func ScheduleList(data ScheduleListData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			if len(data.Schedules) > 0 {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<div class=\"card\"><div class=\"overflow-x-auto\"><table class=\"table\"><thead><tr><th>Schedule</th><th>Method</th><th>Max Backups</th><th>Status</th><th>Last Run</th><th>Next Run</th><th>Actions</th></tr></thead> <tbody>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<div class=\"card\"><div class=\"overflow-x-auto\"><table class=\"table\"><thead><tr><th scope=\"col\">Schedule</th><th scope=\"col\">Method</th><th scope=\"col\">Max Backups</th><th scope=\"col\">Status</th><th scope=\"col\">Last Run</th><th scope=\"col\">Next Run</th><th scope=\"col\">Actions</th></tr></thead> <tbody>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -205,7 +205,7 @@ func ScheduleList(data ScheduleListData) templ.Component {
 				}
 			}
 			if len(data.Schedules) == 0 {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "<div class=\"card p-8 text-center\"><i class=\"fas fa-calendar-alt text-4xl text-gray-400 mb-4\"></i><h3 class=\"text-lg font-medium text-white mb-2\">No verification schedules</h3><p class=\"text-gray-400 mb-4\">Create a schedule to automatically verify your backups</p><a href=\"/backup-verify/schedules/new\" class=\"btn-primary\"><i class=\"fas fa-plus mr-2\"></i>New Schedule</a></div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "<div class=\"card p-8 text-center\"><i aria-hidden=\"true\" class=\"fas fa-calendar-alt text-4xl text-gray-400 mb-4\"></i><h3 class=\"text-lg font-medium text-white mb-2\">No verification schedules</h3><p class=\"text-gray-400 mb-4\">Create a schedule to automatically verify your backups</p><a href=\"/backup-verify/schedules/new\" class=\"btn-primary\"><i aria-hidden=\"true\" class=\"fas fa-plus mr-2\"></i>New Schedule</a></div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}

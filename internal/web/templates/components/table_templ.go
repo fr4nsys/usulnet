@@ -111,7 +111,7 @@ func TableHeader(text string, width string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<th class=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<th scope=\"col\" class=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -167,7 +167,7 @@ func TableHeaderSortable(text, sortKey, currentSort, currentDir string) templ.Co
 			templ_7745c5c3_Var7 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "<th class=\"px-4 py-3 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider\"><a href=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "<th scope=\"col\" class=\"px-4 py-3 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider\"><a href=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -199,18 +199,18 @@ func TableHeaderSortable(text, sortKey, currentSort, currentDir string) templ.Co
 		}
 		if currentSort == sortKey {
 			if currentDir == "asc" {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "<i class=\"fas fa-sort-up text-primary-400\"></i>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "<i aria-hidden=\"true\" class=\"fas fa-sort-up text-primary-400\"></i>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			} else {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "<i class=\"fas fa-sort-down text-primary-400\"></i>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "<i aria-hidden=\"true\" class=\"fas fa-sort-down text-primary-400\"></i>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			}
 		} else {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "<i class=\"fas fa-sort text-gray-400\"></i>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "<i aria-hidden=\"true\" class=\"fas fa-sort text-gray-400\"></i>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -523,12 +523,12 @@ func Pagination(currentPage, totalPages, totalItems int, baseURL string) templ.C
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 33, "\" class=\"px-3 py-1.5 text-sm bg-dark-700 hover:bg-dark-600 text-gray-300 rounded-lg transition-colors\"><i class=\"fas fa-chevron-left mr-1\"></i> Previous</a>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 33, "\" class=\"px-3 py-1.5 text-sm bg-dark-700 hover:bg-dark-600 text-gray-300 rounded-lg transition-colors\"><i aria-hidden=\"true\" class=\"fas fa-chevron-left mr-1\"></i> Previous</a>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		} else {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 34, "<span class=\"px-3 py-1.5 text-sm bg-dark-800 text-gray-500 rounded-lg cursor-not-allowed\"><i class=\"fas fa-chevron-left mr-1\"></i> Previous</span>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 34, "<span class=\"px-3 py-1.5 text-sm bg-dark-800 text-gray-500 rounded-lg cursor-not-allowed\"><i aria-hidden=\"true\" class=\"fas fa-chevron-left mr-1\"></i> Previous</span>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -612,12 +612,12 @@ func Pagination(currentPage, totalPages, totalItems int, baseURL string) templ.C
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 44, "\" class=\"px-3 py-1.5 text-sm bg-dark-700 hover:bg-dark-600 text-gray-300 rounded-lg transition-colors\">Next <i class=\"fas fa-chevron-right ml-1\"></i></a>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 44, "\" class=\"px-3 py-1.5 text-sm bg-dark-700 hover:bg-dark-600 text-gray-300 rounded-lg transition-colors\">Next <i aria-hidden=\"true\" class=\"fas fa-chevron-right ml-1\"></i></a>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		} else {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 45, "<span class=\"px-3 py-1.5 text-sm bg-dark-800 text-gray-500 rounded-lg cursor-not-allowed\">Next <i class=\"fas fa-chevron-right ml-1\"></i></span>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 45, "<span class=\"px-3 py-1.5 text-sm bg-dark-800 text-gray-500 rounded-lg cursor-not-allowed\">Next <i aria-hidden=\"true\" class=\"fas fa-chevron-right ml-1\"></i></span>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

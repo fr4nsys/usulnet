@@ -109,7 +109,7 @@ func SupportMatrixBanner(s BackendSupport) templ.Component {
 			templ_7745c5c3_Var2 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<div class=\"mb-4 rounded border border-dark-700 bg-dark-800 px-4 py-3 text-xs text-gray-400\"><div class=\"flex flex-wrap items-center gap-x-4 gap-y-1\"><span class=\"font-medium text-gray-300\"><i class=\"fas fa-server mr-1\"></i> ")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<div class=\"mb-4 rounded border border-dark-700 bg-dark-800 px-4 py-3 text-xs text-gray-400\"><div class=\"flex flex-wrap items-center gap-x-4 gap-y-1\"><span class=\"font-medium text-gray-300\"><i aria-hidden=\"true\" class=\"fas fa-server mr-1\"></i> ")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -170,7 +170,7 @@ func SupportMatrixBanner(s BackendSupport) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		if !s.Streams {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "<div class=\"mt-2 text-amber-400\"><i class=\"fas fa-info-circle mr-1\"></i> Streams (raw TCP/UDP) cannot be applied with the active backend. Switch to nginx if you need this feature.</div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "<div class=\"mt-2 text-amber-400\"><i aria-hidden=\"true\" class=\"fas fa-info-circle mr-1\"></i> Streams (raw TCP/UDP) cannot be applied with the active backend. Switch to nginx if you need this feature.</div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -205,7 +205,7 @@ func supportBadge(label string, supported bool) templ.Component {
 		}
 		ctx = templ.ClearChildren(ctx)
 		if supported {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "<span class=\"inline-flex items-center gap-1 rounded bg-green-900/40 px-2 py-0.5 text-green-300\"><i class=\"fas fa-check text-[10px]\"></i> ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "<span class=\"inline-flex items-center gap-1 rounded bg-green-900/40 px-2 py-0.5 text-green-300\"><i aria-hidden=\"true\" class=\"fas fa-check text-[10px]\"></i> ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -223,7 +223,7 @@ func supportBadge(label string, supported bool) templ.Component {
 				return templ_7745c5c3_Err
 			}
 		} else {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "<span class=\"inline-flex items-center gap-1 rounded bg-red-900/40 px-2 py-0.5 text-red-300\"><i class=\"fas fa-times text-[10px]\"></i> ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "<span class=\"inline-flex items-center gap-1 rounded bg-red-900/40 px-2 py-0.5 text-red-300\"><i aria-hidden=\"true\" class=\"fas fa-times text-[10px]\"></i> ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

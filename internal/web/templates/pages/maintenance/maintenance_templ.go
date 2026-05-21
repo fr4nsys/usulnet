@@ -99,7 +99,7 @@ func Maintenance(data MaintenanceData) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"space-y-6\"><!-- Header --><div class=\"flex items-center justify-between\"><div><h1 class=\"text-2xl font-display font-bold text-white\">Maintenance Windows</h1><p class=\"text-gray-400 mt-1\">Schedule automated maintenance periods for your Docker hosts</p></div><button onclick=\"document.getElementById('createMaintenanceModal').classList.remove('hidden')\" class=\"btn-primary flex items-center gap-2\"><i class=\"fas fa-plus\"></i> New Window</button></div><!-- Stats --><div class=\"grid grid-cols-2 md:grid-cols-4 gap-4\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"space-y-6\"><!-- Header --><div class=\"flex items-center justify-between\"><div><h1 class=\"text-2xl font-display font-bold text-white\">Maintenance Windows</h1><p class=\"text-gray-400 mt-1\">Schedule automated maintenance periods for your Docker hosts</p></div><button onclick=\"document.getElementById('createMaintenanceModal').classList.remove('hidden')\" class=\"btn-primary flex items-center gap-2\"><i aria-hidden=\"true\" class=\"fas fa-plus\"></i> New Window</button></div><!-- Stats --><div class=\"grid grid-cols-2 md:grid-cols-4 gap-4\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -132,14 +132,14 @@ func Maintenance(data MaintenanceData) templ.Component {
 			}
 			for _, w := range data.Windows {
 				if w.IsActive {
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<div class=\"card border-l-4 border-l-yellow-500 p-4\"><div class=\"flex items-center gap-3\"><span class=\"w-3 h-3 rounded-full bg-yellow-500 animate-pulse\"></span><div><h3 class=\"text-sm font-medium text-yellow-400\"><i class=\"fas fa-wrench mr-2\"></i>Maintenance In Progress: ")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<div class=\"card border-l-4 border-l-yellow-500 p-4\"><div class=\"flex items-center gap-3\"><span class=\"w-3 h-3 rounded-full bg-yellow-500 animate-pulse\"></span><div><h3 class=\"text-sm font-medium text-yellow-400\"><i aria-hidden=\"true\" class=\"fas fa-wrench mr-2\"></i>Maintenance In Progress: ")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
 					var templ_7745c5c3_Var3 string
 					templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(w.Name)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/maintenance/maintenance.templ`, Line: 96, Col: 76}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/maintenance/maintenance.templ`, Line: 96, Col: 95}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 					if templ_7745c5c3_Err != nil {
@@ -182,7 +182,7 @@ func Maintenance(data MaintenanceData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			if len(data.Windows) == 0 {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "<div class=\"card p-12 text-center\"><i class=\"fas fa-calendar-alt text-4xl text-gray-400 mb-4\"></i><h3 class=\"text-lg font-medium text-white mb-2\">No Maintenance Windows</h3><p class=\"text-gray-400 mb-4\">Schedule maintenance periods to automatically manage container lifecycle and cleanup</p></div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "<div class=\"card p-12 text-center\"><i aria-hidden=\"true\" class=\"fas fa-calendar-alt text-4xl text-gray-400 mb-4\"></i><h3 class=\"text-lg font-medium text-white mb-2\">No Maintenance Windows</h3><p class=\"text-gray-400 mb-4\">Schedule maintenance periods to automatically manage container lifecycle and cleanup</p></div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -367,12 +367,12 @@ func windowCard(w MaintenanceWindowView, csrfToken string) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		if w.IsActive {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 22, "<i class=\"fas fa-wrench text-yellow-400 animate-spin-slow\"></i>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 22, "<i aria-hidden=\"true\" class=\"fas fa-wrench text-yellow-400 animate-spin-slow\"></i>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		} else {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 23, "<i class=\"fas fa-calendar-check text-primary-400\"></i>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 23, "<i aria-hidden=\"true\" class=\"fas fa-calendar-check text-primary-400\"></i>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -446,27 +446,27 @@ func windowCard(w MaintenanceWindowView, csrfToken string) templ.Component {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 33, "<div class=\"flex items-center gap-4 mt-2 flex-wrap\"><span class=\"text-xs text-gray-500\"><i class=\"fas fa-clock mr-1\"></i>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 33, "<div class=\"flex items-center gap-4 mt-2 flex-wrap\"><span class=\"text-xs text-gray-500\"><i aria-hidden=\"true\" class=\"fas fa-clock mr-1\"></i>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var19 string
 		templ_7745c5c3_Var19, templ_7745c5c3_Err = templ.JoinStringErrs(w.ScheduleHuman)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/maintenance/maintenance.templ`, Line: 161, Col: 92}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/maintenance/maintenance.templ`, Line: 161, Col: 111}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var19))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 34, "</span> <span class=\"text-xs text-gray-500\"><i class=\"fas fa-hourglass-half mr-1\"></i>Duration: ")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 34, "</span> <span class=\"text-xs text-gray-500\"><i aria-hidden=\"true\" class=\"fas fa-hourglass-half mr-1\"></i>Duration: ")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var20 string
 		templ_7745c5c3_Var20, templ_7745c5c3_Err = templ.JoinStringErrs(w.Duration)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/maintenance/maintenance.templ`, Line: 162, Col: 106}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/maintenance/maintenance.templ`, Line: 162, Col: 125}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var20))
 		if templ_7745c5c3_Err != nil {
@@ -477,14 +477,14 @@ func windowCard(w MaintenanceWindowView, csrfToken string) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		if w.NextRunAt != "" {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 36, "<span class=\"text-xs text-gray-500\"><i class=\"fas fa-forward mr-1\"></i>Next: ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 36, "<span class=\"text-xs text-gray-500\"><i aria-hidden=\"true\" class=\"fas fa-forward mr-1\"></i>Next: ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var21 string
 			templ_7745c5c3_Var21, templ_7745c5c3_Err = templ.JoinStringErrs(w.NextRunAt)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/maintenance/maintenance.templ`, Line: 164, Col: 97}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/maintenance/maintenance.templ`, Line: 164, Col: 116}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var21))
 			if templ_7745c5c3_Err != nil {
@@ -496,14 +496,14 @@ func windowCard(w MaintenanceWindowView, csrfToken string) templ.Component {
 			}
 		}
 		if w.LastRunAt != "" {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 38, "<span class=\"text-xs text-gray-500\"><i class=\"fas fa-history mr-1\"></i>Last: ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 38, "<span class=\"text-xs text-gray-500\"><i aria-hidden=\"true\" class=\"fas fa-history mr-1\"></i>Last: ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var22 string
 			templ_7745c5c3_Var22, templ_7745c5c3_Err = templ.JoinStringErrs(w.LastRunAt)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/maintenance/maintenance.templ`, Line: 167, Col: 97}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/maintenance/maintenance.templ`, Line: 167, Col: 116}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var22))
 			if templ_7745c5c3_Err != nil {
@@ -586,7 +586,7 @@ func windowCard(w MaintenanceWindowView, csrfToken string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 50, "\"> <button type=\"submit\" class=\"p-2 text-gray-400 hover:text-green-400 transition-colors\" title=\"Execute now\"><i class=\"fas fa-play\"></i></button></form><form method=\"POST\" action=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 50, "\"> <button type=\"submit\" class=\"p-2 text-gray-400 hover:text-green-400 transition-colors\" title=\"Execute now\"><i aria-hidden=\"true\" class=\"fas fa-play\"></i></button></form><form method=\"POST\" action=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -617,12 +617,12 @@ func windowCard(w MaintenanceWindowView, csrfToken string) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		if w.IsEnabled {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 53, "<i class=\"fas fa-pause\"></i>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 53, "<i aria-hidden=\"true\" class=\"fas fa-pause\"></i>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		} else {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 54, "<i class=\"fas fa-play\"></i>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 54, "<i aria-hidden=\"true\" class=\"fas fa-play\"></i>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -653,7 +653,7 @@ func windowCard(w MaintenanceWindowView, csrfToken string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 57, "\"> <button type=\"submit\" class=\"p-2 text-gray-400 hover:text-red-400 transition-colors\" title=\"Delete\"><i class=\"fas fa-trash\"></i></button></form></div></div></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 57, "\"> <button type=\"submit\" class=\"p-2 text-gray-400 hover:text-red-400 transition-colors\" title=\"Delete\"><i aria-hidden=\"true\" class=\"fas fa-trash\"></i></button></form></div></div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -682,7 +682,7 @@ func createMaintenanceModal(csrfToken string, hosts []HostOption) templ.Componen
 			templ_7745c5c3_Var29 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 58, "<div id=\"createMaintenanceModal\" class=\"hidden fixed inset-0 z-50 flex items-center justify-center bg-black/60\"><div class=\"bg-dark-800 rounded-xl shadow-xl border border-dark-600 w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto\"><div class=\"flex items-center justify-between p-6 border-b border-dark-600 sticky top-0 bg-dark-800 z-10\"><h2 class=\"text-lg font-display font-bold text-white\">Create Maintenance Window</h2><button onclick=\"document.getElementById('createMaintenanceModal').classList.add('hidden')\" class=\"text-gray-400 hover:text-white\"><i class=\"fas fa-times\"></i></button></div><form method=\"POST\" action=\"/maintenance\" class=\"p-6 space-y-4\"><input type=\"hidden\" name=\"csrf_token\" value=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 58, "<div id=\"createMaintenanceModal\" class=\"hidden fixed inset-0 z-50 flex items-center justify-center bg-black/60\"><div class=\"bg-dark-800 rounded-xl shadow-xl border border-dark-600 w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto\"><div class=\"flex items-center justify-between p-6 border-b border-dark-600 sticky top-0 bg-dark-800 z-10\"><h2 class=\"text-lg font-display font-bold text-white\">Create Maintenance Window</h2><button onclick=\"document.getElementById('createMaintenanceModal').classList.add('hidden')\" class=\"text-gray-400 hover:text-white\"><i aria-hidden=\"true\" class=\"fas fa-times\"></i></button></div><form method=\"POST\" action=\"/maintenance\" class=\"p-6 space-y-4\"><input type=\"hidden\" name=\"csrf_token\" value=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -695,7 +695,7 @@ func createMaintenanceModal(csrfToken string, hosts []HostOption) templ.Componen
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 59, "\"><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Window Name</label> <input type=\"text\" name=\"name\" required class=\"input w-full\" placeholder=\"e.g., Weekly cleanup\"></div><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Description</label> <textarea name=\"description\" rows=\"2\" class=\"input w-full\" placeholder=\"What this maintenance window does\"></textarea></div><div class=\"grid grid-cols-2 gap-4\"><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Target Host</label> <select name=\"host_id\" class=\"input w-full\"><option value=\"all\">All Hosts</option> ")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 59, "\"><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Window Name</label> <input type=\"text\" name=\"name\" required class=\"input w-full\" placeholder=\"e.g., Weekly cleanup\" aria-label=\"e.g., Weekly cleanup\"></div><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Description</label> <textarea name=\"description\" rows=\"2\" class=\"input w-full\" placeholder=\"What this maintenance window does\"></textarea></div><div class=\"grid grid-cols-2 gap-4\"><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Target Host</label> <select name=\"host_id\" class=\"input w-full\"><option value=\"all\">All Hosts</option> ")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -731,7 +731,7 @@ func createMaintenanceModal(csrfToken string, hosts []HostOption) templ.Componen
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 63, "</select></div><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Duration (minutes)</label> <input type=\"number\" name=\"duration_minutes\" required min=\"5\" max=\"480\" value=\"60\" class=\"input w-full\"></div></div><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Schedule</label> <select name=\"schedule\" class=\"input w-full\"><option value=\"0 2 * * 0\">Weekly (Sunday 2 AM)</option> <option value=\"0 3 * * *\">Daily (3 AM)</option> <option value=\"0 2 1 * *\">Monthly (1st at 2 AM)</option> <option value=\"0 4 * * 6\">Weekly (Saturday 4 AM)</option> <option value=\"0 0 * * *\">Daily (Midnight)</option></select></div><!-- Actions --><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Maintenance Actions</label><div class=\"space-y-2 bg-dark-700 rounded-lg p-4\"><label class=\"flex items-center gap-2\"><input type=\"checkbox\" name=\"action_stop_containers\" value=\"on\" class=\"form-checkbox rounded bg-dark-600 border-dark-500\"> <span class=\"text-sm text-gray-300\">Stop non-essential containers</span></label> <label class=\"flex items-center gap-2\"><input type=\"checkbox\" name=\"action_restart_containers\" value=\"on\" checked class=\"form-checkbox rounded bg-dark-600 border-dark-500\"> <span class=\"text-sm text-gray-300\">Restart running containers</span></label> <label class=\"flex items-center gap-2\"><input type=\"checkbox\" name=\"action_prune_images\" value=\"on\" checked class=\"form-checkbox rounded bg-dark-600 border-dark-500\"> <span class=\"text-sm text-gray-300\">Prune unused images</span></label> <label class=\"flex items-center gap-2\"><input type=\"checkbox\" name=\"action_prune_volumes\" value=\"on\" class=\"form-checkbox rounded bg-dark-600 border-dark-500\"> <span class=\"text-sm text-gray-300\">Prune unused volumes</span></label> <label class=\"flex items-center gap-2\"><input type=\"checkbox\" name=\"action_prune_networks\" value=\"on\" checked class=\"form-checkbox rounded bg-dark-600 border-dark-500\"> <span class=\"text-sm text-gray-300\">Prune unused networks</span></label> <label class=\"flex items-center gap-2\"><input type=\"checkbox\" name=\"action_update_images\" value=\"on\" class=\"form-checkbox rounded bg-dark-600 border-dark-500\"> <span class=\"text-sm text-gray-300\">Pull latest images</span></label> <label class=\"flex items-center gap-2\"><input type=\"checkbox\" name=\"action_backup_first\" value=\"on\" checked class=\"form-checkbox rounded bg-dark-600 border-dark-500\"> <span class=\"text-sm text-gray-300\">Create backup before maintenance</span></label></div></div><div class=\"flex justify-end gap-3 pt-4 border-t border-dark-600\"><button type=\"button\" onclick=\"document.getElementById('createMaintenanceModal').classList.add('hidden')\" class=\"btn-secondary\">Cancel</button> <button type=\"submit\" class=\"btn-primary\"><i class=\"fas fa-plus mr-2\"></i>Create Window</button></div></form></div></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 63, "</select></div><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Duration (minutes)</label> <input type=\"number\" name=\"duration_minutes\" required min=\"5\" max=\"480\" value=\"60\" class=\"input w-full\"></div></div><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Schedule</label> <select name=\"schedule\" class=\"input w-full\"><option value=\"0 2 * * 0\">Weekly (Sunday 2 AM)</option> <option value=\"0 3 * * *\">Daily (3 AM)</option> <option value=\"0 2 1 * *\">Monthly (1st at 2 AM)</option> <option value=\"0 4 * * 6\">Weekly (Saturday 4 AM)</option> <option value=\"0 0 * * *\">Daily (Midnight)</option></select></div><!-- Actions --><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Maintenance Actions</label><div class=\"space-y-2 bg-dark-700 rounded-lg p-4\"><label class=\"flex items-center gap-2\"><input type=\"checkbox\" name=\"action_stop_containers\" value=\"on\" class=\"form-checkbox rounded bg-dark-600 border-dark-500\"> <span class=\"text-sm text-gray-300\">Stop non-essential containers</span></label> <label class=\"flex items-center gap-2\"><input type=\"checkbox\" name=\"action_restart_containers\" value=\"on\" checked class=\"form-checkbox rounded bg-dark-600 border-dark-500\"> <span class=\"text-sm text-gray-300\">Restart running containers</span></label> <label class=\"flex items-center gap-2\"><input type=\"checkbox\" name=\"action_prune_images\" value=\"on\" checked class=\"form-checkbox rounded bg-dark-600 border-dark-500\"> <span class=\"text-sm text-gray-300\">Prune unused images</span></label> <label class=\"flex items-center gap-2\"><input type=\"checkbox\" name=\"action_prune_volumes\" value=\"on\" class=\"form-checkbox rounded bg-dark-600 border-dark-500\"> <span class=\"text-sm text-gray-300\">Prune unused volumes</span></label> <label class=\"flex items-center gap-2\"><input type=\"checkbox\" name=\"action_prune_networks\" value=\"on\" checked class=\"form-checkbox rounded bg-dark-600 border-dark-500\"> <span class=\"text-sm text-gray-300\">Prune unused networks</span></label> <label class=\"flex items-center gap-2\"><input type=\"checkbox\" name=\"action_update_images\" value=\"on\" class=\"form-checkbox rounded bg-dark-600 border-dark-500\"> <span class=\"text-sm text-gray-300\">Pull latest images</span></label> <label class=\"flex items-center gap-2\"><input type=\"checkbox\" name=\"action_backup_first\" value=\"on\" checked class=\"form-checkbox rounded bg-dark-600 border-dark-500\"> <span class=\"text-sm text-gray-300\">Create backup before maintenance</span></label></div></div><div class=\"flex justify-end gap-3 pt-4 border-t border-dark-600\"><button type=\"button\" onclick=\"document.getElementById('createMaintenanceModal').classList.add('hidden')\" class=\"btn-secondary\">Cancel</button> <button type=\"submit\" class=\"btn-primary\"><i aria-hidden=\"true\" class=\"fas fa-plus mr-2\"></i>Create Window</button></div></form></div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

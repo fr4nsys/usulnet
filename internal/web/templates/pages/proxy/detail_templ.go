@@ -61,7 +61,7 @@ func Detail(data DetailData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<div class=\"max-w-3xl\"><div class=\"flex items-center justify-between mb-6\"><div class=\"flex items-center gap-3\"><a href=\"/proxy\" class=\"text-gray-400 hover:text-white\"><i class=\"fas fa-arrow-left\"></i></a><div><h2 class=\"text-xl font-display font-bold text-white\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<div class=\"max-w-3xl\"><div class=\"flex items-center justify-between mb-6\"><div class=\"flex items-center gap-3\"><a href=\"/proxy\" class=\"text-gray-400 hover:text-white\"><i aria-hidden=\"true\" class=\"fas fa-arrow-left\"></i></a><div><h2 class=\"text-xl font-display font-bold text-white\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -102,7 +102,7 @@ func Detail(data DetailData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "\" class=\"btn btn-sm btn-secondary\"><i class=\"fas fa-edit mr-1\"></i> Edit</a></div></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "\" class=\"btn btn-sm btn-secondary\"><i aria-hidden=\"true\" class=\"fas fa-edit mr-1\"></i> Edit</a></div></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -169,12 +169,12 @@ func Detail(data DetailData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			if data.Host.SSLEnabled {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "<span class=\"text-green-400\"><i class=\"fas fa-lock mr-1\"></i> Enabled</span>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "<span class=\"text-green-400\"><i aria-hidden=\"true\" class=\"fas fa-lock mr-1\"></i> Enabled</span>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			} else {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "<span class=\"text-gray-500\"><i class=\"fas fa-lock-open mr-1\"></i> Disabled</span>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "<span class=\"text-gray-500\"><i aria-hidden=\"true\" class=\"fas fa-lock-open mr-1\"></i> Disabled</span>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -248,7 +248,7 @@ func Detail(data DetailData) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 25, "\"> <button type=\"submit\" class=\"btn btn-sm btn-warning\"><i class=\"fas fa-pause mr-1\"></i> Disable</button></form>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 25, "\"> <button type=\"submit\" class=\"btn btn-sm btn-warning\"><i aria-hidden=\"true\" class=\"fas fa-pause mr-1\"></i> Disable</button></form>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -279,7 +279,7 @@ func Detail(data DetailData) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 28, "\"> <button type=\"submit\" class=\"btn btn-sm btn-success\"><i class=\"fas fa-play mr-1\"></i> Enable</button></form>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 28, "\"> <button type=\"submit\" class=\"btn btn-sm btn-success\"><i aria-hidden=\"true\" class=\"fas fa-play mr-1\"></i> Enable</button></form>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -310,7 +310,7 @@ func Detail(data DetailData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 31, "\"> <input type=\"hidden\" name=\"_method\" value=\"DELETE\"> <button type=\"submit\" class=\"btn btn-sm btn-danger\"><i class=\"fas fa-trash mr-1\"></i> Delete</button></form></div></div></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 31, "\"> <input type=\"hidden\" name=\"_method\" value=\"DELETE\"> <button type=\"submit\" class=\"btn btn-sm btn-danger\"><i aria-hidden=\"true\" class=\"fas fa-trash mr-1\"></i> Delete</button></form></div></div></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

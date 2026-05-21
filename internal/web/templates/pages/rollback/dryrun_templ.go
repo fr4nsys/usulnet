@@ -87,7 +87,7 @@ func DryRun(data DryRunData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "\" class=\"text-sm text-gray-400 hover:text-white\"><i class=\"fas fa-chevron-left mr-1\"></i>back to policy</a><h1 class=\"text-2xl font-display font-bold text-white mt-1\">Dry-run: ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "\" class=\"text-sm text-gray-400 hover:text-white\"><i aria-hidden=\"true\" class=\"fas fa-chevron-left mr-1\"></i>back to policy</a><h1 class=\"text-2xl font-display font-bold text-white mt-1\">Dry-run: ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -195,19 +195,19 @@ func DryRun(data DryRunData) templ.Component {
 					}
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "</select></div><div class=\"flex items-center justify-end\"><button type=\"submit\" class=\"btn-primary\"><i class=\"fas fa-vial mr-2\"></i>Run preview</button></div></form>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "</select></div><div class=\"flex items-center justify-end\"><button type=\"submit\" class=\"btn-primary\"><i aria-hidden=\"true\" class=\"fas fa-vial mr-2\"></i>Run preview</button></div></form>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			if data.Error != "" {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "<div class=\"card p-4 border border-red-500/40 bg-red-500/10 text-red-200 text-sm\"><i class=\"fas fa-triangle-exclamation mr-2\"></i>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "<div class=\"card p-4 border border-red-500/40 bg-red-500/10 text-red-200 text-sm\"><i aria-hidden=\"true\" class=\"fas fa-triangle-exclamation mr-2\"></i>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var11 string
 				templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(data.Error)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/rollback/dryrun.templ`, Line: 69, Col: 65}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/rollback/dryrun.templ`, Line: 69, Col: 84}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 				if templ_7745c5c3_Err != nil {

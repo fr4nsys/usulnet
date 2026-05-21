@@ -66,7 +66,7 @@ templ ContainersList(data ContainersListData) {
 				</div>
 				<div class="flex items-center gap-3">
 					<a href="/containers/new" class="btn-primary">
-						<i class="fas fa-plus"></i>
+						<i aria-hidden="true" class="fas fa-plus"></i>
 						New Container
 					</a>
 				</div>
@@ -86,7 +86,7 @@ templ ContainersList(data ContainersListData) {
 			>
 				<div class="flex flex-wrap items-center gap-3">
 					<span class="text-primary-400 font-medium">
-						<i class="fas fa-check-square mr-2"></i>
+						<i aria-hidden="true" class="fas fa-check-square mr-2"></i>
 						<span x-text="selected.length"></span> container(s) selected
 					</span>
 					<div class="flex-1"></div>
@@ -95,56 +95,56 @@ templ ContainersList(data ContainersListData) {
 							@click="bulkAction('start')"
 							class="px-3 py-1.5 bg-green-600 hover:bg-green-500 text-white text-sm rounded-lg transition-colors"
 						>
-							<i class="fas fa-play mr-1"></i> Start
+							<i aria-hidden="true" class="fas fa-play mr-1"></i> Start
 						</button>
 						<button
 							@click="bulkAction('stop')"
 							class="px-3 py-1.5 bg-red-600 hover:bg-red-500 text-white text-sm rounded-lg transition-colors"
 						>
-							<i class="fas fa-stop mr-1"></i> Stop
+							<i aria-hidden="true" class="fas fa-stop mr-1"></i> Stop
 						</button>
 						<button
 							@click="bulkAction('restart')"
 							class="px-3 py-1.5 bg-yellow-600 hover:bg-yellow-500 text-white text-sm rounded-lg transition-colors"
 						>
-							<i class="fas fa-redo mr-1"></i> Restart
+							<i aria-hidden="true" class="fas fa-redo mr-1"></i> Restart
 						</button>
 						<button
 							@click="bulkAction('pause')"
 							class="px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white text-sm rounded-lg transition-colors"
 						>
-							<i class="fas fa-pause mr-1"></i> Pause
+							<i aria-hidden="true" class="fas fa-pause mr-1"></i> Pause
 						</button>
 						<button
 							@click="bulkAction('unpause')"
 							class="px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white text-sm rounded-lg transition-colors"
 						>
-							<i class="fas fa-play mr-1"></i> Unpause
+							<i aria-hidden="true" class="fas fa-play mr-1"></i> Unpause
 						</button>
 						<button
 							@click="bulkAction('kill')"
 							class="px-3 py-1.5 bg-orange-600 hover:bg-orange-500 text-white text-sm rounded-lg transition-colors"
 						>
-							<i class="fas fa-skull mr-1"></i> Kill
+							<i aria-hidden="true" class="fas fa-skull mr-1"></i> Kill
 						</button>
 						<button
 							@click="confirmRemove()"
 							class="px-3 py-1.5 bg-red-700 hover:bg-red-600 text-white text-sm rounded-lg transition-colors"
 						>
-							<i class="fas fa-trash mr-1"></i> Remove
+							<i aria-hidden="true" class="fas fa-trash mr-1"></i> Remove
 						</button>
 						<button
 							@click="clearSelection()"
 							class="px-3 py-1.5 bg-dark-600 hover:bg-dark-500 text-gray-300 text-sm rounded-lg transition-colors"
 						>
-							<i class="fas fa-times mr-1"></i> Clear
+							<i aria-hidden="true" class="fas fa-times mr-1"></i> Clear
 						</button>
 					</div>
 				</div>
 			</div>
 
 			<!-- Filters -->
-			<div class="bg-dark-800 rounded-xl border border-dark-600 p-4 mb-6">
+			<div class="card p-4 mb-6">
 				<div class="flex flex-col md:flex-row gap-4">
 					<!-- Search -->
 					<div class="flex-1">
@@ -160,8 +160,9 @@ templ ContainersList(data ContainersListData) {
 								hx-target="#container-table"
 								hx-select="#container-table"
 								hx-push-url="true"
+								aria-label="Search containers..."
 							/>
-							<i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-500"></i>
+							<i aria-hidden="true" class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-500"></i>
 						</div>
 					</div>
 
@@ -195,17 +196,18 @@ templ ContainersList(data ContainersListData) {
 			</form>
 
 			<!-- Container Table -->
-			<div id="container-table" class="bg-dark-800 rounded-xl border border-dark-600 overflow-hidden">
+			<div id="container-table" class="card overflow-hidden">
 				@components.Table() {
 					@components.TableHead() {
-						<th class="w-10 px-4 py-3">
+						<th scope="col" class="w-10 px-4 py-3">
 							<input
 								type="checkbox"
 								class="checkbox"
 								@click="toggleAll($event)"
 							:checked={ fmt.Sprintf("selected.length === %d && selected.length > 0", len(data.Containers)) }
 							:indeterminate={ fmt.Sprintf("selected.length > 0 && selected.length < %d", len(data.Containers)) }
-							/>
+							aria-label="Select all containers"
+								/>
 						</th>
 						@components.TableHeaderSortable("Name", "name", data.Filters.Sort, data.Filters.Dir)
 						@components.TableHeader("Status", "w-32")
@@ -248,9 +250,9 @@ templ ContainersList(data ContainersListData) {
 				style="display: none;"
 				@click.self="showRemoveModal = false"
 			>
-				<div class="bg-dark-800 rounded-xl border border-dark-600 p-6 max-w-md w-full mx-4 shadow-2xl">
+				<div class="card p-6 max-w-md w-full mx-4 shadow-2xl">
 					<h3 class="text-lg font-semibold text-white mb-4">
-						<i class="fas fa-exclamation-triangle text-red-400 mr-2"></i>
+						<i aria-hidden="true" class="fas fa-exclamation-triangle text-red-400 mr-2"></i>
 						Remove Containers
 					</h3>
 					<p class="text-gray-400 mb-4">
@@ -272,7 +274,7 @@ templ ContainersList(data ContainersListData) {
 							@click="bulkAction('remove')"
 							class="px-4 py-2 bg-red-600 hover:bg-red-500 text-white rounded-lg transition-colors"
 						>
-							<i class="fas fa-trash mr-2"></i>Remove
+							<i aria-hidden="true" class="fas fa-trash mr-2"></i>Remove
 						</button>
 					</div>
 				</div>
@@ -372,6 +374,7 @@ templ containerRow(c Container) {
 				value={ c.ID }
 				@change={ "toggleSelect('" + c.ID + "')" }
 				:checked={ "selected.includes('" + c.ID + "')" }
+			aria-label="Select container"
 			/>
 		</td>
 		<td class="px-4 py-3">
@@ -396,7 +399,7 @@ templ containerRow(c Container) {
 				<span class="text-gray-300 font-mono text-sm truncate max-w-xs">{ c.Image }</span>
 				if c.HasUpdates {
 					<span class="px-1.5 py-0.5 text-[10px] bg-primary-500/20 text-primary-400 rounded" title="Update available">
-						<i class="fas fa-arrow-up"></i>
+						<i aria-hidden="true" class="fas fa-arrow-up"></i>
 					</span>
 				}
 			</div>
@@ -433,7 +436,7 @@ templ containerRow(c Container) {
 						class="p-2 text-gray-400 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
 						title="Stop"
 					>
-						<i class="fas fa-stop text-sm"></i>
+						<i aria-hidden="true" class="fas fa-stop text-sm"></i>
 					</button>
 					<button 
 						hx-post={ "/containers/" + c.ID + "/restart" }
@@ -441,7 +444,7 @@ templ containerRow(c Container) {
 						class="p-2 text-gray-400 hover:text-yellow-400 hover:bg-yellow-500/10 rounded-lg transition-colors"
 						title="Restart"
 					>
-						<i class="fas fa-redo text-sm"></i>
+						<i aria-hidden="true" class="fas fa-redo text-sm"></i>
 					</button>
 				} else {
 					<button 
@@ -450,7 +453,7 @@ templ containerRow(c Container) {
 						class="p-2 text-gray-400 hover:text-green-400 hover:bg-green-500/10 rounded-lg transition-colors"
 						title="Start"
 					>
-						<i class="fas fa-play text-sm"></i>
+						<i aria-hidden="true" class="fas fa-play text-sm"></i>
 					</button>
 				}
 				<a 
@@ -458,21 +461,21 @@ templ containerRow(c Container) {
 					class="p-2 text-gray-400 hover:text-primary-400 hover:bg-primary-500/10 rounded-lg transition-colors"
 					title="Logs"
 				>
-					<i class="fas fa-file-alt text-sm"></i>
+					<i aria-hidden="true" class="fas fa-file-alt text-sm"></i>
 				</a>
 				<a 
 					href={ templ.SafeURL("/containers/" + c.ID + "/exec") }
 					class="p-2 text-gray-400 hover:text-primary-400 hover:bg-primary-500/10 rounded-lg transition-colors"
 					title="Terminal"
 				>
-					<i class="fas fa-terminal text-sm"></i>
+					<i aria-hidden="true" class="fas fa-terminal text-sm"></i>
 				</a>
 				<div x-data="{ open: false }" class="relative">
 					<button 
 						@click="open = !open"
 						class="p-2 text-gray-400 hover:text-white hover:bg-dark-600 rounded-lg transition-colors"
 					>
-						<i class="fas fa-ellipsis-v text-sm"></i>
+						<i aria-hidden="true" class="fas fa-ellipsis-v text-sm"></i>
 					</button>
 					<div 
 						x-show="open"
@@ -482,13 +485,13 @@ templ containerRow(c Container) {
 						style="display: none;"
 					>
 						<a href={ templ.SafeURL("/containers/" + c.ID) } class="flex items-center gap-2 px-4 py-2 text-sm text-gray-300 hover:bg-dark-700">
-							<i class="fas fa-info-circle w-4"></i> Details
+							<i aria-hidden="true" class="fas fa-info-circle w-4"></i> Details
 						</a>
 						<a href={ templ.SafeURL("/containers/" + c.ID + "/inspect") } class="flex items-center gap-2 px-4 py-2 text-sm text-gray-300 hover:bg-dark-700">
-							<i class="fas fa-code w-4"></i> Inspect
+							<i aria-hidden="true" class="fas fa-code w-4"></i> Inspect
 						</a>
 						<a href={ templ.SafeURL("/containers/" + c.ID + "/stats") } class="flex items-center gap-2 px-4 py-2 text-sm text-gray-300 hover:bg-dark-700">
-							<i class="fas fa-chart-line w-4"></i> Stats
+							<i aria-hidden="true" class="fas fa-chart-line w-4"></i> Stats
 						</a>
 						<hr class="my-1 border-dark-600"/>
 						<button 
@@ -497,7 +500,7 @@ templ containerRow(c Container) {
 							hx-swap="none"
 							class="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-400 hover:bg-red-500/10"
 						>
-							<i class="fas fa-trash w-4"></i> Remove
+							<i aria-hidden="true" class="fas fa-trash w-4"></i> Remove
 						</button>
 					</div>
 				</div>

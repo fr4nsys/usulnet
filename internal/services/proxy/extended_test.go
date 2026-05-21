@@ -110,6 +110,18 @@ func newMockLocationRepo() *mockLocationRepo {
 func (r *mockLocationRepo) ListByHost(_ context.Context, id uuid.UUID) ([]models.ProxyLocation, error) {
 	return r.byHost[id], nil
 }
+func (r *mockLocationRepo) ListAllGrouped(_ context.Context) (map[uuid.UUID][]models.ProxyLocation, error) {
+	out := make(map[uuid.UUID][]models.ProxyLocation, len(r.byHost))
+	for id, locs := range r.byHost {
+		if len(locs) == 0 {
+			continue
+		}
+		cp := make([]models.ProxyLocation, len(locs))
+		copy(cp, locs)
+		out[id] = cp
+	}
+	return out, nil
+}
 func (r *mockLocationRepo) ReplaceForHost(_ context.Context, id uuid.UUID, locs []models.ProxyLocation) error {
 	r.byHost[id] = locs
 	return nil

@@ -65,7 +65,7 @@ templ Ports(data PortsData) {
 			if data.Error != "" {
 				<div class="bg-red-500/10 border border-red-500/20 rounded-lg p-4">
 					<div class="flex items-center gap-3">
-						<i class="fas fa-exclamation-circle text-red-400 text-xl"></i>
+						<i aria-hidden="true" class="fas fa-exclamation-circle text-red-400 text-xl"></i>
 						<div>
 							<h3 class="text-white font-medium">Failed to load port data</h3>
 							<p class="text-gray-400 text-sm mt-1">{ data.Error }</p>
@@ -78,7 +78,7 @@ templ Ports(data PortsData) {
 			if len(data.Conflicts) > 0 {
 				<div class="bg-red-500/10 border border-red-500/20 rounded-lg p-4">
 					<div class="flex items-center gap-2 text-red-400 font-medium mb-3">
-						<i class="fas fa-exclamation-triangle"></i>
+						<i aria-hidden="true" class="fas fa-exclamation-triangle"></i>
 						<span>Port Conflicts Detected</span>
 					</div>
 					<div class="space-y-2">
@@ -145,13 +145,13 @@ templ Ports(data PortsData) {
 					<table class="table">
 						<thead>
 							<tr>
-								<th>Container</th>
-								<th>Internal</th>
-								<th>External</th>
-								<th>Protocol</th>
-								<th>Bind</th>
-								<th>Exposure</th>
-								<th>Actions</th>
+								<th scope="col">Container</th>
+								<th scope="col">Internal</th>
+								<th scope="col">External</th>
+								<th scope="col">Protocol</th>
+								<th scope="col">Bind</th>
+								<th scope="col">Exposure</th>
+								<th scope="col">Actions</th>
 							</tr>
 						</thead>
 						<tbody>

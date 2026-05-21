@@ -22,19 +22,6 @@ module.exports = {
           900: '#7d3318',
           950: '#441708',
         },
-        sand: {
-          50: '#faf8f1',
-          100: '#f4efde',
-          200: '#e8dcbc',
-          300: '#d9c492',
-          400: '#c9a86a',
-          500: '#bc8f4d',
-          600: '#ae7a41',
-          700: '#916137',
-          800: '#764f31',
-          900: '#61422b',
-          950: '#352115',
-        },
         dark: {
           500: '#30363d',
           600: '#21262d',
@@ -43,17 +30,15 @@ module.exports = {
           900: '#0a0a0f',
           950: '#050507',
         },
-        dune: {
-          sand: '#e6a23c',
-          light: '#d4a574',
-          surface: '#c9956a',
-          glow: '#4a9eff',
-        },
       },
       fontFamily: {
-        sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
-        display: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
-        mono: ['JetBrains Mono', 'Fira Code', 'monospace'],
+        // Keep these aligned with the @font-face declarations in
+        // web/static/vendor/fonts/fonts.css. base.templ and input.css
+        // both rely on these tokens — having them disagree silently
+        // breaks `font-sans`/`font-display`/`font-mono` classes.
+        sans: ['IBM Plex Sans', 'system-ui', '-apple-system', 'sans-serif'],
+        display: ['Space Grotesk', 'system-ui', '-apple-system', 'sans-serif'],
+        mono: ['IBM Plex Mono', 'ui-monospace', 'monospace'],
       },
       animation: {
         'fade-in': 'fadeIn 0.2s ease-out',

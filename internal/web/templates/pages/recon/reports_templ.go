@@ -50,12 +50,12 @@ func Reports(data ReportsData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			if len(data.Reports) == 0 {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<div class=\"card p-12 text-center\"><i class=\"fas fa-file-export text-4xl text-gray-500 mb-4\"></i><h3 class=\"text-lg font-medium text-white mb-2\">No Reports</h3><p class=\"text-gray-400\">Exports generated from a completed scan will appear here.</p></div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<div class=\"card p-12 text-center\"><i aria-hidden=\"true\" class=\"fas fa-file-export text-4xl text-gray-500 mb-4\"></i><h3 class=\"text-lg font-medium text-white mb-2\">No Reports</h3><p class=\"text-gray-400\">Exports generated from a completed scan will appear here.</p></div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			} else {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<div class=\"card overflow-hidden\"><table class=\"w-full text-sm\"><thead class=\"bg-dark-800 text-gray-400 text-xs uppercase tracking-wide\"><tr><th class=\"text-left px-4 py-3\">Target</th><th class=\"text-left px-4 py-3\">Format</th><th class=\"text-left px-4 py-3\">Size</th><th class=\"text-left px-4 py-3\">Created</th><th class=\"text-right px-4 py-3\">Download</th></tr></thead> <tbody class=\"divide-y divide-dark-700\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<div class=\"card overflow-hidden\"><table class=\"w-full text-sm\"><thead class=\"bg-dark-800 text-gray-400 text-xs uppercase tracking-wide\"><tr><th scope=\"col\" class=\"text-left px-4 py-3\">Target</th><th scope=\"col\" class=\"text-left px-4 py-3\">Format</th><th scope=\"col\" class=\"text-left px-4 py-3\">Size</th><th scope=\"col\" class=\"text-left px-4 py-3\">Created</th><th scope=\"col\" class=\"text-right px-4 py-3\">Download</th></tr></thead> <tbody class=\"divide-y divide-dark-700\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -125,7 +125,7 @@ func Reports(data ReportsData) templ.Component {
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "\" class=\"text-primary-400 hover:text-primary-300\"><i class=\"fas fa-download\"></i></a></td></tr>")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "\" class=\"text-primary-400 hover:text-primary-300\"><i aria-hidden=\"true\" class=\"fas fa-download\"></i></a></td></tr>")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}

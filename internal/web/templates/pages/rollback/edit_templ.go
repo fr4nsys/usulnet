@@ -67,7 +67,7 @@ func Edit(data EditData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "\" class=\"text-sm text-gray-400 hover:text-white\"><i class=\"fas fa-chevron-left mr-1\"></i>back to policy</a><h1 class=\"text-2xl font-display font-bold text-white mt-1\">Edit ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "\" class=\"text-sm text-gray-400 hover:text-white\"><i aria-hidden=\"true\" class=\"fas fa-chevron-left mr-1\"></i>back to policy</a><h1 class=\"text-2xl font-display font-bold text-white mt-1\">Edit ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

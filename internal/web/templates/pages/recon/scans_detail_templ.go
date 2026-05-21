@@ -48,7 +48,7 @@ func ScanDetail(data ScanDetailData) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"space-y-6\"><div><a href=\"/recon/scans\" class=\"text-xs text-primary-400 hover:underline\"><i class=\"fas fa-chevron-left mr-1\"></i>Back to scans</a><div class=\"flex items-center justify-between mt-1\"><div><h1 class=\"text-2xl font-display font-bold text-white\">Scan ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"space-y-6\"><div><a href=\"/recon/scans\" class=\"text-xs text-primary-400 hover:underline\"><i aria-hidden=\"true\" class=\"fas fa-chevron-left mr-1\"></i>Back to scans</a><div class=\"flex items-center justify-between mt-1\"><div><h1 class=\"text-2xl font-display font-bold text-white\">Scan ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -140,7 +140,7 @@ func ScanDetail(data ScanDetailData) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "\" hx-confirm=\"Cancel this scan?\"><i class=\"fas fa-stop mr-2\"></i>Cancel</button>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "\" hx-confirm=\"Cancel this scan?\"><i aria-hidden=\"true\" class=\"fas fa-stop mr-2\"></i>Cancel</button>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}

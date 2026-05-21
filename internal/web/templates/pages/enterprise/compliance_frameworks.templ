@@ -30,7 +30,7 @@ templ ComplianceFrameworks(data ComplianceFrameworksData) {
 						:disabled="seeding"
 						class="btn-secondary flex items-center gap-2"
 					>
-						<i class="fas fa-database" :class="seeding && 'animate-spin'"></i>
+						<i aria-hidden="true" class="fas fa-database" :class="seeding && 'animate-spin'"></i>
 						<span x-text="seeding ? 'Seeding...' : 'Seed Default Frameworks'"></span>
 					</button>
 				</div>
@@ -38,14 +38,14 @@ templ ComplianceFrameworks(data ComplianceFrameworksData) {
 
 			<!-- Loading State -->
 			<div x-show="loading" class="card p-12 text-center">
-				<i class="fas fa-spinner fa-spin text-2xl text-primary-400 mb-4"></i>
+				<i aria-hidden="true" class="fas fa-spinner fa-spin text-2xl text-primary-400 mb-4"></i>
 				<p class="text-gray-400">Loading compliance frameworks...</p>
 			</div>
 
 			<!-- Error State -->
 			<div x-show="error && !loading" x-cloak class="card border-l-4 border-l-red-500 p-4">
 				<div class="flex items-center gap-3">
-					<i class="fas fa-exclamation-circle text-red-400"></i>
+					<i aria-hidden="true" class="fas fa-exclamation-circle text-red-400"></i>
 					<div>
 						<h3 class="text-sm font-medium text-red-400">Failed to load frameworks</h3>
 						<p class="text-xs text-gray-400 mt-0.5" x-text="error"></p>
@@ -61,25 +61,25 @@ templ ComplianceFrameworks(data ComplianceFrameworksData) {
 					<button
 						@click="tab = 'frameworks'"
 						:class="tab === 'frameworks' ? 'border-primary-500 text-white' : 'border-transparent text-gray-400 hover:text-gray-300'"
-						class="px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors"
+						class="tab-underline"
 					>
-						<i class="fas fa-layer-group mr-2"></i>Frameworks
+						<i aria-hidden="true" class="fas fa-layer-group mr-2"></i>Frameworks
 						<span class="ml-1 px-1.5 py-0.5 text-xs bg-dark-600 rounded" x-text="frameworks.length"></span>
 					</button>
 					<button
 						@click="tab = 'assessments'; if (allAssessments.length === 0 && !loadingAssessments) fetchAllAssessments()"
 						:class="tab === 'assessments' ? 'border-primary-500 text-white' : 'border-transparent text-gray-400 hover:text-gray-300'"
-						class="px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors"
+						class="tab-underline"
 					>
-						<i class="fas fa-clipboard-check mr-2"></i>Assessments
+						<i aria-hidden="true" class="fas fa-clipboard-check mr-2"></i>Assessments
 						<span class="ml-1 px-1.5 py-0.5 text-xs bg-dark-600 rounded" x-text="allAssessments.length"></span>
 					</button>
 					<button
 						@click="tab = 'evidence'; if (evidenceList.length === 0 && selectedAssessmentForEvidence) fetchEvidence(selectedAssessmentForEvidence)"
 						:class="tab === 'evidence' ? 'border-primary-500 text-white' : 'border-transparent text-gray-400 hover:text-gray-300'"
-						class="px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors"
+						class="tab-underline"
 					>
-						<i class="fas fa-file-alt mr-2"></i>Evidence
+						<i aria-hidden="true" class="fas fa-file-alt mr-2"></i>Evidence
 						<span class="ml-1 px-1.5 py-0.5 text-xs bg-dark-600 rounded" x-text="evidenceList.length"></span>
 					</button>
 				</div>
@@ -93,7 +93,7 @@ templ ComplianceFrameworks(data ComplianceFrameworksData) {
 								<div class="flex items-start justify-between mb-4">
 									<div class="flex items-center gap-3">
 										<div class="w-10 h-10 rounded-lg flex items-center justify-center" :class="frameworkIconBg(fw.name)">
-											<i class="fas" :class="frameworkIcon(fw.name)"></i>
+											<i aria-hidden="true" class="fas" :class="frameworkIcon(fw.name)"></i>
 										</div>
 										<div>
 											<h3 class="font-medium text-white" x-text="fw.display_name || fw.name"></h3>
@@ -153,7 +153,7 @@ templ ComplianceFrameworks(data ComplianceFrameworksData) {
 										@click="openFrameworkDetail(fw)"
 										class="text-sm text-primary-400 hover:text-primary-300 transition-colors flex items-center gap-1 flex-1"
 									>
-										<i class="fas fa-list text-xs"></i>
+										<i aria-hidden="true" class="fas fa-list text-xs"></i>
 										Controls
 									</button>
 									<button
@@ -161,14 +161,14 @@ templ ComplianceFrameworks(data ComplianceFrameworksData) {
 										:disabled="fw._assessing"
 										class="text-sm text-green-400 hover:text-green-300 transition-colors flex items-center gap-1 flex-1"
 									>
-										<i class="fas fa-play text-xs" :class="fw._assessing && 'animate-spin'"></i>
+										<i aria-hidden="true" class="fas fa-play text-xs" :class="fw._assessing && 'animate-spin'"></i>
 										<span x-text="fw._assessing ? 'Running...' : 'Assess'"></span>
 									</button>
 									<button
 										@click="openAssessmentHistory(fw)"
 										class="text-sm text-gray-400 hover:text-gray-300 transition-colors flex items-center gap-1 flex-1"
 									>
-										<i class="fas fa-history text-xs"></i>
+										<i aria-hidden="true" class="fas fa-history text-xs"></i>
 										History
 									</button>
 								</div>
@@ -178,11 +178,11 @@ templ ComplianceFrameworks(data ComplianceFrameworksData) {
 
 					<!-- Empty State -->
 					<div x-show="frameworks.length === 0" x-cloak class="card p-12 text-center">
-						<i class="fas fa-balance-scale text-4xl text-gray-400 mb-4"></i>
+						<i aria-hidden="true" class="fas fa-balance-scale text-4xl text-gray-400 mb-4"></i>
 						<h3 class="text-lg font-medium text-white mb-2">No Compliance Frameworks</h3>
 						<p class="text-gray-400 mb-4">Seed default frameworks (SOC 2, HIPAA, PCI-DSS) to start compliance tracking</p>
 						<button @click="seedFrameworks()" :disabled="seeding" class="btn-primary">
-							<i class="fas fa-database mr-2"></i>Seed Default Frameworks
+							<i aria-hidden="true" class="fas fa-database mr-2"></i>Seed Default Frameworks
 						</button>
 					</div>
 				</div>
@@ -191,7 +191,7 @@ templ ComplianceFrameworks(data ComplianceFrameworksData) {
 				<div x-show="tab === 'assessments'" x-cloak class="space-y-4">
 					<!-- Assessments Loading -->
 					<div x-show="loadingAssessments" class="card p-8 text-center">
-						<i class="fas fa-spinner fa-spin text-xl text-gray-400 mb-2"></i>
+						<i aria-hidden="true" class="fas fa-spinner fa-spin text-xl text-gray-400 mb-2"></i>
 						<p class="text-sm text-gray-400">Loading assessments...</p>
 					</div>
 
@@ -200,13 +200,13 @@ templ ComplianceFrameworks(data ComplianceFrameworksData) {
 						<table class="w-full">
 							<thead>
 								<tr class="border-b border-dark-600">
-									<th class="text-left text-xs font-medium text-gray-400 uppercase px-4 py-3">Assessment</th>
-									<th class="text-left text-xs font-medium text-gray-400 uppercase px-4 py-3">Framework</th>
-									<th class="text-left text-xs font-medium text-gray-400 uppercase px-4 py-3">Status</th>
-									<th class="text-left text-xs font-medium text-gray-400 uppercase px-4 py-3">Score</th>
-									<th class="text-left text-xs font-medium text-gray-400 uppercase px-4 py-3">Controls</th>
-									<th class="text-left text-xs font-medium text-gray-400 uppercase px-4 py-3">Date</th>
-									<th class="text-left text-xs font-medium text-gray-400 uppercase px-4 py-3">Actions</th>
+									<th scope="col" class="text-left text-xs font-medium text-gray-400 uppercase px-4 py-3">Assessment</th>
+									<th scope="col" class="text-left text-xs font-medium text-gray-400 uppercase px-4 py-3">Framework</th>
+									<th scope="col" class="text-left text-xs font-medium text-gray-400 uppercase px-4 py-3">Status</th>
+									<th scope="col" class="text-left text-xs font-medium text-gray-400 uppercase px-4 py-3">Score</th>
+									<th scope="col" class="text-left text-xs font-medium text-gray-400 uppercase px-4 py-3">Controls</th>
+									<th scope="col" class="text-left text-xs font-medium text-gray-400 uppercase px-4 py-3">Date</th>
+									<th scope="col" class="text-left text-xs font-medium text-gray-400 uppercase px-4 py-3">Actions</th>
 								</tr>
 							</thead>
 							<tbody class="divide-y divide-dark-700">
@@ -243,28 +243,28 @@ templ ComplianceFrameworks(data ComplianceFrameworksData) {
 													class="p-1.5 text-gray-400 hover:text-primary-400 transition-colors"
 													title="View details"
 												>
-													<i class="fas fa-eye text-sm"></i>
+													<i aria-hidden="true" class="fas fa-eye text-sm"></i>
 												</button>
 												<button
 													@click="downloadReport(a.id, 'json')"
 													class="p-1.5 text-gray-400 hover:text-blue-400 transition-colors"
 													title="Download JSON report"
 												>
-													<i class="fas fa-file-code text-sm"></i>
+													<i aria-hidden="true" class="fas fa-file-code text-sm"></i>
 												</button>
 												<button
 													@click="downloadReport(a.id, 'html')"
 													class="p-1.5 text-gray-400 hover:text-green-400 transition-colors"
 													title="Download HTML report"
 												>
-													<i class="fas fa-file-alt text-sm"></i>
+													<i aria-hidden="true" class="fas fa-file-alt text-sm"></i>
 												</button>
 												<button
 													@click="selectedAssessmentForEvidence = a.id; tab = 'evidence'; fetchEvidence(a.id)"
 													class="p-1.5 text-gray-400 hover:text-yellow-400 transition-colors"
 													title="View evidence"
 												>
-													<i class="fas fa-folder-open text-sm"></i>
+													<i aria-hidden="true" class="fas fa-folder-open text-sm"></i>
 												</button>
 											</div>
 										</td>
@@ -276,7 +276,7 @@ templ ComplianceFrameworks(data ComplianceFrameworksData) {
 
 					<!-- Assessments Empty State -->
 					<div x-show="!loadingAssessments && allAssessments.length === 0" x-cloak class="card p-12 text-center">
-						<i class="fas fa-clipboard-check text-4xl text-gray-400 mb-4"></i>
+						<i aria-hidden="true" class="fas fa-clipboard-check text-4xl text-gray-400 mb-4"></i>
 						<h3 class="text-lg font-medium text-white mb-2">No Assessments</h3>
 						<p class="text-gray-400">Run an assessment from the Frameworks tab to evaluate your compliance posture</p>
 					</div>
@@ -299,14 +299,14 @@ templ ComplianceFrameworks(data ComplianceFrameworksData) {
 							@click="showAddEvidenceModal = true"
 							class="btn-primary flex items-center gap-2 text-sm"
 						>
-							<i class="fas fa-plus"></i>
+							<i aria-hidden="true" class="fas fa-plus"></i>
 							Add Evidence
 						</button>
 					</div>
 
 					<!-- Evidence Loading -->
 					<div x-show="loadingEvidence" class="card p-8 text-center">
-						<i class="fas fa-spinner fa-spin text-xl text-gray-400 mb-2"></i>
+						<i aria-hidden="true" class="fas fa-spinner fa-spin text-xl text-gray-400 mb-2"></i>
 						<p class="text-sm text-gray-400">Loading evidence...</p>
 					</div>
 
@@ -315,11 +315,11 @@ templ ComplianceFrameworks(data ComplianceFrameworksData) {
 						<table class="w-full">
 							<thead>
 								<tr class="border-b border-dark-600">
-									<th class="text-left text-xs font-medium text-gray-400 uppercase px-4 py-3">Title</th>
-									<th class="text-left text-xs font-medium text-gray-400 uppercase px-4 py-3">Control</th>
-									<th class="text-left text-xs font-medium text-gray-400 uppercase px-4 py-3">Type</th>
-									<th class="text-left text-xs font-medium text-gray-400 uppercase px-4 py-3">Status</th>
-									<th class="text-left text-xs font-medium text-gray-400 uppercase px-4 py-3">Collected</th>
+									<th scope="col" class="text-left text-xs font-medium text-gray-400 uppercase px-4 py-3">Title</th>
+									<th scope="col" class="text-left text-xs font-medium text-gray-400 uppercase px-4 py-3">Control</th>
+									<th scope="col" class="text-left text-xs font-medium text-gray-400 uppercase px-4 py-3">Type</th>
+									<th scope="col" class="text-left text-xs font-medium text-gray-400 uppercase px-4 py-3">Status</th>
+									<th scope="col" class="text-left text-xs font-medium text-gray-400 uppercase px-4 py-3">Collected</th>
 								</tr>
 							</thead>
 							<tbody class="divide-y divide-dark-700">
@@ -349,16 +349,16 @@ templ ComplianceFrameworks(data ComplianceFrameworksData) {
 
 					<!-- Evidence Empty State -->
 					<div x-show="!loadingEvidence && evidenceList.length === 0 && selectedAssessmentForEvidence" x-cloak class="card p-12 text-center">
-						<i class="fas fa-file-alt text-4xl text-gray-400 mb-4"></i>
+						<i aria-hidden="true" class="fas fa-file-alt text-4xl text-gray-400 mb-4"></i>
 						<h3 class="text-lg font-medium text-white mb-2">No Evidence</h3>
 						<p class="text-gray-400 mb-4">No evidence has been collected for this assessment yet</p>
 						<button @click="showAddEvidenceModal = true" class="btn-primary">
-							<i class="fas fa-plus mr-2"></i>Add Evidence
+							<i aria-hidden="true" class="fas fa-plus mr-2"></i>Add Evidence
 						</button>
 					</div>
 
 					<div x-show="!selectedAssessmentForEvidence" x-cloak class="card p-12 text-center">
-						<i class="fas fa-arrow-up text-4xl text-gray-400 mb-4"></i>
+						<i aria-hidden="true" class="fas fa-arrow-up text-4xl text-gray-400 mb-4"></i>
 						<h3 class="text-lg font-medium text-white mb-2">Select an Assessment</h3>
 						<p class="text-gray-400">Choose an assessment from the dropdown to view or add evidence</p>
 					</div>
@@ -374,13 +374,13 @@ templ ComplianceFrameworks(data ComplianceFrameworksData) {
 							<p class="text-sm text-gray-400 mt-0.5" x-text="controls.length + ' controls'"></p>
 						</div>
 						<button @click="showControlsModal = false" class="text-gray-400 hover:text-white">
-							<i class="fas fa-times"></i>
+							<i aria-hidden="true" class="fas fa-times"></i>
 						</button>
 					</div>
 					<div class="p-6 overflow-y-auto flex-1 space-y-4">
 						<!-- Controls Loading -->
 						<div x-show="loadingControls" class="p-8 text-center">
-							<i class="fas fa-spinner fa-spin text-xl text-gray-400 mb-2"></i>
+							<i aria-hidden="true" class="fas fa-spinner fa-spin text-xl text-gray-400 mb-2"></i>
 							<p class="text-sm text-gray-400">Loading controls...</p>
 						</div>
 
@@ -408,11 +408,11 @@ templ ComplianceFrameworks(data ComplianceFrameworksData) {
 							<table class="w-full">
 								<thead>
 									<tr class="border-b border-dark-600 bg-dark-900/50">
-										<th class="text-left text-xs font-medium text-gray-400 uppercase px-4 py-3">Control ID</th>
-										<th class="text-left text-xs font-medium text-gray-400 uppercase px-4 py-3">Title</th>
-										<th class="text-left text-xs font-medium text-gray-400 uppercase px-4 py-3">Category</th>
-										<th class="text-left text-xs font-medium text-gray-400 uppercase px-4 py-3">Severity</th>
-										<th class="text-left text-xs font-medium text-gray-400 uppercase px-4 py-3">Status</th>
+										<th scope="col" class="text-left text-xs font-medium text-gray-400 uppercase px-4 py-3">Control ID</th>
+										<th scope="col" class="text-left text-xs font-medium text-gray-400 uppercase px-4 py-3">Title</th>
+										<th scope="col" class="text-left text-xs font-medium text-gray-400 uppercase px-4 py-3">Category</th>
+										<th scope="col" class="text-left text-xs font-medium text-gray-400 uppercase px-4 py-3">Severity</th>
+										<th scope="col" class="text-left text-xs font-medium text-gray-400 uppercase px-4 py-3">Status</th>
 									</tr>
 								</thead>
 								<tbody class="divide-y divide-dark-700">
@@ -453,7 +453,7 @@ templ ComplianceFrameworks(data ComplianceFrameworksData) {
 
 						<!-- Controls Empty -->
 						<div x-show="!loadingControls && controls.length === 0" x-cloak class="p-8 text-center">
-							<i class="fas fa-list text-2xl text-gray-400 mb-2"></i>
+							<i aria-hidden="true" class="fas fa-list text-2xl text-gray-400 mb-2"></i>
 							<p class="text-sm text-gray-400">No controls found for this framework</p>
 						</div>
 					</div>
@@ -469,13 +469,13 @@ templ ComplianceFrameworks(data ComplianceFrameworksData) {
 							<p class="text-sm text-gray-400 mt-0.5" x-text="historyAssessments.length + ' assessments'"></p>
 						</div>
 						<button @click="showHistoryModal = false" class="text-gray-400 hover:text-white">
-							<i class="fas fa-times"></i>
+							<i aria-hidden="true" class="fas fa-times"></i>
 						</button>
 					</div>
 					<div class="p-6 overflow-y-auto flex-1">
 						<!-- History Loading -->
 						<div x-show="loadingHistory" class="p-8 text-center">
-							<i class="fas fa-spinner fa-spin text-xl text-gray-400 mb-2"></i>
+							<i aria-hidden="true" class="fas fa-spinner fa-spin text-xl text-gray-400 mb-2"></i>
 							<p class="text-sm text-gray-400">Loading assessment history...</p>
 						</div>
 
@@ -484,11 +484,11 @@ templ ComplianceFrameworks(data ComplianceFrameworksData) {
 							<table class="w-full">
 								<thead>
 									<tr class="border-b border-dark-600 bg-dark-900/50">
-										<th class="text-left text-xs font-medium text-gray-400 uppercase px-4 py-3">Name</th>
-										<th class="text-left text-xs font-medium text-gray-400 uppercase px-4 py-3">Score</th>
-										<th class="text-left text-xs font-medium text-gray-400 uppercase px-4 py-3">Passed / Failed</th>
-										<th class="text-left text-xs font-medium text-gray-400 uppercase px-4 py-3">Date</th>
-										<th class="text-left text-xs font-medium text-gray-400 uppercase px-4 py-3">Report</th>
+										<th scope="col" class="text-left text-xs font-medium text-gray-400 uppercase px-4 py-3">Name</th>
+										<th scope="col" class="text-left text-xs font-medium text-gray-400 uppercase px-4 py-3">Score</th>
+										<th scope="col" class="text-left text-xs font-medium text-gray-400 uppercase px-4 py-3">Passed / Failed</th>
+										<th scope="col" class="text-left text-xs font-medium text-gray-400 uppercase px-4 py-3">Date</th>
+										<th scope="col" class="text-left text-xs font-medium text-gray-400 uppercase px-4 py-3">Report</th>
 									</tr>
 								</thead>
 								<tbody class="divide-y divide-dark-700">
@@ -514,14 +514,14 @@ templ ComplianceFrameworks(data ComplianceFrameworksData) {
 														class="p-1.5 text-gray-400 hover:text-blue-400 transition-colors"
 														title="JSON report"
 													>
-														<i class="fas fa-file-code text-sm"></i>
+														<i aria-hidden="true" class="fas fa-file-code text-sm"></i>
 													</button>
 													<button
 														@click="downloadReport(a.id, 'html')"
 														class="p-1.5 text-gray-400 hover:text-green-400 transition-colors"
 														title="HTML report"
 													>
-														<i class="fas fa-file-alt text-sm"></i>
+														<i aria-hidden="true" class="fas fa-file-alt text-sm"></i>
 													</button>
 												</div>
 											</td>
@@ -533,7 +533,7 @@ templ ComplianceFrameworks(data ComplianceFrameworksData) {
 
 						<!-- History Empty -->
 						<div x-show="!loadingHistory && historyAssessments.length === 0" x-cloak class="p-8 text-center">
-							<i class="fas fa-history text-2xl text-gray-400 mb-2"></i>
+							<i aria-hidden="true" class="fas fa-history text-2xl text-gray-400 mb-2"></i>
 							<p class="text-sm text-gray-400">No assessments have been run for this framework yet</p>
 						</div>
 					</div>
@@ -549,7 +549,7 @@ templ ComplianceFrameworks(data ComplianceFrameworksData) {
 							<p class="text-sm text-gray-400 mt-0.5" x-text="'Framework: ' + frameworkNameById(detailAssessment ? detailAssessment.framework_id : null)"></p>
 						</div>
 						<button @click="showDetailModal = false" class="text-gray-400 hover:text-white">
-							<i class="fas fa-times"></i>
+							<i aria-hidden="true" class="fas fa-times"></i>
 						</button>
 					</div>
 					<div class="p-6 overflow-y-auto flex-1 space-y-6">
@@ -609,7 +609,7 @@ templ ComplianceFrameworks(data ComplianceFrameworksData) {
 												<span class="text-sm text-white font-mono" x-text="result.control_id || ('Control ' + (idx + 1))"></span>
 												<span class="text-sm text-gray-400" x-text="result.title || ''"></span>
 											</div>
-											<i class="fas text-gray-500 text-xs" :class="result._open ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
+											<i aria-hidden="true" class="fas text-gray-500 text-xs" :class="result._open ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
 										</button>
 										<div x-show="result._open" x-cloak class="px-4 py-3 border-t border-dark-700 bg-dark-900/50">
 											<div class="grid grid-cols-2 gap-4 text-sm">
@@ -653,7 +653,7 @@ templ ComplianceFrameworks(data ComplianceFrameworksData) {
 					<div class="flex items-center justify-between p-6 border-b border-dark-600">
 						<h2 class="text-lg font-display font-bold text-white">Add Evidence</h2>
 						<button @click="showAddEvidenceModal = false" class="text-gray-400 hover:text-white">
-							<i class="fas fa-times"></i>
+							<i aria-hidden="true" class="fas fa-times"></i>
 						</button>
 					</div>
 					<div class="p-6 space-y-4">
@@ -664,6 +664,7 @@ templ ComplianceFrameworks(data ComplianceFrameworksData) {
 								x-model="newEvidence.title"
 								class="input w-full"
 								placeholder="Evidence title"
+								aria-label="Title"
 							/>
 						</div>
 						<div>
@@ -673,6 +674,7 @@ templ ComplianceFrameworks(data ComplianceFrameworksData) {
 								x-model="newEvidence.control_id"
 								class="input w-full font-mono"
 								placeholder="e.g. SOC2-CC6.1"
+								aria-label="Control ID"
 							/>
 						</div>
 						<div>
@@ -710,7 +712,7 @@ templ ComplianceFrameworks(data ComplianceFrameworksData) {
 								:disabled="!newEvidence.title.trim() || addingEvidence"
 								class="btn-primary disabled:opacity-50"
 							>
-								<i class="fas fa-plus mr-2" :class="addingEvidence && 'animate-spin'"></i>
+								<i aria-hidden="true" class="fas fa-plus mr-2" :class="addingEvidence && 'animate-spin'"></i>
 								<span x-text="addingEvidence ? 'Adding...' : 'Add Evidence'"></span>
 							</button>
 						</div>

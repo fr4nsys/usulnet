@@ -5,7 +5,7 @@ package components
 templ HostBadge(hostName string) {
 	if hostName != "" && hostName != "Local" {
 		<span class="px-2.5 py-1 rounded-full text-xs font-medium bg-primary-500/20 text-primary-400 border border-primary-500/30">
-			<i class="fas fa-server mr-1"></i>{ hostName }
+			<i aria-hidden="true" class="fas fa-server mr-1"></i>{ hostName }
 		</span>
 	}
 }

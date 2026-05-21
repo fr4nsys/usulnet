@@ -68,10 +68,10 @@ templ LogManagement(data LogManagementData) {
 						onclick="document.getElementById('upload-modal').classList.remove('hidden')"
 						class="btn-secondary"
 					>
-						<i class="fas fa-upload mr-2"></i>Upload Logs
+						<i aria-hidden="true" class="fas fa-upload mr-2"></i>Upload Logs
 					</button>
 					<a href="/logs" class="btn-primary">
-						<i class="fas fa-stream mr-2"></i>Live Stream
+						<i aria-hidden="true" class="fas fa-stream mr-2"></i>Live Stream
 					</a>
 				</div>
 			</div>
@@ -84,7 +84,7 @@ templ LogManagement(data LogManagementData) {
 						templ.KV("border-primary-400 text-primary-400", data.Tab == "aggregation" || data.Tab == ""),
 						templ.KV("border-transparent text-gray-400 hover:text-white", data.Tab != "aggregation" && data.Tab != "") }
 				>
-					<i class="fas fa-chart-bar mr-2"></i>Aggregation
+					<i aria-hidden="true" class="fas fa-chart-bar mr-2"></i>Aggregation
 				</a>
 				<a
 					href="/logs/management?tab=patterns"
@@ -92,7 +92,7 @@ templ LogManagement(data LogManagementData) {
 						templ.KV("border-primary-400 text-primary-400", data.Tab == "patterns"),
 						templ.KV("border-transparent text-gray-400 hover:text-white", data.Tab != "patterns") }
 				>
-					<i class="fas fa-exclamation-triangle mr-2"></i>Error Patterns ({ fmt.Sprintf("%d", len(data.Patterns)) })
+					<i aria-hidden="true" class="fas fa-exclamation-triangle mr-2"></i>Error Patterns ({ fmt.Sprintf("%d", len(data.Patterns)) })
 				</a>
 				<a
 					href="/logs/management?tab=uploads"
@@ -100,7 +100,7 @@ templ LogManagement(data LogManagementData) {
 						templ.KV("border-primary-400 text-primary-400", data.Tab == "uploads"),
 						templ.KV("border-transparent text-gray-400 hover:text-white", data.Tab != "uploads") }
 				>
-					<i class="fas fa-file-upload mr-2"></i>Uploaded Logs ({ fmt.Sprintf("%d", len(data.Uploads)) })
+					<i aria-hidden="true" class="fas fa-file-upload mr-2"></i>Uploaded Logs ({ fmt.Sprintf("%d", len(data.Uploads)) })
 				</a>
 				<a
 					href="/logs/management?tab=search"
@@ -108,7 +108,7 @@ templ LogManagement(data LogManagementData) {
 						templ.KV("border-primary-400 text-primary-400", data.Tab == "search"),
 						templ.KV("border-transparent text-gray-400 hover:text-white", data.Tab != "search") }
 				>
-					<i class="fas fa-search mr-2"></i>Search
+					<i aria-hidden="true" class="fas fa-search mr-2"></i>Search
 				</a>
 			</div>
 
@@ -165,7 +165,7 @@ templ aggregationTab(data LogManagementData) {
 		<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
 			<div class="card p-6">
 				<h3 class="text-lg font-semibold text-white mb-4">
-					<i class="fas fa-chart-pie text-primary-400 mr-2"></i>Severity Distribution
+					<i aria-hidden="true" class="fas fa-chart-pie text-primary-400 mr-2"></i>Severity Distribution
 				</h3>
 				<div class="space-y-3">
 					@severityBar("Critical", data.Aggregation.BySeverity["critical"], data.Aggregation.TotalLogs, "bg-red-600")
@@ -178,7 +178,7 @@ templ aggregationTab(data LogManagementData) {
 
 			<div class="card p-6">
 				<h3 class="text-lg font-semibold text-white mb-4">
-					<i class="fas fa-server text-primary-400 mr-2"></i>Top Sources
+					<i aria-hidden="true" class="fas fa-server text-primary-400 mr-2"></i>Top Sources
 				</h3>
 				<div class="space-y-2">
 					for source, count := range data.Aggregation.BySource {
@@ -198,18 +198,18 @@ templ aggregationTab(data LogManagementData) {
 		<div class="card">
 			<div class="p-4 border-b border-dark-600">
 				<h3 class="text-lg font-semibold text-white">
-					<i class="fas fa-bug text-red-400 mr-2"></i>Top Error Patterns
+					<i aria-hidden="true" class="fas fa-bug text-red-400 mr-2"></i>Top Error Patterns
 				</h3>
 			</div>
 			<div class="overflow-x-auto">
 				<table class="table">
 					<thead>
 						<tr>
-							<th>Pattern</th>
-							<th>Type</th>
-							<th>Count</th>
-							<th>Last Seen</th>
-							<th>Actions</th>
+							<th scope="col">Pattern</th>
+							<th scope="col">Type</th>
+							<th scope="col">Count</th>
+							<th scope="col">Last Seen</th>
+							<th scope="col">Actions</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -309,19 +309,19 @@ templ patternsTab(data LogManagementData) {
 				<table class="table">
 					<thead>
 						<tr>
-							<th>Error Pattern</th>
-							<th>Type</th>
-							<th>Severity</th>
-							<th>Occurrences</th>
-							<th>Sources</th>
-							<th>Time Range</th>
+							<th scope="col">Error Pattern</th>
+							<th scope="col">Type</th>
+							<th scope="col">Severity</th>
+							<th scope="col">Occurrences</th>
+							<th scope="col">Sources</th>
+							<th scope="col">Time Range</th>
 						</tr>
 					</thead>
 					<tbody>
 						if len(data.Patterns) == 0 {
 							<tr>
 								<td colspan="6" class="text-center text-gray-500 py-8">
-									<i class="fas fa-check-circle text-green-400 text-2xl mb-2"></i>
+									<i aria-hidden="true" class="fas fa-check-circle text-green-400 text-2xl mb-2"></i>
 									<p>No error patterns detected</p>
 								</td>
 							</tr>
@@ -375,7 +375,7 @@ templ uploadsTab(data LogManagementData) {
 		<!-- Upload Area -->
 		<div class="card p-8 border-2 border-dashed border-dark-500 hover:border-primary-500/50 transition-colors">
 			<div class="text-center">
-				<i class="fas fa-cloud-upload-alt text-4xl text-gray-500 mb-4"></i>
+				<i aria-hidden="true" class="fas fa-cloud-upload-alt text-4xl text-gray-500 mb-4"></i>
 				<h3 class="text-lg font-medium text-white mb-2">Upload Log Files</h3>
 				<p class="text-gray-400 text-sm mb-4">
 					Drag and drop log files here, or click to browse.
@@ -385,7 +385,7 @@ templ uploadsTab(data LogManagementData) {
 					onclick="document.getElementById('upload-modal').classList.remove('hidden')"
 					class="btn-primary"
 				>
-					<i class="fas fa-upload mr-2"></i>Select Files
+					<i aria-hidden="true" class="fas fa-upload mr-2"></i>Select Files
 				</button>
 			</div>
 		</div>
@@ -399,13 +399,13 @@ templ uploadsTab(data LogManagementData) {
 				<table class="table">
 					<thead>
 						<tr>
-							<th>Filename</th>
-							<th>Format</th>
-							<th>Lines</th>
-							<th>Errors</th>
-							<th>Size</th>
-							<th>Uploaded</th>
-							<th>Actions</th>
+							<th scope="col">Filename</th>
+							<th scope="col">Format</th>
+							<th scope="col">Lines</th>
+							<th scope="col">Errors</th>
+							<th scope="col">Size</th>
+							<th scope="col">Uploaded</th>
+							<th scope="col">Actions</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -486,6 +486,7 @@ templ searchTab(data LogManagementData) {
 							x-model="query"
 							class="input"
 							placeholder="Enter search terms, regex, or field:value..."
+							aria-label="Search Query"
 						/>
 					</div>
 					<div>
@@ -534,7 +535,7 @@ templ searchTab(data LogManagementData) {
 					</div>
 					<div class="flex items-end">
 						<button type="submit" class="btn-primary w-full">
-							<i class="fas fa-search mr-2"></i>Search
+							<i aria-hidden="true" class="fas fa-search mr-2"></i>Search
 						</button>
 					</div>
 				</div>
@@ -552,20 +553,20 @@ templ searchTab(data LogManagementData) {
 				</h3>
 				<div class="flex items-center gap-2">
 					<button @click="exportResults()" x-show="results.length > 0" class="btn-sm btn-secondary">
-						<i class="fas fa-download mr-1"></i>Export
+						<i aria-hidden="true" class="fas fa-download mr-1"></i>Export
 					</button>
 				</div>
 			</div>
 			<div class="divide-y divide-dark-600 max-h-[600px] overflow-y-auto" id="search-results">
 				<template x-if="loading">
 					<div class="p-8 text-center text-gray-500">
-						<i class="fas fa-spinner fa-spin text-2xl mb-2"></i>
+						<i aria-hidden="true" class="fas fa-spinner fa-spin text-2xl mb-2"></i>
 						<p>Searching...</p>
 					</div>
 				</template>
 				<template x-if="!loading && results.length === 0">
 					<div class="p-8 text-center text-gray-500">
-						<i class="fas fa-search text-2xl mb-2"></i>
+						<i aria-hidden="true" class="fas fa-search text-2xl mb-2"></i>
 						<p>No results. Try adjusting your search criteria.</p>
 					</div>
 				</template>
@@ -669,14 +670,14 @@ templ uploadModal(csrfToken string) {
 	<div id="upload-modal" class="hidden fixed inset-0 z-50 overflow-y-auto">
 		<div class="fixed inset-0 bg-black/50" onclick="document.getElementById('upload-modal').classList.add('hidden')"></div>
 		<div class="relative min-h-screen flex items-center justify-center p-4">
-			<div class="relative bg-dark-800 rounded-xl border border-dark-600 max-w-lg w-full p-6">
+			<div class="relative card max-w-lg w-full p-6">
 				<div class="flex items-center justify-between mb-6">
 					<h2 class="text-xl font-display font-bold text-white">Upload Log File</h2>
 					<button
 						onclick="document.getElementById('upload-modal').classList.add('hidden')"
 						class="text-gray-400 hover:text-white"
 					>
-						<i class="fas fa-times"></i>
+						<i aria-hidden="true" class="fas fa-times"></i>
 					</button>
 				</div>
 
@@ -691,13 +692,14 @@ templ uploadModal(csrfToken string) {
 							required
 							accept=".log,.txt,.json,.gz,.tar.gz,.zip"
 							class="input file:mr-4 file:py-1 file:px-3 file:rounded-lg file:border-0 file:bg-primary-500 file:text-black file:font-medium file:cursor-pointer"
+							aria-label="Log File"
 						/>
 						<p class="text-xs text-gray-500 mt-1">Max file size: 100MB. Supported: .log, .txt, .json, .gz, .tar.gz, .zip</p>
 					</div>
 
 					<div>
 						<label class="block text-sm font-medium text-gray-300 mb-2">Description (optional)</label>
-						<input type="text" name="description" class="input" placeholder="e.g. Production server logs from incident"/>
+						<input type="text" name="description" class="input" placeholder="e.g. Production server logs from incident" aria-label="e.g. Production server logs from incident"/>
 					</div>
 
 					<div class="grid grid-cols-2 gap-4">
@@ -733,7 +735,7 @@ templ uploadModal(csrfToken string) {
 							Cancel
 						</button>
 						<button type="submit" class="btn-primary">
-							<i class="fas fa-upload mr-2"></i>Upload & Analyze
+							<i aria-hidden="true" class="fas fa-upload mr-2"></i>Upload & Analyze
 						</button>
 					</div>
 				</form>

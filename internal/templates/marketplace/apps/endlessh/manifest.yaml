@@ -1,0 +1,45 @@
+slug: endlessh
+name: Endlessh
+description: SSH tarpit that traps brute-force clients in an endless slow banner instead of a real shell.
+long_description: |
+  Endlessh is a tiny SSH tarpit by Christopher Wellons. It speaks
+  just enough of the SSH protocol to make a connecting client keep
+  reading bytes — it sends a slowly-trickling fake banner, one line
+  every few seconds, forever. There is no auth, no shell, no actual
+  SSH service. Most automated SSH brute-forcers wait for the banner
+  to finish before they start credential probing, so endlessh ties
+  up their workers without producing logs anyone has to triage.
+
+  Image: lscr.io/linuxserver/endlessh (GPL-3.0-or-later). Use as the
+  default :22 sink on hosts that don't actually need to accept SSH
+  from the public internet — point your real sshd at a non-standard
+  high port and let endlessh waste the scrapers' time.
+category: security
+icon: fa-clock
+icon_color: "#5d6d7e"
+version: "1.1"
+manifest_version: 1
+website: https://nullprogram.com/blog/2019/03/22/
+source: https://github.com/skeeto/endlessh
+author: usulnet contributors
+license: GPL-3.0-or-later
+tags:
+  - honeypot
+  - tarpit
+  - ssh
+min_memory_mb: 32
+min_cpu_cores: 0.1
+is_official: true
+is_verified: true
+featured: false
+fields:
+  - key: SSH_PORT
+    label: Tarpit port
+    description: |
+      Host port the tarpit listens on. Default 2222 to avoid clashing
+      with a real sshd; point your firewall/NAT at this if you want
+      external port 22 to land in the tarpit.
+    type: text
+    default: "2222"
+    required: true
+    placeholder: "2222"

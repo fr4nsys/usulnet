@@ -88,7 +88,7 @@ templ AuditList(data AuditListData) {
 				</div>
 				<div class="flex items-center gap-2">
 					if data.Connected {
-						<span class="badge badge-success"><i class="fas fa-link mr-1"></i>Connected</span>
+						<span class="badge badge-success"><i aria-hidden="true" class="fas fa-link mr-1"></i>Connected</span>
 					}
 				</div>
 			</div>
@@ -117,11 +117,11 @@ templ AuditList(data AuditListData) {
 							<table class="table">
 								<thead>
 									<tr>
-										<th>Time</th>
-										<th>Operation</th>
-										<th>Resource</th>
-										<th>Name</th>
-										<th>User</th>
+										<th scope="col">Time</th>
+										<th scope="col">Operation</th>
+										<th scope="col">Resource</th>
+										<th scope="col">Name</th>
+										<th scope="col">User</th>
 									</tr>
 								</thead>
 								<tbody>
@@ -161,7 +161,7 @@ templ AuditList(data AuditListData) {
 						<div class="flex items-center justify-center gap-2">
 							if data.Page > 1 {
 								<a href={ templ.SafeURL(fmt.Sprintf("/proxy/audit?page=%d&filter=%s", data.Page-1, data.Filter)) } class="btn-secondary text-sm">
-									<i class="fas fa-chevron-left mr-1"></i>Previous
+									<i aria-hidden="true" class="fas fa-chevron-left mr-1"></i>Previous
 								</a>
 							}
 							<span class="text-sm text-gray-400">
@@ -169,24 +169,24 @@ templ AuditList(data AuditListData) {
 							</span>
 							if data.Page < data.TotalPages {
 								<a href={ templ.SafeURL(fmt.Sprintf("/proxy/audit?page=%d&filter=%s", data.Page+1, data.Filter)) } class="btn-secondary text-sm">
-									Next<i class="fas fa-chevron-right ml-1"></i>
+									Next<i aria-hidden="true" class="fas fa-chevron-right ml-1"></i>
 								</a>
 							}
 						</div>
 					}
 				} else {
 					<div class="card p-8 text-center">
-						<i class="fas fa-history text-4xl text-gray-400 mb-4"></i>
+						<i aria-hidden="true" class="fas fa-history text-4xl text-gray-400 mb-4"></i>
 						<h3 class="text-lg font-medium text-white mb-2">No audit entries</h3>
 						<p class="text-gray-400">Operations on proxy resources will appear here.</p>
 					</div>
 				}
 			} else {
 				<div class="card p-8 text-center">
-					<i class="fas fa-plug text-4xl text-gray-400 mb-4"></i>
+					<i aria-hidden="true" class="fas fa-plug text-4xl text-gray-400 mb-4"></i>
 					<h3 class="text-lg font-medium text-white mb-2">NPM Not Connected</h3>
 					<p class="text-gray-400 mb-4">Connect to NPM first.</p>
-					<a href="/proxy/setup" class="btn-primary"><i class="fas fa-link mr-2"></i>Setup Connection</a>
+					<a href="/proxy/setup" class="btn-primary"><i aria-hidden="true" class="fas fa-link mr-2"></i>Setup Connection</a>
 				</div>
 			}
 		</div>

@@ -1,0 +1,86 @@
+# Smoke E2E gate (Tier 0 / session 01 of the v26.5.2 plan).
+#
+# Brings up the canonical docker-compose stack with the e2e overlay
+# against a freshly built image, logs in as the bootstrap admin, walks
+# every route in the sidebar, and asserts no panic in the container
+# log. Exists because the v26.5.1 image shipped to Docker Hub with a
+# chi-router panic that crash-looped the binary on first boot — the
+# class of bug that no unit test catches but a single curl would have.
+#
+# Runs on every PR and every push to main. The release / image-publish
+# workflow that ships to Docker Hub should `needs: smoke-e2e` so a
+# crash-looping binary never publishes again.
+
+name: smoke-e2e
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: smoke-e2e-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  smoke:
+    name: smoke
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          check-latest: true
+          cache: true
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Run smoke E2E
+        run: make smoke-e2e
+
+      - name: Dump container logs on failure
+        if: failure()
+        run: |
+          echo "::group::usulnet logs"
+          docker compose \
+            -p usulnet-smoke-e2e \
+            -f docker-compose.yml \
+            -f docker-compose.e2e.yml \
+            logs --no-color usulnet || true
+          echo "::endgroup::"
+          echo "::group::postgres logs"
+          docker compose \
+            -p usulnet-smoke-e2e \
+            -f docker-compose.yml \
+            -f docker-compose.e2e.yml \
+            logs --no-color postgres || true
+          echo "::endgroup::"
+
+      - name: Upload container logs as artifact
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: smoke-e2e-logs
+          path: |
+            /tmp/usulnet-smoke-*.log
+          if-no-files-found: ignore
+          retention-days: 7
+
+      - name: Always tear down
+        if: always()
+        run: |
+          docker compose \
+            -p usulnet-smoke-e2e \
+            -f docker-compose.yml \
+            -f docker-compose.e2e.yml \
+            down -v --remove-orphans || true

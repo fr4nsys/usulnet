@@ -39,6 +39,7 @@ import (
 	capturesvc "github.com/fr4nsys/usulnet/internal/services/capture"
 	containersvc "github.com/fr4nsys/usulnet/internal/services/container"
 	crontabsvc "github.com/fr4nsys/usulnet/internal/services/crontab"
+	egresssvc "github.com/fr4nsys/usulnet/internal/services/egress"
 	hostsvc "github.com/fr4nsys/usulnet/internal/services/host"
 	notificationsvc "github.com/fr4nsys/usulnet/internal/services/notification"
 	wireguardsvc "github.com/fr4nsys/usulnet/internal/services/wireguard"
@@ -64,6 +65,7 @@ type Application struct {
 	backupVerifyService *backupverifysvc.Service
 	rollbackEventWorker *workers.RollbackEventWorker
 	wireguardService    *wireguardsvc.Service
+	egressProxy         *egresssvc.Proxy
 
 	// License provider (background goroutine).
 	licenseProvider *licensepkg.Provider
@@ -332,6 +334,13 @@ func (app *Application) shutdown(ctx context.Context) error {
 			app.Logger.Error("Error stopping crontab service", "error", err)
 		} else {
 			app.Logger.Info("Crontab service stopped")
+		}
+	}
+	if app.egressProxy != nil {
+		if err := app.egressProxy.Stop(ctx); err != nil {
+			app.Logger.Error("Error stopping egress proxy", "error", err)
+		} else {
+			app.Logger.Info("Egress proxy stopped")
 		}
 	}
 	if app.rollbackEventWorker != nil {

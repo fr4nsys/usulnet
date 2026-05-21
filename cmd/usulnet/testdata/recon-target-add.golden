@@ -1,13 +1,26 @@
-Create a recon target (email|phone|username|domain|ip|ip_range)
+Register a new recon target.
+
+<type> must be one of: email, phone, username, domain, ip, ip_range.
+<value> is the literal identifier (e.g. me@example.com, 192.168.1.1).
+
+Once registered the target must be verified (recon target verify)
+before scans can be queued against it.
 
 Usage:
   usulnet recon target add <type> <value> [flags]
+
+Examples:
+  usulnet recon target add email me@example.com
+  usulnet recon target add domain example.com
+  usulnet recon target add ip 192.168.1.1 --output json
 
 Flags:
   -h, --help   help for add
 
 Global Flags:
   -c, --config string   config file path (default: /etc/usulnet/config.yaml or ./config.yaml)
+      --json            shortcut for --output json (overrides --output)
       --output string   output format: table|json|yaml (default "table")
+  -q, --quiet           suppress informational output (errors and primary data still print)
       --server string   usulnet API URL (default $USULNET_API_URL)
       --token string    API token (default $USULNET_API_TOKEN)

@@ -428,17 +428,13 @@ func (s *Service) loadExtendedData(ctx context.Context) (*ExtendedSyncData, erro
 		data.Streams = streams
 	}
 	if s.locations != nil {
-		hosts, err := s.hosts.ListAll(ctx, false)
+		grouped, err := s.locations.ListAllGrouped(ctx)
 		if err != nil {
-			return nil, fmt.Errorf("load hosts for locations: %w", err)
+			return nil, fmt.Errorf("load proxy locations: %w", err)
 		}
-		for _, h := range hosts {
-			locs, err := s.locations.ListByHost(ctx, h.ID)
-			if err != nil {
-				return nil, fmt.Errorf("load locations for proxy host %s: %w", h.ID, err)
-			}
+		for hostID, locs := range grouped {
 			if len(locs) > 0 {
-				data.Locations[h.ID] = locs
+				data.Locations[hostID] = locs
 			}
 		}
 	}

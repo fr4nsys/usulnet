@@ -81,7 +81,7 @@ templ Lifecycle(data LifecycleData) {
 					onclick="document.getElementById('createPolicyModal').classList.remove('hidden')"
 					class="btn-primary flex items-center gap-2"
 				>
-					<i class="fas fa-plus"></i>
+					<i aria-hidden="true" class="fas fa-plus"></i>
 					New Policy
 				</button>
 			</div>
@@ -98,7 +98,7 @@ templ Lifecycle(data LifecycleData) {
 			if data.Stats.DanglingImages > 0 || data.Stats.StoppedContainers > 0 || data.Stats.UnusedVolumes > 0 || data.Stats.UnusedNetworks > 0 {
 				<div class="card p-4">
 					<h3 class="text-sm font-medium text-yellow-400 mb-3">
-						<i class="fas fa-exclamation-triangle mr-2"></i>Resources Available for Cleanup
+						<i aria-hidden="true" class="fas fa-exclamation-triangle mr-2"></i>Resources Available for Cleanup
 					</h3>
 					<div class="grid grid-cols-2 md:grid-cols-4 gap-3">
 						if data.Stats.DanglingImages > 0 {
@@ -120,10 +120,10 @@ templ Lifecycle(data LifecycleData) {
 			<!-- Tabs -->
 			<div x-data="{ tab: 'policies' }" class="space-y-4">
 				<div class="flex gap-1 border-b border-dark-600">
-					<button @click="tab = 'policies'" :class="tab === 'policies' ? 'border-primary-500 text-white' : 'border-transparent text-gray-400 hover:text-gray-300'" class="px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors">
+					<button @click="tab = 'policies'" :class="tab === 'policies' ? 'border-primary-500 text-white' : 'border-transparent text-gray-400 hover:text-gray-300'" class="tab-underline">
 						Policies ({ fmt.Sprintf("%d", len(data.Policies)) })
 					</button>
-					<button @click="tab = 'history'" :class="tab === 'history' ? 'border-primary-500 text-white' : 'border-transparent text-gray-400 hover:text-gray-300'" class="px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors">
+					<button @click="tab = 'history'" :class="tab === 'history' ? 'border-primary-500 text-white' : 'border-transparent text-gray-400 hover:text-gray-300'" class="tab-underline">
 						Cleanup History ({ fmt.Sprintf("%d", len(data.History)) })
 					</button>
 				</div>
@@ -132,7 +132,7 @@ templ Lifecycle(data LifecycleData) {
 				<div x-show="tab === 'policies'" x-cloak>
 					if len(data.Policies) == 0 {
 						<div class="card p-12 text-center">
-							<i class="fas fa-recycle text-4xl text-gray-400 mb-4"></i>
+							<i aria-hidden="true" class="fas fa-recycle text-4xl text-gray-400 mb-4"></i>
 							<h3 class="text-lg font-medium text-white mb-2">No Lifecycle Policies</h3>
 							<p class="text-gray-400 mb-4">Create policies to automatically clean up unused Docker resources</p>
 						</div>
@@ -149,7 +149,7 @@ templ Lifecycle(data LifecycleData) {
 				<div x-show="tab === 'history'" x-cloak>
 					if len(data.History) == 0 {
 						<div class="card p-12 text-center">
-							<i class="fas fa-history text-4xl text-gray-400 mb-4"></i>
+							<i aria-hidden="true" class="fas fa-history text-4xl text-gray-400 mb-4"></i>
 							<h3 class="text-lg font-medium text-white mb-2">No Cleanup History</h3>
 							<p class="text-gray-400">History will appear after policies execute</p>
 						</div>
@@ -158,12 +158,12 @@ templ Lifecycle(data LifecycleData) {
 							<table class="w-full">
 								<thead>
 									<tr class="border-b border-dark-600">
-										<th class="text-left text-xs font-medium text-gray-400 uppercase px-4 py-3">Policy</th>
-										<th class="text-left text-xs font-medium text-gray-400 uppercase px-4 py-3">Resource</th>
-										<th class="text-left text-xs font-medium text-gray-400 uppercase px-4 py-3">Items</th>
-										<th class="text-left text-xs font-medium text-gray-400 uppercase px-4 py-3">Space</th>
-										<th class="text-left text-xs font-medium text-gray-400 uppercase px-4 py-3">Status</th>
-										<th class="text-left text-xs font-medium text-gray-400 uppercase px-4 py-3">Executed</th>
+										<th scope="col" class="text-left text-xs font-medium text-gray-400 uppercase px-4 py-3">Policy</th>
+										<th scope="col" class="text-left text-xs font-medium text-gray-400 uppercase px-4 py-3">Resource</th>
+										<th scope="col" class="text-left text-xs font-medium text-gray-400 uppercase px-4 py-3">Items</th>
+										<th scope="col" class="text-left text-xs font-medium text-gray-400 uppercase px-4 py-3">Space</th>
+										<th scope="col" class="text-left text-xs font-medium text-gray-400 uppercase px-4 py-3">Status</th>
+										<th scope="col" class="text-left text-xs font-medium text-gray-400 uppercase px-4 py-3">Executed</th>
 									</tr>
 								</thead>
 								<tbody class="divide-y divide-dark-700">
@@ -237,22 +237,22 @@ templ policyCard(policy PolicyView, csrfToken string) {
 					}
 					<div class="flex items-center gap-4 mt-2 text-xs text-gray-500">
 						if policy.Schedule != "" {
-							<span><i class="fas fa-clock mr-1"></i>{ policy.Schedule }</span>
+							<span><i aria-hidden="true" class="fas fa-clock mr-1"></i>{ policy.Schedule }</span>
 						}
 						if policy.Conditions.MaxAgeDays > 0 {
-							<span><i class="fas fa-calendar mr-1"></i>Max age: { fmt.Sprintf("%d", policy.Conditions.MaxAgeDays) } days</span>
+							<span><i aria-hidden="true" class="fas fa-calendar mr-1"></i>Max age: { fmt.Sprintf("%d", policy.Conditions.MaxAgeDays) } days</span>
 						}
 						if policy.Conditions.KeepLatest > 0 {
-							<span><i class="fas fa-layer-group mr-1"></i>Keep latest: { fmt.Sprintf("%d", policy.Conditions.KeepLatest) }</span>
+							<span><i aria-hidden="true" class="fas fa-layer-group mr-1"></i>Keep latest: { fmt.Sprintf("%d", policy.Conditions.KeepLatest) }</span>
 						}
 						if policy.Conditions.OnlyDangling {
-							<span><i class="fas fa-unlink mr-1"></i>Dangling only</span>
+							<span><i aria-hidden="true" class="fas fa-unlink mr-1"></i>Dangling only</span>
 						}
 						if policy.Conditions.OnlyUnused {
-							<span><i class="fas fa-ban mr-1"></i>Unused only</span>
+							<span><i aria-hidden="true" class="fas fa-ban mr-1"></i>Unused only</span>
 						}
 						if policy.LastExecutedAt != "" {
-							<span><i class="fas fa-check mr-1"></i>Last: { policy.LastExecutedAt }</span>
+							<span><i aria-hidden="true" class="fas fa-check mr-1"></i>Last: { policy.LastExecutedAt }</span>
 						}
 					</div>
 				</div>
@@ -261,23 +261,23 @@ templ policyCard(policy PolicyView, csrfToken string) {
 				<form method="POST" action={ templ.SafeURL("/lifecycle/policies/" + policy.ID + "/execute") }>
 					<input type="hidden" name="csrf_token" value={ csrfToken }/>
 					<button type="submit" class="p-2 text-gray-400 hover:text-primary-400 transition-colors" title="Execute now">
-						<i class="fas fa-play"></i>
+						<i aria-hidden="true" class="fas fa-play"></i>
 					</button>
 				</form>
 				<form method="POST" action={ templ.SafeURL("/lifecycle/policies/" + policy.ID + "/toggle") }>
 					<input type="hidden" name="csrf_token" value={ csrfToken }/>
 					<button type="submit" class="p-2 text-gray-400 hover:text-yellow-400 transition-colors" title="Toggle">
 						if policy.IsEnabled {
-							<i class="fas fa-pause"></i>
+							<i aria-hidden="true" class="fas fa-pause"></i>
 						} else {
-							<i class="fas fa-play-circle"></i>
+							<i aria-hidden="true" class="fas fa-play-circle"></i>
 						}
 					</button>
 				</form>
 				<form method="POST" action={ templ.SafeURL("/lifecycle/policies/" + policy.ID + "/delete") } onsubmit="return confirm('Delete this policy?')">
 					<input type="hidden" name="csrf_token" value={ csrfToken }/>
 					<button type="submit" class="p-2 text-gray-400 hover:text-red-400 transition-colors" title="Delete">
-						<i class="fas fa-trash"></i>
+						<i aria-hidden="true" class="fas fa-trash"></i>
 					</button>
 				</form>
 			</div>
@@ -291,7 +291,7 @@ templ createPolicyModal(csrfToken string) {
 			<div class="flex items-center justify-between p-6 border-b border-dark-600">
 				<h2 class="text-lg font-display font-bold text-white">Create Lifecycle Policy</h2>
 				<button onclick="document.getElementById('createPolicyModal').classList.add('hidden')" class="text-gray-400 hover:text-white">
-					<i class="fas fa-times"></i>
+					<i aria-hidden="true" class="fas fa-times"></i>
 				</button>
 			</div>
 			<form method="POST" action="/lifecycle/policies" class="p-6 space-y-4">
@@ -299,12 +299,12 @@ templ createPolicyModal(csrfToken string) {
 
 				<div>
 					<label class="block text-sm font-medium text-gray-300 mb-1">Policy Name</label>
-					<input type="text" name="name" required class="input w-full" placeholder="e.g., Prune dangling images weekly"/>
+					<input type="text" name="name" required class="input w-full" placeholder="e.g., Prune dangling images weekly" aria-label="e.g., Prune dangling images weekly"/>
 				</div>
 
 				<div>
 					<label class="block text-sm font-medium text-gray-300 mb-1">Description</label>
-					<input type="text" name="description" class="input w-full" placeholder="Optional description"/>
+					<input type="text" name="description" class="input w-full" placeholder="Optional description" aria-label="Optional description"/>
 				</div>
 
 				<div class="grid grid-cols-2 gap-4">
@@ -362,7 +362,7 @@ templ createPolicyModal(csrfToken string) {
 				</div>
 
 				<button type="button" @click="showAdvanced = !showAdvanced" class="text-sm text-primary-400 hover:text-primary-300">
-					<i class="fas fa-cog mr-1"></i>
+					<i aria-hidden="true" class="fas fa-cog mr-1"></i>
 					<span x-text="showAdvanced ? 'Hide advanced' : 'Show advanced options'"></span>
 				</button>
 
@@ -370,29 +370,29 @@ templ createPolicyModal(csrfToken string) {
 					<div class="grid grid-cols-2 gap-4">
 						<div>
 							<label class="block text-sm font-medium text-gray-300 mb-1">Max Age (days)</label>
-							<input type="number" name="max_age_days" value="0" min="0" class="input w-full" placeholder="0 = no limit"/>
+							<input type="number" name="max_age_days" value="0" min="0" class="input w-full" placeholder="0 = no limit" aria-label="0 = no limit"/>
 						</div>
 						<div>
 							<label class="block text-sm font-medium text-gray-300 mb-1">Keep Latest N</label>
-							<input type="number" name="keep_latest" value="0" min="0" class="input w-full" placeholder="0 = no limit"/>
+							<input type="number" name="keep_latest" value="0" min="0" class="input w-full" placeholder="0 = no limit" aria-label="0 = no limit"/>
 						</div>
 					</div>
 
 					<div>
 						<label class="block text-sm font-medium text-gray-300 mb-1">Exclude Labels (comma-separated)</label>
-						<input type="text" name="exclude_labels" class="input w-full" placeholder="e.g., keep=true,protected"/>
+						<input type="text" name="exclude_labels" class="input w-full" placeholder="e.g., keep=true,protected" aria-label="e.g., keep=true,protected"/>
 					</div>
 
 					<div>
 						<label class="block text-sm font-medium text-gray-300 mb-1">Include Labels (comma-separated)</label>
-						<input type="text" name="include_labels" class="input w-full" placeholder="e.g., temp=true,disposable"/>
+						<input type="text" name="include_labels" class="input w-full" placeholder="e.g., temp=true,disposable" aria-label="e.g., temp=true,disposable"/>
 					</div>
 				</div>
 
 				<div class="flex justify-end gap-3 pt-4 border-t border-dark-600">
 					<button type="button" onclick="document.getElementById('createPolicyModal').classList.add('hidden')" class="btn-secondary">Cancel</button>
 					<button type="submit" class="btn-primary">
-						<i class="fas fa-plus mr-2"></i>Create Policy
+						<i aria-hidden="true" class="fas fa-plus mr-2"></i>Create Policy
 					</button>
 				</div>
 			</form>

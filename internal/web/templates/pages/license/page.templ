@@ -53,7 +53,7 @@ templ LicensePage(data LicensePageData) {
 			<!-- Header -->
 			<div>
 				<h1 class="text-2xl font-bold text-white">
-					<i class="fas fa-id-card mr-2 text-primary-400"></i>
+					<i aria-hidden="true" class="fas fa-id-card mr-2 text-primary-400"></i>
 					License Management
 				</h1>
 				<p class="text-gray-400 mt-1">
@@ -66,7 +66,7 @@ templ LicensePage(data LicensePageData) {
 				<div class="flex items-start justify-between flex-wrap gap-4">
 					<div class="flex items-center gap-4">
 						<div class="w-14 h-14 rounded-xl flex items-center justify-center bg-primary-500/10">
-							<i class="fas fa-infinity text-2xl text-primary-400"></i>
+							<i aria-hidden="true" class="fas fa-infinity text-2xl text-primary-400"></i>
 						</div>
 						<div>
 							<h2 class="text-xl font-bold text-white">
@@ -74,7 +74,7 @@ templ LicensePage(data LicensePageData) {
 							</h2>
 							<div class="flex items-center gap-3 mt-1 flex-wrap">
 								<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-green-500/10 text-green-400 border border-green-500/20">
-									<i class="fas fa-check-circle"></i>
+									<i aria-hidden="true" class="fas fa-check-circle"></i>
 									All features unlocked
 								</span>
 								<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-dark-700 text-gray-400 border border-dark-600">
@@ -92,7 +92,7 @@ templ LicensePage(data LicensePageData) {
 				<!-- Instance Information -->
 				<div class="bg-dark-800 border border-dark-700 rounded-xl p-6">
 					<h3 class="text-sm font-medium text-gray-400 uppercase tracking-wider mb-4">
-						<i class="fas fa-server mr-2"></i> Instance Information
+						<i aria-hidden="true" class="fas fa-server mr-2"></i> Instance Information
 					</h3>
 					<dl class="space-y-3">
 						<div class="flex items-center justify-between py-1">
@@ -127,9 +127,9 @@ templ LicensePage(data LicensePageData) {
 								<dd>
 									<span class={ "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border", statusBadge(data.License.Status) }>
 										if data.License.Status == "active" {
-											<i class="fas fa-check-circle"></i>
+											<i aria-hidden="true" class="fas fa-check-circle"></i>
 										} else {
-											<i class="fas fa-exclamation-circle"></i>
+											<i aria-hidden="true" class="fas fa-exclamation-circle"></i>
 										}
 										{ data.License.Status }
 									</span>
@@ -142,7 +142,7 @@ templ LicensePage(data LicensePageData) {
 				<!-- Optional commercial support token -->
 				<div class="bg-dark-800 border border-dark-700 rounded-xl p-6">
 					<h3 class="text-sm font-medium text-gray-400 uppercase tracking-wider mb-4">
-						<i class="fas fa-key mr-2"></i>
+						<i aria-hidden="true" class="fas fa-key mr-2"></i>
 						if hasCommercialToken(data.License) {
 							Update Support Token
 						} else {
@@ -165,7 +165,7 @@ templ LicensePage(data LicensePageData) {
 							></textarea>
 						</div>
 						<button type="submit" class="w-full bg-primary-500 hover:bg-primary-600 text-black font-medium px-4 py-2.5 rounded-lg transition-colors">
-							<i class="fas fa-check mr-2"></i>
+							<i aria-hidden="true" class="fas fa-check mr-2"></i>
 							Activate
 						</button>
 					</form>
@@ -173,7 +173,7 @@ templ LicensePage(data LicensePageData) {
 						<form method="post" action="/license/deactivate" class="mt-3">
 							<input type="hidden" name="csrf_token" value={ data.PageData.CSRFToken }/>
 							<button type="submit" class="w-full text-sm text-gray-500 hover:text-red-400 transition-colors py-2">
-								<i class="fas fa-times mr-1"></i> Remove support token
+								<i aria-hidden="true" class="fas fa-times mr-1"></i> Remove support token
 							</button>
 						</form>
 					}

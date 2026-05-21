@@ -190,13 +190,13 @@ templ Detail(data RepoDetailData) {
 			<!-- Breadcrumb -->
 			<div class="flex items-center gap-2 text-sm text-gray-400">
 				<a href="/integrations/gitea" class="hover:text-white transition-colors">
-					<i class="fas fa-code-branch mr-1"></i>Gitea
+					<i aria-hidden="true" class="fas fa-code-branch mr-1"></i>Gitea
 				</a>
-				<i class="fas fa-chevron-right text-[10px] text-gray-400"></i>
+				<i aria-hidden="true" class="fas fa-chevron-right text-[10px] text-gray-400"></i>
 				<span class="text-white">{ data.Repo.FullName }</span>
 				if data.CurrentPath != "" {
 					for _, crumb := range pathCrumbs(data.CurrentPath) {
-						<i class="fas fa-chevron-right text-[10px] text-gray-400"></i>
+						<i aria-hidden="true" class="fas fa-chevron-right text-[10px] text-gray-400"></i>
 						if crumb.IsLast {
 							<span class="text-white">{ crumb.Name }</span>
 						} else {
@@ -223,21 +223,21 @@ templ Detail(data RepoDetailData) {
 					</div>
 					<div class="flex items-center gap-3 mt-2 text-sm text-gray-400">
 						if data.Repo.IsPrivate {
-							<span class="text-yellow-400"><i class="fas fa-lock mr-1"></i>Private</span>
+							<span class="text-yellow-400"><i aria-hidden="true" class="fas fa-lock mr-1"></i>Private</span>
 						} else {
-							<span class="text-green-400"><i class="fas fa-globe mr-1"></i>Public</span>
+							<span class="text-green-400"><i aria-hidden="true" class="fas fa-globe mr-1"></i>Public</span>
 						}
 						if data.Repo.IsFork {
-							<span class="text-purple-400"><i class="fas fa-code-branch mr-1"></i>Fork</span>
+							<span class="text-purple-400"><i aria-hidden="true" class="fas fa-code-branch mr-1"></i>Fork</span>
 						}
 						if data.Repo.IsArchived {
-							<span class="text-gray-500"><i class="fas fa-archive mr-1"></i>Archived</span>
+							<span class="text-gray-500"><i aria-hidden="true" class="fas fa-archive mr-1"></i>Archived</span>
 						}
 						if data.Repo.Stars > 0 {
-							<span><i class="fas fa-star text-yellow-500 mr-1"></i>{ fmt.Sprintf("%d", data.Repo.Stars) }</span>
+							<span><i aria-hidden="true" class="fas fa-star text-yellow-500 mr-1"></i>{ fmt.Sprintf("%d", data.Repo.Stars) }</span>
 						}
 						if data.Repo.Forks > 0 {
-							<span><i class="fas fa-code-branch mr-1"></i>{ fmt.Sprintf("%d", data.Repo.Forks) }</span>
+							<span><i aria-hidden="true" class="fas fa-code-branch mr-1"></i>{ fmt.Sprintf("%d", data.Repo.Forks) }</span>
 						}
 						<span class="text-gray-500">via { data.Repo.ConnectionName }</span>
 					</div>
@@ -246,14 +246,14 @@ templ Detail(data RepoDetailData) {
 					if data.Repo.HTMLURL != "" {
 						<a href={ templ.SafeURL(data.Repo.HTMLURL) } target="_blank"
 							class="btn-ghost text-sm">
-							<i class="fas fa-external-link-alt mr-1"></i>Open in Gitea
+							<i aria-hidden="true" class="fas fa-external-link-alt mr-1"></i>Open in Gitea
 						</a>
 					}
 					<!-- Repo Actions Menu -->
 					<div x-data="{ open: false }" class="relative">
 						<button @click="open = !open" class="btn-ghost text-sm">
-							<i class="fas fa-cog mr-1"></i>Settings
-							<i class="fas fa-chevron-down ml-1 text-xs"></i>
+							<i aria-hidden="true" class="fas fa-cog mr-1"></i>Settings
+							<i aria-hidden="true" class="fas fa-chevron-down ml-1 text-xs"></i>
 						</button>
 						<div x-show="open" @click.outside="open = false"
 							x-transition:enter="transition ease-out duration-100"
@@ -261,11 +261,11 @@ templ Detail(data RepoDetailData) {
 							x-transition:enter-end="opacity-100 scale-100"
 							class="absolute right-0 mt-2 w-48 bg-gray-800 border border-gray-700 rounded-lg shadow-xl z-50">
 							<button onclick="openEditRepoModal()" class="w-full px-4 py-2 text-left text-sm text-gray-300 hover:bg-gray-700 hover:text-white transition-colors flex items-center">
-								<i class="fas fa-edit w-5"></i>Edit Repository
+								<i aria-hidden="true" class="fas fa-edit w-5"></i>Edit Repository
 							</button>
 							<hr class="border-gray-700"/>
 							<button onclick="openDeleteRepoModal()" class="w-full px-4 py-2 text-left text-sm text-red-400 hover:bg-red-500/10 hover:text-red-300 transition-colors flex items-center">
-								<i class="fas fa-trash w-5"></i>Delete Repository
+								<i aria-hidden="true" class="fas fa-trash w-5"></i>Delete Repository
 							</button>
 						</div>
 					</div>
@@ -277,25 +277,25 @@ templ Detail(data RepoDetailData) {
 				<nav class="flex gap-1" aria-label="Repository tabs">
 					<a href={ templ.SafeURL(fmt.Sprintf("/integrations/gitea/repos/%s?ref=%s", data.Repo.ID, data.CurrentBranch)) }
 						class="px-4 py-2 text-sm font-medium text-white border-b-2 border-blue-500 bg-gray-800/50 rounded-t-lg">
-						<i class="fas fa-code mr-2"></i>Code
+						<i aria-hidden="true" class="fas fa-code mr-2"></i>Code
 					</a>
 					<a href={ templ.SafeURL(fmt.Sprintf("/integrations/gitea/repos/%s/pulls?tab=pulls", data.Repo.ID)) }
 						class="px-4 py-2 text-sm font-medium text-gray-400 hover:text-white hover:bg-gray-800/30 rounded-t-lg transition-colors flex items-center gap-2">
-						<i class="fas fa-code-pull-request"></i>Pull Requests
+						<i aria-hidden="true" class="fas fa-code-pull-request"></i>Pull Requests
 						if data.OpenPRs > 0 {
 							<span class="bg-gray-700 text-xs px-1.5 py-0.5 rounded-full">{ fmt.Sprintf("%d", data.OpenPRs) }</span>
 						}
 					</a>
 					<a href={ templ.SafeURL(fmt.Sprintf("/integrations/gitea/repos/%s/issues?tab=issues", data.Repo.ID)) }
 						class="px-4 py-2 text-sm font-medium text-gray-400 hover:text-white hover:bg-gray-800/30 rounded-t-lg transition-colors flex items-center gap-2">
-						<i class="fas fa-circle-exclamation"></i>Issues
+						<i aria-hidden="true" class="fas fa-circle-exclamation"></i>Issues
 						if data.OpenIssues > 0 {
 							<span class="bg-gray-700 text-xs px-1.5 py-0.5 rounded-full">{ fmt.Sprintf("%d", data.OpenIssues) }</span>
 						}
 					</a>
 					<button onclick="openCollaboratorsModal()" 
 						class="px-4 py-2 text-sm font-medium text-gray-400 hover:text-white hover:bg-gray-800/30 rounded-t-lg transition-colors">
-						<i class="fas fa-users mr-2"></i>Collaborators
+						<i aria-hidden="true" class="fas fa-users mr-2"></i>Collaborators
 					</button>
 				</nav>
 			</div>
@@ -327,15 +327,15 @@ templ Detail(data RepoDetailData) {
 								</optgroup>
 							}
 						</select>
-						<i class="fas fa-code-branch absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400 text-xs pointer-events-none"></i>
-						<i class="fas fa-chevron-down absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs pointer-events-none"></i>
+						<i aria-hidden="true" class="fas fa-code-branch absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400 text-xs pointer-events-none"></i>
+						<i aria-hidden="true" class="fas fa-chevron-down absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs pointer-events-none"></i>
 					</div>
 					<div class="flex items-center gap-3 text-sm text-gray-400">
 						<span>
-							<i class="fas fa-code-branch mr-1"></i>{ fmt.Sprintf("%d", len(data.Branches)) }
+							<i aria-hidden="true" class="fas fa-code-branch mr-1"></i>{ fmt.Sprintf("%d", len(data.Branches)) }
 						</span>
 						<span>
-							<i class="fas fa-tag mr-1"></i>{ fmt.Sprintf("%d", len(data.Tags)) }
+							<i aria-hidden="true" class="fas fa-tag mr-1"></i>{ fmt.Sprintf("%d", len(data.Tags)) }
 						</span>
 					</div>
 				</div>
@@ -343,13 +343,13 @@ templ Detail(data RepoDetailData) {
 				<!-- Branch/Tag Actions -->
 				<div class="flex items-center gap-2">
 					<button onclick="openCreateBranchModal()" class="btn-ghost text-sm">
-						<i class="fas fa-code-branch mr-1"></i>New Branch
+						<i aria-hidden="true" class="fas fa-code-branch mr-1"></i>New Branch
 					</button>
 					<button onclick="openCreateTagModal()" class="btn-ghost text-sm">
-						<i class="fas fa-tag mr-1"></i>New Tag
+						<i aria-hidden="true" class="fas fa-tag mr-1"></i>New Tag
 					</button>
 					<button onclick="openCompareModal()" class="btn-ghost text-sm">
-						<i class="fas fa-code-compare mr-1"></i>Compare
+						<i aria-hidden="true" class="fas fa-code-compare mr-1"></i>Compare
 					</button>
 				</div>
 			</div>
@@ -361,7 +361,7 @@ templ Detail(data RepoDetailData) {
 					<div class="card">
 						<div class="p-3 border-b border-gray-700/50 flex items-center justify-between">
 							<h3 class="text-sm font-medium text-gray-300">
-								<i class="fas fa-folder-open mr-2 text-gray-500"></i>
+								<i aria-hidden="true" class="fas fa-folder-open mr-2 text-gray-500"></i>
 								if data.CurrentPath == "" {
 									Files
 								} else {
@@ -371,7 +371,7 @@ templ Detail(data RepoDetailData) {
 							if data.CurrentPath != "" {
 								<a href={ templ.SafeURL(fmt.Sprintf("/integrations/gitea/repos/%s?ref=%s&path=%s", data.Repo.ID, data.CurrentBranch, parentPath(data.CurrentPath))) }
 									class="text-sm text-gray-400 hover:text-white transition-colors">
-									<i class="fas fa-level-up-alt mr-1"></i>Up
+									<i aria-hidden="true" class="fas fa-level-up-alt mr-1"></i>Up
 								</a>
 							}
 						</div>
@@ -385,7 +385,7 @@ templ Detail(data RepoDetailData) {
 								@fileList(data.Files, data.Repo.ID, data.CurrentBranch)
 							} else {
 								<div class="p-8 text-center text-gray-500">
-									<i class="fas fa-spinner fa-spin mr-2"></i>Loading files...
+									<i aria-hidden="true" class="fas fa-spinner fa-spin mr-2"></i>Loading files...
 								</div>
 							}
 						</div>
@@ -397,7 +397,7 @@ templ Detail(data RepoDetailData) {
 					<div class="card">
 						<div class="p-3 border-b border-gray-700/50">
 							<h3 class="text-sm font-medium text-gray-300">
-								<i class="fas fa-history mr-2 text-gray-500"></i>Recent Commits
+								<i aria-hidden="true" class="fas fa-history mr-2 text-gray-500"></i>Recent Commits
 							</h3>
 						</div>
 						if len(data.Commits) == 0 {
@@ -420,17 +420,17 @@ templ Detail(data RepoDetailData) {
 				<div class="card">
 					<div class="p-3 border-b border-gray-700/50 flex items-center justify-between">
 						<h3 id="file-viewer-path" class="text-sm font-medium text-gray-300">
-							<i class="fas fa-file-code mr-2 text-gray-500"></i>
+							<i aria-hidden="true" class="fas fa-file-code mr-2 text-gray-500"></i>
 						</h3>
 						<div class="flex items-center gap-2">
 							<a id="btn-edit-monaco" href="#" class="hidden btn-sm btn-primary" title="Edit in Monaco">
-								<i class="fas fa-edit mr-1"></i> Monaco
+								<i aria-hidden="true" class="fas fa-edit mr-1"></i> Monaco
 							</a>
 							<a id="btn-edit-nvim" href="#" class="hidden btn-sm btn-ghost" title="Edit in Neovim">
-								<i class="fas fa-terminal mr-1"></i> Neovim
+								<i aria-hidden="true" class="fas fa-terminal mr-1"></i> Neovim
 							</a>
 							<button onclick="closeFileViewer()" class="btn-sm btn-ghost" title="Close">
-								<i class="fas fa-times"></i>
+								<i aria-hidden="true" class="fas fa-times"></i>
 							</button>
 						</div>
 					</div>
@@ -456,8 +456,8 @@ templ Detail(data RepoDetailData) {
 			var btnMonaco = document.getElementById('btn-edit-monaco');
 			var btnNvim = document.getElementById('btn-edit-nvim');
 
-			pathEl.innerHTML = '<i class="fas fa-file-code mr-2 text-gray-500"></i>' + path;
-			contentEl.innerHTML = '<div class="p-8 text-center text-gray-500"><i class="fas fa-spinner fa-spin mr-2"></i>Loading...</div>';
+			pathEl.innerHTML = '<i aria-hidden="true" class="fas fa-file-code mr-2 text-gray-500"></i>' + path;
+			contentEl.innerHTML = '<div class="p-8 text-center text-gray-500"><i aria-hidden="true" class="fas fa-spinner fa-spin mr-2"></i>Loading...</div>';
 			btnMonaco.classList.add('hidden');
 			btnNvim.classList.add('hidden');
 			viewer.classList.remove('hidden');
@@ -492,7 +492,7 @@ templ Detail(data RepoDetailData) {
 					}
 				})
 				.catch(function(err) {
-					contentEl.innerHTML = '<div class="p-8 text-center text-red-400"><i class="fas fa-exclamation-triangle mr-2"></i>' + err.message + '</div>';
+					contentEl.innerHTML = '<div class="p-8 text-center text-red-400"><i aria-hidden="true" class="fas fa-exclamation-triangle mr-2"></i>' + err.message + '</div>';
 				});
 
 			viewer.scrollIntoView({ behavior: 'smooth' });
@@ -523,7 +523,7 @@ templ fileList(files []FileItem, repoID string, currentBranch string) {
 			if f.Type == "dir" {
 				<a href={ templ.SafeURL(fmt.Sprintf("/integrations/gitea/repos/%s?ref=%s&path=%s", repoID, currentBranch, f.Path)) }
 					class="flex items-center gap-3 px-4 py-2.5 hover:bg-gray-800/30 transition-colors group">
-					<i class="fas fa-folder text-blue-400"></i>
+					<i aria-hidden="true" class="fas fa-folder text-blue-400"></i>
 					<span class="text-sm text-gray-300 group-hover:text-white">{ f.Name }</span>
 				</a>
 			} else {
@@ -671,14 +671,14 @@ templ tier1Modals(data RepoDetailData) {
 	<div id="create-branch-modal" class="fixed inset-0 bg-black/60 z-50 hidden items-center justify-center">
 		<div class="bg-gray-800 rounded-xl border border-gray-700 p-6 w-full max-w-md mx-4">
 			<h3 class="text-lg font-semibold text-white mb-4">
-				<i class="fas fa-code-branch mr-2 text-blue-400"></i>Create Branch
+				<i aria-hidden="true" class="fas fa-code-branch mr-2 text-blue-400"></i>Create Branch
 			</h3>
 			<form id="create-branch-form" class="space-y-4">
 				<input type="hidden" name="csrf_token" value={ data.CSRFToken }/>
 				<div>
 					<label class="block text-sm text-gray-400 mb-1">Branch Name</label>
 					<input type="text" name="name" required placeholder="feature/my-branch"
-						class="w-full px-3 py-2 bg-gray-900 border border-gray-600 rounded-lg text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500"/>
+						class="w-full px-3 py-2 bg-gray-900 border border-gray-600 rounded-lg text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500" aria-label="Branch Name"/>
 				</div>
 				<div>
 					<label class="block text-sm text-gray-400 mb-1">Source Branch</label>
@@ -704,19 +704,19 @@ templ tier1Modals(data RepoDetailData) {
 	<div id="create-tag-modal" class="fixed inset-0 bg-black/60 z-50 hidden items-center justify-center">
 		<div class="bg-gray-800 rounded-xl border border-gray-700 p-6 w-full max-w-md mx-4">
 			<h3 class="text-lg font-semibold text-white mb-4">
-				<i class="fas fa-tag mr-2 text-green-400"></i>Create Tag
+				<i aria-hidden="true" class="fas fa-tag mr-2 text-green-400"></i>Create Tag
 			</h3>
 			<form id="create-tag-form" class="space-y-4">
 				<input type="hidden" name="csrf_token" value={ data.CSRFToken }/>
 				<div>
 					<label class="block text-sm text-gray-400 mb-1">Tag Name</label>
 					<input type="text" name="name" required placeholder="v1.0.0"
-						class="w-full px-3 py-2 bg-gray-900 border border-gray-600 rounded-lg text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500"/>
+						class="w-full px-3 py-2 bg-gray-900 border border-gray-600 rounded-lg text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500" aria-label="Tag Name"/>
 				</div>
 				<div>
 					<label class="block text-sm text-gray-400 mb-1">Target (branch or commit)</label>
 					<input type="text" name="target" placeholder={ data.CurrentBranch }
-						class="w-full px-3 py-2 bg-gray-900 border border-gray-600 rounded-lg text-white"/>
+						class="w-full px-3 py-2 bg-gray-900 border border-gray-600 rounded-lg text-white" aria-label="Target (branch or commit)"/>
 					<p class="text-xs text-gray-500 mt-1">Leave empty to use current branch</p>
 				</div>
 				<div>
@@ -736,7 +736,7 @@ templ tier1Modals(data RepoDetailData) {
 	<div id="compare-modal" class="fixed inset-0 bg-black/60 z-50 hidden items-center justify-center">
 		<div class="bg-gray-800 rounded-xl border border-gray-700 p-6 w-full max-w-lg mx-4">
 			<h3 class="text-lg font-semibold text-white mb-4">
-				<i class="fas fa-code-compare mr-2 text-purple-400"></i>Compare Branches
+				<i aria-hidden="true" class="fas fa-code-compare mr-2 text-purple-400"></i>Compare Branches
 			</h3>
 			<form id="compare-form" class="space-y-4">
 				<div class="grid grid-cols-2 gap-4">
@@ -786,7 +786,7 @@ templ tier1Modals(data RepoDetailData) {
 	<div id="edit-repo-modal" class="fixed inset-0 bg-black/60 z-50 hidden items-center justify-center">
 		<div class="bg-gray-800 rounded-xl border border-gray-700 p-6 w-full max-w-md mx-4">
 			<h3 class="text-lg font-semibold text-white mb-4">
-				<i class="fas fa-edit mr-2 text-blue-400"></i>Edit Repository
+				<i aria-hidden="true" class="fas fa-edit mr-2 text-blue-400"></i>Edit Repository
 			</h3>
 			<form action={ templ.SafeURL(fmt.Sprintf("/integrations/gitea/repos/%s/edit", data.Repo.ID)) } method="POST" class="space-y-4">
 				<input type="hidden" name="csrf_token" value={ data.CSRFToken }/>
@@ -837,7 +837,7 @@ templ tier1Modals(data RepoDetailData) {
 	<div id="delete-repo-modal" class="fixed inset-0 bg-black/60 z-50 hidden items-center justify-center">
 		<div class="bg-gray-800 rounded-xl border border-gray-700 p-6 w-full max-w-md mx-4">
 			<h3 class="text-lg font-semibold text-red-400 mb-4">
-				<i class="fas fa-exclamation-triangle mr-2"></i>Delete Repository
+				<i aria-hidden="true" class="fas fa-exclamation-triangle mr-2"></i>Delete Repository
 			</h3>
 			<p class="text-gray-300 mb-4">
 				Are you sure you want to delete <strong class="text-white">{ data.Repo.FullName }</strong>?
@@ -848,7 +848,7 @@ templ tier1Modals(data RepoDetailData) {
 				<div>
 					<label class="block text-sm text-gray-400 mb-1">Type repository name to confirm</label>
 					<input type="text" name="confirm_name" required placeholder={ data.Repo.FullName }
-						class="w-full px-3 py-2 bg-gray-900 border border-red-600/50 rounded-lg text-white focus:border-red-500 focus:ring-1 focus:ring-red-500"/>
+						class="w-full px-3 py-2 bg-gray-900 border border-red-600/50 rounded-lg text-white focus:border-red-500 focus:ring-1 focus:ring-red-500" aria-label="Type repository name to confirm"/>
 				</div>
 				<div class="flex justify-end gap-3 pt-2">
 					<button type="button" onclick="closeModal('delete-repo-modal')" class="btn-ghost">Cancel</button>
@@ -865,11 +865,11 @@ templ tier1Modals(data RepoDetailData) {
 		<div class="bg-gray-800 rounded-xl border border-gray-700 p-6 w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto">
 			<div class="flex items-center justify-between mb-4">
 				<h3 class="text-lg font-semibold text-white">
-					<i class="fas fa-code-commit mr-2 text-orange-400"></i>
+					<i aria-hidden="true" class="fas fa-code-commit mr-2 text-orange-400"></i>
 					<span id="commit-sha-title"></span>
 				</h3>
 				<button onclick="closeModal('commit-detail-modal')" class="text-gray-400 hover:text-white">
-					<i class="fas fa-times"></i>
+					<i aria-hidden="true" class="fas fa-times"></i>
 				</button>
 			</div>
 			<div id="commit-detail-content">
@@ -1000,9 +1000,9 @@ templ tier1Scripts(data RepoDetailData) {
 						<div>
 							<p class="text-white font-medium">${escapeHtml(commit.commit.message)}<\/p>
 							<p class="text-sm text-gray-400 mt-2">
-								<i class="fas fa-user mr-1"><\/i>${escapeHtml(commit.commit.author?.name || 'Unknown')}
+								<i aria-hidden="true" class="fas fa-user mr-1"><\/i>${escapeHtml(commit.commit.author?.name || 'Unknown')}
 								<span class="mx-2">•<\/span>
-								<i class="fas fa-clock mr-1"><\/i>${escapeHtml(commit.commit.author?.date || '')}
+								<i aria-hidden="true" class="fas fa-clock mr-1"><\/i>${escapeHtml(commit.commit.author?.date || '')}
 							<\/p>
 						<\/div>
 						<div class="text-sm">
@@ -1075,14 +1075,14 @@ templ tier2Modals(data RepoDetailData) {
 	<div id="create-pr-modal" class="fixed inset-0 bg-black/60 z-50 hidden items-center justify-center">
 		<div class="bg-gray-800 rounded-xl border border-gray-700 p-6 w-full max-w-lg mx-4">
 			<h3 class="text-lg font-semibold text-white mb-4">
-				<i class="fas fa-code-pull-request mr-2 text-green-400"></i>Create Pull Request
+				<i aria-hidden="true" class="fas fa-code-pull-request mr-2 text-green-400"></i>Create Pull Request
 			</h3>
 			<form id="create-pr-form" class="space-y-4">
 				<input type="hidden" name="csrf_token" value={ data.CSRFToken }/>
 				<div>
 					<label class="block text-sm text-gray-400 mb-1">Title</label>
 					<input type="text" name="title" required placeholder="What does this PR do?"
-						class="w-full px-3 py-2 bg-gray-900 border border-gray-600 rounded-lg text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500"/>
+						class="w-full px-3 py-2 bg-gray-900 border border-gray-600 rounded-lg text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500" aria-label="Title"/>
 				</div>
 				<div class="grid grid-cols-2 gap-4">
 					<div>
@@ -1127,14 +1127,14 @@ templ tier2Modals(data RepoDetailData) {
 	<div id="create-issue-modal" class="fixed inset-0 bg-black/60 z-50 hidden items-center justify-center">
 		<div class="bg-gray-800 rounded-xl border border-gray-700 p-6 w-full max-w-lg mx-4">
 			<h3 class="text-lg font-semibold text-white mb-4">
-				<i class="fas fa-circle-exclamation mr-2 text-yellow-400"></i>Create Issue
+				<i aria-hidden="true" class="fas fa-circle-exclamation mr-2 text-yellow-400"></i>Create Issue
 			</h3>
 			<form id="create-issue-form" class="space-y-4">
 				<input type="hidden" name="csrf_token" value={ data.CSRFToken }/>
 				<div>
 					<label class="block text-sm text-gray-400 mb-1">Title</label>
 					<input type="text" name="title" required placeholder="Issue title"
-						class="w-full px-3 py-2 bg-gray-900 border border-gray-600 rounded-lg text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500"/>
+						class="w-full px-3 py-2 bg-gray-900 border border-gray-600 rounded-lg text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500" aria-label="Title"/>
 				</div>
 				<div>
 					<label class="block text-sm text-gray-400 mb-1">Description</label>
@@ -1153,21 +1153,21 @@ templ tier2Modals(data RepoDetailData) {
 	<div id="collaborators-modal" class="fixed inset-0 bg-black/60 z-50 hidden items-center justify-center">
 		<div class="bg-gray-800 rounded-xl border border-gray-700 p-6 w-full max-w-lg mx-4 max-h-[80vh] flex flex-col">
 			<h3 class="text-lg font-semibold text-white mb-4 flex items-center justify-between">
-				<span><i class="fas fa-users mr-2 text-blue-400"></i>Collaborators</span>
+				<span><i aria-hidden="true" class="fas fa-users mr-2 text-blue-400"></i>Collaborators</span>
 				<button onclick="closeModal('collaborators-modal')" class="text-gray-400 hover:text-white">
-					<i class="fas fa-times"></i>
+					<i aria-hidden="true" class="fas fa-times"></i>
 				</button>
 			</h3>
 			<div id="collaborators-content" class="flex-1 overflow-y-auto">
 				<div class="text-center py-8 text-gray-400">
-					<i class="fas fa-spinner fa-spin text-2xl mb-2"></i>
+					<i aria-hidden="true" class="fas fa-spinner fa-spin text-2xl mb-2"></i>
 					<p>Loading collaborators...</p>
 				</div>
 			</div>
 			<div class="border-t border-gray-700 pt-4 mt-4">
 				<form id="add-collaborator-form" class="flex gap-2">
 					<input type="text" name="username" placeholder="Username" required
-						class="flex-1 px-3 py-2 bg-gray-900 border border-gray-600 rounded-lg text-white text-sm"/>
+						class="flex-1 px-3 py-2 bg-gray-900 border border-gray-600 rounded-lg text-white text-sm" aria-label="Username"/>
 					<select name="permission" class="px-3 py-2 bg-gray-900 border border-gray-600 rounded-lg text-white text-sm">
 						<option value="read">Read</option>
 						<option value="write" selected>Write</option>
@@ -1184,16 +1184,16 @@ templ tier2Modals(data RepoDetailData) {
 		<div class="bg-gray-800 rounded-xl border border-gray-700 p-6 w-full max-w-3xl mx-4 max-h-[85vh] flex flex-col">
 			<div class="flex items-center justify-between mb-4">
 				<h3 class="text-lg font-semibold text-white">
-					<i class="fas fa-code-pull-request mr-2 text-green-400"></i>
+					<i aria-hidden="true" class="fas fa-code-pull-request mr-2 text-green-400"></i>
 					<span id="pr-detail-title">Pull Request</span>
 				</h3>
 				<button onclick="closeModal('pr-detail-modal')" class="text-gray-400 hover:text-white">
-					<i class="fas fa-times"></i>
+					<i aria-hidden="true" class="fas fa-times"></i>
 				</button>
 			</div>
 			<div id="pr-detail-content" class="flex-1 overflow-y-auto">
 				<div class="text-center py-8 text-gray-400">
-					<i class="fas fa-spinner fa-spin text-2xl"></i>
+					<i aria-hidden="true" class="fas fa-spinner fa-spin text-2xl"></i>
 				</div>
 			</div>
 		</div>
@@ -1204,16 +1204,16 @@ templ tier2Modals(data RepoDetailData) {
 		<div class="bg-gray-800 rounded-xl border border-gray-700 p-6 w-full max-w-3xl mx-4 max-h-[85vh] flex flex-col">
 			<div class="flex items-center justify-between mb-4">
 				<h3 class="text-lg font-semibold text-white">
-					<i class="fas fa-circle-exclamation mr-2 text-yellow-400"></i>
+					<i aria-hidden="true" class="fas fa-circle-exclamation mr-2 text-yellow-400"></i>
 					<span id="issue-detail-title">Issue</span>
 				</h3>
 				<button onclick="closeModal('issue-detail-modal')" class="text-gray-400 hover:text-white">
-					<i class="fas fa-times"></i>
+					<i aria-hidden="true" class="fas fa-times"></i>
 				</button>
 			</div>
 			<div id="issue-detail-content" class="flex-1 overflow-y-auto">
 				<div class="text-center py-8 text-gray-400">
-					<i class="fas fa-spinner fa-spin text-2xl"></i>
+					<i aria-hidden="true" class="fas fa-spinner fa-spin text-2xl"></i>
 				</div>
 			</div>
 		</div>
@@ -1279,7 +1279,7 @@ templ tier2Scripts(data RepoDetailData) {
 							</span>
 							<button onclick="removeCollaborator('${escapeHtml(c.login)}')"
 								class="text-gray-400 hover:text-red-400 p-1">
-								<i class="fas fa-times"></i>
+								<i aria-hidden="true" class="fas fa-times"></i>
 							</button>
 						</div>
 					</div>
@@ -1392,7 +1392,7 @@ templ tier2Scripts(data RepoDetailData) {
 		async function viewPR(number) {
 			document.getElementById('pr-detail-modal').classList.remove('hidden');
 			document.getElementById('pr-detail-modal').classList.add('flex');
-			document.getElementById('pr-detail-content').innerHTML = '<div class="text-center py-8 text-gray-400"><i class="fas fa-spinner fa-spin text-2xl"></i></div>';
+			document.getElementById('pr-detail-content').innerHTML = '<div class="text-center py-8 text-gray-400"><i aria-hidden="true" class="fas fa-spinner fa-spin text-2xl"></i></div>';
 
 			try {
 				const resp = await fetch(`/integrations/gitea/repos/${tier2RepoID}/pulls/${number}`);
@@ -1415,7 +1415,7 @@ templ tier2Scripts(data RepoDetailData) {
 						${pr.mergeable && pr.state === 'open' && !pr.merged ? `
 							<div class="flex items-center gap-2 pt-4 border-t border-gray-700">
 								<button onclick="mergePR(${pr.number})" class="btn-primary">
-									<i class="fas fa-code-merge mr-2"><\/i>Merge Pull Request
+									<i aria-hidden="true" class="fas fa-code-merge mr-2"><\/i>Merge Pull Request
 								<\/button>
 							<\/div>
 						` : ''}
@@ -1450,7 +1450,7 @@ templ tier2Scripts(data RepoDetailData) {
 		async function viewIssue(number) {
 			document.getElementById('issue-detail-modal').classList.remove('hidden');
 			document.getElementById('issue-detail-modal').classList.add('flex');
-			document.getElementById('issue-detail-content').innerHTML = '<div class="text-center py-8 text-gray-400"><i class="fas fa-spinner fa-spin text-2xl"></i></div>';
+			document.getElementById('issue-detail-content').innerHTML = '<div class="text-center py-8 text-gray-400"><i aria-hidden="true" class="fas fa-spinner fa-spin text-2xl"></i></div>';
 
 			try {
 				const resp = await fetch(`/integrations/gitea/repos/${tier2RepoID}/issues/${number}`);
@@ -1489,7 +1489,7 @@ templ tier2Scripts(data RepoDetailData) {
 						<div class="border-t border-gray-700 pt-4">
 							<form id="add-comment-form-${issue.number}" class="flex gap-2">
 								<input type="text" name="body" placeholder="Add a comment..."
-									class="flex-1 px-3 py-2 bg-gray-900 border border-gray-600 rounded-lg text-white text-sm"\/>
+									class="flex-1 px-3 py-2 bg-gray-900 border border-gray-600 rounded-lg text-white text-sm"\ aria-label="Add a comment..."/>
 								<button type="submit" class="btn-primary text-sm">Comment<\/button>
 							<\/form>
 						<\/div>

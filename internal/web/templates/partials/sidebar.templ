@@ -52,9 +52,9 @@ templ Sidebar(active string, user *types.UserData, stats *types.StatsData, editi
 				</div>
 			</div>
 
-			<!-- Resources (always expanded) -->
+			<!-- Compute (always expanded) — was "Resources" in v26.5.1. -->
 			<div>
-				<p class="px-3 mb-2 text-[10px] font-semibold text-gray-500 uppercase tracking-widest">Resources</p>
+				<p class="px-3 mb-2 text-[10px] font-semibold text-gray-500 uppercase tracking-widest">Compute</p>
 				<div class="space-y-1">
 					@navItem("Containers", "fa-cube", "/containers", active == "containers", getBadge(stats, "containers"))
 					@navItem("Images", "fa-layer-group", "/images", active == "images", 0)
@@ -70,89 +70,21 @@ templ Sidebar(active string, user *types.UserData, stats *types.StatsData, editi
 				</div>
 			</div>
 
-			<!-- Operations (collapsible, default expanded) -->
+			<!-- Operations: schedule + housekeeping + monitoring. -->
 			@sidebarSection("operations", "Operations", prefs) {
-				@navItemDanger("Security", "fa-shield-alt", "/security", active == "security", getBadge(stats, "security"))
-				@navItem("Vulnerabilities", "fa-bug", "/vulnerabilities", active == "vulnerabilities", 0)
-				@navItem("Firewall", "fa-fire", "/firewall", active == "firewall", 0)
-				@navItem("WireGuard", "fa-shield-halved", "/wireguard", active == "wireguard", 0)
-				@navItem("Crontab", "fa-clock", "/crontab", active == "crontab", 0)
-				@navItem("Docker Engine", "fab fa-docker", "/config/docker", active == "docker-config", 0)
-				@navItem("Image Builder", "fa-hammer", "/image-builder", active == "image-builder", 0)
-				@navItem("Rollback", "fa-undo-alt", "/rollback", active == "rollback", 0)
-				@navItem("SSL Observatory", "fa-lock", "/ssl", active == "ssl", 0)
-				if !prefs.IsHidden("compliance") {
-					@navItem("Compliance", "fa-check-double", "/compliance", active == "compliance", 0)
-				}
-				@navItemPrimary("Updates", "fa-sync-alt", "/updates", active == "updates", getBadge(stats, "updates"))
 				@navItem("Backups", "fa-archive", "/backups", active == "backups", 0)
 				@navItem("Backup Verify", "fa-clipboard-check", "/backup-verify", active == "backup-verify", 0)
-				if !prefs.IsHidden("config") {
-					@navItem("Config", "fa-cogs", "/config", active == "config", 0)
-				}
-				if !prefs.IsHidden("secrets") {
-					@navItem("Secrets", "fa-lock", "/secrets", active == "secrets", 0)
+				@navItemPrimary("Updates", "fa-sync-alt", "/updates", active == "updates", getBadge(stats, "updates"))
+				@navItem("Crontab", "fa-clock", "/crontab", active == "crontab", 0)
+				@navItem("Calendar", "fa-calendar", "/calendar", active == "calendar", 0)
+				@navItem("Jobs", "fa-tasks", "/jobs", active == "jobs", 0)
+				if !prefs.IsHidden("maintenance") {
+					@navItem("Maintenance", "fa-wrench", "/maintenance", active == "maintenance", 0)
 				}
 				if !prefs.IsHidden("lifecycle") {
 					@navItem("Lifecycle", "fa-recycle", "/lifecycle", active == "lifecycle", 0)
 				}
-				if !prefs.IsHidden("maintenance") {
-					@navItem("Maintenance", "fa-wrench", "/maintenance", active == "maintenance", 0)
-				}
 				@navItem("Bulk Operations", "fa-th-list", "/bulk-ops", active == "bulk-ops", 0)
-			}
-
-			<!-- Connections (collapsible, default expanded) -->
-			@sidebarSection("connections", "Connections", prefs) {
-				if !prefs.IsHidden("databases") {
-					@navItem("Databases", "fa-database", "/connections/database", active == "connections-database", 0)
-				}
-				if !prefs.IsHidden("ldap") {
-					@navItem("LDAP", "fa-sitemap", "/connections/ldap", active == "connections-ldap", 0)
-				}
-				@navItem("SSH", "fa-terminal", "/connections/ssh", active == "connections-ssh", 0)
-				if !prefs.IsHidden("rdp") {
-					@navItem("RDP", "fa-desktop", "/connections/rdp", active == "connections-rdp", 0)
-				}
-				@navItem("SSH Keys", "fa-key", "/connections/keys", active == "connections-keys", 0)
-				@navItem("Shortcuts", "fa-external-link-alt", "/connections/shortcuts", active == "connections-shortcuts", 0)
-			}
-
-			<!-- Tools (collapsible, default collapsed) -->
-			@sidebarSection("tools", "Tools", prefs) {
-				@navItem("Terminal Hub", "fa-terminal", "/terminal", active == "terminal", 0)
-				@navItem("Editor", "fa-edit", "/editor", active == "editor", 0)
-				@navItem("Calendar", "fa-calendar", "/calendar", active == "calendar", 0)
-				@navItem("Cheat Sheet", "fa-book", "/tools/cheatsheet", active == "cheatsheet", 0)
-				if !prefs.IsHidden("ansible") {
-					@navItem("Ansible", "fa-cogs", "/tools/ansible", active == "ansible", 0)
-				}
-				if !prefs.IsHidden("capture") {
-					@navItem("Packet Capture", "fa-satellite-dish", "/tools/capture", active == "capture", 0)
-				}
-			}
-
-			<!-- Integrations (collapsible, default collapsed) -->
-			@sidebarSection("integrations", "Integrations", prefs) {
-				if !prefs.IsHidden("proxy") {
-					@navItem("Reverse Proxy", "fa-random", "/proxy", active == "proxy", 0)
-				}
-				if !prefs.IsHidden("dns") {
-					@navItem("DNS Providers", "fa-cloud", "/dns", active == "dns", 0)
-				}
-				@navItem("Marketplace", "fa-store", "/marketplace", active == "marketplace", 0)
-				if !prefs.IsHidden("repositories") {
-					@navItem("Repositories", "fa-code-branch", "/integrations/gitea", active == "gitea", 0)
-				}
-				if !prefs.IsHidden("gitops") {
-					@navItem("GitOps", "fa-code-branch", "/gitops", active == "gitops", 0)
-				}
-				@navItem("Storage", "fa-database", "/storage", active == "storage", 0)
-				@navItem("Notifications", "fa-bell", "/notifications", active == "notifications", 0)
-			}
-
-			<!-- Monitoring (collapsible, default collapsed) -->
-			@sidebarSection("monitoring", "Monitoring", prefs) {
 				if !prefs.IsHidden("metrics") {
 					@navItem("Metrics", "fa-chart-line", "/monitoring", active == "monitoring", 0)
 				}
@@ -169,11 +101,36 @@ templ Sidebar(active string, user *types.UserData, stats *types.StatsData, editi
 				if !prefs.IsHidden("dependencies") {
 					@navItem("Dependencies", "fa-sitemap", "/dependencies", active == "dependencies", 0)
 				}
+				if !prefs.IsHidden("config") {
+					@navItem("Config", "fa-cogs", "/config", active == "config", 0)
+				}
+				if !prefs.IsHidden("secrets") {
+					@navItem("Secrets", "fa-lock", "/secrets", active == "secrets", 0)
+				}
+			}
+
+			<!-- Security: every defensive surface, including Trivy CVE
+			     scanning, host firewall, mesh VPN, runtime detection. -->
+			@sidebarSection("security", "Security", prefs) {
+				@navItemDanger("Security", "fa-shield-alt", "/security", active == "security", getBadge(stats, "security"))
+				@navItem("Vulnerabilities", "fa-bug", "/vulnerabilities", active == "vulnerabilities", 0)
+				@navItem("Firewall", "fa-fire", "/firewall", active == "firewall", 0)
+				@navItem("Egress Filter", "fa-filter", "/egress", active == "egress", 0)
+				@navItem("YARA Scan", "fa-microscope", "/scan/yara", active == "yara", 0)
+				@navItem("WireGuard", "fa-shield-halved", "/wireguard", active == "wireguard", 0)
+				@navItem("SSL Observatory", "fa-lock", "/ssl", active == "ssl", 0)
+				@navItem("OPA Policies", "fa-gavel", "/opa-policies", active == "opa-policies", 0)
+				@navItem("Runtime Security", "fa-shield-virus", "/runtime-security", active == "runtime-security", 0)
+				@navItem("Image Signing", "fa-file-signature", "/image-signing", active == "image-signing", 0)
+				if !prefs.IsHidden("compliance") {
+					@navItem("Compliance", "fa-check-double", "/compliance", active == "compliance", 0)
+				}
+				@navItem("Rollback", "fa-undo-alt", "/rollback", active == "rollback", 0)
 			}
 
 			<!-- Privacy & Recon (v26.5.0, gated by feature flag + role) -->
 			if reconEnabled && user != nil && (user.Role == "admin" || user.Role == "operator" || user.Role == "viewer") {
-				@sidebarSection("privacy-recon", "Privacy & Recon", prefs) {
+				@sidebarSection("privacy", "Privacy", prefs) {
 					@navItem("Dashboard", "fa-user-secret", "/recon/dashboard", active == "recon-dashboard", 0)
 					@navItem("Targets", "fa-bullseye", "/recon/targets", active == "recon-targets", 0)
 					@navItem("Scans", "fa-radar", "/recon/scans", active == "recon-scans", 0)
@@ -185,15 +142,49 @@ templ Sidebar(active string, user *types.UserData, stats *types.StatsData, editi
 				}
 			}
 
-			<!-- Advanced -->
-			@sidebarSection("advanced", "Advanced", prefs) {
-				@navItem("OPA Policies", "fa-gavel", "/opa-policies", active == "opa-policies", 0)
-				@navItem("Runtime Security", "fa-shield-virus", "/runtime-security", active == "runtime-security", 0)
-				@navItem("Image Signing", "fa-file-signature", "/image-signing", active == "image-signing", 0)
-				@navItem("Dashboards", "fa-tachometer-alt", "/custom-dashboards", active == "custom-dashboards", 0)
-				@navItem("Ephemeral Envs", "fa-clock", "/ephemeral-environments", active == "ephemeral-envs", 0)
-				@navItem("Manifest Builder", "fa-puzzle-piece", "/manifest-builder", active == "manifest-builder", 0)
+			<!-- Platform: integrations, build tooling, terminals,
+			     external connections. The catch-all for tooling that
+			     isn't pure compute, operations, or security. -->
+			@sidebarSection("platform", "Platform", prefs) {
+				@navItem("Marketplace", "fa-store", "/marketplace", active == "marketplace", 0)
+				@navItem("Image Builder", "fa-hammer", "/image-builder", active == "image-builder", 0)
+				@navItem("Docker Engine", "fab fa-docker", "/config/docker", active == "docker-config", 0)
+				if !prefs.IsHidden("dns") {
+					@navItem("DNS Providers", "fa-cloud", "/dns", active == "dns", 0)
+				}
+				if !prefs.IsHidden("proxy") {
+					@navItem("Reverse Proxy", "fa-random", "/proxy", active == "proxy", 0)
+				}
+				if !prefs.IsHidden("repositories") {
+					@navItem("Repositories", "fa-code-branch", "/integrations/gitea", active == "gitea", 0)
+				}
+				if !prefs.IsHidden("gitops") {
+					@navItem("GitOps", "fa-code-branch", "/gitops", active == "gitops", 0)
+				}
 				@navItem("Git Sync", "fa-sync", "/git-sync", active == "git-sync", 0)
+				@navItem("Manifest Builder", "fa-puzzle-piece", "/manifest-builder", active == "manifest-builder", 0)
+				@navItem("Ephemeral Envs", "fa-clock", "/ephemeral-environments", active == "ephemeral-envs", 0)
+				@navItem("Dashboards", "fa-tachometer-alt", "/custom-dashboards", active == "custom-dashboards", 0)
+				@navItem("Storage", "fa-database", "/storage", active == "storage", 0)
+				@navItem("Notifications", "fa-bell", "/notifications", active == "notifications", 0)
+				@navItem("Terminal Hub", "fa-terminal", "/terminal", active == "terminal", 0)
+				@navItem("Editor", "fa-edit", "/editor", active == "editor", 0)
+				@navItem("Cheat Sheet", "fa-book", "/tools/cheatsheet", active == "cheatsheet", 0)
+				if !prefs.IsHidden("capture") {
+					@navItem("Packet Capture", "fa-satellite-dish", "/tools/capture", active == "capture", 0)
+				}
+				if !prefs.IsHidden("databases") {
+					@navItem("Databases", "fa-database", "/connections/database", active == "connections-database", 0)
+				}
+				if !prefs.IsHidden("ldap") {
+					@navItem("LDAP", "fa-sitemap", "/connections/ldap", active == "connections-ldap", 0)
+				}
+				@navItem("SSH", "fa-terminal", "/connections/ssh", active == "connections-ssh", 0)
+				if !prefs.IsHidden("rdp") {
+					@navItem("RDP", "fa-desktop", "/connections/rdp", active == "connections-rdp", 0)
+				}
+				@navItem("SSH Keys", "fa-key", "/connections/keys", active == "connections-keys", 0)
+				@navItem("Shortcuts", "fa-external-link-alt", "/connections/shortcuts", active == "connections-shortcuts", 0)
 			}
 
 			<!-- Admin (only for admin users, always expanded) -->
@@ -227,7 +218,6 @@ templ Sidebar(active string, user *types.UserData, stats *types.StatsData, editi
 						if !prefs.IsHidden("registries") {
 							@navItem("Registries", "fa-box", "/registries", active == "registries", 0)
 						}
-						@navItem("Jobs", "fa-tasks", "/jobs", active == "jobs", 0)
 						@navItem("License", "fa-key", "/license", active == "license", 0)
 						@navItem("About", "fa-info-circle", "/about", active == "about", 0)
 					</div>
@@ -255,7 +245,7 @@ templ Sidebar(active string, user *types.UserData, stats *types.StatsData, editi
 					<p class="text-xs text-gray-500 truncate">{ getUserRole(user) }</p>
 				</div>
 				<form method="POST" action="/logout" style="display:inline">
-					<button type="submit" class="p-2 text-gray-400 hover:text-red-400 transition-colors" title="Logout">
+					<button type="submit" class="p-2 text-gray-400 hover:text-red-400 transition-colors" title="Logout" aria-label="Logout">
 						<i class="fas fa-sign-out-alt"></i>
 					</button>
 				</form>
@@ -320,12 +310,15 @@ templ sidebarSection(key string, label string, prefs *types.SidebarPreferences) 
 	<div x-data={ fmt.Sprintf("{ open: !%t }", prefs.IsCollapsed(key)) } x-init={ fmt.Sprintf("try { var s = JSON.parse(localStorage.getItem('usulnet-sidebar-collapsed') || '{}'); if ('%s' in s) open = !s['%s']; } catch(e) {}", key, key) }>
 		<button
 			@click={ fmt.Sprintf("open = !open; window._sidebarToggleSection('%s', !open)", key) }
+			:aria-expanded="open ? 'true' : 'false'"
+			aria-label={ fmt.Sprintf("Toggle %s section", label) }
 			class="flex items-center justify-between w-full px-3 mb-2 group"
 		>
 			<span class="text-[10px] font-semibold text-gray-500 uppercase tracking-widest group-hover:text-gray-400 transition-colors">{ label }</span>
 			<i
 				:class="open ? 'fa-chevron-down' : 'fa-chevron-right'"
 				class="fas text-[8px] text-gray-600 group-hover:text-gray-400 transition-colors"
+				aria-hidden="true"
 			></i>
 		</button>
 		<div x-show="open" x-collapse class="space-y-1">

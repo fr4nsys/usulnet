@@ -134,12 +134,12 @@ func VulnManagement(data VulnMgmtData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "\"> <button type=\"submit\" class=\"btn-primary flex items-center gap-2\"><i class=\"fas fa-radar\"></i> Scan All Containers</button></form></div><!-- Trivy Warning -->")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "\"> <button type=\"submit\" class=\"btn-primary flex items-center gap-2\"><i aria-hidden=\"true\" class=\"fas fa-radar\"></i> Scan All Containers</button></form></div><!-- Trivy Warning -->")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			if !data.TrivyAvailable {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<div class=\"card border-l-4 border-l-yellow-500 p-4\"><div class=\"flex items-center gap-3\"><i class=\"fas fa-exclamation-triangle text-yellow-400\"></i><div><h3 class=\"text-sm font-medium text-yellow-400\">CVE Scanner Unavailable</h3><p class=\"text-xs text-gray-400 mt-0.5\">Trivy is not installed or not reachable. Install Trivy to enable full vulnerability management.</p></div></div></div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<div class=\"card border-l-4 border-l-yellow-500 p-4\"><div class=\"flex items-center gap-3\"><i aria-hidden=\"true\" class=\"fas fa-exclamation-triangle text-yellow-400\"></i><div><h3 class=\"text-sm font-medium text-yellow-400\">CVE Scanner Unavailable</h3><p class=\"text-xs text-gray-400 mt-0.5\">Trivy is not installed or not reachable. Install Trivy to enable full vulnerability management.</p></div></div></div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -149,7 +149,7 @@ func VulnManagement(data VulnMgmtData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			if !data.HasTrackedData && len(data.Vulnerabilities) > 0 {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<div class=\"card border-l-4 border-l-blue-500 p-4\"><div class=\"flex items-center gap-3\"><i class=\"fas fa-info-circle text-blue-400\"></i><div><h3 class=\"text-sm font-medium text-blue-400\">Showing Security Scan Results</h3><p class=\"text-xs text-gray-400 mt-0.5\">Click <strong>Scan All Containers</strong> to import CVEs into the tracking system with SLA deadlines and assignment.</p></div></div></div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<div class=\"card border-l-4 border-l-blue-500 p-4\"><div class=\"flex items-center gap-3\"><i aria-hidden=\"true\" class=\"fas fa-info-circle text-blue-400\"></i><div><h3 class=\"text-sm font-medium text-blue-400\">Showing Security Scan Results</h3><p class=\"text-xs text-gray-400 mt-0.5\">Click <strong>Scan All Containers</strong> to import CVEs into the tracking system with SLA deadlines and assignment.</p></div></div></div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -195,7 +195,7 @@ func VulnManagement(data VulnMgmtData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			if data.Stats.SLABreached > 0 {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "<div class=\"card border-l-4 border-l-red-500 p-4\"><div class=\"flex items-center gap-3\"><i class=\"fas fa-exclamation-triangle text-red-400\"></i><div><h3 class=\"text-sm font-medium text-red-400\">SLA Violations</h3><p class=\"text-xs text-gray-400 mt-0.5\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "<div class=\"card border-l-4 border-l-red-500 p-4\"><div class=\"flex items-center gap-3\"><i aria-hidden=\"true\" class=\"fas fa-exclamation-triangle text-red-400\"></i><div><h3 class=\"text-sm font-medium text-red-400\">SLA Violations</h3><p class=\"text-xs text-gray-400 mt-0.5\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -226,7 +226,7 @@ func VulnManagement(data VulnMgmtData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "\" class=\"space-y-4\"><div class=\"flex gap-1 border-b border-dark-600\"><button @click=\"tab = 'vulnerabilities'\" :class=\"tab === 'vulnerabilities' ? 'border-primary-500 text-white' : 'border-transparent text-gray-400 hover:text-gray-300'\" class=\"px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors\">Vulnerabilities (")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "\" class=\"space-y-4\"><div class=\"flex gap-1 border-b border-dark-600\"><button @click=\"tab = 'vulnerabilities'\" :class=\"tab === 'vulnerabilities' ? 'border-primary-500 text-white' : 'border-transparent text-gray-400 hover:text-gray-300'\" class=\"tab-underline\">Vulnerabilities (")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -239,7 +239,7 @@ func VulnManagement(data VulnMgmtData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, ")</button> <button @click=\"tab = 'containers'\" :class=\"tab === 'containers' ? 'border-primary-500 text-white' : 'border-transparent text-gray-400 hover:text-gray-300'\" class=\"px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors\">Container Risk (")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, ")</button> <button @click=\"tab = 'containers'\" :class=\"tab === 'containers' ? 'border-primary-500 text-white' : 'border-transparent text-gray-400 hover:text-gray-300'\" class=\"tab-underline\">Container Risk (")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -257,7 +257,7 @@ func VulnManagement(data VulnMgmtData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			if data.HasTrackedData {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "<button @click=\"tab = 'dashboard'\" :class=\"tab === 'dashboard' ? 'border-primary-500 text-white' : 'border-transparent text-gray-400 hover:text-gray-300'\" class=\"px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors\">Dashboard</button>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "<button @click=\"tab = 'dashboard'\" :class=\"tab === 'dashboard' ? 'border-primary-500 text-white' : 'border-transparent text-gray-400 hover:text-gray-300'\" class=\"tab-underline\">Dashboard</button>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -267,7 +267,7 @@ func VulnManagement(data VulnMgmtData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			if len(data.Vulnerabilities) == 0 {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "<div class=\"card p-12 text-center\"><i class=\"fas fa-shield-alt text-4xl text-green-600 mb-4\"></i><h3 class=\"text-lg font-medium text-white mb-2\">No Vulnerabilities Found</h3><p class=\"text-gray-400\">Run a scan to check for container vulnerabilities</p></div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "<div class=\"card p-12 text-center\"><i aria-hidden=\"true\" class=\"fas fa-shield-alt text-4xl text-green-600 mb-4\"></i><h3 class=\"text-lg font-medium text-white mb-2\">No Vulnerabilities Found</h3><p class=\"text-gray-400\">Run a scan to check for container vulnerabilities</p></div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -292,12 +292,12 @@ func VulnManagement(data VulnMgmtData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			if len(data.Containers) == 0 {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 20, "<div class=\"card p-12 text-center\"><i class=\"fas fa-box text-4xl text-gray-400 mb-4\"></i><h3 class=\"text-lg font-medium text-white mb-2\">No Container Data</h3><p class=\"text-gray-400\">Run a vulnerability scan to assess container risk</p></div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 20, "<div class=\"card p-12 text-center\"><i aria-hidden=\"true\" class=\"fas fa-box text-4xl text-gray-400 mb-4\"></i><h3 class=\"text-lg font-medium text-white mb-2\">No Container Data</h3><p class=\"text-gray-400\">Run a vulnerability scan to assess container risk</p></div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			} else {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 21, "<div class=\"card overflow-hidden\"><table class=\"w-full\"><thead><tr class=\"border-b border-dark-600\"><th class=\"text-left text-xs font-medium text-gray-400 uppercase px-4 py-3\">Container</th><th class=\"text-left text-xs font-medium text-gray-400 uppercase px-4 py-3\">Image</th><th class=\"text-center text-xs font-medium text-gray-400 uppercase px-4 py-3\">Critical</th><th class=\"text-center text-xs font-medium text-gray-400 uppercase px-4 py-3\">High</th><th class=\"text-center text-xs font-medium text-gray-400 uppercase px-4 py-3\">Medium</th><th class=\"text-center text-xs font-medium text-gray-400 uppercase px-4 py-3\">Low</th><th class=\"text-center text-xs font-medium text-gray-400 uppercase px-4 py-3\">Total</th><th class=\"text-left text-xs font-medium text-gray-400 uppercase px-4 py-3\">Risk</th><th class=\"text-left text-xs font-medium text-gray-400 uppercase px-4 py-3\">Last Scan</th></tr></thead> <tbody class=\"divide-y divide-dark-700\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 21, "<div class=\"card overflow-hidden\"><table class=\"w-full\"><thead><tr class=\"border-b border-dark-600\"><th scope=\"col\" class=\"text-left text-xs font-medium text-gray-400 uppercase px-4 py-3\">Container</th><th scope=\"col\" class=\"text-left text-xs font-medium text-gray-400 uppercase px-4 py-3\">Image</th><th scope=\"col\" class=\"text-center text-xs font-medium text-gray-400 uppercase px-4 py-3\">Critical</th><th scope=\"col\" class=\"text-center text-xs font-medium text-gray-400 uppercase px-4 py-3\">High</th><th scope=\"col\" class=\"text-center text-xs font-medium text-gray-400 uppercase px-4 py-3\">Medium</th><th scope=\"col\" class=\"text-center text-xs font-medium text-gray-400 uppercase px-4 py-3\">Low</th><th scope=\"col\" class=\"text-center text-xs font-medium text-gray-400 uppercase px-4 py-3\">Total</th><th scope=\"col\" class=\"text-left text-xs font-medium text-gray-400 uppercase px-4 py-3\">Risk</th><th scope=\"col\" class=\"text-left text-xs font-medium text-gray-400 uppercase px-4 py-3\">Last Scan</th></tr></thead> <tbody class=\"divide-y divide-dark-700\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -692,7 +692,7 @@ func VulnManagement(data VulnMgmtData) templ.Component {
 					return templ_7745c5c3_Err
 				}
 				if len(data.WeeklyTrend) > 0 {
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 69, "<div class=\"card p-5\"><h3 class=\"text-sm font-medium text-gray-400 mb-3\">Weekly Vulnerability Trend (Last 26 Weeks)</h3><div class=\"overflow-x-auto\"><table class=\"w-full text-xs\"><thead><tr class=\"border-b border-dark-600\"><th class=\"text-left text-gray-400 px-2 py-1\">Week</th><th class=\"text-right text-gray-400 px-2 py-1\">Opened</th><th class=\"text-right text-gray-400 px-2 py-1\">Resolved</th><th class=\"text-left text-gray-400 px-4 py-1\">Ratio</th></tr></thead> <tbody class=\"divide-y divide-dark-700\">")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 69, "<div class=\"card p-5\"><h3 class=\"text-sm font-medium text-gray-400 mb-3\">Weekly Vulnerability Trend (Last 26 Weeks)</h3><div class=\"overflow-x-auto\"><table class=\"w-full text-xs\"><thead><tr class=\"border-b border-dark-600\"><th scope=\"col\" class=\"text-left text-gray-400 px-2 py-1\">Week</th><th scope=\"col\" class=\"text-right text-gray-400 px-2 py-1\">Opened</th><th scope=\"col\" class=\"text-right text-gray-400 px-2 py-1\">Resolved</th><th scope=\"col\" class=\"text-left text-gray-400 px-4 py-1\">Ratio</th></tr></thead> <tbody class=\"divide-y divide-dark-700\">")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
@@ -1022,7 +1022,7 @@ func vulnCard(v VulnerabilityView, csrfToken string, tracked bool, users []VulnU
 			return templ_7745c5c3_Err
 		}
 		if v.SLABreached {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 97, "<span class=\"px-2 py-0.5 text-xs bg-red-500/20 text-red-400 rounded flex items-center gap-1\"><i class=\"fas fa-clock text-[10px]\"></i>SLA Breached</span>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 97, "<span class=\"px-2 py-0.5 text-xs bg-red-500/20 text-red-400 rounded flex items-center gap-1\"><i aria-hidden=\"true\" class=\"fas fa-clock text-[10px]\"></i>SLA Breached</span>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -1068,14 +1068,14 @@ func vulnCard(v VulnerabilityView, csrfToken string, tracked bool, users []VulnU
 			return templ_7745c5c3_Err
 		}
 		if v.Package != "" {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 103, "<span><i class=\"fas fa-cube mr-1\"></i>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 103, "<span><i aria-hidden=\"true\" class=\"fas fa-cube mr-1\"></i>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var48 string
 			templ_7745c5c3_Var48, templ_7745c5c3_Err = templ.JoinStringErrs(v.Package)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/vulnmgmt/vulnmgmt.templ`, Line: 410, Col: 56}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/vulnmgmt/vulnmgmt.templ`, Line: 410, Col: 75}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var48))
 			if templ_7745c5c3_Err != nil {
@@ -1088,7 +1088,7 @@ func vulnCard(v VulnerabilityView, csrfToken string, tracked bool, users []VulnU
 			var templ_7745c5c3_Var49 string
 			templ_7745c5c3_Var49, templ_7745c5c3_Err = templ.JoinStringErrs(v.InstalledVer)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/vulnmgmt/vulnmgmt.templ`, Line: 410, Col: 76}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/vulnmgmt/vulnmgmt.templ`, Line: 410, Col: 95}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var49))
 			if templ_7745c5c3_Err != nil {
@@ -1100,14 +1100,14 @@ func vulnCard(v VulnerabilityView, csrfToken string, tracked bool, users []VulnU
 			}
 		}
 		if v.FixedVer != "" {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 106, "<span class=\"text-green-400\"><i class=\"fas fa-arrow-up mr-1\"></i>Fix: ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 106, "<span class=\"text-green-400\"><i aria-hidden=\"true\" class=\"fas fa-arrow-up mr-1\"></i>Fix: ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var50 string
 			templ_7745c5c3_Var50, templ_7745c5c3_Err = templ.JoinStringErrs(v.FixedVer)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/vulnmgmt/vulnmgmt.templ`, Line: 413, Col: 89}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/vulnmgmt/vulnmgmt.templ`, Line: 413, Col: 108}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var50))
 			if templ_7745c5c3_Err != nil {
@@ -1118,14 +1118,14 @@ func vulnCard(v VulnerabilityView, csrfToken string, tracked bool, users []VulnU
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 108, "<span><i class=\"fas fa-box mr-1\"></i>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 108, "<span><i aria-hidden=\"true\" class=\"fas fa-box mr-1\"></i>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var51 string
 		templ_7745c5c3_Var51, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d container(s)", v.ContainerCount))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/vulnmgmt/vulnmgmt.templ`, Line: 415, Col: 93}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/vulnmgmt/vulnmgmt.templ`, Line: 415, Col: 112}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var51))
 		if templ_7745c5c3_Err != nil {
@@ -1136,14 +1136,14 @@ func vulnCard(v VulnerabilityView, csrfToken string, tracked bool, users []VulnU
 			return templ_7745c5c3_Err
 		}
 		if v.SLADeadline != "" {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 110, "<span><i class=\"fas fa-calendar mr-1\"></i>SLA: ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 110, "<span><i aria-hidden=\"true\" class=\"fas fa-calendar mr-1\"></i>SLA: ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var52 string
 			templ_7745c5c3_Var52, templ_7745c5c3_Err = templ.JoinStringErrs(v.SLADeadline)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/vulnmgmt/vulnmgmt.templ`, Line: 417, Col: 69}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/vulnmgmt/vulnmgmt.templ`, Line: 417, Col: 88}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var52))
 			if templ_7745c5c3_Err != nil {
@@ -1155,14 +1155,14 @@ func vulnCard(v VulnerabilityView, csrfToken string, tracked bool, users []VulnU
 			}
 		}
 		if v.Assignee != "" {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 112, "<span class=\"text-primary-400\"><i class=\"fas fa-user mr-1\"></i>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 112, "<span class=\"text-primary-400\"><i aria-hidden=\"true\" class=\"fas fa-user mr-1\"></i>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var53 string
 			templ_7745c5c3_Var53, templ_7745c5c3_Err = templ.JoinStringErrs(v.Assignee)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/vulnmgmt/vulnmgmt.templ`, Line: 420, Col: 82}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/vulnmgmt/vulnmgmt.templ`, Line: 420, Col: 101}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var53))
 			if templ_7745c5c3_Err != nil {
@@ -1173,19 +1173,19 @@ func vulnCard(v VulnerabilityView, csrfToken string, tracked bool, users []VulnU
 				return templ_7745c5c3_Err
 			}
 		} else if tracked {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 114, "<button @click=\"showAssign = !showAssign\" class=\"text-gray-500 hover:text-primary-400 transition-colors\"><i class=\"fas fa-user-plus mr-1\"></i>Assign</button> ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 114, "<button @click=\"showAssign = !showAssign\" class=\"text-gray-500 hover:text-primary-400 transition-colors\"><i aria-hidden=\"true\" class=\"fas fa-user-plus mr-1\"></i>Assign</button> ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 115, "<span><i class=\"fas fa-clock mr-1\"></i>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 115, "<span><i aria-hidden=\"true\" class=\"fas fa-clock mr-1\"></i>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var54 string
 		templ_7745c5c3_Var54, templ_7745c5c3_Err = templ.JoinStringErrs(v.DetectedAt)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/vulnmgmt/vulnmgmt.templ`, Line: 424, Col: 59}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/vulnmgmt/vulnmgmt.templ`, Line: 424, Col: 78}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var54))
 		if templ_7745c5c3_Err != nil {
@@ -1196,14 +1196,14 @@ func vulnCard(v VulnerabilityView, csrfToken string, tracked bool, users []VulnU
 			return templ_7745c5c3_Err
 		}
 		if v.ResolvedAt != "" {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 117, "<span class=\"text-green-400\"><i class=\"fas fa-check mr-1\"></i>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 117, "<span class=\"text-green-400\"><i aria-hidden=\"true\" class=\"fas fa-check mr-1\"></i>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var55 string
 			templ_7745c5c3_Var55, templ_7745c5c3_Err = templ.JoinStringErrs(v.ResolvedAt)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/vulnmgmt/vulnmgmt.templ`, Line: 426, Col: 83}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/vulnmgmt/vulnmgmt.templ`, Line: 426, Col: 102}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var55))
 			if templ_7745c5c3_Err != nil {
@@ -1268,13 +1268,13 @@ func vulnCard(v VulnerabilityView, csrfToken string, tracked bool, users []VulnU
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 125, "\"> <button type=\"submit\" class=\"p-2 text-gray-400 hover:text-yellow-400 transition-colors\" title=\"Start working\"><i class=\"fas fa-play\"></i></button></form>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 125, "\"> <button type=\"submit\" class=\"p-2 text-gray-400 hover:text-yellow-400 transition-colors\" title=\"Start working\"><i aria-hidden=\"true\" class=\"fas fa-play\"></i></button></form>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		}
 		if tracked && v.Status != "resolved" && v.Status != "accepted_risk" {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 126, "<button @click=\"showResolve = !showResolve\" class=\"p-2 text-gray-400 hover:text-green-400 transition-colors\" title=\"Resolve with evidence\"><i class=\"fas fa-check-double\"></i></button><form method=\"POST\" action=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 126, "<button @click=\"showResolve = !showResolve\" class=\"p-2 text-gray-400 hover:text-green-400 transition-colors\" title=\"Resolve with evidence\"><i aria-hidden=\"true\" class=\"fas fa-check-double\"></i></button><form method=\"POST\" action=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -1300,12 +1300,12 @@ func vulnCard(v VulnerabilityView, csrfToken string, tracked bool, users []VulnU
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 128, "\"> <button type=\"submit\" class=\"p-2 text-gray-400 hover:text-blue-400 transition-colors\" title=\"Accept risk\"><i class=\"fas fa-thumbs-up\"></i></button></form>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 128, "\"> <button type=\"submit\" class=\"p-2 text-gray-400 hover:text-blue-400 transition-colors\" title=\"Accept risk\"><i aria-hidden=\"true\" class=\"fas fa-thumbs-up\"></i></button></form>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			if len(users) > 0 {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 129, "<button @click=\"showAssign = !showAssign\" class=\"p-2 text-gray-400 hover:text-primary-400 transition-colors\" title=\"Assign\"><i class=\"fas fa-user-tag\"></i></button>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 129, "<button @click=\"showAssign = !showAssign\" class=\"p-2 text-gray-400 hover:text-primary-400 transition-colors\" title=\"Assign\"><i aria-hidden=\"true\" class=\"fas fa-user-tag\"></i></button>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}

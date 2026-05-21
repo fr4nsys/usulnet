@@ -5,7 +5,6 @@
 package main
 
 import (
-	"bufio"
 	"bytes"
 	"context"
 	"encoding/json"
@@ -14,7 +13,6 @@ import (
 	"io"
 	"net/http"
 	"net/url"
-	"os"
 	"strconv"
 	"strings"
 	"text/tabwriter"
@@ -22,6 +20,8 @@ import (
 
 	"github.com/spf13/cobra"
 	"gopkg.in/yaml.v3"
+
+	"github.com/fr4nsys/usulnet/cmd/usulnet/internal/apiclient"
 )
 
 // =============================================================================
@@ -63,7 +63,16 @@ func (e *infraError) Error() string { return e.msg }
 // =============================================================================
 
 // outputFormat is the value of the global --output flag. Default is "table".
-var outputFormat string
+// outputJSONShortcut is the global --json flag; when true it forces
+// outputFormat to "json" via the root command's PersistentPreRun.
+// quietMode is the global --quiet flag; when true the CLI suppresses
+// non-essential informational lines (e.g. "stripped: foo -> bar"). It
+// does not affect errors or primary data output.
+var (
+	outputFormat       string
+	outputJSONShortcut bool
+	quietMode          bool
+)
 
 // validateOutputFormat returns a usageError if the format isn't supported.
 func validateOutputFormat() error {
@@ -74,16 +83,43 @@ func validateOutputFormat() error {
 	return &usageError{msg: fmt.Sprintf("invalid --output %q (want table|json|yaml)", outputFormat)}
 }
 
+// resolveOutputFlags must be called from a PersistentPreRun on rootCmd. It
+// applies the --json convenience flag (forcing --output to "json") and
+// validates the resolved format. Centralized here so the precedence —
+// --json wins over an explicit --output — is in exactly one place.
+func resolveOutputFlags() error {
+	if outputJSONShortcut {
+		outputFormat = "json"
+	}
+	return validateOutputFormat()
+}
+
+// infof writes an informational line to the command's stdout, unless
+// --quiet is set. Use for non-essential success summaries (e.g.
+// "stripped: foo -> bar"). Errors and primary data output must NOT
+// route through infof — they are always emitted regardless of --quiet.
+func infof(cmd *cobra.Command, format string, args ...any) {
+	if quietMode {
+		return
+	}
+	_, _ = fmt.Fprintf(cmd.OutOrStdout(), format, args...)
+}
+
 // tableRow is one row in a table-formatted output. The first slice is the
 // header.
 type tableRow []string
 
-// writeOutput serializes `data` to the cobra command's stdout using the
-// current --output format. table rendering requires the caller to supply
-// rows (data must be of type [][]string, with the header as the first row).
+// writeView serializes a result using the current --output format.
 //
-// For json and yaml, `data` is serialized verbatim.
-func writeOutput(cmd *cobra.Command, data any) error {
+//   - json/yaml: data is marshaled.
+//   - table:     headers are printed on the first line, followed by each row
+//     in rows. If headers is nil the function falls through to JSON to
+//     preserve the existing behavior of callers that have nothing tabular
+//     to render (e.g. a single-record API response with no headers built).
+//
+// writeView centralizes the json/yaml-vs-table branch so every list and
+// record command can keep one path instead of two (the audit's H2 item).
+func writeView(cmd *cobra.Command, data any, headers []string, rows [][]string) error {
 	w := cmd.OutOrStdout()
 	switch strings.ToLower(outputFormat) {
 	case "json":
@@ -98,15 +134,17 @@ func writeOutput(cmd *cobra.Command, data any) error {
 		_, err = w.Write(b)
 		return err
 	default:
-		// table
-		rows, ok := data.([]tableRow)
-		if !ok {
-			// Fall back to JSON when caller hasn't built rows for table mode.
+		if headers == nil {
 			enc := json.NewEncoder(w)
 			enc.SetIndent("", "  ")
 			return enc.Encode(data)
 		}
-		return writeTable(w, rows)
+		tableRows := make([]tableRow, 0, len(rows)+1)
+		tableRows = append(tableRows, tableRow(headers))
+		for _, row := range rows {
+			tableRows = append(tableRows, tableRow(row))
+		}
+		return writeTable(w, tableRows)
 	}
 }
 
@@ -125,144 +163,35 @@ func writeTable(w io.Writer, rows []tableRow) error {
 	return tw.Flush()
 }
 
+// formatError renders err for stderr. In default mode the output is
+// "usulnet: <message>"; under --output json the message is emitted as
+// a structured record so scripts can parse it.
+//
+// This is the central H4 formatter — every error that escapes
+// rootCmd.Execute() goes through here.
+func formatError(err error) string {
+	code, ok := metaExitCode(err)
+	if !ok {
+		code = 1
+	}
+	if strings.EqualFold(outputFormat, "json") {
+		b, jerr := json.Marshal(struct {
+			Error string `json:"error"`
+			Code  int    `json:"code"`
+		}{Error: err.Error(), Code: code})
+		if jerr == nil {
+			return string(b)
+		}
+	}
+	return "usulnet: " + err.Error()
+}
+
 // =============================================================================
-// API client — a deliberately minimal HTTP client for /api/v1/recon and
-// /api/v1/metadata. No existing client lives in internal/api/client, so this
-// CLI builds one in-process; it reads $USULNET_API_URL and $USULNET_API_TOKEN
-// (matching the convention adopted by every other usulnet CLI integration —
-// see docs/v26.5/technical-notes.md "CLI conventions").
+// API client wiring — the actual HTTP client lives in
+// cmd/usulnet/internal/apiclient. The recon + meta trees both build a
+// client via that package; this file just hosts the per-tree options and
+// the error→exit-code translation (hasReconError below).
 // =============================================================================
-
-// apiClient wraps the local server's HTTP API.
-type apiClient struct {
-	baseURL string
-	token   string
-	hc      *http.Client
-}
-
-// apiClientOptions are constructor options for apiClient. Empty fields are
-// resolved from $USULNET_API_URL and $USULNET_API_TOKEN.
-type apiClientOptions struct {
-	BaseURL string
-	Token   string
-	Timeout time.Duration
-}
-
-// newAPIClient resolves connection info from opts then env, validating that
-// at least a base URL is configured.
-func newAPIClient(opts apiClientOptions) (*apiClient, error) {
-	if opts.BaseURL == "" {
-		opts.BaseURL = os.Getenv("USULNET_API_URL")
-	}
-	if opts.Token == "" {
-		opts.Token = os.Getenv("USULNET_API_TOKEN")
-	}
-	if opts.BaseURL == "" {
-		return nil, &infraError{
-			msg:  "no API URL configured: set --server or $USULNET_API_URL",
-			code: exitServerUnreach,
-		}
-	}
-	if opts.Timeout <= 0 {
-		opts.Timeout = 30 * time.Second
-	}
-	return &apiClient{
-		baseURL: strings.TrimRight(opts.BaseURL, "/"),
-		token:   opts.Token,
-		hc:      &http.Client{Timeout: opts.Timeout},
-	}, nil
-}
-
-// do executes a JSON request and decodes the response into `out` when non-nil.
-// Non-2xx responses are surfaced as an error containing the HTTP status and a
-// truncated body.
-func (c *apiClient) do(ctx context.Context, method, path string, body, out any) error {
-	var reqBody io.Reader
-	if body != nil {
-		b, err := json.Marshal(body)
-		if err != nil {
-			return fmt.Errorf("encode request: %w", err)
-		}
-		reqBody = bytes.NewReader(b)
-	}
-	req, err := http.NewRequestWithContext(ctx, method, c.baseURL+path, reqBody)
-	if err != nil {
-		return err
-	}
-	if body != nil {
-		req.Header.Set("Content-Type", "application/json")
-	}
-	req.Header.Set("Accept", "application/json")
-	if c.token != "" {
-		req.Header.Set("Authorization", "Bearer "+c.token)
-	}
-	resp, err := c.hc.Do(req)
-	if err != nil {
-		return &infraError{msg: fmt.Sprintf("api request: %v", err), code: exitServerUnreach}
-	}
-	defer func() { _ = resp.Body.Close() }()
-	if resp.StatusCode == http.StatusUnauthorized || resp.StatusCode == http.StatusForbidden {
-		return &infraError{
-			msg:  fmt.Sprintf("api %s %s: %s", method, path, resp.Status),
-			code: exitAuth,
-		}
-	}
-	if resp.StatusCode >= 400 {
-		buf, _ := io.ReadAll(io.LimitReader(resp.Body, 4096))
-		return fmt.Errorf("api %s %s: %s: %s", method, path, resp.Status, bytes.TrimSpace(buf))
-	}
-	if out == nil || resp.StatusCode == http.StatusNoContent {
-		return nil
-	}
-	return json.NewDecoder(resp.Body).Decode(out)
-}
-
-// stream issues a GET that consumes a text/event-stream response, invoking
-// onEvent for each parsed SSE event until the context is canceled or the
-// stream closes.
-func (c *apiClient) stream(ctx context.Context, path string, onEvent func(event, data string)) error {
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, c.baseURL+path, nil)
-	if err != nil {
-		return err
-	}
-	req.Header.Set("Accept", "text/event-stream")
-	if c.token != "" {
-		req.Header.Set("Authorization", "Bearer "+c.token)
-	}
-	hc := &http.Client{Timeout: 0} // SSE keeps the connection open.
-	resp, err := hc.Do(req)
-	if err != nil {
-		return &infraError{msg: fmt.Sprintf("api stream: %v", err), code: exitServerUnreach}
-	}
-	defer func() { _ = resp.Body.Close() }()
-	if resp.StatusCode >= 400 {
-		return fmt.Errorf("api stream %s: %s", path, resp.Status)
-	}
-	scanner := bufio.NewScanner(resp.Body)
-	scanner.Buffer(make([]byte, 0, 64*1024), 1024*1024)
-
-	var event, data string
-	for scanner.Scan() {
-		line := scanner.Text()
-		switch {
-		case line == "":
-			if data != "" {
-				onEvent(event, data)
-			}
-			event, data = "", ""
-		case strings.HasPrefix(line, "event:"):
-			event = strings.TrimSpace(strings.TrimPrefix(line, "event:"))
-		case strings.HasPrefix(line, "data:"):
-			if data != "" {
-				data += "\n"
-			}
-			data += strings.TrimSpace(strings.TrimPrefix(line, "data:"))
-		}
-		// Lines starting with ":" are SSE comments / heartbeats; they
-		// match none of the cases above and are silently ignored.
-	}
-	return scanner.Err()
-}
 
 // =============================================================================
 // DTOs — kept in sync with internal/api/handlers/recon.go response shapes.
@@ -328,6 +257,8 @@ var reconCmd = &cobra.Command{
 Every recon command talks to the running usulnet server over the
 local API. Configure the server via --server or $USULNET_API_URL,
 and authenticate via $USULNET_API_TOKEN.`,
+	Args: cobra.NoArgs,
+	Run:  func(cmd *cobra.Command, args []string) { _ = cmd.Help() },
 }
 
 // flags shared by recon
@@ -355,13 +286,34 @@ var scanReportFormat string
 
 var reconTargetCmd = &cobra.Command{
 	Use:   "target",
-	Short: "Manage recon targets",
+	Short: "Register, list, or verify ownership of recon targets",
+	Long: `Manage the targets a recon scan can be aimed at.
+
+  add <type> <value>     register a new target
+  list                   show every target you own
+  verify <id> <method>   prove ownership before a scan can start
+
+Every recon scan requires a verified target. Ownership verification
+runs out of band (DNS TXT, e-mail link, RDAP, admin-attest, or
+self-assert) and is recorded in the audit log.`,
+	Args: cobra.NoArgs,
+	Run:  func(cmd *cobra.Command, args []string) { _ = cmd.Help() },
 }
 
 var reconTargetAddCmd = &cobra.Command{
 	Use:   "add <type> <value>",
 	Short: "Create a recon target (email|phone|username|domain|ip|ip_range)",
-	Args:  cobra.ExactArgs(2),
+	Long: `Register a new recon target.
+
+<type> must be one of: email, phone, username, domain, ip, ip_range.
+<value> is the literal identifier (e.g. me@example.com, 192.168.1.1).
+
+Once registered the target must be verified (recon target verify)
+before scans can be queued against it.`,
+	Example: `  usulnet recon target add email me@example.com
+  usulnet recon target add domain example.com
+  usulnet recon target add ip 192.168.1.1 --output json`,
+	Args: cobra.ExactArgs(2),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		if err := validateOutputFormat(); err != nil {
 			return err
@@ -372,17 +324,23 @@ var reconTargetAddCmd = &cobra.Command{
 		}
 		body := map[string]string{"type": args[0], "value": args[1]}
 		var resp targetResponse
-		if err := client.do(cmd.Context(), http.MethodPost, "/api/v1/recon/targets", body, &resp); err != nil {
+		if err := client.Do(cmd.Context(), http.MethodPost, "/api/v1/recon/targets", body, &resp); err != nil {
 			return err
 		}
-		return writeOutput(cmd, targetRows([]targetResponse{resp}, true))
+		return writeView(cmd, resp, targetTableHeaders, targetTableRows([]targetResponse{resp}))
 	},
 }
 
 var reconTargetListCmd = &cobra.Command{
 	Use:   "list",
 	Short: "List recon targets",
-	Args:  cobra.NoArgs,
+	Long: `Print every registered recon target.
+
+Default output is a table with ID, TYPE, VALUE, LABEL, and CREATED
+columns. Use --output json|yaml for scripting.`,
+	Example: `  usulnet recon target list
+  usulnet recon target list --output json`,
+	Args: cobra.NoArgs,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		if err := validateOutputFormat(); err != nil {
 			return err
@@ -392,20 +350,23 @@ var reconTargetListCmd = &cobra.Command{
 			return err
 		}
 		var resp []targetResponse
-		if err := client.do(cmd.Context(), http.MethodGet, "/api/v1/recon/targets", nil, &resp); err != nil {
+		if err := client.Do(cmd.Context(), http.MethodGet, "/api/v1/recon/targets", nil, &resp); err != nil {
 			return err
 		}
-		if outputFormat == "json" || outputFormat == "yaml" {
-			return writeOutput(cmd, resp)
-		}
-		return writeOutput(cmd, targetRows(resp, true))
+		return writeView(cmd, resp, targetTableHeaders, targetTableRows(resp))
 	},
 }
 
 var reconTargetVerifyCmd = &cobra.Command{
 	Use:   "verify <id>",
 	Short: "Start ownership verification (uses rdap_match by default)",
-	Args:  cobra.ExactArgs(1),
+	Long: `Begin ownership verification for the given target.
+
+Currently rdap_match is the only supported method. The response
+includes the proof ID and the current status (pending|verified|
+failed). Scans cannot run against an unverified target.`,
+	Example: `  usulnet recon target verify 11111111-1111-1111-1111-111111111111`,
+	Args:    cobra.ExactArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		if err := validateOutputFormat(); err != nil {
 			return err
@@ -416,21 +377,17 @@ var reconTargetVerifyCmd = &cobra.Command{
 		}
 		body := map[string]string{"method": "rdap_match"}
 		var resp ownershipProofResponse
-		err = client.do(cmd.Context(),
+		err = client.Do(cmd.Context(),
 			http.MethodPost,
 			"/api/v1/recon/targets/"+url.PathEscape(args[0])+"/ownership/verify",
 			body, &resp)
 		if err != nil {
 			return err
 		}
-		if outputFormat == "json" || outputFormat == "yaml" {
-			return writeOutput(cmd, resp)
-		}
-		rows := []tableRow{
-			{"ID", "TARGET", "METHOD", "STATUS", "VERIFIED_AT"},
-			{resp.ID, resp.TargetID, resp.Method, resp.Status, resp.VerifiedAt},
-		}
-		return writeOutput(cmd, rows)
+		return writeView(cmd, resp,
+			[]string{"ID", "TARGET", "METHOD", "STATUS", "VERIFIED_AT"},
+			[][]string{{resp.ID, resp.TargetID, resp.Method, resp.Status, resp.VerifiedAt}},
+		)
 	},
 }
 
@@ -438,13 +395,29 @@ var reconTargetVerifyCmd = &cobra.Command{
 
 var reconProfileCmd = &cobra.Command{
 	Use:   "profile",
-	Short: "Manage recon profiles",
+	Short: "List the predefined scan profiles available to targets",
+	Long: `Inspect the catalogue of scan profiles a target can be paired
+with. Profiles bundle a curated module set and time budget so an
+operator does not have to assemble one by hand.
+
+  list   show every profile, built-in or user-defined
+
+Built-in profiles are immutable. User-defined profiles are created
+through the web UI; this subcommand is read-only.`,
+	Args: cobra.NoArgs,
+	Run:  func(cmd *cobra.Command, args []string) { _ = cmd.Help() },
 }
 
 var reconProfileListCmd = &cobra.Command{
 	Use:   "list",
 	Short: "List recon profiles",
-	Args:  cobra.NoArgs,
+	Long: `Print every available scan profile.
+
+Output columns: ID, NAME, KIND, TARGET_TYPES (comma-separated).
+Pass the profile name (or UUID) to "recon scan start --profile".`,
+	Example: `  usulnet recon profile list
+  usulnet recon profile list --output json`,
+	Args: cobra.NoArgs,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		if err := validateOutputFormat(); err != nil {
 			return err
@@ -454,17 +427,17 @@ var reconProfileListCmd = &cobra.Command{
 			return err
 		}
 		var resp []profileResponse
-		if err := client.do(cmd.Context(), http.MethodGet, "/api/v1/recon/profiles", nil, &resp); err != nil {
+		if err := client.Do(cmd.Context(), http.MethodGet, "/api/v1/recon/profiles", nil, &resp); err != nil {
 			return err
 		}
-		if outputFormat == "json" || outputFormat == "yaml" {
-			return writeOutput(cmd, resp)
-		}
-		rows := []tableRow{{"ID", "NAME", "KIND", "TARGET_TYPES"}}
+		rows := make([][]string, 0, len(resp))
 		for _, p := range resp {
-			rows = append(rows, tableRow{p.ID, p.Name, p.Kind, strings.Join(p.TargetTypes, ",")})
+			rows = append(rows, []string{p.ID, p.Name, p.Kind, strings.Join(p.TargetTypes, ",")})
 		}
-		return writeOutput(cmd, rows)
+		return writeView(cmd, resp,
+			[]string{"ID", "NAME", "KIND", "TARGET_TYPES"},
+			rows,
+		)
 	},
 }
 
@@ -472,13 +445,38 @@ var reconProfileListCmd = &cobra.Command{
 
 var reconScanCmd = &cobra.Command{
 	Use:   "scan",
-	Short: "Manage recon scans",
+	Short: "Start, list, watch, cancel, or download recon scan reports",
+	Long: `Drive recon scans from the CLI. A scan pairs a verified
+target with a profile and runs the configured modules in the
+sandboxed recon container.
+
+  start   queue a new scan for a target + profile
+  list    show recent scans with state and progress
+  status  poll one scan for live progress
+  cancel  request cancellation of a running scan
+  report  download a finished scan's report as JSON, CSV, or PDF
+
+Scans cannot start until the target's ownership has been verified
+and recon has been enabled by an admin.`,
+	Args: cobra.NoArgs,
+	Run:  func(cmd *cobra.Command, args []string) { _ = cmd.Help() },
 }
 
 var reconScanStartCmd = &cobra.Command{
 	Use:   "start <target-id>",
 	Short: "Start a scan against a target using the named profile",
-	Args:  cobra.ExactArgs(1),
+	Long: `Queue a scan against the given target with the named profile.
+
+--profile is required; pass either the profile name (see "recon
+profile list") or a UUID.
+
+Without --watch, the command returns once the scan is queued and
+prints the scan record. With --watch the command streams scan
+events from /api/v1/recon/scans/<id>/events until the scan
+completes or the connection drops.`,
+	Example: `  usulnet recon scan start 11111111-1111-1111-1111-111111111111 --profile default
+  usulnet recon scan start <target-id> --profile osint --watch`,
+	Args: cobra.ExactArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		if err := validateOutputFormat(); err != nil {
 			return err
@@ -496,21 +494,18 @@ var reconScanStartCmd = &cobra.Command{
 		}
 		body := map[string]string{"target_id": args[0], "profile_id": profileID}
 		var resp scanResponse
-		if err := client.do(cmd.Context(), http.MethodPost, "/api/v1/recon/scans", body, &resp); err != nil {
+		if err := client.Do(cmd.Context(), http.MethodPost, "/api/v1/recon/scans", body, &resp); err != nil {
 			return err
 		}
 		if !scanStartWatch {
-			if outputFormat == "json" || outputFormat == "yaml" {
-				return writeOutput(cmd, resp)
-			}
-			return writeOutput(cmd, scanRows([]scanResponse{resp}, true))
+			return writeView(cmd, resp, scanTableHeaders, scanTableRows([]scanResponse{resp}))
 		}
 		// Watch: stream events from the scan. The endpoint is best-effort —
 		// older servers without the SSE route still get a useful summary
 		// printed above and then a clean exit.
 		ctx := cmd.Context()
 		path := "/api/v1/recon/scans/" + url.PathEscape(resp.ID) + "/events"
-		err = client.stream(ctx, path, func(event, data string) {
+		err = client.Stream(ctx, path, func(event, data string) {
 			line := summarizeEvent(event, data)
 			if line == "" {
 				return
@@ -529,7 +524,14 @@ var reconScanStartCmd = &cobra.Command{
 var reconScanListCmd = &cobra.Command{
 	Use:   "list",
 	Short: "List recent scans",
-	Args:  cobra.NoArgs,
+	Long: `Print recent scans across every target.
+
+Default output is a table; use --output json|yaml for scripts.
+The server's own filtering parameters are not exposed here yet —
+use "recon findings list --target" to narrow further.`,
+	Example: `  usulnet recon scan list
+  usulnet recon scan list --output json`,
+	Args: cobra.NoArgs,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		if err := validateOutputFormat(); err != nil {
 			return err
@@ -539,20 +541,22 @@ var reconScanListCmd = &cobra.Command{
 			return err
 		}
 		var resp []scanResponse
-		if err := client.do(cmd.Context(), http.MethodGet, "/api/v1/recon/scans", nil, &resp); err != nil {
+		if err := client.Do(cmd.Context(), http.MethodGet, "/api/v1/recon/scans", nil, &resp); err != nil {
 			return err
 		}
-		if outputFormat == "json" || outputFormat == "yaml" {
-			return writeOutput(cmd, resp)
-		}
-		return writeOutput(cmd, scanRows(resp, true))
+		return writeView(cmd, resp, scanTableHeaders, scanTableRows(resp))
 	},
 }
 
 var reconScanStatusCmd = &cobra.Command{
 	Use:   "status <scan-id>",
 	Short: "Show one scan's current status",
-	Args:  cobra.ExactArgs(1),
+	Long: `Fetch the current status, engine, and timestamps for a
+single scan by ID. Status is one of pending|running|completed|
+failed|canceled.`,
+	Example: `  usulnet recon scan status aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa
+  usulnet recon scan status <scan-id> --output json`,
+	Args: cobra.ExactArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		if err := validateOutputFormat(); err != nil {
 			return err
@@ -563,30 +567,33 @@ var reconScanStatusCmd = &cobra.Command{
 		}
 		var resp scanResponse
 		path := "/api/v1/recon/scans/" + url.PathEscape(args[0])
-		if err := client.do(cmd.Context(), http.MethodGet, path, nil, &resp); err != nil {
+		if err := client.Do(cmd.Context(), http.MethodGet, path, nil, &resp); err != nil {
 			return err
 		}
-		if outputFormat == "json" || outputFormat == "yaml" {
-			return writeOutput(cmd, resp)
-		}
-		return writeOutput(cmd, scanRows([]scanResponse{resp}, true))
+		return writeView(cmd, resp, scanTableHeaders, scanTableRows([]scanResponse{resp}))
 	},
 }
 
 var reconScanCancelCmd = &cobra.Command{
 	Use:   "cancel <scan-id>",
 	Short: "Cancel a running or queued scan",
-	Args:  cobra.ExactArgs(1),
+	Long: `Request cancellation of a running or queued scan.
+
+A finished scan (completed|failed|canceled) is left as-is; the
+server responds 204 in both cases. Prints "canceled <id>" on
+success.`,
+	Example: `  usulnet recon scan cancel aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa`,
+	Args:    cobra.ExactArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		client, err := reconClient()
 		if err != nil {
 			return err
 		}
 		path := "/api/v1/recon/scans/" + url.PathEscape(args[0])
-		if err := client.do(cmd.Context(), http.MethodDelete, path, nil, nil); err != nil {
+		if err := client.Do(cmd.Context(), http.MethodDelete, path, nil, nil); err != nil {
 			return err
 		}
-		_, _ = fmt.Fprintf(cmd.OutOrStdout(), "canceled %s\n", args[0])
+		infof(cmd, "canceled %s\n", args[0])
 		return nil
 	},
 }
@@ -594,7 +601,15 @@ var reconScanCancelCmd = &cobra.Command{
 var reconScanReportCmd = &cobra.Command{
 	Use:   "report <scan-id>",
 	Short: "Download a scan report (--format json|csv|pdf, default json)",
-	Args:  cobra.ExactArgs(1),
+	Long: `Download a completed scan's report.
+
+The body is streamed to stdout — redirect to a file with
+"> report.<ext>". Format is selected with --format (json|csv|pdf,
+default json).`,
+	Example: `  usulnet recon scan report <scan-id> > report.json
+  usulnet recon scan report <scan-id> --format csv > report.csv
+  usulnet recon scan report <scan-id> --format pdf > report.pdf`,
+	Args: cobra.ExactArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		format := strings.ToLower(scanReportFormat)
 		if format == "" {
@@ -610,21 +625,23 @@ var reconScanReportCmd = &cobra.Command{
 			return err
 		}
 		path := "/api/v1/recon/scans/" + url.PathEscape(args[0]) + "/report." + format
-		req, err := http.NewRequestWithContext(cmd.Context(), http.MethodGet, client.baseURL+path, nil)
+		req, err := client.NewRequest(cmd.Context(), http.MethodGet, path, nil)
 		if err != nil {
 			return err
 		}
-		if client.token != "" {
-			req.Header.Set("Authorization", "Bearer "+client.token)
-		}
-		resp, err := client.hc.Do(req)
+		resp, err := client.HTTPClient().Do(req)
 		if err != nil {
-			return &infraError{msg: fmt.Sprintf("api request: %v", err), code: exitServerUnreach}
+			return &apiclient.ErrNetwork{Op: "GET " + path, Err: err}
 		}
 		defer func() { _ = resp.Body.Close() }()
 		if resp.StatusCode >= 400 {
 			buf, _ := io.ReadAll(io.LimitReader(resp.Body, 4096))
-			return fmt.Errorf("api report: %s: %s", resp.Status, bytes.TrimSpace(buf))
+			return &apiclient.ErrStatus{
+				Method: http.MethodGet,
+				Path:   path,
+				Status: resp.Status,
+				Body:   bytes.TrimSpace(buf),
+			}
 		}
 		_, err = io.Copy(cmd.OutOrStdout(), resp.Body)
 		return err
@@ -635,13 +652,32 @@ var reconScanReportCmd = &cobra.Command{
 
 var reconFindingsCmd = &cobra.Command{
 	Use:   "findings",
-	Short: "Inspect recon findings",
+	Short: "Browse findings produced by completed scans",
+	Long: `Query the findings table that recon scans write to. Findings
+are grouped by source module (e.g. sfp_shodan, sfp_hibp) and tagged
+with a severity ladder (high / medium / low / info).
+
+  list   page through findings with optional filters
+
+Reads are scoped to the targets the calling user owns; admins see
+every finding. The CLI uses the same auth surface as the web UI —
+$USULNET_API_TOKEN or --token.`,
+	Args: cobra.NoArgs,
+	Run:  func(cmd *cobra.Command, args []string) { _ = cmd.Help() },
 }
 
 var reconFindingsListCmd = &cobra.Command{
 	Use:   "list",
 	Short: "List findings, optionally filtered by --target and --severity",
-	Args:  cobra.NoArgs,
+	Long: `List findings.
+
+Without --target, the most recent scan's findings are listed.
+With --target, every scan for that target is aggregated.
+--severity (low|medium|high|critical) filters within the result.`,
+	Example: `  usulnet recon findings list
+  usulnet recon findings list --target <target-id>
+  usulnet recon findings list --target <target-id> --severity high --output json`,
+	Args: cobra.NoArgs,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		if err := validateOutputFormat(); err != nil {
 			return err
@@ -665,19 +701,19 @@ var reconFindingsListCmd = &cobra.Command{
 				path += "?severity=" + url.QueryEscape(findingsSeverity)
 			}
 			var batch []findingResponse
-			if err := client.do(cmd.Context(), http.MethodGet, path, nil, &batch); err != nil {
+			if err := client.Do(cmd.Context(), http.MethodGet, path, nil, &batch); err != nil {
 				return err
 			}
 			out = append(out, batch...)
 		}
-		if outputFormat == "json" || outputFormat == "yaml" {
-			return writeOutput(cmd, out)
-		}
-		rows := []tableRow{{"SEVERITY", "MODULE", "TARGET", "VALUE"}}
+		rows := make([][]string, 0, len(out))
 		for _, f := range out {
-			rows = append(rows, tableRow{f.Severity, f.Module, f.TargetID, truncate(f.Value, 60)})
+			rows = append(rows, []string{f.Severity, f.Module, f.TargetID, truncate(f.Value, 60)})
 		}
-		return writeOutput(cmd, rows)
+		return writeView(cmd, out,
+			[]string{"SEVERITY", "MODULE", "TARGET", "VALUE"},
+			rows,
+		)
 	},
 }
 
@@ -685,11 +721,11 @@ var reconFindingsListCmd = &cobra.Command{
 // Helpers
 // =============================================================================
 
-// reconClient resolves an apiClient from the recon-tree flags + env. It is
-// re-resolved per command so unit tests can swap $USULNET_API_URL between
-// invocations.
-func reconClient() (*apiClient, error) {
-	return newAPIClient(apiClientOptions{
+// reconClient resolves an apiclient.Client from the recon-tree flags +
+// env. It is re-resolved per command so unit tests can swap
+// $USULNET_API_URL between invocations.
+func reconClient() (*apiclient.Client, error) {
+	return apiclient.New(apiclient.Options{
 		BaseURL: reconAPIURL,
 		Token:   reconAPIToken,
 	})
@@ -698,12 +734,12 @@ func reconClient() (*apiClient, error) {
 // resolveProfileID looks up a profile by name (the form the CLI accepts) and
 // returns its UUID. Callers may also pass a raw UUID, in which case it is
 // returned verbatim.
-func resolveProfileID(ctx context.Context, client *apiClient, nameOrID string) (string, error) {
+func resolveProfileID(ctx context.Context, client *apiclient.Client, nameOrID string) (string, error) {
 	if looksLikeUUID(nameOrID) {
 		return nameOrID, nil
 	}
 	var profiles []profileResponse
-	if err := client.do(ctx, http.MethodGet, "/api/v1/recon/profiles", nil, &profiles); err != nil {
+	if err := client.Do(ctx, http.MethodGet, "/api/v1/recon/profiles", nil, &profiles); err != nil {
 		return "", err
 	}
 	for _, p := range profiles {
@@ -717,13 +753,13 @@ func resolveProfileID(ctx context.Context, client *apiClient, nameOrID string) (
 // listScansForFilter returns the scans the findings command should aggregate
 // over. When targetID is empty it returns the most recent scan (one item);
 // otherwise every scan for that target.
-func listScansForFilter(ctx context.Context, client *apiClient, targetID string) ([]scanResponse, error) {
+func listScansForFilter(ctx context.Context, client *apiclient.Client, targetID string) ([]scanResponse, error) {
 	path := "/api/v1/recon/scans"
 	if targetID != "" {
 		path += "?target_id=" + url.QueryEscape(targetID)
 	}
 	var scans []scanResponse
-	if err := client.do(ctx, http.MethodGet, path, nil, &scans); err != nil {
+	if err := client.Do(ctx, http.MethodGet, path, nil, &scans); err != nil {
 		return nil, err
 	}
 	if targetID == "" && len(scans) > 1 {
@@ -753,26 +789,28 @@ func looksLikeUUID(s string) bool {
 	return true
 }
 
-func targetRows(items []targetResponse, header bool) []tableRow {
-	rows := make([]tableRow, 0, len(items)+1)
-	if header {
-		rows = append(rows, tableRow{"ID", "TYPE", "VALUE", "LABEL", "CREATED"})
-	}
+// targetTableHeaders / targetTableRows split the table view of a target
+// list from its column names. Used together with writeView so json/yaml
+// output gets the structured response while table output gets the
+// human-readable columns.
+var targetTableHeaders = []string{"ID", "TYPE", "VALUE", "LABEL", "CREATED"}
+
+func targetTableRows(items []targetResponse) [][]string {
+	out := make([][]string, 0, len(items))
 	for _, t := range items {
-		rows = append(rows, tableRow{t.ID, t.Type, t.Value, t.Label, t.CreatedAt})
+		out = append(out, []string{t.ID, t.Type, t.Value, t.Label, t.CreatedAt})
 	}
-	return rows
+	return out
 }
 
-func scanRows(items []scanResponse, header bool) []tableRow {
-	rows := make([]tableRow, 0, len(items)+1)
-	if header {
-		rows = append(rows, tableRow{"ID", "TARGET", "PROFILE", "STATUS", "STARTED", "FINISHED"})
-	}
+var scanTableHeaders = []string{"ID", "TARGET", "PROFILE", "STATUS", "STARTED", "FINISHED"}
+
+func scanTableRows(items []scanResponse) [][]string {
+	out := make([][]string, 0, len(items))
 	for _, s := range items {
-		rows = append(rows, tableRow{s.ID, s.TargetID, s.ProfileID, s.Status, s.StartedAt, s.FinishedAt})
+		out = append(out, []string{s.ID, s.TargetID, s.ProfileID, s.Status, s.StartedAt, s.FinishedAt})
 	}
-	return rows
+	return out
 }
 
 // summarizeEvent renders one SSE record as a one-line summary.
@@ -822,8 +860,12 @@ func truncate(s string, n int) string {
 const reconLocalArtifactsDir = "metadata-cli"
 
 // hasReconError reports whether err — possibly wrapped — carries an
-// exit-code hint. The wrapper in init() consults this and writes the
-// matching exit code on usage / infra failures.
+// exit-code hint. The wrapper in main() consults this and writes the
+// matching exit code on usage / infra / api failures.
+//
+// The apiclient package returns typed errors (ErrConfig, ErrNetwork,
+// ErrAuth, ErrStatus); they're mapped here to the documented exit codes
+// (70/71/72) so the apiclient package itself stays agnostic.
 func hasReconError(err error) (code int, ok bool) {
 	if err == nil {
 		return 0, false
@@ -838,6 +880,23 @@ func hasReconError(err error) (code int, ok bool) {
 			return exitInfra, true
 		}
 		return ie.code, true
+	}
+	// apiclient typed errors → exit codes
+	var cfgErr *apiclient.ErrConfig
+	if errors.As(err, &cfgErr) {
+		return exitServerUnreach, true
+	}
+	var netErr *apiclient.ErrNetwork
+	if errors.As(err, &netErr) {
+		return exitServerUnreach, true
+	}
+	var authErr *apiclient.ErrAuth
+	if errors.As(err, &authErr) {
+		return exitAuth, true
+	}
+	var statusErr *apiclient.ErrStatus
+	if errors.As(err, &statusErr) {
+		return exitInfra, true
 	}
 	return 0, false
 }
@@ -862,8 +921,23 @@ func resolveTimeout(ctx context.Context, raw string) (context.Context, context.C
 }
 
 func init() {
-	// Global flags shared by recon + meta.
+	// Global flags shared by recon + meta + every other subtree.
 	rootCmd.PersistentFlags().StringVar(&outputFormat, "output", "table", "output format: table|json|yaml")
+	rootCmd.PersistentFlags().BoolVar(&outputJSONShortcut, "json", false, "shortcut for --output json (overrides --output)")
+	rootCmd.PersistentFlags().BoolVarP(&quietMode, "quiet", "q", false, "suppress informational output (errors and primary data still print)")
+
+	// Completion for the global --output enum. Registered on rootCmd so
+	// every subcommand inherits it.
+	mustRegisterFlagCompletion(rootCmd, "output",
+		cobra.FixedCompletions(completeOutputFormats, cobra.ShellCompDirectiveNoFileComp))
+
+	// PersistentPreRunE on rootCmd resolves --json → --output json
+	// once for every subcommand. Subcommands keep their own RunE for
+	// the actual work; the resolved outputFormat is read from the
+	// package var.
+	rootCmd.PersistentPreRunE = func(cmd *cobra.Command, args []string) error {
+		return resolveOutputFlags()
+	}
 
 	// recon flags
 	reconCmd.PersistentFlags().StringVar(&reconAPIURL, "server", "", "usulnet API URL (default $USULNET_API_URL)")
@@ -872,13 +946,29 @@ func init() {
 	// scan start flags
 	reconScanStartCmd.Flags().StringVar(&scanStartProfile, "profile", "", "profile name or UUID (required)")
 	reconScanStartCmd.Flags().BoolVar(&scanStartWatch, "watch", false, "stream scan events to stdout")
+	mustRegisterFlagCompletion(reconScanStartCmd, "profile", completeReconProfileNames)
 
 	// scan report flags
 	reconScanReportCmd.Flags().StringVar(&scanReportFormat, "format", "json", "report format: json|csv|pdf")
+	mustRegisterFlagCompletion(reconScanReportCmd, "format",
+		cobra.FixedCompletions(completeReportFormats, cobra.ShellCompDirectiveNoFileComp))
 
 	// findings flags
 	reconFindingsListCmd.Flags().StringVar(&findingsTarget, "target", "", "filter findings by target ID")
 	reconFindingsListCmd.Flags().StringVar(&findingsSeverity, "severity", "", "filter findings by severity")
+	mustRegisterFlagCompletion(reconFindingsListCmd, "target", completeReconTargetIDs)
+	mustRegisterFlagCompletion(reconFindingsListCmd, "severity",
+		cobra.FixedCompletions(completeSeverityLevels, cobra.ShellCompDirectiveNoFileComp))
+
+	// Positional completion for recon subcommands that take an ID. Each
+	// ValidArgsFunction runs once per tab, talking to the local API
+	// with a short timeout (see completion.go for the implementations).
+	reconTargetAddCmd.ValidArgsFunction = completeReconTargetAddArgs
+	reconTargetVerifyCmd.ValidArgsFunction = completeReconTargetIDs
+	reconScanStartCmd.ValidArgsFunction = completeReconTargetIDs
+	reconScanStatusCmd.ValidArgsFunction = completeReconScanIDs
+	reconScanCancelCmd.ValidArgsFunction = completeReconScanIDs
+	reconScanReportCmd.ValidArgsFunction = completeReconScanIDs
 
 	// target tree
 	reconTargetCmd.AddCommand(reconTargetAddCmd)

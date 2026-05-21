@@ -103,7 +103,7 @@ templ ContainerDetail(data ContainerDetailData) {
 		<!-- Breadcrumb -->
 		<nav class="flex items-center gap-2 text-sm text-gray-400 mb-4">
 			<a href="/containers" class="hover:text-primary-400 transition-colors">Containers</a>
-			<i class="fas fa-chevron-right text-xs"></i>
+			<i aria-hidden="true" class="fas fa-chevron-right text-xs"></i>
 			<span class="text-white">{ data.Container.Name }</span>
 		</nav>
 
@@ -121,7 +121,7 @@ templ ContainerDetail(data ContainerDetailData) {
 						</span>
 						if data.Container.HasUpdates {
 							<span class="px-2.5 py-1 rounded-full text-xs font-medium bg-primary-500/20 text-primary-400">
-								<i class="fas fa-arrow-up mr-1"></i>Update available
+								<i aria-hidden="true" class="fas fa-arrow-up mr-1"></i>Update available
 							</span>
 						}
 					</div>
@@ -135,14 +135,14 @@ templ ContainerDetail(data ContainerDetailData) {
 						hx-swap="none"
 						class="px-4 py-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-lg transition-colors"
 					>
-						<i class="fas fa-stop mr-2"></i>Stop
+						<i aria-hidden="true" class="fas fa-stop mr-2"></i>Stop
 					</button>
 					<button 
 						hx-post={ "/containers/" + data.Container.ID + "/restart" }
 						hx-swap="none"
 						class="px-4 py-2 bg-yellow-500/10 hover:bg-yellow-500/20 text-yellow-400 rounded-lg transition-colors"
 					>
-						<i class="fas fa-redo mr-2"></i>Restart
+						<i aria-hidden="true" class="fas fa-redo mr-2"></i>Restart
 					</button>
 				} else {
 					<button 
@@ -150,14 +150,14 @@ templ ContainerDetail(data ContainerDetailData) {
 						hx-swap="none"
 						class="px-4 py-2 bg-green-500/10 hover:bg-green-500/20 text-green-400 rounded-lg transition-colors"
 					>
-						<i class="fas fa-play mr-2"></i>Start
+						<i aria-hidden="true" class="fas fa-play mr-2"></i>Start
 					</button>
 				}
 				<a href={ templ.SafeURL("/containers/" + data.Container.ID + "/logs") } class="px-4 py-2 bg-dark-700 hover:bg-dark-600 text-gray-300 rounded-lg transition-colors">
-					<i class="fas fa-file-alt mr-2"></i>Logs
+					<i aria-hidden="true" class="fas fa-file-alt mr-2"></i>Logs
 				</a>
 				<a href={ templ.SafeURL("/containers/" + data.Container.ID + "/exec") } class="btn-primary">
-					<i class="fas fa-terminal mr-2"></i>Terminal
+					<i aria-hidden="true" class="fas fa-terminal mr-2"></i>Terminal
 				</a>
 			</div>
 		</div>
@@ -180,7 +180,7 @@ templ ContainerDetail(data ContainerDetailData) {
 			<!-- Main Info -->
 			<div class="lg:col-span-2 space-y-6">
 				<!-- General Info -->
-				<div class="bg-dark-800 rounded-xl border border-dark-600 p-5">
+				<div class="card p-5">
 					<h2 class="text-lg font-semibold text-white mb-4">General Information</h2>
 					<dl class="grid grid-cols-2 gap-4">
 						@infoItem("Container ID", shortID(data.Container.ID))
@@ -193,7 +193,7 @@ templ ContainerDetail(data ContainerDetailData) {
 				</div>
 
 				<!-- Network -->
-				<div class="bg-dark-800 rounded-xl border border-dark-600 p-5">
+				<div class="card p-5">
 					<div class="flex items-center justify-between mb-4">
 						<h2 class="text-lg font-semibold text-white">Network</h2>
 						<button
@@ -217,6 +217,7 @@ templ ContainerDetail(data ContainerDetailData) {
 									placeholder="Enter network ID or name..."
 									class="w-full px-3 py-2 bg-dark-900 border border-dark-500 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
 									required
+									aria-label="Network ID or Name"
 								/>
 							</div>
 							<div class="flex justify-end gap-2">
@@ -285,15 +286,15 @@ templ ContainerDetail(data ContainerDetailData) {
 
 				<!-- Ports -->
 				if len(data.Container.Ports) > 0 {
-					<div class="bg-dark-800 rounded-xl border border-dark-600 p-5">
+					<div class="card p-5">
 						<h2 class="text-lg font-semibold text-white mb-4">Ports</h2>
 						<div class="overflow-x-auto">
 							<table class="w-full text-sm">
 								<thead>
 									<tr class="border-b border-dark-600">
-										<th class="py-2 text-left text-gray-400 font-medium">Container</th>
-										<th class="py-2 text-left text-gray-400 font-medium">Host</th>
-										<th class="py-2 text-left text-gray-400 font-medium">Protocol</th>
+										<th scope="col" class="py-2 text-left text-gray-400 font-medium">Container</th>
+										<th scope="col" class="py-2 text-left text-gray-400 font-medium">Host</th>
+										<th scope="col" class="py-2 text-left text-gray-400 font-medium">Protocol</th>
 									</tr>
 								</thead>
 								<tbody>
@@ -320,7 +321,7 @@ templ ContainerDetail(data ContainerDetailData) {
 
 				<!-- Mounts -->
 				if len(data.Container.Mounts) > 0 {
-					<div class="bg-dark-800 rounded-xl border border-dark-600 p-5">
+					<div class="card p-5">
 						<h2 class="text-lg font-semibold text-white mb-4">Mounts</h2>
 						<div class="space-y-3">
 							for _, m := range data.Container.Mounts {
@@ -348,7 +349,7 @@ templ ContainerDetail(data ContainerDetailData) {
 			<!-- Sidebar -->
 			<div class="space-y-6">
 				<!-- Security Score -->
-				<div class="bg-dark-800 rounded-xl border border-dark-600 p-5">
+				<div class="card p-5">
 					<div class="flex items-center justify-between mb-4">
 						<h2 class="text-lg font-semibold text-white">Security</h2>
 						<a href={ templ.SafeURL("/security/container/" + data.Container.ID) } class="text-sm text-primary-400 hover:text-primary-300">
@@ -367,7 +368,7 @@ templ ContainerDetail(data ContainerDetailData) {
 				</div>
 
 				<!-- Quick Info -->
-				<div class="bg-dark-800 rounded-xl border border-dark-600 p-5">
+				<div class="card p-5">
 					<h2 class="text-lg font-semibold text-white mb-4">Configuration</h2>
 					<dl class="space-y-3 text-sm">
 						<div class="flex items-center justify-between">
@@ -402,7 +403,7 @@ templ ContainerDetail(data ContainerDetailData) {
 				</div>
 
 				<!-- Resources -->
-				<div class="bg-dark-800 rounded-xl border border-dark-600 p-5">
+				<div class="card p-5">
 					<h2 class="text-lg font-semibold text-white mb-4">Resources</h2>
 					<dl class="space-y-3 text-sm">
 						<div class="flex items-center justify-between">
@@ -422,7 +423,7 @@ templ ContainerDetail(data ContainerDetailData) {
 
 				<!-- Labels -->
 				if len(data.Container.Labels) > 0 {
-					<div class="bg-dark-800 rounded-xl border border-dark-600 p-5">
+					<div class="card p-5">
 						<h2 class="text-lg font-semibold text-white mb-4">Labels</h2>
 						<div class="space-y-2 max-h-48 overflow-y-auto">
 							for k, v := range data.Container.Labels {

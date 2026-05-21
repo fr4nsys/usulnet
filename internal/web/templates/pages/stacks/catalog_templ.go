@@ -62,7 +62,7 @@ func Catalog(data CatalogData) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"space-y-6\"><!-- Header --><div class=\"flex items-center justify-between\"><div><h1 class=\"text-2xl font-display font-bold text-white\">Apps</h1><p class=\"text-gray-400 mt-1\">Deploy pre-configured applications with one click</p></div><div class=\"flex items-center gap-3\"><a href=\"/stacks/new\" class=\"btn-secondary\"><i class=\"fas fa-code mr-2\"></i>Manual Compose</a> <a href=\"/stacks\" class=\"btn-secondary\"><i class=\"fas fa-cubes mr-2\"></i>My Stacks</a></div></div><!-- Category Filter --><div id=\"catalog-filters\" class=\"flex items-center gap-2 flex-wrap\"><button class=\"catalog-filter active px-3 py-1.5 text-sm font-medium rounded-lg bg-primary-500/10 text-primary-400 border border-primary-500/20\" data-filter=\"all\">All</button> ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"space-y-6\"><!-- Header --><div class=\"flex items-center justify-between\"><div><h1 class=\"text-2xl font-display font-bold text-white\">Apps</h1><p class=\"text-gray-400 mt-1\">Deploy pre-configured applications with one click</p></div><div class=\"flex items-center gap-3\"><a href=\"/stacks/new\" class=\"btn-secondary\"><i aria-hidden=\"true\" class=\"fas fa-code mr-2\"></i>Manual Compose</a> <a href=\"/stacks\" class=\"btn-secondary\"><i aria-hidden=\"true\" class=\"fas fa-cubes mr-2\"></i>My Stacks</a></div></div><!-- Category Filter --><div id=\"catalog-filters\" class=\"flex items-center gap-2 flex-wrap\"><button class=\"catalog-filter active px-3 py-1.5 text-sm font-medium rounded-lg bg-primary-500/10 text-primary-400 border border-primary-500/20\" data-filter=\"all\">All</button> ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -103,7 +103,7 @@ func Catalog(data CatalogData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			if len(data.Apps) == 0 {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<div class=\"card p-12 text-center\"><i class=\"fas fa-store text-4xl text-gray-400 mb-4\"></i><h3 class=\"text-lg font-medium text-white mb-2\">No applications available</h3><p class=\"text-gray-400\">The application catalog is empty.</p></div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<div class=\"card p-12 text-center\"><i aria-hidden=\"true\" class=\"fas fa-store text-4xl text-gray-400 mb-4\"></i><h3 class=\"text-lg font-medium text-white mb-2\">No applications available</h3><p class=\"text-gray-400\">The application catalog is empty.</p></div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -222,20 +222,20 @@ func Catalog(data CatalogData) templ.Component {
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "</p></div></div><div class=\"mt-4 flex items-center justify-between\"><span class=\"text-xs text-gray-500 font-medium\"><i class=\"fas fa-tag mr-1\"></i>")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "</p></div></div><div class=\"mt-4 flex items-center justify-between\"><span class=\"text-xs text-gray-500 font-medium\"><i aria-hidden=\"true\" class=\"fas fa-tag mr-1\"></i>")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
 					var templ_7745c5c3_Var14 string
 					templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.JoinStringErrs(app.Category)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/stacks/catalog.templ`, Line: 86, Col: 54}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/stacks/catalog.templ`, Line: 86, Col: 73}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var14))
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "</span> <span class=\"text-xs text-primary-400 opacity-0 group-hover:opacity-100 transition-opacity font-medium\">Install <i class=\"fas fa-arrow-right ml-1\"></i></span></div></a>")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "</span> <span class=\"text-xs text-primary-400 opacity-0 group-hover:opacity-100 transition-opacity font-medium\">Install <i aria-hidden=\"true\" class=\"fas fa-arrow-right ml-1\"></i></span></div></a>")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}

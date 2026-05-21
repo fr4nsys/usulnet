@@ -53,7 +53,7 @@ func ContainerTerminal(data ContainerTerminalData) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<!-- Breadcrumb --> <nav class=\"flex items-center gap-2 text-sm text-gray-400 mb-4\"><a href=\"/containers\" class=\"hover:text-primary-400 transition-colors\">Containers</a> <i class=\"fas fa-chevron-right text-xs\"></i> <a href=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<!-- Breadcrumb --> <nav class=\"flex items-center gap-2 text-sm text-gray-400 mb-4\"><a href=\"/containers\" class=\"hover:text-primary-400 transition-colors\">Containers</a> <i aria-hidden=\"true\" class=\"fas fa-chevron-right text-xs\"></i> <a href=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -79,7 +79,7 @@ func ContainerTerminal(data ContainerTerminalData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</a> <i class=\"fas fa-chevron-right text-xs\"></i> <span class=\"text-white\">Terminal</span></nav><!-- Header --> <div class=\"flex items-center justify-between mb-6\"><div class=\"flex items-center gap-4\"><div class=\"w-10 h-10 rounded-lg bg-dark-700 flex items-center justify-center\"><i class=\"fas fa-terminal text-lg text-primary-400\"></i></div><div><h1 class=\"text-2xl font-bold font-display text-white\">Terminal</h1><p class=\"text-gray-400 text-sm\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</a> <i aria-hidden=\"true\" class=\"fas fa-chevron-right text-xs\"></i> <span class=\"text-white\">Terminal</span></nav><!-- Header --> <div class=\"flex items-center justify-between mb-6\"><div class=\"flex items-center gap-4\"><div class=\"w-10 h-10 rounded-lg bg-dark-700 flex items-center justify-center\"><i aria-hidden=\"true\" class=\"fas fa-terminal text-lg text-primary-400\"></i></div><div><h1 class=\"text-2xl font-bold font-display text-white\">Terminal</h1><p class=\"text-gray-400 text-sm\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -105,7 +105,7 @@ func ContainerTerminal(data ContainerTerminalData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "\" class=\"px-4 py-2 bg-dark-700 hover:bg-dark-600 text-gray-300 rounded-lg transition-colors\"><i class=\"fas fa-arrow-left mr-2\"></i>Back</a> <a href=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "\" class=\"px-4 py-2 bg-dark-700 hover:bg-dark-600 text-gray-300 rounded-lg transition-colors\"><i aria-hidden=\"true\" class=\"fas fa-arrow-left mr-2\"></i>Back</a> <a href=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -118,12 +118,12 @@ func ContainerTerminal(data ContainerTerminalData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "\" class=\"px-4 py-2 bg-dark-700 hover:bg-dark-600 text-gray-300 rounded-lg transition-colors\"><i class=\"fas fa-file-alt mr-2\"></i>Logs</a></div></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "\" class=\"px-4 py-2 bg-dark-700 hover:bg-dark-600 text-gray-300 rounded-lg transition-colors\"><i aria-hidden=\"true\" class=\"fas fa-file-alt mr-2\"></i>Logs</a></div></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			if data.State != "running" {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "<!-- Container not running warning --> <div class=\"bg-yellow-500/10 border border-yellow-500/20 rounded-xl p-6 text-center\"><i class=\"fas fa-exclamation-triangle text-4xl text-yellow-400 mb-4\"></i><h2 class=\"text-lg font-semibold text-white mb-2\">Container Not Running</h2><p class=\"text-gray-400 mb-4\">The terminal is only available when the container is running.</p><button hx-post=\"")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "<!-- Container not running warning --> <div class=\"bg-yellow-500/10 border border-yellow-500/20 rounded-xl p-6 text-center\"><i aria-hidden=\"true\" class=\"fas fa-exclamation-triangle text-4xl text-yellow-400 mb-4\"></i><h2 class=\"text-lg font-semibold text-white mb-2\">Container Not Running</h2><p class=\"text-gray-400 mb-4\">The terminal is only available when the container is running.</p><button hx-post=\"")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -136,7 +136,7 @@ func ContainerTerminal(data ContainerTerminalData) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "\" hx-swap=\"none\" class=\"btn-primary\"><i class=\"fas fa-play mr-2\"></i>Start Container</button></div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "\" hx-swap=\"none\" class=\"btn-primary\"><i aria-hidden=\"true\" class=\"fas fa-play mr-2\"></i>Start Container</button></div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -154,7 +154,7 @@ func ContainerTerminal(data ContainerTerminalData) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "\" class=\"bg-dark-800 rounded-xl border border-dark-600 overflow-hidden\"><!-- Terminal Header --><div class=\"flex items-center justify-between px-4 py-3 border-b border-dark-600 bg-dark-850\"><div class=\"flex items-center gap-3\"><!-- Window controls (decorative) --><div class=\"flex items-center gap-1.5\"><span class=\"w-3 h-3 rounded-full bg-red-500\"></span> <span class=\"w-3 h-3 rounded-full bg-yellow-500\"></span> <span class=\"w-3 h-3 rounded-full bg-green-500\"></span></div><span class=\"text-sm text-gray-400\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "\" class=\"card overflow-hidden\"><!-- Terminal Header --><div class=\"flex items-center justify-between px-4 py-3 border-b border-dark-600 bg-dark-850\"><div class=\"flex items-center gap-3\"><!-- Window controls (decorative) --><div class=\"flex items-center gap-1.5\"><span class=\"w-3 h-3 rounded-full bg-red-500\"></span> <span class=\"w-3 h-3 rounded-full bg-yellow-500\"></span> <span class=\"w-3 h-3 rounded-full bg-green-500\"></span></div><span class=\"text-sm text-gray-400\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -180,7 +180,7 @@ func ContainerTerminal(data ContainerTerminalData) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "</span></div><div class=\"flex items-center gap-2\"><!-- Connection status --><span x-show=\"connected\" class=\"flex items-center gap-1.5 text-xs text-green-400\"><span class=\"w-2 h-2 bg-green-500 rounded-full animate-pulse\"></span> Connected</span> <span x-show=\"!connected && !connecting\" class=\"flex items-center gap-1.5 text-xs text-red-400\"><span class=\"w-2 h-2 bg-red-500 rounded-full\"></span> Disconnected</span> <span x-show=\"connecting\" class=\"flex items-center gap-1.5 text-xs text-yellow-400\"><i class=\"fas fa-spinner fa-spin\"></i> Connecting...</span><!-- Actions --><button @click=\"reconnect()\" class=\"p-2 text-gray-400 hover:text-white hover:bg-dark-600 rounded-lg transition-colors\" title=\"Reconnect\"><i class=\"fas fa-redo\"></i></button> <button @click=\"toggleFullscreen()\" class=\"p-2 text-gray-400 hover:text-white hover:bg-dark-600 rounded-lg transition-colors\" title=\"Fullscreen\"><i class=\"fas fa-expand\"></i></button></div></div><!-- Terminal Display --><div x-ref=\"terminalContainer\" id=\"terminal\" class=\"h-[500px]\"></div></div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "</span></div><div class=\"flex items-center gap-2\"><!-- Connection status --><span x-show=\"connected\" class=\"flex items-center gap-1.5 text-xs text-green-400\"><span class=\"w-2 h-2 bg-green-500 rounded-full animate-pulse\"></span> Connected</span> <span x-show=\"!connected && !connecting\" class=\"flex items-center gap-1.5 text-xs text-red-400\"><span class=\"w-2 h-2 bg-red-500 rounded-full\"></span> Disconnected</span> <span x-show=\"connecting\" class=\"flex items-center gap-1.5 text-xs text-yellow-400\"><i aria-hidden=\"true\" class=\"fas fa-spinner fa-spin\"></i> Connecting...</span><!-- Actions --><button @click=\"reconnect()\" class=\"p-2 text-gray-400 hover:text-white hover:bg-dark-600 rounded-lg transition-colors\" title=\"Reconnect\"><i aria-hidden=\"true\" class=\"fas fa-redo\"></i></button> <button @click=\"toggleFullscreen()\" class=\"p-2 text-gray-400 hover:text-white hover:bg-dark-600 rounded-lg transition-colors\" title=\"Fullscreen\"><i aria-hidden=\"true\" class=\"fas fa-expand\"></i></button></div></div><!-- Terminal Display --><div x-ref=\"terminalContainer\" id=\"terminal\" class=\"h-[500px]\"></div></div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}

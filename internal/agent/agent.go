@@ -29,32 +29,45 @@ import (
 )
 
 // Config holds the agent configuration.
+//
+// YAML tags make this struct directly unmarshalable from the agent's
+// config file (cmd/usulnet-agent). Operator-facing keys (gateway_url,
+// docker_host, log_level, …) are snake_case; the TLS sub-block is
+// nested under tls: in YAML.
 type Config struct {
 	// AgentID is the unique identifier for this agent (generated if empty)
-	AgentID string
+	AgentID string `yaml:"agent_id"`
 	// Token is the authentication token for the gateway
-	Token string
+	Token string `yaml:"token"`
 	// GatewayURL is the NATS server URL
-	GatewayURL string
+	GatewayURL string `yaml:"gateway_url"`
 	// DockerHost is the Docker daemon address (default: unix:// + configured socket path)
-	DockerHost string
+	DockerHost string `yaml:"docker_host"`
 	// Hostname is the agent's hostname (auto-detected if empty)
-	Hostname string
+	Hostname string `yaml:"hostname"`
 	// Labels are custom labels for this agent
-	Labels map[string]string
+	Labels map[string]string `yaml:"labels"`
 	// LogLevel is the logging level
-	LogLevel string
+	LogLevel string `yaml:"log_level"`
 	// DataDir is the directory for local state storage
-	DataDir string
-	// BackupEnabled enables backup capabilities on this agent
-	BackupEnabled bool
-	// ScannerEnabled enables security scanning capabilities on this agent
-	ScannerEnabled bool
-	// TLS configuration for NATS
-	TLSEnabled  bool
-	TLSCertFile string
-	TLSKeyFile  string
-	TLSCAFile   string
+	DataDir string `yaml:"data_dir"`
+	// BackupEnabled enables backup capabilities on this agent.
+	// Not exposed in the YAML schema; flipped by the gateway at runtime.
+	BackupEnabled bool `yaml:"-"`
+	// ScannerEnabled enables security scanning capabilities on this agent.
+	// Not exposed in the YAML schema; flipped by the gateway at runtime.
+	ScannerEnabled bool `yaml:"-"`
+	// TLS holds the NATS TLS settings (nested under tls: in YAML).
+	TLS TLSConfig `yaml:"tls"`
+}
+
+// TLSConfig is the agent's NATS TLS sub-config. Lives at cfg.TLS in
+// memory and `tls:` in the YAML file.
+type TLSConfig struct {
+	Enabled  bool   `yaml:"enabled"`
+	CertFile string `yaml:"cert_file"`
+	KeyFile  string `yaml:"key_file"`
+	CAFile   string `yaml:"ca_file"`
 }
 
 // DefaultConfig returns default agent configuration.
@@ -234,7 +247,7 @@ func (a *Agent) connectNATS() error {
 	}
 
 	// Add TLS if configured
-	if a.config.TLSEnabled {
+	if a.config.TLS.Enabled {
 		tlsCfg, tlsErr := a.buildTLSConfig()
 		if tlsErr != nil {
 			return fmt.Errorf("failed to build TLS config: %w", tlsErr)
@@ -261,8 +274,8 @@ func (a *Agent) buildTLSConfig() (*tls.Config, error) {
 	}
 
 	// Load CA certificate
-	if a.config.TLSCAFile != "" {
-		caCert, err := os.ReadFile(a.config.TLSCAFile)
+	if a.config.TLS.CAFile != "" {
+		caCert, err := os.ReadFile(a.config.TLS.CAFile)
 		if err != nil {
 			return nil, fmt.Errorf("failed to read CA certificate: %w", err)
 		}
@@ -274,8 +287,8 @@ func (a *Agent) buildTLSConfig() (*tls.Config, error) {
 	}
 
 	// Load client certificate and key
-	if a.config.TLSCertFile != "" && a.config.TLSKeyFile != "" {
-		cert, err := tls.LoadX509KeyPair(a.config.TLSCertFile, a.config.TLSKeyFile)
+	if a.config.TLS.CertFile != "" && a.config.TLS.KeyFile != "" {
+		cert, err := tls.LoadX509KeyPair(a.config.TLS.CertFile, a.config.TLS.KeyFile)
 		if err != nil {
 			return nil, fmt.Errorf("failed to load client certificate: %w", err)
 		}

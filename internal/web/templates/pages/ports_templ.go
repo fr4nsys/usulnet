@@ -97,7 +97,7 @@ func Ports(data PortsData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			if data.Error != "" {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<div class=\"bg-red-500/10 border border-red-500/20 rounded-lg p-4\"><div class=\"flex items-center gap-3\"><i class=\"fas fa-exclamation-circle text-red-400 text-xl\"></i><div><h3 class=\"text-white font-medium\">Failed to load port data</h3><p class=\"text-gray-400 text-sm mt-1\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<div class=\"bg-red-500/10 border border-red-500/20 rounded-lg p-4\"><div class=\"flex items-center gap-3\"><i aria-hidden=\"true\" class=\"fas fa-exclamation-circle text-red-400 text-xl\"></i><div><h3 class=\"text-white font-medium\">Failed to load port data</h3><p class=\"text-gray-400 text-sm mt-1\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -120,7 +120,7 @@ func Ports(data PortsData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			if len(data.Conflicts) > 0 {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<div class=\"bg-red-500/10 border border-red-500/20 rounded-lg p-4\"><div class=\"flex items-center gap-2 text-red-400 font-medium mb-3\"><i class=\"fas fa-exclamation-triangle\"></i> <span>Port Conflicts Detected</span></div><div class=\"space-y-2\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<div class=\"bg-red-500/10 border border-red-500/20 rounded-lg p-4\"><div class=\"flex items-center gap-2 text-red-400 font-medium mb-3\"><i aria-hidden=\"true\" class=\"fas fa-exclamation-triangle\"></i> <span>Port Conflicts Detected</span></div><div class=\"space-y-2\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -275,7 +275,7 @@ func Ports(data PortsData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 23, ")</h2><div class=\"flex items-center gap-4 text-sm\"><span class=\"flex items-center gap-2\"><span class=\"w-2 h-2 rounded-full bg-red-500\"></span> <span class=\"text-gray-400\">Internet</span></span> <span class=\"flex items-center gap-2\"><span class=\"w-2 h-2 rounded-full bg-yellow-500\"></span> <span class=\"text-gray-400\">Localhost</span></span> <span class=\"flex items-center gap-2\"><span class=\"w-2 h-2 rounded-full bg-green-500\"></span> <span class=\"text-gray-400\">Internal</span></span></div></div><div class=\"overflow-x-auto\"><table class=\"table\"><thead><tr><th>Container</th><th>Internal</th><th>External</th><th>Protocol</th><th>Bind</th><th>Exposure</th><th>Actions</th></tr></thead> <tbody>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 23, ")</h2><div class=\"flex items-center gap-4 text-sm\"><span class=\"flex items-center gap-2\"><span class=\"w-2 h-2 rounded-full bg-red-500\"></span> <span class=\"text-gray-400\">Internet</span></span> <span class=\"flex items-center gap-2\"><span class=\"w-2 h-2 rounded-full bg-yellow-500\"></span> <span class=\"text-gray-400\">Localhost</span></span> <span class=\"flex items-center gap-2\"><span class=\"w-2 h-2 rounded-full bg-green-500\"></span> <span class=\"text-gray-400\">Internal</span></span></div></div><div class=\"overflow-x-auto\"><table class=\"table\"><thead><tr><th scope=\"col\">Container</th><th scope=\"col\">Internal</th><th scope=\"col\">External</th><th scope=\"col\">Protocol</th><th scope=\"col\">Bind</th><th scope=\"col\">Exposure</th><th scope=\"col\">Actions</th></tr></thead> <tbody>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

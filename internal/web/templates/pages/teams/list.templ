@@ -60,7 +60,7 @@ templ List(data TeamsData) {
 					</p>
 				</div>
 				<a href="/teams/new" class="btn-primary">
-					<i class="fas fa-plus mr-2"></i>New Team
+					<i aria-hidden="true" class="fas fa-plus mr-2"></i>New Team
 				</a>
 			</div>
 
@@ -90,11 +90,11 @@ templ List(data TeamsData) {
 					<table class="table">
 						<thead>
 							<tr>
-								<th>Team</th>
-								<th>Members</th>
-								<th>Permissions</th>
-								<th>Created</th>
-								<th>Actions</th>
+								<th scope="col">Team</th>
+								<th scope="col">Members</th>
+								<th scope="col">Permissions</th>
+								<th scope="col">Created</th>
+								<th scope="col">Actions</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -103,7 +103,7 @@ templ List(data TeamsData) {
 									<td colspan="5" class="text-center text-gray-500 py-8">
 										<div class="flex flex-col items-center gap-3">
 											<div class="w-12 h-12 rounded-full bg-primary-500/10 flex items-center justify-center">
-												<i class="fas fa-users-cog text-xl text-primary-400"></i>
+												<i aria-hidden="true" class="fas fa-users-cog text-xl text-primary-400"></i>
 											</div>
 											<p>No teams created yet</p>
 											<a href="/teams/new" class="text-primary-400 hover:text-primary-300 text-sm">
@@ -132,13 +132,13 @@ templ List(data TeamsData) {
 									</td>
 									<td>
 										<span class={ "badge", templ.KV("badge-success", team.MemberCount > 0), templ.KV("bg-dark-600 text-gray-400", team.MemberCount == 0) }>
-											<i class="fas fa-users mr-1 text-xs"></i>
+											<i aria-hidden="true" class="fas fa-users mr-1 text-xs"></i>
 											{ fmt.Sprintf("%d", team.MemberCount) }
 										</span>
 									</td>
 									<td>
 										<span class={ "badge", templ.KV("badge-info", team.PermissionCount > 0), templ.KV("bg-dark-600 text-gray-400", team.PermissionCount == 0) }>
-											<i class="fas fa-lock mr-1 text-xs"></i>
+											<i aria-hidden="true" class="fas fa-lock mr-1 text-xs"></i>
 											{ fmt.Sprintf("%d", team.PermissionCount) }
 										</span>
 									</td>
@@ -171,7 +171,7 @@ templ List(data TeamsData) {
 			<!-- Info about scoping -->
 			<div class="card p-4 border border-blue-500/20">
 				<div class="flex gap-3">
-					<i class="fas fa-info-circle text-blue-400 mt-0.5"></i>
+					<i aria-hidden="true" class="fas fa-info-circle text-blue-400 mt-0.5"></i>
 					<div class="text-sm text-gray-400">
 						<p class="text-blue-400 font-medium mb-1">Resource Scoping</p>
 						<p>Teams use an opt-in model: unassigned resources are visible to all users. Only resources explicitly granted to a team become restricted to that team's members. Admins always see everything.</p>
@@ -191,7 +191,7 @@ templ New(data TeamNewData) {
 		<div class="max-w-lg mx-auto space-y-6">
 			<div class="flex items-center gap-4">
 				<a href="/teams" class="p-2 text-gray-400 hover:text-white hover:bg-dark-700 rounded-lg">
-					<i class="fas fa-arrow-left"></i>
+					<i aria-hidden="true" class="fas fa-arrow-left"></i>
 				</a>
 				<h1 class="text-2xl font-display font-bold text-white">New Team</h1>
 			</div>
@@ -206,7 +206,7 @@ templ New(data TeamNewData) {
 				<input type="hidden" name="csrf_token" value={ data.PageData.CSRFToken }/>
 				<div>
 					<label class="block text-sm font-medium text-gray-300 mb-2">Team Name</label>
-					<input type="text" name="name" required minlength="2" maxlength="100" class="input" placeholder="e.g. Backend Team"/>
+					<input type="text" name="name" required minlength="2" maxlength="100" class="input" placeholder="e.g. Backend Team" aria-label="e.g. Backend Team"/>
 				</div>
 				<div>
 					<label class="block text-sm font-medium text-gray-300 mb-2">Description</label>
@@ -230,7 +230,7 @@ templ Edit(data TeamEditData) {
 		<div class="max-w-lg mx-auto space-y-6">
 			<div class="flex items-center gap-4">
 				<a href={ templ.SafeURL("/teams/" + data.Team.ID) } class="p-2 text-gray-400 hover:text-white hover:bg-dark-700 rounded-lg">
-					<i class="fas fa-arrow-left"></i>
+					<i aria-hidden="true" class="fas fa-arrow-left"></i>
 				</a>
 				<div>
 					<h1 class="text-2xl font-display font-bold text-white">Edit Team</h1>
@@ -270,7 +270,7 @@ templ Edit(data TeamEditData) {
 					hx-confirm={ "Delete team '" + data.Team.Name + "'? This cannot be undone." }
 					class="px-4 py-2 text-sm font-medium text-red-400 border border-red-500/30 rounded-lg hover:bg-red-500/10 transition-colors"
 				>
-					<i class="fas fa-trash mr-2"></i>Delete Team
+					<i aria-hidden="true" class="fas fa-trash mr-2"></i>Delete Team
 				</button>
 			</div>
 		</div>

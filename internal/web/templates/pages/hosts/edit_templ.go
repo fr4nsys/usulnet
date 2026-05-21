@@ -60,7 +60,7 @@ func Edit(data EditData) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"space-y-6\"><!-- Breadcrumb --><nav class=\"flex items-center gap-2 text-sm text-gray-400\"><a href=\"/nodes\" class=\"hover:text-primary-400 transition-colors\">Nodes</a> <i class=\"fas fa-chevron-right text-xs\"></i> <a href=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"space-y-6\"><!-- Breadcrumb --><nav class=\"flex items-center gap-2 text-sm text-gray-400\"><a href=\"/nodes\" class=\"hover:text-primary-400 transition-colors\">Nodes</a> <i aria-hidden=\"true\" class=\"fas fa-chevron-right text-xs\"></i> <a href=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -86,7 +86,7 @@ func Edit(data EditData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</a> <i class=\"fas fa-chevron-right text-xs\"></i> <span class=\"text-white\">Edit</span></nav><div class=\"max-w-2xl\"><div class=\"flex items-center gap-3 mb-6\"><a href=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</a> <i aria-hidden=\"true\" class=\"fas fa-chevron-right text-xs\"></i> <span class=\"text-white\">Edit</span></nav><div class=\"max-w-2xl\"><div class=\"flex items-center gap-3 mb-6\"><a href=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -99,7 +99,7 @@ func Edit(data EditData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "\" class=\"text-gray-400 hover:text-white transition-colors\"><i class=\"fas fa-arrow-left\"></i></a><h2 class=\"text-xl font-display font-bold text-white\">Edit Node</h2>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "\" class=\"text-gray-400 hover:text-white transition-colors\"><i aria-hidden=\"true\" class=\"fas fa-arrow-left\"></i></a><h2 class=\"text-xl font-display font-bold text-white\">Edit Node</h2>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -112,14 +112,14 @@ func Edit(data EditData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			if data.Error != "" {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<div class=\"bg-red-500/10 border border-red-500/20 rounded-lg p-4 mb-4\"><p class=\"text-red-400 text-sm\"><i class=\"fas fa-exclamation-circle mr-1\"></i>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<div class=\"bg-red-500/10 border border-red-500/20 rounded-lg p-4 mb-4\"><p class=\"text-red-400 text-sm\"><i aria-hidden=\"true\" class=\"fas fa-exclamation-circle mr-1\"></i>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var6 string
 				templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(data.Error)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/hosts/edit.templ`, Line: 45, Col: 96}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/hosts/edit.templ`, Line: 45, Col: 115}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 				if templ_7745c5c3_Err != nil {
@@ -131,7 +131,7 @@ func Edit(data EditData) templ.Component {
 				}
 			}
 			if data.AgentToken != "" {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "<div class=\"bg-green-500/10 border border-green-500/20 rounded-lg p-4 mb-6\" x-data=\"{ token: $el.querySelector('[data-token]')?.textContent || '' }\"><div class=\"flex items-start gap-3\"><i class=\"fas fa-key text-green-400 mt-0.5\"></i><div class=\"flex-1\"><p class=\"font-medium text-green-400 mb-2\">Agent Token Generated</p><p class=\"text-sm text-gray-300 mb-3\">Copy this token now. It will not be shown again.</p><div class=\"flex items-center gap-2\"><code data-token class=\"flex-1 bg-dark-900 rounded px-3 py-2 text-sm font-mono text-white break-all select-all\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "<div class=\"bg-green-500/10 border border-green-500/20 rounded-lg p-4 mb-6\" x-data=\"{ token: $el.querySelector('[data-token]')?.textContent || '' }\"><div class=\"flex items-start gap-3\"><i aria-hidden=\"true\" class=\"fas fa-key text-green-400 mt-0.5\"></i><div class=\"flex-1\"><p class=\"font-medium text-green-400 mb-2\">Agent Token Generated</p><p class=\"text-sm text-gray-300 mb-3\">Copy this token now. It will not be shown again.</p><div class=\"flex items-center gap-2\"><code data-token class=\"flex-1 bg-dark-900 rounded px-3 py-2 text-sm font-mono text-white break-all select-all\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -144,7 +144,7 @@ func Edit(data EditData) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "</code> <button type=\"button\" x-on:click=\"navigator.clipboard.writeText($el.previousElementSibling.textContent.trim())\" class=\"px-3 py-2 bg-dark-700 hover:bg-dark-600 text-gray-300 rounded-lg transition-colors flex-shrink-0\" title=\"Copy to clipboard\"><i class=\"fas fa-copy\"></i></button></div></div></div></div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "</code> <button type=\"button\" x-on:click=\"navigator.clipboard.writeText($el.previousElementSibling.textContent.trim())\" class=\"px-3 py-2 bg-dark-700 hover:bg-dark-600 text-gray-300 rounded-lg transition-colors flex-shrink-0\" title=\"Copy to clipboard\"><i aria-hidden=\"true\" class=\"fas fa-copy\"></i></button></div></div></div></div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -201,7 +201,7 @@ func Edit(data EditData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "\" placeholder=\"Friendly name for this node\" class=\"w-full bg-dark-800 border border-dark-600 text-white rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary-500 focus:border-transparent\"></div><!-- Endpoint URL (TCP only) -->")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "\" placeholder=\"Friendly name for this node\" class=\"w-full bg-dark-800 border border-dark-600 text-white rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary-500 focus:border-transparent\" aria-label=\"Display Name\"></div><!-- Endpoint URL (TCP only) -->")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -213,13 +213,13 @@ func Edit(data EditData) templ.Component {
 				var templ_7745c5c3_Var12 string
 				templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(data.Host.EndpointURL)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/hosts/edit.templ`, Line: 94, Col: 37}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/hosts/edit.templ`, Line: 95, Col: 37}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "\" placeholder=\"tcp://192.168.1.100:2376\" class=\"w-full bg-dark-800 border border-dark-600 text-white rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary-500 focus:border-transparent\"></div><!-- TLS Configuration --> <div><label class=\"flex items-center gap-2 text-sm text-gray-300 cursor-pointer mb-3\"><input type=\"checkbox\" name=\"tls_enabled\" value=\"true\" x-model=\"tlsEnabled\" class=\"rounded border-dark-600 bg-dark-800 text-primary-500 focus:ring-primary-500\"> Enable TLS</label><div x-show=\"tlsEnabled\" x-transition class=\"space-y-4 pl-6 border-l-2 border-dark-600\"><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">CA Certificate</label> <textarea name=\"tls_ca_cert\" rows=\"3\" placeholder=\"Paste new certificate to replace (leave empty to keep current)\" class=\"w-full bg-dark-800 border border-dark-600 text-white rounded-lg px-3 py-2 text-sm font-mono focus:ring-2 focus:ring-primary-500 focus:border-transparent\"></textarea></div><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Client Certificate</label> <textarea name=\"tls_client_cert\" rows=\"3\" placeholder=\"Paste new certificate to replace (leave empty to keep current)\" class=\"w-full bg-dark-800 border border-dark-600 text-white rounded-lg px-3 py-2 text-sm font-mono focus:ring-2 focus:ring-primary-500 focus:border-transparent\"></textarea></div><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Client Key</label> <textarea name=\"tls_client_key\" rows=\"3\" placeholder=\"Paste new key to replace (leave empty to keep current)\" class=\"w-full bg-dark-800 border border-dark-600 text-white rounded-lg px-3 py-2 text-sm font-mono focus:ring-2 focus:ring-primary-500 focus:border-transparent\"></textarea></div></div></div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "\" placeholder=\"tcp://192.168.1.100:2376\" class=\"w-full bg-dark-800 border border-dark-600 text-white rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary-500 focus:border-transparent\" aria-label=\"Endpoint URL\"></div><!-- TLS Configuration --> <div><label class=\"flex items-center gap-2 text-sm text-gray-300 cursor-pointer mb-3\"><input type=\"checkbox\" name=\"tls_enabled\" value=\"true\" x-model=\"tlsEnabled\" class=\"rounded border-dark-600 bg-dark-800 text-primary-500 focus:ring-primary-500\"> Enable TLS</label><div x-show=\"tlsEnabled\" x-transition class=\"space-y-4 pl-6 border-l-2 border-dark-600\"><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">CA Certificate</label> <textarea name=\"tls_ca_cert\" rows=\"3\" placeholder=\"Paste new certificate to replace (leave empty to keep current)\" class=\"w-full bg-dark-800 border border-dark-600 text-white rounded-lg px-3 py-2 text-sm font-mono focus:ring-2 focus:ring-primary-500 focus:border-transparent\"></textarea></div><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Client Certificate</label> <textarea name=\"tls_client_cert\" rows=\"3\" placeholder=\"Paste new certificate to replace (leave empty to keep current)\" class=\"w-full bg-dark-800 border border-dark-600 text-white rounded-lg px-3 py-2 text-sm font-mono focus:ring-2 focus:ring-primary-500 focus:border-transparent\"></textarea></div><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Client Key</label> <textarea name=\"tls_client_key\" rows=\"3\" placeholder=\"Paste new key to replace (leave empty to keep current)\" class=\"w-full bg-dark-800 border border-dark-600 text-white rounded-lg px-3 py-2 text-sm font-mono focus:ring-2 focus:ring-primary-500 focus:border-transparent\"></textarea></div></div></div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -229,19 +229,19 @@ func Edit(data EditData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			if data.Host.EndpointType == "agent" {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "<div class=\"card p-4\"><div class=\"flex items-center justify-between\"><div class=\"flex items-center gap-3\"><i class=\"fas fa-key text-yellow-400\"></i><div><p class=\"text-sm font-medium text-white\">Agent Token</p><p class=\"text-xs text-gray-500\">Regenerate the token if the agent needs to reconnect</p></div></div><button type=\"submit\" name=\"action\" value=\"regenerate_token\" class=\"px-3 py-1.5 bg-yellow-500/20 hover:bg-yellow-500/30 text-yellow-400 rounded-lg text-sm transition-colors\"><i class=\"fas fa-sync-alt mr-1\"></i>Regenerate</button></div></div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "<div class=\"card p-4\"><div class=\"flex items-center justify-between\"><div class=\"flex items-center gap-3\"><i aria-hidden=\"true\" class=\"fas fa-key text-yellow-400\"></i><div><p class=\"text-sm font-medium text-white\">Agent Token</p><p class=\"text-xs text-gray-500\">Regenerate the token if the agent needs to reconnect</p></div></div><button type=\"submit\" name=\"action\" value=\"regenerate_token\" class=\"px-3 py-1.5 bg-yellow-500/20 hover:bg-yellow-500/30 text-yellow-400 rounded-lg text-sm transition-colors\"><i aria-hidden=\"true\" class=\"fas fa-sync-alt mr-1\"></i>Regenerate</button></div></div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "<!-- Submit --><div class=\"flex items-center justify-between pt-2\"><div class=\"flex gap-3\"><button type=\"submit\" name=\"action\" value=\"save\" class=\"btn btn-primary\"><i class=\"fas fa-save mr-2\"></i>Save Changes</button> <a href=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "<!-- Submit --><div class=\"flex items-center justify-between pt-2\"><div class=\"flex gap-3\"><button type=\"submit\" name=\"action\" value=\"save\" class=\"btn btn-primary\"><i aria-hidden=\"true\" class=\"fas fa-save mr-2\"></i>Save Changes</button> <a href=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var13 templ.SafeURL
 			templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinURLErrs(templ.SafeURL("/nodes/" + data.Host.ID))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/hosts/edit.templ`, Line: 167, Col: 56}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/hosts/edit.templ`, Line: 169, Col: 56}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
 			if templ_7745c5c3_Err != nil {
@@ -254,44 +254,44 @@ func Edit(data EditData) templ.Component {
 			var templ_7745c5c3_Var14 string
 			templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.JoinStringErrs("/nodes/" + data.Host.ID)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/hosts/edit.templ`, Line: 172, Col: 43}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/hosts/edit.templ`, Line: 174, Col: 43}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var14))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 21, "\" hx-confirm=\"Are you sure you want to delete this node? This action cannot be undone.\"><i class=\"fas fa-trash-alt mr-1\"></i>Delete Node</button></div></form><!-- Deploy Agent Section (agent-type hosts only) -->")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 21, "\" hx-confirm=\"Are you sure you want to delete this node? This action cannot be undone.\"><i aria-hidden=\"true\" class=\"fas fa-trash-alt mr-1\"></i>Delete Node</button></div></form><!-- Deploy Agent Section (agent-type hosts only) -->")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			if data.Host.EndpointType == "agent" {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 22, "<div class=\"mt-8 pt-8 border-t border-dark-600\"><div class=\"flex items-center gap-3 mb-4\"><div class=\"w-10 h-10 rounded-lg bg-green-500/10 flex items-center justify-center\"><i class=\"fas fa-rocket text-green-400\"></i></div><div><h3 class=\"text-lg font-semibold text-white\">Deploy Agent</h3><p class=\"text-sm text-gray-400\">Install the usulnet agent on a remote host via SSH</p></div></div><div x-data=\"")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 22, "<div class=\"mt-8 pt-8 border-t border-dark-600\"><div class=\"flex items-center gap-3 mb-4\"><div class=\"w-10 h-10 rounded-lg bg-green-500/10 flex items-center justify-center\"><i aria-hidden=\"true\" class=\"fas fa-rocket text-green-400\"></i></div><div><h3 class=\"text-lg font-semibold text-white\">Deploy Agent</h3><p class=\"text-sm text-gray-400\">Install the usulnet agent on a remote host via SSH</p></div></div><div x-data=\"")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var15 string
 				templ_7745c5c3_Var15, templ_7745c5c3_Err = templ.JoinStringErrs(deployAgentData(data.Host.ID, data.AgentToken, data.PageData.CSRFToken))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/hosts/edit.templ`, Line: 192, Col: 91}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/hosts/edit.templ`, Line: 194, Col: 91}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var15))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 23, "\" class=\"space-y-4\"><!-- Deploy form --><div x-show=\"!deploying && !deployResult\"><div class=\"bg-dark-800 rounded-xl border border-dark-600 p-5 space-y-4\"><div class=\"bg-blue-500/5 border border-blue-500/20 rounded-lg p-3 mb-2\"><p class=\"text-sm text-gray-300\"><i class=\"fas fa-info-circle text-blue-400 mr-1\"></i> Connect via SSH to install and configure the agent. The remote host must have Docker installed and the user needs root or sudo access.</p></div><!-- SSH Host --><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Host / IP Address</label> <input type=\"text\" x-model=\"sshHost\" placeholder=\"192.168.1.100 or server.example.com\" class=\"w-full bg-dark-900 border border-dark-600 text-white rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary-500 focus:border-transparent\"></div><!-- SSH User --><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">SSH User</label> <input type=\"text\" x-model=\"sshUser\" placeholder=\"root\" class=\"w-full bg-dark-900 border border-dark-600 text-white rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary-500 focus:border-transparent\"><p class=\"text-xs text-gray-500 mt-1\">User must be root or have sudo privileges</p></div><!-- Auth Type --><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Authentication</label> <select x-model=\"sshAuthType\" class=\"w-full bg-dark-900 border border-dark-600 text-white rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary-500 focus:border-transparent\"><option value=\"password\">Password</option> <option value=\"key\">SSH Key</option></select></div><!-- Password --><div x-show=\"sshAuthType === 'password'\" x-transition><label class=\"block text-sm font-medium text-gray-300 mb-1\">Password</label> <input type=\"password\" x-model=\"sshPassword\" placeholder=\"SSH password\" class=\"w-full bg-dark-900 border border-dark-600 text-white rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary-500 focus:border-transparent\"></div><!-- Private Key --><div x-show=\"sshAuthType === 'key'\" x-transition><label class=\"block text-sm font-medium text-gray-300 mb-1\">Private Key</label> <textarea x-model=\"sshPrivateKey\" rows=\"4\" placeholder=\"")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 23, "\" class=\"space-y-4\"><!-- Deploy form --><div x-show=\"!deploying && !deployResult\"><div class=\"card p-5 space-y-4\"><div class=\"bg-blue-500/5 border border-blue-500/20 rounded-lg p-3 mb-2\"><p class=\"text-sm text-gray-300\"><i aria-hidden=\"true\" class=\"fas fa-info-circle text-blue-400 mr-1\"></i> Connect via SSH to install and configure the agent. The remote host must have Docker installed and the user needs root or sudo access.</p></div><!-- SSH Host --><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Host / IP Address</label> <input type=\"text\" x-model=\"sshHost\" placeholder=\"192.168.1.100 or server.example.com\" class=\"w-full bg-dark-900 border border-dark-600 text-white rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary-500 focus:border-transparent\" aria-label=\"Host / IP Address\"></div><!-- SSH User --><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">SSH User</label> <input type=\"text\" x-model=\"sshUser\" placeholder=\"root\" class=\"w-full bg-dark-900 border border-dark-600 text-white rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary-500 focus:border-transparent\" aria-label=\"SSH User\"><p class=\"text-xs text-gray-500 mt-1\">User must be root or have sudo privileges</p></div><!-- Auth Type --><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Authentication</label> <select x-model=\"sshAuthType\" class=\"w-full bg-dark-900 border border-dark-600 text-white rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary-500 focus:border-transparent\"><option value=\"password\">Password</option> <option value=\"key\">SSH Key</option></select></div><!-- Password --><div x-show=\"sshAuthType === 'password'\" x-transition><label class=\"block text-sm font-medium text-gray-300 mb-1\">Password</label> <input type=\"password\" x-model=\"sshPassword\" placeholder=\"SSH password\" class=\"w-full bg-dark-900 border border-dark-600 text-white rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary-500 focus:border-transparent\" aria-label=\"Password\"></div><!-- Private Key --><div x-show=\"sshAuthType === 'key'\" x-transition><label class=\"block text-sm font-medium text-gray-300 mb-1\">Private Key</label> <textarea x-model=\"sshPrivateKey\" rows=\"4\" placeholder=\"")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var16 string
 				templ_7745c5c3_Var16, templ_7745c5c3_Err = templ.JoinStringErrs("-----BEGIN OPENSSH PRIVATE KEY-----\n...")
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/hosts/edit.templ`, Line: 250, Col: 67}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/hosts/edit.templ`, Line: 255, Col: 67}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var16))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 24, "\" class=\"w-full bg-dark-900 border border-dark-600 text-white rounded-lg px-3 py-2 text-sm font-mono focus:ring-2 focus:ring-primary-500 focus:border-transparent\"></textarea></div><!-- Gateway URL --><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Gateway URL (NATS)</label> <input type=\"text\" x-model=\"gatewayURL\" placeholder=\"nats://master-ip:4222\" class=\"w-full bg-dark-900 border border-dark-600 text-white rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary-500 focus:border-transparent\"><p class=\"text-xs text-gray-500 mt-1\">NATS URL the agent will use to connect back to this master</p></div><!-- Error message --><template x-if=\"error\"><div class=\"bg-red-500/10 border border-red-500/20 rounded-lg p-3\"><p class=\"text-red-400 text-sm\"><i class=\"fas fa-exclamation-circle mr-1\"></i><span x-text=\"error\"></span></p></div></template><!-- Deploy button --><button type=\"button\" x-on:click=\"startDeploy()\" class=\"btn btn-primary w-full\" x-bind:disabled=\"!sshHost || !sshUser || (sshAuthType === 'password' && !sshPassword) || !gatewayURL\"><i class=\"fas fa-rocket mr-2\"></i>Deploy Agent</button></div></div><!-- Deploy progress --><template x-if=\"deploying || deployResult\"><div class=\"bg-dark-800 rounded-xl border border-dark-600 p-5 space-y-4\"><div class=\"flex items-center gap-3\"><template x-if=\"deployResult && deployResult.status === 'complete'\"><div class=\"w-8 h-8 rounded-full bg-green-500/20 flex items-center justify-center\"><i class=\"fas fa-check text-green-400\"></i></div></template><template x-if=\"deployResult && deployResult.status === 'failed'\"><div class=\"w-8 h-8 rounded-full bg-red-500/20 flex items-center justify-center\"><i class=\"fas fa-times text-red-400\"></i></div></template><template x-if=\"!deployResult || (deployResult.status !== 'complete' && deployResult.status !== 'failed')\"><div class=\"w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center\"><i class=\"fas fa-spinner fa-spin text-blue-400\"></i></div></template><div><p class=\"text-white font-medium\" x-text=\"deployResult ? (deployResult.status === 'complete' ? 'Deployment Complete' : deployResult.status === 'failed' ? 'Deployment Failed' : 'Deploying...') : 'Starting deployment...'\"></p><p class=\"text-xs text-gray-400\" x-show=\"deployResult && deployResult.step\" x-text=\"deployResult ? deployResult.step : ''\"></p></div></div><!-- Deploy logs --><div class=\"bg-dark-900 rounded-lg p-3 max-h-64 overflow-y-auto font-mono text-xs\" x-ref=\"deployLogs\"><template x-if=\"deployResult && deployResult.logs\"><template x-for=\"(log, idx) in deployResult.logs\" :key=\"idx\"><div class=\"text-gray-300 py-0.5\" x-text=\"log\"></div></template></template></div><!-- Error --><template x-if=\"deployResult && deployResult.error\"><div class=\"text-red-400 text-sm font-medium\" x-text=\"'Error: ' + deployResult.error\"></div></template><!-- Actions after completion --><template x-if=\"deployResult && (deployResult.status === 'complete' || deployResult.status === 'failed')\"><div class=\"flex gap-3\"><template x-if=\"deployResult.status === 'complete'\"><a x-bind:href=\"'/nodes/' + hostID\" class=\"btn btn-primary\"><i class=\"fas fa-arrow-right mr-2\"></i>View Node</a></template><button type=\"button\" x-on:click=\"resetDeploy()\" class=\"btn btn-secondary\"><i class=\"fas fa-redo mr-2\"></i>Deploy Again</button></div></template></div></template></div></div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 24, "\" class=\"w-full bg-dark-900 border border-dark-600 text-white rounded-lg px-3 py-2 text-sm font-mono focus:ring-2 focus:ring-primary-500 focus:border-transparent\"></textarea></div><!-- Gateway URL --><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Gateway URL (NATS)</label> <input type=\"text\" x-model=\"gatewayURL\" placeholder=\"nats://master-ip:4222\" class=\"w-full bg-dark-900 border border-dark-600 text-white rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary-500 focus:border-transparent\" aria-label=\"Gateway URL (NATS)\"><p class=\"text-xs text-gray-500 mt-1\">NATS URL the agent will use to connect back to this master</p></div><!-- Error message --><template x-if=\"error\"><div class=\"bg-red-500/10 border border-red-500/20 rounded-lg p-3\"><p class=\"text-red-400 text-sm\"><i aria-hidden=\"true\" class=\"fas fa-exclamation-circle mr-1\"></i><span x-text=\"error\"></span></p></div></template><!-- Deploy button --><button type=\"button\" x-on:click=\"startDeploy()\" class=\"btn btn-primary w-full\" x-bind:disabled=\"!sshHost || !sshUser || (sshAuthType === 'password' && !sshPassword) || !gatewayURL\"><i aria-hidden=\"true\" class=\"fas fa-rocket mr-2\"></i>Deploy Agent</button></div></div><!-- Deploy progress --><template x-if=\"deploying || deployResult\"><div class=\"card p-5 space-y-4\"><div class=\"flex items-center gap-3\"><template x-if=\"deployResult && deployResult.status === 'complete'\"><div class=\"w-8 h-8 rounded-full bg-green-500/20 flex items-center justify-center\"><i aria-hidden=\"true\" class=\"fas fa-check text-green-400\"></i></div></template><template x-if=\"deployResult && deployResult.status === 'failed'\"><div class=\"w-8 h-8 rounded-full bg-red-500/20 flex items-center justify-center\"><i aria-hidden=\"true\" class=\"fas fa-times text-red-400\"></i></div></template><template x-if=\"!deployResult || (deployResult.status !== 'complete' && deployResult.status !== 'failed')\"><div class=\"w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center\"><i aria-hidden=\"true\" class=\"fas fa-spinner fa-spin text-blue-400\"></i></div></template><div><p class=\"text-white font-medium\" x-text=\"deployResult ? (deployResult.status === 'complete' ? 'Deployment Complete' : deployResult.status === 'failed' ? 'Deployment Failed' : 'Deploying...') : 'Starting deployment...'\"></p><p class=\"text-xs text-gray-400\" x-show=\"deployResult && deployResult.step\" x-text=\"deployResult ? deployResult.step : ''\"></p></div></div><!-- Deploy logs --><div class=\"bg-dark-900 rounded-lg p-3 max-h-64 overflow-y-auto font-mono text-xs\" x-ref=\"deployLogs\"><template x-if=\"deployResult && deployResult.logs\"><template x-for=\"(log, idx) in deployResult.logs\" :key=\"idx\"><div class=\"text-gray-300 py-0.5\" x-text=\"log\"></div></template></template></div><!-- Error --><template x-if=\"deployResult && deployResult.error\"><div class=\"text-red-400 text-sm font-medium\" x-text=\"'Error: ' + deployResult.error\"></div></template><!-- Actions after completion --><template x-if=\"deployResult && (deployResult.status === 'complete' || deployResult.status === 'failed')\"><div class=\"flex gap-3\"><template x-if=\"deployResult.status === 'complete'\"><a x-bind:href=\"'/nodes/' + hostID\" class=\"btn btn-primary\"><i aria-hidden=\"true\" class=\"fas fa-arrow-right mr-2\"></i>View Node</a></template><button type=\"button\" x-on:click=\"resetDeploy()\" class=\"btn btn-secondary\"><i aria-hidden=\"true\" class=\"fas fa-redo mr-2\"></i>Deploy Again</button></div></template></div></template></div></div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -421,17 +421,17 @@ func endpointBadge(t string) templ.Component {
 		ctx = templ.ClearChildren(ctx)
 		switch t {
 		case "local":
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 26, "<span class=\"px-2.5 py-1 rounded-full text-xs font-medium bg-primary-500/20 text-primary-400\"><i class=\"fas fa-home mr-1\"></i>Local</span>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 26, "<span class=\"px-2.5 py-1 rounded-full text-xs font-medium bg-primary-500/20 text-primary-400\"><i aria-hidden=\"true\" class=\"fas fa-home mr-1\"></i>Local</span>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		case "tcp":
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 27, "<span class=\"px-2.5 py-1 rounded-full text-xs font-medium bg-blue-500/20 text-blue-400\"><i class=\"fas fa-network-wired mr-1\"></i>TCP</span>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 27, "<span class=\"px-2.5 py-1 rounded-full text-xs font-medium bg-blue-500/20 text-blue-400\"><i aria-hidden=\"true\" class=\"fas fa-network-wired mr-1\"></i>TCP</span>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		case "agent":
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 28, "<span class=\"px-2.5 py-1 rounded-full text-xs font-medium bg-green-500/20 text-green-400\"><i class=\"fas fa-satellite-dish mr-1\"></i>Agent</span>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 28, "<span class=\"px-2.5 py-1 rounded-full text-xs font-medium bg-green-500/20 text-green-400\"><i aria-hidden=\"true\" class=\"fas fa-satellite-dish mr-1\"></i>Agent</span>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -443,7 +443,7 @@ func endpointBadge(t string) templ.Component {
 			var templ_7745c5c3_Var18 string
 			templ_7745c5c3_Var18, templ_7745c5c3_Err = templ.JoinStringErrs(t)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/hosts/edit.templ`, Line: 445, Col: 7}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/hosts/edit.templ`, Line: 451, Col: 7}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var18))
 			if templ_7745c5c3_Err != nil {

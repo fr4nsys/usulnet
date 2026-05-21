@@ -171,7 +171,7 @@ func Setup(data SetupData) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "\"> <button type=\"submit\" class=\"btn btn-sm btn-secondary\"><i class=\"fas fa-heartbeat mr-1\"></i> Health Check</button></form></div></div><div class=\"bg-dark-800/50 border border-dark-700 rounded-lg p-4\"><p class=\"text-sm text-gray-400\"><i class=\"fas fa-info-circle text-primary-400 mr-2\"></i> Caddy proxy is automatically configured. Manage proxy hosts from the <a href=\"/proxy\" class=\"text-primary-400 hover:text-primary-300\">Proxy Hosts</a> page. To switch to Nginx Proxy Manager (NPM), configure NPM in your docker-compose and restart usulnet.</p></div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "\"> <button type=\"submit\" class=\"btn btn-sm btn-secondary\"><i aria-hidden=\"true\" class=\"fas fa-heartbeat mr-1\"></i> Health Check</button></form></div></div><div class=\"bg-dark-800/50 border border-dark-700 rounded-lg p-4\"><p class=\"text-sm text-gray-400\"><i aria-hidden=\"true\" class=\"fas fa-info-circle text-primary-400 mr-2\"></i> Caddy proxy is automatically configured. Manage proxy hosts from the <a href=\"/proxy\" class=\"text-primary-400 hover:text-primary-300\">Proxy Hosts</a> page. To switch to Nginx Proxy Manager (NPM), configure NPM in your docker-compose and restart usulnet.</p></div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -258,7 +258,7 @@ func Setup(data SetupData) templ.Component {
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 27, "\"> <button type=\"submit\" class=\"btn btn-sm btn-secondary\"><i class=\"fas fa-heartbeat mr-1\"></i> Test Connection</button></form><form method=\"POST\" action=\"/proxy/setup/delete\" onsubmit=\"return confirm('Delete NPM connection?')\"><input type=\"hidden\" name=\"csrf_token\" value=\"")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 27, "\"> <button type=\"submit\" class=\"btn btn-sm btn-secondary\"><i aria-hidden=\"true\" class=\"fas fa-heartbeat mr-1\"></i> Test Connection</button></form><form method=\"POST\" action=\"/proxy/setup/delete\" onsubmit=\"return confirm('Delete NPM connection?')\"><input type=\"hidden\" name=\"csrf_token\" value=\"")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
@@ -271,7 +271,7 @@ func Setup(data SetupData) templ.Component {
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 28, "\"> <button type=\"submit\" class=\"btn btn-sm btn-danger\"><i class=\"fas fa-trash mr-1\"></i> Disconnect</button></form></div></div>")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 28, "\"> <button type=\"submit\" class=\"btn btn-sm btn-danger\"><i aria-hidden=\"true\" class=\"fas fa-trash mr-1\"></i> Disconnect</button></form></div></div>")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
@@ -302,20 +302,20 @@ func Setup(data SetupData) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 31, "\" placeholder=\"http://npm:81\" required class=\"w-full bg-dark-800 border border-dark-600 text-white rounded-lg px-3 py-2 focus:ring-2 focus:ring-accent-500 focus:border-transparent\"><p class=\"text-gray-500 text-xs mt-1\">The NPM admin API URL (usually port 81)</p></div><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Admin Email</label> <input type=\"email\" name=\"admin_email\" value=\"")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 31, "\" placeholder=\"http://npm:81\" required class=\"w-full bg-dark-800 border border-dark-600 text-white rounded-lg px-3 py-2 focus:ring-2 focus:ring-accent-500 focus:border-transparent\" aria-label=\"NPM Base URL\"><p class=\"text-gray-500 text-xs mt-1\">The NPM admin API URL (usually port 81)</p></div><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Admin Email</label> <input type=\"email\" name=\"admin_email\" value=\"")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var15 string
 				templ_7745c5c3_Var15, templ_7745c5c3_Err = templ.JoinStringErrs(data.AdminEmail)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/proxy/setup.templ`, Line: 150, Col: 31}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/proxy/setup.templ`, Line: 151, Col: 31}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var15))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 32, "\" placeholder=\"admin@example.com\" required class=\"w-full bg-dark-800 border border-dark-600 text-white rounded-lg px-3 py-2 focus:ring-2 focus:ring-accent-500 focus:border-transparent\"></div><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Admin Password</label> <input type=\"password\" name=\"admin_password\" placeholder=\"")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 32, "\" placeholder=\"admin@example.com\" required class=\"w-full bg-dark-800 border border-dark-600 text-white rounded-lg px-3 py-2 focus:ring-2 focus:ring-accent-500 focus:border-transparent\" aria-label=\"Admin Email\"></div><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Admin Password</label> <input type=\"password\" name=\"admin_password\" placeholder=\"")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -327,13 +327,13 @@ func Setup(data SetupData) templ.Component {
 					return "Enter password"
 				}()))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/proxy/setup.templ`, Line: 161, Col: 142}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/proxy/setup.templ`, Line: 163, Col: 142}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var16))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 33, "\" class=\"w-full bg-dark-800 border border-dark-600 text-white rounded-lg px-3 py-2 focus:ring-2 focus:ring-accent-500 focus:border-transparent\"> ")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 33, "\" class=\"w-full bg-dark-800 border border-dark-600 text-white rounded-lg px-3 py-2 focus:ring-2 focus:ring-accent-500 focus:border-transparent\" aria-label=\"Admin Password\"> ")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -348,12 +348,12 @@ func Setup(data SetupData) templ.Component {
 					return templ_7745c5c3_Err
 				}
 				if data.Connected {
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 36, "<i class=\"fas fa-save mr-1\"></i> Update Connection")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 36, "<i aria-hidden=\"true\" class=\"fas fa-save mr-1\"></i> Update Connection")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
 				} else {
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 37, "<i class=\"fas fa-plug mr-1\"></i> Connect to NPM")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 37, "<i aria-hidden=\"true\" class=\"fas fa-plug mr-1\"></i> Connect to NPM")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}

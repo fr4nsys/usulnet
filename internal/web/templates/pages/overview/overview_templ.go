@@ -271,14 +271,14 @@ func Overview(data OverviewData) templ.Component {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "</div></div><!-- Nodes Grid --><div class=\"card\"><div class=\"px-5 py-4 border-b border-dark-700 flex items-center justify-between\"><h2 class=\"font-medium text-white\"><i class=\"fas fa-server mr-2 text-primary-400\"></i>Nodes (")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "</div></div><!-- Nodes Grid --><div class=\"card\"><div class=\"px-5 py-4 border-b border-dark-700 flex items-center justify-between\"><h2 class=\"font-medium text-white\"><i aria-hidden=\"true\" class=\"fas fa-server mr-2 text-primary-400\"></i>Nodes (")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var15 string
 			templ_7745c5c3_Var15, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", data.TotalNodes))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/overview/overview.templ`, Line: 106, Col: 100}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/overview/overview.templ`, Line: 106, Col: 119}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var15))
 			if templ_7745c5c3_Err != nil {
@@ -289,7 +289,7 @@ func Overview(data OverviewData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			if len(data.Nodes) == 0 {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 21, "<div class=\"p-8 text-center text-gray-400\"><i class=\"fas fa-server text-3xl mb-3 text-gray-400\"></i><p>No nodes configured</p><a href=\"/nodes/new\" class=\"text-primary-400 hover:text-primary-300 text-sm mt-2 inline-block\">Add a node</a></div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 21, "<div class=\"p-8 text-center text-gray-400\"><i aria-hidden=\"true\" class=\"fas fa-server text-3xl mb-3 text-gray-400\"></i><p>No nodes configured</p><a href=\"/nodes/new\" class=\"text-primary-400 hover:text-primary-300 text-sm mt-2 inline-block\">Add a node</a></div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -314,7 +314,7 @@ func Overview(data OverviewData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			if len(data.RecentAlerts) > 0 {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 25, "<div class=\"card\"><div class=\"px-5 py-4 border-b border-dark-700 flex items-center justify-between\"><h2 class=\"font-medium text-white\"><i class=\"fas fa-bell mr-2 text-yellow-400\"></i>Recent Alerts</h2><a href=\"/alerts\" class=\"text-sm text-primary-400 hover:text-primary-300\">View All</a></div><div class=\"divide-y divide-dark-700\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 25, "<div class=\"card\"><div class=\"px-5 py-4 border-b border-dark-700 flex items-center justify-between\"><h2 class=\"font-medium text-white\"><i aria-hidden=\"true\" class=\"fas fa-bell mr-2 text-yellow-400\"></i>Recent Alerts</h2><a href=\"/alerts\" class=\"text-sm text-primary-400 hover:text-primary-300\">View All</a></div><div class=\"divide-y divide-dark-700\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}

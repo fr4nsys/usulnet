@@ -27,7 +27,7 @@ templ NewBuild(data NewBuildData) {
 			<div class="max-w-3xl">
 				<div class="flex items-center gap-3 mb-6">
 					<a href="/image-builder" class="text-gray-400 hover:text-white">
-						<i class="fas fa-arrow-left"></i>
+						<i aria-hidden="true" class="fas fa-arrow-left"></i>
 					</a>
 					<h2 class="text-xl font-display font-bold text-white">New Image Build</h2>
 				</div>
@@ -66,6 +66,7 @@ templ NewBuild(data NewBuildData) {
 							value={ data.PrefillName }
 							placeholder="my-app"
 							class="w-full bg-dark-800 border border-dark-600 text-white rounded-lg px-3 py-2 focus:ring-2 focus:ring-accent-500 focus:border-transparent"
+							aria-label="Build Name"
 						/>
 						<p class="text-xs text-gray-500 mt-1">Optional friendly name for the build</p>
 					</div>
@@ -78,6 +79,7 @@ templ NewBuild(data NewBuildData) {
 							placeholder="myapp:latest"
 							required
 							class="w-full bg-dark-800 border border-dark-600 text-white font-mono rounded-lg px-3 py-2 focus:ring-2 focus:ring-accent-500 focus:border-transparent"
+							aria-label="Image Tag"
 						/>
 						<p class="text-xs text-gray-500 mt-1">Tag for the resulting image (e.g., myapp:latest)</p>
 					</div>
@@ -100,6 +102,7 @@ templ NewBuild(data NewBuildData) {
 							name="context_path"
 							value="."
 							class="w-full bg-dark-800 border border-dark-600 text-white font-mono rounded-lg px-3 py-2 focus:ring-2 focus:ring-accent-500 focus:border-transparent"
+							aria-label="Build Context Path"
 						/>
 						<p class="text-xs text-gray-500 mt-1">Build context directory (default: current directory)</p>
 					</div>
@@ -124,6 +127,7 @@ templ NewBuild(data NewBuildData) {
 							name="target"
 							placeholder=""
 							class="w-full bg-dark-800 border border-dark-600 text-white font-mono rounded-lg px-3 py-2 focus:ring-2 focus:ring-accent-500 focus:border-transparent"
+							aria-label="Target Stage"
 						/>
 						<p class="text-xs text-gray-500 mt-1">For multi-stage builds: target stage name (optional)</p>
 					</div>
@@ -141,7 +145,7 @@ templ NewBuild(data NewBuildData) {
 
 					<div class="flex gap-2 pt-4">
 						<button type="submit" class="btn btn-primary">
-							<i class="fas fa-hammer mr-1"></i> Start Build
+							<i aria-hidden="true" class="fas fa-hammer mr-1"></i> Start Build
 						</button>
 						<a href="/image-builder" class="btn btn-secondary">Cancel</a>
 					</div>

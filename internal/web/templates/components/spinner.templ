@@ -1,0 +1,48 @@
+package components
+
+// Size controls how big a spinner renders. Matches Tailwind text-size
+// utilities one-to-one so callers don't pass arbitrary pixel values.
+type SpinnerSize string
+
+const (
+	SpinnerSizeSm SpinnerSize = "sm" // text-sm   ~14px
+	SpinnerSizeMd SpinnerSize = "md" // text-xl   ~20px
+	SpinnerSizeLg SpinnerSize = "lg" // text-2xl  ~24px
+	SpinnerSizeXl SpinnerSize = "xl" // text-4xl  ~36px
+)
+
+func spinnerSizeClass(s SpinnerSize) string {
+	switch s {
+	case SpinnerSizeSm:
+		return "text-sm"
+	case SpinnerSizeLg:
+		return "text-2xl"
+	case SpinnerSizeXl:
+		return "text-4xl"
+	case SpinnerSizeMd:
+		fallthrough
+	default:
+		return "text-xl"
+	}
+}
+
+// Spinner renders a centered loading indicator with an optional
+// label. Used by HTMX `hx-indicator` slots and Alpine loading states
+// where the whole region is "in flight". For inline use (a spinner
+// next to a word, e.g. "Saving…") prefer SpinnerInline.
+templ Spinner(size SpinnerSize, label string) {
+	<div class="flex flex-col items-center justify-center py-8 text-gray-400">
+		<i class={ "fas fa-spinner fa-spin " + spinnerSizeClass(size) }></i>
+		if label != "" {
+			<span class="mt-3 text-sm">{ label }</span>
+		}
+	</div>
+}
+
+// SpinnerInline renders just the spinner icon with a right margin
+// suitable for inlining inside a button or sentence. Use this when
+// the spinner is part of in-progress UI like `<i class="fa-spinner
+// fa-spin mr-2"></i>Saving…`.
+templ SpinnerInline() {
+	<i aria-hidden="true" class="fas fa-spinner fa-spin mr-2"></i>
+}

@@ -133,7 +133,7 @@ func Detail(data DetailData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "\" class=\"px-3 py-2 bg-primary-600 hover:bg-primary-700 text-black font-medium rounded-lg transition-colors text-sm\"><i class=\"fas fa-plus mr-1\"></i>Add Peer</a><form method=\"POST\" action=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "\" class=\"px-3 py-2 bg-primary-600 hover:bg-primary-700 text-black font-medium rounded-lg transition-colors text-sm\"><i aria-hidden=\"true\" class=\"fas fa-plus mr-1\"></i>Add Peer</a><form method=\"POST\" action=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -146,7 +146,7 @@ func Detail(data DetailData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "\" onsubmit=\"return confirm('Delete this interface and all its peers?');\"><button type=\"submit\" class=\"px-3 py-2 bg-red-600/20 hover:bg-red-600/30 text-red-400 rounded-lg transition-colors text-sm\"><i class=\"fas fa-trash mr-1\"></i>Delete</button></form></div></div><div class=\"grid grid-cols-1 md:grid-cols-3 gap-4\"><div class=\"bg-dark-700 rounded-lg p-4 border border-dark-600\"><p class=\"text-xs text-gray-500 uppercase tracking-wide\">Status</p><div class=\"mt-2\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "\" onsubmit=\"return confirm('Delete this interface and all its peers?');\"><button type=\"submit\" class=\"px-3 py-2 bg-red-600/20 hover:bg-red-600/30 text-red-400 rounded-lg transition-colors text-sm\"><i aria-hidden=\"true\" class=\"fas fa-trash mr-1\"></i>Delete</button></form></div></div><div class=\"grid grid-cols-1 md:grid-cols-3 gap-4\"><div class=\"bg-dark-700 rounded-lg p-4 border border-dark-600\"><p class=\"text-xs text-gray-500 uppercase tracking-wide\">Status</p><div class=\"mt-2\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -193,7 +193,7 @@ func Detail(data DetailData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, ")</h3></div><table class=\"w-full\"><thead><tr class=\"border-b border-dark-600 text-xs text-gray-500 uppercase tracking-wide\"><th class=\"text-left p-4\">Name</th><th class=\"text-left p-4\">Allowed IPs</th><th class=\"text-left p-4\">Endpoint</th><th class=\"text-left p-4\">Status</th><th class=\"text-left p-4\">Transfer</th><th class=\"text-left p-4\">Actions</th></tr></thead> <tbody>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, ")</h3></div><table class=\"w-full\"><thead><tr class=\"border-b border-dark-600 text-xs text-gray-500 uppercase tracking-wide\"><th scope=\"col\" class=\"text-left p-4\">Name</th><th scope=\"col\" class=\"text-left p-4\">Allowed IPs</th><th scope=\"col\" class=\"text-left p-4\">Endpoint</th><th scope=\"col\" class=\"text-left p-4\">Status</th><th scope=\"col\" class=\"text-left p-4\">Transfer</th><th scope=\"col\" class=\"text-left p-4\">Actions</th></tr></thead> <tbody>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -272,14 +272,14 @@ func Detail(data DetailData) templ.Component {
 					return templ_7745c5c3_Err
 				}
 				if peer.LastHandshake != "" {
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 20, "<span class=\"text-xs text-green-400\"><i class=\"fas fa-circle text-[6px] mr-1\"></i>")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 20, "<span class=\"text-xs text-green-400\"><i aria-hidden=\"true\" class=\"fas fa-circle text-[6px] mr-1\"></i>")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
 					var templ_7745c5c3_Var15 string
 					templ_7745c5c3_Var15, templ_7745c5c3_Err = templ.JoinStringErrs(peer.LastHandshake)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/wireguard/detail.templ`, Line: 104, Col: 76}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/wireguard/detail.templ`, Line: 104, Col: 95}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var15))
 					if templ_7745c5c3_Err != nil {
@@ -334,7 +334,7 @@ func Detail(data DetailData) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 26, "\" class=\"text-gray-400 hover:text-white transition-colors\" title=\"View Config\"><i class=\"fas fa-qrcode\"></i></a><form method=\"POST\" action=\"")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 26, "\" class=\"text-gray-400 hover:text-white transition-colors\" title=\"View Config\"><i aria-hidden=\"true\" class=\"fas fa-qrcode\"></i></a><form method=\"POST\" action=\"")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -347,7 +347,7 @@ func Detail(data DetailData) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 27, "\" onsubmit=\"return confirm('Delete this peer?');\"><button type=\"submit\" class=\"text-gray-400 hover:text-red-400 transition-colors\" title=\"Delete\"><i class=\"fas fa-trash\"></i></button></form></td></tr>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 27, "\" onsubmit=\"return confirm('Delete this peer?');\"><button type=\"submit\" class=\"text-gray-400 hover:text-red-400 transition-colors\" title=\"Delete\"><i aria-hidden=\"true\" class=\"fas fa-trash\"></i></button></form></td></tr>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}

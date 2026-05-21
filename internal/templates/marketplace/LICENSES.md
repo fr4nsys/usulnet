@@ -19,6 +19,10 @@ silently.
 | `whoami` | traefik/whoami | `docker.io/traefik/whoami:v1.10` | MIT | Yes | Reference: https://github.com/traefik/whoami/blob/master/LICENSE.md |
 | `gitea` | Gitea | `docker.io/gitea/gitea:1.22` | MIT | Yes | Reference: https://github.com/go-gitea/gitea/blob/main/LICENSE |
 | `uptime-kuma` | Uptime Kuma | `docker.io/louislam/uptime-kuma:1.23.13-alpine` | MIT | Yes | Reference: https://github.com/louislam/uptime-kuma/blob/master/LICENSE |
+| `cowrie` | Cowrie | `docker.io/cowrie/cowrie:2.5.0` | BSD-3-Clause | Yes | Reference: https://github.com/cowrie/cowrie/blob/master/LICENSE.rst |
+| `dionaea` | DinoTools/dionaea | `docker.io/dinotools/dionaea:0.11.0` | GPL-2.0-or-later | Yes | Reference: https://github.com/DinoTools/dionaea/blob/master/LICENSE |
+| `endlessh` | linuxserver/endlessh (skeeto/endlessh) | `lscr.io/linuxserver/endlessh:1.1` | GPL-3.0-or-later | Yes | Reference: https://github.com/skeeto/endlessh/blob/master/COPYING |
+| `tor-socks-proxy` | PeterDaveHello/tor-socks-proxy (Tor Project) | `docker.io/peterdavehello/tor-socks-proxy:0.4.8` | BSD-3-Clause | Yes | Reference: https://github.com/PeterDaveHello/tor-socks-proxy/blob/master/LICENSE — Tor itself ships under the modified BSD maintained by the Tor Project |
 
 ## AGPL compatibility policy
 

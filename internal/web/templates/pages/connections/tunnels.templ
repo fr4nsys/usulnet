@@ -28,7 +28,7 @@ templ SSHTunnels(data SSHTunnelsPageData) {
 			<div class="flex items-center justify-between">
 				<div class="flex items-center gap-4">
 					<a href="/connections/ssh" class="p-2 text-gray-400 hover:text-white hover:bg-dark-700 rounded-lg">
-						<i class="fas fa-arrow-left"></i>
+						<i aria-hidden="true" class="fas fa-arrow-left"></i>
 					</a>
 					<div>
 						<h1 class="text-2xl font-display font-bold text-white">SSH Tunnels</h1>
@@ -37,13 +37,13 @@ templ SSHTunnels(data SSHTunnelsPageData) {
 				</div>
 				<div class="flex items-center gap-2">
 					<a href={ templ.SafeURL(fmt.Sprintf("/connections/ssh/%s/terminal", data.Connection.ID)) } class="btn-ghost">
-						<i class="fas fa-terminal mr-2"></i>Terminal
+						<i aria-hidden="true" class="fas fa-terminal mr-2"></i>Terminal
 					</a>
 					<a href={ templ.SafeURL(fmt.Sprintf("/connections/ssh/%s/files", data.Connection.ID)) } class="btn-ghost">
-						<i class="fas fa-folder mr-2"></i>Files
+						<i aria-hidden="true" class="fas fa-folder mr-2"></i>Files
 					</a>
 					<button @click="showNewTunnelModal = true" class="btn-primary">
-						<i class="fas fa-plus mr-2"></i>New Tunnel
+						<i aria-hidden="true" class="fas fa-plus mr-2"></i>New Tunnel
 					</button>
 				</div>
 			</div>
@@ -53,7 +53,7 @@ templ SSHTunnels(data SSHTunnelsPageData) {
 				<div class="flex items-center justify-between">
 					<div class="flex items-center gap-4">
 						<div class="w-12 h-12 rounded-lg bg-dark-700 flex items-center justify-center">
-							<i class="fas fa-server text-xl text-primary-400"></i>
+							<i aria-hidden="true" class="fas fa-server text-xl text-primary-400"></i>
 						</div>
 						<div>
 							<h3 class="text-white font-medium">{ data.Connection.Name }</h3>
@@ -74,7 +74,7 @@ templ SSHTunnels(data SSHTunnelsPageData) {
 				<div class="card p-4">
 					<div class="flex items-center gap-3 mb-2">
 						<div class="w-8 h-8 rounded bg-blue-500/20 flex items-center justify-center">
-							<i class="fas fa-arrow-right text-blue-400 text-sm"></i>
+							<i aria-hidden="true" class="fas fa-arrow-right text-blue-400 text-sm"></i>
 						</div>
 						<h4 class="text-white font-medium">Local Forward</h4>
 					</div>
@@ -83,7 +83,7 @@ templ SSHTunnels(data SSHTunnelsPageData) {
 				<div class="card p-4">
 					<div class="flex items-center gap-3 mb-2">
 						<div class="w-8 h-8 rounded bg-purple-500/20 flex items-center justify-center">
-							<i class="fas fa-arrow-left text-purple-400 text-sm"></i>
+							<i aria-hidden="true" class="fas fa-arrow-left text-purple-400 text-sm"></i>
 						</div>
 						<h4 class="text-white font-medium">Remote Forward</h4>
 					</div>
@@ -92,7 +92,7 @@ templ SSHTunnels(data SSHTunnelsPageData) {
 				<div class="card p-4">
 					<div class="flex items-center gap-3 mb-2">
 						<div class="w-8 h-8 rounded bg-emerald-500/20 flex items-center justify-center">
-							<i class="fas fa-globe text-emerald-400 text-sm"></i>
+							<i aria-hidden="true" class="fas fa-globe text-emerald-400 text-sm"></i>
 						</div>
 						<h4 class="text-white font-medium">Dynamic (SOCKS)</h4>
 					</div>
@@ -108,7 +108,7 @@ templ SSHTunnels(data SSHTunnelsPageData) {
 				<div class="divide-y divide-dark-600">
 					if len(data.Tunnels) == 0 {
 						<div class="px-6 py-12 text-center">
-							<i class="fas fa-network-wired text-4xl text-gray-400 mb-4"></i>
+							<i aria-hidden="true" class="fas fa-network-wired text-4xl text-gray-400 mb-4"></i>
 							<p class="text-gray-400">No tunnels configured</p>
 							<p class="text-gray-500 text-sm mt-1">Create a tunnel to forward ports through this SSH connection</p>
 						</div>
@@ -118,17 +118,17 @@ templ SSHTunnels(data SSHTunnelsPageData) {
 							<div class="flex items-center gap-4">
 								<div class="w-10 h-10 rounded-lg bg-dark-700 flex items-center justify-center">
 									if tunnel.Type == "local" {
-										<i class="fas fa-arrow-right text-blue-400"></i>
+										<i aria-hidden="true" class="fas fa-arrow-right text-blue-400"></i>
 									} else if tunnel.Type == "remote" {
-										<i class="fas fa-arrow-left text-purple-400"></i>
+										<i aria-hidden="true" class="fas fa-arrow-left text-purple-400"></i>
 									} else {
-										<i class="fas fa-globe text-emerald-400"></i>
+										<i aria-hidden="true" class="fas fa-globe text-emerald-400"></i>
 									}
 								</div>
 								<div>
 									<div class="flex items-center gap-2">
 										<span class="text-white font-medium">{ formatHostPort(tunnel.LocalHost, tunnel.LocalPort) }</span>
-										<i class="fas fa-long-arrow-alt-right text-gray-500"></i>
+										<i aria-hidden="true" class="fas fa-long-arrow-alt-right text-gray-500"></i>
 										<span class="text-white font-medium">{ formatHostPort(tunnel.RemoteHost, tunnel.RemotePort) }</span>
 									</div>
 									<p class="text-gray-400 text-xs mt-0.5">
@@ -165,9 +165,9 @@ templ SSHTunnels(data SSHTunnelsPageData) {
 									title={ ternary(tunnel.Status == "active", "Stop", "Start") }
 								>
 									if tunnel.Status == "active" {
-										<i class="fas fa-stop"></i>
+										<i aria-hidden="true" class="fas fa-stop"></i>
 									} else {
-										<i class="fas fa-play"></i>
+										<i aria-hidden="true" class="fas fa-play"></i>
 									}
 								</button>
 								<button
@@ -175,7 +175,7 @@ templ SSHTunnels(data SSHTunnelsPageData) {
 									class="p-2 text-gray-400 hover:text-red-400 hover:bg-dark-600 rounded-lg"
 									title="Delete"
 								>
-									<i class="fas fa-trash"></i>
+									<i aria-hidden="true" class="fas fa-trash"></i>
 								</button>
 							</div>
 						</div>
@@ -189,7 +189,7 @@ templ SSHTunnels(data SSHTunnelsPageData) {
 					<div class="fixed inset-0 bg-black/60" @click="showNewTunnelModal = false"></div>
 					<div class="relative card w-full max-w-lg p-6">
 						<h3 class="text-lg font-semibold text-white mb-4">
-							<i class="fas fa-plus-circle text-primary-400 mr-2"></i>New SSH Tunnel
+							<i aria-hidden="true" class="fas fa-plus-circle text-primary-400 mr-2"></i>New SSH Tunnel
 						</h3>
 
 						<form @submit.prevent="createTunnel">
@@ -201,21 +201,21 @@ templ SSHTunnels(data SSHTunnelsPageData) {
 										@click="tunnelType = 'local'"
 										:class="tunnelType === 'local' ? 'bg-blue-500/20 border-blue-500 text-blue-400' : 'bg-dark-700 border-dark-600 text-gray-400'"
 										class="p-3 rounded-lg border text-center hover:border-blue-500 transition-colors">
-										<i class="fas fa-arrow-right mb-1"></i>
+										<i aria-hidden="true" class="fas fa-arrow-right mb-1"></i>
 										<p class="text-xs">Local</p>
 									</button>
 									<button type="button"
 										@click="tunnelType = 'remote'"
 										:class="tunnelType === 'remote' ? 'bg-purple-500/20 border-purple-500 text-purple-400' : 'bg-dark-700 border-dark-600 text-gray-400'"
 										class="p-3 rounded-lg border text-center hover:border-purple-500 transition-colors">
-										<i class="fas fa-arrow-left mb-1"></i>
+										<i aria-hidden="true" class="fas fa-arrow-left mb-1"></i>
 										<p class="text-xs">Remote</p>
 									</button>
 									<button type="button"
 										@click="tunnelType = 'dynamic'"
 										:class="tunnelType === 'dynamic' ? 'bg-emerald-500/20 border-emerald-500 text-emerald-400' : 'bg-dark-700 border-dark-600 text-gray-400'"
 										class="p-3 rounded-lg border text-center hover:border-emerald-500 transition-colors">
-										<i class="fas fa-globe mb-1"></i>
+										<i aria-hidden="true" class="fas fa-globe mb-1"></i>
 										<p class="text-xs">Dynamic</p>
 									</button>
 								</div>
@@ -226,12 +226,12 @@ templ SSHTunnels(data SSHTunnelsPageData) {
 								<div>
 									<label class="block text-sm font-medium text-gray-300 mb-1">Local Host</label>
 									<input type="text" x-model="localHost" placeholder="127.0.0.1"
-										class="input w-full" :disabled="tunnelType === 'dynamic'"/>
+										class="input w-full" :disabled="tunnelType === 'dynamic'" aria-label="Local Host"/>
 								</div>
 								<div>
 									<label class="block text-sm font-medium text-gray-300 mb-1">Local Port</label>
 									<input type="number" x-model="localPort" placeholder="8080"
-										class="input w-full" required min="1" max="65535"/>
+										class="input w-full" required min="1" max="65535" aria-label="Local Port"/>
 								</div>
 							</div>
 
@@ -240,12 +240,12 @@ templ SSHTunnels(data SSHTunnelsPageData) {
 								<div>
 									<label class="block text-sm font-medium text-gray-300 mb-1">Remote Host</label>
 									<input type="text" x-model="remoteHost" placeholder="localhost"
-										class="input w-full"/>
+										class="input w-full" aria-label="Remote Host"/>
 								</div>
 								<div>
 									<label class="block text-sm font-medium text-gray-300 mb-1">Remote Port</label>
 									<input type="number" x-model="remotePort" placeholder="80"
-										class="input w-full" min="1" max="65535"/>
+										class="input w-full" min="1" max="65535" aria-label="Remote Port"/>
 								</div>
 							</div>
 
@@ -259,7 +259,7 @@ templ SSHTunnels(data SSHTunnelsPageData) {
 							<div class="flex justify-end gap-3">
 								<button type="button" @click="showNewTunnelModal = false" class="btn-ghost">Cancel</button>
 								<button type="submit" class="btn-primary">
-									<i class="fas fa-plus mr-2"></i>Create Tunnel
+									<i aria-hidden="true" class="fas fa-plus mr-2"></i>Create Tunnel
 								</button>
 							</div>
 						</form>

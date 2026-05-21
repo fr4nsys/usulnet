@@ -30,7 +30,7 @@ func StatCard(title, value, icon, color, subtitle string) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"bg-dark-800 rounded-xl border border-dark-600 p-5 hover:border-dark-500 transition-colors\"><div class=\"flex items-center justify-between\"><div><p class=\"text-sm font-medium text-gray-400\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"card p-5 hover:border-dark-500 transition-colors\"><div class=\"flex items-center justify-between\"><div><p class=\"text-sm font-medium text-gray-400\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -171,7 +171,7 @@ func StatCardLarge(title, value, icon, color, change, changeLabel string, positi
 			templ_7745c5c3_Var11 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "<div class=\"bg-dark-800 rounded-xl border border-dark-600 p-6\"><div class=\"flex items-center gap-4\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "<div class=\"card p-6\"><div class=\"flex items-center gap-4\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -273,12 +273,12 @@ func StatCardLarge(title, value, icon, color, change, changeLabel string, positi
 				return templ_7745c5c3_Err
 			}
 			if positive {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 22, "<i class=\"fas fa-arrow-up text-sm mr-1\"></i> ")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 22, "<i aria-hidden=\"true\" class=\"fas fa-arrow-up text-sm mr-1\"></i> ")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			} else {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 23, "<i class=\"fas fa-arrow-down text-sm mr-1\"></i> ")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 23, "<i aria-hidden=\"true\" class=\"fas fa-arrow-down text-sm mr-1\"></i> ")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}

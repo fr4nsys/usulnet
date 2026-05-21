@@ -1,0 +1,34 @@
+package components
+
+import (
+	"fmt"
+	"time"
+)
+
+// HTMXPoll wraps a region that should fetch its content from `url`
+// on first paint and then re-fetch every `interval`. The fetched
+// payload replaces the children passed into this component (which
+// act as the placeholder shown until the first response lands —
+// typically an inline @Spinner). The HTMX request goes through the
+// standard CSRF and toast-error wiring from web/static/js/usulnet-core.js,
+// so callers don't need to think about that.
+//
+// Example:
+//
+//	@components.HTMXPoll("/partials/containers?limit=5", 30 * time.Second) {
+//	    @components.Spinner(components.SpinnerSizeSm, "Loading containers...")
+//	}
+//
+// The component is intentionally narrow — no swap-style override, no
+// indicator selector — because every existing polling tile in the
+// tree uses the same conventions. Callers that need a different
+// strategy can still write the `hx-*` attributes by hand.
+templ HTMXPoll(url string, interval time.Duration) {
+	<div
+		hx-get={ url }
+		hx-trigger={ fmt.Sprintf("load, every %ds", int(interval.Seconds())) }
+		hx-swap="innerHTML"
+	>
+		{ children... }
+	</div>
+}

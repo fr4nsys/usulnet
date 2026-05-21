@@ -7,6 +7,7 @@ package marketplace
 import (
 	"fmt"
 
+	"github.com/fr4nsys/usulnet/internal/web/templates/components"
 	"github.com/fr4nsys/usulnet/internal/web/templates/layouts"
 )
 
@@ -19,6 +20,7 @@ type ListData struct {
 	Query      string
 	Category   string
 	Total      int
+	EmptyState components.EmptyStateData
 }
 
 // AppView is the card-level view of a marketplace app.
@@ -47,7 +49,7 @@ templ List(data ListData) {
 			@Nav("browse")
 
 			<div class="flex items-start gap-3 mb-2 text-xs text-gray-500">
-				<i class="fas fa-info-circle mt-0.5"></i>
+				<i aria-hidden="true" class="fas fa-info-circle mt-0.5"></i>
 				<p>
 					Offline-first catalogue baked into usulnet. Templates and reviews are
 					local to this instance &mdash; no data leaves the host.
@@ -57,9 +59,9 @@ templ List(data ListData) {
 			<div class="mb-6">
 				<form method="GET" action="/marketplace" class="flex gap-3">
 					<div class="flex-1 relative">
-						<i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-500"></i>
+						<i aria-hidden="true" class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-500"></i>
 						<input type="text" name="q" value={ data.Query } placeholder="Search apps..."
-							class="w-full pl-10 pr-4 py-2 bg-dark-600 border border-dark-500 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-primary-500"/>
+							class="w-full pl-10 pr-4 py-2 bg-dark-600 border border-dark-500 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-primary-500" aria-label="Search apps..."/>
 					</div>
 					<select name="category" class="px-3 py-2 bg-dark-600 border border-dark-500 rounded-lg text-gray-300 focus:outline-none focus:border-primary-500">
 						<option value="">All Categories</option>
@@ -76,7 +78,7 @@ templ List(data ListData) {
 			if len(data.Featured) > 0 && data.Query == "" && data.Category == "" {
 				<div class="mb-8">
 					<h2 class="text-lg font-semibold text-white mb-4">
-						<i class="fas fa-star text-yellow-400 mr-2"></i>Featured
+						<i aria-hidden="true" class="fas fa-star text-yellow-400 mr-2"></i>Featured
 					</h2>
 					<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
 						for _, app := range data.Featured {
@@ -100,10 +102,7 @@ templ List(data ListData) {
 					}
 				</div>
 				if len(data.Apps) == 0 {
-					<div class="text-center py-12 text-gray-500">
-						<i class="fas fa-search text-4xl mb-3"></i>
-						<p>No apps found matching your criteria.</p>
-					</div>
+					@components.EmptyStateCTAs(data.EmptyState)
 				}
 			</div>
 		</div>
@@ -122,13 +121,13 @@ templ appCard(app AppView, featured bool) {
 				<h3 class="text-sm font-semibold text-white group-hover:text-primary-400 transition-colors truncate">
 					{ app.Name }
 					if app.IsOfficial {
-						<i class="fas fa-check-circle text-primary-400 text-xs ml-1" title="Official"></i>
+						<i aria-hidden="true" class="fas fa-check-circle text-primary-400 text-xs ml-1" title="Official"></i>
 					}
 					if app.IsVerified {
-						<i class="fas fa-shield-alt text-green-400 text-xs ml-1" title="Verified"></i>
+						<i aria-hidden="true" class="fas fa-shield-alt text-green-400 text-xs ml-1" title="Verified"></i>
 					}
 					if app.BuiltIn {
-						<i class="fas fa-microchip text-gray-500 text-xs ml-1" title="Shipped with usulnet"></i>
+						<i aria-hidden="true" class="fas fa-microchip text-gray-500 text-xs ml-1" title="Shipped with usulnet"></i>
 					}
 				</h3>
 				if app.Author != "" {
@@ -142,12 +141,12 @@ templ appCard(app AppView, featured bool) {
 			<div class="flex items-center gap-3">
 				if app.AvgRating > 0 {
 					<span>
-						<i class="fas fa-star text-yellow-400"></i>
+						<i aria-hidden="true" class="fas fa-star text-yellow-400"></i>
 						{ fmt.Sprintf("%.1f", app.AvgRating) }
 					</span>
 				}
 				<span>
-					<i class="fas fa-download"></i>
+					<i aria-hidden="true" class="fas fa-download"></i>
 					{ fmt.Sprintf("%d", app.InstallCount) }
 				</span>
 			</div>

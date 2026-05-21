@@ -82,7 +82,7 @@ func StreamList(data StreamListData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			if data.Connected {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<span class=\"badge badge-success\"><i class=\"fas fa-link mr-1\"></i>Connected</span> <a href=\"/proxy/streams/new\" class=\"btn-primary\"><i class=\"fas fa-plus mr-2\"></i>New Stream</a>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<span class=\"badge badge-success\"><i aria-hidden=\"true\" class=\"fas fa-link mr-1\"></i>Connected</span> <a href=\"/proxy/streams/new\" class=\"btn-primary\"><i aria-hidden=\"true\" class=\"fas fa-plus mr-2\"></i>New Stream</a>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -101,7 +101,7 @@ func StreamList(data StreamListData) templ.Component {
 			}
 			if data.Connected {
 				if len(data.Streams) > 0 {
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<div class=\"card\"><div class=\"overflow-x-auto\"><table class=\"table\"><thead><tr><th>Incoming Port</th><th>Forward To</th><th>Protocol</th><th>Status</th><th>Actions</th></tr></thead> <tbody>")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<div class=\"card\"><div class=\"overflow-x-auto\"><table class=\"table\"><thead><tr><th scope=\"col\">Incoming Port</th><th scope=\"col\">Forward To</th><th scope=\"col\">Protocol</th><th scope=\"col\">Status</th><th scope=\"col\">Actions</th></tr></thead> <tbody>")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
@@ -209,13 +209,13 @@ func StreamList(data StreamListData) templ.Component {
 						return templ_7745c5c3_Err
 					}
 				} else {
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "<div class=\"card p-8 text-center\"><i class=\"fas fa-stream text-4xl text-gray-400 mb-4\"></i><h3 class=\"text-lg font-medium text-white mb-2\">No streams</h3><p class=\"text-gray-400 mb-4\">Create a TCP/UDP stream to forward traffic on specific ports</p><a href=\"/proxy/streams/new\" class=\"btn-primary\"><i class=\"fas fa-plus mr-2\"></i>New Stream</a></div>")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "<div class=\"card p-8 text-center\"><i aria-hidden=\"true\" class=\"fas fa-stream text-4xl text-gray-400 mb-4\"></i><h3 class=\"text-lg font-medium text-white mb-2\">No streams</h3><p class=\"text-gray-400 mb-4\">Create a TCP/UDP stream to forward traffic on specific ports</p><a href=\"/proxy/streams/new\" class=\"btn-primary\"><i aria-hidden=\"true\" class=\"fas fa-plus mr-2\"></i>New Stream</a></div>")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
 				}
 			} else {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "<div class=\"card p-8 text-center\"><i class=\"fas fa-plug text-4xl text-gray-400 mb-4\"></i><h3 class=\"text-lg font-medium text-white mb-2\">NPM Not Connected</h3><p class=\"text-gray-400 mb-4\">Connect to NPM to manage streams.</p><a href=\"/proxy/setup\" class=\"btn-primary\"><i class=\"fas fa-link mr-2\"></i>Setup Connection</a></div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "<div class=\"card p-8 text-center\"><i aria-hidden=\"true\" class=\"fas fa-plug text-4xl text-gray-400 mb-4\"></i><h3 class=\"text-lg font-medium text-white mb-2\">NPM Not Connected</h3><p class=\"text-gray-400 mb-4\">Connect to NPM to manage streams.</p><a href=\"/proxy/setup\" class=\"btn-primary\"><i aria-hidden=\"true\" class=\"fas fa-link mr-2\"></i>Setup Connection</a></div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -281,7 +281,7 @@ func StreamForm(data StreamFormData) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "<div class=\"max-w-2xl mx-auto space-y-6\"><div class=\"flex items-center gap-4\"><a href=\"/proxy/streams\" class=\"p-2 text-gray-400 hover:text-white hover:bg-dark-700 rounded-lg\"><i class=\"fas fa-arrow-left\"></i></a><div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "<div class=\"max-w-2xl mx-auto space-y-6\"><div class=\"flex items-center gap-4\"><a href=\"/proxy/streams\" class=\"p-2 text-gray-400 hover:text-white hover:bg-dark-700 rounded-lg\"><i aria-hidden=\"true\" class=\"fas fa-arrow-left\"></i></a><div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -301,14 +301,14 @@ func StreamForm(data StreamFormData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			if data.Error != "" {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 23, "<div class=\"bg-red-500/10 border border-red-500/20 rounded-lg p-4 text-red-400\"><i class=\"fas fa-exclamation-triangle mr-2\"></i>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 23, "<div class=\"bg-red-500/10 border border-red-500/20 rounded-lg p-4 text-red-400\"><i aria-hidden=\"true\" class=\"fas fa-exclamation-triangle mr-2\"></i>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var11 string
 				templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(data.Error)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/proxy/stream.templ`, Line: 159, Col: 65}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/proxy/stream.templ`, Line: 159, Col: 84}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 				if templ_7745c5c3_Err != nil {
@@ -368,7 +368,7 @@ func StreamForm(data StreamFormData) templ.Component {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 30, " placeholder=\"3306\" class=\"input w-40\"><p class=\"text-xs text-gray-500 mt-1\">Port NPM will listen on for this stream.</p></div><div class=\"grid grid-cols-3 gap-4\"><div class=\"col-span-2\"><label class=\"block text-sm font-medium text-gray-300 mb-2\">Forwarding Host</label> <input type=\"text\" name=\"forwarding_host\" required")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 30, " placeholder=\"3306\" class=\"input w-40\" aria-label=\"Incoming Port\"><p class=\"text-xs text-gray-500 mt-1\">Port NPM will listen on for this stream.</p></div><div class=\"grid grid-cols-3 gap-4\"><div class=\"col-span-2\"><label class=\"block text-sm font-medium text-gray-300 mb-2\">Forwarding Host</label> <input type=\"text\" name=\"forwarding_host\" required")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -380,7 +380,7 @@ func StreamForm(data StreamFormData) templ.Component {
 				var templ_7745c5c3_Var15 string
 				templ_7745c5c3_Var15, templ_7745c5c3_Err = templ.JoinStringErrs(data.Stream.ForwardingHost)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/proxy/stream.templ`, Line: 182, Col: 42}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/proxy/stream.templ`, Line: 183, Col: 42}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var15))
 				if templ_7745c5c3_Err != nil {
@@ -391,7 +391,7 @@ func StreamForm(data StreamFormData) templ.Component {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 33, " placeholder=\"192.168.1.100 or container-name\" class=\"input w-full\"></div><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Port</label> <input type=\"number\" name=\"forwarding_port\" required min=\"1\" max=\"65535\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 33, " placeholder=\"192.168.1.100 or container-name\" class=\"input w-full\" aria-label=\"Forwarding Host\"></div><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Port</label> <input type=\"number\" name=\"forwarding_port\" required min=\"1\" max=\"65535\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -403,7 +403,7 @@ func StreamForm(data StreamFormData) templ.Component {
 				var templ_7745c5c3_Var16 string
 				templ_7745c5c3_Var16, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", data.Stream.ForwardingPort))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/proxy/stream.templ`, Line: 192, Col: 61}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/proxy/stream.templ`, Line: 194, Col: 61}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var16))
 				if templ_7745c5c3_Err != nil {
@@ -414,7 +414,7 @@ func StreamForm(data StreamFormData) templ.Component {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 36, " placeholder=\"3306\" class=\"input w-full\"></div></div><div><label class=\"block text-sm font-medium text-gray-300 mb-3\">Protocol</label><div class=\"flex items-center gap-6\"><div class=\"flex items-center gap-2\"><input type=\"checkbox\" name=\"tcp_forwarding\" id=\"tcp-fwd\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 36, " placeholder=\"3306\" class=\"input w-full\" aria-label=\"Port\"></div></div><div><label class=\"block text-sm font-medium text-gray-300 mb-3\">Protocol</label><div class=\"flex items-center gap-6\"><div class=\"flex items-center gap-2\"><input type=\"checkbox\" name=\"tcp_forwarding\" id=\"tcp-fwd\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -459,12 +459,12 @@ func StreamForm(data StreamFormData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			if data.IsEdit {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 45, "<i class=\"fas fa-save mr-2\"></i>Save Changes")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 45, "<i aria-hidden=\"true\" class=\"fas fa-save mr-2\"></i>Save Changes")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			} else {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 46, "<i class=\"fas fa-plus mr-2\"></i>Create Stream")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 46, "<i aria-hidden=\"true\" class=\"fas fa-plus mr-2\"></i>Create Stream")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -481,13 +481,13 @@ func StreamForm(data StreamFormData) templ.Component {
 				var templ_7745c5c3_Var17 string
 				templ_7745c5c3_Var17, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("/proxy/streams/%d", data.Stream.ID))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/proxy/stream.templ`, Line: 250, Col: 74}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/proxy/stream.templ`, Line: 253, Col: 74}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var17))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 49, "\" hx-confirm=\"Delete this stream?\" class=\"btn-danger\"><i class=\"fas fa-trash mr-2\"></i>Delete</button></div></div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 49, "\" hx-confirm=\"Delete this stream?\" class=\"btn-danger\"><i aria-hidden=\"true\" class=\"fas fa-trash mr-2\"></i>Delete</button></div></div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}

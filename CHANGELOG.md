@@ -6,6 +6,480 @@ the project uses CalVer-style minor releases (v26.x).
 
 ## [Unreleased]
 
+## [v26.5.2] — 2026-05-19
+
+Self-hosted track. Adds the Shodan recon connector to the AGPL binary
+as the second bring-your-own-key external integration after HIBP, and
+ships the CLI / agent / web-a11y refresh from the session-19 audit:
+global `--quiet` and `--json` flags, a JSON error envelope, a Cobra
+`usulnet-agent` with `run` / `version` / `validate-config`
+subcommands, the canonical `USULNET_AGENT_DOCKER_HOST` env var, and
+header / sidebar / modal / flash a11y landmarks. Operator-facing
+release notes at
+[`docs/v26.5.2/release-notes.md`](docs/v26.5.2/release-notes.md).
+
+### Added
+
+- **YARA scanner — one-shot scans against host files and container paths.**
+  New package `internal/services/yara/` exposes `Scan(ctx, target,
+  ruleset)` where the target is either an absolute `host_path` on the
+  usulnet host or a `(container_id, path)` pair inside a running
+  container. Scans execute inside the existing recon-toolkit image
+  via `recon.ContainerLauncher.RunOnce` — no cgo, no libyara at
+  build-time. The toolkit container picks up the recon hardening
+  baseline: `--read-only` rootfs, dropped capabilities, non-root UID,
+  no-network, 512 MiB / 1 CPU / 256-PID caps. Container-target paths
+  are extracted to a host tmpfile via `ContainerCopyFileStream` first,
+  then bind-mounted read-only into the toolkit — `/proc/1/exe` etc
+  resolve via Docker's archive layer. Ships one curated ruleset,
+  `linux-elf-suspicious` (5 rules covering reverse-shells, ptrace
+  injection, systemd/cron persistence, packed/self-modifying binaries,
+  credential-theft paths), embedded via `go:embed` at
+  `internal/templates/yara-rules/`. REST surface
+  (`/api/v1/yara/`, RequireOperator throughout): `GET /rulesets`,
+  `POST /scan`, plus a container-scoped POST at
+  `/api/v1/containers/{hostID}/{containerID}/yara-scan`. Web UI at
+  `/scan/yara` (Security sidebar) renders a form-driven scanner with
+  inline results table. The recon-toolkit Dockerfile now installs
+  `yara` and its dispatcher learns a `yara --rules <r> --path <p>`
+  subcommand that emits native one-line-per-match output to stdout.
+- **Forensics: opt-in YARA probe.** `internal/services/forensics/` gains
+  `ProbeOptions{YARAELFScan, YARARuleset, YARAPath}` and a
+  `SnapshotWithOptions(ctx, containerID, opts)` method; the legacy
+  `Snapshot` is a thin wrapper that passes the zero-value options, so
+  every existing caller sees byte-identical tarballs. When the option
+  is enabled AND a YARA runner has been registered via
+  `WithYARAScanner`, the snapshot tar gains a `yara-elf-scan.txt`
+  entry over the configured in-container path (default
+  `/proc/1/exe`, ruleset `linux-elf-suspicious`). The YARA runner is
+  satisfied by `*yara.Service` via its `ScanContainerPath` adapter
+  method. v26.5.2 keeps the toggle internal-only (no API or CLI
+  surface flips it); the follow-up PR hoists it to a flag.
+- **L7 egress filter — in-process forward proxy with per-host policies.**
+  New package `internal/services/egress/` ships an HTTP/HTTPS forward
+  proxy that listens on `cfg.EgressProxy.ListenAddr` (default `:18080`,
+  opt-in via `egress_proxy.enabled=true` because the listener binds a
+  TCP port on the host). Workloads route `HTTP_PROXY` / `HTTPS_PROXY`
+  at the listener; the proxy evaluates each outbound CONNECT / GET /
+  POST against the operator's per-host allow/deny rules persisted in
+  the new `egress_policies` table (migration `058_egress_policies`).
+  Matching uses `path.Match` (`*.github.com`, `*`, exact hosts) and is
+  case-insensitive. First-match-wins in `created_at` ASC order; a host
+  with **zero policies** is pass-through (opt-in), a host with **≥ 1
+  policies and none matched** is default-deny. HTTPS is evaluated on
+  the cleartext SNI / Host header before the CONNECT tunnel opens —
+  no TLS interception. Denies write to `egress_audit_log` (allows are
+  not logged, by design). REST surface at `/api/v1/egress/`:
+  `GET /{hostID}/policies`, `POST /{hostID}/policies`,
+  `DELETE /policies/{id}`, `GET /{hostID}/denies` —
+  RequireOperator throughout. Web UI under `/egress` (Security
+  sidebar). Out of scope this PR: per-container policy attachment
+  (needs net-ns plumbing), TLS MITM (against the design),
+  multi-host listeners (standalone-only).
+- **recon: Shodan connector (BYO key).** New package
+  `internal/services/recon/connectors/shodan/` implementing
+  `recon.Connector` with `Kind="shodan"`. `HealthCheck` pings
+  `GET /api-info` and asserts a 200 carrying `query_credits`;
+  `Lookup` covers the three Shodan-relevant target kinds — `ip`
+  (`/shodan/host/{ip}`), `domain` (`/dns/resolve`), and
+  `ip_range` (`/shodan/host/search` with `net:<cidr>`) — and
+  maps each response into `recon.EngineEvent` records under the
+  `sfp_shodan` module bucket so findings group with whatever
+  SpiderFoot emits from the same module. Severity ladder:
+  any CVE in vulns → high, sensitive port (SSH/RDP/DB/Docker)
+  → medium, otherwise → low (info for DNS resolutions).
+  Registered at startup behind the existing
+  `recon.connectors.shodan.enabled` toggle alongside HIBP;
+  credentials managed via `PUT /api/v1/recon/connectors/shodan`
+  or the existing `/recon/connectors` UI card, persisted
+  encrypted-at-rest in `recon_connectors`. The binary still
+  bundles **no Shodan key** — operators supply their own. A
+  full-cycle secrecy test pins that the configured key never
+  appears in any log line or returned error string, including
+  through `url.Error` from transport failures (Shodan only
+  accepts the key in the query string, so the connector scrubs
+  the key out of every transport error before returning it).
+  Operator docs in
+  [`docs/recon.md`](docs/recon.md) §13.1.
+- **CLI: `usulnet migrate up` / `down [N]` / `status` subcommands
+  ([#111], [#112]).** `migrate` is now a parent command with three
+  leaf subcommands. `up` applies pending migrations; `down [N]`
+  rolls back the last N (default 1) via the matching `.down.sql`
+  files; `status` prints one line per migration with applied/pending
+  state. Bare `usulnet migrate` prints the help text instead of
+  failing with Cobra's default error (same shape as the other
+  parent commands — `config`, `admin`, `meta`, `recon`).
+- **CLI: global `--quiet` and `--json` flags ([#113]).** `--quiet`
+  (short `-q`) suppresses informational summaries (e.g. `stripped:
+  foo -> bar`, `Configuration is valid`); errors and primary data
+  still print. `--json` is a shortcut for `--output json` and wins
+  over an explicit `--output`. Both are persistent on the root
+  command and inherited by every subcommand.
+- **CLI: structured JSON error envelope ([#113]).** With `--json`
+  set, errors are emitted as `{"error":"<string>","code":<int>}` on
+  stderr with the `code` field matching the process exit code. The
+  plain formatter prefixes the line with `usulnet:`; Cobra's own
+  usage dump is suppressed so a typo'd flag prints only the error.
+- **CLI: shared `apiclient` sub-package ([#114]).** The HTTP client
+  used by `recon` and `meta` is now extracted to
+  `cmd/usulnet/internal/apiclient/`. Same behaviour, single
+  constructor — typed errors (`ErrConfig` / `ErrNetwork` / `ErrAuth`
+  / `ErrStatus`) drive the documented exit codes (71 / 72 / 70).
+- **agent: Cobra command tree with `run` / `version` /
+  `validate-config` subcommands ([#115]).** Bare `usulnet-agent`
+  remains equivalent to `usulnet-agent run` (no breaking change for
+  existing systemd units or compose specs); `version` prints build
+  info; `validate-config` loads the resolved config and runs the
+  required-field check without starting the agent — exits 0 only
+  when a startable config can be assembled. Recommended pre-flight
+  before restarting an agent in production. Persistent flags
+  (`--config`, `--gateway`, `--token`, `--docker`, `--hostname`,
+  `--log-level`, `--log-format`, `--data-dir`) work on every
+  subcommand.
+- **agent: `USULNET_AGENT_DOCKER_HOST` env var ([#115]).** Canonical
+  source for `--docker`; falls through to `$DOCKER_HOST` (for parity
+  with Docker tooling) and then the unix-socket default. Resolves
+  the prior mixed-prefix confusion (every other agent env var is
+  `USULNET_*`-prefixed). No breaking change — `DOCKER_HOST` still
+  works.
+- **web: a11y landmarks on header, sidebar, modal, and flash
+  ([#116]).** `<main role="main">` landmark wraps the page body;
+  collapsible sidebar groups carry `aria-expanded` reflecting the
+  Alpine state; mobile sidebar toggle carries `aria-label` +
+  `aria-controls`; the modal partial renders as `role="dialog"
+  aria-modal="true"` with the heading wired via `aria-labelledby`;
+  flash messages live in an `aria-live="polite"` region. No visual
+  changes — pure semantic markup so screen readers and keyboard
+  users get the same affordances as the visible UI.
+- **docs: new CLI reference at [`docs/cli.md`](docs/cli.md).**
+  Subcommand table, global flags, exit codes, error formats (plain
+  + JSON envelope), and the `meta strip --output-file` migration
+  note in one place. Linked from the README and from the agent
+  guide.
+- **CLI: shell tab-completion install script + Makefile target.**
+  Both binaries register Cobra's `completion <shell>` for `bash`,
+  `zsh`, `fish`, and `powershell` (auto-wired by the framework).
+  New `deploy/install-completions.sh` detects the active shell,
+  writes the file to the conventional per-user path (under
+  `$XDG_DATA_HOME` / `$XDG_CONFIG_HOME`), supports a `--system`
+  flag for system-wide install, and covers both `usulnet` and
+  `usulnet-agent` in one invocation. New `make install-completions`
+  target wraps the script. Both production Docker images bake the
+  four scripts at `/app/completions/{bash,zsh,fish,powershell}/<binary>`
+  so operators can `docker cp` them out without running the binary
+  on the host. Install reference in
+  [`docs/cli.md#tab-completion`](docs/cli.md#tab-completion).
+- **release: smoke E2E gate that boots the compose stack against
+  the just-built image ([#147]).** `make smoke-e2e` (and the new
+  `.github/workflows/smoke-e2e.yml`) brings up the canonical compose
+  with an overlay that pins ephemeral tmpfs volumes and the
+  `usulnet/usulnet:test` tag, polls `/health`, logs in as the
+  bootstrap admin, walks every sidebar `href`, asserts 2xx/3xx on
+  each, and scrapes `docker logs` for `panic:` / `"level":"fatal"`
+  / `runtime error:`. Catches both startup crashes (the v26.5.1
+  chi mount panic class) and dead links (the orphan `/tools/ansible`
+  nav entry it surfaced). Build-skippable via
+  `USULNET_SMOKE_SKIP_BUILD=1` for local iteration. The new
+  `internal/web/testhelpers/chi_walk.go` plus per-route structural
+  tests (`routes_register_test.go`, 12 sub-tests, one per
+  `Register*Routes`) backstop the smoke at unit-test speed so a
+  duplicate `r.Route("/{id}")` panic shows up in `go test` instead
+  of `docker logs` ([#148]).
+- **release: bumped coverage threshold from 15 % to 16 % ([#148]).**
+  Empirical post-tests is 16.5 %; the lift came from the structural
+  router tests and from pinning the recon adapter contract
+  (`ReconEnabled=true` + `ReconService=nil` must report disabled)
+  surfaced during the same audit.
+- **CLI: host-side `usulnet` subcommands for contexts / login /
+  containers / images / hosts / stacks / backups ([#149]).**
+  New top-level parents `contexts`, plus `containers ls`,
+  `images ls`, `hosts ls`, `stacks ls`, `backups ls`, and the
+  session-level commands `login`, `logout`, `whoami`. All leaves
+  declare `RunE`, a non-empty `Long`, and a copy-pasteable
+  `Example`; the existing parents now also assert
+  `Args: cobra.NoArgs` and print their own `--help` on bare
+  invocation. Client config persists at `~/.config/usulnet/config.yaml`
+  with `XDG_CONFIG_HOME` honoured and `USULNET_CLIENT_CONFIG` as
+  the env override. Active context resolves in the order
+  `$USULNET_CONTEXT` → `default_context:` in the YAML → single
+  context fallback. Docs in
+  [`docs/cli.md#host-side-client`](docs/cli.md#host-side-client-v2652).
+- **web: sidebar regrouped from 9 to 7 sections ([#150]).** New
+  taxonomy: Overview / Compute / Operations / Security / Privacy /
+  Platform / Admin. Every existing `href` and every existing
+  `prefs.IsHidden(k)` gate is preserved — pure visual reorg, no
+  route renames, no permission changes.
+- **web: first-run onboarding wizard ([#153]).** On a fresh install
+  an admin logging in with the default bootstrap credential is
+  redirected to `/onboarding/welcome` and cannot reach any other
+  UI route until the password is changed. Two screens — mandatory
+  password change, then a "you're set" step with two skippable
+  secondary CTAs (`/hosts/new`, `/marketplace`) and a "Finish
+  setup" button that flips `system_state.onboarding_completed`.
+  New migration 057. Wizard middleware fails open on a nil
+  service (stripped builds) and fails closed on a DB read error
+  at boot (the wizard keeps firing). Non-admin users always pass
+  through. The smoke E2E completes the wizard before walking the
+  sidebar so the route walk still gates the real chrome.
+- **web: uniform empty-states across 12 modules ([#151], [#152]).**
+  New `components.EmptyStateCTAs` renders the rich
+  icon + Title + What / Why + 1-3 CTA empty-state card. Per-module
+  wording lives in a single audit surface at
+  `internal/web/empty_state_catalog.go` — twelve
+  `EmptyStateCatalog<Module>()` functions, each returning the
+  data the per-page templ consumes. Wired into the list pages
+  for `/backups`, `/backup-verify`, `/calendar`, `/crontab`,
+  `/dns`, `/firewall`, `/image-builder`, `/marketplace`, `/proxy`,
+  `/rollback`, `/ssl`, `/wireguard`. The `/proxy` case is the
+  spec's named regression: the bare "NPM Not Connected" card
+  from v26.5.1 is now the same shape as every other module's
+  empty-state. A `TestEmptyStateCatalog_AllEntriesValid` test
+  pins five invariants across the catalog (Icon non-empty, fa-
+  prefix, Title/What/Why non-empty, exactly one primary CTA, no
+  external URLs).
+- **marketplace: three honeypot apps ([#155]).** Cowrie
+  (SSH/Telnet honeypot), Dionaea (multi-protocol malware-catcher),
+  and Endlessh (SSH tarpit) land as curated marketplace apps under
+  `internal/templates/marketplace/apps/`. Each ships a pinned
+  upstream image digest, a hardened `compose.yaml` (no host network,
+  no privileged, explicit `read_only` where the upstream allows),
+  an SVG icon, and a `manifest.yaml` with category, ports, and the
+  one-line operator value-prop. The catalog regression test
+  (`internal/templates/marketplace/catalog_test.go`) gains coverage
+  for all three. Deploys via the existing one-click marketplace
+  flow; no API surface change.
+- **marketplace: Tor SOCKS5 proxy egress app ([#157]).** New
+  `tor-socks-proxy` marketplace app — operators deploy a sandboxed
+  Tor daemon as a SOCKS5 proxy at `tor-socks-proxy:9050` and route
+  individual containers through it via `HTTP_PROXY` / `ALL_PROXY`
+  env vars or compose `network_mode`. Pinned to a digest-locked
+  upstream image, no host network, no NET_ADMIN. Provides the
+  building block for the deeper "Tor egress for the recon sandbox"
+  feature that remains deferred to v26.6 (it would wire this app
+  into a built-in `usulnet-tor-egress` Docker network and surface
+  circuit health under `/privacy/tor`).
+- **recon-toolkit: rebase sandbox image on Arch ([#160]).** The
+  recon-toolkit container's Dockerfile moves from `debian:stable-slim`
+  at `deploy/recon/toolkit/` to `archlinux:latest` at
+  `images/recon-toolkit/`. New weekly workflow
+  `.github/workflows/recon-toolkit-weekly.yml` rebuilds the image
+  every Monday 04:00 UTC so package updates land within a week of
+  upstream; PR-touching changes go through the same workflow as a
+  build-only validation gate (smoke + size budget run on cron).
+  The image is now `linux/amd64` only — the official `archlinux`
+  Docker image is x86_64-only; arm64 hosts can either set
+  `recon.toolkit.image` to a custom multi-arch alternative or
+  disable the recon module via `recon.enabled: false`.
+
+  Initial-landing scope: arch core + extra (`mat2`, exiftool, yara,
+  python) plus pip-installed `holehe`, `h8mail`, `oletools`, `pdfid`
+  in a venv at `/opt/venv`. The full BlackArch overlay and the Go
+  binary set (phoneinfoga, subfinder, katana, amass, nuclei, ...)
+  are deferred to a follow-up — three CI attempts to bootstrap
+  BlackArch in the PR build kept dying in <60s without a
+  log-surface we could read, so the follow-up lands them with the
+  log path proven first. The Go-side recon wrappers and the
+  metadata service continue to call the dispatcher unchanged;
+  subcommands whose tool is not yet in the image return the
+  existing structured `unsupported_arch` / `tool_failed` JSON.
+  Catalogue surfaced in the UI at `/recon/connectors` under
+  "Sandbox tools", parsed at build time from
+  `images/recon-toolkit/tools.list` via the new
+  `internal/services/recon/sandboxtools/` package
+  (`TestManifestInSync` guards against drift between the two
+  copies). Operator docs in
+  [`docs/recon.md`](docs/recon.md) §12.
+
+### Changed
+
+- **CLI: rename `meta strip --output` → `--output-file` ([#111]).**
+  The destination-path flag on `usulnet meta strip` previously
+  shadowed the global `--output table|json|yaml` format flag (same
+  name, two meanings on the same line). The destination flag is
+  now `--output-file`; the `-o` short form is preserved. Scripts
+  using the old flag must update — no alias. Migration note in
+  [`docs/cli.md`](docs/cli.md#meta-strip---output-file-migration-note).
+- **CLI: help-text polish on every subcommand ([#112]).** Every
+  leaf command now carries `Example:` (with a real copy-pasteable
+  invocation) and a `Long:` description of what the command does,
+  what flags exist, and what success / failure looks like. Parent
+  `Short:` lines rewritten to describe what the subtree offers
+  instead of "X commands" boilerplate.
+- **CLI: `recon` subtree now honors the `--token` flag ([#111]).**
+  Previously declared on `reconCmd.PersistentFlags()` but only read
+  from `$USULNET_API_TOKEN`. Operators get a silent ignore no
+  more — the flag and env var resolve consistently across `recon`
+  and `meta`.
+- **CLI: `version` switched to `RunE` ([#111]).** Previously used
+  `Run:` and could not propagate errors from `app.PrintVersion()`.
+  Now matches the other 15 subcommands.
+- **CLI: parent commands print help when called without a
+  subcommand ([#111]).** `migrate`, `config`, `admin`, `meta`,
+  `recon` print their own help text instead of falling through to
+  Cobra's default "unknown command" error.
+- **CLI: `SilenceUsage` + `SilenceErrors` on rootCmd ([#111]).**
+  Cobra no longer dumps the full help text on every `RunE` error.
+  Operators see only the `usulnet: <message>` line (or the JSON
+  envelope under `--json`); `--help` still works on demand.
+- **agent: YAML config unmarshals directly into `agent.Config`
+  ([#115]).** The old parallel `agentFileConfig` mirror struct is
+  retired; `yaml` tags on `agent.Config` drive the mapping. The
+  `tls:` block continues to nest under `agent.Config.TLS`
+  (`TLSConfig` struct with `enabled` / `cert_file` / `key_file` /
+  `ca_file`). YAML schema is unchanged — existing
+  `config.agent.yaml` files keep working.
+
+### Fixed
+
+- **CLI: `--output` flag-shadow bug on `meta strip` ([#111]).** See
+  the rename above. The bug surfaced as confusing help text (the
+  same name appearing twice with different semantics on the same
+  subcommand); Cobra's short-flag resolution meant `-o cleaned.jpg`
+  worked even when `--output cleaned.jpg` did the wrong thing.
+- **web: chi router panic on /dns subtree ([#142]).** `r.Route("/{id}",
+  …)` declared twice inside `/dns` panicked at boot:
+  `chi: attempting to Route() a mount that already exists`. The
+  duplicate mount was an artefact of the v26.5.1 port — now
+  consolidated into a single `r.Route("/{id}", …)` with
+  `r.With(view|write)` middleware per HTTP verb. Same chi panic
+  class the smoke E2E ([#147]) now backstops at the binary level.
+- **web: `/recon/*` always 404 with `ReconEnabled=true` ([#142]).**
+  `regDeps.ReconService` was never assigned even though the
+  feature flag was on. The web adapter contract is
+  `r.reconEnabled && r.reconSvc != nil`, so the missing pointer
+  silently disabled the module. Service plumbed through; a new
+  unit test pins the contract so it cannot regress.
+- **web: dead `/tools/ansible` sidebar entry surfaced by the smoke
+  E2E ([#147]).** The route was retired in an earlier session but
+  the nav entry was missed. Smoke caught it as `/tools/ansible:
+  HTTP 404`; the sidebar entry is now gone.
+- **pre-release sweep ([#145]).** `gofmt` on four drifted files
+  (`cmd/pdf-builder/main.go`, `cmd/usulnet-agent/main.go`,
+  `internal/web/form_validation.go`, `tests/e2e/recon/metadata_e2e_test.go`),
+  removed an unused `ptr[T]` helper from
+  `internal/services/monitoring/alerts.go`, and added
+  `docker-compose.override.{yml,yaml}` to `.dockerignore` so
+  contributor overrides don't bake into the production image.
+- **Makefile: `make quality` now calls `verify-migrations` ([#146]).**
+  Previously the hook lived in `scripts/verify-migrations.sh` but
+  wasn't wired into the gate run by CI, so an unbalanced up/down
+  pair could land. Now wired.
+
+### Security
+
+- **govulncheck allowlist justification pinned in CI.** New
+  `scripts/check-govulncheck-allowlist.sh` runs in the
+  `govulncheck.yml` workflow and in `make quality`; it fails the
+  build if any of the two daemon-side Moby false positives
+  (`GO-2026-4883`, `GO-2026-4887`) stop being false positives
+  because a new commit introduces one of the forbidden callsites
+  (`client.Plugin*`) or daemon imports
+  (`github.com/docker/docker/pkg/authorization`,
+  `github.com/docker/docker/plugin/v2`,
+  `github.com/docker/docker/daemon`). The script also pins
+  `internal/services/dockerconfig/` as the only owner of the
+  `authorization-plugins` config string, so a new owner triggers
+  an explicit re-review of the AuthZ allowlist entry. The legacy
+  `github.com/docker/docker` module remains pinned at v28.5.2
+  (`+incompatible`, the last version on that import path with
+  "Fixed in: N/A" for both advisories); the moby/v2 fix path
+  remains in beta (v2.0.0-beta.15 as of the v26.5.2 cut) and is
+  deferred until upstream tags a stable release we can adopt
+  without risking the rest of the docker SDK surface.
+
+### Deferred to v26.6
+
+The following work was tracked under the v26.5.2 14-session plan
+but is intentionally **not in this release**:
+
+- **Light theme — full per-page audit** (plan session 13). Theme
+  toggle is wired; the per-page sweep across
+  `internal/web/templates/pages/` for hard-coded dark Tailwind
+  classes (~40 files) lands in v26.6.
+- **Frontend animations** (plan session 14): HTMX swap fade-in,
+  sidebar accordion transition, toast slide-in, hover micro-
+  interactions. Tracked for v26.6.
+- **trufflehog volume secrets scanner** (plan session 09 — second
+  half). YARA shipped via [#159]; the matching trufflehog
+  `secrets_volume` analyzer remains a v26.6 item. The marketplace
+  ships `trufflesecurity/trufflehog` for operators who need it
+  today.
+- **BlackArch overlay + full OSINT toolset for recon-toolkit**
+  (follow-up to [#160]). Arch + pip subset landed in v26.5.2; the
+  BlackArch overlay + Go-binary set (phoneinfoga, subfinder,
+  katana, amass, nuclei, ...) lands in v26.6.
+
+[#111]: https://github.com/fr4nsys/usulnetdevbeta04/pull/111
+[#112]: https://github.com/fr4nsys/usulnetdevbeta04/pull/112
+[#113]: https://github.com/fr4nsys/usulnetdevbeta04/pull/113
+[#114]: https://github.com/fr4nsys/usulnetdevbeta04/pull/114
+[#115]: https://github.com/fr4nsys/usulnetdevbeta04/pull/115
+[#116]: https://github.com/fr4nsys/usulnetdevbeta04/pull/116
+[#117]: https://github.com/fr4nsys/usulnetdevbeta04/pull/117
+[#118]: https://github.com/fr4nsys/usulnetdevbeta04/pull/118
+[#142]: https://github.com/fr4nsys/usulnetdevbeta04/pull/142
+[#145]: https://github.com/fr4nsys/usulnetdevbeta04/pull/145
+[#146]: https://github.com/fr4nsys/usulnetdevbeta04/pull/146
+[#147]: https://github.com/fr4nsys/usulnetdevbeta04/pull/147
+[#148]: https://github.com/fr4nsys/usulnetdevbeta04/pull/148
+[#149]: https://github.com/fr4nsys/usulnetdevbeta04/pull/149
+[#150]: https://github.com/fr4nsys/usulnetdevbeta04/pull/150
+[#151]: https://github.com/fr4nsys/usulnetdevbeta04/pull/151
+[#152]: https://github.com/fr4nsys/usulnetdevbeta04/pull/152
+[#153]: https://github.com/fr4nsys/usulnetdevbeta04/pull/153
+
+## [Unreleased — cloud]
+
+### [v26.5.2-cloud] — Cloud product launch
+
+Cloud product launch at `cloud.usulnet.com`. **No AGPL self-hosted
+code shipped in this tag.** Sessions 01-22 land the v1 pillar
+(recon-as-a-service + exposure dashboard) and the compliance /
+operations surfaces required to charge real money in the EU.
+Production Polar org wired; sandbox Polar org retired. Full notes:
+[`docs/v26.5.2-cloud/release-notes.md`](docs/v26.5.2-cloud/release-notes.md).
+
+#### Added
+
+- **Cloud product launches at `cloud.usulnet.com`.** Indexable
+  landing, `/auth` magic-link sign-in, `/app/**` authenticated
+  dashboard.
+- **v1 pillar: recon-as-a-service + exposure dashboard.**
+  Target CRUD + ownership verification (S08); scan scheduler
+  (S09); AES-256-GCM findings storage (S10); HIBP Pro paid
+  connector (S11); per-target exposure view + PDF reports (S12);
+  weekly digest with run deltas (S13); curated EU/US broker list
+  (S14).
+- **Three tiers (monthly / annual / 5-year) at prices €6.99 /
+  €69 / €289.** Locked by Decision 2 (2026-05-16) and rendered on
+  `usulnet.com/pricing` from Cloudflare Pages bindings
+  (`CLOUD_PRICE_MONTHLY` / `_ANNUAL` / `_5YEAR`) with the
+  D2-locked defaults baked in for unset bindings.
+- **Production Polar org wired.** `POLAR_API_BASE`,
+  `POLAR_API_TOKEN`, `POLAR_WEBHOOK_SECRET`, and the three
+  `POLAR_PRODUCT_*` bindings flipped from sandbox to production
+  via the operator-only follow-up PR
+  `chore(cloud): switch Polar to production`.
+- **Compliance:** Privacy policy, ToS, DPA template (S15);
+  right-to-erasure with a 7-day cancel window (S16); Article 30
+  Record + transparency report (S17).
+- **Operations:** operational dashboard at
+  `cloud.usulnet.com/admin` (S18); Sentry EU error tracking +
+  `status.usulnet.com` (S19); support inbox at
+  `support@usulnet.com` (S20).
+- **Onboarding:** focused `cloud.usulnet.com/` landing (S21);
+  D1 + D30 onboarding emails honouring `email_preferences` opt-out
+  (S22).
+
+#### Known limitations
+
+- Password-manager pillar (v2) deferred — v1 ships
+  recon-as-a-service + exposure dashboard only.
+- Shodan and IntelX connectors deferred to v2 — v1 ships with
+  HIBP Pro included.
+- Tor egress for the recon sandbox deferred to v26.6.
+- Call/SMS spam-control pillar (v3) out of scope.
+
 ### [v26.5.1-cloud] — Cloud launch
 
 Marketing / SaaS-launch release. **No Go code shipped in this tag.**

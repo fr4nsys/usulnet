@@ -108,7 +108,7 @@ func Compliance(data ComplianceData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "\"> <button type=\"submit\" class=\"btn-secondary flex items-center gap-2\"><i class=\"fas fa-search\"></i> Run Check</button></form><button onclick=\"document.getElementById('createPolicyModal').classList.remove('hidden')\" class=\"btn-primary flex items-center gap-2\"><i class=\"fas fa-plus\"></i> New Policy</button></div></div><!-- Stats --><div class=\"grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "\"> <button type=\"submit\" class=\"btn-secondary flex items-center gap-2\"><i aria-hidden=\"true\" class=\"fas fa-search\"></i> Run Check</button></form><button onclick=\"document.getElementById('createPolicyModal').classList.remove('hidden')\" class=\"btn-primary flex items-center gap-2\"><i aria-hidden=\"true\" class=\"fas fa-plus\"></i> New Policy</button></div></div><!-- Stats --><div class=\"grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -149,7 +149,7 @@ func Compliance(data ComplianceData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "\" class=\"space-y-4\"><div class=\"flex gap-1 border-b border-dark-600\"><button @click=\"tab = 'policies'\" :class=\"tab === 'policies' ? 'border-primary-500 text-white' : 'border-transparent text-gray-400 hover:text-gray-300'\" class=\"px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors\">Policies (")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "\" class=\"space-y-4\"><div class=\"flex gap-1 border-b border-dark-600\"><button @click=\"tab = 'policies'\" :class=\"tab === 'policies' ? 'border-primary-500 text-white' : 'border-transparent text-gray-400 hover:text-gray-300'\" class=\"tab-underline\">Policies (")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -162,7 +162,7 @@ func Compliance(data ComplianceData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, ")</button> <button @click=\"tab = 'violations'\" :class=\"tab === 'violations' ? 'border-primary-500 text-white' : 'border-transparent text-gray-400 hover:text-gray-300'\" class=\"px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors\">Violations (")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, ")</button> <button @click=\"tab = 'violations'\" :class=\"tab === 'violations' ? 'border-primary-500 text-white' : 'border-transparent text-gray-400 hover:text-gray-300'\" class=\"tab-underline\">Violations (")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -180,7 +180,7 @@ func Compliance(data ComplianceData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			if len(data.Policies) == 0 {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "<div class=\"card p-12 text-center\"><i class=\"fas fa-shield-alt text-4xl text-gray-400 mb-4\"></i><h3 class=\"text-lg font-medium text-white mb-2\">No Compliance Policies</h3><p class=\"text-gray-400 mb-4\">Create policies to enforce security best practices across your containers</p></div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "<div class=\"card p-12 text-center\"><i aria-hidden=\"true\" class=\"fas fa-shield-alt text-4xl text-gray-400 mb-4\"></i><h3 class=\"text-lg font-medium text-white mb-2\">No Compliance Policies</h3><p class=\"text-gray-400 mb-4\">Create policies to enforce security best practices across your containers</p></div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -205,12 +205,12 @@ func Compliance(data ComplianceData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			if len(data.Violations) == 0 {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "<div class=\"card p-12 text-center\"><i class=\"fas fa-check-circle text-4xl text-green-600 mb-4\"></i><h3 class=\"text-lg font-medium text-white mb-2\">No Violations</h3><p class=\"text-gray-400\">All containers are in compliance with defined policies</p></div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "<div class=\"card p-12 text-center\"><i aria-hidden=\"true\" class=\"fas fa-check-circle text-4xl text-green-600 mb-4\"></i><h3 class=\"text-lg font-medium text-white mb-2\">No Violations</h3><p class=\"text-gray-400\">All containers are in compliance with defined policies</p></div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			} else {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "<div class=\"card overflow-hidden\"><table class=\"w-full\"><thead><tr class=\"border-b border-dark-600\"><th class=\"text-left text-xs font-medium text-gray-400 uppercase px-4 py-3\">Container</th><th class=\"text-left text-xs font-medium text-gray-400 uppercase px-4 py-3\">Policy</th><th class=\"text-left text-xs font-medium text-gray-400 uppercase px-4 py-3\">Severity</th><th class=\"text-left text-xs font-medium text-gray-400 uppercase px-4 py-3\">Message</th><th class=\"text-left text-xs font-medium text-gray-400 uppercase px-4 py-3\">Status</th><th class=\"text-left text-xs font-medium text-gray-400 uppercase px-4 py-3\">Detected</th><th class=\"text-left text-xs font-medium text-gray-400 uppercase px-4 py-3\">Actions</th></tr></thead> <tbody class=\"divide-y divide-dark-700\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "<div class=\"card overflow-hidden\"><table class=\"w-full\"><thead><tr class=\"border-b border-dark-600\"><th scope=\"col\" class=\"text-left text-xs font-medium text-gray-400 uppercase px-4 py-3\">Container</th><th scope=\"col\" class=\"text-left text-xs font-medium text-gray-400 uppercase px-4 py-3\">Policy</th><th scope=\"col\" class=\"text-left text-xs font-medium text-gray-400 uppercase px-4 py-3\">Severity</th><th scope=\"col\" class=\"text-left text-xs font-medium text-gray-400 uppercase px-4 py-3\">Message</th><th scope=\"col\" class=\"text-left text-xs font-medium text-gray-400 uppercase px-4 py-3\">Status</th><th scope=\"col\" class=\"text-left text-xs font-medium text-gray-400 uppercase px-4 py-3\">Detected</th><th scope=\"col\" class=\"text-left text-xs font-medium text-gray-400 uppercase px-4 py-3\">Actions</th></tr></thead> <tbody class=\"divide-y divide-dark-700\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -327,7 +327,7 @@ func Compliance(data ComplianceData) templ.Component {
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
-						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 23, "\"> <button type=\"submit\" class=\"p-1.5 text-gray-400 hover:text-yellow-400 transition-colors\" title=\"Acknowledge\"><i class=\"fas fa-eye text-sm\"></i></button></form>")
+						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 23, "\"> <button type=\"submit\" class=\"p-1.5 text-gray-400 hover:text-yellow-400 transition-colors\" title=\"Acknowledge\"><i aria-hidden=\"true\" class=\"fas fa-eye text-sm\"></i></button></form>")
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
@@ -358,7 +358,7 @@ func Compliance(data ComplianceData) templ.Component {
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 26, "\"> <button type=\"submit\" class=\"p-1.5 text-gray-400 hover:text-green-400 transition-colors\" title=\"Resolve\"><i class=\"fas fa-check text-sm\"></i></button></form><form method=\"POST\" action=\"")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 26, "\"> <button type=\"submit\" class=\"p-1.5 text-gray-400 hover:text-green-400 transition-colors\" title=\"Resolve\"><i aria-hidden=\"true\" class=\"fas fa-check text-sm\"></i></button></form><form method=\"POST\" action=\"")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
@@ -384,7 +384,7 @@ func Compliance(data ComplianceData) templ.Component {
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 28, "\"> <button type=\"submit\" class=\"p-1.5 text-gray-400 hover:text-blue-400 transition-colors\" title=\"Exempt\"><i class=\"fas fa-ban text-sm\"></i></button></form></div></td></tr>")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 28, "\"> <button type=\"submit\" class=\"p-1.5 text-gray-400 hover:text-blue-400 transition-colors\" title=\"Exempt\"><i aria-hidden=\"true\" class=\"fas fa-ban text-sm\"></i></button></form></div></td></tr>")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
@@ -591,7 +591,7 @@ func policyCard(p CompliancePolicyView, csrfToken string) templ.Component {
 			}
 		}
 		if p.IsEnforced {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 45, "<span class=\"px-2 py-0.5 text-xs bg-red-500/20 text-red-400 rounded flex items-center gap-1\"><i class=\"fas fa-lock text-[10px]\"></i>Enforced</span>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 45, "<span class=\"px-2 py-0.5 text-xs bg-red-500/20 text-red-400 rounded flex items-center gap-1\"><i aria-hidden=\"true\" class=\"fas fa-lock text-[10px]\"></i>Enforced</span>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -619,27 +619,27 @@ func policyCard(p CompliancePolicyView, csrfToken string) templ.Component {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 49, "<div class=\"flex items-center gap-4 mt-2 text-xs text-gray-500\"><span><i class=\"fas fa-tag mr-1\"></i>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 49, "<div class=\"flex items-center gap-4 mt-2 text-xs text-gray-500\"><span><i aria-hidden=\"true\" class=\"fas fa-tag mr-1\"></i>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var30 string
 		templ_7745c5c3_Var30, templ_7745c5c3_Err = templ.JoinStringErrs(p.Category)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/compliance/compliance.templ`, Line: 230, Col: 55}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/compliance/compliance.templ`, Line: 230, Col: 74}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var30))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 50, "</span> <span><i class=\"fas fa-cog mr-1\"></i>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 50, "</span> <span><i aria-hidden=\"true\" class=\"fas fa-cog mr-1\"></i>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var31 string
 		templ_7745c5c3_Var31, templ_7745c5c3_Err = templ.JoinStringErrs(p.RuleConfig)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/compliance/compliance.templ`, Line: 231, Col: 57}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/compliance/compliance.templ`, Line: 231, Col: 76}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var31))
 		if templ_7745c5c3_Err != nil {
@@ -650,14 +650,14 @@ func policyCard(p CompliancePolicyView, csrfToken string) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		if p.Violations > 0 {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 52, "<span class=\"text-red-400\"><i class=\"fas fa-exclamation-triangle mr-1\"></i>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 52, "<span class=\"text-red-400\"><i aria-hidden=\"true\" class=\"fas fa-exclamation-triangle mr-1\"></i>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var32 string
 			templ_7745c5c3_Var32, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d violations", p.Violations))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/compliance/compliance.templ`, Line: 233, Col: 126}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/compliance/compliance.templ`, Line: 233, Col: 145}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var32))
 			if templ_7745c5c3_Err != nil {
@@ -668,20 +668,20 @@ func policyCard(p CompliancePolicyView, csrfToken string) templ.Component {
 				return templ_7745c5c3_Err
 			}
 		} else {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 54, "<span class=\"text-green-400\"><i class=\"fas fa-check mr-1\"></i>Compliant</span> ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 54, "<span class=\"text-green-400\"><i aria-hidden=\"true\" class=\"fas fa-check mr-1\"></i>Compliant</span> ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		}
 		if p.LastCheckAt != "" {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 55, "<span><i class=\"fas fa-clock mr-1\"></i>Checked: ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 55, "<span><i aria-hidden=\"true\" class=\"fas fa-clock mr-1\"></i>Checked: ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var33 string
 			templ_7745c5c3_Var33, templ_7745c5c3_Err = templ.JoinStringErrs(p.LastCheckAt)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/compliance/compliance.templ`, Line: 238, Col: 70}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/compliance/compliance.templ`, Line: 238, Col: 89}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var33))
 			if templ_7745c5c3_Err != nil {
@@ -723,12 +723,12 @@ func policyCard(p CompliancePolicyView, csrfToken string) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		if p.IsEnabled {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 60, "<i class=\"fas fa-pause\"></i>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 60, "<i aria-hidden=\"true\" class=\"fas fa-pause\"></i>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		} else {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 61, "<i class=\"fas fa-play\"></i>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 61, "<i aria-hidden=\"true\" class=\"fas fa-play\"></i>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -759,7 +759,7 @@ func policyCard(p CompliancePolicyView, csrfToken string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 64, "\"> <button type=\"submit\" class=\"p-2 text-gray-400 hover:text-red-400 transition-colors\" title=\"Delete\"><i class=\"fas fa-trash\"></i></button></form></div></div></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 64, "\"> <button type=\"submit\" class=\"p-2 text-gray-400 hover:text-red-400 transition-colors\" title=\"Delete\"><i aria-hidden=\"true\" class=\"fas fa-trash\"></i></button></form></div></div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -918,7 +918,7 @@ func createPolicyModal(csrfToken string) templ.Component {
 			templ_7745c5c3_Var42 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 77, "<div id=\"createPolicyModal\" class=\"hidden fixed inset-0 z-50 flex items-center justify-center bg-black/60\"><div class=\"bg-dark-800 rounded-xl shadow-xl border border-dark-600 w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto\"><div class=\"flex items-center justify-between p-6 border-b border-dark-600 sticky top-0 bg-dark-800 z-10\"><h2 class=\"text-lg font-display font-bold text-white\">Create Compliance Policy</h2><button onclick=\"document.getElementById('createPolicyModal').classList.add('hidden')\" class=\"text-gray-400 hover:text-white\"><i class=\"fas fa-times\"></i></button></div><form method=\"POST\" action=\"/compliance/policies\" class=\"p-6 space-y-4\"><input type=\"hidden\" name=\"csrf_token\" value=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 77, "<div id=\"createPolicyModal\" class=\"hidden fixed inset-0 z-50 flex items-center justify-center bg-black/60\"><div class=\"bg-dark-800 rounded-xl shadow-xl border border-dark-600 w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto\"><div class=\"flex items-center justify-between p-6 border-b border-dark-600 sticky top-0 bg-dark-800 z-10\"><h2 class=\"text-lg font-display font-bold text-white\">Create Compliance Policy</h2><button onclick=\"document.getElementById('createPolicyModal').classList.add('hidden')\" class=\"text-gray-400 hover:text-white\"><i aria-hidden=\"true\" class=\"fas fa-times\"></i></button></div><form method=\"POST\" action=\"/compliance/policies\" class=\"p-6 space-y-4\"><input type=\"hidden\" name=\"csrf_token\" value=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -931,7 +931,7 @@ func createPolicyModal(csrfToken string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 78, "\"><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Policy Name</label> <input type=\"text\" name=\"name\" required class=\"input w-full\" placeholder=\"e.g., Require healthcheck on all containers\"></div><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Description</label> <textarea name=\"description\" rows=\"2\" class=\"input w-full\" placeholder=\"Describe what this policy enforces\"></textarea></div><div class=\"grid grid-cols-2 gap-4\"><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Category</label> <select name=\"category\" class=\"input w-full\"><option value=\"security\">Security</option> <option value=\"reliability\">Reliability</option> <option value=\"performance\">Performance</option> <option value=\"best_practice\">Best Practice</option></select></div><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Severity</label> <select name=\"severity\" class=\"input w-full\"><option value=\"critical\">Critical</option> <option value=\"high\">High</option> <option value=\"medium\">Medium</option> <option value=\"low\">Low</option></select></div></div><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Rule</label> <select name=\"rule\" class=\"input w-full\"><option value=\"no_root\">No Root User - Containers must not run as root</option> <option value=\"require_healthcheck\">Require Healthcheck - Containers must define a healthcheck</option> <option value=\"no_privileged\">No Privileged Mode - Containers cannot run in privileged mode</option> <option value=\"require_memory_limit\">Memory Limit - Containers must have memory limits set</option> <option value=\"require_cpu_limit\">CPU Limit - Containers must have CPU limits set</option> <option value=\"no_host_network\">No Host Network - Containers cannot use host network mode</option> <option value=\"no_host_pid\">No Host PID - Containers cannot use host PID namespace</option> <option value=\"no_secrets_env\">No Secrets in Env - Environment variables must not contain secrets</option> <option value=\"require_readonly_fs\">Read-Only Filesystem - Container root FS must be read-only</option> <option value=\"no_cap_add\">No Extra Capabilities - Containers cannot add Linux capabilities</option> <option value=\"require_labels\">Require Labels - Containers must have specific labels</option> <option value=\"image_allowlist\">Image Allowlist - Only approved images can be used</option> <option value=\"no_latest_tag\">No Latest Tag - Containers must use specific image tags</option> <option value=\"require_restart_policy\">Require Restart Policy - Containers must have restart policy</option></select></div><label class=\"flex items-center gap-2\"><input type=\"checkbox\" name=\"is_enforced\" value=\"on\" class=\"form-checkbox rounded bg-dark-700 border-dark-500\"> <span class=\"text-sm text-gray-300\">Enforce policy (block non-compliant containers)</span></label><div class=\"flex justify-end gap-3 pt-4 border-t border-dark-600\"><button type=\"button\" onclick=\"document.getElementById('createPolicyModal').classList.add('hidden')\" class=\"btn-secondary\">Cancel</button> <button type=\"submit\" class=\"btn-primary\"><i class=\"fas fa-plus mr-2\"></i>Create Policy</button></div></form></div></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 78, "\"><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Policy Name</label> <input type=\"text\" name=\"name\" required class=\"input w-full\" placeholder=\"e.g., Require healthcheck on all containers\" aria-label=\"e.g., Require healthcheck on all containers\"></div><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Description</label> <textarea name=\"description\" rows=\"2\" class=\"input w-full\" placeholder=\"Describe what this policy enforces\"></textarea></div><div class=\"grid grid-cols-2 gap-4\"><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Category</label> <select name=\"category\" class=\"input w-full\"><option value=\"security\">Security</option> <option value=\"reliability\">Reliability</option> <option value=\"performance\">Performance</option> <option value=\"best_practice\">Best Practice</option></select></div><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Severity</label> <select name=\"severity\" class=\"input w-full\"><option value=\"critical\">Critical</option> <option value=\"high\">High</option> <option value=\"medium\">Medium</option> <option value=\"low\">Low</option></select></div></div><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Rule</label> <select name=\"rule\" class=\"input w-full\"><option value=\"no_root\">No Root User - Containers must not run as root</option> <option value=\"require_healthcheck\">Require Healthcheck - Containers must define a healthcheck</option> <option value=\"no_privileged\">No Privileged Mode - Containers cannot run in privileged mode</option> <option value=\"require_memory_limit\">Memory Limit - Containers must have memory limits set</option> <option value=\"require_cpu_limit\">CPU Limit - Containers must have CPU limits set</option> <option value=\"no_host_network\">No Host Network - Containers cannot use host network mode</option> <option value=\"no_host_pid\">No Host PID - Containers cannot use host PID namespace</option> <option value=\"no_secrets_env\">No Secrets in Env - Environment variables must not contain secrets</option> <option value=\"require_readonly_fs\">Read-Only Filesystem - Container root FS must be read-only</option> <option value=\"no_cap_add\">No Extra Capabilities - Containers cannot add Linux capabilities</option> <option value=\"require_labels\">Require Labels - Containers must have specific labels</option> <option value=\"image_allowlist\">Image Allowlist - Only approved images can be used</option> <option value=\"no_latest_tag\">No Latest Tag - Containers must use specific image tags</option> <option value=\"require_restart_policy\">Require Restart Policy - Containers must have restart policy</option></select></div><label class=\"flex items-center gap-2\"><input type=\"checkbox\" name=\"is_enforced\" value=\"on\" class=\"form-checkbox rounded bg-dark-700 border-dark-500\"> <span class=\"text-sm text-gray-300\">Enforce policy (block non-compliant containers)</span></label><div class=\"flex justify-end gap-3 pt-4 border-t border-dark-600\"><button type=\"button\" onclick=\"document.getElementById('createPolicyModal').classList.add('hidden')\" class=\"btn-secondary\">Cancel</button> <button type=\"submit\" class=\"btn-primary\"><i aria-hidden=\"true\" class=\"fas fa-plus mr-2\"></i>Create Policy</button></div></form></div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

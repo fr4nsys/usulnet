@@ -124,7 +124,7 @@ func capabilityCard(c CapabilityView) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "</p></div><div class=\"overflow-x-auto\"><table class=\"table\"><thead><tr><th>Record type</th><th>Read</th><th>Write</th><th>Update TTL</th></tr></thead> <tbody>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "</p></div><div class=\"overflow-x-auto\"><table class=\"table\"><thead><tr><th scope=\"col\">Record type</th><th scope=\"col\">Read</th><th scope=\"col\">Write</th><th scope=\"col\">Update TTL</th></tr></thead> <tbody>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -147,12 +147,12 @@ func capabilityCard(c CapabilityView) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			if rec.Read {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "<i class=\"fas fa-check text-green-400\"></i>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "<i aria-hidden=\"true\" class=\"fas fa-check text-green-400\"></i>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			} else {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "<i class=\"fas fa-times text-gray-600\"></i>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "<i aria-hidden=\"true\" class=\"fas fa-times text-gray-600\"></i>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -162,12 +162,12 @@ func capabilityCard(c CapabilityView) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			if rec.Write {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "<i class=\"fas fa-check text-green-400\"></i>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "<i aria-hidden=\"true\" class=\"fas fa-check text-green-400\"></i>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			} else {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "<i class=\"fas fa-times text-gray-600\"></i>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "<i aria-hidden=\"true\" class=\"fas fa-times text-gray-600\"></i>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -177,12 +177,12 @@ func capabilityCard(c CapabilityView) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			if rec.UpdateTTL {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "<i class=\"fas fa-check text-green-400\"></i>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "<i aria-hidden=\"true\" class=\"fas fa-check text-green-400\"></i>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			} else {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "<i class=\"fas fa-times text-gray-600\"></i>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "<i aria-hidden=\"true\" class=\"fas fa-times text-gray-600\"></i>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}

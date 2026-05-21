@@ -11,12 +11,14 @@ import templruntime "github.com/a-h/templ/runtime"
 import (
 	"fmt"
 
+	"github.com/fr4nsys/usulnet/internal/web/templates/components"
 	"github.com/fr4nsys/usulnet/internal/web/templates/layouts"
 )
 
 type TargetListData struct {
-	PageData layouts.PageData
-	Targets  []TargetView
+	PageData   layouts.PageData
+	Targets    []TargetView
+	EmptyState components.EmptyStateData
 }
 
 type TargetView struct {
@@ -65,7 +67,7 @@ func TargetList(data TargetListData) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"space-y-6\"><!-- Header --><div class=\"flex items-center justify-between\"><div><h1 class=\"text-2xl font-display font-bold text-white\">SSL Targets</h1><p class=\"text-gray-400 mt-1\">Manage TLS/SSL monitoring targets</p></div><a href=\"/ssl/targets/new\" class=\"btn-primary\"><i class=\"fas fa-plus mr-2\"></i>Add Target</a></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"space-y-6\"><!-- Header --><div class=\"flex items-center justify-between\"><div><h1 class=\"text-2xl font-display font-bold text-white\">SSL Targets</h1><p class=\"text-gray-400 mt-1\">Manage TLS/SSL monitoring targets</p></div><a href=\"/ssl/targets/new\" class=\"btn-primary\"><i aria-hidden=\"true\" class=\"fas fa-plus mr-2\"></i>Add Target</a></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -78,7 +80,7 @@ func TargetList(data TargetListData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			if len(data.Targets) > 0 {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<div class=\"card\"><div class=\"overflow-x-auto\"><table class=\"table\"><thead><tr><th>Name</th><th>Hostname</th><th>SNI</th><th>Grade</th><th>Score</th><th>Cert Expires</th><th>Last Scan</th><th>Actions</th></tr></thead> <tbody>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<div class=\"card\"><div class=\"overflow-x-auto\"><table class=\"table\"><thead><tr><th scope=\"col\">Name</th><th scope=\"col\">Hostname</th><th scope=\"col\">SNI</th><th scope=\"col\">Grade</th><th scope=\"col\">Score</th><th scope=\"col\">Cert Expires</th><th scope=\"col\">Last Scan</th><th scope=\"col\">Actions</th></tr></thead> <tbody>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -90,7 +92,7 @@ func TargetList(data TargetListData) templ.Component {
 					var templ_7745c5c3_Var3 templ.SafeURL
 					templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinURLErrs(templ.SafeURL(fmt.Sprintf("/ssl/targets/%s", target.ID)))
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/sslobservatory/list.templ`, Line: 64, Col: 77}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/sslobservatory/list.templ`, Line: 66, Col: 77}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 					if templ_7745c5c3_Err != nil {
@@ -103,7 +105,7 @@ func TargetList(data TargetListData) templ.Component {
 					var templ_7745c5c3_Var4 string
 					templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(target.Name)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/sslobservatory/list.templ`, Line: 65, Col: 25}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/sslobservatory/list.templ`, Line: 67, Col: 25}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 					if templ_7745c5c3_Err != nil {
@@ -126,7 +128,7 @@ func TargetList(data TargetListData) templ.Component {
 					var templ_7745c5c3_Var5 string
 					templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(target.Hostname)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/sslobservatory/list.templ`, Line: 72, Col: 74}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/sslobservatory/list.templ`, Line: 74, Col: 74}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 					if templ_7745c5c3_Err != nil {
@@ -139,7 +141,7 @@ func TargetList(data TargetListData) templ.Component {
 					var templ_7745c5c3_Var6 string
 					templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", target.Port))
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/sslobservatory/list.templ`, Line: 72, Col: 109}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/sslobservatory/list.templ`, Line: 74, Col: 109}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 					if templ_7745c5c3_Err != nil {
@@ -157,7 +159,7 @@ func TargetList(data TargetListData) templ.Component {
 						var templ_7745c5c3_Var7 string
 						templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", len(target.ExtraHostnames)))
 						if templ_7745c5c3_Err != nil {
-							return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/sslobservatory/list.templ`, Line: 76, Col: 96}
+							return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/sslobservatory/list.templ`, Line: 78, Col: 96}
 						}
 						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 						if templ_7745c5c3_Err != nil {
@@ -200,7 +202,7 @@ func TargetList(data TargetListData) templ.Component {
 						var templ_7745c5c3_Var8 string
 						templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(target.LatestScore)
 						if templ_7745c5c3_Err != nil {
-							return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/sslobservatory/list.templ`, Line: 90, Col: 68}
+							return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/sslobservatory/list.templ`, Line: 92, Col: 68}
 						}
 						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 						if templ_7745c5c3_Err != nil {
@@ -228,7 +230,7 @@ func TargetList(data TargetListData) templ.Component {
 						var templ_7745c5c3_Var9 string
 						templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(target.CertExpires)
 						if templ_7745c5c3_Err != nil {
-							return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/sslobservatory/list.templ`, Line: 97, Col: 68}
+							return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/sslobservatory/list.templ`, Line: 99, Col: 68}
 						}
 						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 						if templ_7745c5c3_Err != nil {
@@ -256,7 +258,7 @@ func TargetList(data TargetListData) templ.Component {
 						var templ_7745c5c3_Var10 string
 						templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(target.LastScan)
 						if templ_7745c5c3_Err != nil {
-							return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/sslobservatory/list.templ`, Line: 104, Col: 65}
+							return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/sslobservatory/list.templ`, Line: 106, Col: 65}
 						}
 						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 						if templ_7745c5c3_Err != nil {
@@ -279,7 +281,7 @@ func TargetList(data TargetListData) templ.Component {
 					var templ_7745c5c3_Var11 templ.SafeURL
 					templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinURLErrs(templ.SafeURL(fmt.Sprintf("/ssl/targets/%s", target.ID)))
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/sslobservatory/list.templ`, Line: 111, Col: 78}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/sslobservatory/list.templ`, Line: 113, Col: 78}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 					if templ_7745c5c3_Err != nil {
@@ -292,7 +294,7 @@ func TargetList(data TargetListData) templ.Component {
 					var templ_7745c5c3_Var12 templ.SafeURL
 					templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinURLErrs(templ.SafeURL(fmt.Sprintf("/ssl/targets/%s/scan", target.ID)))
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/sslobservatory/list.templ`, Line: 114, Col: 102}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/sslobservatory/list.templ`, Line: 116, Col: 102}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
 					if templ_7745c5c3_Err != nil {
@@ -305,7 +307,7 @@ func TargetList(data TargetListData) templ.Component {
 					var templ_7745c5c3_Var13 string
 					templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(data.PageData.CSRFToken)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/sslobservatory/list.templ`, Line: 115, Col: 83}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/sslobservatory/list.templ`, Line: 117, Col: 83}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
 					if templ_7745c5c3_Err != nil {
@@ -318,7 +320,7 @@ func TargetList(data TargetListData) templ.Component {
 					var templ_7745c5c3_Var14 string
 					templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("/ssl/targets/%s", target.ID))
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/sslobservatory/list.templ`, Line: 121, Col: 66}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/sslobservatory/list.templ`, Line: 123, Col: 66}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var14))
 					if templ_7745c5c3_Err != nil {
@@ -335,12 +337,12 @@ func TargetList(data TargetListData) templ.Component {
 				}
 			}
 			if len(data.Targets) == 0 {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 34, "<div class=\"card p-8 text-center\"><i class=\"fas fa-crosshairs text-4xl text-gray-400 mb-4\"></i><h3 class=\"text-lg font-medium text-white mb-2\">No SSL targets</h3><p class=\"text-gray-400 mb-4\">Add your first SSL target to start monitoring certificate health</p><a href=\"/ssl/targets/new\" class=\"btn-primary\"><i class=\"fas fa-plus mr-2\"></i>Add Target</a></div>")
+				templ_7745c5c3_Err = components.EmptyStateCTAs(data.EmptyState).Render(ctx, templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 35, "</div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 34, "</div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

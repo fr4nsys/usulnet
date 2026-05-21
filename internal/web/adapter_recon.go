@@ -15,6 +15,7 @@ import (
 	"github.com/google/uuid"
 
 	"github.com/fr4nsys/usulnet/internal/services/recon"
+	"github.com/fr4nsys/usulnet/internal/services/recon/sandboxtools"
 )
 
 // ReconLegalNotice is the text shown on the acknowledgement modal before
@@ -57,6 +58,21 @@ type ReconService interface {
 
 	ListConnectors(ctx context.Context) ([]ReconConnectorView, error)
 	ListReports(ctx context.Context) ([]ReconReportView, error)
+
+	// ListSandboxTools surfaces the toolset shipped inside the
+	// recon-toolkit container, grouped by category. The data is static
+	// per binary build (the canonical manifest lives at
+	// images/recon-toolkit/tools.list and is mirrored into the
+	// sandboxtools package at build time) so this method never errs
+	// and never blocks on Docker.
+	ListSandboxTools(ctx context.Context) []ReconSandboxToolGroup
+}
+
+// ReconSandboxToolGroup is one labelled section of the sandbox tool
+// panel rendered at /recon/connectors.
+type ReconSandboxToolGroup struct {
+	Category string
+	Tools    []string
 }
 
 // ReconDashboardData is the bundle rendered on /recon/dashboard.
@@ -466,7 +482,7 @@ func (a *reconAdapter) ListConnectors(_ context.Context) ([]ReconConnectorView, 
 		{
 			Kind:        "shodan",
 			Name:        "Shodan",
-			Description: "Discover exposed services for IP and domain targets.",
+			Description: "Discover exposed services for IP, hostname, and CIDR targets. BYO API key from your Shodan account.",
 			DocsURL:     "https://developer.shodan.io/",
 		},
 	}, nil
@@ -476,6 +492,32 @@ func (a *reconAdapter) ListReports(_ context.Context) ([]ReconReportView, error)
 	// Report listing is a v26.5.1 deliverable. The page renders an
 	// empty state until then.
 	return nil, nil
+}
+
+func (a *reconAdapter) ListSandboxTools(_ context.Context) []ReconSandboxToolGroup {
+	cat := sandboxtools.Catalog()
+	if len(cat) == 0 {
+		return nil
+	}
+	// Preserve the manifest's stable ordering by walking the catalogue
+	// in-order and grouping consecutive entries that share a category.
+	groups := make([]ReconSandboxToolGroup, 0, 4)
+	order := make([]string, 0, 4)
+	byCat := make(map[string][]string, 4)
+	for _, t := range cat {
+		category := t.Category
+		if category == "" {
+			category = "support"
+		}
+		if _, seen := byCat[category]; !seen {
+			order = append(order, category)
+		}
+		byCat[category] = append(byCat[category], t.Name)
+	}
+	for _, c := range order {
+		groups = append(groups, ReconSandboxToolGroup{Category: c, Tools: byCat[c]})
+	}
+	return groups
 }
 
 // ----------------------------------------------------------------------------

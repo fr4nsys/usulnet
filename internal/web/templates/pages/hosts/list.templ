@@ -38,7 +38,7 @@ templ List(data HostsData) {
 					<p class="text-gray-400 mt-1">Docker nodes and system information</p>
 				</div>
 				<a href="/nodes/new" class="btn btn-primary">
-					<i class="fas fa-plus mr-2"></i>Add Node
+					<i aria-hidden="true" class="fas fa-plus mr-2"></i>Add Node
 				</a>
 			</div>
 
@@ -60,24 +60,24 @@ templ List(data HostsData) {
 								</div>
 							</div>
 							if host.EndpointType == "local" {
-								<span class="px-2 py-0.5 rounded text-xs font-medium bg-primary-500/20 text-primary-400"><i class="fas fa-home mr-1"></i>Local</span>
+								<span class="px-2 py-0.5 rounded text-xs font-medium bg-primary-500/20 text-primary-400"><i aria-hidden="true" class="fas fa-home mr-1"></i>Local</span>
 							} else if host.EndpointType == "tcp" {
-								<span class="px-2 py-0.5 rounded text-xs font-medium bg-blue-500/20 text-blue-400"><i class="fas fa-network-wired mr-1"></i>TCP</span>
+								<span class="px-2 py-0.5 rounded text-xs font-medium bg-blue-500/20 text-blue-400"><i aria-hidden="true" class="fas fa-network-wired mr-1"></i>TCP</span>
 							} else if host.EndpointType == "agent" {
-								<span class="px-2 py-0.5 rounded text-xs font-medium bg-green-500/20 text-green-400"><i class="fas fa-satellite-dish mr-1"></i>Agent</span>
+								<span class="px-2 py-0.5 rounded text-xs font-medium bg-green-500/20 text-green-400"><i aria-hidden="true" class="fas fa-satellite-dish mr-1"></i>Agent</span>
 							}
 						</div>
 
 						<!-- System info row -->
 						<div class="flex flex-wrap gap-x-4 gap-y-1 text-xs text-gray-400 mb-4 pb-3 border-b border-dark-700">
 							if host.OS != "" {
-								<span><i class="fas fa-desktop mr-1"></i>{ host.OS }</span>
+								<span><i aria-hidden="true" class="fas fa-desktop mr-1"></i>{ host.OS }</span>
 							}
 							if host.Architecture != "" {
-								<span><i class="fas fa-microchip mr-1"></i>{ host.Architecture }</span>
+								<span><i aria-hidden="true" class="fas fa-microchip mr-1"></i>{ host.Architecture }</span>
 							}
 							if host.KernelVersion != "" {
-								<span><i class="fas fa-code-branch mr-1"></i>{ host.KernelVersion }</span>
+								<span><i aria-hidden="true" class="fas fa-code-branch mr-1"></i>{ host.KernelVersion }</span>
 							}
 						</div>
 
@@ -108,11 +108,11 @@ templ List(data HostsData) {
 						<!-- Docker version footer -->
 						<div class="flex justify-between text-xs pt-3 mt-3 border-t border-dark-700">
 							<span class="text-gray-500">
-								<i class="fab fa-docker mr-1"></i>Docker { host.DockerVersion }
+								<i aria-hidden="true" class="fab fa-docker mr-1"></i>Docker { host.DockerVersion }
 							</span>
 							if host.LastSeen != "" {
 								<span class="text-gray-500">
-									<i class="fas fa-clock mr-1"></i>{ host.LastSeen }
+									<i aria-hidden="true" class="fas fa-clock mr-1"></i>{ host.LastSeen }
 								</span>
 							}
 						</div>
@@ -122,11 +122,11 @@ templ List(data HostsData) {
 
 			if len(data.Hosts) == 0 {
 				<div class="card p-12 text-center">
-					<i class="fas fa-server text-4xl text-gray-400 mb-4"></i>
+					<i aria-hidden="true" class="fas fa-server text-4xl text-gray-400 mb-4"></i>
 					<h3 class="text-lg font-medium text-white mb-2">No nodes configured</h3>
 					<p class="text-gray-400 mb-4">Add a local, remote, or agent-managed Docker node to get started</p>
 					<a href="/nodes/new" class="btn btn-primary">
-						<i class="fas fa-plus mr-2"></i>Add Your First Node
+						<i aria-hidden="true" class="fas fa-plus mr-2"></i>Add Your First Node
 					</a>
 				</div>
 			}

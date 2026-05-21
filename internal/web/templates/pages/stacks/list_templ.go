@@ -125,17 +125,17 @@ func List(data StacksData) templ.Component {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "</p></div><div class=\"flex items-center gap-2\"><a href=\"/stacks/catalog\" class=\"btn-secondary\"><i class=\"fas fa-store mr-2\"></i>Apps</a> <a href=\"/stacks/new\" class=\"btn-primary\"><i class=\"fas fa-plus mr-2\"></i>New Stack</a></div></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "</p></div><div class=\"flex items-center gap-2\"><a href=\"/stacks/catalog\" class=\"btn-secondary\"><i aria-hidden=\"true\" class=\"fas fa-store mr-2\"></i>Apps</a> <a href=\"/stacks/new\" class=\"btn-primary\"><i aria-hidden=\"true\" class=\"fas fa-plus mr-2\"></i>New Stack</a></div></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			if len(data.Stacks) == 0 {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "<div class=\"card p-12 text-center\"><i class=\"fas fa-layer-group text-4xl text-gray-400 mb-4\"></i><h3 class=\"text-lg font-medium text-white mb-2\">No stacks found</h3><p class=\"text-gray-400 mb-4\">Deploy your first Docker Compose stack</p><div class=\"flex items-center justify-center gap-3\"><a href=\"/stacks/catalog\" class=\"btn-secondary\"><i class=\"fas fa-store mr-2\"></i>Browse Apps</a> <a href=\"/stacks/new\" class=\"btn-primary\"><i class=\"fas fa-plus mr-2\"></i>Create Stack</a></div></div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "<div class=\"card p-12 text-center\"><i aria-hidden=\"true\" class=\"fas fa-layer-group text-4xl text-gray-400 mb-4\"></i><h3 class=\"text-lg font-medium text-white mb-2\">No stacks found</h3><p class=\"text-gray-400 mb-4\">Deploy your first Docker Compose stack</p><div class=\"flex items-center justify-center gap-3\"><a href=\"/stacks/catalog\" class=\"btn-secondary\"><i aria-hidden=\"true\" class=\"fas fa-store mr-2\"></i>Browse Apps</a> <a href=\"/stacks/new\" class=\"btn-primary\"><i aria-hidden=\"true\" class=\"fas fa-plus mr-2\"></i>Create Stack</a></div></div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			} else {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "<!-- Stacks Table --> <div class=\"card overflow-hidden\"><div class=\"overflow-x-auto\"><table class=\"table\"><thead><tr><th class=\"w-8\"></th><th>Name</th><th>Status</th><th>Services</th><th>Containers</th><th>Created</th><th class=\"text-right\">Actions</th></tr></thead> <tbody>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "<!-- Stacks Table --> <div class=\"card overflow-hidden\"><div class=\"overflow-x-auto\"><table class=\"table\"><thead><tr><th scope=\"col\" class=\"w-8\"></th><th scope=\"col\">Name</th><th scope=\"col\">Status</th><th scope=\"col\">Services</th><th scope=\"col\">Containers</th><th scope=\"col\">Created</th><th scope=\"col\" class=\"text-right\">Actions</th></tr></thead> <tbody>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -193,7 +193,7 @@ func List(data StacksData) templ.Component {
 						return templ_7745c5c3_Err
 					}
 					if stack.IsExternal {
-						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "<span class=\"inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-blue-500/20 text-blue-400 border border-blue-500/30\" title=\"Discovered from Docker, not managed by usulnet\"><i class=\"fas fa-external-link-alt mr-1 text-[8px]\"></i>External</span>")
+						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "<span class=\"inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-blue-500/20 text-blue-400 border border-blue-500/30\" title=\"Discovered from Docker, not managed by usulnet\"><i aria-hidden=\"true\" class=\"fas fa-external-link-alt mr-1 text-[8px]\"></i>External</span>")
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
@@ -443,7 +443,7 @@ func List(data StacksData) templ.Component {
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
-						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 40, "\" class=\"p-1.5 text-gray-400 hover:text-yellow-400 hover:bg-dark-600 rounded transition-colors\" title=\"Stop\"><i class=\"fas fa-stop text-xs\"></i></button> <button hx-post=\"")
+						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 40, "\" class=\"p-1.5 text-gray-400 hover:text-yellow-400 hover:bg-dark-600 rounded transition-colors\" title=\"Stop\"><i aria-hidden=\"true\" class=\"fas fa-stop text-xs\"></i></button> <button hx-post=\"")
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
@@ -469,7 +469,7 @@ func List(data StacksData) templ.Component {
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
-						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 42, "\" hx-on::after-request=\"setTimeout(()=>location.reload(),500)\" class=\"p-1.5 text-gray-400 hover:text-blue-400 hover:bg-dark-600 rounded transition-colors\" title=\"Restart\"><i class=\"fas fa-redo text-xs\"></i></button> ")
+						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 42, "\" hx-on::after-request=\"setTimeout(()=>location.reload(),500)\" class=\"p-1.5 text-gray-400 hover:text-blue-400 hover:bg-dark-600 rounded transition-colors\" title=\"Restart\"><i aria-hidden=\"true\" class=\"fas fa-redo text-xs\"></i></button> ")
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
@@ -500,7 +500,7 @@ func List(data StacksData) templ.Component {
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
-						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 45, "\" hx-on::after-request=\"setTimeout(()=>location.reload(),500)\" class=\"p-1.5 text-gray-400 hover:text-green-400 hover:bg-dark-600 rounded transition-colors\" title=\"Start\"><i class=\"fas fa-play text-xs\"></i></button> ")
+						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 45, "\" hx-on::after-request=\"setTimeout(()=>location.reload(),500)\" class=\"p-1.5 text-gray-400 hover:text-green-400 hover:bg-dark-600 rounded transition-colors\" title=\"Start\"><i aria-hidden=\"true\" class=\"fas fa-play text-xs\"></i></button> ")
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
@@ -518,7 +518,7 @@ func List(data StacksData) templ.Component {
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 47, "\" class=\"p-1.5 text-gray-400 hover:text-white hover:bg-dark-600 rounded transition-colors\" title=\"Details\"><i class=\"fas fa-eye text-xs\"></i></a> <button hx-post=\"")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 47, "\" class=\"p-1.5 text-gray-400 hover:text-white hover:bg-dark-600 rounded transition-colors\" title=\"Details\"><i aria-hidden=\"true\" class=\"fas fa-eye text-xs\"></i></a> <button hx-post=\"")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
@@ -544,7 +544,7 @@ func List(data StacksData) templ.Component {
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 49, "\" class=\"p-1.5 text-gray-400 hover:text-red-400 hover:bg-dark-600 rounded transition-colors\" title=\"Remove\"><i class=\"fas fa-trash text-xs\"></i></button></div></td></tr>")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 49, "\" class=\"p-1.5 text-gray-400 hover:text-red-400 hover:bg-dark-600 rounded transition-colors\" title=\"Remove\"><i aria-hidden=\"true\" class=\"fas fa-trash text-xs\"></i></button></div></td></tr>")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}

@@ -65,7 +65,7 @@ func Detail(data DetailData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<div class=\"max-w-4xl\"><div class=\"flex items-center gap-3 mb-6\"><a href=\"/backup-verify\" class=\"text-gray-400 hover:text-white\"><i class=\"fas fa-arrow-left\"></i></a><div><h2 class=\"text-xl font-display font-bold text-white\">Verification Detail</h2><p class=\"text-sm text-gray-400\">Backup: ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<div class=\"max-w-4xl\"><div class=\"flex items-center gap-3 mb-6\"><a href=\"/backup-verify\" class=\"text-gray-400 hover:text-white\"><i aria-hidden=\"true\" class=\"fas fa-arrow-left\"></i></a><div><h2 class=\"text-xl font-display font-bold text-white\">Verification Detail</h2><p class=\"text-sm text-gray-400\">Backup: ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -120,7 +120,7 @@ func Detail(data DetailData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "</p></div></div><div class=\"card p-6 mb-6\"><h3 class=\"text-lg font-semibold text-white mb-4\"><i class=\"fas fa-clipboard-check text-primary-400 mr-2\"></i>Verification Checks</h3><div class=\"grid grid-cols-1 md:grid-cols-2 gap-4\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "</p></div></div><div class=\"card p-6 mb-6\"><h3 class=\"text-lg font-semibold text-white mb-4\"><i aria-hidden=\"true\" class=\"fas fa-clipboard-check text-primary-400 mr-2\"></i>Verification Checks</h3><div class=\"grid grid-cols-1 md:grid-cols-2 gap-4\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -145,7 +145,7 @@ func Detail(data DetailData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			if data.Verification.ErrorMessage != "" {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "<div class=\"bg-red-500/10 border border-red-500/20 rounded-lg p-4 mb-6\"><h4 class=\"font-medium text-red-400 mb-1\"><i class=\"fas fa-exclamation-triangle mr-1\"></i>Error</h4><p class=\"text-sm text-red-300 font-mono whitespace-pre-wrap\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "<div class=\"bg-red-500/10 border border-red-500/20 rounded-lg p-4 mb-6\"><h4 class=\"font-medium text-red-400 mb-1\"><i aria-hidden=\"true\" class=\"fas fa-exclamation-triangle mr-1\"></i>Error</h4><p class=\"text-sm text-red-300 font-mono whitespace-pre-wrap\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -304,17 +304,17 @@ func checkRow(label string, icon string, valid *bool) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		if valid != nil && *valid {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 22, "<span class=\"text-green-400 font-medium text-sm\"><i class=\"fas fa-check-circle mr-1\"></i>Pass</span>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 22, "<span class=\"text-green-400 font-medium text-sm\"><i aria-hidden=\"true\" class=\"fas fa-check-circle mr-1\"></i>Pass</span>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		} else if valid != nil && !*valid {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 23, "<span class=\"text-red-400 font-medium text-sm\"><i class=\"fas fa-times-circle mr-1\"></i>Fail</span>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 23, "<span class=\"text-red-400 font-medium text-sm\"><i aria-hidden=\"true\" class=\"fas fa-times-circle mr-1\"></i>Fail</span>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		} else {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 24, "<span class=\"text-gray-500 text-sm\"><i class=\"fas fa-minus-circle mr-1\"></i>N/A</span>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 24, "<span class=\"text-gray-500 text-sm\"><i aria-hidden=\"true\" class=\"fas fa-minus-circle mr-1\"></i>N/A</span>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

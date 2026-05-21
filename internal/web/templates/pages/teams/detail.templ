@@ -65,7 +65,7 @@ templ Detail(data TeamDetailData) {
 			<div class="flex items-center justify-between">
 				<div class="flex items-center gap-4">
 					<a href="/teams" class="p-2 text-gray-400 hover:text-white hover:bg-dark-700 rounded-lg">
-						<i class="fas fa-arrow-left"></i>
+						<i aria-hidden="true" class="fas fa-arrow-left"></i>
 					</a>
 					<div>
 						<h1 class="text-2xl font-display font-bold text-white">{ data.Team.Name }</h1>
@@ -75,7 +75,7 @@ templ Detail(data TeamDetailData) {
 					</div>
 				</div>
 				<a href={ templ.SafeURL("/teams/" + data.Team.ID + "/edit") } class="btn-secondary">
-					<i class="fas fa-edit mr-2"></i>Edit
+					<i aria-hidden="true" class="fas fa-edit mr-2"></i>Edit
 				</a>
 			</div>
 
@@ -113,7 +113,7 @@ templ Detail(data TeamDetailData) {
 						templ.KV("border-primary-400 text-primary-400", data.Tab == "members" || data.Tab == ""),
 						templ.KV("border-transparent text-gray-400 hover:text-white", data.Tab != "members" && data.Tab != "") }
 				>
-					<i class="fas fa-users mr-2"></i>Members ({ fmt.Sprintf("%d", len(data.Members)) })
+					<i aria-hidden="true" class="fas fa-users mr-2"></i>Members ({ fmt.Sprintf("%d", len(data.Members)) })
 				</a>
 				<a
 					href={ templ.SafeURL("/teams/" + data.Team.ID + "?tab=permissions") }
@@ -121,7 +121,7 @@ templ Detail(data TeamDetailData) {
 						templ.KV("border-primary-400 text-primary-400", data.Tab == "permissions"),
 						templ.KV("border-transparent text-gray-400 hover:text-white", data.Tab != "permissions") }
 				>
-					<i class="fas fa-lock mr-2"></i>Permissions ({ fmt.Sprintf("%d", len(data.Permissions)) })
+					<i aria-hidden="true" class="fas fa-lock mr-2"></i>Permissions ({ fmt.Sprintf("%d", len(data.Permissions)) })
 				</a>
 			</div>
 
@@ -173,7 +173,7 @@ templ membersTab(data TeamDetailData) {
 					</select>
 				</div>
 				<button type="submit" class="btn-primary whitespace-nowrap">
-					<i class="fas fa-user-plus mr-2"></i>Add
+					<i aria-hidden="true" class="fas fa-user-plus mr-2"></i>Add
 				</button>
 			</form>
 		</div>
@@ -184,10 +184,10 @@ templ membersTab(data TeamDetailData) {
 				<table class="table">
 					<thead>
 						<tr>
-							<th>User</th>
-							<th>Role</th>
-							<th>Added</th>
-							<th>Actions</th>
+							<th scope="col">User</th>
+							<th scope="col">Role</th>
+							<th scope="col">Added</th>
+							<th scope="col">Actions</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -220,7 +220,7 @@ templ membersTab(data TeamDetailData) {
 										templ.KV("bg-yellow-500/20 text-yellow-400 border border-yellow-500/30", m.Role == "owner"),
 										templ.KV("badge-success", m.Role == "member") }>
 										if m.Role == "owner" {
-											<i class="fas fa-crown mr-1 text-xs"></i>
+											<i aria-hidden="true" class="fas fa-crown mr-1 text-xs"></i>
 										}
 										{ m.Role }
 									</span>
@@ -292,6 +292,7 @@ templ permissionsTab(data TeamDetailData) {
 							id="container-group-input"
 							class="input hidden mt-2"
 							placeholder="Enter container group label (e.g. app=myapp)"
+							aria-label="Resource"
 						/>
 					</div>
 					<div>
@@ -304,7 +305,7 @@ templ permissionsTab(data TeamDetailData) {
 				</div>
 				<div class="flex justify-end">
 					<button type="submit" class="btn-primary">
-						<i class="fas fa-plus mr-2"></i>Grant Permission
+						<i aria-hidden="true" class="fas fa-plus mr-2"></i>Grant Permission
 					</button>
 				</div>
 			</form>
@@ -393,11 +394,11 @@ templ permissionsTab(data TeamDetailData) {
 				<table class="table">
 					<thead>
 						<tr>
-							<th>Resource</th>
-							<th>Type</th>
-							<th>Access</th>
-							<th>Granted</th>
-							<th>Actions</th>
+							<th scope="col">Resource</th>
+							<th scope="col">Type</th>
+							<th scope="col">Access</th>
+							<th scope="col">Granted</th>
+							<th scope="col">Actions</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -442,9 +443,9 @@ templ permissionsTab(data TeamDetailData) {
 										templ.KV("bg-red-500/20 text-red-400 border border-red-500/30", p.AccessLevel == "manage"),
 										templ.KV("bg-gray-500/20 text-gray-400", p.AccessLevel == "view") }>
 										if p.AccessLevel == "manage" {
-											<i class="fas fa-edit mr-1 text-xs"></i>
+											<i aria-hidden="true" class="fas fa-edit mr-1 text-xs"></i>
 										} else {
-											<i class="fas fa-eye mr-1 text-xs"></i>
+											<i aria-hidden="true" class="fas fa-eye mr-1 text-xs"></i>
 										}
 										{ p.AccessLevel }
 									</span>

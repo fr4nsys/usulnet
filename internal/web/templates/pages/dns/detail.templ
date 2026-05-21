@@ -17,7 +17,7 @@ templ ProviderDetail(data ProviderDetailData) {
 				<div class="flex items-center gap-2">
 					<a href={ templ.SafeURL(fmt.Sprintf("/dns/%s/edit", data.Provider.ID)) } class="btn-secondary">Edit</a>
 					<a href={ templ.SafeURL(fmt.Sprintf("/dns/%s/records/new", data.Provider.ID)) } class="btn-primary">
-						<i class="fas fa-plus mr-2"></i>Add record
+						<i aria-hidden="true" class="fas fa-plus mr-2"></i>Add record
 					</a>
 				</div>
 			</div>
@@ -54,12 +54,12 @@ templ ProviderDetail(data ProviderDetailData) {
 					<table class="table">
 						<thead>
 							<tr>
-								<th>Name</th>
-								<th>Type</th>
-								<th>Content</th>
-								<th>TTL</th>
-								<th>Managed by</th>
-								<th class="text-right">Actions</th>
+								<th scope="col">Name</th>
+								<th scope="col">Type</th>
+								<th scope="col">Content</th>
+								<th scope="col">TTL</th>
+								<th scope="col">Managed by</th>
+								<th scope="col" class="text-right">Actions</th>
 							</tr>
 						</thead>
 						<tbody>

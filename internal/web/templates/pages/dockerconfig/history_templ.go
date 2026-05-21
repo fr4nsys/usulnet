@@ -69,7 +69,7 @@ func History(data HistoryData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</code></p></div><div><a href=\"/config/docker\" class=\"btn-secondary text-sm\"><i class=\"fas fa-arrow-left mr-1\"></i>Back to editor</a></div></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</code></p></div><div><a href=\"/config/docker\" class=\"btn-secondary text-sm\"><i aria-hidden=\"true\" class=\"fas fa-arrow-left mr-1\"></i>Back to editor</a></div></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -103,12 +103,12 @@ func History(data HistoryData) templ.Component {
 					return templ_7745c5c3_Err
 				}
 				if len(data.Snapshots) == 0 {
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<div class=\"card p-8 text-center\"><i class=\"fas fa-clock text-4xl text-gray-500 mb-4\"></i><p class=\"text-gray-300\">No snapshots recorded yet.</p><p class=\"text-sm text-gray-500 mt-1\">Each successful apply writes a snapshot of the prior daemon.json into the snapshot directory.</p></div>")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<div class=\"card p-8 text-center\"><i aria-hidden=\"true\" class=\"fas fa-clock text-4xl text-gray-500 mb-4\"></i><p class=\"text-gray-300\">No snapshots recorded yet.</p><p class=\"text-sm text-gray-500 mt-1\">Each successful apply writes a snapshot of the prior daemon.json into the snapshot directory.</p></div>")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
 				} else {
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "<div class=\"card overflow-hidden\"><table class=\"w-full text-sm\"><thead class=\"bg-dark-800 text-gray-400 text-xs uppercase\"><tr><th class=\"px-4 py-3 text-left font-semibold\">Snapshot ID</th><th class=\"px-4 py-3 text-left font-semibold\">Timestamp</th><th class=\"px-4 py-3 text-left font-semibold\">Size</th><th class=\"px-4 py-3 text-right font-semibold\">Action</th></tr></thead> <tbody class=\"divide-y divide-dark-600\">")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "<div class=\"card overflow-hidden\"><table class=\"w-full text-sm\"><thead class=\"bg-dark-800 text-gray-400 text-xs uppercase\"><tr><th scope=\"col\" class=\"px-4 py-3 text-left font-semibold\">Snapshot ID</th><th scope=\"col\" class=\"px-4 py-3 text-left font-semibold\">Timestamp</th><th scope=\"col\" class=\"px-4 py-3 text-left font-semibold\">Size</th><th scope=\"col\" class=\"px-4 py-3 text-right font-semibold\">Action</th></tr></thead> <tbody class=\"divide-y divide-dark-600\">")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
@@ -191,7 +191,7 @@ func History(data HistoryData) templ.Component {
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
-						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "\"> <button type=\"submit\" class=\"btn-warning text-xs\" onclick=\"return confirm('Restore this snapshot? The daemon will reload — usulnet will roll back automatically if it does not return healthy.')\"><i class=\"fas fa-undo mr-1\"></i>Restore</button></form></td></tr>")
+						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "\"> <button type=\"submit\" class=\"btn-warning text-xs\" onclick=\"return confirm('Restore this snapshot? The daemon will reload — usulnet will roll back automatically if it does not return healthy.')\"><i aria-hidden=\"true\" class=\"fas fa-undo mr-1\"></i>Restore</button></form></td></tr>")
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}

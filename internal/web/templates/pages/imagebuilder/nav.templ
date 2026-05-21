@@ -12,7 +12,7 @@ templ Nav(active string) {
 				templ.KV("bg-primary-500/10 text-primary-400", active == "builds"),
 				templ.KV("text-gray-400 hover:text-white hover:bg-dark-700", active != "builds") }
 		>
-			<i class="fas fa-hammer mr-2"></i>Builds
+			<i aria-hidden="true" class="fas fa-hammer mr-2"></i>Builds
 		</a>
 		<a
 			href="/image-builder/templates"
@@ -20,7 +20,7 @@ templ Nav(active string) {
 				templ.KV("bg-primary-500/10 text-primary-400", active == "templates"),
 				templ.KV("text-gray-400 hover:text-white hover:bg-dark-700", active != "templates") }
 		>
-			<i class="fas fa-file-code mr-2"></i>Templates
+			<i aria-hidden="true" class="fas fa-file-code mr-2"></i>Templates
 		</a>
 	</div>
 }

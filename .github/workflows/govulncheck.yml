@@ -55,6 +55,13 @@ jobs:
         # vulnerability still fails the job.
         run: bash scripts/govulncheck.sh
 
+      - name: Assert allowlist justifications still hold
+        # Pin the empirical claims behind each allowlist entry. Fails if
+        # any forbidden API call / import / config string appears in
+        # production code, which would invalidate the corresponding
+        # "not exploitable" justification in scripts/govulncheck.sh.
+        run: bash scripts/check-govulncheck-allowlist.sh
+
       - name: Always attach report to job summary
         if: always() && hashFiles('govulncheck.txt') != ''
         run: |

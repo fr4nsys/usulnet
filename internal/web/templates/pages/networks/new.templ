@@ -12,7 +12,7 @@ templ New(data NetworkNewData) {
 		<div class="max-w-2xl mx-auto space-y-6">
 			<div class="flex items-center gap-4">
 				<a href="/networks" class="p-2 text-gray-400 hover:text-white hover:bg-dark-700 rounded-lg">
-					<i class="fas fa-arrow-left"></i>
+					<i aria-hidden="true" class="fas fa-arrow-left"></i>
 				</a>
 				<div>
 					<h1 class="text-2xl font-display font-bold text-white">Create Network</h1>
@@ -22,7 +22,7 @@ templ New(data NetworkNewData) {
 
 			if data.Error != "" {
 				<div class="bg-red-500/10 border border-red-500/20 rounded-lg p-4 text-red-400">
-					<i class="fas fa-exclamation-circle mr-2"></i>{ data.Error }
+					<i aria-hidden="true" class="fas fa-exclamation-circle mr-2"></i>{ data.Error }
 				</div>
 			}
 
@@ -30,7 +30,7 @@ templ New(data NetworkNewData) {
 				<input type="hidden" name="csrf_token" value={ data.PageData.CSRFToken }/>
 				<div>
 					<label class="block text-sm font-medium text-gray-300 mb-2">Network Name</label>
-					<input type="text" name="name" required class="input" placeholder="my-network"/>
+					<input type="text" name="name" required class="input" placeholder="my-network" aria-label="my-network"/>
 				</div>
 
 				<div>
@@ -46,12 +46,12 @@ templ New(data NetworkNewData) {
 
 				<div>
 					<label class="block text-sm font-medium text-gray-300 mb-2">Subnet (optional)</label>
-					<input type="text" name="subnet" class="input font-mono" placeholder="172.20.0.0/16"/>
+					<input type="text" name="subnet" class="input font-mono" placeholder="172.20.0.0/16" aria-label="172.20.0.0/16"/>
 				</div>
 
 				<div>
 					<label class="block text-sm font-medium text-gray-300 mb-2">Gateway (optional)</label>
-					<input type="text" name="gateway" class="input font-mono" placeholder="172.20.0.1"/>
+					<input type="text" name="gateway" class="input font-mono" placeholder="172.20.0.1" aria-label="172.20.0.1"/>
 				</div>
 
 				<div class="flex items-center gap-4">
@@ -68,7 +68,7 @@ templ New(data NetworkNewData) {
 				<div class="flex justify-end gap-3 pt-4">
 					<a href="/networks" class="btn-secondary">Cancel</a>
 					<button type="submit" class="btn-primary">
-						<i class="fas fa-plus mr-2"></i>Create Network
+						<i aria-hidden="true" class="fas fa-plus mr-2"></i>Create Network
 					</button>
 				</div>
 			</form>

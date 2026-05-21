@@ -1263,21 +1263,44 @@ func (s *Service) reconciliationWorker(ctx context.Context) {
 	}
 }
 
+// containerSyncFanoutCap bounds the goroutines that syncAllHosts uses
+// to reconcile each online host's container set with the local cache.
+// Each goroutine issues one ContainerList plus a per-container
+// ContainerGet + Upsert sequence against the Docker daemon and the
+// local DB respectively, so the cap is the worst-case concurrent load
+// on both. 8 leaves comfortable headroom against the default 25-conn
+// PostgreSQL pool while shrinking a 100-host sync from O(N) × T to
+// O(N/8) × T, which keeps the periodic reconciliation worker from
+// overrunning its s.config.SyncInterval ticker on large installs.
+const containerSyncFanoutCap = 8
+
 func (s *Service) syncAllHosts(ctx context.Context) {
 	hosts, _, err := s.hostService.List(ctx, postgres.HostListOptions{Status: "online"})
 	if err != nil {
 		s.logger.Error("failed to list online hosts for reconciliation sync", "error", err)
 		return
 	}
-
-	for _, host := range hosts {
-		if err := s.SyncHost(ctx, host.ID); err != nil {
-			s.logger.Warn("failed to sync host containers",
-				"host_id", host.ID,
-				"error", err,
-			)
-		}
+	if len(hosts) == 0 {
+		return
 	}
+
+	sem := make(chan struct{}, containerSyncFanoutCap)
+	var wg sync.WaitGroup
+	for _, host := range hosts {
+		wg.Add(1)
+		sem <- struct{}{}
+		go func(hostID uuid.UUID) {
+			defer wg.Done()
+			defer func() { <-sem }()
+			if err := s.SyncHost(ctx, hostID); err != nil {
+				s.logger.Warn("failed to sync host containers",
+					"host_id", hostID,
+					"error", err,
+				)
+			}
+		}(host.ID)
+	}
+	wg.Wait()
 }
 
 func (s *Service) cleanupWorker(ctx context.Context) {

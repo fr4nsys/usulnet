@@ -145,7 +145,7 @@ func List(data AlertsData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</p></div><button onclick=\"document.getElementById('create-rule-modal').classList.remove('hidden')\" class=\"btn-primary\"><i class=\"fas fa-plus mr-2\"></i>New Rule</button></div><!-- Stats --><div class=\"grid grid-cols-2 md:grid-cols-5 gap-4\"><div class=\"card p-4\"><div class=\"text-2xl font-bold text-white\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</p></div><button onclick=\"document.getElementById('create-rule-modal').classList.remove('hidden')\" class=\"btn-primary\"><i aria-hidden=\"true\" class=\"fas fa-plus mr-2\"></i>New Rule</button></div><!-- Stats --><div class=\"grid grid-cols-2 md:grid-cols-5 gap-4\"><div class=\"card p-4\"><div class=\"text-2xl font-bold text-white\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -256,14 +256,14 @@ func List(data AlertsData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "\"><i class=\"fas fa-ruler-combined mr-2\"></i>Rules (")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "\"><i aria-hidden=\"true\" class=\"fas fa-ruler-combined mr-2\"></i>Rules (")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var13 string
 			templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", len(data.Rules)))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/alerts/alerts.templ`, Line: 148, Col: 90}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/alerts/alerts.templ`, Line: 148, Col: 109}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
 			if templ_7745c5c3_Err != nil {
@@ -293,14 +293,14 @@ func List(data AlertsData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "\"><i class=\"fas fa-bell mr-2\"></i>Events (")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "\"><i aria-hidden=\"true\" class=\"fas fa-bell mr-2\"></i>Events (")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var16 string
 			templ_7745c5c3_Var16, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", len(data.Events)))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/alerts/alerts.templ`, Line: 156, Col: 82}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/alerts/alerts.templ`, Line: 156, Col: 101}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var16))
 			if templ_7745c5c3_Err != nil {
@@ -330,14 +330,14 @@ func List(data AlertsData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "\"><i class=\"fas fa-volume-mute mr-2\"></i>Silences (")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "\"><i aria-hidden=\"true\" class=\"fas fa-volume-mute mr-2\"></i>Silences (")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var19 string
 			templ_7745c5c3_Var19, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", len(data.Silences)))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/alerts/alerts.templ`, Line: 164, Col: 93}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/alerts/alerts.templ`, Line: 164, Col: 112}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var19))
 			if templ_7745c5c3_Err != nil {
@@ -409,7 +409,7 @@ func rulesTab(data AlertsData) templ.Component {
 			templ_7745c5c3_Var20 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 21, "<div class=\"card\"><div class=\"overflow-x-auto\"><table class=\"table\"><thead><tr><th>Rule</th><th>Metric</th><th>Condition</th><th>Severity</th><th>State</th><th>Last Evaluated</th><th>Actions</th></tr></thead> <tbody>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 21, "<div class=\"card\"><div class=\"overflow-x-auto\"><table class=\"table\"><thead><tr><th scope=\"col\">Rule</th><th scope=\"col\">Metric</th><th scope=\"col\">Condition</th><th scope=\"col\">Severity</th><th scope=\"col\">State</th><th scope=\"col\">Last Evaluated</th><th scope=\"col\">Actions</th></tr></thead> <tbody>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -475,14 +475,14 @@ func rulesTab(data AlertsData) templ.Component {
 				}
 			}
 			if rule.HostName != "" {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 28, "<div class=\"text-xs text-gray-500 mt-1\"><i class=\"fas fa-server mr-1\"></i>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 28, "<div class=\"text-xs text-gray-500 mt-1\"><i aria-hidden=\"true\" class=\"fas fa-server mr-1\"></i>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var25 string
 				templ_7745c5c3_Var25, templ_7745c5c3_Err = templ.JoinStringErrs(rule.HostName)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/alerts/alerts.templ`, Line: 220, Col: 60}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/alerts/alerts.templ`, Line: 220, Col: 79}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var25))
 				if templ_7745c5c3_Err != nil {
@@ -713,27 +713,27 @@ func ruleStateBadge(state string, isEnabled bool) templ.Component {
 		}
 		ctx = templ.ClearChildren(ctx)
 		if !isEnabled {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 49, "<span class=\"badge bg-gray-500/20 text-gray-400\"><i class=\"fas fa-power-off mr-1 text-xs\"></i>Disabled</span>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 49, "<span class=\"badge bg-gray-500/20 text-gray-400\"><i aria-hidden=\"true\" class=\"fas fa-power-off mr-1 text-xs\"></i>Disabled</span>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		} else if state == "firing" {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 50, "<span class=\"badge bg-red-500/20 text-red-400 border border-red-500/30\"><i class=\"fas fa-fire mr-1 text-xs animate-pulse\"></i>Firing</span>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 50, "<span class=\"badge bg-red-500/20 text-red-400 border border-red-500/30\"><i aria-hidden=\"true\" class=\"fas fa-fire mr-1 text-xs animate-pulse\"></i>Firing</span>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		} else if state == "pending" {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 51, "<span class=\"badge bg-yellow-500/20 text-yellow-400\"><i class=\"fas fa-clock mr-1 text-xs\"></i>Pending</span>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 51, "<span class=\"badge bg-yellow-500/20 text-yellow-400\"><i aria-hidden=\"true\" class=\"fas fa-clock mr-1 text-xs\"></i>Pending</span>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		} else if state == "resolved" {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 52, "<span class=\"badge bg-blue-500/20 text-blue-400\"><i class=\"fas fa-check mr-1 text-xs\"></i>Resolved</span>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 52, "<span class=\"badge bg-blue-500/20 text-blue-400\"><i aria-hidden=\"true\" class=\"fas fa-check mr-1 text-xs\"></i>Resolved</span>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		} else {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 53, "<span class=\"badge bg-green-500/20 text-green-400\"><i class=\"fas fa-check-circle mr-1 text-xs\"></i>OK</span>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 53, "<span class=\"badge bg-green-500/20 text-green-400\"><i aria-hidden=\"true\" class=\"fas fa-check-circle mr-1 text-xs\"></i>OK</span>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -766,7 +766,7 @@ func eventsTab(data AlertsData) templ.Component {
 			templ_7745c5c3_Var39 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 54, "<div class=\"card\"><div class=\"overflow-x-auto\"><table class=\"table\"><thead><tr><th>Alert</th><th>Host</th><th>Value</th><th>Severity</th><th>State</th><th>Fired At</th><th>Actions</th></tr></thead> <tbody>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 54, "<div class=\"card\"><div class=\"overflow-x-auto\"><table class=\"table\"><thead><tr><th scope=\"col\">Alert</th><th scope=\"col\">Host</th><th scope=\"col\">Value</th><th scope=\"col\">Severity</th><th scope=\"col\">State</th><th scope=\"col\">Fired At</th><th scope=\"col\">Actions</th></tr></thead> <tbody>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -892,17 +892,17 @@ func eventsTab(data AlertsData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			if event.ResolvedAt != "" {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 66, "<span class=\"badge bg-green-500/20 text-green-400\"><i class=\"fas fa-check mr-1 text-xs\"></i>Resolved</span>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 66, "<span class=\"badge bg-green-500/20 text-green-400\"><i aria-hidden=\"true\" class=\"fas fa-check mr-1 text-xs\"></i>Resolved</span>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			} else if event.AcknowledgedAt != "" {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 67, "<span class=\"badge bg-blue-500/20 text-blue-400\"><i class=\"fas fa-user-check mr-1 text-xs\"></i>Ack</span>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 67, "<span class=\"badge bg-blue-500/20 text-blue-400\"><i aria-hidden=\"true\" class=\"fas fa-user-check mr-1 text-xs\"></i>Ack</span>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			} else {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 68, "<span class=\"badge bg-red-500/20 text-red-400 border border-red-500/30\"><i class=\"fas fa-fire mr-1 text-xs\"></i>Active</span>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 68, "<span class=\"badge bg-red-500/20 text-red-400 border border-red-500/30\"><i aria-hidden=\"true\" class=\"fas fa-fire mr-1 text-xs\"></i>Active</span>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -1029,7 +1029,7 @@ func silencesTab(data AlertsData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 80, "</select></div><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Duration</label> <select name=\"duration\" class=\"input\"><option value=\"1h\">1 hour</option> <option value=\"4h\">4 hours</option> <option value=\"8h\">8 hours</option> <option value=\"24h\">24 hours</option> <option value=\"7d\">7 days</option></select></div><div class=\"md:col-span-2\"><label class=\"block text-sm font-medium text-gray-300 mb-2\">Reason</label> <input type=\"text\" name=\"reason\" required class=\"input\" placeholder=\"e.g. Maintenance window\"></div></div><div class=\"flex justify-end\"><button type=\"submit\" class=\"btn-primary\"><i class=\"fas fa-volume-mute mr-2\"></i>Create Silence</button></div></form></div><!-- Silences Table --><div class=\"card\"><div class=\"overflow-x-auto\"><table class=\"table\"><thead><tr><th>Target</th><th>Reason</th><th>Duration</th><th>Status</th><th>Actions</th></tr></thead> <tbody>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 80, "</select></div><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Duration</label> <select name=\"duration\" class=\"input\"><option value=\"1h\">1 hour</option> <option value=\"4h\">4 hours</option> <option value=\"8h\">8 hours</option> <option value=\"24h\">24 hours</option> <option value=\"7d\">7 days</option></select></div><div class=\"md:col-span-2\"><label class=\"block text-sm font-medium text-gray-300 mb-2\">Reason</label> <input type=\"text\" name=\"reason\" required class=\"input\" placeholder=\"e.g. Maintenance window\" aria-label=\"e.g. Maintenance window\"></div></div><div class=\"flex justify-end\"><button type=\"submit\" class=\"btn-primary\"><i aria-hidden=\"true\" class=\"fas fa-volume-mute mr-2\"></i>Create Silence</button></div></form></div><!-- Silences Table --><div class=\"card\"><div class=\"overflow-x-auto\"><table class=\"table\"><thead><tr><th scope=\"col\">Target</th><th scope=\"col\">Reason</th><th scope=\"col\">Duration</th><th scope=\"col\">Status</th><th scope=\"col\">Actions</th></tr></thead> <tbody>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -1148,7 +1148,7 @@ func silencesTab(data AlertsData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			if silence.IsActive {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 93, "<span class=\"badge bg-purple-500/20 text-purple-400\"><i class=\"fas fa-volume-mute mr-1 text-xs\"></i>Active</span>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 93, "<span class=\"badge bg-purple-500/20 text-purple-400\"><i aria-hidden=\"true\" class=\"fas fa-volume-mute mr-1 text-xs\"></i>Active</span>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -1218,7 +1218,7 @@ func createRuleModal(hosts []HostOption, csrfToken string) templ.Component {
 			templ_7745c5c3_Var62 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 100, "<div id=\"create-rule-modal\" class=\"hidden fixed inset-0 z-50 overflow-y-auto\"><div class=\"fixed inset-0 bg-black/50\" onclick=\"document.getElementById('create-rule-modal').classList.add('hidden')\"></div><div class=\"relative min-h-screen flex items-center justify-center p-4\"><div class=\"relative bg-dark-800 rounded-xl border border-dark-600 max-w-2xl w-full p-6\"><div class=\"flex items-center justify-between mb-6\"><h2 class=\"text-xl font-display font-bold text-white\">New Alert Rule</h2><button onclick=\"document.getElementById('create-rule-modal').classList.add('hidden')\" class=\"text-gray-400 hover:text-white\"><i class=\"fas fa-times\"></i></button></div><form action=\"/alerts\" method=\"POST\" class=\"space-y-4\"><input type=\"hidden\" name=\"csrf_token\" value=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 100, "<div id=\"create-rule-modal\" class=\"hidden fixed inset-0 z-50 overflow-y-auto\"><div class=\"fixed inset-0 bg-black/50\" onclick=\"document.getElementById('create-rule-modal').classList.add('hidden')\"></div><div class=\"relative min-h-screen flex items-center justify-center p-4\"><div class=\"relative card max-w-2xl w-full p-6\"><div class=\"flex items-center justify-between mb-6\"><h2 class=\"text-xl font-display font-bold text-white\">New Alert Rule</h2><button onclick=\"document.getElementById('create-rule-modal').classList.add('hidden')\" class=\"text-gray-400 hover:text-white\"><i aria-hidden=\"true\" class=\"fas fa-times\"></i></button></div><form action=\"/alerts\" method=\"POST\" class=\"space-y-4\"><input type=\"hidden\" name=\"csrf_token\" value=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -1231,7 +1231,7 @@ func createRuleModal(hosts []HostOption, csrfToken string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 101, "\"><div class=\"grid grid-cols-1 md:grid-cols-2 gap-4\"><div class=\"md:col-span-2\"><label class=\"block text-sm font-medium text-gray-300 mb-2\">Rule Name</label> <input type=\"text\" name=\"name\" required class=\"input\" placeholder=\"e.g. High CPU Usage\"></div><div class=\"md:col-span-2\"><label class=\"block text-sm font-medium text-gray-300 mb-2\">Description</label> <input type=\"text\" name=\"description\" class=\"input\" placeholder=\"Optional description\"></div><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Host</label> <select name=\"host_id\" class=\"input\"><option value=\"\">All hosts</option> ")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 101, "\"><div class=\"grid grid-cols-1 md:grid-cols-2 gap-4\"><div class=\"md:col-span-2\"><label class=\"block text-sm font-medium text-gray-300 mb-2\">Rule Name</label> <input type=\"text\" name=\"name\" required class=\"input\" placeholder=\"e.g. High CPU Usage\" aria-label=\"e.g. High CPU Usage\"></div><div class=\"md:col-span-2\"><label class=\"block text-sm font-medium text-gray-300 mb-2\">Description</label> <input type=\"text\" name=\"description\" class=\"input\" placeholder=\"Optional description\" aria-label=\"Optional description\"></div><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Host</label> <select name=\"host_id\" class=\"input\"><option value=\"\">All hosts</option> ")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -1267,7 +1267,7 @@ func createRuleModal(hosts []HostOption, csrfToken string) templ.Component {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 105, "</select></div><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Metric</label> <select name=\"metric\" required class=\"input\"><option value=\"cpu_percent\">CPU Usage (%)</option> <option value=\"memory_percent\">Memory Usage (%)</option> <option value=\"disk_percent\">Disk Usage (%)</option> <option value=\"network_rx_rate\">Network RX Rate</option> <option value=\"network_tx_rate\">Network TX Rate</option> <option value=\"container_count\">Container Count</option> <option value=\"container_cpu\">Container CPU (%)</option> <option value=\"container_memory\">Container Memory (%)</option></select></div><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Condition</label><div class=\"flex gap-2\"><select name=\"operator\" class=\"input w-24\"><option value=\">\">&gt;</option> <option value=\">=\">&gt;=</option> <option value=\"<\">&lt;</option> <option value=\"<=\">&lt;=</option> <option value=\"==\">==</option> <option value=\"!=\">!=</option></select> <input type=\"number\" name=\"threshold\" required step=\"0.1\" class=\"input flex-1\" placeholder=\"80\"></div></div><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Severity</label> <select name=\"severity\" class=\"input\"><option value=\"info\">Info</option> <option value=\"warning\" selected>Warning</option> <option value=\"critical\">Critical</option></select></div><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Duration (seconds)</label> <input type=\"number\" name=\"duration\" value=\"60\" min=\"0\" class=\"input\" placeholder=\"60\"><p class=\"text-xs text-gray-500 mt-1\">Condition must be true for this duration</p></div><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Cooldown (seconds)</label> <input type=\"number\" name=\"cooldown\" value=\"300\" min=\"0\" class=\"input\" placeholder=\"300\"><p class=\"text-xs text-gray-500 mt-1\">Minimum time between alerts</p></div></div><div class=\"flex justify-end gap-3 pt-4 border-t border-dark-600\"><button type=\"button\" onclick=\"document.getElementById('create-rule-modal').classList.add('hidden')\" class=\"btn-secondary\">Cancel</button> <button type=\"submit\" class=\"btn-primary\"><i class=\"fas fa-plus mr-2\"></i>Create Rule</button></div></form></div></div></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 105, "</select></div><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Metric</label> <select name=\"metric\" required class=\"input\"><option value=\"cpu_percent\">CPU Usage (%)</option> <option value=\"memory_percent\">Memory Usage (%)</option> <option value=\"disk_percent\">Disk Usage (%)</option> <option value=\"network_rx_rate\">Network RX Rate</option> <option value=\"network_tx_rate\">Network TX Rate</option> <option value=\"container_count\">Container Count</option> <option value=\"container_cpu\">Container CPU (%)</option> <option value=\"container_memory\">Container Memory (%)</option></select></div><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Condition</label><div class=\"flex gap-2\"><select name=\"operator\" class=\"input w-24\"><option value=\">\">&gt;</option> <option value=\">=\">&gt;=</option> <option value=\"<\">&lt;</option> <option value=\"<=\">&lt;=</option> <option value=\"==\">==</option> <option value=\"!=\">!=</option></select> <input type=\"number\" name=\"threshold\" required step=\"0.1\" class=\"input flex-1\" placeholder=\"80\" aria-label=\"80\"></div></div><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Severity</label> <select name=\"severity\" class=\"input\"><option value=\"info\">Info</option> <option value=\"warning\" selected>Warning</option> <option value=\"critical\">Critical</option></select></div><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Duration (seconds)</label> <input type=\"number\" name=\"duration\" value=\"60\" min=\"0\" class=\"input\" placeholder=\"60\" aria-label=\"60\"><p class=\"text-xs text-gray-500 mt-1\">Condition must be true for this duration</p></div><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Cooldown (seconds)</label> <input type=\"number\" name=\"cooldown\" value=\"300\" min=\"0\" class=\"input\" placeholder=\"300\" aria-label=\"300\"><p class=\"text-xs text-gray-500 mt-1\">Minimum time between alerts</p></div></div><div class=\"flex justify-end gap-3 pt-4 border-t border-dark-600\"><button type=\"button\" onclick=\"document.getElementById('create-rule-modal').classList.add('hidden')\" class=\"btn-secondary\">Cancel</button> <button type=\"submit\" class=\"btn-primary\"><i aria-hidden=\"true\" class=\"fas fa-plus mr-2\"></i>Create Rule</button></div></form></div></div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -1319,7 +1319,7 @@ func Edit(data AlertEditData) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 106, "<div class=\"max-w-2xl mx-auto space-y-6\"><div class=\"flex items-center gap-4\"><a href=\"/alerts\" class=\"p-2 text-gray-400 hover:text-white hover:bg-dark-700 rounded-lg\"><i class=\"fas fa-arrow-left\"></i></a><div><h1 class=\"text-2xl font-display font-bold text-white\">Edit Alert Rule</h1><p class=\"text-gray-400 text-sm\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 106, "<div class=\"max-w-2xl mx-auto space-y-6\"><div class=\"flex items-center gap-4\"><a href=\"/alerts\" class=\"p-2 text-gray-400 hover:text-white hover:bg-dark-700 rounded-lg\"><i aria-hidden=\"true\" class=\"fas fa-arrow-left\"></i></a><div><h1 class=\"text-2xl font-display font-bold text-white\">Edit Alert Rule</h1><p class=\"text-gray-400 text-sm\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

@@ -37,7 +37,7 @@ templ Install(data InstallData) {
 
 				if data.Error != "" {
 					<div class="mb-4 px-3 py-2 bg-red-500/10 border border-red-500/20 rounded-lg text-sm text-red-400">
-						<i class="fas fa-exclamation-triangle mr-2"></i>{ data.Error }
+						<i aria-hidden="true" class="fas fa-exclamation-triangle mr-2"></i>{ data.Error }
 					</div>
 				}
 
@@ -46,7 +46,7 @@ templ Install(data InstallData) {
 						<label class="block text-sm font-medium text-gray-300 mb-1">Stack name</label>
 						<input type="text" name="name" required placeholder={ data.App.Slug }
 							value={ data.App.Slug }
-							class="w-full px-3 py-2 bg-dark-600 border border-dark-500 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-primary-500"/>
+							class="w-full px-3 py-2 bg-dark-600 border border-dark-500 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-primary-500" aria-label="Stack name"/>
 						<p class="text-xs text-gray-500 mt-1">This becomes the stack name. Lowercase letters, digits, and dashes work best.</p>
 					</div>
 
@@ -72,12 +72,12 @@ templ Install(data InstallData) {
 										<input type="password" name={ "field_" + field.Key }
 											value={ field.Default }
 											placeholder={ field.Placeholder }
-											class="w-full px-3 py-2 bg-dark-600 border border-dark-500 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-primary-500"/>
+											class="w-full px-3 py-2 bg-dark-600 border border-dark-500 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-primary-500" aria-label={ field.Placeholder }/>
 									} else {
 										<input type="text" name={ "field_" + field.Key }
 											value={ field.Default }
 											placeholder={ field.Placeholder }
-											class="w-full px-3 py-2 bg-dark-600 border border-dark-500 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-primary-500"/>
+											class="w-full px-3 py-2 bg-dark-600 border border-dark-500 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-primary-500" aria-label={ field.Placeholder }/>
 									}
 									if field.Description != "" {
 										<p class="text-xs text-gray-500 mt-1">{ field.Description }</p>
@@ -89,7 +89,7 @@ templ Install(data InstallData) {
 
 					<div class="flex gap-3 pt-2">
 						<button type="submit" class="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-black font-medium rounded-lg transition-colors text-sm">
-							<i class="fas fa-download mr-2"></i>Install
+							<i aria-hidden="true" class="fas fa-download mr-2"></i>Install
 						</button>
 						<a href={ templ.SafeURL("/marketplace/" + data.App.Slug) } class="px-4 py-2 bg-dark-600 hover:bg-dark-500 text-gray-300 rounded-lg transition-colors text-sm">
 							Cancel

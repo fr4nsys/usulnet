@@ -75,15 +75,19 @@ func (h *Handler) CheatSheet(w http.ResponseWriter, r *http.Request) {
 	h.renderTempl(w, r, toolspages.CheatSheet(data))
 }
 
+// cheatSheetCustomForm captures the cheat-sheet custom command
+// inputs. Title and command are required; description / category
+// are optional.
+type cheatSheetCustomForm struct {
+	Title       string `form:"title" validate:"required"`
+	Command     string `form:"command" validate:"required"`
+	Description string `form:"description"`
+	Category    string `form:"category"`
+}
+
 // CheatSheetCustomCreate creates a new custom command.
 // POST /tools/cheatsheet/custom
 func (h *Handler) CheatSheetCustomCreate(w http.ResponseWriter, r *http.Request) {
-	if err := r.ParseForm(); err != nil {
-		h.setFlash(w, r, "error", "Invalid form data")
-		http.Redirect(w, r, "/tools/cheatsheet", http.StatusSeeOther)
-		return
-	}
-
 	ctx := r.Context()
 	user := GetUserFromContext(ctx)
 	if user == nil {
@@ -92,13 +96,9 @@ func (h *Handler) CheatSheetCustomCreate(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	title := r.FormValue("title")
-	command := r.FormValue("command")
-	description := r.FormValue("description")
-	category := r.FormValue("category")
-
-	if title == "" || command == "" {
-		h.setFlash(w, r, "error", "Title and command are required")
+	var form cheatSheetCustomForm
+	if msg := BindForm(r, &form); msg != "" {
+		h.setFlash(w, r, "error", msg)
 		http.Redirect(w, r, "/tools/cheatsheet", http.StatusSeeOther)
 		return
 	}
@@ -118,16 +118,16 @@ func (h *Handler) CheatSheetCustomCreate(w http.ResponseWriter, r *http.Request)
 
 	// Store as snippet with cheatsheet/ path prefix
 	path := "cheatsheet/"
-	if category != "" {
-		path += category
+	if form.Category != "" {
+		path += form.Category
 	}
 
 	input := &models.CreateSnippetInput{
-		Name:        title,
+		Name:        form.Title,
 		Path:        path,
 		Language:    "shell",
-		Content:     command,
-		Description: description,
+		Content:     form.Command,
+		Description: form.Description,
 		Tags:        []string{"cheatsheet"},
 	}
 
@@ -141,8 +141,8 @@ func (h *Handler) CheatSheetCustomCreate(w http.ResponseWriter, r *http.Request)
 
 	h.logger.Info("Custom command created",
 		"user", user.Username,
-		"title", title,
-		"category", category,
+		"title", form.Title,
+		"category", form.Category,
 	)
 
 	h.setFlash(w, r, "success", "Custom command saved")

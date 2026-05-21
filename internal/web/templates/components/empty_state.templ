@@ -1,0 +1,117 @@
+package components
+
+// EmptyState renders the standard "nothing here yet" panel: a large
+// muted icon, a one-line title, an optional sub-text body, and an
+// optional CTA button.
+//
+// Pass `iconClass` as a bare Font Awesome name (e.g. "fa-box-open").
+// The component prepends the `fas` family and the size utility.
+//
+// For an empty state inside a table cell (where the page-level icon
+// would be excessive) use EmptyRow instead. For the richer card
+// with What/Why copy + 1-3 CTAs introduced in v26.5.2, see
+// EmptyStateCTAs below.
+templ EmptyState(iconClass string, title string, body string) {
+	<div class="card p-12 text-center">
+		if iconClass != "" {
+			<i class={ "fas " + iconClass + " text-4xl text-gray-500 mb-4" }></i>
+		}
+		if title != "" {
+			<h3 class="text-lg font-medium text-white mb-1">{ title }</h3>
+		}
+		if body != "" {
+			<p class="text-sm text-gray-400">{ body }</p>
+		}
+		{ children... }
+	</div>
+}
+
+// EmptyRow renders an empty-state placeholder sized for a single
+// table row. The caller is expected to wrap it in `<td colspan="N">`.
+// Density is intentionally lower than EmptyState — no large icon,
+// no card frame — so it doesn't dwarf the surrounding table chrome.
+templ EmptyRow(message string) {
+	<div class="text-center text-gray-400 py-8 text-sm">
+		{ message }
+	</div>
+}
+
+// ---------------------------------------------------------------------------
+// EmptyStateCTAs — richer empty-state added in v26.5.2 session 05.
+//
+// Compared with EmptyState (above), EmptyStateCTAs adds:
+//   - A "What" sentence describing the module mechanically.
+//   - A "Why" sentence explaining operator value.
+//   - 1-3 CTA buttons (first = primary "create" action, last =
+//     usually "Read the docs").
+//
+// The visual is an orange-tile icon over a centred copy stack +
+// button row. Module copy lives in internal/web/empty_state_catalog.go
+// — that file is the single audit surface for empty-state wording.
+//
+// EmptyState (simple) and EmptyStateCTAs (rich) coexist: existing
+// callers keep using EmptyState, new modules opt into the richer
+// form by importing the catalog and rendering EmptyStateCTAs.
+// ---------------------------------------------------------------------------
+
+// EmptyStateCTA is one button on the rich empty-state card. The first
+// CTA in the slice renders as primary (orange-filled); subsequent
+// CTAs render as ghost buttons.
+type EmptyStateCTA struct {
+	Label   string
+	Href    string
+	Icon    string // Font Awesome class, e.g. "fa-plus". Optional.
+	Primary bool
+}
+
+// EmptyStateData drives EmptyStateCTAs. Pages populate it from the
+// per-module catalog so the wording is reviewable in one diff.
+type EmptyStateData struct {
+	Icon  string          // Font Awesome class for the rounded background tile.
+	Title string          // Noun in title case naming the module.
+	What  string          // One sentence: what the module does mechanically.
+	Why   string          // One sentence: why an operator would configure one.
+	CTAs  []EmptyStateCTA // 1-3 buttons (convention: first primary "create").
+}
+
+templ EmptyStateCTAs(data EmptyStateData) {
+	<div class="flex flex-col items-center justify-center py-16 text-center">
+		<div class="w-16 h-16 rounded-2xl bg-primary-500/10 flex items-center justify-center mb-4">
+			<i class={ "fas " + data.Icon + " text-primary-400 text-2xl" } aria-hidden="true"></i>
+		</div>
+		<h3 class="text-lg font-semibold text-white mb-2">{ data.Title }</h3>
+		if data.What != "" {
+			<p class="text-sm text-gray-400 mb-1 max-w-md mx-auto">{ data.What }</p>
+		}
+		if data.Why != "" {
+			<p class="text-xs text-gray-500 mb-6 max-w-md mx-auto">{ data.Why }</p>
+		}
+		if len(data.CTAs) > 0 {
+			<div class="flex flex-wrap gap-2 justify-center">
+				for _, cta := range data.CTAs {
+					if cta.Primary {
+						<a
+							href={ templ.SafeURL(cta.Href) }
+							class="inline-flex items-center gap-2 px-4 py-2 bg-primary-500 hover:bg-primary-600 text-black font-medium rounded-lg transition-colors"
+						>
+							if cta.Icon != "" {
+								<i class={ "fas " + cta.Icon } aria-hidden="true"></i>
+							}
+							{ cta.Label }
+						</a>
+					} else {
+						<a
+							href={ templ.SafeURL(cta.Href) }
+							class="inline-flex items-center gap-2 px-4 py-2 bg-dark-700 hover:bg-dark-600 text-gray-300 rounded-lg transition-colors"
+						>
+							if cta.Icon != "" {
+								<i class={ "fas " + cta.Icon } aria-hidden="true"></i>
+							}
+							{ cta.Label }
+						</a>
+					}
+				}
+			</div>
+		}
+	</div>
+}

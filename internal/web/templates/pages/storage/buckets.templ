@@ -10,7 +10,7 @@ templ BucketsList(data StorageBucketsData) {
 			<!-- Breadcrumb -->
 			<div class="flex items-center gap-2 text-sm text-gray-400">
 				<a href="/storage" class="hover:text-primary-400 transition-colors">Storage</a>
-				<i class="fas fa-chevron-right text-xs text-gray-400"></i>
+				<i aria-hidden="true" class="fas fa-chevron-right text-xs text-gray-400"></i>
 				<span class="text-white">{ data.Connection.Name }</span>
 			</div>
 
@@ -18,16 +18,16 @@ templ BucketsList(data StorageBucketsData) {
 			<div class="flex items-center justify-between">
 				<div>
 					<h1 class="text-2xl font-display font-bold text-white">
-						<i class="fas fa-folder-open text-primary-400 mr-2"></i>{ data.Connection.Name }
+						<i aria-hidden="true" class="fas fa-folder-open text-primary-400 mr-2"></i>{ data.Connection.Name }
 					</h1>
 					<p class="text-gray-400 mt-1 text-sm font-mono">{ data.Connection.Endpoint } — { data.Connection.Region }</p>
 				</div>
 				<div class="flex items-center gap-2">
 					<a href={ templ.SafeURL("/storage/" + data.Connection.ID + "/audit") } class="btn-secondary text-sm">
-						<i class="fas fa-history mr-2"></i>Audit Log
+						<i aria-hidden="true" class="fas fa-history mr-2"></i>Audit Log
 					</a>
 					<button onclick="document.getElementById('create-bucket-modal').classList.remove('hidden')" class="btn-primary text-sm">
-						<i class="fas fa-plus mr-2"></i>Create Bucket
+						<i aria-hidden="true" class="fas fa-plus mr-2"></i>Create Bucket
 					</button>
 				</div>
 			</div>
@@ -35,12 +35,12 @@ templ BucketsList(data StorageBucketsData) {
 			if len(data.Buckets) == 0 {
 				<div class="card p-12 text-center">
 					<div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-primary-500/10 flex items-center justify-center">
-						<i class="fas fa-bucket text-2xl text-primary-400"></i>
+						<i aria-hidden="true" class="fas fa-bucket text-2xl text-primary-400"></i>
 					</div>
 					<h3 class="text-lg font-medium text-white mb-2">No buckets yet</h3>
 					<p class="text-gray-400 mb-6">Create a bucket to start storing objects.</p>
 					<button onclick="document.getElementById('create-bucket-modal').classList.remove('hidden')" class="btn-primary">
-						<i class="fas fa-plus mr-2"></i>Create Bucket
+						<i aria-hidden="true" class="fas fa-plus mr-2"></i>Create Bucket
 					</button>
 				</div>
 			} else {
@@ -49,12 +49,12 @@ templ BucketsList(data StorageBucketsData) {
 					<table class="w-full">
 						<thead>
 							<tr class="border-b border-dark-600">
-								<th class="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Name</th>
-								<th class="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Region</th>
-								<th class="text-right px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Objects</th>
-								<th class="text-right px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Size</th>
-								<th class="text-center px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Flags</th>
-								<th class="text-right px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Actions</th>
+								<th scope="col" class="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Name</th>
+								<th scope="col" class="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Region</th>
+								<th scope="col" class="text-right px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Objects</th>
+								<th scope="col" class="text-right px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Size</th>
+								<th scope="col" class="text-center px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Flags</th>
+								<th scope="col" class="text-right px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Actions</th>
 							</tr>
 						</thead>
 						<tbody class="divide-y divide-dark-700">
@@ -76,7 +76,7 @@ templ bucketRow(connID string, b StorageBucketData, csrfToken string) {
 		<td class="px-4 py-3">
 			<a href={ templ.SafeURL("/storage/" + connID + "/buckets/" + b.Name + "/browse") }
 				class="font-medium text-primary-400 hover:text-primary-300 transition-colors">
-				<i class="fas fa-archive mr-2 text-gray-500"></i>{ b.Name }
+				<i aria-hidden="true" class="fas fa-archive mr-2 text-gray-500"></i>{ b.Name }
 			</a>
 		</td>
 		<td class="px-4 py-3 text-sm text-gray-400">{ b.Region }</td>
@@ -96,12 +96,12 @@ templ bucketRow(connID string, b StorageBucketData, csrfToken string) {
 			<div class="flex items-center justify-end gap-2">
 				<a href={ templ.SafeURL("/storage/" + connID + "/buckets/" + b.Name + "/browse") }
 					class="btn-secondary text-xs">
-					<i class="fas fa-folder-open"></i>
+					<i aria-hidden="true" class="fas fa-folder-open"></i>
 				</a>
 				<form method="POST" action={ templ.SafeURL("/storage/" + connID + "/buckets/" + b.Name + "/delete") }
 					onsubmit="return confirm('Delete this bucket? The bucket must be empty.')">
 					<input type="hidden" name="csrf_token" value={ csrfToken }/>
-					<button type="submit" class="btn-danger text-xs"><i class="fas fa-trash"></i></button>
+					<button type="submit" class="btn-danger text-xs"><i aria-hidden="true" class="fas fa-trash"></i></button>
 				</form>
 			</div>
 		</td>
@@ -114,7 +114,7 @@ templ createBucketModal(connID, defaultRegion, csrfToken string) {
 			<div class="flex items-center justify-between mb-6">
 				<h2 class="text-lg font-display font-bold text-white">Create Bucket</h2>
 				<button onclick="document.getElementById('create-bucket-modal').classList.add('hidden')" class="text-gray-400 hover:text-white">
-					<i class="fas fa-times"></i>
+					<i aria-hidden="true" class="fas fa-times"></i>
 				</button>
 			</div>
 
@@ -123,7 +123,7 @@ templ createBucketModal(connID, defaultRegion, csrfToken string) {
 
 				<div>
 					<label class="label">Bucket Name</label>
-					<input type="text" name="name" required pattern="[a-z0-9][a-z0-9.-]{1,61}[a-z0-9]" placeholder="my-bucket" class="input"/>
+					<input type="text" name="name" required pattern="[a-z0-9][a-z0-9.-]{1,61}[a-z0-9]" placeholder="my-bucket" aria-label="my-bucket" class="input"/>
 					<p class="text-xs text-gray-500 mt-1">Lowercase, 3-63 chars, no underscores</p>
 				</div>
 

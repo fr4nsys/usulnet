@@ -101,7 +101,7 @@ func List(data GiteaData) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"space-y-6\"><!-- Header --><div class=\"flex items-center justify-between\"><div><h1 class=\"text-2xl font-display font-bold text-white\"><i class=\"fas fa-code-branch text-blue-400 mr-2\"></i>Repositories</h1><p class=\"text-gray-400 mt-1\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"space-y-6\"><!-- Header --><div class=\"flex items-center justify-between\"><div><h1 class=\"text-2xl font-display font-bold text-white\"><i aria-hidden=\"true\" class=\"fas fa-code-branch text-blue-400 mr-2\"></i>Repositories</h1><p class=\"text-gray-400 mt-1\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -119,12 +119,12 @@ func List(data GiteaData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			if len(data.Connections) > 0 {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<button onclick=\"document.getElementById('new-repo-modal').classList.remove('hidden')\" class=\"btn-primary bg-green-600 hover:bg-green-700\"><i class=\"fas fa-plus mr-2\"></i>New Repository</button> ")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<button onclick=\"document.getElementById('new-repo-modal').classList.remove('hidden')\" class=\"btn-primary bg-green-600 hover:bg-green-700\"><i aria-hidden=\"true\" class=\"fas fa-plus mr-2\"></i>New Repository</button> ")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<button onclick=\"document.getElementById('new-connection-modal').classList.remove('hidden')\" class=\"btn-primary\"><i class=\"fas fa-plug mr-2\"></i>Add Connection</button></div></div><!-- Stats Cards --><div class=\"grid grid-cols-2 md:grid-cols-4 gap-4\"><div class=\"card p-4\"><div class=\"text-2xl font-bold text-white\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<button onclick=\"document.getElementById('new-connection-modal').classList.remove('hidden')\" class=\"btn-primary\"><i aria-hidden=\"true\" class=\"fas fa-plug mr-2\"></i>Add Connection</button></div></div><!-- Stats Cards --><div class=\"grid grid-cols-2 md:grid-cols-4 gap-4\"><div class=\"card p-4\"><div class=\"text-2xl font-bold text-white\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -181,7 +181,7 @@ func List(data GiteaData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			if len(data.Connections) == 0 {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "<div class=\"p-8 text-center\"><i class=\"fas fa-plug text-4xl text-gray-400 mb-3\"></i><p class=\"text-gray-400\">No Git connections configured</p><p class=\"text-sm text-gray-500 mt-1\">Add a connection to Gitea, GitHub, or GitLab to start syncing repositories</p></div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "<div class=\"p-8 text-center\"><i aria-hidden=\"true\" class=\"fas fa-plug text-4xl text-gray-400 mb-3\"></i><p class=\"text-gray-400\">No Git connections configured</p><p class=\"text-sm text-gray-500 mt-1\">Add a connection to Gitea, GitHub, or GitLab to start syncing repositories</p></div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -393,7 +393,7 @@ func connectionRow(conn ConnectionItem, csrfToken string) templ.Component {
 			}
 		}
 		if conn.AutoSync {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 29, "<span class=\"text-xs px-1.5 py-0.5 rounded bg-blue-500/10 text-blue-400\"><i class=\"fas fa-sync-alt mr-1\"></i>auto-sync</span>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 29, "<span class=\"text-xs px-1.5 py-0.5 rounded bg-blue-500/10 text-blue-400\"><i aria-hidden=\"true\" class=\"fas fa-sync-alt mr-1\"></i>auto-sync</span>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -424,19 +424,19 @@ func connectionRow(conn ConnectionItem, csrfToken string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 32, " <i class=\"fas fa-external-link-alt text-[10px] ml-1\"></i></a></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 32, " <i aria-hidden=\"true\" class=\"fas fa-external-link-alt text-[10px] ml-1\"></i></a></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		if conn.Status == "error" && conn.StatusMsg != "" {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 33, "<div class=\"text-xs text-red-400 mt-1\"><i class=\"fas fa-exclamation-triangle mr-1\"></i>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 33, "<div class=\"text-xs text-red-400 mt-1\"><i aria-hidden=\"true\" class=\"fas fa-exclamation-triangle mr-1\"></i>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var20 string
 			templ_7745c5c3_Var20, templ_7745c5c3_Err = templ.JoinStringErrs(conn.StatusMsg)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/gitea/list.templ`, Line: 197, Col: 71}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/gitea/list.templ`, Line: 197, Col: 90}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var20))
 			if templ_7745c5c3_Err != nil {
@@ -486,7 +486,7 @@ func connectionRow(conn ConnectionItem, csrfToken string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 38, "\"> <button type=\"submit\" class=\"btn-sm btn-ghost\" title=\"Test connection\"><i class=\"fas fa-heartbeat\"></i></button></form><form method=\"post\" action=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 38, "\"> <button type=\"submit\" class=\"btn-sm btn-ghost\" title=\"Test connection\"><i aria-hidden=\"true\" class=\"fas fa-heartbeat\"></i></button></form><form method=\"post\" action=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -512,7 +512,7 @@ func connectionRow(conn ConnectionItem, csrfToken string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 40, "\"> <button type=\"submit\" class=\"btn-sm btn-ghost\" title=\"Sync repositories\"><i class=\"fas fa-sync-alt\"></i></button></form><form method=\"post\" action=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 40, "\"> <button type=\"submit\" class=\"btn-sm btn-ghost\" title=\"Sync repositories\"><i aria-hidden=\"true\" class=\"fas fa-sync-alt\"></i></button></form><form method=\"post\" action=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -538,7 +538,7 @@ func connectionRow(conn ConnectionItem, csrfToken string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 42, "\"> <button type=\"submit\" class=\"btn-sm btn-ghost text-red-400 hover:text-red-300\" title=\"Delete\"><i class=\"fas fa-trash\"></i></button></form></div></div></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 42, "\"> <button type=\"submit\" class=\"btn-sm btn-ghost text-red-400 hover:text-red-300\" title=\"Delete\"><i aria-hidden=\"true\" class=\"fas fa-trash\"></i></button></form></div></div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -645,19 +645,19 @@ func repoRow(repo RepoItem) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		if repo.IsPrivate {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 50, "<span class=\"text-xs px-1.5 py-0.5 rounded bg-yellow-500/10 text-yellow-400\"><i class=\"fas fa-lock mr-0.5\"></i>private</span> ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 50, "<span class=\"text-xs px-1.5 py-0.5 rounded bg-yellow-500/10 text-yellow-400\"><i aria-hidden=\"true\" class=\"fas fa-lock mr-0.5\"></i>private</span> ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		}
 		if repo.IsArchived {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 51, "<span class=\"text-xs px-1.5 py-0.5 rounded bg-gray-500/10 text-gray-400\"><i class=\"fas fa-archive mr-0.5\"></i>archived</span> ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 51, "<span class=\"text-xs px-1.5 py-0.5 rounded bg-gray-500/10 text-gray-400\"><i aria-hidden=\"true\" class=\"fas fa-archive mr-0.5\"></i>archived</span> ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		}
 		if repo.IsFork {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 52, "<span class=\"text-xs px-1.5 py-0.5 rounded bg-purple-500/10 text-purple-400\"><i class=\"fas fa-code-branch mr-0.5\"></i>fork</span>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 52, "<span class=\"text-xs px-1.5 py-0.5 rounded bg-purple-500/10 text-purple-400\"><i aria-hidden=\"true\" class=\"fas fa-code-branch mr-0.5\"></i>fork</span>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -685,14 +685,14 @@ func repoRow(repo RepoItem) templ.Component {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 56, "<div class=\"flex items-center gap-3 mt-1 text-xs text-gray-500\"><span><i class=\"fas fa-code-branch mr-1\"></i>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 56, "<div class=\"flex items-center gap-3 mt-1 text-xs text-gray-500\"><span><i aria-hidden=\"true\" class=\"fas fa-code-branch mr-1\"></i>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var36 string
 		templ_7745c5c3_Var36, templ_7745c5c3_Err = templ.JoinStringErrs(repo.DefaultBranch)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/gitea/list.templ`, Line: 270, Col: 71}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/gitea/list.templ`, Line: 270, Col: 90}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var36))
 		if templ_7745c5c3_Err != nil {
@@ -716,14 +716,14 @@ func repoRow(repo RepoItem) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		if repo.Stars > 0 {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 59, "<span><i class=\"fas fa-star text-yellow-500 mr-1\"></i>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 59, "<span><i aria-hidden=\"true\" class=\"fas fa-star text-yellow-500 mr-1\"></i>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var38 string
 			templ_7745c5c3_Var38, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", repo.Stars))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/gitea/list.templ`, Line: 277, Col: 90}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/gitea/list.templ`, Line: 277, Col: 109}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var38))
 			if templ_7745c5c3_Err != nil {
@@ -735,14 +735,14 @@ func repoRow(repo RepoItem) templ.Component {
 			}
 		}
 		if repo.Forks > 0 {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 61, "<span><i class=\"fas fa-code-branch mr-1\"></i>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 61, "<span><i aria-hidden=\"true\" class=\"fas fa-code-branch mr-1\"></i>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var39 string
 			templ_7745c5c3_Var39, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", repo.Forks))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/gitea/list.templ`, Line: 280, Col: 81}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/gitea/list.templ`, Line: 280, Col: 100}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var39))
 			if templ_7745c5c3_Err != nil {
@@ -780,7 +780,7 @@ func repoRow(repo RepoItem) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 65, "\"><i class=\"fas fa-external-link-alt\"></i></a>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 65, "\"><i aria-hidden=\"true\" class=\"fas fa-external-link-alt\"></i></a>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -817,7 +817,7 @@ func newConnectionModal(csrfToken string) templ.Component {
 			templ_7745c5c3_Var42 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 67, "<div id=\"new-connection-modal\" class=\"hidden fixed inset-0 z-50 overflow-y-auto\"><div class=\"flex min-h-screen items-center justify-center p-4\"><!-- Backdrop --><div class=\"fixed inset-0 bg-black/60\" onclick=\"this.parentElement.parentElement.classList.add('hidden')\"></div><!-- Modal --><div class=\"relative card w-full max-w-lg p-6\"><div class=\"flex items-center justify-between mb-6\"><h3 class=\"text-lg font-semibold text-white\"><i class=\"fas fa-plug text-blue-400 mr-2\"></i>Add Git Connection</h3><button onclick=\"document.getElementById('new-connection-modal').classList.add('hidden')\" class=\"text-gray-400 hover:text-white\"><i class=\"fas fa-times\"></i></button></div><form method=\"post\" action=\"/integrations/git/connections\" id=\"new-connection-form\" class=\"space-y-4\"><input type=\"hidden\" name=\"csrf_token\" value=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 67, "<div id=\"new-connection-modal\" class=\"hidden fixed inset-0 z-50 overflow-y-auto\"><div class=\"flex min-h-screen items-center justify-center p-4\"><!-- Backdrop --><div class=\"fixed inset-0 bg-black/60\" onclick=\"this.parentElement.parentElement.classList.add('hidden')\"></div><!-- Modal --><div class=\"relative card w-full max-w-lg p-6\"><div class=\"flex items-center justify-between mb-6\"><h3 class=\"text-lg font-semibold text-white\"><i aria-hidden=\"true\" class=\"fas fa-plug text-blue-400 mr-2\"></i>Add Git Connection</h3><button onclick=\"document.getElementById('new-connection-modal').classList.add('hidden')\" class=\"text-gray-400 hover:text-white\"><i aria-hidden=\"true\" class=\"fas fa-times\"></i></button></div><form method=\"post\" action=\"/integrations/git/connections\" id=\"new-connection-form\" class=\"space-y-4\"><input type=\"hidden\" name=\"csrf_token\" value=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -830,7 +830,7 @@ func newConnectionModal(csrfToken string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 68, "\"><!-- Provider Selection --><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Provider</label><div class=\"grid grid-cols-3 gap-3\"><label class=\"provider-option\"><input type=\"radio\" name=\"provider_type\" value=\"gitea\" class=\"sr-only peer\" checked onchange=\"updateConnectionForm('gitea')\"><div class=\"flex flex-col items-center p-3 rounded-lg border-2 border-gray-600 cursor-pointer\n\t\t\t\t\t\t\t\t\tpeer-checked:border-green-500 peer-checked:bg-green-500/10 hover:border-gray-500 transition-colors\"><i class=\"fas fa-mug-hot text-2xl text-green-400 mb-1\"></i> <span class=\"text-sm text-gray-300\">Gitea</span></div></label> <label class=\"provider-option\"><input type=\"radio\" name=\"provider_type\" value=\"github\" class=\"sr-only peer\" onchange=\"updateConnectionForm('github')\"><div class=\"flex flex-col items-center p-3 rounded-lg border-2 border-gray-600 cursor-pointer\n\t\t\t\t\t\t\t\t\tpeer-checked:border-gray-100 peer-checked:bg-gray-100/10 hover:border-gray-500 transition-colors\"><i class=\"fab fa-github text-2xl text-gray-100 mb-1\"></i> <span class=\"text-sm text-gray-300\">GitHub</span></div></label> <label class=\"provider-option\"><input type=\"radio\" name=\"provider_type\" value=\"gitlab\" class=\"sr-only peer\" onchange=\"updateConnectionForm('gitlab')\"><div class=\"flex flex-col items-center p-3 rounded-lg border-2 border-gray-600 cursor-pointer\n\t\t\t\t\t\t\t\t\tpeer-checked:border-orange-500 peer-checked:bg-orange-500/10 hover:border-gray-500 transition-colors\"><i class=\"fab fa-gitlab text-2xl text-orange-400 mb-1\"></i> <span class=\"text-sm text-gray-300\">GitLab</span></div></label></div></div><div><label for=\"conn-name\" class=\"block text-sm font-medium text-gray-300 mb-1\">Connection Name</label> <input type=\"text\" id=\"conn-name\" name=\"name\" required placeholder=\"e.g. My Git Server\" class=\"w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-500 focus:border-blue-500 focus:ring-1 focus:ring-blue-500\"></div><!-- URL field (hidden for GitHub, shown for Gitea/GitLab) --><div id=\"conn-url-wrapper\"><label for=\"conn-url\" class=\"block text-sm font-medium text-gray-300 mb-1\">Server URL</label> <input type=\"url\" id=\"conn-url\" name=\"url\" placeholder=\"https://gitea.example.com\" class=\"w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-500 focus:border-blue-500 focus:ring-1 focus:ring-blue-500\"><p id=\"conn-url-hint\" class=\"text-xs text-gray-500 mt-1\">Leave empty to use the default server</p></div><div><label for=\"conn-token\" class=\"block text-sm font-medium text-gray-300 mb-1\"><span id=\"token-label\">API Token</span></label> <input type=\"password\" id=\"conn-token\" name=\"api_token\" required placeholder=\"Your personal access token\" class=\"w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-500 focus:border-blue-500 focus:ring-1 focus:ring-blue-500\"><p id=\"token-hint\" class=\"text-xs text-gray-500 mt-1\">Generate in Settings → Developer settings → Personal access tokens</p></div><div><label for=\"conn-secret\" class=\"block text-sm font-medium text-gray-300 mb-1\">Webhook Secret <span class=\"text-gray-500\">(optional)</span></label> <input type=\"password\" id=\"conn-secret\" name=\"webhook_secret\" placeholder=\"For validating webhook payloads\" class=\"w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-500 focus:border-blue-500 focus:ring-1 focus:ring-blue-500\"></div><div class=\"flex justify-end gap-3 pt-2\"><button type=\"button\" onclick=\"document.getElementById('new-connection-modal').classList.add('hidden')\" class=\"btn-ghost\">Cancel</button> <button type=\"submit\" class=\"btn-primary\"><i class=\"fas fa-plus mr-2\"></i>Create Connection</button></div></form></div></div></div><script>\n\tfunction updateConnectionForm(provider) {\n\t\tconst urlWrapper = document.getElementById('conn-url-wrapper');\n\t\tconst urlInput = document.getElementById('conn-url');\n\t\tconst urlHint = document.getElementById('conn-url-hint');\n\t\tconst tokenHint = document.getElementById('token-hint');\n\t\tconst nameInput = document.getElementById('conn-name');\n\t\t\n\t\tswitch(provider) {\n\t\t\tcase 'github':\n\t\t\t\turlWrapper.classList.add('hidden');\n\t\t\t\turlInput.required = false;\n\t\t\t\turlInput.value = 'https://api.github.com';\n\t\t\t\ttokenHint.textContent = 'Generate at github.com → Settings → Developer settings → Personal access tokens (classic). Needs repo scope.';\n\t\t\t\tnameInput.placeholder = 'e.g. GitHub Personal';\n\t\t\t\tbreak;\n\t\t\tcase 'gitlab':\n\t\t\t\turlWrapper.classList.remove('hidden');\n\t\t\t\turlInput.required = false;\n\t\t\t\turlInput.placeholder = 'https://gitlab.com';\n\t\t\t\turlHint.textContent = 'Leave empty for gitlab.com or enter your self-hosted GitLab URL';\n\t\t\t\ttokenHint.textContent = 'Generate at GitLab → User Settings → Access Tokens. Needs api scope.';\n\t\t\t\tnameInput.placeholder = 'e.g. GitLab SaaS';\n\t\t\t\tbreak;\n\t\t\tcase 'gitea':\n\t\t\tdefault:\n\t\t\t\turlWrapper.classList.remove('hidden');\n\t\t\t\turlInput.required = true;\n\t\t\t\turlInput.placeholder = 'https://gitea.example.com';\n\t\t\t\turlHint.textContent = 'Your Gitea server URL';\n\t\t\t\ttokenHint.textContent = 'Generate in Gitea → Settings → Applications → Generate New Token';\n\t\t\t\tnameInput.placeholder = 'e.g. My Gitea Server';\n\t\t\t\tbreak;\n\t\t}\n\t}\n\t\n\t// Initialize form on load\n\tdocument.addEventListener('DOMContentLoaded', () => {\n\t\tupdateConnectionForm('gitea');\n\t});\n\t</script>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 68, "\"><!-- Provider Selection --><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Provider</label><div class=\"grid grid-cols-3 gap-3\"><label class=\"provider-option\"><input type=\"radio\" name=\"provider_type\" value=\"gitea\" class=\"sr-only peer\" checked onchange=\"updateConnectionForm('gitea')\"><div class=\"flex flex-col items-center p-3 rounded-lg border-2 border-gray-600 cursor-pointer\n\t\t\t\t\t\t\t\t\tpeer-checked:border-green-500 peer-checked:bg-green-500/10 hover:border-gray-500 transition-colors\"><i aria-hidden=\"true\" class=\"fas fa-mug-hot text-2xl text-green-400 mb-1\"></i> <span class=\"text-sm text-gray-300\">Gitea</span></div></label> <label class=\"provider-option\"><input type=\"radio\" name=\"provider_type\" value=\"github\" class=\"sr-only peer\" onchange=\"updateConnectionForm('github')\"><div class=\"flex flex-col items-center p-3 rounded-lg border-2 border-gray-600 cursor-pointer\n\t\t\t\t\t\t\t\t\tpeer-checked:border-gray-100 peer-checked:bg-gray-100/10 hover:border-gray-500 transition-colors\"><i aria-hidden=\"true\" class=\"fab fa-github text-2xl text-gray-100 mb-1\"></i> <span class=\"text-sm text-gray-300\">GitHub</span></div></label> <label class=\"provider-option\"><input type=\"radio\" name=\"provider_type\" value=\"gitlab\" class=\"sr-only peer\" onchange=\"updateConnectionForm('gitlab')\"><div class=\"flex flex-col items-center p-3 rounded-lg border-2 border-gray-600 cursor-pointer\n\t\t\t\t\t\t\t\t\tpeer-checked:border-orange-500 peer-checked:bg-orange-500/10 hover:border-gray-500 transition-colors\"><i aria-hidden=\"true\" class=\"fab fa-gitlab text-2xl text-orange-400 mb-1\"></i> <span class=\"text-sm text-gray-300\">GitLab</span></div></label></div></div><div><label for=\"conn-name\" class=\"block text-sm font-medium text-gray-300 mb-1\">Connection Name</label> <input type=\"text\" id=\"conn-name\" name=\"name\" required placeholder=\"e.g. My Git Server\" class=\"w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-500 focus:border-blue-500 focus:ring-1 focus:ring-blue-500\"></div><!-- URL field (hidden for GitHub, shown for Gitea/GitLab) --><div id=\"conn-url-wrapper\"><label for=\"conn-url\" class=\"block text-sm font-medium text-gray-300 mb-1\">Server URL</label> <input type=\"url\" id=\"conn-url\" name=\"url\" placeholder=\"https://gitea.example.com\" class=\"w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-500 focus:border-blue-500 focus:ring-1 focus:ring-blue-500\"><p id=\"conn-url-hint\" class=\"text-xs text-gray-500 mt-1\">Leave empty to use the default server</p></div><div><label for=\"conn-token\" class=\"block text-sm font-medium text-gray-300 mb-1\"><span id=\"token-label\">API Token</span></label> <input type=\"password\" id=\"conn-token\" name=\"api_token\" required placeholder=\"Your personal access token\" class=\"w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-500 focus:border-blue-500 focus:ring-1 focus:ring-blue-500\"><p id=\"token-hint\" class=\"text-xs text-gray-500 mt-1\">Generate in Settings → Developer settings → Personal access tokens</p></div><div><label for=\"conn-secret\" class=\"block text-sm font-medium text-gray-300 mb-1\">Webhook Secret <span class=\"text-gray-500\">(optional)</span></label> <input type=\"password\" id=\"conn-secret\" name=\"webhook_secret\" placeholder=\"For validating webhook payloads\" class=\"w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-500 focus:border-blue-500 focus:ring-1 focus:ring-blue-500\"></div><div class=\"flex justify-end gap-3 pt-2\"><button type=\"button\" onclick=\"document.getElementById('new-connection-modal').classList.add('hidden')\" class=\"btn-ghost\">Cancel</button> <button type=\"submit\" class=\"btn-primary\"><i aria-hidden=\"true\" class=\"fas fa-plus mr-2\"></i>Create Connection</button></div></form></div></div></div><script>\n\tfunction updateConnectionForm(provider) {\n\t\tconst urlWrapper = document.getElementById('conn-url-wrapper');\n\t\tconst urlInput = document.getElementById('conn-url');\n\t\tconst urlHint = document.getElementById('conn-url-hint');\n\t\tconst tokenHint = document.getElementById('token-hint');\n\t\tconst nameInput = document.getElementById('conn-name');\n\t\t\n\t\tswitch(provider) {\n\t\t\tcase 'github':\n\t\t\t\turlWrapper.classList.add('hidden');\n\t\t\t\turlInput.required = false;\n\t\t\t\turlInput.value = 'https://api.github.com';\n\t\t\t\ttokenHint.textContent = 'Generate at github.com → Settings → Developer settings → Personal access tokens (classic). Needs repo scope.';\n\t\t\t\tnameInput.placeholder = 'e.g. GitHub Personal';\n\t\t\t\tbreak;\n\t\t\tcase 'gitlab':\n\t\t\t\turlWrapper.classList.remove('hidden');\n\t\t\t\turlInput.required = false;\n\t\t\t\turlInput.placeholder = 'https://gitlab.com';\n\t\t\t\turlHint.textContent = 'Leave empty for gitlab.com or enter your self-hosted GitLab URL';\n\t\t\t\ttokenHint.textContent = 'Generate at GitLab → User Settings → Access Tokens. Needs api scope.';\n\t\t\t\tnameInput.placeholder = 'e.g. GitLab SaaS';\n\t\t\t\tbreak;\n\t\t\tcase 'gitea':\n\t\t\tdefault:\n\t\t\t\turlWrapper.classList.remove('hidden');\n\t\t\t\turlInput.required = true;\n\t\t\t\turlInput.placeholder = 'https://gitea.example.com';\n\t\t\t\turlHint.textContent = 'Your Gitea server URL';\n\t\t\t\ttokenHint.textContent = 'Generate in Gitea → Settings → Applications → Generate New Token';\n\t\t\t\tnameInput.placeholder = 'e.g. My Gitea Server';\n\t\t\t\tbreak;\n\t\t}\n\t}\n\t\n\t// Initialize form on load\n\tdocument.addEventListener('DOMContentLoaded', () => {\n\t\tupdateConnectionForm('gitea');\n\t});\n\t</script>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -862,7 +862,7 @@ func newRepoModal(connections []ConnectionItem, csrfToken string) templ.Componen
 			templ_7745c5c3_Var44 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 69, "<div id=\"new-repo-modal\" class=\"hidden fixed inset-0 z-50 overflow-y-auto\"><div class=\"flex min-h-screen items-center justify-center p-4\"><!-- Backdrop --><div class=\"fixed inset-0 bg-black/60\" onclick=\"this.parentElement.parentElement.classList.add('hidden')\"></div><!-- Modal --><div class=\"relative card w-full max-w-lg p-6\"><div class=\"flex items-center justify-between mb-6\"><h3 class=\"text-lg font-semibold text-white\"><i class=\"fas fa-folder-plus text-green-400 mr-2\"></i>Create Repository</h3><button onclick=\"document.getElementById('new-repo-modal').classList.add('hidden')\" class=\"text-gray-400 hover:text-white\"><i class=\"fas fa-times\"></i></button></div><form method=\"post\" action=\"/integrations/git/repos\" class=\"space-y-4\"><input type=\"hidden\" name=\"csrf_token\" value=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 69, "<div id=\"new-repo-modal\" class=\"hidden fixed inset-0 z-50 overflow-y-auto\"><div class=\"flex min-h-screen items-center justify-center p-4\"><!-- Backdrop --><div class=\"fixed inset-0 bg-black/60\" onclick=\"this.parentElement.parentElement.classList.add('hidden')\"></div><!-- Modal --><div class=\"relative card w-full max-w-lg p-6\"><div class=\"flex items-center justify-between mb-6\"><h3 class=\"text-lg font-semibold text-white\"><i aria-hidden=\"true\" class=\"fas fa-folder-plus text-green-400 mr-2\"></i>Create Repository</h3><button onclick=\"document.getElementById('new-repo-modal').classList.add('hidden')\" class=\"text-gray-400 hover:text-white\"><i aria-hidden=\"true\" class=\"fas fa-times\"></i></button></div><form method=\"post\" action=\"/integrations/git/repos\" class=\"space-y-4\"><input type=\"hidden\" name=\"csrf_token\" value=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -926,7 +926,7 @@ func newRepoModal(connections []ConnectionItem, csrfToken string) templ.Componen
 				}
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 75, "</select></div><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Repository Name</label> <input type=\"text\" name=\"name\" required placeholder=\"my-awesome-project\" pattern=\"^[a-zA-Z0-9_.-]+$\" class=\"w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-500 focus:border-blue-500 focus:ring-1 focus:ring-blue-500\"><p class=\"text-xs text-gray-500 mt-1\">Letters, numbers, hyphens, underscores, and dots only</p></div><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Description <span class=\"text-gray-500\">(optional)</span></label> <textarea name=\"description\" rows=\"2\" placeholder=\"A brief description of your repository\" class=\"w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-500 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 resize-none\"></textarea></div><div class=\"grid grid-cols-2 gap-4\"><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">.gitignore</label> <select name=\"gitignore\" id=\"repo-gitignore\" class=\"w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500\"><option value=\"\">None</option><!-- Populated via JS --></select></div><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">License</label> <select name=\"license\" id=\"repo-license\" class=\"w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500\"><option value=\"\">None</option><!-- Populated via JS --></select></div></div><div class=\"flex items-center gap-6\"><label class=\"flex items-center gap-2 cursor-pointer\"><input type=\"checkbox\" name=\"private\" value=\"true\" class=\"rounded bg-gray-800 border-gray-600 text-blue-500 focus:ring-blue-500\"> <span class=\"text-sm text-gray-300\">Private repository</span></label> <label class=\"flex items-center gap-2 cursor-pointer\"><input type=\"checkbox\" name=\"auto_init\" value=\"true\" checked class=\"rounded bg-gray-800 border-gray-600 text-blue-500 focus:ring-blue-500\"> <span class=\"text-sm text-gray-300\">Initialize with README</span></label></div><div class=\"flex justify-end gap-3 pt-2\"><button type=\"button\" onclick=\"document.getElementById('new-repo-modal').classList.add('hidden')\" class=\"btn-ghost\">Cancel</button> <button type=\"submit\" class=\"btn-primary bg-green-600 hover:bg-green-700\"><i class=\"fas fa-plus mr-2\"></i>Create Repository</button></div></form></div></div></div><script>\n\t// Load gitignore and license templates when connection changes\n\tasync function loadTemplates(connectionID) {\n\t\tif (!connectionID) return;\n\t\t\n\t\ttry {\n\t\t\tconst resp = await fetch(`/integrations/git/connections/${connectionID}/templates`);\n\t\t\tif (!resp.ok) throw new Error('Failed to load templates');\n\t\t\tconst data = await resp.json();\n\t\t\t\n\t\t\t// Populate gitignore select\n\t\t\tconst gitignoreSelect = document.getElementById('repo-gitignore');\n\t\t\tgitignoreSelect.innerHTML = '<option value=\"\">None</option>';\n\t\t\t(data.gitignores || []).forEach(g => {\n\t\t\t\tconst opt = document.createElement('option');\n\t\t\t\topt.value = g;\n\t\t\t\topt.textContent = g;\n\t\t\t\tgitignoreSelect.appendChild(opt);\n\t\t\t});\n\t\t\t\n\t\t\t// Populate license select\n\t\t\tconst licenseSelect = document.getElementById('repo-license');\n\t\t\tlicenseSelect.innerHTML = '<option value=\"\">None</option>';\n\t\t\t(data.licenses || []).forEach(l => {\n\t\t\t\tconst opt = document.createElement('option');\n\t\t\t\topt.value = l.key;\n\t\t\t\topt.textContent = l.name;\n\t\t\t\tlicenseSelect.appendChild(opt);\n\t\t\t});\n\t\t} catch (err) {\n\t\t\tconsole.error('Error loading templates:', err);\n\t\t}\n\t}\n\t\n\t// Load templates for first connection on page load\n\tdocument.addEventListener('DOMContentLoaded', () => {\n\t\tconst select = document.getElementById('repo-connection-select');\n\t\tif (select && select.value) {\n\t\t\tloadTemplates(select.value);\n\t\t}\n\t});\n\t</script>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 75, "</select></div><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Repository Name</label> <input type=\"text\" name=\"name\" required placeholder=\"my-awesome-project\" pattern=\"^[a-zA-Z0-9_.-]+$\" class=\"w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-500 focus:border-blue-500 focus:ring-1 focus:ring-blue-500\" aria-label=\"Repository Name\"><p class=\"text-xs text-gray-500 mt-1\">Letters, numbers, hyphens, underscores, and dots only</p></div><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Description <span class=\"text-gray-500\">(optional)</span></label> <textarea name=\"description\" rows=\"2\" placeholder=\"A brief description of your repository\" class=\"w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-500 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 resize-none\"></textarea></div><div class=\"grid grid-cols-2 gap-4\"><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">.gitignore</label> <select name=\"gitignore\" id=\"repo-gitignore\" class=\"w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500\"><option value=\"\">None</option><!-- Populated via JS --></select></div><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">License</label> <select name=\"license\" id=\"repo-license\" class=\"w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500\"><option value=\"\">None</option><!-- Populated via JS --></select></div></div><div class=\"flex items-center gap-6\"><label class=\"flex items-center gap-2 cursor-pointer\"><input type=\"checkbox\" name=\"private\" value=\"true\" class=\"rounded bg-gray-800 border-gray-600 text-blue-500 focus:ring-blue-500\"> <span class=\"text-sm text-gray-300\">Private repository</span></label> <label class=\"flex items-center gap-2 cursor-pointer\"><input type=\"checkbox\" name=\"auto_init\" value=\"true\" checked class=\"rounded bg-gray-800 border-gray-600 text-blue-500 focus:ring-blue-500\"> <span class=\"text-sm text-gray-300\">Initialize with README</span></label></div><div class=\"flex justify-end gap-3 pt-2\"><button type=\"button\" onclick=\"document.getElementById('new-repo-modal').classList.add('hidden')\" class=\"btn-ghost\">Cancel</button> <button type=\"submit\" class=\"btn-primary bg-green-600 hover:bg-green-700\"><i aria-hidden=\"true\" class=\"fas fa-plus mr-2\"></i>Create Repository</button></div></form></div></div></div><script>\n\t// Load gitignore and license templates when connection changes\n\tasync function loadTemplates(connectionID) {\n\t\tif (!connectionID) return;\n\t\t\n\t\ttry {\n\t\t\tconst resp = await fetch(`/integrations/git/connections/${connectionID}/templates`);\n\t\t\tif (!resp.ok) throw new Error('Failed to load templates');\n\t\t\tconst data = await resp.json();\n\t\t\t\n\t\t\t// Populate gitignore select\n\t\t\tconst gitignoreSelect = document.getElementById('repo-gitignore');\n\t\t\tgitignoreSelect.innerHTML = '<option value=\"\">None</option>';\n\t\t\t(data.gitignores || []).forEach(g => {\n\t\t\t\tconst opt = document.createElement('option');\n\t\t\t\topt.value = g;\n\t\t\t\topt.textContent = g;\n\t\t\t\tgitignoreSelect.appendChild(opt);\n\t\t\t});\n\t\t\t\n\t\t\t// Populate license select\n\t\t\tconst licenseSelect = document.getElementById('repo-license');\n\t\t\tlicenseSelect.innerHTML = '<option value=\"\">None</option>';\n\t\t\t(data.licenses || []).forEach(l => {\n\t\t\t\tconst opt = document.createElement('option');\n\t\t\t\topt.value = l.key;\n\t\t\t\topt.textContent = l.name;\n\t\t\t\tlicenseSelect.appendChild(opt);\n\t\t\t});\n\t\t} catch (err) {\n\t\t\tconsole.error('Error loading templates:', err);\n\t\t}\n\t}\n\t\n\t// Load templates for first connection on page load\n\tdocument.addEventListener('DOMContentLoaded', () => {\n\t\tconst select = document.getElementById('repo-connection-select');\n\t\tif (select && select.value) {\n\t\t\tloadTemplates(select.value);\n\t\t}\n\t});\n\t</script>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

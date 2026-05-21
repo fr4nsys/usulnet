@@ -20,7 +20,7 @@ templ Detail(data DetailData) {
 				<div class="flex items-center justify-between mb-6">
 					<div class="flex items-center gap-3">
 						<a href="/proxy" class="text-gray-400 hover:text-white">
-							<i class="fas fa-arrow-left"></i>
+							<i aria-hidden="true" class="fas fa-arrow-left"></i>
 						</a>
 						<div>
 							<h2 class="text-xl font-display font-bold text-white">{ data.Host.DomainName }</h2>
@@ -34,7 +34,7 @@ templ Detail(data DetailData) {
 							<span class="badge badge-danger">Disabled</span>
 						}
 						<a href={ templ.SafeURL(fmt.Sprintf("/proxy/%s/edit", data.Host.ID)) } class="btn btn-sm btn-secondary">
-							<i class="fas fa-edit mr-1"></i> Edit
+							<i aria-hidden="true" class="fas fa-edit mr-1"></i> Edit
 						</a>
 					</div>
 				</div>
@@ -57,9 +57,9 @@ templ Detail(data DetailData) {
 					<div class="p-4 flex justify-between">
 						<span class="text-gray-400">SSL</span>
 						if data.Host.SSLEnabled {
-							<span class="text-green-400"><i class="fas fa-lock mr-1"></i> Enabled</span>
+							<span class="text-green-400"><i aria-hidden="true" class="fas fa-lock mr-1"></i> Enabled</span>
 						} else {
-							<span class="text-gray-500"><i class="fas fa-lock-open mr-1"></i> Disabled</span>
+							<span class="text-gray-500"><i aria-hidden="true" class="fas fa-lock-open mr-1"></i> Disabled</span>
 						}
 					</div>
 					<div class="p-4 flex justify-between">
@@ -83,14 +83,14 @@ templ Detail(data DetailData) {
 						<form method="POST" action={ templ.SafeURL(fmt.Sprintf("/proxy/hosts/%s/disable", data.Host.ID)) }>
 							<input type="hidden" name="csrf_token" value={ data.PageData.CSRFToken }/>
 							<button type="submit" class="btn btn-sm btn-warning">
-								<i class="fas fa-pause mr-1"></i> Disable
+								<i aria-hidden="true" class="fas fa-pause mr-1"></i> Disable
 							</button>
 						</form>
 					} else {
 						<form method="POST" action={ templ.SafeURL(fmt.Sprintf("/proxy/hosts/%s/enable", data.Host.ID)) }>
 							<input type="hidden" name="csrf_token" value={ data.PageData.CSRFToken }/>
 							<button type="submit" class="btn btn-sm btn-success">
-								<i class="fas fa-play mr-1"></i> Enable
+								<i aria-hidden="true" class="fas fa-play mr-1"></i> Enable
 							</button>
 						</form>
 					}
@@ -99,7 +99,7 @@ templ Detail(data DetailData) {
 									<input type="hidden" name="csrf_token" value={ data.PageData.CSRFToken }/>
 						<input type="hidden" name="_method" value="DELETE"/>
 						<button type="submit" class="btn btn-sm btn-danger">
-							<i class="fas fa-trash mr-1"></i> Delete
+							<i aria-hidden="true" class="fas fa-trash mr-1"></i> Delete
 						</button>
 					</form>
 				</div>

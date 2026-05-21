@@ -58,7 +58,7 @@ templ LogsList(data LogsPageData) {
 						:disabled="logLines.length === 0"
 						class="flex items-center gap-2 bg-dark-700 text-gray-300 hover:text-white px-4 py-2 rounded-lg transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
 					>
-						<i class="fas fa-download text-sm"></i>
+						<i aria-hidden="true" class="fas fa-download text-sm"></i>
 						Export
 					</button>
 					<button
@@ -66,7 +66,7 @@ templ LogsList(data LogsPageData) {
 						:disabled="logLines.length === 0"
 						class="flex items-center gap-2 bg-dark-700 text-gray-300 hover:text-white px-4 py-2 rounded-lg transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
 					>
-						<i class="fas fa-trash-alt text-sm"></i>
+						<i aria-hidden="true" class="fas fa-trash-alt text-sm"></i>
 						Clear
 					</button>
 				</div>
@@ -78,7 +78,7 @@ templ LogsList(data LogsPageData) {
 					<!-- Container Selector -->
 					<div class="lg:col-span-2">
 						<label class="block text-sm font-medium text-gray-400 mb-2">
-							<i class="fas fa-cubes mr-1"></i> Containers
+							<i aria-hidden="true" class="fas fa-cubes mr-1"></i> Containers
 						</label>
 						<div class="relative" x-data="{ open: false }">
 							<button
@@ -86,7 +86,7 @@ templ LogsList(data LogsPageData) {
 								class="w-full flex items-center justify-between bg-dark-700 border border-dark-600 rounded-lg text-white px-3 py-2 text-sm"
 							>
 								<span x-text="selectedContainers.length === 0 ? 'Select containers...' : selectedContainers.length + ' container(s) selected'"></span>
-								<i class="fas fa-chevron-down text-gray-500 text-xs transition-transform" :class="open && 'rotate-180'"></i>
+								<i aria-hidden="true" class="fas fa-chevron-down text-gray-500 text-xs transition-transform" :class="open && 'rotate-180'"></i>
 							</button>
 							<div
 								x-show="open"
@@ -126,23 +126,24 @@ templ LogsList(data LogsPageData) {
 					<!-- Search -->
 					<div>
 						<label class="block text-sm font-medium text-gray-400 mb-2">
-							<i class="fas fa-search mr-1"></i> Filter
+							<i aria-hidden="true" class="fas fa-search mr-1"></i> Filter
 						</label>
 						<input
 							type="text"
 							x-model="searchFilter"
 							placeholder="Search logs..."
 							class="w-full bg-dark-700 border border-dark-600 rounded-lg text-white px-3 py-2 text-sm placeholder-gray-500 focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
+							aria-label="Filter"
 						/>
 					</div>
 
 					<!-- Options -->
 					<div>
 						<label class="block text-sm font-medium text-gray-400 mb-2">
-							<i class="fas fa-sliders-h mr-1"></i> Options
+							<i aria-hidden="true" class="fas fa-sliders-h mr-1"></i> Options
 						</label>
 						<div class="flex items-center gap-4">
-							<select x-model="tailLines" class="bg-dark-700 border border-dark-600 rounded-lg text-white px-3 py-2 text-sm">
+							<select x-model="tailLines" class="input-sm">
 								<option value="100">100 lines</option>
 								<option value="500">500 lines</option>
 								<option value="1000">1000 lines</option>
@@ -164,7 +165,7 @@ templ LogsList(data LogsPageData) {
 							:disabled="selectedContainers.length === 0 || streaming"
 							class="flex items-center gap-2 bg-primary-500 hover:bg-primary-600 text-black font-medium px-4 py-2 rounded-lg transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
 						>
-							<i class="fas fa-play text-sm"></i>
+							<i aria-hidden="true" class="fas fa-play text-sm"></i>
 							Start
 						</button>
 						<button
@@ -172,7 +173,7 @@ templ LogsList(data LogsPageData) {
 							:disabled="!streaming"
 							class="flex items-center gap-2 bg-red-500/10 text-red-400 hover:bg-red-500/20 px-4 py-2 rounded-lg transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
 						>
-							<i class="fas fa-stop text-sm"></i>
+							<i aria-hidden="true" class="fas fa-stop text-sm"></i>
 							Stop
 						</button>
 						<button
@@ -180,13 +181,13 @@ templ LogsList(data LogsPageData) {
 							:disabled="!streaming"
 							class="flex items-center gap-2 bg-dark-700 text-gray-300 hover:text-white px-4 py-2 rounded-lg transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
 						>
-							<i class="fas" :class="paused ? 'fa-play' : 'fa-pause'"></i>
+							<i aria-hidden="true" class="fas" :class="paused ? 'fa-play' : 'fa-pause'"></i>
 							<span x-text="paused ? 'Resume' : 'Pause'"></span>
 						</button>
 					</div>
 					<div class="flex items-center gap-4 text-sm text-gray-400">
 						<span>
-							<i class="fas fa-circle text-xs mr-1" :class="streaming ? 'text-green-400 animate-pulse' : 'text-gray-400'"></i>
+							<i aria-hidden="true" class="fas fa-circle text-xs mr-1" :class="streaming ? 'text-green-400 animate-pulse' : 'text-gray-400'"></i>
 							<span x-text="streaming ? 'Streaming' : 'Stopped'"></span>
 						</span>
 						<span x-text="logLines.length + ' lines'"></span>
@@ -205,7 +206,7 @@ templ LogsList(data LogsPageData) {
 				>
 					<template x-if="logLines.length === 0">
 						<div class="flex flex-col items-center justify-center py-20 text-gray-500">
-							<i class="fas fa-terminal text-4xl mb-4"></i>
+							<i aria-hidden="true" class="fas fa-terminal text-4xl mb-4"></i>
 							<p class="text-lg">No log output</p>
 							<p class="text-sm mt-1">Select containers and click Start to begin streaming</p>
 						</div>

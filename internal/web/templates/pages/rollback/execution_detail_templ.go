@@ -54,7 +54,7 @@ func ExecutionDetail(data ExecutionDetailData) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"space-y-6\"><div><a href=\"/rollback/executions\" class=\"text-sm text-gray-400 hover:text-white\"><i class=\"fas fa-chevron-left mr-1\"></i>back to execution log</a><div class=\"flex items-center gap-3 mt-1\"><h1 class=\"text-2xl font-display font-bold text-white\">Execution ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"space-y-6\"><div><a href=\"/rollback/executions\" class=\"text-sm text-gray-400 hover:text-white\"><i aria-hidden=\"true\" class=\"fas fa-chevron-left mr-1\"></i>back to execution log</a><div class=\"flex items-center gap-3 mt-1\"><h1 class=\"text-2xl font-display font-bold text-white\">Execution ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -267,7 +267,7 @@ func ExecutionDetail(data ExecutionDetailData) templ.Component {
 				}
 			}
 			if data.Execution.Error != "" {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 23, "<div class=\"card p-4 border border-red-500/40 bg-red-500/5\"><h3 class=\"text-sm font-semibold text-red-200 mb-2\"><i class=\"fas fa-triangle-exclamation mr-1\"></i>Error</h3><p class=\"text-sm text-red-300 whitespace-pre-wrap\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 23, "<div class=\"card p-4 border border-red-500/40 bg-red-500/5\"><h3 class=\"text-sm font-semibold text-red-200 mb-2\"><i aria-hidden=\"true\" class=\"fas fa-triangle-exclamation mr-1\"></i>Error</h3><p class=\"text-sm text-red-300 whitespace-pre-wrap\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}

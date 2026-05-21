@@ -67,7 +67,7 @@ templ List(data UpdatesData) {
 				</div>
 				<div class="flex items-center gap-2">
 					<button hx-post="/updates/check-all" hx-swap="none" hx-headers={ fmt.Sprintf(`{"X-CSRF-Token":"%s"}`, data.PageData.CSRFToken) } class="btn-secondary">
-						<i class="fas fa-sync mr-2"></i>Check All
+						<i aria-hidden="true" class="fas fa-sync mr-2"></i>Check All
 					</button>
 				</div>
 			</div>
@@ -76,19 +76,19 @@ templ List(data UpdatesData) {
 			<div class="border-b border-dark-700">
 				<nav class="flex gap-6" aria-label="Tabs">
 					<a href="/updates" class={ "tab-link", templ.KV("tab-active", data.ActiveTab != "policies" && data.ActiveTab != "history") }>
-						<i class="fas fa-download mr-2"></i>Available Updates
+						<i aria-hidden="true" class="fas fa-download mr-2"></i>Available Updates
 						if len(data.Available) > 0 {
 							<span class="ml-2 bg-primary-500/20 text-primary-400 text-xs px-2 py-0.5 rounded-full">{ fmt.Sprintf("%d", len(data.Available)) }</span>
 						}
 					</a>
 					<a href="/updates?tab=policies" class={ "tab-link", templ.KV("tab-active", data.ActiveTab == "policies") }>
-						<i class="fas fa-robot mr-2"></i>Auto-Update Policies
+						<i aria-hidden="true" class="fas fa-robot mr-2"></i>Auto-Update Policies
 						if len(data.Policies) > 0 {
 							<span class="ml-2 bg-purple-500/20 text-purple-400 text-xs px-2 py-0.5 rounded-full">{ fmt.Sprintf("%d", len(data.Policies)) }</span>
 						}
 					</a>
 					<a href="/updates?tab=history" class={ "tab-link", templ.KV("tab-active", data.ActiveTab == "history") }>
-						<i class="fas fa-history mr-2"></i>History & Rollback
+						<i aria-hidden="true" class="fas fa-history mr-2"></i>History & Rollback
 					</a>
 				</nav>
 			</div>
@@ -118,7 +118,7 @@ templ updatesTab(data UpdatesData) {
 		</div>
 		if len(data.Available) == 0 {
 			<div class="p-8 text-center text-gray-400">
-				<i class="fas fa-check-circle text-green-400 text-3xl mb-3"></i>
+				<i aria-hidden="true" class="fas fa-check-circle text-green-400 text-3xl mb-3"></i>
 				<p>All containers are up to date</p>
 				<p class="text-sm mt-2">Use the manual update form below to target a specific version</p>
 			</div>
@@ -163,7 +163,7 @@ templ updatesTab(data UpdatesData) {
 										type="submit"
 										onclick="return confirm('Update this container? A backup will be created automatically.')"
 										class="btn-primary text-sm">
-										<i class="fas fa-download mr-1"></i>Update
+										<i aria-hidden="true" class="fas fa-download mr-1"></i>Update
 									</button>
 								</form>
 							</div>
@@ -195,7 +195,7 @@ templ updatesTab(data UpdatesData) {
 					</div>
 					<div class="w-48">
 						<label class="block text-sm font-medium text-gray-300 mb-2">Target Version</label>
-						<input type="text" name="target_version" required class="input" placeholder="e.g. 1.2.3 or latest"/>
+						<input type="text" name="target_version" required class="input" placeholder="e.g. 1.2.3 or latest" aria-label="e.g. 1.2.3 or latest"/>
 					</div>
 					<div class="flex items-center gap-3">
 						<label class="flex items-center gap-2 text-sm text-gray-300">
@@ -203,7 +203,7 @@ templ updatesTab(data UpdatesData) {
 							Backup first
 						</label>
 						<button type="submit" onclick="return confirm('Update container to specified version?')" class="btn-primary">
-							<i class="fas fa-download mr-2"></i>Update
+							<i aria-hidden="true" class="fas fa-download mr-2"></i>Update
 						</button>
 					</div>
 				</form>
@@ -217,13 +217,13 @@ templ policiesTab(data UpdatesData) {
 	<div class="card">
 		<div class="px-5 py-4 border-b border-dark-700 flex items-center justify-between">
 			<h2 class="font-medium text-white">
-				<i class="fas fa-robot mr-2 text-purple-400"></i>Auto-Update Policies
+				<i aria-hidden="true" class="fas fa-robot mr-2 text-purple-400"></i>Auto-Update Policies
 			</h2>
 			<span class="text-sm text-gray-400">{ fmt.Sprintf("%d", len(data.Policies)) } configured</span>
 		</div>
 		if len(data.Policies) == 0 {
 			<div class="p-8 text-center text-gray-400">
-				<i class="fas fa-robot text-3xl mb-3 text-gray-400"></i>
+				<i aria-hidden="true" class="fas fa-robot text-3xl mb-3 text-gray-400"></i>
 				<p>No auto-update policies configured</p>
 				<p class="text-sm mt-2">Create a policy below to automatically update containers when new versions are available</p>
 			</div>
@@ -250,7 +250,7 @@ templ policiesTab(data UpdatesData) {
 									}
 									if policy.Schedule != "" {
 										<span class="bg-yellow-500/10 text-yellow-400 px-2 py-0.5 rounded-full">
-											<i class="fas fa-clock mr-1"></i>{ policy.Schedule }
+											<i aria-hidden="true" class="fas fa-clock mr-1"></i>{ policy.Schedule }
 										</span>
 									}
 									if policy.IncludePrerelease {
@@ -263,16 +263,16 @@ templ policiesTab(data UpdatesData) {
 									<input type="hidden" name="csrf_token" value={ data.PageData.CSRFToken }/>
 									<button type="submit" class="text-sm text-gray-400 hover:text-white px-2 py-1" title="Toggle policy">
 										if policy.IsEnabled {
-											<i class="fas fa-pause"></i>
+											<i aria-hidden="true" class="fas fa-pause"></i>
 										} else {
-											<i class="fas fa-play"></i>
+											<i aria-hidden="true" class="fas fa-play"></i>
 										}
 									</button>
 								</form>
 								<form method="POST" action={ templ.SafeURL("/updates/policies/" + policy.ID + "/delete") }>
 									<input type="hidden" name="csrf_token" value={ data.PageData.CSRFToken }/>
 									<button type="submit" onclick="return confirm('Delete this auto-update policy?')" class="text-sm text-red-400 hover:text-red-300 px-2 py-1" title="Delete policy">
-										<i class="fas fa-trash"></i>
+										<i aria-hidden="true" class="fas fa-trash"></i>
 									</button>
 								</form>
 							</div>
@@ -281,10 +281,10 @@ templ policiesTab(data UpdatesData) {
 							<span>Max retries: { fmt.Sprintf("%d", policy.MaxRetries) }</span>
 							<span>Health check wait: { fmt.Sprintf("%ds", policy.HealthCheckWait) }</span>
 							if policy.NotifyOnUpdate {
-								<span><i class="fas fa-bell mr-1"></i>Notify on update</span>
+								<span><i aria-hidden="true" class="fas fa-bell mr-1"></i>Notify on update</span>
 							}
 							if policy.NotifyOnFailure {
-								<span><i class="fas fa-exclamation-triangle mr-1"></i>Notify on failure</span>
+								<span><i aria-hidden="true" class="fas fa-exclamation-triangle mr-1"></i>Notify on failure</span>
 							}
 						</div>
 					</div>
@@ -314,7 +314,7 @@ templ policiesTab(data UpdatesData) {
 					</div>
 					<div>
 						<label class="block text-sm font-medium text-gray-300 mb-2">Schedule (cron, optional)</label>
-						<input type="text" name="schedule" class="input" placeholder="e.g. 0 2 * * * (daily at 2 AM)"/>
+						<input type="text" name="schedule" class="input" placeholder="e.g. 0 2 * * * (daily at 2 AM)" aria-label="e.g. 0 2 * * * (daily at 2 AM)"/>
 						<p class="text-xs text-gray-500 mt-1">Leave empty for immediate updates when detected</p>
 					</div>
 				</div>
@@ -335,9 +335,9 @@ templ policiesTab(data UpdatesData) {
 				</div>
 
 				<button type="button" @click="showAdvanced = !showAdvanced" class="text-sm text-primary-400 hover:text-primary-300 mb-4">
-					<i class="fas fa-cog mr-1"></i>Advanced Options
-					<i class="fas fa-chevron-down ml-1 text-xs" x-show="!showAdvanced"></i>
-					<i class="fas fa-chevron-up ml-1 text-xs" x-show="showAdvanced"></i>
+					<i aria-hidden="true" class="fas fa-cog mr-1"></i>Advanced Options
+					<i aria-hidden="true" class="fas fa-chevron-down ml-1 text-xs" x-show="!showAdvanced"></i>
+					<i aria-hidden="true" class="fas fa-chevron-up ml-1 text-xs" x-show="showAdvanced"></i>
 				</button>
 
 				<div x-show="showAdvanced" x-cloak class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4 p-4 bg-dark-900 rounded-lg">
@@ -360,7 +360,7 @@ templ policiesTab(data UpdatesData) {
 				</div>
 
 				<button type="submit" class="btn-primary">
-					<i class="fas fa-plus mr-2"></i>Create Policy
+					<i aria-hidden="true" class="fas fa-plus mr-2"></i>Create Policy
 				</button>
 			</form>
 		</div>
@@ -371,12 +371,12 @@ templ historyTab(data UpdatesData) {
 	<div class="card">
 		<div class="px-5 py-4 border-b border-dark-700">
 			<h2 class="font-medium text-white">
-				<i class="fas fa-history mr-2 text-blue-400"></i>Update History & Rollback
+				<i aria-hidden="true" class="fas fa-history mr-2 text-blue-400"></i>Update History & Rollback
 			</h2>
 		</div>
 		if len(data.History) == 0 {
 			<div class="p-8 text-center text-gray-400">
-				<i class="fas fa-history text-3xl mb-3 text-gray-400"></i>
+				<i aria-hidden="true" class="fas fa-history text-3xl mb-3 text-gray-400"></i>
 				<p>No update history yet</p>
 			</div>
 		} else {
@@ -384,13 +384,13 @@ templ historyTab(data UpdatesData) {
 				<table class="table">
 					<thead>
 						<tr>
-							<th>Container</th>
-							<th>From</th>
-							<th>To</th>
-							<th>Status</th>
-							<th>Duration</th>
-							<th>Date</th>
-							<th>Actions</th>
+							<th scope="col">Container</th>
+							<th scope="col">From</th>
+							<th scope="col">To</th>
+							<th scope="col">Status</th>
+							<th scope="col">Duration</th>
+							<th scope="col">Date</th>
+							<th scope="col">Actions</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -411,12 +411,12 @@ templ historyTab(data UpdatesData) {
 										<form method="POST" action={ templ.SafeURL("/updates/" + h.ID + "/rollback") } class="inline">
 											<input type="hidden" name="csrf_token" value={ data.PageData.CSRFToken }/>
 											<button type="submit" onclick="return confirm('Roll back this update? The previous version will be restored from backup.')" class="text-sm text-orange-400 hover:text-orange-300" title="Rollback to previous version">
-												<i class="fas fa-undo mr-1"></i>Rollback
+												<i aria-hidden="true" class="fas fa-undo mr-1"></i>Rollback
 											</button>
 										</form>
 									} else if h.Status == "completed" {
 										<span class="text-xs text-gray-500" title="Rollback window expired (24h)">
-											<i class="fas fa-clock mr-1"></i>Expired
+											<i aria-hidden="true" class="fas fa-clock mr-1"></i>Expired
 										</span>
 									}
 								</td>

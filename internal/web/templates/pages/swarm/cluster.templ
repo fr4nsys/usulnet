@@ -51,7 +51,7 @@ templ Cluster(data ClusterData) {
 			<div class="flex items-center justify-between">
 				<div>
 					<h1 class="text-2xl font-display font-bold text-white">
-						<i class="fas fa-network-wired mr-2 text-primary-400"></i>Swarm Cluster
+						<i aria-hidden="true" class="fas fa-network-wired mr-2 text-primary-400"></i>Swarm Cluster
 					</h1>
 					<p class="text-gray-400 mt-1">Docker Swarm high availability management</p>
 				</div>
@@ -61,7 +61,7 @@ templ Cluster(data ClusterData) {
 						hx-confirm="Initialize Docker Swarm on this node? This will make it the cluster manager."
 						class="btn btn-primary"
 					>
-						<i class="fas fa-play mr-2"></i>Initialize Swarm
+						<i aria-hidden="true" class="fas fa-play mr-2"></i>Initialize Swarm
 					</button>
 				}
 			</div>
@@ -80,7 +80,7 @@ templ Cluster(data ClusterData) {
 templ clusterInactive() {
 	<div class="card p-8 text-center">
 		<div class="text-gray-400 mb-4">
-			<i class="fas fa-network-wired text-6xl opacity-30"></i>
+			<i aria-hidden="true" class="fas fa-network-wired text-6xl opacity-30"></i>
 		</div>
 		<h2 class="text-xl font-semibold text-white mb-2">Swarm Not Initialized</h2>
 		<p class="text-gray-400 mb-6 max-w-lg mx-auto">
@@ -90,10 +90,10 @@ templ clusterInactive() {
 		<div class="card bg-dark-700 p-4 max-w-md mx-auto text-left">
 			<h3 class="text-sm font-semibold text-gray-300 mb-2">What happens when you initialize:</h3>
 			<ul class="text-sm text-gray-400 space-y-1">
-				<li><i class="fas fa-check text-green-400 mr-2"></i>This node becomes the Swarm manager</li>
-				<li><i class="fas fa-check text-green-400 mr-2"></i>Join tokens are generated for workers</li>
-				<li><i class="fas fa-check text-green-400 mr-2"></i>You can then add agent nodes as workers</li>
-				<li><i class="fas fa-check text-green-400 mr-2"></i>Enable HA for any container with replicas</li>
+				<li><i aria-hidden="true" class="fas fa-check text-green-400 mr-2"></i>This node becomes the Swarm manager</li>
+				<li><i aria-hidden="true" class="fas fa-check text-green-400 mr-2"></i>Join tokens are generated for workers</li>
+				<li><i aria-hidden="true" class="fas fa-check text-green-400 mr-2"></i>You can then add agent nodes as workers</li>
+				<li><i aria-hidden="true" class="fas fa-check text-green-400 mr-2"></i>Enable HA for any container with replicas</li>
 			</ul>
 		</div>
 	</div>
@@ -130,7 +130,7 @@ templ clusterActive(data ClusterData) {
 		if data.JoinTokenWorker != "" {
 			<div class="card p-4">
 				<h3 class="text-sm font-semibold text-gray-300 mb-3">
-					<i class="fas fa-key mr-2 text-yellow-400"></i>Join Tokens
+					<i aria-hidden="true" class="fas fa-key mr-2 text-yellow-400"></i>Join Tokens
 				</h3>
 				<div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
 					<div>
@@ -138,9 +138,9 @@ templ clusterActive(data ClusterData) {
 						<div class="relative">
 							<input type="password" value={ data.JoinTokenWorker } readonly
 								class="w-full bg-dark-800 text-gray-300 text-xs font-mono p-2 rounded border border-dark-600 pr-20"
-								id="worker-token" />
+								id="worker-token"  aria-label="Worker Token"/>
 							<button onclick="toggleToken('worker-token')" class="absolute right-1 top-1 btn btn-sm btn-ghost text-xs">
-								<i class="fas fa-eye"></i>
+								<i aria-hidden="true" class="fas fa-eye"></i>
 							</button>
 						</div>
 					</div>
@@ -149,9 +149,9 @@ templ clusterActive(data ClusterData) {
 						<div class="relative">
 							<input type="password" value={ data.JoinTokenManager } readonly
 								class="w-full bg-dark-800 text-gray-300 text-xs font-mono p-2 rounded border border-dark-600 pr-20"
-								id="manager-token" />
+								id="manager-token"  aria-label="Manager Token"/>
 							<button onclick="toggleToken('manager-token')" class="absolute right-1 top-1 btn btn-sm btn-ghost text-xs">
-								<i class="fas fa-eye"></i>
+								<i aria-hidden="true" class="fas fa-eye"></i>
 							</button>
 						</div>
 					</div>
@@ -163,21 +163,21 @@ templ clusterActive(data ClusterData) {
 		<div class="card">
 			<div class="p-4 border-b border-dark-600 flex items-center justify-between">
 				<h3 class="font-semibold text-white">
-					<i class="fas fa-server mr-2 text-blue-400"></i>Cluster Nodes
+					<i aria-hidden="true" class="fas fa-server mr-2 text-blue-400"></i>Cluster Nodes
 				</h3>
 			</div>
 			<div class="overflow-x-auto">
 				<table class="w-full">
 					<thead>
 						<tr class="border-b border-dark-600 text-left text-xs text-gray-500 uppercase">
-							<th class="p-3">Hostname</th>
-							<th class="p-3">Role</th>
-							<th class="p-3">Status</th>
-							<th class="p-3">Availability</th>
-							<th class="p-3">Address</th>
-							<th class="p-3">Engine</th>
-							<th class="p-3">Resources</th>
-							<th class="p-3">Actions</th>
+							<th scope="col" class="p-3">Hostname</th>
+							<th scope="col" class="p-3">Role</th>
+							<th scope="col" class="p-3">Status</th>
+							<th scope="col" class="p-3">Availability</th>
+							<th scope="col" class="p-3">Address</th>
+							<th scope="col" class="p-3">Engine</th>
+							<th scope="col" class="p-3">Resources</th>
+							<th scope="col" class="p-3">Actions</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -200,9 +200,9 @@ templ clusterActive(data ClusterData) {
 								</td>
 								<td class="p-3">
 									if node.Status == "ready" {
-										<span class="text-green-400"><i class="fas fa-circle text-xs mr-1"></i>Ready</span>
+										<span class="text-green-400"><i aria-hidden="true" class="fas fa-circle text-xs mr-1"></i>Ready</span>
 									} else {
-										<span class="text-red-400"><i class="fas fa-circle text-xs mr-1"></i>{ node.Status }</span>
+										<span class="text-red-400"><i aria-hidden="true" class="fas fa-circle text-xs mr-1"></i>{ node.Status }</span>
 									}
 								</td>
 								<td class="p-3 text-gray-400">{ node.Availability }</td>
@@ -218,7 +218,7 @@ templ clusterActive(data ClusterData) {
 											hx-confirm={ fmt.Sprintf("Remove node '%s' from Swarm cluster?", node.Hostname) }
 											class="btn btn-sm btn-ghost text-red-400 hover:text-red-300"
 										>
-											<i class="fas fa-times"></i>
+											<i aria-hidden="true" class="fas fa-times"></i>
 										</button>
 									}
 								</td>
@@ -233,15 +233,15 @@ templ clusterActive(data ClusterData) {
 		<div class="card">
 			<div class="p-4 border-b border-dark-600 flex items-center justify-between">
 				<h3 class="font-semibold text-white">
-					<i class="fas fa-cubes mr-2 text-green-400"></i>Services
+					<i aria-hidden="true" class="fas fa-cubes mr-2 text-green-400"></i>Services
 				</h3>
 				<a href="/swarm/services/new" class="btn btn-sm btn-primary">
-					<i class="fas fa-plus mr-1"></i>Create Service
+					<i aria-hidden="true" class="fas fa-plus mr-1"></i>Create Service
 				</a>
 			</div>
 			if len(data.Services) == 0 {
 				<div class="p-8 text-center text-gray-500">
-					<i class="fas fa-cubes text-4xl mb-3 opacity-30"></i>
+					<i aria-hidden="true" class="fas fa-cubes text-4xl mb-3 opacity-30"></i>
 					<p>No Swarm services yet.</p>
 					<p class="text-sm mt-1">Create a service or convert a container to enable HA.</p>
 				</div>
@@ -250,12 +250,12 @@ templ clusterActive(data ClusterData) {
 					<table class="w-full">
 						<thead>
 							<tr class="border-b border-dark-600 text-left text-xs text-gray-500 uppercase">
-								<th class="p-3">Name</th>
-								<th class="p-3">Image</th>
-								<th class="p-3">Mode</th>
-								<th class="p-3">Replicas</th>
-								<th class="p-3">Ports</th>
-								<th class="p-3">Actions</th>
+								<th scope="col" class="p-3">Name</th>
+								<th scope="col" class="p-3">Image</th>
+								<th scope="col" class="p-3">Mode</th>
+								<th scope="col" class="p-3">Replicas</th>
+								<th scope="col" class="p-3">Ports</th>
+								<th scope="col" class="p-3">Actions</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -285,7 +285,7 @@ templ clusterActive(data ClusterData) {
 											hx-confirm={ fmt.Sprintf("Remove service '%s'? This will stop all replicas.", svc.Name) }
 											class="btn btn-sm btn-ghost text-red-400 hover:text-red-300"
 										>
-											<i class="fas fa-trash"></i>
+											<i aria-hidden="true" class="fas fa-trash"></i>
 										</button>
 									</td>
 								</tr>
@@ -299,7 +299,7 @@ templ clusterActive(data ClusterData) {
 		<!-- Leave Swarm -->
 		<div class="card p-4 border-red-500/30">
 			<h3 class="text-sm font-semibold text-red-400 mb-2">
-				<i class="fas fa-exclamation-triangle mr-1"></i>Danger Zone
+				<i aria-hidden="true" class="fas fa-exclamation-triangle mr-1"></i>Danger Zone
 			</h3>
 			<div class="flex items-center justify-between">
 				<p class="text-sm text-gray-400">Leave the Swarm cluster. This will stop all services on this node.</p>
@@ -308,7 +308,7 @@ templ clusterActive(data ClusterData) {
 					hx-confirm="Are you sure? This will remove this node from the Swarm cluster and stop all Swarm services."
 					class="btn btn-sm bg-red-500/20 text-red-400 hover:bg-red-500/30 border border-red-500/30"
 				>
-					<i class="fas fa-sign-out-alt mr-1"></i>Leave Swarm
+					<i aria-hidden="true" class="fas fa-sign-out-alt mr-1"></i>Leave Swarm
 				</button>
 			</div>
 		</div>
@@ -336,32 +336,32 @@ templ ServiceCreateForm(data ServiceCreateData) {
 				<div>
 					<label class="label">Service Name</label>
 					<input type="text" name="name" required placeholder="my-service"
-						class="input w-full" />
+						class="input w-full"  aria-label="Service Name"/>
 				</div>
 
 				<div>
 					<label class="label">Image</label>
 					<input type="text" name="image" required placeholder="nginx:latest"
-						class="input w-full" />
+						class="input w-full"  aria-label="Image"/>
 				</div>
 
 				<div class="grid grid-cols-2 gap-4">
 					<div>
 						<label class="label">Replicas</label>
 						<input type="number" name="replicas" value="2" min="1" max="100"
-							class="input w-full" />
+							class="input w-full"  aria-label="Replicas"/>
 					</div>
 					<div>
 						<label class="label">Published Port</label>
 						<input type="number" name="published_port" placeholder="80"
-							class="input w-full" />
+							class="input w-full"  aria-label="Published Port"/>
 					</div>
 				</div>
 
 				<div>
 					<label class="label">Target Port (container)</label>
 					<input type="number" name="target_port" placeholder="80"
-						class="input w-full" />
+						class="input w-full"  aria-label="Target Port (container)"/>
 				</div>
 
 				<div>
@@ -371,7 +371,7 @@ templ ServiceCreateForm(data ServiceCreateData) {
 
 				<div class="flex gap-3 pt-2">
 					<button type="submit" class="btn btn-primary">
-						<i class="fas fa-plus mr-2"></i>Create Service
+						<i aria-hidden="true" class="fas fa-plus mr-2"></i>Create Service
 					</button>
 					<a href="/swarm" class="btn btn-ghost">Cancel</a>
 				</div>

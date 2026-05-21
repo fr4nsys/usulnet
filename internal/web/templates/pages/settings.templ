@@ -54,7 +54,7 @@ templ Settings(data SettingsData) {
 					<a href="/admin/notifications/channels" class="card p-4 hover:border-primary-500/50 transition-colors group">
 						<div class="flex items-center gap-3">
 							<div class="w-10 h-10 rounded-lg bg-primary-500/10 flex items-center justify-center">
-								<i class="fas fa-bell text-primary-400 group-hover:scale-110 transition-transform"></i>
+								<i aria-hidden="true" class="fas fa-bell text-primary-400 group-hover:scale-110 transition-transform"></i>
 							</div>
 							<div>
 								<h3 class="font-medium text-white">Notification Channels</h3>
@@ -65,7 +65,7 @@ templ Settings(data SettingsData) {
 					<a href="/admin/oauth" class="card p-4 hover:border-primary-500/50 transition-colors group">
 						<div class="flex items-center gap-3">
 							<div class="w-10 h-10 rounded-lg bg-blue-500/10 flex items-center justify-center">
-								<i class="fas fa-key text-blue-400 group-hover:scale-110 transition-transform"></i>
+								<i aria-hidden="true" class="fas fa-key text-blue-400 group-hover:scale-110 transition-transform"></i>
 							</div>
 							<div>
 								<h3 class="font-medium text-white">OAuth Providers</h3>
@@ -76,7 +76,7 @@ templ Settings(data SettingsData) {
 					<a href="/admin/ldap" class="card p-4 hover:border-primary-500/50 transition-colors group">
 						<div class="flex items-center gap-3">
 							<div class="w-10 h-10 rounded-lg bg-green-500/10 flex items-center justify-center">
-								<i class="fas fa-sitemap text-green-400 group-hover:scale-110 transition-transform"></i>
+								<i aria-hidden="true" class="fas fa-sitemap text-green-400 group-hover:scale-110 transition-transform"></i>
 							</div>
 							<div>
 								<h3 class="font-medium text-white">LDAP Providers</h3>
@@ -87,7 +87,7 @@ templ Settings(data SettingsData) {
 					<a href="/license" class="card p-4 hover:border-primary-500/50 transition-colors group">
 						<div class="flex items-center gap-3">
 							<div class="w-10 h-10 rounded-lg bg-purple-500/10 flex items-center justify-center">
-								<i class="fas fa-id-card text-purple-400 group-hover:scale-110 transition-transform"></i>
+								<i aria-hidden="true" class="fas fa-id-card text-purple-400 group-hover:scale-110 transition-transform"></i>
 							</div>
 							<div>
 								<h3 class="font-medium text-white">License</h3>
@@ -106,7 +106,7 @@ templ Settings(data SettingsData) {
 							<p class="text-xs text-gray-500 mt-1">Add an extra layer of security with TOTP-based 2FA</p>
 						</div>
 						<a href="/settings/totp" class="btn-secondary text-sm">
-							<i class="fas fa-shield-alt mr-2"></i>Configure 2FA
+							<i aria-hidden="true" class="fas fa-shield-alt mr-2"></i>Configure 2FA
 						</a>
 					</div>
 				</div>
@@ -201,7 +201,7 @@ templ Settings(data SettingsData) {
 
 				<div class="flex justify-end">
 					<button type="submit" class="btn-primary">
-						<i class="fas fa-save mr-2"></i>Save Settings
+						<i aria-hidden="true" class="fas fa-save mr-2"></i>Save Settings
 					</button>
 				</div>
 			</form>
@@ -212,7 +212,7 @@ templ Settings(data SettingsData) {
 					<div class="card p-6 mb-6">
 						<div class="flex items-start gap-3 mb-5">
 							<div class="w-10 h-10 rounded-lg bg-primary-500/10 flex items-center justify-center text-primary-400 flex-shrink-0">
-								<i class="fas fa-columns"></i>
+								<i aria-hidden="true" class="fas fa-columns"></i>
 							</div>
 							<div>
 								<h2 class="text-lg font-medium text-white">Sidebar Navigation</h2>
@@ -247,7 +247,7 @@ templ Settings(data SettingsData) {
 						</div>
 						<!-- Status indicator -->
 						<div x-show="saved" x-transition class="mt-4 flex items-center gap-2 text-sm text-emerald-400">
-							<i class="fas fa-check-circle"></i>
+							<i aria-hidden="true" class="fas fa-check-circle"></i>
 							<span>Sidebar preferences saved</span>
 						</div>
 					</div>

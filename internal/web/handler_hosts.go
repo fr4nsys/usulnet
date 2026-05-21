@@ -57,32 +57,36 @@ func (h *Handler) HostEditFormTempl(w http.ResponseWriter, r *http.Request) {
 	h.renderTempl(w, r, hosts.Edit(data))
 }
 
+// hostCreateForm captures the host create inputs. endpoint_type
+// defaults to "local" after binding when blank; tls_enabled uses
+// the "true" literal that the existing form posts (not the HTML
+// "on" default), so we read it via the helper's flexible bool
+// parser.
+type hostCreateForm struct {
+	Name         string `form:"name" validate:"required,min=1,max=200"`
+	EndpointType string `form:"endpoint_type"`
+	EndpointURL  string `form:"endpoint_url"`
+	TLSEnabled   bool   `form:"tls_enabled"`
+}
+
 // HostCreateTempl handles POST /nodes/create - creates a new host.
 func (h *Handler) HostCreateTempl(w http.ResponseWriter, r *http.Request) {
-	if err := r.ParseForm(); err != nil {
-		h.renderCreateError(w, r, "Invalid form data")
+	var form hostCreateForm
+	if msg := BindForm(r, &form); msg != "" {
+		h.renderCreateError(w, r, msg)
 		return
 	}
 
-	name := r.FormValue("name")
-	endpointType := r.FormValue("endpoint_type")
-	endpointURL := r.FormValue("endpoint_url")
-	tlsEnabled := r.FormValue("tls_enabled") == "true"
-
-	if name == "" {
-		h.renderCreateError(w, r, "Node name is required")
-		return
-	}
-
+	endpointType := form.EndpointType
 	if endpointType == "" {
 		endpointType = "local"
 	}
 
 	hv := &HostView{
-		Name:         name,
+		Name:         form.Name,
 		EndpointType: endpointType,
-		Endpoint:     endpointURL,
-		TLSEnabled:   tlsEnabled,
+		Endpoint:     form.EndpointURL,
+		TLSEnabled:   form.TLSEnabled,
 	}
 
 	hostID, err := h.services.Hosts().Create(r.Context(), hv)
@@ -106,6 +110,16 @@ func (h *Handler) HostCreateTempl(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/nodes/"+hostID, http.StatusSeeOther)
 }
 
+// hostUpdateForm captures the host update inputs. action is a
+// mode field — "regenerate_token" routes to the token-rotation
+// branch; the empty value runs the normal update path.
+type hostUpdateForm struct {
+	Action      string `form:"action"`
+	DisplayName string `form:"display_name"`
+	EndpointURL string `form:"endpoint_url"`
+	TLSEnabled  bool   `form:"tls_enabled"`
+}
+
 // HostUpdateTempl handles POST /nodes/{id} - updates a host.
 func (h *Handler) HostUpdateTempl(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
@@ -116,15 +130,14 @@ func (h *Handler) HostUpdateTempl(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := r.ParseForm(); err != nil {
-		h.renderEditError(w, r, idStr, "Invalid form data")
+	var form hostUpdateForm
+	if msg := BindForm(r, &form); msg != "" {
+		h.renderEditError(w, r, idStr, msg)
 		return
 	}
 
-	action := r.FormValue("action")
-
 	// Handle token regeneration
-	if action == "regenerate_token" {
+	if form.Action == "regenerate_token" {
 		token, err := h.services.Hosts().GenerateAgentToken(ctx, idStr)
 		if err != nil {
 			h.renderEditError(w, r, idStr, "Failed to regenerate token: "+err.Error())
@@ -134,16 +147,11 @@ func (h *Handler) HostUpdateTempl(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Normal update
-	displayName := r.FormValue("display_name")
-	endpointURL := r.FormValue("endpoint_url")
-	tlsEnabled := r.FormValue("tls_enabled") == "true"
-
 	hv := &HostView{
 		ID:          idStr,
-		DisplayName: displayName,
-		Endpoint:    endpointURL,
-		TLSEnabled:  tlsEnabled,
+		DisplayName: form.DisplayName,
+		Endpoint:    form.EndpointURL,
+		TLSEnabled:  form.TLSEnabled,
 	}
 
 	if err := h.services.Hosts().Update(ctx, hv); err != nil {

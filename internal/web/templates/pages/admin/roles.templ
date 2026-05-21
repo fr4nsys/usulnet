@@ -52,7 +52,7 @@ templ RolesList(data RolesData) {
 					onclick="showNewRoleModal()"
 					class="btn-primary"
 				>
-					<i class="fas fa-plus mr-2"></i>Create Role
+					<i aria-hidden="true" class="fas fa-plus mr-2"></i>Create Role
 				</button>
 			</div>
 
@@ -84,7 +84,7 @@ templ RolesList(data RolesData) {
 			<div class="card">
 				<div class="p-4 border-b border-dark-700">
 					<h2 class="text-lg font-medium text-white">
-						<i class="fas fa-shield-alt mr-2 text-blue-400"></i>System Roles
+						<i aria-hidden="true" class="fas fa-shield-alt mr-2 text-blue-400"></i>System Roles
 					</h2>
 					<p class="text-sm text-gray-500 mt-1">Built-in roles that cannot be deleted</p>
 				</div>
@@ -92,11 +92,11 @@ templ RolesList(data RolesData) {
 					<table class="table">
 						<thead>
 							<tr>
-								<th>Role</th>
-								<th>Description</th>
-								<th>Permissions</th>
-								<th>Users</th>
-								<th>Actions</th>
+								<th scope="col">Role</th>
+								<th scope="col">Description</th>
+								<th scope="col">Permissions</th>
+								<th scope="col">Users</th>
+								<th scope="col">Actions</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -114,7 +114,7 @@ templ RolesList(data RolesData) {
 			<div class="card">
 				<div class="p-4 border-b border-dark-700">
 					<h2 class="text-lg font-medium text-white">
-						<i class="fas fa-user-cog mr-2 text-purple-400"></i>Custom Roles
+						<i aria-hidden="true" class="fas fa-user-cog mr-2 text-purple-400"></i>Custom Roles
 					</h2>
 					<p class="text-sm text-gray-500 mt-1">User-defined roles with custom permissions</p>
 				</div>
@@ -122,12 +122,12 @@ templ RolesList(data RolesData) {
 					<table class="table">
 						<thead>
 							<tr>
-								<th>Role</th>
-								<th>Description</th>
-								<th>Permissions</th>
-								<th>Users</th>
-								<th>Status</th>
-								<th>Actions</th>
+								<th scope="col">Role</th>
+								<th scope="col">Description</th>
+								<th scope="col">Permissions</th>
+								<th scope="col">Users</th>
+								<th scope="col">Status</th>
+								<th scope="col">Actions</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -139,7 +139,7 @@ templ RolesList(data RolesData) {
 							if countCustomRoles(data.Roles) == 0 {
 								<tr>
 									<td colspan="6" class="text-center text-gray-500 py-8">
-										<i class="fas fa-user-cog text-4xl mb-3 block"></i>
+										<i aria-hidden="true" class="fas fa-user-cog text-4xl mb-3 block"></i>
 										No custom roles yet. Create one to define granular permissions.
 									</td>
 								</tr>
@@ -152,7 +152,7 @@ templ RolesList(data RolesData) {
 			<!-- Permission Categories Reference -->
 			<details class="card">
 				<summary class="p-4 cursor-pointer text-white hover:bg-dark-700 rounded-t-xl font-medium">
-					<i class="fas fa-book mr-2 text-primary-400"></i>Available Permissions Reference
+					<i aria-hidden="true" class="fas fa-book mr-2 text-primary-400"></i>Available Permissions Reference
 				</summary>
 				<div class="p-4 pt-0 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
 					@permissionCategory("Containers", "fa-cube", "blue", []string{"container:view", "container:create", "container:start", "container:stop", "container:restart", "container:remove", "container:exec", "container:logs"})
@@ -253,7 +253,7 @@ templ customRoleRow(role RoleItem, csrfToken string) {
 		<td>
 			<div class="flex items-center gap-3">
 				<div class="w-10 h-10 rounded-lg bg-purple-500/20 flex items-center justify-center">
-					<i class="fas fa-user-tag text-purple-400"></i>
+					<i aria-hidden="true" class="fas fa-user-tag text-purple-400"></i>
 				</div>
 				<div>
 					<div class="font-medium text-white">{ role.DisplayName }</div>
@@ -349,12 +349,12 @@ templ newRoleModal(csrfToken string) {
 				<div class="grid grid-cols-2 gap-4">
 					<div>
 						<label class="block text-sm font-medium text-gray-300 mb-2">Role Name</label>
-						<input type="text" name="name" required pattern="[a-z0-9_-]+" class="input" placeholder="e.g. devops-lead"/>
+						<input type="text" name="name" required pattern="[a-z0-9_-]+" class="input" placeholder="e.g. devops-lead" aria-label="e.g. devops-lead"/>
 						<p class="text-xs text-gray-500 mt-1">Lowercase letters, numbers, hyphens, underscores only</p>
 					</div>
 					<div>
 						<label class="block text-sm font-medium text-gray-300 mb-2">Display Name</label>
-						<input type="text" name="display_name" required class="input" placeholder="e.g. DevOps Lead"/>
+						<input type="text" name="display_name" required class="input" placeholder="e.g. DevOps Lead" aria-label="e.g. DevOps Lead"/>
 					</div>
 				</div>
 
@@ -540,7 +540,7 @@ templ RoleEdit(data RoleEditData) {
 		<div class="max-w-4xl mx-auto space-y-6">
 			<div class="flex items-center gap-4">
 				<a href="/admin/roles" class="p-2 text-gray-400 hover:text-white hover:bg-dark-700 rounded-lg">
-					<i class="fas fa-arrow-left"></i>
+					<i aria-hidden="true" class="fas fa-arrow-left"></i>
 				</a>
 				<div>
 					<h1 class="text-2xl font-display font-bold text-white">
@@ -554,7 +554,7 @@ templ RoleEdit(data RoleEditData) {
 				</div>
 				if data.Role.IsSystem {
 					<span class="badge bg-blue-500/20 text-blue-400 border border-blue-500/30">
-						<i class="fas fa-shield-alt mr-1"></i>System Role
+						<i aria-hidden="true" class="fas fa-shield-alt mr-1"></i>System Role
 					</span>
 				}
 			</div>

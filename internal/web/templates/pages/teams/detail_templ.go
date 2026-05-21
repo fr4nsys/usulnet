@@ -98,7 +98,7 @@ func Detail(data TeamDetailData) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"space-y-6\"><!-- Header --><div class=\"flex items-center justify-between\"><div class=\"flex items-center gap-4\"><a href=\"/teams\" class=\"p-2 text-gray-400 hover:text-white hover:bg-dark-700 rounded-lg\"><i class=\"fas fa-arrow-left\"></i></a><div><h1 class=\"text-2xl font-display font-bold text-white\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"space-y-6\"><!-- Header --><div class=\"flex items-center justify-between\"><div class=\"flex items-center gap-4\"><a href=\"/teams\" class=\"p-2 text-gray-400 hover:text-white hover:bg-dark-700 rounded-lg\"><i aria-hidden=\"true\" class=\"fas fa-arrow-left\"></i></a><div><h1 class=\"text-2xl font-display font-bold text-white\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -147,7 +147,7 @@ func Detail(data TeamDetailData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "\" class=\"btn-secondary\"><i class=\"fas fa-edit mr-2\"></i>Edit</a></div><!-- Stats Row --><div class=\"grid grid-cols-2 md:grid-cols-4 gap-4\"><div class=\"card p-4\"><div class=\"text-2xl font-bold text-white\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "\" class=\"btn-secondary\"><i aria-hidden=\"true\" class=\"fas fa-edit mr-2\"></i>Edit</a></div><!-- Stats Row --><div class=\"grid grid-cols-2 md:grid-cols-4 gap-4\"><div class=\"card p-4\"><div class=\"text-2xl font-bold text-white\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -243,14 +243,14 @@ func Detail(data TeamDetailData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "\"><i class=\"fas fa-users mr-2\"></i>Members (")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "\"><i aria-hidden=\"true\" class=\"fas fa-users mr-2\"></i>Members (")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var13 string
 			templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", len(data.Members)))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/teams/detail.templ`, Line: 116, Col: 85}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/teams/detail.templ`, Line: 116, Col: 104}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
 			if templ_7745c5c3_Err != nil {
@@ -293,14 +293,14 @@ func Detail(data TeamDetailData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "\"><i class=\"fas fa-lock mr-2\"></i>Permissions (")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "\"><i aria-hidden=\"true\" class=\"fas fa-lock mr-2\"></i>Permissions (")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var17 string
 			templ_7745c5c3_Var17, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", len(data.Permissions)))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/teams/detail.templ`, Line: 124, Col: 92}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/teams/detail.templ`, Line: 124, Col: 111}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var17))
 			if templ_7745c5c3_Err != nil {
@@ -446,7 +446,7 @@ func membersTab(data TeamDetailData) templ.Component {
 				}
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 30, "</select></div><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Role</label> <select name=\"role\" class=\"input\"><option value=\"member\">Member</option> <option value=\"owner\">Owner</option></select></div><button type=\"submit\" class=\"btn-primary whitespace-nowrap\"><i class=\"fas fa-user-plus mr-2\"></i>Add</button></form></div><!-- Members Table --><div class=\"card\"><div class=\"overflow-x-auto\"><table class=\"table\"><thead><tr><th>User</th><th>Role</th><th>Added</th><th>Actions</th></tr></thead> <tbody>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 30, "</select></div><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Role</label> <select name=\"role\" class=\"input\"><option value=\"member\">Member</option> <option value=\"owner\">Owner</option></select></div><button type=\"submit\" class=\"btn-primary whitespace-nowrap\"><i aria-hidden=\"true\" class=\"fas fa-user-plus mr-2\"></i>Add</button></form></div><!-- Members Table --><div class=\"card\"><div class=\"overflow-x-auto\"><table class=\"table\"><thead><tr><th scope=\"col\">User</th><th scope=\"col\">Role</th><th scope=\"col\">Added</th><th scope=\"col\">Actions</th></tr></thead> <tbody>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -559,7 +559,7 @@ func membersTab(data TeamDetailData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			if m.Role == "owner" {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 42, "<i class=\"fas fa-crown mr-1 text-xs\"></i> ")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 42, "<i aria-hidden=\"true\" class=\"fas fa-crown mr-1 text-xs\"></i> ")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -675,7 +675,7 @@ func permissionsTab(data TeamDetailData) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 50, "\"><div class=\"grid grid-cols-1 md:grid-cols-4 gap-4\"><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Resource Type</label> <select name=\"resource_type\" id=\"resource-type-select\" required class=\"input\" onchange=\"updateResourceOptions()\"><option value=\"\">Select type…</option> <option value=\"stack\">Stack</option> <option value=\"host\">Host/Node</option> <option value=\"network\">Network</option> <option value=\"volume\">Volume</option> <option value=\"gitea_connection\">Gitea Connection</option> <option value=\"s3_connection\">S3 Connection</option> <option value=\"container_group\">Container Group (label)</option></select></div><div class=\"md:col-span-2\"><label class=\"block text-sm font-medium text-gray-300 mb-2\">Resource</label> <select name=\"resource_id\" id=\"resource-id-select\" required class=\"input\" disabled><option value=\"\">First select a resource type</option></select><!-- Container group input (shown only for container_group type) --><input type=\"text\" name=\"container_group_label\" id=\"container-group-input\" class=\"input hidden mt-2\" placeholder=\"Enter container group label (e.g. app=myapp)\"></div><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Access Level</label> <select name=\"access_level\" class=\"input\"><option value=\"view\">View only</option> <option value=\"manage\">Full manage</option></select></div></div><div class=\"flex justify-end\"><button type=\"submit\" class=\"btn-primary\"><i class=\"fas fa-plus mr-2\"></i>Grant Permission</button></div></form></div><script>\n\t\t\tfunction updateResourceOptions() {\n\t\t\t\tconst typeSelect = document.getElementById('resource-type-select');\n\t\t\t\tconst resourceSelect = document.getElementById('resource-id-select');\n\t\t\t\tconst containerInput = document.getElementById('container-group-input');\n\t\t\t\tconst selectedType = typeSelect.value;\n\n\t\t\t\t// Handle container_group special case\n\t\t\t\tif (selectedType === 'container_group') {\n\t\t\t\t\tresourceSelect.classList.add('hidden');\n\t\t\t\t\tresourceSelect.disabled = true;\n\t\t\t\t\tresourceSelect.name = '';\n\t\t\t\t\tcontainerInput.classList.remove('hidden');\n\t\t\t\t\tcontainerInput.required = true;\n\t\t\t\t\tcontainerInput.name = 'resource_id';\n\t\t\t\t\treturn;\n\t\t\t\t}\n\n\t\t\t\t// Normal resource selection\n\t\t\t\tcontainerInput.classList.add('hidden');\n\t\t\t\tcontainerInput.required = false;\n\t\t\t\tcontainerInput.name = 'container_group_label';\n\t\t\t\tresourceSelect.classList.remove('hidden');\n\t\t\t\tresourceSelect.name = 'resource_id';\n\n\t\t\t\tif (!selectedType) {\n\t\t\t\t\tresourceSelect.innerHTML = '<option value=\"\">First select a resource type</option>';\n\t\t\t\t\tresourceSelect.disabled = true;\n\t\t\t\t\treturn;\n\t\t\t\t}\n\n\t\t\t\t// Get resources from embedded JSON\n\t\t\t\ttry {\n\t\t\t\t\tconst resourcesData = document.getElementById('available-resources');\n\t\t\t\t\t// Parse manually since we can't use JSON.parse on templ-generated content\n\t\t\t\t\tconst resources = getResourcesForType(selectedType);\n\n\t\t\t\t\tif (resources.length === 0) {\n\t\t\t\t\t\tresourceSelect.innerHTML = '<option value=\"\">No resources available</option>';\n\t\t\t\t\t\tresourceSelect.disabled = true;\n\t\t\t\t\t\treturn;\n\t\t\t\t\t}\n\n\t\t\t\t\tresourceSelect.innerHTML = '<option value=\"\">Select a resource…</option>';\n\t\t\t\t\tresources.forEach(r => {\n\t\t\t\t\t\tconst option = document.createElement('option');\n\t\t\t\t\t\toption.value = r.id;\n\t\t\t\t\t\toption.textContent = r.name;\n\t\t\t\t\t\tresourceSelect.appendChild(option);\n\t\t\t\t\t});\n\t\t\t\t\tresourceSelect.disabled = false;\n\t\t\t\t} catch (e) {\n\t\t\t\t\tconsole.error('Error loading resources:', e);\n\t\t\t\t\tresourceSelect.innerHTML = '<option value=\"\">Error loading resources</option>';\n\t\t\t\t}\n\t\t\t}\n\n\t\t\tfunction getResourcesForType(type) {\n\t\t\t\t// This will be populated by HTMX partial or we use data attributes\n\t\t\t\tconst dataEl = document.getElementById('resources-' + type);\n\t\t\t\tif (dataEl) {\n\t\t\t\t\treturn JSON.parse(dataEl.textContent);\n\t\t\t\t}\n\t\t\t\treturn [];\n\t\t\t}\n\t\t</script><!-- Resource data elements (JSON for JavaScript) --><div class=\"hidden\"><script type=\"application/json\" id=\"resources-stack\">{ resourcesJSON(data.AvailableStacks) }</script><script type=\"application/json\" id=\"resources-host\">{ resourcesJSON(data.AvailableHosts) }</script><script type=\"application/json\" id=\"resources-network\">{ resourcesJSON(data.AvailableNetworks) }</script><script type=\"application/json\" id=\"resources-volume\">{ resourcesJSON(data.AvailableVolumes) }</script><script type=\"application/json\" id=\"resources-gitea_connection\">{ resourcesJSON(data.AvailableGiteaConns) }</script><script type=\"application/json\" id=\"resources-s3_connection\">{ resourcesJSON(data.AvailableS3Conns) }</script></div><!-- Permissions Table --><div class=\"card\"><div class=\"overflow-x-auto\"><table class=\"table\"><thead><tr><th>Resource</th><th>Type</th><th>Access</th><th>Granted</th><th>Actions</th></tr></thead> <tbody>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 50, "\"><div class=\"grid grid-cols-1 md:grid-cols-4 gap-4\"><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Resource Type</label> <select name=\"resource_type\" id=\"resource-type-select\" required class=\"input\" onchange=\"updateResourceOptions()\"><option value=\"\">Select type…</option> <option value=\"stack\">Stack</option> <option value=\"host\">Host/Node</option> <option value=\"network\">Network</option> <option value=\"volume\">Volume</option> <option value=\"gitea_connection\">Gitea Connection</option> <option value=\"s3_connection\">S3 Connection</option> <option value=\"container_group\">Container Group (label)</option></select></div><div class=\"md:col-span-2\"><label class=\"block text-sm font-medium text-gray-300 mb-2\">Resource</label> <select name=\"resource_id\" id=\"resource-id-select\" required class=\"input\" disabled><option value=\"\">First select a resource type</option></select><!-- Container group input (shown only for container_group type) --><input type=\"text\" name=\"container_group_label\" id=\"container-group-input\" class=\"input hidden mt-2\" placeholder=\"Enter container group label (e.g. app=myapp)\" aria-label=\"Resource\"></div><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Access Level</label> <select name=\"access_level\" class=\"input\"><option value=\"view\">View only</option> <option value=\"manage\">Full manage</option></select></div></div><div class=\"flex justify-end\"><button type=\"submit\" class=\"btn-primary\"><i aria-hidden=\"true\" class=\"fas fa-plus mr-2\"></i>Grant Permission</button></div></form></div><script>\n\t\t\tfunction updateResourceOptions() {\n\t\t\t\tconst typeSelect = document.getElementById('resource-type-select');\n\t\t\t\tconst resourceSelect = document.getElementById('resource-id-select');\n\t\t\t\tconst containerInput = document.getElementById('container-group-input');\n\t\t\t\tconst selectedType = typeSelect.value;\n\n\t\t\t\t// Handle container_group special case\n\t\t\t\tif (selectedType === 'container_group') {\n\t\t\t\t\tresourceSelect.classList.add('hidden');\n\t\t\t\t\tresourceSelect.disabled = true;\n\t\t\t\t\tresourceSelect.name = '';\n\t\t\t\t\tcontainerInput.classList.remove('hidden');\n\t\t\t\t\tcontainerInput.required = true;\n\t\t\t\t\tcontainerInput.name = 'resource_id';\n\t\t\t\t\treturn;\n\t\t\t\t}\n\n\t\t\t\t// Normal resource selection\n\t\t\t\tcontainerInput.classList.add('hidden');\n\t\t\t\tcontainerInput.required = false;\n\t\t\t\tcontainerInput.name = 'container_group_label';\n\t\t\t\tresourceSelect.classList.remove('hidden');\n\t\t\t\tresourceSelect.name = 'resource_id';\n\n\t\t\t\tif (!selectedType) {\n\t\t\t\t\tresourceSelect.innerHTML = '<option value=\"\">First select a resource type</option>';\n\t\t\t\t\tresourceSelect.disabled = true;\n\t\t\t\t\treturn;\n\t\t\t\t}\n\n\t\t\t\t// Get resources from embedded JSON\n\t\t\t\ttry {\n\t\t\t\t\tconst resourcesData = document.getElementById('available-resources');\n\t\t\t\t\t// Parse manually since we can't use JSON.parse on templ-generated content\n\t\t\t\t\tconst resources = getResourcesForType(selectedType);\n\n\t\t\t\t\tif (resources.length === 0) {\n\t\t\t\t\t\tresourceSelect.innerHTML = '<option value=\"\">No resources available</option>';\n\t\t\t\t\t\tresourceSelect.disabled = true;\n\t\t\t\t\t\treturn;\n\t\t\t\t\t}\n\n\t\t\t\t\tresourceSelect.innerHTML = '<option value=\"\">Select a resource…</option>';\n\t\t\t\t\tresources.forEach(r => {\n\t\t\t\t\t\tconst option = document.createElement('option');\n\t\t\t\t\t\toption.value = r.id;\n\t\t\t\t\t\toption.textContent = r.name;\n\t\t\t\t\t\tresourceSelect.appendChild(option);\n\t\t\t\t\t});\n\t\t\t\t\tresourceSelect.disabled = false;\n\t\t\t\t} catch (e) {\n\t\t\t\t\tconsole.error('Error loading resources:', e);\n\t\t\t\t\tresourceSelect.innerHTML = '<option value=\"\">Error loading resources</option>';\n\t\t\t\t}\n\t\t\t}\n\n\t\t\tfunction getResourcesForType(type) {\n\t\t\t\t// This will be populated by HTMX partial or we use data attributes\n\t\t\t\tconst dataEl = document.getElementById('resources-' + type);\n\t\t\t\tif (dataEl) {\n\t\t\t\t\treturn JSON.parse(dataEl.textContent);\n\t\t\t\t}\n\t\t\t\treturn [];\n\t\t\t}\n\t\t</script><!-- Resource data elements (JSON for JavaScript) --><div class=\"hidden\"><script type=\"application/json\" id=\"resources-stack\">{ resourcesJSON(data.AvailableStacks) }</script><script type=\"application/json\" id=\"resources-host\">{ resourcesJSON(data.AvailableHosts) }</script><script type=\"application/json\" id=\"resources-network\">{ resourcesJSON(data.AvailableNetworks) }</script><script type=\"application/json\" id=\"resources-volume\">{ resourcesJSON(data.AvailableVolumes) }</script><script type=\"application/json\" id=\"resources-gitea_connection\">{ resourcesJSON(data.AvailableGiteaConns) }</script><script type=\"application/json\" id=\"resources-s3_connection\">{ resourcesJSON(data.AvailableS3Conns) }</script></div><!-- Permissions Table --><div class=\"card\"><div class=\"overflow-x-auto\"><table class=\"table\"><thead><tr><th scope=\"col\">Resource</th><th scope=\"col\">Type</th><th scope=\"col\">Access</th><th scope=\"col\">Granted</th><th scope=\"col\">Actions</th></tr></thead> <tbody>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -694,7 +694,7 @@ func permissionsTab(data TeamDetailData) templ.Component {
 				var templ_7745c5c3_Var38 string
 				templ_7745c5c3_Var38, templ_7745c5c3_Err = templ.JoinStringErrs(p.ResourceName)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/teams/detail.templ`, Line: 417, Col: 28}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/teams/detail.templ`, Line: 418, Col: 28}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var38))
 				if templ_7745c5c3_Err != nil {
@@ -704,7 +704,7 @@ func permissionsTab(data TeamDetailData) templ.Component {
 				var templ_7745c5c3_Var39 string
 				templ_7745c5c3_Var39, templ_7745c5c3_Err = templ.JoinStringErrs(shortResourceID(p.ResourceID))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/teams/detail.templ`, Line: 419, Col: 43}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/teams/detail.templ`, Line: 420, Col: 43}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var39))
 				if templ_7745c5c3_Err != nil {
@@ -723,7 +723,7 @@ func permissionsTab(data TeamDetailData) templ.Component {
 				var templ_7745c5c3_Var40 string
 				templ_7745c5c3_Var40, templ_7745c5c3_Err = templ.JoinStringErrs(shortResourceID(p.ResourceID))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/teams/detail.templ`, Line: 423, Col: 87}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/teams/detail.templ`, Line: 424, Col: 87}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var40))
 				if templ_7745c5c3_Err != nil {
@@ -792,7 +792,7 @@ func permissionsTab(data TeamDetailData) templ.Component {
 			var templ_7745c5c3_Var45 string
 			templ_7745c5c3_Var45, templ_7745c5c3_Err = templ.JoinStringErrs(resourceTypeLabel(p.ResourceType))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/teams/detail.templ`, Line: 437, Col: 45}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/teams/detail.templ`, Line: 438, Col: 45}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var45))
 			if templ_7745c5c3_Err != nil {
@@ -827,12 +827,12 @@ func permissionsTab(data TeamDetailData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			if p.AccessLevel == "manage" {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 64, "<i class=\"fas fa-edit mr-1 text-xs\"></i> ")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 64, "<i aria-hidden=\"true\" class=\"fas fa-edit mr-1 text-xs\"></i> ")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			} else {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 65, "<i class=\"fas fa-eye mr-1 text-xs\"></i> ")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 65, "<i aria-hidden=\"true\" class=\"fas fa-eye mr-1 text-xs\"></i> ")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -840,7 +840,7 @@ func permissionsTab(data TeamDetailData) templ.Component {
 			var templ_7745c5c3_Var48 string
 			templ_7745c5c3_Var48, templ_7745c5c3_Err = templ.JoinStringErrs(p.AccessLevel)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/teams/detail.templ`, Line: 449, Col: 25}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/teams/detail.templ`, Line: 450, Col: 25}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var48))
 			if templ_7745c5c3_Err != nil {
@@ -853,7 +853,7 @@ func permissionsTab(data TeamDetailData) templ.Component {
 			var templ_7745c5c3_Var49 string
 			templ_7745c5c3_Var49, templ_7745c5c3_Err = templ.JoinStringErrs(p.GrantedAt)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/teams/detail.templ`, Line: 452, Col: 55}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/teams/detail.templ`, Line: 453, Col: 55}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var49))
 			if templ_7745c5c3_Err != nil {
@@ -866,7 +866,7 @@ func permissionsTab(data TeamDetailData) templ.Component {
 			var templ_7745c5c3_Var50 string
 			templ_7745c5c3_Var50, templ_7745c5c3_Err = templ.JoinStringErrs("/teams/" + data.Team.ID + "/permissions/" + p.ID)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/teams/detail.templ`, Line: 455, Col: 71}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/teams/detail.templ`, Line: 456, Col: 71}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var50))
 			if templ_7745c5c3_Err != nil {

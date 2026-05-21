@@ -59,10 +59,10 @@ templ RedirList(data RedirListData) {
 				<div class="flex items-center gap-2">
 					if data.Connected {
 						<span class="badge badge-success">
-							<i class="fas fa-link mr-1"></i>Connected
+							<i aria-hidden="true" class="fas fa-link mr-1"></i>Connected
 						</span>
 						<a href="/proxy/redirections/new" class="btn-primary">
-							<i class="fas fa-plus mr-2"></i>New Redirection
+							<i aria-hidden="true" class="fas fa-plus mr-2"></i>New Redirection
 						</a>
 					}
 				</div>
@@ -77,12 +77,12 @@ templ RedirList(data RedirListData) {
 							<table class="table">
 								<thead>
 									<tr>
-										<th>Source</th>
-										<th>Destination</th>
-										<th>Code</th>
-										<th>SSL</th>
-										<th>Status</th>
-										<th>Actions</th>
+										<th scope="col">Source</th>
+										<th scope="col">Destination</th>
+										<th scope="col">Code</th>
+										<th scope="col">SSL</th>
+										<th scope="col">Status</th>
+										<th scope="col">Actions</th>
 									</tr>
 								</thead>
 								<tbody>
@@ -136,20 +136,20 @@ templ RedirList(data RedirListData) {
 					</div>
 				} else {
 					<div class="card p-8 text-center">
-						<i class="fas fa-directions text-4xl text-gray-400 mb-4"></i>
+						<i aria-hidden="true" class="fas fa-directions text-4xl text-gray-400 mb-4"></i>
 						<h3 class="text-lg font-medium text-white mb-2">No redirection hosts</h3>
 						<p class="text-gray-400 mb-4">Create a redirection to forward traffic between domains</p>
 						<a href="/proxy/redirections/new" class="btn-primary">
-							<i class="fas fa-plus mr-2"></i>New Redirection
+							<i aria-hidden="true" class="fas fa-plus mr-2"></i>New Redirection
 						</a>
 					</div>
 				}
 			} else {
 				<div class="card p-8 text-center">
-					<i class="fas fa-plug text-4xl text-gray-400 mb-4"></i>
+					<i aria-hidden="true" class="fas fa-plug text-4xl text-gray-400 mb-4"></i>
 					<h3 class="text-lg font-medium text-white mb-2">NPM Not Connected</h3>
 					<p class="text-gray-400 mb-4">Connect to NPM to manage redirections.</p>
-					<a href="/proxy/setup" class="btn-primary"><i class="fas fa-link mr-2"></i>Setup Connection</a>
+					<a href="/proxy/setup" class="btn-primary"><i aria-hidden="true" class="fas fa-link mr-2"></i>Setup Connection</a>
 				</div>
 			}
 		</div>

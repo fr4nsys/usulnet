@@ -12,7 +12,7 @@ templ CertNewLE(data CertNewLEData) {
 		<div class="max-w-2xl mx-auto space-y-6">
 			<div class="flex items-center gap-4">
 				<a href="/proxy/certificates" class="p-2 text-gray-400 hover:text-white hover:bg-dark-700 rounded-lg">
-					<i class="fas fa-arrow-left"></i>
+					<i aria-hidden="true" class="fas fa-arrow-left"></i>
 				</a>
 				<div>
 					<h1 class="text-2xl font-display font-bold text-white">New Let's Encrypt Certificate</h1>
@@ -22,7 +22,7 @@ templ CertNewLE(data CertNewLEData) {
 
 			if data.Error != "" {
 				<div class="bg-red-500/10 border border-red-500/20 rounded-lg p-4 text-red-400">
-					<i class="fas fa-exclamation-triangle mr-2"></i>{ data.Error }
+					<i aria-hidden="true" class="fas fa-exclamation-triangle mr-2"></i>{ data.Error }
 				</div>
 			}
 
@@ -34,6 +34,7 @@ templ CertNewLE(data CertNewLEData) {
 					<input type="text" name="domain_names" required
 						placeholder="example.com, *.example.com"
 						class="input w-full"
+						aria-label="Domain Names"
 					/>
 					<p class="text-xs text-gray-500 mt-1">Comma-separated. Wildcards (*.domain.com) require DNS challenge.</p>
 				</div>
@@ -44,6 +45,7 @@ templ CertNewLE(data CertNewLEData) {
 					<input type="email" name="email" required
 						placeholder="admin@example.com"
 						class="input w-full"
+						aria-label="Let's Encrypt Email"
 					/>
 					<p class="text-xs text-gray-500 mt-1">Used for certificate expiration notifications.</p>
 				</div>
@@ -55,7 +57,7 @@ templ CertNewLE(data CertNewLEData) {
 						<label class="card p-4 cursor-pointer border-2 border-transparent has-[:checked]:border-primary-500">
 							<input type="radio" name="challenge_type" value="http" checked class="sr-only" onchange="toggleDNS(false)"/>
 							<div class="flex items-center gap-3">
-								<i class="fas fa-globe text-xl text-blue-400"></i>
+								<i aria-hidden="true" class="fas fa-globe text-xl text-blue-400"></i>
 								<div>
 									<div class="text-sm font-medium text-white">HTTP Challenge</div>
 									<div class="text-xs text-gray-400">Port 80 must be open</div>
@@ -65,7 +67,7 @@ templ CertNewLE(data CertNewLEData) {
 						<label class="card p-4 cursor-pointer border-2 border-transparent has-[:checked]:border-primary-500">
 							<input type="radio" name="challenge_type" value="dns" class="sr-only" onchange="toggleDNS(true)"/>
 							<div class="flex items-center gap-3">
-								<i class="fas fa-dns text-xl text-green-400"></i>
+								<i aria-hidden="true" class="fas fa-dns text-xl text-green-400"></i>
 								<div>
 									<div class="text-sm font-medium text-white">DNS Challenge</div>
 									<div class="text-xs text-gray-400">Supports wildcards</div>
@@ -112,6 +114,7 @@ templ CertNewLE(data CertNewLEData) {
 						<label class="block text-sm font-medium text-gray-300 mb-2">Propagation Wait (seconds)</label>
 						<input type="number" name="propagation_seconds" value="30" min="0" max="600"
 							class="input w-32"
+							aria-label="Propagation Wait (seconds)"
 						/>
 						<p class="text-xs text-gray-500 mt-1">Time to wait for DNS propagation. Increase if validation fails.</p>
 					</div>
@@ -130,7 +133,7 @@ templ CertNewLE(data CertNewLEData) {
 				<div class="flex items-center justify-end gap-3">
 					<a href="/proxy/certificates" class="btn-secondary">Cancel</a>
 					<button type="submit" class="btn-primary">
-						<i class="fas fa-certificate mr-2"></i>Request Certificate
+						<i aria-hidden="true" class="fas fa-certificate mr-2"></i>Request Certificate
 					</button>
 				</div>
 			</form>

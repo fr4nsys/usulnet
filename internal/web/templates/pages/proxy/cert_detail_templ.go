@@ -52,7 +52,7 @@ func CertDetail(data CertDetailData) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"max-w-3xl mx-auto space-y-6\"><div class=\"flex items-center justify-between\"><div class=\"flex items-center gap-4\"><a href=\"/proxy/certificates\" class=\"p-2 text-gray-400 hover:text-white hover:bg-dark-700 rounded-lg\"><i class=\"fas fa-arrow-left\"></i></a><div><h1 class=\"text-2xl font-display font-bold text-white\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"max-w-3xl mx-auto space-y-6\"><div class=\"flex items-center justify-between\"><div class=\"flex items-center gap-4\"><a href=\"/proxy/certificates\" class=\"p-2 text-gray-400 hover:text-white hover:bg-dark-700 rounded-lg\"><i aria-hidden=\"true\" class=\"fas fa-arrow-left\"></i></a><div><h1 class=\"text-2xl font-display font-bold text-white\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -118,7 +118,7 @@ func CertDetail(data CertDetailData) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "\" hx-confirm=\"Renew this certificate?\" class=\"btn-secondary\"><i class=\"fas fa-sync-alt mr-2\"></i>Renew</button> ")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "\" hx-confirm=\"Renew this certificate?\" class=\"btn-secondary\"><i aria-hidden=\"true\" class=\"fas fa-sync-alt mr-2\"></i>Renew</button> ")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -136,22 +136,22 @@ func CertDetail(data CertDetailData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "\" class=\"btn-secondary\"><i class=\"fas fa-download mr-2\"></i>Download</a></div></div><!-- Status Cards --><div class=\"grid grid-cols-3 gap-4\"><div class=\"card p-4\"><div class=\"text-xs text-gray-500 uppercase tracking-wider mb-1\">Status</div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "\" class=\"btn-secondary\"><i aria-hidden=\"true\" class=\"fas fa-download mr-2\"></i>Download</a></div></div><!-- Status Cards --><div class=\"grid grid-cols-3 gap-4\"><div class=\"card p-4\"><div class=\"text-xs text-gray-500 uppercase tracking-wider mb-1\">Status</div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			if data.Cert.IsExpired {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "<div class=\"flex items-center gap-2 text-red-400\"><i class=\"fas fa-times-circle\"></i> <span class=\"font-medium\">Expired</span></div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "<div class=\"flex items-center gap-2 text-red-400\"><i aria-hidden=\"true\" class=\"fas fa-times-circle\"></i> <span class=\"font-medium\">Expired</span></div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			} else if data.Cert.DaysLeft < 14 {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "<div class=\"flex items-center gap-2 text-yellow-400\"><i class=\"fas fa-exclamation-triangle\"></i> <span class=\"font-medium\">Expiring Soon</span></div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "<div class=\"flex items-center gap-2 text-yellow-400\"><i aria-hidden=\"true\" class=\"fas fa-exclamation-triangle\"></i> <span class=\"font-medium\">Expiring Soon</span></div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			} else {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "<div class=\"flex items-center gap-2 text-green-400\"><i class=\"fas fa-check-circle\"></i> <span class=\"font-medium\">Valid</span></div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "<div class=\"flex items-center gap-2 text-green-400\"><i aria-hidden=\"true\" class=\"fas fa-check-circle\"></i> <span class=\"font-medium\">Valid</span></div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -251,7 +251,7 @@ func CertDetail(data CertDetailData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			for _, domain := range data.Cert.DomainNames {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 22, "<div class=\"flex items-center gap-2 py-2 px-3 bg-dark-700 rounded-lg\"><i class=\"fas fa-globe text-gray-500\"></i> <span class=\"font-mono text-sm text-white\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 22, "<div class=\"flex items-center gap-2 py-2 px-3 bg-dark-700 rounded-lg\"><i aria-hidden=\"true\" class=\"fas fa-globe text-gray-500\"></i> <span class=\"font-mono text-sm text-white\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -292,7 +292,7 @@ func CertDetail(data CertDetailData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 27, "\" hx-confirm=\"Delete this certificate? This cannot be undone.\" class=\"btn-danger\"><i class=\"fas fa-trash mr-2\"></i>Delete</button></div></div></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 27, "\" hx-confirm=\"Delete this certificate? This cannot be undone.\" class=\"btn-danger\"><i aria-hidden=\"true\" class=\"fas fa-trash mr-2\"></i>Delete</button></div></div></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

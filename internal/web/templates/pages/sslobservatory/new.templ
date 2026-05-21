@@ -17,7 +17,7 @@ templ NewTarget(data NewTargetData) {
 			<div class="max-w-3xl">
 				<div class="flex items-center gap-3 mb-6">
 					<a href="/ssl/targets" class="text-gray-400 hover:text-white">
-						<i class="fas fa-arrow-left"></i>
+						<i aria-hidden="true" class="fas fa-arrow-left"></i>
 					</a>
 					<h2 class="text-xl font-display font-bold text-white">New SSL Target</h2>
 				</div>
@@ -39,6 +39,7 @@ templ NewTarget(data NewTargetData) {
 							placeholder="My Website"
 							required
 							class="w-full bg-dark-800 border border-dark-600 text-white rounded-lg px-3 py-2 focus:ring-2 focus:ring-accent-500 focus:border-transparent"
+							aria-label="Name"
 						/>
 					</div>
 
@@ -50,6 +51,7 @@ templ NewTarget(data NewTargetData) {
 							placeholder="example.com"
 							required
 							class="w-full bg-dark-800 border border-dark-600 text-white font-mono rounded-lg px-3 py-2 focus:ring-2 focus:ring-accent-500 focus:border-transparent"
+							aria-label="Hostname"
 						/>
 					</div>
 
@@ -62,6 +64,7 @@ templ NewTarget(data NewTargetData) {
 							min="1"
 							max="65535"
 							class="w-full bg-dark-800 border border-dark-600 text-white font-mono rounded-lg px-3 py-2 focus:ring-2 focus:ring-accent-500 focus:border-transparent"
+							aria-label="Port"
 						/>
 					</div>
 
@@ -88,12 +91,13 @@ templ NewTarget(data NewTargetData) {
 							name="alert_thresholds"
 							placeholder="30,14,7,3,1"
 							class="w-full bg-dark-800 border border-dark-600 text-white font-mono rounded-lg px-3 py-2 focus:ring-2 focus:ring-accent-500 focus:border-transparent"
+							aria-label="Alert Thresholds (days) (blank = defaults 30,14,7,3,1)"
 						/>
 					</div>
 
 					<div class="flex gap-2 pt-4">
 						<button type="submit" class="btn btn-primary">
-							<i class="fas fa-plus mr-1"></i> Create Target
+							<i aria-hidden="true" class="fas fa-plus mr-1"></i> Create Target
 						</button>
 						<a href="/ssl/targets" class="btn btn-secondary">Cancel</a>
 					</div>

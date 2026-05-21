@@ -91,12 +91,12 @@ func AnsibleInventory(data AnsibleInventoryData) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"space-y-6\" x-data=\"ansibleBrowser()\"><!-- Header --><div class=\"flex items-center justify-between\"><div><h1 class=\"text-2xl font-display font-bold text-white\"><i class=\"fab fa-ansible text-primary-400 mr-2\"></i>Ansible Inventory</h1><p class=\"text-gray-400 mt-1\">Browse, analyze, and manage Ansible inventory files</p></div><div class=\"flex items-center gap-3\"><button onclick=\"document.getElementById('upload-modal').classList.remove('hidden')\" class=\"btn-secondary\"><i class=\"fas fa-upload mr-2\"></i>Upload Inventory</button> <button onclick=\"document.getElementById('paste-modal').classList.remove('hidden')\" class=\"btn-primary\"><i class=\"fas fa-paste mr-2\"></i>Paste Content</button></div></div><!-- Main Content --><div class=\"grid grid-cols-1 lg:grid-cols-4 gap-6\"><!-- Inventory Files Sidebar --><div class=\"lg:col-span-1\"><div class=\"card\"><div class=\"p-4 border-b border-dark-600\"><h2 class=\"font-semibold text-white\">Inventory Files</h2></div><div class=\"divide-y divide-dark-600\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"space-y-6\" x-data=\"ansibleBrowser()\"><!-- Header --><div class=\"flex items-center justify-between\"><div><h1 class=\"text-2xl font-display font-bold text-white\"><i aria-hidden=\"true\" class=\"fab fa-ansible text-primary-400 mr-2\"></i>Ansible Inventory</h1><p class=\"text-gray-400 mt-1\">Browse, analyze, and manage Ansible inventory files</p></div><div class=\"flex items-center gap-3\"><button onclick=\"document.getElementById('upload-modal').classList.remove('hidden')\" class=\"btn-secondary\"><i aria-hidden=\"true\" class=\"fas fa-upload mr-2\"></i>Upload Inventory</button> <button onclick=\"document.getElementById('paste-modal').classList.remove('hidden')\" class=\"btn-primary\"><i aria-hidden=\"true\" class=\"fas fa-paste mr-2\"></i>Paste Content</button></div></div><!-- Main Content --><div class=\"grid grid-cols-1 lg:grid-cols-4 gap-6\"><!-- Inventory Files Sidebar --><div class=\"lg:col-span-1\"><div class=\"card\"><div class=\"p-4 border-b border-dark-600\"><h2 class=\"font-semibold text-white\">Inventory Files</h2></div><div class=\"divide-y divide-dark-600\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			if len(data.Inventories) == 0 {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<div class=\"p-6 text-center text-gray-500\"><i class=\"fas fa-file-upload text-2xl mb-2\"></i><p class=\"text-sm\">No inventories loaded</p><p class=\"text-xs text-gray-400 mt-1\">Upload or paste an inventory file</p></div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<div class=\"p-6 text-center text-gray-500\"><i aria-hidden=\"true\" class=\"fas fa-file-upload text-2xl mb-2\"></i><p class=\"text-sm\">No inventories loaded</p><p class=\"text-xs text-gray-400 mt-1\">Upload or paste an inventory file</p></div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -310,7 +310,7 @@ func AnsibleInventory(data AnsibleInventoryData) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 21, "\" hx-target=\"body\" hx-confirm=\"Delete this inventory?\" class=\"btn-sm bg-red-500/10 text-red-400 hover:bg-red-500/20\"><i class=\"fas fa-trash mr-1\"></i>Delete</button></div></div><div class=\"mt-4 grid grid-cols-4 gap-4\"><div class=\"bg-dark-700 rounded-lg p-3 text-center\"><div class=\"text-2xl font-bold text-primary-400\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 21, "\" hx-target=\"body\" hx-confirm=\"Delete this inventory?\" class=\"btn-sm bg-red-500/10 text-red-400 hover:bg-red-500/20\"><i aria-hidden=\"true\" class=\"fas fa-trash mr-1\"></i>Delete</button></div></div><div class=\"mt-4 grid grid-cols-4 gap-4\"><div class=\"bg-dark-700 rounded-lg p-3 text-center\"><div class=\"text-2xl font-bold text-primary-400\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -362,33 +362,33 @@ func AnsibleInventory(data AnsibleInventoryData) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 25, "</div><div class=\"text-xs text-gray-500\">Size</div></div></div></div><!-- Tabs --> <div class=\"flex gap-2 border-b border-dark-600\"><button @click=\"activeTab = 'hosts'\" :class=\"activeTab === 'hosts' ? 'border-primary-400 text-primary-400' : 'border-transparent text-gray-400 hover:text-white'\" class=\"px-4 py-2.5 text-sm font-medium border-b-2 transition-colors -mb-px\"><i class=\"fas fa-server mr-2\"></i>Hosts (")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 25, "</div><div class=\"text-xs text-gray-500\">Size</div></div></div></div><!-- Tabs --> <div class=\"flex gap-2 border-b border-dark-600\"><button @click=\"activeTab = 'hosts'\" :class=\"activeTab === 'hosts' ? 'border-primary-400 text-primary-400' : 'border-transparent text-gray-400 hover:text-white'\" class=\"px-4 py-2.5 text-sm font-medium border-b-2 transition-colors -mb-px\"><i aria-hidden=\"true\" class=\"fas fa-server mr-2\"></i>Hosts (")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var24 string
 				templ_7745c5c3_Var24, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", len(data.Hosts)))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/tools/ansible.templ`, Line: 175, Col: 85}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/tools/ansible.templ`, Line: 175, Col: 104}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var24))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 26, ")</button> <button @click=\"activeTab = 'groups'\" :class=\"activeTab === 'groups' ? 'border-primary-400 text-primary-400' : 'border-transparent text-gray-400 hover:text-white'\" class=\"px-4 py-2.5 text-sm font-medium border-b-2 transition-colors -mb-px\"><i class=\"fas fa-layer-group mr-2\"></i>Groups (")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 26, ")</button> <button @click=\"activeTab = 'groups'\" :class=\"activeTab === 'groups' ? 'border-primary-400 text-primary-400' : 'border-transparent text-gray-400 hover:text-white'\" class=\"px-4 py-2.5 text-sm font-medium border-b-2 transition-colors -mb-px\"><i aria-hidden=\"true\" class=\"fas fa-layer-group mr-2\"></i>Groups (")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var25 string
 				templ_7745c5c3_Var25, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", len(data.Groups)))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/tools/ansible.templ`, Line: 182, Col: 92}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/tools/ansible.templ`, Line: 182, Col: 111}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var25))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 27, ")</button> <button @click=\"activeTab = 'variables'\" :class=\"activeTab === 'variables' ? 'border-primary-400 text-primary-400' : 'border-transparent text-gray-400 hover:text-white'\" class=\"px-4 py-2.5 text-sm font-medium border-b-2 transition-colors -mb-px\"><i class=\"fas fa-code mr-2\"></i>Variables</button> <button @click=\"activeTab = 'raw'\" :class=\"activeTab === 'raw' ? 'border-primary-400 text-primary-400' : 'border-transparent text-gray-400 hover:text-white'\" class=\"px-4 py-2.5 text-sm font-medium border-b-2 transition-colors -mb-px\"><i class=\"fas fa-file-code mr-2\"></i>Raw</button></div><!-- Hosts Tab --> <div x-show=\"activeTab === 'hosts'\" class=\"card\"><div class=\"overflow-x-auto\"><table class=\"table\"><thead><tr><th>Host</th><th>IP/Address</th><th>Port</th><th>User</th><th>Groups</th><th>Status</th></tr></thead> <tbody>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 27, ")</button> <button @click=\"activeTab = 'variables'\" :class=\"activeTab === 'variables' ? 'border-primary-400 text-primary-400' : 'border-transparent text-gray-400 hover:text-white'\" class=\"px-4 py-2.5 text-sm font-medium border-b-2 transition-colors -mb-px\"><i aria-hidden=\"true\" class=\"fas fa-code mr-2\"></i>Variables</button> <button @click=\"activeTab = 'raw'\" :class=\"activeTab === 'raw' ? 'border-primary-400 text-primary-400' : 'border-transparent text-gray-400 hover:text-white'\" class=\"px-4 py-2.5 text-sm font-medium border-b-2 transition-colors -mb-px\"><i aria-hidden=\"true\" class=\"fas fa-file-code mr-2\"></i>Raw</button></div><!-- Hosts Tab --> <div x-show=\"activeTab === 'hosts'\" class=\"card\"><div class=\"overflow-x-auto\"><table class=\"table\"><thead><tr><th scope=\"col\">Host</th><th scope=\"col\">IP/Address</th><th scope=\"col\">Port</th><th scope=\"col\">User</th><th scope=\"col\">Groups</th><th scope=\"col\">Status</th></tr></thead> <tbody>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -547,7 +547,7 @@ func AnsibleInventory(data AnsibleInventoryData) templ.Component {
 					}
 				}
 				for _, group := range data.Groups {
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 44, "<div class=\"p-4\"><div class=\"flex items-center justify-between mb-3\"><h3 class=\"font-semibold text-white flex items-center gap-2\"><i class=\"fas fa-layer-group text-blue-400\"></i> ")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 44, "<div class=\"p-4\"><div class=\"flex items-center justify-between mb-3\"><h3 class=\"font-semibold text-white flex items-center gap-2\"><i aria-hidden=\"true\" class=\"fas fa-layer-group text-blue-400\"></i> ")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
@@ -578,14 +578,14 @@ func AnsibleInventory(data AnsibleInventoryData) templ.Component {
 						return templ_7745c5c3_Err
 					}
 					for _, host := range group.Hosts {
-						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 47, "<span class=\"badge bg-dark-600 text-gray-300 text-xs\"><i class=\"fas fa-server mr-1\"></i>")
+						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 47, "<span class=\"badge bg-dark-600 text-gray-300 text-xs\"><i aria-hidden=\"true\" class=\"fas fa-server mr-1\"></i>")
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
 						var templ_7745c5c3_Var38 string
 						templ_7745c5c3_Var38, templ_7745c5c3_Err = templ.JoinStringErrs(host)
 						if templ_7745c5c3_Err != nil {
-							return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/tools/ansible.templ`, Line: 268, Col: 53}
+							return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/tools/ansible.templ`, Line: 268, Col: 72}
 						}
 						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var38))
 						if templ_7745c5c3_Err != nil {
@@ -681,7 +681,7 @@ func AnsibleInventory(data AnsibleInventoryData) templ.Component {
 					return templ_7745c5c3_Err
 				}
 			} else {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 61, "<!-- No Selection --> <div class=\"card p-12 text-center\"><i class=\"fab fa-ansible text-6xl text-gray-400 mb-4\"></i><h2 class=\"text-xl font-semibold text-white mb-2\">Ansible Inventory Browser</h2><p class=\"text-gray-400 mb-6\">Upload or select an inventory file to view hosts and groups</p><div class=\"flex justify-center gap-3\"><button onclick=\"document.getElementById('upload-modal').classList.remove('hidden')\" class=\"btn-secondary\"><i class=\"fas fa-upload mr-2\"></i>Upload File</button> <button onclick=\"document.getElementById('paste-modal').classList.remove('hidden')\" class=\"btn-primary\"><i class=\"fas fa-paste mr-2\"></i>Paste Content</button></div></div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 61, "<!-- No Selection --> <div class=\"card p-12 text-center\"><i aria-hidden=\"true\" class=\"fab fa-ansible text-6xl text-gray-400 mb-4\"></i><h2 class=\"text-xl font-semibold text-white mb-2\">Ansible Inventory Browser</h2><p class=\"text-gray-400 mb-6\">Upload or select an inventory file to view hosts and groups</p><div class=\"flex justify-center gap-3\"><button onclick=\"document.getElementById('upload-modal').classList.remove('hidden')\" class=\"btn-secondary\"><i aria-hidden=\"true\" class=\"fas fa-upload mr-2\"></i>Upload File</button> <button onclick=\"document.getElementById('paste-modal').classList.remove('hidden')\" class=\"btn-primary\"><i aria-hidden=\"true\" class=\"fas fa-paste mr-2\"></i>Paste Content</button></div></div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -737,7 +737,7 @@ func ansibleUploadModal(csrfToken string) templ.Component {
 			templ_7745c5c3_Var42 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 65, "<div id=\"upload-modal\" class=\"hidden fixed inset-0 z-50 overflow-y-auto\"><div class=\"fixed inset-0 bg-black/50\" onclick=\"document.getElementById('upload-modal').classList.add('hidden')\"></div><div class=\"relative min-h-screen flex items-center justify-center p-4\"><div class=\"relative bg-dark-800 rounded-xl border border-dark-600 max-w-lg w-full p-6\"><div class=\"flex items-center justify-between mb-6\"><h2 class=\"text-xl font-display font-bold text-white\">Upload Inventory File</h2><button onclick=\"document.getElementById('upload-modal').classList.add('hidden')\" class=\"text-gray-400 hover:text-white\"><i class=\"fas fa-times\"></i></button></div><form action=\"/tools/ansible/upload\" method=\"POST\" enctype=\"multipart/form-data\" class=\"space-y-4\"><input type=\"hidden\" name=\"csrf_token\" value=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 65, "<div id=\"upload-modal\" class=\"hidden fixed inset-0 z-50 overflow-y-auto\"><div class=\"fixed inset-0 bg-black/50\" onclick=\"document.getElementById('upload-modal').classList.add('hidden')\"></div><div class=\"relative min-h-screen flex items-center justify-center p-4\"><div class=\"relative card max-w-lg w-full p-6\"><div class=\"flex items-center justify-between mb-6\"><h2 class=\"text-xl font-display font-bold text-white\">Upload Inventory File</h2><button onclick=\"document.getElementById('upload-modal').classList.add('hidden')\" class=\"text-gray-400 hover:text-white\"><i aria-hidden=\"true\" class=\"fas fa-times\"></i></button></div><form action=\"/tools/ansible/upload\" method=\"POST\" enctype=\"multipart/form-data\" class=\"space-y-4\"><input type=\"hidden\" name=\"csrf_token\" value=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -750,7 +750,7 @@ func ansibleUploadModal(csrfToken string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 66, "\"><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Inventory File</label> <input type=\"file\" name=\"file\" required accept=\".ini,.yaml,.yml,.json,.txt\" class=\"input file:mr-4 file:py-1 file:px-3 file:rounded-lg file:border-0 file:bg-primary-500 file:text-black file:font-medium file:cursor-pointer\"><p class=\"text-xs text-gray-500 mt-1\">Supports INI, YAML, and JSON formats</p></div><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Name (optional)</label> <input type=\"text\" name=\"name\" class=\"input\" placeholder=\"e.g. Production Inventory\"></div><div class=\"flex justify-end gap-3 pt-4 border-t border-dark-600\"><button type=\"button\" onclick=\"document.getElementById('upload-modal').classList.add('hidden')\" class=\"btn-secondary\">Cancel</button> <button type=\"submit\" class=\"btn-primary\"><i class=\"fas fa-upload mr-2\"></i>Upload</button></div></form></div></div></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 66, "\"><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Inventory File</label> <input type=\"file\" name=\"file\" required accept=\".ini,.yaml,.yml,.json,.txt\" class=\"input file:mr-4 file:py-1 file:px-3 file:rounded-lg file:border-0 file:bg-primary-500 file:text-black file:font-medium file:cursor-pointer\" aria-label=\"Inventory File\"><p class=\"text-xs text-gray-500 mt-1\">Supports INI, YAML, and JSON formats</p></div><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Name (optional)</label> <input type=\"text\" name=\"name\" class=\"input\" placeholder=\"e.g. Production Inventory\" aria-label=\"e.g. Production Inventory\"></div><div class=\"flex justify-end gap-3 pt-4 border-t border-dark-600\"><button type=\"button\" onclick=\"document.getElementById('upload-modal').classList.add('hidden')\" class=\"btn-secondary\">Cancel</button> <button type=\"submit\" class=\"btn-primary\"><i aria-hidden=\"true\" class=\"fas fa-upload mr-2\"></i>Upload</button></div></form></div></div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -779,20 +779,20 @@ func ansiblePasteModal(csrfToken string) templ.Component {
 			templ_7745c5c3_Var44 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 67, "<div id=\"paste-modal\" class=\"hidden fixed inset-0 z-50 overflow-y-auto\"><div class=\"fixed inset-0 bg-black/50\" onclick=\"document.getElementById('paste-modal').classList.add('hidden')\"></div><div class=\"relative min-h-screen flex items-center justify-center p-4\"><div class=\"relative bg-dark-800 rounded-xl border border-dark-600 max-w-2xl w-full p-6\"><div class=\"flex items-center justify-between mb-6\"><h2 class=\"text-xl font-display font-bold text-white\">Paste Inventory Content</h2><button onclick=\"document.getElementById('paste-modal').classList.add('hidden')\" class=\"text-gray-400 hover:text-white\"><i class=\"fas fa-times\"></i></button></div><form action=\"/tools/ansible/parse\" method=\"POST\" class=\"space-y-4\"><input type=\"hidden\" name=\"csrf_token\" value=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 67, "<div id=\"paste-modal\" class=\"hidden fixed inset-0 z-50 overflow-y-auto\"><div class=\"fixed inset-0 bg-black/50\" onclick=\"document.getElementById('paste-modal').classList.add('hidden')\"></div><div class=\"relative min-h-screen flex items-center justify-center p-4\"><div class=\"relative card max-w-2xl w-full p-6\"><div class=\"flex items-center justify-between mb-6\"><h2 class=\"text-xl font-display font-bold text-white\">Paste Inventory Content</h2><button onclick=\"document.getElementById('paste-modal').classList.add('hidden')\" class=\"text-gray-400 hover:text-white\"><i aria-hidden=\"true\" class=\"fas fa-times\"></i></button></div><form action=\"/tools/ansible/parse\" method=\"POST\" class=\"space-y-4\"><input type=\"hidden\" name=\"csrf_token\" value=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var45 string
 		templ_7745c5c3_Var45, templ_7745c5c3_Err = templ.JoinStringErrs(csrfToken)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/tools/ansible.templ`, Line: 422, Col: 61}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/tools/ansible.templ`, Line: 423, Col: 61}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var45))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 68, "\"><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Name</label> <input type=\"text\" name=\"name\" required class=\"input\" placeholder=\"e.g. Dev Environment\"></div><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Format</label> <select name=\"format\" class=\"input\"><option value=\"auto\">Auto-detect</option> <option value=\"ini\">INI</option> <option value=\"yaml\">YAML</option> <option value=\"json\">JSON</option></select></div><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Inventory Content</label> <textarea name=\"content\" required rows=\"12\" class=\"input font-mono text-sm\" placeholder=\"[webservers]\nweb1 ansible_host=192.168.1.10\nweb2 ansible_host=192.168.1.11\n\n[databases]\ndb1 ansible_host=192.168.1.20\"></textarea></div><div class=\"flex justify-end gap-3 pt-4 border-t border-dark-600\"><button type=\"button\" onclick=\"document.getElementById('paste-modal').classList.add('hidden')\" class=\"btn-secondary\">Cancel</button> <button type=\"submit\" class=\"btn-primary\"><i class=\"fas fa-check mr-2\"></i>Parse & View</button></div></form></div></div></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 68, "\"><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Name</label> <input type=\"text\" name=\"name\" required class=\"input\" placeholder=\"e.g. Dev Environment\" aria-label=\"e.g. Dev Environment\"></div><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Format</label> <select name=\"format\" class=\"input\"><option value=\"auto\">Auto-detect</option> <option value=\"ini\">INI</option> <option value=\"yaml\">YAML</option> <option value=\"json\">JSON</option></select></div><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Inventory Content</label> <textarea name=\"content\" required rows=\"12\" class=\"input font-mono text-sm\" placeholder=\"[webservers]\nweb1 ansible_host=192.168.1.10\nweb2 ansible_host=192.168.1.11\n\n[databases]\ndb1 ansible_host=192.168.1.20\"></textarea></div><div class=\"flex justify-end gap-3 pt-4 border-t border-dark-600\"><button type=\"button\" onclick=\"document.getElementById('paste-modal').classList.add('hidden')\" class=\"btn-secondary\">Cancel</button> <button type=\"submit\" class=\"btn-primary\"><i aria-hidden=\"true\" class=\"fas fa-check mr-2\"></i>Parse & View</button></div></form></div></div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

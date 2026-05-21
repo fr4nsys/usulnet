@@ -42,10 +42,10 @@ templ List(data ConfigData) {
 				if data.WarningMessage == "" {
 					<div class="flex items-center gap-2">
 						<a href="/config/audit" class="btn-secondary">
-							<i class="fas fa-history mr-2"></i>Audit Log
+							<i aria-hidden="true" class="fas fa-history mr-2"></i>Audit Log
 						</a>
 						<button onclick="document.getElementById('new-var-modal').showModal()" class="btn-primary">
-							<i class="fas fa-plus mr-2"></i>New Variable
+							<i aria-hidden="true" class="fas fa-plus mr-2"></i>New Variable
 						</button>
 					</div>
 				}
@@ -53,7 +53,7 @@ templ List(data ConfigData) {
 
 			if data.WarningMessage != "" {
 				<div class="bg-yellow-900/30 border border-yellow-700 rounded-lg p-4 flex items-start gap-3">
-					<i class="fas fa-exclamation-triangle text-yellow-400 mt-0.5"></i>
+					<i aria-hidden="true" class="fas fa-exclamation-triangle text-yellow-400 mt-0.5"></i>
 					<div>
 						<p class="text-yellow-300 font-medium">Service Unavailable</p>
 						<p class="text-yellow-400/80 text-sm mt-1">{ data.WarningMessage }</p>
@@ -91,12 +91,12 @@ templ List(data ConfigData) {
 					<table class="table">
 						<thead>
 							<tr>
-								<th>Name</th>
-								<th>Value</th>
-								<th>Scope</th>
-								<th>Used By</th>
-								<th>Updated</th>
-								<th>Actions</th>
+								<th scope="col">Name</th>
+								<th scope="col">Value</th>
+								<th scope="col">Scope</th>
+								<th scope="col">Used By</th>
+								<th scope="col">Updated</th>
+								<th scope="col">Actions</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -107,7 +107,7 @@ templ List(data ConfigData) {
 										if v.IsSecret {
 											<span class="text-gray-500">••••••••</span>
 											<button class="ml-2 text-gray-400 hover:text-white text-xs" title="Show">
-												<i class="fas fa-eye"></i>
+												<i aria-hidden="true" class="fas fa-eye"></i>
 											</button>
 										} else {
 											<span class="text-gray-400">{ v.Value }</span>
@@ -149,7 +149,7 @@ templ List(data ConfigData) {
 				<div class="p-6 space-y-4">
 					<div>
 						<label class="block text-sm font-medium text-gray-300 mb-2">Name</label>
-						<input type="text" name="name" required class="input" placeholder="MY_VARIABLE"/>
+						<input type="text" name="name" required class="input" placeholder="MY_VARIABLE" aria-label="MY_VARIABLE"/>
 					</div>
 					<div>
 						<label class="block text-sm font-medium text-gray-300 mb-2">Value</label>

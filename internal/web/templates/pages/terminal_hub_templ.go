@@ -58,7 +58,7 @@ func TerminalHub(data TerminalHubData) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"h-[calc(100vh-180px)] bg-dark-800 rounded-xl border border-dark-600 overflow-hidden\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"h-[calc(100vh-180px)] card overflow-hidden\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -154,12 +154,12 @@ func TerminalPicker(containers []TerminalPickerContainer) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			if c.Status == "running" {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "<i class=\"fas fa-play text-green-400 text-xs\"></i>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "<i aria-hidden=\"true\" class=\"fas fa-play text-green-400 text-xs\"></i>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			} else {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "<i class=\"fas fa-stop text-gray-400 text-xs\"></i>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "<i aria-hidden=\"true\" class=\"fas fa-stop text-gray-400 text-xs\"></i>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -190,7 +190,7 @@ func TerminalPicker(containers []TerminalPickerContainer) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "</p></div><i class=\"fas fa-chevron-right text-gray-500\"></i></button>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "</p></div><i aria-hidden=\"true\" class=\"fas fa-chevron-right text-gray-500\"></i></button>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

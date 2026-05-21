@@ -8,7 +8,10 @@
 // once and then pass them through unchanged.
 package dns
 
-import "github.com/fr4nsys/usulnet/internal/web/templates/layouts"
+import (
+	"github.com/fr4nsys/usulnet/internal/web/templates/components"
+	"github.com/fr4nsys/usulnet/internal/web/templates/layouts"
+)
 
 // ProviderView is the row shape of the provider list page.
 type ProviderView struct {
@@ -108,6 +111,7 @@ type ProviderListData struct {
 	PageData     layouts.PageData
 	Providers    []ProviderView
 	Capabilities []CapabilityView
+	EmptyState   components.EmptyStateData
 }
 
 // ProviderFormData backs the new/edit forms.

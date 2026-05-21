@@ -110,6 +110,7 @@ func (h *Handler) WireGuardListTempl(w http.ResponseWriter, r *http.Request) {
 		Interfaces:   views,
 		Stats:        statsView,
 		ProbeMessage: h.wgProbeMessage(),
+		EmptyState:   EmptyStateCatalogWireGuard(),
 	}))
 }
 

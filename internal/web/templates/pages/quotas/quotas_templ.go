@@ -120,19 +120,19 @@ func Quotas(data QuotasData) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"space-y-6\"><!-- Header --><div class=\"flex items-center justify-between\"><div><h1 class=\"text-2xl font-display font-bold text-white\">Resource Quotas</h1><p class=\"text-gray-400 mt-1\">Set and monitor resource limits per host</p></div><button onclick=\"document.getElementById('createQuotaModal').classList.remove('hidden')\" class=\"btn-primary flex items-center gap-2\"><i class=\"fas fa-plus\"></i> New Quota</button></div><!-- Active Alerts -->")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"space-y-6\"><!-- Header --><div class=\"flex items-center justify-between\"><div><h1 class=\"text-2xl font-display font-bold text-white\">Resource Quotas</h1><p class=\"text-gray-400 mt-1\">Set and monitor resource limits per host</p></div><button onclick=\"document.getElementById('createQuotaModal').classList.remove('hidden')\" class=\"btn-primary flex items-center gap-2\"><i aria-hidden=\"true\" class=\"fas fa-plus\"></i> New Quota</button></div><!-- Active Alerts -->")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			if len(data.Alerts) > 0 {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<div class=\"card border-l-4 border-l-red-500 p-4\"><h3 class=\"text-sm font-medium text-red-400 mb-3\"><i class=\"fas fa-exclamation-circle mr-2\"></i>Quota Alerts (")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<div class=\"card border-l-4 border-l-red-500 p-4\"><h3 class=\"text-sm font-medium text-red-400 mb-3\"><i aria-hidden=\"true\" class=\"fas fa-exclamation-circle mr-2\"></i>Quota Alerts (")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var3 string
 				templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", len(data.Alerts)))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/quotas/quotas.templ`, Line: 104, Col: 103}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/quotas/quotas.templ`, Line: 104, Col: 122}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 				if templ_7745c5c3_Err != nil {
@@ -288,7 +288,7 @@ func Quotas(data QuotasData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			if len(data.Quotas) == 0 {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "<div class=\"card p-12 text-center\"><i class=\"fas fa-tachometer-alt text-4xl text-gray-400 mb-4\"></i><h3 class=\"text-lg font-medium text-white mb-2\">No Resource Quotas</h3><p class=\"text-gray-400 mb-4\">Set limits to prevent resource exhaustion on your Docker hosts</p></div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "<div class=\"card p-12 text-center\"><i aria-hidden=\"true\" class=\"fas fa-tachometer-alt text-4xl text-gray-400 mb-4\"></i><h3 class=\"text-lg font-medium text-white mb-2\">No Resource Quotas</h3><p class=\"text-gray-400 mb-4\">Set limits to prevent resource exhaustion on your Docker hosts</p></div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -708,12 +708,12 @@ func quotaCard(quota QuotaView, csrfToken string) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		if quota.IsEnabled {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 56, "<i class=\"fas fa-pause\"></i>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 56, "<i aria-hidden=\"true\" class=\"fas fa-pause\"></i>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		} else {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 57, "<i class=\"fas fa-play\"></i>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 57, "<i aria-hidden=\"true\" class=\"fas fa-play\"></i>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -744,7 +744,7 @@ func quotaCard(quota QuotaView, csrfToken string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 60, "\"> <button type=\"submit\" class=\"p-2 text-gray-400 hover:text-red-400 transition-colors\" title=\"Delete\"><i class=\"fas fa-trash\"></i></button></form></div></div></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 60, "\"> <button type=\"submit\" class=\"p-2 text-gray-400 hover:text-red-400 transition-colors\" title=\"Delete\"><i aria-hidden=\"true\" class=\"fas fa-trash\"></i></button></form></div></div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -773,7 +773,7 @@ func createQuotaModal(csrfToken string, hosts []HostBasic) templ.Component {
 			templ_7745c5c3_Var39 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 61, "<div id=\"createQuotaModal\" class=\"hidden fixed inset-0 z-50 flex items-center justify-center bg-black/60\"><div class=\"bg-dark-800 rounded-xl shadow-xl border border-dark-600 w-full max-w-lg mx-4\"><div class=\"flex items-center justify-between p-6 border-b border-dark-600\"><h2 class=\"text-lg font-display font-bold text-white\">Create Resource Quota</h2><button onclick=\"document.getElementById('createQuotaModal').classList.add('hidden')\" class=\"text-gray-400 hover:text-white\"><i class=\"fas fa-times\"></i></button></div><form method=\"POST\" action=\"/quotas\" class=\"p-6 space-y-4\" x-data=\"{ resourceType: 'memory' }\"><input type=\"hidden\" name=\"csrf_token\" value=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 61, "<div id=\"createQuotaModal\" class=\"hidden fixed inset-0 z-50 flex items-center justify-center bg-black/60\"><div class=\"bg-dark-800 rounded-xl shadow-xl border border-dark-600 w-full max-w-lg mx-4\"><div class=\"flex items-center justify-between p-6 border-b border-dark-600\"><h2 class=\"text-lg font-display font-bold text-white\">Create Resource Quota</h2><button onclick=\"document.getElementById('createQuotaModal').classList.add('hidden')\" class=\"text-gray-400 hover:text-white\"><i aria-hidden=\"true\" class=\"fas fa-times\"></i></button></div><form method=\"POST\" action=\"/quotas\" class=\"p-6 space-y-4\" x-data=\"{ resourceType: 'memory' }\"><input type=\"hidden\" name=\"csrf_token\" value=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -786,7 +786,7 @@ func createQuotaModal(csrfToken string, hosts []HostBasic) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 62, "\"><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Quota Name</label> <input type=\"text\" name=\"name\" required class=\"input w-full\" placeholder=\"e.g., Production memory limit\"></div><div class=\"grid grid-cols-2 gap-4\"><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Scope</label> <select name=\"scope\" class=\"input w-full\"><option value=\"global\">Global (all hosts)</option> ")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 62, "\"><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Quota Name</label> <input type=\"text\" name=\"name\" required class=\"input w-full\" placeholder=\"e.g., Production memory limit\" aria-label=\"e.g., Production memory limit\"></div><div class=\"grid grid-cols-2 gap-4\"><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Scope</label> <select name=\"scope\" class=\"input w-full\"><option value=\"global\">Global (all hosts)</option> ")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -822,7 +822,7 @@ func createQuotaModal(csrfToken string, hosts []HostBasic) templ.Component {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 66, "</select></div><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Resource Type</label> <select name=\"resource_type\" x-model=\"resourceType\" class=\"input w-full\"><option value=\"memory\">Memory</option> <option value=\"cpu\">CPU Cores</option> <option value=\"containers\">Containers</option> <option value=\"images\">Images</option> <option value=\"volumes\">Volumes</option> <option value=\"disk\">Disk Space</option></select></div></div><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Limit <span class=\"text-xs text-gray-500 ml-1\" x-text=\"resourceType === 'memory' || resourceType === 'disk' ? '(MB)' : resourceType === 'cpu' ? '(cores)' : '(count)'\"></span></label> <input type=\"number\" name=\"limit_value\" required min=\"1\" class=\"input w-full\" placeholder=\"Enter limit value\"></div><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Alert Threshold (%)</label> <input type=\"number\" name=\"alert_at\" value=\"80\" min=\"50\" max=\"100\" class=\"input w-full\"><p class=\"text-xs text-gray-500 mt-1\">Trigger alert when usage exceeds this percentage</p></div><div class=\"flex justify-end gap-3 pt-4 border-t border-dark-600\"><button type=\"button\" onclick=\"document.getElementById('createQuotaModal').classList.add('hidden')\" class=\"btn-secondary\">Cancel</button> <button type=\"submit\" class=\"btn-primary\"><i class=\"fas fa-plus mr-2\"></i>Create Quota</button></div></form></div></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 66, "</select></div><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Resource Type</label> <select name=\"resource_type\" x-model=\"resourceType\" class=\"input w-full\"><option value=\"memory\">Memory</option> <option value=\"cpu\">CPU Cores</option> <option value=\"containers\">Containers</option> <option value=\"images\">Images</option> <option value=\"volumes\">Volumes</option> <option value=\"disk\">Disk Space</option></select></div></div><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Limit <span class=\"text-xs text-gray-500 ml-1\" x-text=\"resourceType === 'memory' || resourceType === 'disk' ? '(MB)' : resourceType === 'cpu' ? '(cores)' : '(count)'\"></span></label> <input type=\"number\" name=\"limit_value\" required min=\"1\" class=\"input w-full\" placeholder=\"Enter limit value\" aria-label=\"Enter limit value\"></div><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Alert Threshold (%)</label> <input type=\"number\" name=\"alert_at\" value=\"80\" min=\"50\" max=\"100\" class=\"input w-full\"><p class=\"text-xs text-gray-500 mt-1\">Trigger alert when usage exceeds this percentage</p></div><div class=\"flex justify-end gap-3 pt-4 border-t border-dark-600\"><button type=\"button\" onclick=\"document.getElementById('createQuotaModal').classList.add('hidden')\" class=\"btn-secondary\">Cancel</button> <button type=\"submit\" class=\"btn-primary\"><i aria-hidden=\"true\" class=\"fas fa-plus mr-2\"></i>Create Quota</button></div></form></div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

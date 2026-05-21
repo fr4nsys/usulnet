@@ -94,7 +94,7 @@ func NetworkDetail(data NetworkDetailData) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"mb-6\"><div class=\"flex items-center gap-4\"><a href=\"/networks\" class=\"text-gray-400 hover:text-white\"><i class=\"fas fa-arrow-left\"></i></a><div class=\"w-12 h-12 rounded-lg bg-blue-500/20 flex items-center justify-center\"><i class=\"fas fa-network-wired text-blue-400 text-xl\"></i></div><div><h1 class=\"text-2xl font-bold font-display text-white\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"mb-6\"><div class=\"flex items-center gap-4\"><a href=\"/networks\" class=\"text-gray-400 hover:text-white\"><i aria-hidden=\"true\" class=\"fas fa-arrow-left\"></i></a><div class=\"w-12 h-12 rounded-lg bg-blue-500/20 flex items-center justify-center\"><i aria-hidden=\"true\" class=\"fas fa-network-wired text-blue-400 text-xl\"></i></div><div><h1 class=\"text-2xl font-bold font-display text-white\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -138,7 +138,7 @@ func NetworkDetail(data NetworkDetailData) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "\" hx-confirm=\"Are you sure you want to delete this network?\" class=\"px-4 py-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-lg\"><i class=\"fas fa-trash mr-2\"></i>Delete</button>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "\" hx-confirm=\"Are you sure you want to delete this network?\" class=\"px-4 py-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-lg\"><i aria-hidden=\"true\" class=\"fas fa-trash mr-2\"></i>Delete</button>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -226,7 +226,7 @@ func NetworkDetail(data NetworkDetailData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "\"><i class=\"fas fa-info-circle\"></i> <span>Overview</span></a> ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "\"><i aria-hidden=\"true\" class=\"fas fa-info-circle\"></i> <span>Overview</span></a> ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -261,7 +261,7 @@ func NetworkDetail(data NetworkDetailData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "\"><i class=\"fas fa-cube\"></i> <span>Containers (")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "\"><i aria-hidden=\"true\" class=\"fas fa-cube\"></i> <span>Containers (")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -309,7 +309,7 @@ func NetworkDetail(data NetworkDetailData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 22, "\"><i class=\"fas fa-sitemap\"></i> <span>IPAM</span></a> ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 22, "\"><i aria-hidden=\"true\" class=\"fas fa-sitemap\"></i> <span>IPAM</span></a> ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -344,7 +344,7 @@ func NetworkDetail(data NetworkDetailData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 25, "\"><i class=\"fas fa-tags\"></i> <span>Labels</span></a></nav></div><!-- Tab Content --> <div class=\"bg-dark-800 rounded-xl border border-dark-600 p-6\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 25, "\"><i aria-hidden=\"true\" class=\"fas fa-tags\"></i> <span>Labels</span></a></nav></div><!-- Tab Content --> <div class=\"card p-6\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -593,7 +593,7 @@ func networkContainersTab(net NetworkFull) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		if len(net.Containers) == 0 {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 47, "<div class=\"text-center py-8\"><div class=\"w-16 h-16 rounded-full bg-dark-700 flex items-center justify-center mx-auto mb-4\"><i class=\"fas fa-cube text-gray-500 text-2xl\"></i></div><p class=\"text-gray-400\">No containers are connected to this network</p></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 47, "<div class=\"text-center py-8\"><div class=\"w-16 h-16 rounded-full bg-dark-700 flex items-center justify-center mx-auto mb-4\"><i aria-hidden=\"true\" class=\"fas fa-cube text-gray-500 text-2xl\"></i></div><p class=\"text-gray-400\">No containers are connected to this network</p></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

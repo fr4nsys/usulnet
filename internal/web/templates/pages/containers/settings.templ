@@ -107,9 +107,9 @@ templ ContainerSettings(data ContainerSettingsData) {
 		<!-- Breadcrumb -->
 		<nav class="flex items-center gap-2 text-sm text-gray-400 mb-4">
 			<a href="/containers" class="hover:text-primary-400 transition-colors">Containers</a>
-			<i class="fas fa-chevron-right text-xs"></i>
+			<i aria-hidden="true" class="fas fa-chevron-right text-xs"></i>
 			<a href={ templ.SafeURL("/containers/" + data.Container.ID) } class="hover:text-primary-400 transition-colors">{ data.Container.Name }</a>
-			<i class="fas fa-chevron-right text-xs"></i>
+			<i aria-hidden="true" class="fas fa-chevron-right text-xs"></i>
 			<span class="text-white">Settings</span>
 		</nav>
 
@@ -151,9 +151,9 @@ templ ContainerSettings(data ContainerSettingsData) {
 
 			<div class="space-y-6">
 				<!-- Image & Basic Info -->
-				<div class="bg-dark-800 rounded-xl border border-dark-600 p-5">
+				<div class="card p-5">
 					<h2 class="text-lg font-semibold text-white mb-4">
-						<i class="fas fa-box mr-2 text-primary-400"></i>Image & Basic Info
+						<i aria-hidden="true" class="fas fa-box mr-2 text-primary-400"></i>Image & Basic Info
 					</h2>
 					<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 						<div>
@@ -165,6 +165,7 @@ templ ContainerSettings(data ContainerSettingsData) {
 								class="w-full px-3 py-2 bg-dark-900 border border-dark-500 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
 								placeholder="e.g. pihole/pihole"
 								required
+								aria-label="Docker Image"
 							/>
 						</div>
 						<div>
@@ -175,6 +176,7 @@ templ ContainerSettings(data ContainerSettingsData) {
 								value={ getImageTag(data.Container.Image) }
 								class="w-full px-3 py-2 bg-dark-900 border border-dark-500 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
 								placeholder="latest"
+								aria-label="Tag"
 							/>
 						</div>
 						<div>
@@ -185,6 +187,7 @@ templ ContainerSettings(data ContainerSettingsData) {
 								value={ data.Container.Name }
 								class="w-full px-3 py-2 bg-dark-900 border border-dark-500 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
 								required
+								aria-label="Container Name"
 							/>
 						</div>
 						<div>
@@ -195,15 +198,16 @@ templ ContainerSettings(data ContainerSettingsData) {
 								value={ data.Container.Hostname }
 								class="w-full px-3 py-2 bg-dark-900 border border-dark-500 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
 								placeholder="Container hostname"
+								aria-label="Hostname"
 							/>
 						</div>
 					</div>
 				</div>
 
 				<!-- Web UI Access -->
-				<div class="bg-dark-800 rounded-xl border border-dark-600 p-5">
+				<div class="card p-5">
 					<h2 class="text-lg font-semibold text-white mb-4">
-						<i class="fas fa-globe mr-2 text-primary-400"></i>Web UI Access
+						<i aria-hidden="true" class="fas fa-globe mr-2 text-primary-400"></i>Web UI Access
 					</h2>
 					<p class="text-sm text-gray-400 mb-4">Configure a direct link to this container's web interface. If left empty, the first exposed host port will be used automatically.</p>
 					<div class="flex flex-wrap items-end gap-2">
@@ -226,6 +230,7 @@ templ ContainerSettings(data ContainerSettingsData) {
 								value={ data.Container.WebUIHost }
 								class="w-full px-3 py-2 bg-dark-900 border border-dark-500 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
 								placeholder="(auto-detect)"
+								aria-label="Host"
 							/>
 						</div>
 						<div class="w-24">
@@ -236,6 +241,7 @@ templ ContainerSettings(data ContainerSettingsData) {
 								value={ data.Container.WebUIPort }
 								class="w-full px-3 py-2 bg-dark-900 border border-dark-500 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
 								placeholder="(auto)"
+								aria-label="Port"
 							/>
 						</div>
 						<div class="w-32">
@@ -246,6 +252,7 @@ templ ContainerSettings(data ContainerSettingsData) {
 								value={ data.Container.WebUIPath }
 								class="w-full px-3 py-2 bg-dark-900 border border-dark-500 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
 								placeholder="/admin"
+								aria-label="Path"
 							/>
 						</div>
 						<div>
@@ -257,16 +264,16 @@ templ ContainerSettings(data ContainerSettingsData) {
 									templ.KV("bg-primary-600 hover:bg-primary-700 text-white", buildWebUIURL(data.Container) != ""),
 									templ.KV("bg-dark-600 text-gray-500 cursor-not-allowed pointer-events-none", buildWebUIURL(data.Container) == "") }
 							>
-								<i class="fas fa-external-link-alt"></i>Open Web UI
+								<i aria-hidden="true" class="fas fa-external-link-alt"></i>Open Web UI
 							</a>
 						</div>
 					</div>
 				</div>
 
 				<!-- Network -->
-				<div class="bg-dark-800 rounded-xl border border-dark-600 p-5">
+				<div class="card p-5">
 					<h2 class="text-lg font-semibold text-white mb-4">
-						<i class="fas fa-network-wired mr-2 text-primary-400"></i>Network
+						<i aria-hidden="true" class="fas fa-network-wired mr-2 text-primary-400"></i>Network
 					</h2>
 					<div>
 						<label class="block text-sm font-medium text-gray-300 mb-2">Network Mode</label>
@@ -287,13 +294,13 @@ templ ContainerSettings(data ContainerSettingsData) {
 				</div>
 
 				<!-- Port Mappings -->
-				<div class="bg-dark-800 rounded-xl border border-dark-600 p-5" x-data={ fmt.Sprintf("portSettings(%s)", portSettingsJSON(data.Container.Ports)) }>
+				<div class="card p-5" x-data={ fmt.Sprintf("portSettings(%s)", portSettingsJSON(data.Container.Ports)) }>
 					<div class="flex items-center justify-between mb-4">
 						<h2 class="text-lg font-semibold text-white">
-							<i class="fas fa-plug mr-2 text-primary-400"></i>Port Mappings
+							<i aria-hidden="true" class="fas fa-plug mr-2 text-primary-400"></i>Port Mappings
 						</h2>
 						<button type="button" @click="addPort()" class="text-sm px-3 py-1.5 bg-primary-600 hover:bg-primary-700 text-white rounded-lg transition-colors">
-							<i class="fas fa-plus mr-1"></i>Add Port
+							<i aria-hidden="true" class="fas fa-plus mr-1"></i>Add Port
 						</button>
 					</div>
 					<div class="space-y-2">
@@ -312,6 +319,7 @@ templ ContainerSettings(data ContainerSettingsData) {
 										x-model="port.host"
 										class="w-full px-3 py-2 bg-dark-900 border border-dark-500 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
 										placeholder="8080"
+										aria-label="8080"
 									/>
 								</div>
 								<div class="col-span-4">
@@ -321,6 +329,7 @@ templ ContainerSettings(data ContainerSettingsData) {
 										x-model="port.container"
 										class="w-full px-3 py-2 bg-dark-900 border border-dark-500 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
 										placeholder="80"
+										aria-label="80"
 									/>
 								</div>
 								<div class="col-span-3">
@@ -335,7 +344,7 @@ templ ContainerSettings(data ContainerSettingsData) {
 								</div>
 								<div class="col-span-1 text-center">
 									<button type="button" @click="removePort(index)" class="text-red-400 hover:text-red-300 p-1">
-										<i class="fas fa-trash text-sm"></i>
+										<i aria-hidden="true" class="fas fa-trash text-sm"></i>
 									</button>
 								</div>
 							</div>
@@ -348,13 +357,13 @@ templ ContainerSettings(data ContainerSettingsData) {
 				</div>
 
 				<!-- Volume Mounts -->
-				<div class="bg-dark-800 rounded-xl border border-dark-600 p-5" x-data={ fmt.Sprintf("volumeSettings(%s)", volumeSettingsJSON(data.Container.Volumes)) }>
+				<div class="card p-5" x-data={ fmt.Sprintf("volumeSettings(%s)", volumeSettingsJSON(data.Container.Volumes)) }>
 					<div class="flex items-center justify-between mb-4">
 						<h2 class="text-lg font-semibold text-white">
-							<i class="fas fa-hdd mr-2 text-primary-400"></i>Volume Mounts
+							<i aria-hidden="true" class="fas fa-hdd mr-2 text-primary-400"></i>Volume Mounts
 						</h2>
 						<button type="button" @click="addVolume()" class="text-sm px-3 py-1.5 bg-primary-600 hover:bg-primary-700 text-white rounded-lg transition-colors">
-							<i class="fas fa-plus mr-1"></i>Add Volume
+							<i aria-hidden="true" class="fas fa-plus mr-1"></i>Add Volume
 						</button>
 					</div>
 					<div class="space-y-2">
@@ -373,6 +382,7 @@ templ ContainerSettings(data ContainerSettingsData) {
 										x-model="vol.host"
 										class="w-full px-3 py-2 bg-dark-900 border border-dark-500 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
 										placeholder="/host/path or volume_name"
+										aria-label="/host/path or volume_name"
 									/>
 								</div>
 								<div class="col-span-5">
@@ -382,6 +392,7 @@ templ ContainerSettings(data ContainerSettingsData) {
 										x-model="vol.container"
 										class="w-full px-3 py-2 bg-dark-900 border border-dark-500 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
 										placeholder="/container/path"
+										aria-label="/container/path"
 									/>
 								</div>
 								<div class="col-span-1 flex justify-center">
@@ -391,11 +402,12 @@ templ ContainerSettings(data ContainerSettingsData) {
 										x-model="vol.rw"
 										class="rounded border-dark-500 bg-dark-900 text-primary-500"
 										checked
+										aria-label="Read-write"
 									/>
 								</div>
 								<div class="col-span-1 text-center">
 									<button type="button" @click="removeVolume(index)" class="text-red-400 hover:text-red-300 p-1">
-										<i class="fas fa-trash text-sm"></i>
+										<i aria-hidden="true" class="fas fa-trash text-sm"></i>
 									</button>
 								</div>
 							</div>
@@ -408,13 +420,13 @@ templ ContainerSettings(data ContainerSettingsData) {
 				</div>
 
 				<!-- Environment Variables -->
-				<div class="bg-dark-800 rounded-xl border border-dark-600 p-5" x-data={ fmt.Sprintf("envSettings(%s)", envSettingsJSON(data.Container.EnvVars)) }>
+				<div class="card p-5" x-data={ fmt.Sprintf("envSettings(%s)", envSettingsJSON(data.Container.EnvVars)) }>
 					<div class="flex items-center justify-between mb-4">
 						<h2 class="text-lg font-semibold text-white">
-							<i class="fas fa-list mr-2 text-primary-400"></i>Environment Variables
+							<i aria-hidden="true" class="fas fa-list mr-2 text-primary-400"></i>Environment Variables
 						</h2>
 						<button type="button" @click="addEnv()" class="text-sm px-3 py-1.5 bg-primary-600 hover:bg-primary-700 text-white rounded-lg transition-colors">
-							<i class="fas fa-plus mr-1"></i>Add Variable
+							<i aria-hidden="true" class="fas fa-plus mr-1"></i>Add Variable
 						</button>
 					</div>
 					<div class="space-y-2">
@@ -432,6 +444,7 @@ templ ContainerSettings(data ContainerSettingsData) {
 										x-model="env.key"
 										class="w-full px-3 py-2 bg-dark-900 border border-dark-500 rounded-lg text-white text-sm font-mono focus:outline-none focus:ring-2 focus:ring-primary-500"
 										placeholder="VARIABLE_NAME"
+										aria-label="VARIABLE_NAME"
 									/>
 								</div>
 								<div class="col-span-6">
@@ -441,11 +454,12 @@ templ ContainerSettings(data ContainerSettingsData) {
 										x-model="env.value"
 										class="w-full px-3 py-2 bg-dark-900 border border-dark-500 rounded-lg text-white text-sm font-mono focus:outline-none focus:ring-2 focus:ring-primary-500"
 										placeholder="value"
+										aria-label="value"
 									/>
 								</div>
 								<div class="col-span-1 text-center">
 									<button type="button" @click="removeEnv(index)" class="text-red-400 hover:text-red-300 p-1">
-										<i class="fas fa-trash text-sm"></i>
+										<i aria-hidden="true" class="fas fa-trash text-sm"></i>
 									</button>
 								</div>
 							</div>
@@ -458,13 +472,13 @@ templ ContainerSettings(data ContainerSettingsData) {
 				</div>
 
 				<!-- Devices -->
-				<div class="bg-dark-800 rounded-xl border border-dark-600 p-5" x-data={ fmt.Sprintf("deviceSettings(%s)", deviceSettingsJSON(data.Container.Devices)) }>
+				<div class="card p-5" x-data={ fmt.Sprintf("deviceSettings(%s)", deviceSettingsJSON(data.Container.Devices)) }>
 					<div class="flex items-center justify-between mb-4">
 						<h2 class="text-lg font-semibold text-white">
-							<i class="fas fa-microchip mr-2 text-primary-400"></i>Devices
+							<i aria-hidden="true" class="fas fa-microchip mr-2 text-primary-400"></i>Devices
 						</h2>
 						<button type="button" @click="addDevice()" class="text-sm px-3 py-1.5 bg-primary-600 hover:bg-primary-700 text-white rounded-lg transition-colors">
-							<i class="fas fa-plus mr-1"></i>Add Device
+							<i aria-hidden="true" class="fas fa-plus mr-1"></i>Add Device
 						</button>
 					</div>
 					<div class="space-y-2">
@@ -482,6 +496,7 @@ templ ContainerSettings(data ContainerSettingsData) {
 										x-model="dev.host"
 										class="w-full px-3 py-2 bg-dark-900 border border-dark-500 rounded-lg text-white text-sm font-mono focus:outline-none focus:ring-2 focus:ring-primary-500"
 										placeholder="/dev/dri"
+										aria-label="/dev/dri"
 									/>
 								</div>
 								<div class="col-span-6">
@@ -491,11 +506,12 @@ templ ContainerSettings(data ContainerSettingsData) {
 										x-model="dev.container"
 										class="w-full px-3 py-2 bg-dark-900 border border-dark-500 rounded-lg text-white text-sm font-mono focus:outline-none focus:ring-2 focus:ring-primary-500"
 										placeholder="/dev/dri"
+										aria-label="/dev/dri"
 									/>
 								</div>
 								<div class="col-span-1 text-center">
 									<button type="button" @click="removeDevice(index)" class="text-red-400 hover:text-red-300 p-1">
-										<i class="fas fa-trash text-sm"></i>
+										<i aria-hidden="true" class="fas fa-trash text-sm"></i>
 									</button>
 								</div>
 							</div>
@@ -508,9 +524,9 @@ templ ContainerSettings(data ContainerSettingsData) {
 				</div>
 
 				<!-- Command & Execution -->
-				<div class="bg-dark-800 rounded-xl border border-dark-600 p-5">
+				<div class="card p-5">
 					<h2 class="text-lg font-semibold text-white mb-4">
-						<i class="fas fa-terminal mr-2 text-primary-400"></i>Command & Execution
+						<i aria-hidden="true" class="fas fa-terminal mr-2 text-primary-400"></i>Command & Execution
 					</h2>
 					<div class="space-y-4">
 						<div>
@@ -521,6 +537,7 @@ templ ContainerSettings(data ContainerSettingsData) {
 								value={ data.Container.Command }
 								class="w-full px-3 py-2 bg-dark-900 border border-dark-500 rounded-lg text-white text-sm font-mono focus:outline-none focus:ring-2 focus:ring-primary-500"
 								placeholder="e.g. /bin/sh -c 'echo hello'"
+								aria-label="Container Command"
 							/>
 							<p class="text-xs text-gray-500 mt-1">Override the default container command</p>
 						</div>
@@ -528,9 +545,9 @@ templ ContainerSettings(data ContainerSettingsData) {
 				</div>
 
 				<!-- Resources -->
-				<div class="bg-dark-800 rounded-xl border border-dark-600 p-5">
+				<div class="card p-5">
 					<h2 class="text-lg font-semibold text-white mb-4">
-						<i class="fas fa-tachometer-alt mr-2 text-primary-400"></i>Resources
+						<i aria-hidden="true" class="fas fa-tachometer-alt mr-2 text-primary-400"></i>Resources
 					</h2>
 					<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
 						<div>
@@ -542,6 +559,7 @@ templ ContainerSettings(data ContainerSettingsData) {
 								class="w-full px-3 py-2 bg-dark-900 border border-dark-500 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
 								placeholder="0 = unlimited"
 								min="0"
+								aria-label="Memory Limit (MB)"
 							/>
 						</div>
 						<div>
@@ -553,6 +571,7 @@ templ ContainerSettings(data ContainerSettingsData) {
 								class="w-full px-3 py-2 bg-dark-900 border border-dark-500 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
 								placeholder="1024 = default"
 								min="0"
+								aria-label="CPU Shares"
 							/>
 						</div>
 						<div>
@@ -565,15 +584,16 @@ templ ContainerSettings(data ContainerSettingsData) {
 								placeholder="0 = unlimited"
 								min="0"
 								step="0.01"
+								aria-label="CPUs (NanoCPUs / 1e9)"
 							/>
 						</div>
 					</div>
 				</div>
 
 				<!-- Security & Privileges -->
-				<div class="bg-dark-800 rounded-xl border border-dark-600 p-5">
+				<div class="card p-5">
 					<h2 class="text-lg font-semibold text-white mb-4">
-						<i class="fas fa-shield-alt mr-2 text-primary-400"></i>Security & Privileges
+						<i aria-hidden="true" class="fas fa-shield-alt mr-2 text-primary-400"></i>Security & Privileges
 					</h2>
 					<div class="space-y-4">
 						<div class="flex items-center gap-3">
@@ -590,7 +610,7 @@ templ ContainerSettings(data ContainerSettingsData) {
 								<div class="w-11 h-6 bg-dark-600 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-primary-500 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-600"></div>
 								<span class="ms-3 text-sm font-medium text-gray-300">Privileged Mode</span>
 							</label>
-							<span class="text-xs text-yellow-400"><i class="fas fa-exclamation-triangle mr-1"></i>Full access to host</span>
+							<span class="text-xs text-yellow-400"><i aria-hidden="true" class="fas fa-exclamation-triangle mr-1"></i>Full access to host</span>
 						</div>
 						<div>
 							<label class="block text-sm font-medium text-gray-300 mb-2">Restart Policy</label>
@@ -608,13 +628,13 @@ templ ContainerSettings(data ContainerSettingsData) {
 				</div>
 
 				<!-- Capabilities -->
-				<div class="bg-dark-800 rounded-xl border border-dark-600 p-5" x-data={ fmt.Sprintf("capSettings(%s)", capSettingsJSON(data.Container.CapAdd)) }>
+				<div class="card p-5" x-data={ fmt.Sprintf("capSettings(%s)", capSettingsJSON(data.Container.CapAdd)) }>
 					<div class="flex items-center justify-between mb-4">
 						<h2 class="text-lg font-semibold text-white">
-							<i class="fas fa-key mr-2 text-primary-400"></i>Capabilities (cap-add)
+							<i aria-hidden="true" class="fas fa-key mr-2 text-primary-400"></i>Capabilities (cap-add)
 						</h2>
 						<button type="button" @click="addCap()" class="text-sm px-3 py-1.5 bg-primary-600 hover:bg-primary-700 text-white rounded-lg transition-colors">
-							<i class="fas fa-plus mr-1"></i>Add Capability
+							<i aria-hidden="true" class="fas fa-plus mr-1"></i>Add Capability
 						</button>
 					</div>
 					<div class="space-y-2">
@@ -646,7 +666,7 @@ templ ContainerSettings(data ContainerSettingsData) {
 									<option value="KILL">KILL</option>
 								</select>
 								<button type="button" @click="removeCap(index)" class="text-red-400 hover:text-red-300 p-1">
-									<i class="fas fa-trash text-sm"></i>
+									<i aria-hidden="true" class="fas fa-trash text-sm"></i>
 								</button>
 							</div>
 						</template>
@@ -658,9 +678,9 @@ templ ContainerSettings(data ContainerSettingsData) {
 				</div>
 
 				<!-- Actions -->
-				<div class="flex items-center justify-between bg-dark-800 rounded-xl border border-dark-600 p-5">
+				<div class="flex items-center justify-between card p-5">
 					<div class="text-sm text-gray-400">
-						<i class="fas fa-info-circle mr-1"></i>
+						<i aria-hidden="true" class="fas fa-info-circle mr-1"></i>
 						Saving settings will stop and recreate the container with the new configuration.
 					</div>
 					<div class="flex items-center gap-3">
@@ -672,7 +692,7 @@ templ ContainerSettings(data ContainerSettingsData) {
 							onclick="return confirm('This will recreate the container with the new settings. Continue?')"
 							class="px-6 py-2.5 bg-primary-600 hover:bg-primary-700 text-white font-medium rounded-lg transition-colors"
 						>
-							<i class="fas fa-save mr-2"></i>Save & Recreate
+							<i aria-hidden="true" class="fas fa-save mr-2"></i>Save & Recreate
 						</button>
 					</div>
 				</div>
@@ -749,7 +769,7 @@ templ ContainerSettingsSummary(data ContainerSettingsData) {
 			<div>
 				<span class="text-xs text-gray-500 block">Privileged</span>
 				if data.Container.Privileged {
-					<span class="text-sm text-yellow-400"><i class="fas fa-exclamation-triangle mr-1"></i>Yes</span>
+					<span class="text-sm text-yellow-400"><i aria-hidden="true" class="fas fa-exclamation-triangle mr-1"></i>Yes</span>
 				} else {
 					<span class="text-sm text-gray-400">No</span>
 				}
@@ -759,7 +779,7 @@ templ ContainerSettingsSummary(data ContainerSettingsData) {
 		<!-- Ports -->
 		if len(data.Container.Ports) > 0 {
 			<div>
-				<span class="text-xs text-gray-500 block mb-1"><i class="fas fa-plug mr-1"></i>Port Mappings</span>
+				<span class="text-xs text-gray-500 block mb-1"><i aria-hidden="true" class="fas fa-plug mr-1"></i>Port Mappings</span>
 				<div class="flex flex-wrap gap-2">
 					for _, p := range data.Container.Ports {
 						<span class="px-2 py-1 bg-dark-700 rounded text-xs text-gray-300 font-mono">
@@ -773,7 +793,7 @@ templ ContainerSettingsSummary(data ContainerSettingsData) {
 		<!-- Volumes -->
 		if len(data.Container.Volumes) > 0 {
 			<div>
-				<span class="text-xs text-gray-500 block mb-1"><i class="fas fa-hdd mr-1"></i>Volumes</span>
+				<span class="text-xs text-gray-500 block mb-1"><i aria-hidden="true" class="fas fa-hdd mr-1"></i>Volumes</span>
 				<div class="space-y-1">
 					for _, v := range data.Container.Volumes {
 						<div class="text-xs text-gray-300 font-mono">
@@ -790,7 +810,7 @@ templ ContainerSettingsSummary(data ContainerSettingsData) {
 		<!-- Env vars (count only) -->
 		if len(data.Container.EnvVars) > 0 {
 			<div>
-				<span class="text-xs text-gray-500"><i class="fas fa-list mr-1"></i>Environment Variables: { fmt.Sprintf("%d", len(data.Container.EnvVars)) } configured</span>
+				<span class="text-xs text-gray-500"><i aria-hidden="true" class="fas fa-list mr-1"></i>Environment Variables: { fmt.Sprintf("%d", len(data.Container.EnvVars)) } configured</span>
 			</div>
 		}
 
@@ -798,13 +818,13 @@ templ ContainerSettingsSummary(data ContainerSettingsData) {
 		if data.Container.MemoryLimit > 0 || data.Container.CPUShares > 0 || data.Container.NanoCPUs > 0 {
 			<div class="flex flex-wrap gap-4">
 				if data.Container.MemoryLimit > 0 {
-					<span class="text-xs text-gray-400"><i class="fas fa-memory mr-1"></i>Memory: { formatMemoryMB(data.Container.MemoryLimit) }MB</span>
+					<span class="text-xs text-gray-400"><i aria-hidden="true" class="fas fa-memory mr-1"></i>Memory: { formatMemoryMB(data.Container.MemoryLimit) }MB</span>
 				}
 				if data.Container.CPUShares > 0 {
-					<span class="text-xs text-gray-400"><i class="fas fa-microchip mr-1"></i>CPU Shares: { fmt.Sprintf("%d", data.Container.CPUShares) }</span>
+					<span class="text-xs text-gray-400"><i aria-hidden="true" class="fas fa-microchip mr-1"></i>CPU Shares: { fmt.Sprintf("%d", data.Container.CPUShares) }</span>
 				}
 				if data.Container.NanoCPUs > 0 {
-					<span class="text-xs text-gray-400"><i class="fas fa-microchip mr-1"></i>CPUs: { formatNanoCPUs(data.Container.NanoCPUs) }</span>
+					<span class="text-xs text-gray-400"><i aria-hidden="true" class="fas fa-microchip mr-1"></i>CPUs: { formatNanoCPUs(data.Container.NanoCPUs) }</span>
 				}
 			</div>
 		}
@@ -815,7 +835,7 @@ templ ContainerSettingsSummary(data ContainerSettingsData) {
 				href={ templ.SafeURL("/containers/" + data.Container.ID + "/settings") }
 				class="text-sm text-primary-400 hover:text-primary-300 transition-colors"
 			>
-				<i class="fas fa-edit mr-1"></i>Edit Full Settings
+				<i aria-hidden="true" class="fas fa-edit mr-1"></i>Edit Full Settings
 			</a>
 		</div>
 	</div>

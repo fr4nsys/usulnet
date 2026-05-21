@@ -69,7 +69,7 @@ func Detail(data DetailData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<div class=\"max-w-5xl\"><!-- Header --><div class=\"flex items-center gap-3 mb-6\"><a href=\"/image-builder\" class=\"text-gray-400 hover:text-white\"><i class=\"fas fa-arrow-left\"></i></a><div><h2 class=\"text-xl font-display font-bold text-white\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<div class=\"max-w-5xl\"><!-- Header --><div class=\"flex items-center gap-3 mb-6\"><a href=\"/image-builder\" class=\"text-gray-400 hover:text-white\"><i aria-hidden=\"true\" class=\"fas fa-arrow-left\"></i></a><div><h2 class=\"text-xl font-display font-bold text-white\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -143,7 +143,7 @@ func Detail(data DetailData) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "\"><i class=\"fas fa-shield-alt mr-1\"></i>Signed</span>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "\"><i aria-hidden=\"true\" class=\"fas fa-shield-alt mr-1\"></i>Signed</span>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -213,7 +213,7 @@ func Detail(data DetailData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			if data.Build.ErrorMessage != "" {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "<div class=\"bg-red-500/10 border border-red-500/20 rounded-lg p-4 mb-6\"><h4 class=\"font-medium text-red-400 mb-1\"><i class=\"fas fa-exclamation-triangle mr-1\"></i>Error</h4><p class=\"text-sm text-red-300 font-mono whitespace-pre-wrap\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "<div class=\"bg-red-500/10 border border-red-500/20 rounded-lg p-4 mb-6\"><h4 class=\"font-medium text-red-400 mb-1\"><i aria-hidden=\"true\" class=\"fas fa-exclamation-triangle mr-1\"></i>Error</h4><p class=\"text-sm text-red-300 font-mono whitespace-pre-wrap\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}

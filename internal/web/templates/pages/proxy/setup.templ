@@ -67,7 +67,7 @@ templ Setup(data SetupData) {
 							<form method="POST" action="/proxy/setup/test">
 								<input type="hidden" name="csrf_token" value={ data.PageData.CSRFToken }/>
 								<button type="submit" class="btn btn-sm btn-secondary">
-									<i class="fas fa-heartbeat mr-1"></i> Health Check
+									<i aria-hidden="true" class="fas fa-heartbeat mr-1"></i> Health Check
 								</button>
 							</form>
 						</div>
@@ -75,7 +75,7 @@ templ Setup(data SetupData) {
 
 					<div class="bg-dark-800/50 border border-dark-700 rounded-lg p-4">
 						<p class="text-sm text-gray-400">
-							<i class="fas fa-info-circle text-primary-400 mr-2"></i>
+							<i aria-hidden="true" class="fas fa-info-circle text-primary-400 mr-2"></i>
 							Caddy proxy is automatically configured. Manage proxy hosts from the
 							<a href="/proxy" class="text-primary-400 hover:text-primary-300">Proxy Hosts</a> page.
 							To switch to Nginx Proxy Manager (NPM), configure NPM in your docker-compose and restart usulnet.
@@ -114,13 +114,13 @@ templ Setup(data SetupData) {
 								<form method="POST" action="/proxy/setup/test">
 									<input type="hidden" name="csrf_token" value={ data.PageData.CSRFToken }/>
 									<button type="submit" class="btn btn-sm btn-secondary">
-										<i class="fas fa-heartbeat mr-1"></i> Test Connection
+										<i aria-hidden="true" class="fas fa-heartbeat mr-1"></i> Test Connection
 									</button>
 								</form>
 								<form method="POST" action="/proxy/setup/delete" onsubmit="return confirm('Delete NPM connection?')">
 									<input type="hidden" name="csrf_token" value={ data.PageData.CSRFToken }/>
 									<button type="submit" class="btn btn-sm btn-danger">
-										<i class="fas fa-trash mr-1"></i> Disconnect
+										<i aria-hidden="true" class="fas fa-trash mr-1"></i> Disconnect
 									</button>
 								</form>
 							</div>
@@ -139,6 +139,7 @@ templ Setup(data SetupData) {
 								placeholder="http://npm:81"
 								required
 								class="w-full bg-dark-800 border border-dark-600 text-white rounded-lg px-3 py-2 focus:ring-2 focus:ring-accent-500 focus:border-transparent"
+								aria-label="NPM Base URL"
 							/>
 							<p class="text-gray-500 text-xs mt-1">The NPM admin API URL (usually port 81)</p>
 						</div>
@@ -151,6 +152,7 @@ templ Setup(data SetupData) {
 								placeholder="admin@example.com"
 								required
 								class="w-full bg-dark-800 border border-dark-600 text-white rounded-lg px-3 py-2 focus:ring-2 focus:ring-accent-500 focus:border-transparent"
+								aria-label="Admin Email"
 							/>
 						</div>
 						<div>
@@ -160,6 +162,7 @@ templ Setup(data SetupData) {
 								name="admin_password"
 								placeholder={ templ.EscapeString(func() string { if data.Connected { return "••••••••" }; return "Enter password" }()) }
 								class="w-full bg-dark-800 border border-dark-600 text-white rounded-lg px-3 py-2 focus:ring-2 focus:ring-accent-500 focus:border-transparent"
+								aria-label="Admin Password"
 							/>
 							if data.Connected {
 								<p class="text-gray-500 text-xs mt-1">Leave empty to keep current password</p>
@@ -167,9 +170,9 @@ templ Setup(data SetupData) {
 						</div>
 						<button type="submit" class="btn btn-primary">
 							if data.Connected {
-								<i class="fas fa-save mr-1"></i> Update Connection
+								<i aria-hidden="true" class="fas fa-save mr-1"></i> Update Connection
 							} else {
-								<i class="fas fa-plug mr-1"></i> Connect to NPM
+								<i aria-hidden="true" class="fas fa-plug mr-1"></i> Connect to NPM
 							}
 						</button>
 					</form>

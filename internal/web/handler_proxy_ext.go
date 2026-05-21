@@ -60,6 +60,19 @@ func (h *Handler) CertNewCustomTempl(w http.ResponseWriter, r *http.Request) {
 	h.renderTempl(w, r, proxy.CertNewCustom(data))
 }
 
+// certCreateLEForm captures the Let's Encrypt certificate request
+// inputs. The challenge_type is a discriminator; dns_provider /
+// dns_credentials are only consulted when it equals "dns".
+type certCreateLEForm struct {
+	DomainNames        string `form:"domain_names" validate:"required"`
+	Email              string `form:"email"`
+	Agree              bool   `form:"agree"`
+	ChallengeType      string `form:"challenge_type"`
+	DNSProvider        string `form:"dns_provider"`
+	DNSCredentials     string `form:"dns_credentials"`
+	PropagationSeconds int    `form:"propagation_seconds" validate:"gte=0"`
+}
+
 func (h *Handler) CertCreateLE(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	proxySvc := h.services.Proxy()
@@ -68,22 +81,18 @@ func (h *Handler) CertCreateLE(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/proxy/certificates", http.StatusSeeOther)
 		return
 	}
-	if err := r.ParseForm(); err != nil {
-		http.Redirect(w, r, "/proxy/certificates/new/letsencrypt", http.StatusSeeOther)
+	var form certCreateLEForm
+	if msg := BindForm(r, &form); msg != "" {
+		pageData := h.prepareTemplPageData(r, "New Let's Encrypt Certificate", "proxy")
+		data := proxy.CertNewLEData{PageData: pageData, Error: msg}
+		h.renderTempl(w, r, proxy.CertNewLE(data))
 		return
 	}
 
-	domainsRaw := r.FormValue("domain_names")
-	domains := splitAndTrim(domainsRaw)
-	email := r.FormValue("email")
-	agree := r.FormValue("agree") == "on"
-	challengeType := r.FormValue("challenge_type")
-	dnsChallenge := challengeType == "dns"
-	dnsProvider := r.FormValue("dns_provider")
-	dnsCredentials := r.FormValue("dns_credentials")
-	propagation, _ := strconv.Atoi(r.FormValue("propagation_seconds"))
+	domains := splitAndTrim(form.DomainNames)
+	dnsChallenge := form.ChallengeType == "dns"
 
-	if err := proxySvc.RequestLECertificate(ctx, domains, email, agree, dnsChallenge, dnsProvider, dnsCredentials, propagation); err != nil {
+	if err := proxySvc.RequestLECertificate(ctx, domains, form.Email, form.Agree, dnsChallenge, form.DNSProvider, form.DNSCredentials, form.PropagationSeconds); err != nil {
 		slog.Error("Failed to request LE certificate", "error", err)
 		pageData := h.prepareTemplPageData(r, "New Let's Encrypt Certificate", "proxy")
 		data := proxy.CertNewLEData{PageData: pageData, Error: err.Error()}
@@ -259,6 +268,20 @@ func (h *Handler) RedirNewTempl(w http.ResponseWriter, r *http.Request) {
 	h.renderTempl(w, r, proxy.RedirForm(data))
 }
 
+// proxyRedirForm captures the redirection inputs shared between
+// Create and Update. enabled is only honoured by Update — Create
+// hardcodes the redirection as enabled.
+type proxyRedirForm struct {
+	DomainNames     string `form:"domain_names" validate:"required"`
+	ForwardScheme   string `form:"forward_scheme"`
+	ForwardDomain   string `form:"forward_domain" validate:"required"`
+	ForwardHTTPCode int    `form:"forward_http_code" validate:"gte=0,lte=599"`
+	PreservePath    bool   `form:"preserve_path"`
+	SSLForced       bool   `form:"ssl_forced"`
+	CertificateID   int    `form:"certificate_id" validate:"gte=0"`
+	Enabled         bool   `form:"enabled"`
+}
+
 func (h *Handler) RedirCreate(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	proxySvc := h.services.Proxy()
@@ -267,22 +290,21 @@ func (h *Handler) RedirCreate(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/proxy/redirections", http.StatusSeeOther)
 		return
 	}
-	if err := r.ParseForm(); err != nil {
+	var form proxyRedirForm
+	if msg := BindForm(r, &form); msg != "" {
+		h.setFlash(w, r, "error", msg)
 		http.Redirect(w, r, "/proxy/redirections/new", http.StatusSeeOther)
 		return
 	}
 
-	httpCode, _ := strconv.Atoi(r.FormValue("forward_http_code"))
-	certID, _ := strconv.Atoi(r.FormValue("certificate_id"))
-
 	rv := &RedirectionHostView{
-		DomainNames:     splitAndTrim(r.FormValue("domain_names")),
-		ForwardScheme:   r.FormValue("forward_scheme"),
-		ForwardDomain:   r.FormValue("forward_domain"),
-		ForwardHTTPCode: httpCode,
-		PreservePath:    r.FormValue("preserve_path") == "on",
-		SSLForced:       r.FormValue("ssl_forced") == "on",
-		CertificateID:   certID,
+		DomainNames:     splitAndTrim(form.DomainNames),
+		ForwardScheme:   form.ForwardScheme,
+		ForwardDomain:   form.ForwardDomain,
+		ForwardHTTPCode: form.ForwardHTTPCode,
+		PreservePath:    form.PreservePath,
+		SSLForced:       form.SSLForced,
+		CertificateID:   form.CertificateID,
 	}
 
 	if err := proxySvc.CreateRedirection(ctx, rv); err != nil {
@@ -350,24 +372,23 @@ func (h *Handler) RedirUpdate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	id, _ := strconv.Atoi(chi.URLParam(r, "id"))
-	if err := r.ParseForm(); err != nil {
+	var form proxyRedirForm
+	if msg := BindForm(r, &form); msg != "" {
+		h.setFlash(w, r, "error", msg)
 		http.Redirect(w, r, "/proxy/redirections", http.StatusSeeOther)
 		return
 	}
 
-	httpCode, _ := strconv.Atoi(r.FormValue("forward_http_code"))
-	certID, _ := strconv.Atoi(r.FormValue("certificate_id"))
-
 	rv := &RedirectionHostView{
 		ID:              id,
-		DomainNames:     splitAndTrim(r.FormValue("domain_names")),
-		ForwardScheme:   r.FormValue("forward_scheme"),
-		ForwardDomain:   r.FormValue("forward_domain"),
-		ForwardHTTPCode: httpCode,
-		PreservePath:    r.FormValue("preserve_path") == "on",
-		SSLForced:       r.FormValue("ssl_forced") == "on",
-		CertificateID:   certID,
-		Enabled:         r.FormValue("enabled") == "on",
+		DomainNames:     splitAndTrim(form.DomainNames),
+		ForwardScheme:   form.ForwardScheme,
+		ForwardDomain:   form.ForwardDomain,
+		ForwardHTTPCode: form.ForwardHTTPCode,
+		PreservePath:    form.PreservePath,
+		SSLForced:       form.SSLForced,
+		CertificateID:   form.CertificateID,
+		Enabled:         form.Enabled,
 	}
 
 	if err := proxySvc.UpdateRedirection(ctx, rv); err != nil {
@@ -459,6 +480,17 @@ func (h *Handler) StreamNewTempl(w http.ResponseWriter, r *http.Request) {
 	h.renderTempl(w, r, proxy.StreamForm(data))
 }
 
+// proxyStreamForm captures the proxy-stream inputs shared
+// between Create and Update.
+type proxyStreamForm struct {
+	IncomingPort   int    `form:"incoming_port" validate:"required,gte=1,lte=65535"`
+	ForwardingHost string `form:"forwarding_host" validate:"required"`
+	ForwardingPort int    `form:"forwarding_port" validate:"required,gte=1,lte=65535"`
+	TCPForwarding  bool   `form:"tcp_forwarding"`
+	UDPForwarding  bool   `form:"udp_forwarding"`
+	Enabled        bool   `form:"enabled"`
+}
+
 func (h *Handler) StreamCreate(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	proxySvc := h.services.Proxy()
@@ -467,20 +499,19 @@ func (h *Handler) StreamCreate(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/proxy/streams", http.StatusSeeOther)
 		return
 	}
-	if err := r.ParseForm(); err != nil {
+	var form proxyStreamForm
+	if msg := BindForm(r, &form); msg != "" {
+		h.setFlash(w, r, "error", msg)
 		http.Redirect(w, r, "/proxy/streams/new", http.StatusSeeOther)
 		return
 	}
 
-	inPort, _ := strconv.Atoi(r.FormValue("incoming_port"))
-	fwdPort, _ := strconv.Atoi(r.FormValue("forwarding_port"))
-
 	sv := &StreamView{
-		IncomingPort:   inPort,
-		ForwardingHost: r.FormValue("forwarding_host"),
-		ForwardingPort: fwdPort,
-		TCPForwarding:  r.FormValue("tcp_forwarding") == "on",
-		UDPForwarding:  r.FormValue("udp_forwarding") == "on",
+		IncomingPort:   form.IncomingPort,
+		ForwardingHost: form.ForwardingHost,
+		ForwardingPort: form.ForwardingPort,
+		TCPForwarding:  form.TCPForwarding,
+		UDPForwarding:  form.UDPForwarding,
 	}
 
 	if err := proxySvc.CreateStream(ctx, sv); err != nil {
@@ -538,22 +569,21 @@ func (h *Handler) StreamUpdate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	id, _ := strconv.Atoi(chi.URLParam(r, "id"))
-	if err := r.ParseForm(); err != nil {
+	var form proxyStreamForm
+	if msg := BindForm(r, &form); msg != "" {
+		h.setFlash(w, r, "error", msg)
 		http.Redirect(w, r, "/proxy/streams", http.StatusSeeOther)
 		return
 	}
 
-	inPort, _ := strconv.Atoi(r.FormValue("incoming_port"))
-	fwdPort, _ := strconv.Atoi(r.FormValue("forwarding_port"))
-
 	sv := &StreamView{
 		ID:             id,
-		IncomingPort:   inPort,
-		ForwardingHost: r.FormValue("forwarding_host"),
-		ForwardingPort: fwdPort,
-		TCPForwarding:  r.FormValue("tcp_forwarding") == "on",
-		UDPForwarding:  r.FormValue("udp_forwarding") == "on",
-		Enabled:        r.FormValue("enabled") == "on",
+		IncomingPort:   form.IncomingPort,
+		ForwardingHost: form.ForwardingHost,
+		ForwardingPort: form.ForwardingPort,
+		TCPForwarding:  form.TCPForwarding,
+		UDPForwarding:  form.UDPForwarding,
+		Enabled:        form.Enabled,
 	}
 
 	if err := proxySvc.UpdateStream(ctx, sv); err != nil {
@@ -641,6 +671,13 @@ func (h *Handler) DeadNewTempl(w http.ResponseWriter, r *http.Request) {
 	h.renderTempl(w, r, proxy.DeadForm(data))
 }
 
+// deadHostCreateForm captures the 404 / dead-host inputs.
+type deadHostCreateForm struct {
+	DomainNames   string `form:"domain_names" validate:"required"`
+	SSLForced     bool   `form:"ssl_forced"`
+	CertificateID int    `form:"certificate_id" validate:"gte=0"`
+}
+
 func (h *Handler) DeadCreate(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	proxySvc := h.services.Proxy()
@@ -649,17 +686,17 @@ func (h *Handler) DeadCreate(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/proxy/dead-hosts", http.StatusSeeOther)
 		return
 	}
-	if err := r.ParseForm(); err != nil {
+	var form deadHostCreateForm
+	if msg := BindForm(r, &form); msg != "" {
+		h.setFlash(w, r, "error", msg)
 		http.Redirect(w, r, "/proxy/dead-hosts/new", http.StatusSeeOther)
 		return
 	}
 
-	certID, _ := strconv.Atoi(r.FormValue("certificate_id"))
-
 	dv := &DeadHostView{
-		DomainNames: splitAndTrim(r.FormValue("domain_names")),
-		SSLForced:   r.FormValue("ssl_forced") == "on",
-		CertID:      certID,
+		DomainNames: splitAndTrim(form.DomainNames),
+		SSLForced:   form.SSLForced,
+		CertID:      form.CertificateID,
 		Enabled:     true,
 	}
 

@@ -96,7 +96,7 @@ func Changes(data ChangesData) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div x-data=\"{ showDiff: false, diffData: null }\" class=\"space-y-6\"><!-- Header --><div class=\"flex items-center justify-between\"><div><h1 class=\"text-2xl font-display font-bold text-white\">Change Management</h1><p class=\"text-gray-400 mt-1\">Structured audit trail of all infrastructure changes</p></div><a href=\"/changes/export/csv\" class=\"btn-secondary flex items-center gap-2\"><i class=\"fas fa-download\"></i> Export CSV</a></div><!-- Stats --><div class=\"grid grid-cols-2 md:grid-cols-4 gap-3\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div x-data=\"{ showDiff: false, diffData: null }\" class=\"space-y-6\"><!-- Header --><div class=\"flex items-center justify-between\"><div><h1 class=\"text-2xl font-display font-bold text-white\">Change Management</h1><p class=\"text-gray-400 mt-1\">Structured audit trail of all infrastructure changes</p></div><a href=\"/changes/export/csv\" class=\"btn-secondary flex items-center gap-2\"><i aria-hidden=\"true\" class=\"fas fa-download\"></i> Export CSV</a></div><!-- Stats --><div class=\"grid grid-cols-2 md:grid-cols-4 gap-3\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -389,7 +389,7 @@ func Changes(data ChangesData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 55, "\" placeholder=\"Search changes...\" class=\"bg-dark-700 border border-dark-500 rounded px-3 py-1.5 text-sm text-white\"></div><div><label class=\"block text-xs text-gray-400 mb-1\">Since</label> <input type=\"date\" name=\"since\" value=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 55, "\" placeholder=\"Search changes...\" aria-label=\"Search changes...\" class=\"bg-dark-700 border border-dark-500 rounded px-3 py-1.5 text-sm text-white\"></div><div><label class=\"block text-xs text-gray-400 mb-1\">Since</label> <input type=\"date\" name=\"since\" value=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -420,7 +420,7 @@ func Changes(data ChangesData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			if len(data.Events) == 0 {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 58, "<div class=\"card p-12 text-center\"><i class=\"fas fa-history text-4xl text-gray-400 mb-4\"></i><h3 class=\"text-lg font-medium text-white mb-2\">No Changes Recorded</h3><p class=\"text-gray-400\">Infrastructure changes will appear here as they occur.</p></div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 58, "<div class=\"card p-12 text-center\"><i aria-hidden=\"true\" class=\"fas fa-history text-4xl text-gray-400 mb-4\"></i><h3 class=\"text-lg font-medium text-white mb-2\">No Changes Recorded</h3><p class=\"text-gray-400\">Infrastructure changes will appear here as they occur.</p></div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -463,7 +463,7 @@ func Changes(data ChangesData) templ.Component {
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 64, "\" class=\"btn-secondary text-sm\"><i class=\"fas fa-chevron-left mr-1\"></i>Prev</a> ")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 64, "\" class=\"btn-secondary text-sm\"><i aria-hidden=\"true\" class=\"fas fa-chevron-left mr-1\"></i>Prev</a> ")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
@@ -512,7 +512,7 @@ func Changes(data ChangesData) templ.Component {
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 69, "\" class=\"btn-secondary text-sm\">Next<i class=\"fas fa-chevron-right ml-1\"></i></a>")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 69, "\" class=\"btn-secondary text-sm\">Next<i aria-hidden=\"true\" class=\"fas fa-chevron-right ml-1\"></i></a>")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
@@ -522,7 +522,7 @@ func Changes(data ChangesData) templ.Component {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 71, "<!-- Diff Modal --><div x-show=\"showDiff\" x-cloak class=\"fixed inset-0 z-50 flex items-center justify-center bg-black/60\" @click.self=\"showDiff = false; diffData = null\"><div class=\"bg-dark-800 rounded-lg shadow-xl max-w-5xl w-full mx-4 max-h-[80vh] flex flex-col\"><div class=\"flex items-center justify-between p-4 border-b border-dark-600\"><h3 class=\"text-lg font-medium text-white\">Change Diff</h3><button @click=\"showDiff = false; diffData = null\" class=\"text-gray-400 hover:text-white\"><i class=\"fas fa-times\"></i></button></div><div class=\"p-4 overflow-auto flex-1\"><template x-if=\"diffData\"><div><div class=\"flex items-center gap-3 mb-3 text-sm text-gray-400\"><span><i class=\"fas fa-user mr-1\"></i><span x-text=\"diffData.user_name\"></span></span> <span><i class=\"fas fa-clock mr-1\"></i><span x-text=\"diffData.timestamp\"></span></span> <span x-text=\"diffData.action\" class=\"px-2 py-0.5 bg-dark-600 rounded text-xs\"></span></div><div class=\"grid grid-cols-2 gap-4\"><div><h4 class=\"text-xs font-medium text-red-400 mb-1\">Before</h4><pre class=\"bg-dark-900 rounded p-3 text-xs text-gray-300 overflow-auto max-h-96 whitespace-pre-wrap\" x-text=\"diffData.old_state ? JSON.stringify(diffData.old_state, null, 2) : '(none)'\"></pre></div><div><h4 class=\"text-xs font-medium text-green-400 mb-1\">After</h4><pre class=\"bg-dark-900 rounded p-3 text-xs text-gray-300 overflow-auto max-h-96 whitespace-pre-wrap\" x-text=\"diffData.new_state ? JSON.stringify(diffData.new_state, null, 2) : '(none)'\"></pre></div></div><template x-if=\"diffData.diff_summary\"><div class=\"mt-3\"><h4 class=\"text-xs font-medium text-gray-400 mb-1\">Summary</h4><p class=\"text-xs text-gray-500 font-mono\" x-text=\"diffData.diff_summary\"></p></div></template></div></template><template x-if=\"!diffData\"><div class=\"flex items-center justify-center py-8\"><div class=\"animate-spin rounded-full h-6 w-6 border-b-2 border-primary-500\"></div></div></template></div></div></div></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 71, "<!-- Diff Modal --><div x-show=\"showDiff\" x-cloak class=\"fixed inset-0 z-50 flex items-center justify-center bg-black/60\" @click.self=\"showDiff = false; diffData = null\"><div class=\"bg-dark-800 rounded-lg shadow-xl max-w-5xl w-full mx-4 max-h-[80vh] flex flex-col\"><div class=\"flex items-center justify-between p-4 border-b border-dark-600\"><h3 class=\"text-lg font-medium text-white\">Change Diff</h3><button @click=\"showDiff = false; diffData = null\" class=\"text-gray-400 hover:text-white\"><i aria-hidden=\"true\" class=\"fas fa-times\"></i></button></div><div class=\"p-4 overflow-auto flex-1\"><template x-if=\"diffData\"><div><div class=\"flex items-center gap-3 mb-3 text-sm text-gray-400\"><span><i aria-hidden=\"true\" class=\"fas fa-user mr-1\"></i><span x-text=\"diffData.user_name\"></span></span> <span><i aria-hidden=\"true\" class=\"fas fa-clock mr-1\"></i><span x-text=\"diffData.timestamp\"></span></span> <span x-text=\"diffData.action\" class=\"px-2 py-0.5 bg-dark-600 rounded text-xs\"></span></div><div class=\"grid grid-cols-2 gap-4\"><div><h4 class=\"text-xs font-medium text-red-400 mb-1\">Before</h4><pre class=\"bg-dark-900 rounded p-3 text-xs text-gray-300 overflow-auto max-h-96 whitespace-pre-wrap\" x-text=\"diffData.old_state ? JSON.stringify(diffData.old_state, null, 2) : '(none)'\"></pre></div><div><h4 class=\"text-xs font-medium text-green-400 mb-1\">After</h4><pre class=\"bg-dark-900 rounded p-3 text-xs text-gray-300 overflow-auto max-h-96 whitespace-pre-wrap\" x-text=\"diffData.new_state ? JSON.stringify(diffData.new_state, null, 2) : '(none)'\"></pre></div></div><template x-if=\"diffData.diff_summary\"><div class=\"mt-3\"><h4 class=\"text-xs font-medium text-gray-400 mb-1\">Summary</h4><p class=\"text-xs text-gray-500 font-mono\" x-text=\"diffData.diff_summary\"></p></div></template></div></template><template x-if=\"!diffData\"><div class=\"flex items-center justify-center py-8\"><div class=\"animate-spin rounded-full h-6 w-6 border-b-2 border-primary-500\"></div></div></template></div></div></div></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -772,14 +772,14 @@ func changeRow(e ChangeEventView) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		if e.RelatedTicket != "" {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 91, "<span class=\"px-2 py-0.5 text-xs bg-purple-500/20 text-purple-400 rounded\"><i class=\"fas fa-ticket-alt mr-1\"></i>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 91, "<span class=\"px-2 py-0.5 text-xs bg-purple-500/20 text-purple-400 rounded\"><i aria-hidden=\"true\" class=\"fas fa-ticket-alt mr-1\"></i>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var26 string
 			templ_7745c5c3_Var26, templ_7745c5c3_Err = templ.JoinStringErrs(e.RelatedTicket)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/changes/changes.templ`, Line: 243, Col: 135}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/changes/changes.templ`, Line: 243, Col: 154}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var26))
 			if templ_7745c5c3_Err != nil {
@@ -813,14 +813,14 @@ func changeRow(e ChangeEventView) templ.Component {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 96, "<div class=\"flex items-center gap-3 mt-1 text-xs text-gray-500\"><span><i class=\"fas fa-user mr-1\"></i>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 96, "<div class=\"flex items-center gap-3 mt-1 text-xs text-gray-500\"><span><i aria-hidden=\"true\" class=\"fas fa-user mr-1\"></i>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var28 string
 		templ_7745c5c3_Var28, templ_7745c5c3_Err = templ.JoinStringErrs(e.UserName)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/changes/changes.templ`, Line: 250, Col: 54}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/changes/changes.templ`, Line: 250, Col: 73}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var28))
 		if templ_7745c5c3_Err != nil {
@@ -839,14 +839,14 @@ func changeRow(e ChangeEventView) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 98, "\"><i class=\"fas fa-clock mr-1\"></i>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 98, "\"><i aria-hidden=\"true\" class=\"fas fa-clock mr-1\"></i>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var30 string
 		templ_7745c5c3_Var30, templ_7745c5c3_Err = templ.JoinStringErrs(e.Timestamp)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/changes/changes.templ`, Line: 251, Col: 82}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/changes/changes.templ`, Line: 251, Col: 101}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var30))
 		if templ_7745c5c3_Err != nil {
@@ -857,14 +857,14 @@ func changeRow(e ChangeEventView) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		if e.ClientIP != "" {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 100, "<span><i class=\"fas fa-globe mr-1\"></i>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 100, "<span><i aria-hidden=\"true\" class=\"fas fa-globe mr-1\"></i>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var31 string
 			templ_7745c5c3_Var31, templ_7745c5c3_Err = templ.JoinStringErrs(e.ClientIP)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/changes/changes.templ`, Line: 253, Col: 56}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/changes/changes.templ`, Line: 253, Col: 75}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var31))
 			if templ_7745c5c3_Err != nil {
@@ -893,7 +893,7 @@ func changeRow(e ChangeEventView) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 104, "\" class=\"p-1.5 text-gray-400 hover:text-primary-400 transition-colors\" title=\"View diff\"><i class=\"fas fa-code-compare text-sm\"></i></button>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 104, "\" class=\"p-1.5 text-gray-400 hover:text-primary-400 transition-colors\" title=\"View diff\"><i aria-hidden=\"true\" class=\"fas fa-code-compare text-sm\"></i></button>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

@@ -217,7 +217,7 @@ func OrderDetail(data OrderDetailData) templ.Component {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "</div><div class=\"card\"><div class=\"px-6 py-4 border-b border-dark-700\"><h2 class=\"text-lg font-medium text-white\">Order log</h2><p class=\"text-xs text-gray-500\">State transitions and errors recorded as they happen.</p></div><div class=\"overflow-x-auto\"><table class=\"table\"><thead><tr><th>When</th><th>Action</th><th>Details</th></tr></thead> <tbody>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "</div><div class=\"card\"><div class=\"px-6 py-4 border-b border-dark-700\"><h2 class=\"text-lg font-medium text-white\">Order log</h2><p class=\"text-xs text-gray-500\">State transitions and errors recorded as they happen.</p></div><div class=\"overflow-x-auto\"><table class=\"table\"><thead><tr><th scope=\"col\">When</th><th scope=\"col\">Action</th><th scope=\"col\">Details</th></tr></thead> <tbody>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

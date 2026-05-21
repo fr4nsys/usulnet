@@ -123,7 +123,7 @@ func JobList(data JobListData) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"space-y-6\"><!-- Header --><div class=\"flex items-center justify-between\"><div><h1 class=\"text-2xl font-bold text-white\"><i class=\"fas fa-tasks mr-2 text-primary-400\"></i> Scheduler Jobs</h1><p class=\"text-gray-400 mt-1\">Background tasks and scheduled operations</p></div><a href=\"/jobs/scheduled\" class=\"bg-dark-700 hover:bg-dark-600 text-gray-300 font-medium px-4 py-2 rounded-lg transition-colors text-sm\"><i class=\"fas fa-calendar-alt mr-1\"></i> Scheduled Jobs</a></div><!-- Stats Cards --><div class=\"grid grid-cols-2 md:grid-cols-5 gap-4\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"space-y-6\"><!-- Header --><div class=\"flex items-center justify-between\"><div><h1 class=\"text-2xl font-bold text-white\"><i aria-hidden=\"true\" class=\"fas fa-tasks mr-2 text-primary-400\"></i> Scheduler Jobs</h1><p class=\"text-gray-400 mt-1\">Background tasks and scheduled operations</p></div><a href=\"/jobs/scheduled\" class=\"bg-dark-700 hover:bg-dark-600 text-gray-300 font-medium px-4 py-2 rounded-lg transition-colors text-sm\"><i aria-hidden=\"true\" class=\"fas fa-calendar-alt mr-1\"></i> Scheduled Jobs</a></div><!-- Stats Cards --><div class=\"grid grid-cols-2 md:grid-cols-5 gap-4\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -147,7 +147,7 @@ func JobList(data JobListData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</div><!-- Filters --><div class=\"bg-dark-800 border border-dark-700 rounded-xl p-4\"><form method=\"get\" action=\"/jobs\" class=\"flex flex-wrap items-center gap-4\"><div><label class=\"block text-xs text-gray-500 mb-1\">Status</label> <select name=\"status\" class=\"bg-dark-700 border border-dark-600 rounded-lg text-white px-3 py-2 text-sm\"><option value=\"\">All</option> <option value=\"pending\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</div><!-- Filters --><div class=\"bg-dark-800 border border-dark-700 rounded-xl p-4\"><form method=\"get\" action=\"/jobs\" class=\"flex flex-wrap items-center gap-4\"><div><label class=\"block text-xs text-gray-500 mb-1\">Status</label> <select name=\"status\" class=\"input-sm\"><option value=\"\">All</option> <option value=\"pending\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -197,7 +197,7 @@ func JobList(data JobListData) templ.Component {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, ">Cancelled</option></select></div><div><label class=\"block text-xs text-gray-500 mb-1\">Type</label> <select name=\"type\" class=\"bg-dark-700 border border-dark-600 rounded-lg text-white px-3 py-2 text-sm\"><option value=\"\">All Types</option> <option value=\"security_scan\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, ">Cancelled</option></select></div><div><label class=\"block text-xs text-gray-500 mb-1\">Type</label> <select name=\"type\" class=\"input-sm\"><option value=\"\">All Types</option> <option value=\"security_scan\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -347,12 +347,12 @@ func JobList(data JobListData) templ.Component {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 42, ">Auto Deploy</option></select></div><div class=\"flex items-end\"><button type=\"submit\" class=\"bg-primary-500 hover:bg-primary-600 text-black font-medium px-4 py-2 rounded-lg transition-colors\"><i class=\"fas fa-filter mr-1\"></i> Filter</button></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 42, ">Auto Deploy</option></select></div><div class=\"flex items-end\"><button type=\"submit\" class=\"bg-primary-500 hover:bg-primary-600 text-black font-medium px-4 py-2 rounded-lg transition-colors\"><i aria-hidden=\"true\" class=\"fas fa-filter mr-1\"></i> Filter</button></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			if data.Filters.Status != "" || data.Filters.Type != "" {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 43, "<div class=\"flex items-end\"><a href=\"/jobs\" class=\"text-gray-400 hover:text-white text-sm px-3 py-2\"><i class=\"fas fa-times mr-1\"></i> Clear</a></div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 43, "<div class=\"flex items-end\"><a href=\"/jobs\" class=\"text-gray-400 hover:text-white text-sm px-3 py-2\"><i aria-hidden=\"true\" class=\"fas fa-times mr-1\"></i> Clear</a></div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -362,7 +362,7 @@ func JobList(data JobListData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			if len(data.Jobs) == 0 {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 45, "<div class=\"flex flex-col items-center justify-center py-16 text-gray-500\"><i class=\"fas fa-inbox text-4xl mb-4\"></i><p class=\"text-lg\">No jobs found</p>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 45, "<div class=\"flex flex-col items-center justify-center py-16 text-gray-500\"><i aria-hidden=\"true\" class=\"fas fa-inbox text-4xl mb-4\"></i><p class=\"text-lg\">No jobs found</p>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -382,7 +382,7 @@ func JobList(data JobListData) templ.Component {
 					return templ_7745c5c3_Err
 				}
 			} else {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 49, "<div class=\"overflow-x-auto\"><table class=\"w-full\"><thead><tr class=\"text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-dark-700\"><th class=\"px-4 py-3\">Type</th><th class=\"px-4 py-3\">Status</th><th class=\"px-4 py-3\">Progress</th><th class=\"px-4 py-3\">Created By</th><th class=\"px-4 py-3\">Scheduled</th><th class=\"px-4 py-3\">Duration</th><th class=\"px-4 py-3 text-right\">Actions</th></tr></thead> <tbody class=\"divide-y divide-dark-700\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 49, "<div class=\"overflow-x-auto\"><table class=\"w-full\"><thead><tr class=\"text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-dark-700\"><th scope=\"col\" class=\"px-4 py-3\">Type</th><th scope=\"col\" class=\"px-4 py-3\">Status</th><th scope=\"col\" class=\"px-4 py-3\">Progress</th><th scope=\"col\" class=\"px-4 py-3\">Created By</th><th scope=\"col\" class=\"px-4 py-3\">Scheduled</th><th scope=\"col\" class=\"px-4 py-3\">Duration</th><th scope=\"col\" class=\"px-4 py-3 text-right\">Actions</th></tr></thead> <tbody class=\"divide-y divide-dark-700\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -722,7 +722,7 @@ func JobList(data JobListData) templ.Component {
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 85, "\" class=\"text-gray-400 hover:text-primary-400 transition-colors p-1\" title=\"View details\"><i class=\"fas fa-eye text-sm\"></i></a> ")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 85, "\" class=\"text-gray-400 hover:text-primary-400 transition-colors p-1\" title=\"View details\"><i aria-hidden=\"true\" class=\"fas fa-eye text-sm\"></i></a> ")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
@@ -753,7 +753,7 @@ func JobList(data JobListData) templ.Component {
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
-						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 88, "\"> <button type=\"submit\" class=\"text-gray-400 hover:text-yellow-400 transition-colors p-1\" title=\"Cancel job\" onclick=\"return confirm('Cancel this job?')\"><i class=\"fas fa-ban text-sm\"></i></button></form>")
+						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 88, "\"> <button type=\"submit\" class=\"text-gray-400 hover:text-yellow-400 transition-colors p-1\" title=\"Cancel job\" onclick=\"return confirm('Cancel this job?')\"><i aria-hidden=\"true\" class=\"fas fa-ban text-sm\"></i></button></form>")
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
@@ -785,7 +785,7 @@ func JobList(data JobListData) templ.Component {
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
-						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 91, "\"> <button type=\"submit\" class=\"text-gray-400 hover:text-red-400 transition-colors p-1\" title=\"Delete job\" onclick=\"return confirm('Delete this job?')\"><i class=\"fas fa-trash-alt text-sm\"></i></button></form>")
+						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 91, "\"> <button type=\"submit\" class=\"text-gray-400 hover:text-red-400 transition-colors p-1\" title=\"Delete job\" onclick=\"return confirm('Delete this job?')\"><i aria-hidden=\"true\" class=\"fas fa-trash-alt text-sm\"></i></button></form>")
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}

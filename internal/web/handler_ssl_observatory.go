@@ -250,8 +250,9 @@ func (h *Handler) SSLTargetListTempl(w http.ResponseWriter, r *http.Request) {
 	}
 
 	data := ssltpl.TargetListData{
-		PageData: pageData,
-		Targets:  targetViews,
+		PageData:   pageData,
+		Targets:    targetViews,
+		EmptyState: EmptyStateCatalogSSLObservatory(),
 	}
 
 	h.renderTempl(w, r, ssltpl.TargetList(data))
@@ -271,31 +272,52 @@ func (h *Handler) SSLTargetNewTempl(w http.ResponseWriter, r *http.Request) {
 }
 
 // SSLTargetCreateTempl handles POST /ssl/targets — creates a new SSL target.
+// sslTargetForm captures the SSL target inputs for Create.
+// Port defaults to 443 after binding when 0.
+type sslTargetForm struct {
+	Name            string `form:"name" validate:"required"`
+	Hostname        string `form:"hostname" validate:"required"`
+	Port            int    `form:"port" validate:"gte=0,lte=65535"`
+	ExtraHostnames  string `form:"extra_hostnames"`
+	AlertThresholds string `form:"alert_thresholds"`
+}
+
+// sslTargetUpdateForm extends sslTargetForm with the Enabled
+// toggle that the Update endpoint accepts (Create always sets
+// Enabled=true on the underlying repo).
+type sslTargetUpdateForm struct {
+	sslTargetForm
+	Enabled bool `form:"enabled"`
+}
+
 func (h *Handler) SSLTargetCreateTempl(w http.ResponseWriter, r *http.Request) {
 	svc := h.requireSSLObsSvc(w, r)
 	if svc == nil {
 		return
 	}
-	if err := r.ParseForm(); err != nil {
-		http.Error(w, "Error parsing form", http.StatusBadRequest)
+	var form sslTargetForm
+	if msg := BindForm(r, &form); msg != "" {
+		pageData := h.prepareTemplPageData(r, "New SSL Target", "ssl")
+		h.renderTempl(w, r, ssltpl.NewTarget(ssltpl.NewTargetData{
+			PageData: pageData,
+			Error:    msg,
+		}))
 		return
 	}
 
 	hostID := h.getSSLHostID(r)
 
-	port := 443
-	if p := r.FormValue("port"); p != "" {
-		if v, err := strconv.Atoi(p); err == nil && v > 0 && v <= 65535 {
-			port = v
-		}
+	port := form.Port
+	if port == 0 {
+		port = 443
 	}
 
 	input := models.CreateSSLTargetInput{
-		Name:            r.FormValue("name"),
-		Hostname:        r.FormValue("hostname"),
+		Name:            form.Name,
+		Hostname:        form.Hostname,
 		Port:            port,
-		ExtraHostnames:  parseHostList(r.FormValue("extra_hostnames")),
-		AlertThresholds: parseIntList(r.FormValue("alert_thresholds")),
+		ExtraHostnames:  parseHostList(form.ExtraHostnames),
+		AlertThresholds: parseIntList(form.AlertThresholds),
 	}
 
 	if _, err := svc.CreateTarget(r.Context(), hostID, input); err != nil {
@@ -418,26 +440,23 @@ func (h *Handler) SSLTargetUpdateTempl(w http.ResponseWriter, r *http.Request) {
 		h.RenderErrorTempl(w, r, http.StatusBadRequest, "Invalid ID", "The target ID is not valid.")
 		return
 	}
-	if err := r.ParseForm(); err != nil {
-		http.Error(w, "Error parsing form", http.StatusBadRequest)
+	var form sslTargetUpdateForm
+	if msg := BindForm(r, &form); msg != "" {
+		http.Error(w, msg, http.StatusBadRequest)
 		return
 	}
 
-	name := r.FormValue("name")
-	hostname := r.FormValue("hostname")
-	port := 443
-	if p := r.FormValue("port"); p != "" {
-		if v, err := strconv.Atoi(p); err == nil && v > 0 && v <= 65535 {
-			port = v
-		}
+	port := form.Port
+	if port == 0 {
+		port = 443
 	}
-	enabled := r.FormValue("enabled") == "on" || r.FormValue("enabled") == "true"
+	enabled := form.Enabled
 	input := models.UpdateSSLTargetInput{
-		Name:            &name,
-		Hostname:        &hostname,
+		Name:            &form.Name,
+		Hostname:        &form.Hostname,
 		Port:            &port,
-		ExtraHostnames:  parseHostList(r.FormValue("extra_hostnames")),
-		AlertThresholds: parseIntList(r.FormValue("alert_thresholds")),
+		ExtraHostnames:  parseHostList(form.ExtraHostnames),
+		AlertThresholds: parseIntList(form.AlertThresholds),
 		Enabled:         &enabled,
 	}
 	if input.ExtraHostnames == nil {
@@ -451,8 +470,8 @@ func (h *Handler) SSLTargetUpdateTempl(w http.ResponseWriter, r *http.Request) {
 		h.renderTempl(w, r, ssltpl.EditTarget(ssltpl.EditTargetData{
 			PageData:       pageData,
 			ID:             targetID.String(),
-			Name:           name,
-			Hostname:       hostname,
+			Name:           form.Name,
+			Hostname:       form.Hostname,
 			Port:           port,
 			ExtraHostnames: input.ExtraHostnames,
 			Thresholds:     input.AlertThresholds,

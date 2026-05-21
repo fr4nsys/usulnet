@@ -1,7 +1,19 @@
-Extract metadata for every file under <dir> (recurse with --recursive)
+Walk a directory and extract metadata for every file.
+
+Per-file failures are reported but do not abort the run. If any
+file fails, the command exits 2 after printing the full report
+(per docs/recon.md §8).
+
+By default only the immediate children of <dir> are processed; use
+--recursive to descend into sub-directories.
 
 Usage:
   usulnet meta scan <dir> [flags]
+
+Examples:
+  usulnet meta scan ./photos
+  usulnet meta scan ./photos --recursive
+  usulnet meta scan ./photos --recursive --output json
 
 Flags:
   -h, --help        help for scan
@@ -10,7 +22,9 @@ Flags:
 Global Flags:
   -c, --config string    config file path (default: /etc/usulnet/config.yaml or ./config.yaml)
       --image string     toolkit image (local mode only; default $USULNET_RECON_TOOLKIT_IMAGE)
+      --json             shortcut for --output json (overrides --output)
       --output string    output format: table|json|yaml (default "table")
+  -q, --quiet            suppress informational output (errors and primary data still print)
       --server string    usulnet API URL (forces server mode; default $USULNET_API_URL)
       --timeout string   container timeout (e.g. 30s)
       --token string     API token (default $USULNET_API_TOKEN)

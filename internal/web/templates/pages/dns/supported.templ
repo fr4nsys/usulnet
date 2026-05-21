@@ -33,7 +33,7 @@ templ capabilityCard(c CapabilityView) {
 		<div class="overflow-x-auto">
 			<table class="table">
 				<thead>
-					<tr><th>Record type</th><th>Read</th><th>Write</th><th>Update TTL</th></tr>
+					<tr><th scope="col">Record type</th><th scope="col">Read</th><th scope="col">Write</th><th scope="col">Update TTL</th></tr>
 				</thead>
 				<tbody>
 					for _, rec := range c.Records {
@@ -41,23 +41,23 @@ templ capabilityCard(c CapabilityView) {
 							<td><span class="font-mono text-sm">{ rec.Type }</span></td>
 							<td>
 								if rec.Read {
-									<i class="fas fa-check text-green-400"></i>
+									<i aria-hidden="true" class="fas fa-check text-green-400"></i>
 								} else {
-									<i class="fas fa-times text-gray-600"></i>
+									<i aria-hidden="true" class="fas fa-times text-gray-600"></i>
 								}
 							</td>
 							<td>
 								if rec.Write {
-									<i class="fas fa-check text-green-400"></i>
+									<i aria-hidden="true" class="fas fa-check text-green-400"></i>
 								} else {
-									<i class="fas fa-times text-gray-600"></i>
+									<i aria-hidden="true" class="fas fa-times text-gray-600"></i>
 								}
 							</td>
 							<td>
 								if rec.UpdateTTL {
-									<i class="fas fa-check text-green-400"></i>
+									<i aria-hidden="true" class="fas fa-check text-green-400"></i>
 								} else {
-									<i class="fas fa-times text-gray-600"></i>
+									<i aria-hidden="true" class="fas fa-times text-gray-600"></i>
 								}
 							</td>
 						</tr>

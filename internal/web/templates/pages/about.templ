@@ -56,7 +56,7 @@ templ About(data AboutData) {
 			<!-- Version Card -->
 			<div class="card">
 				<div class="px-5 py-4 border-b border-dark-700">
-					<h2 class="font-medium text-white"><i class="fas fa-code-branch mr-2 text-primary-400"></i>Version Information</h2>
+					<h2 class="font-medium text-white"><i aria-hidden="true" class="fas fa-code-branch mr-2 text-primary-400"></i>Version Information</h2>
 				</div>
 				<div class="p-5">
 					<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -91,18 +91,18 @@ templ About(data AboutData) {
 			<!-- Connection Status Card -->
 			<div class="card">
 				<div class="px-5 py-4 border-b border-dark-700">
-					<h2 class="font-medium text-white"><i class="fas fa-network-wired mr-2 text-primary-400"></i>Connection Status</h2>
+					<h2 class="font-medium text-white"><i aria-hidden="true" class="fas fa-network-wired mr-2 text-primary-400"></i>Connection Status</h2>
 				</div>
 				<div class="p-5">
 					<div class="overflow-x-auto">
 						<table class="w-full text-sm">
 							<thead>
 								<tr class="text-gray-500 text-left text-xs uppercase tracking-wide">
-									<th class="pb-3">Service</th>
-									<th class="pb-3">Status</th>
-									<th class="pb-3">Encryption</th>
-									<th class="pb-3">Latency</th>
-									<th class="pb-3">Details</th>
+									<th scope="col" class="pb-3">Service</th>
+									<th scope="col" class="pb-3">Status</th>
+									<th scope="col" class="pb-3">Encryption</th>
+									<th scope="col" class="pb-3">Latency</th>
+									<th scope="col" class="pb-3">Details</th>
 								</tr>
 							</thead>
 							<tbody class="divide-y divide-dark-700">
@@ -127,12 +127,12 @@ templ About(data AboutData) {
 										<td class="py-3">
 											if conn.TLS {
 												<span class="inline-flex items-center gap-1 text-green-400 text-xs">
-													<i class="fas fa-lock"></i>
+													<i aria-hidden="true" class="fas fa-lock"></i>
 													{ conn.TLSInfo }
 												</span>
 											} else {
 												<span class="inline-flex items-center gap-1 text-yellow-400 text-xs">
-													<i class="fas fa-lock-open"></i>
+													<i aria-hidden="true" class="fas fa-lock-open"></i>
 													{ conn.TLSInfo }
 												</span>
 											}
@@ -150,7 +150,7 @@ templ About(data AboutData) {
 			<!-- Docker Info Card -->
 			<div class="card">
 				<div class="px-5 py-4 border-b border-dark-700">
-					<h2 class="font-medium text-white"><i class="fab fa-docker mr-2 text-primary-400"></i>Docker Engine</h2>
+					<h2 class="font-medium text-white"><i aria-hidden="true" class="fab fa-docker mr-2 text-primary-400"></i>Docker Engine</h2>
 				</div>
 				<div class="p-5">
 					<div class="grid grid-cols-2 md:grid-cols-4 gap-6">
@@ -179,7 +179,7 @@ templ About(data AboutData) {
 			<!-- Instance Backup Card -->
 			<div class="card">
 				<div class="px-5 py-4 border-b border-dark-700">
-					<h2 class="font-medium text-white"><i class="fas fa-database mr-2 text-primary-400"></i>Instance Backup &amp; Restore</h2>
+					<h2 class="font-medium text-white"><i aria-hidden="true" class="fas fa-database mr-2 text-primary-400"></i>Instance Backup &amp; Restore</h2>
 				</div>
 				<div class="p-5 space-y-4">
 					<p class="text-sm text-gray-400">
@@ -190,14 +190,14 @@ templ About(data AboutData) {
 						<form method="post" action="/about/instance-backup">
 							<input type="hidden" name="csrf_token" value={ data.PageData.CSRFToken }/>
 							<button type="submit" class="btn-primary">
-								<i class="fas fa-download mr-2"></i>Export Instance Backup
+								<i aria-hidden="true" class="fas fa-download mr-2"></i>Export Instance Backup
 							</button>
 						</form>
 						<button
 							onclick="document.getElementById('restore-file').click()"
 							class="btn-secondary"
 						>
-							<i class="fas fa-upload mr-2"></i>Import Instance Backup
+							<i aria-hidden="true" class="fas fa-upload mr-2"></i>Import Instance Backup
 						</button>
 						<form id="restore-form" method="post" action="/about/instance-restore" enctype="multipart/form-data" style="display:none;">
 							<input type="hidden" name="csrf_token" value={ data.PageData.CSRFToken }/>

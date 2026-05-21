@@ -46,9 +46,9 @@ templ StreamList(data StreamListData) {
 				</div>
 				<div class="flex items-center gap-2">
 					if data.Connected {
-						<span class="badge badge-success"><i class="fas fa-link mr-1"></i>Connected</span>
+						<span class="badge badge-success"><i aria-hidden="true" class="fas fa-link mr-1"></i>Connected</span>
 						<a href="/proxy/streams/new" class="btn-primary">
-							<i class="fas fa-plus mr-2"></i>New Stream
+							<i aria-hidden="true" class="fas fa-plus mr-2"></i>New Stream
 						</a>
 					}
 				</div>
@@ -65,11 +65,11 @@ templ StreamList(data StreamListData) {
 							<table class="table">
 								<thead>
 									<tr>
-										<th>Incoming Port</th>
-										<th>Forward To</th>
-										<th>Protocol</th>
-										<th>Status</th>
-										<th>Actions</th>
+										<th scope="col">Incoming Port</th>
+										<th scope="col">Forward To</th>
+										<th scope="col">Protocol</th>
+										<th scope="col">Status</th>
+										<th scope="col">Actions</th>
 									</tr>
 								</thead>
 								<tbody>
@@ -105,18 +105,18 @@ templ StreamList(data StreamListData) {
 					</div>
 				} else {
 					<div class="card p-8 text-center">
-						<i class="fas fa-stream text-4xl text-gray-400 mb-4"></i>
+						<i aria-hidden="true" class="fas fa-stream text-4xl text-gray-400 mb-4"></i>
 						<h3 class="text-lg font-medium text-white mb-2">No streams</h3>
 						<p class="text-gray-400 mb-4">Create a TCP/UDP stream to forward traffic on specific ports</p>
-						<a href="/proxy/streams/new" class="btn-primary"><i class="fas fa-plus mr-2"></i>New Stream</a>
+						<a href="/proxy/streams/new" class="btn-primary"><i aria-hidden="true" class="fas fa-plus mr-2"></i>New Stream</a>
 					</div>
 				}
 			} else {
 				<div class="card p-8 text-center">
-					<i class="fas fa-plug text-4xl text-gray-400 mb-4"></i>
+					<i aria-hidden="true" class="fas fa-plug text-4xl text-gray-400 mb-4"></i>
 					<h3 class="text-lg font-medium text-white mb-2">NPM Not Connected</h3>
 					<p class="text-gray-400 mb-4">Connect to NPM to manage streams.</p>
-					<a href="/proxy/setup" class="btn-primary"><i class="fas fa-link mr-2"></i>Setup Connection</a>
+					<a href="/proxy/setup" class="btn-primary"><i aria-hidden="true" class="fas fa-link mr-2"></i>Setup Connection</a>
 				</div>
 			}
 		</div>
@@ -142,7 +142,7 @@ templ StreamForm(data StreamFormData) {
 		<div class="max-w-2xl mx-auto space-y-6">
 			<div class="flex items-center gap-4">
 				<a href="/proxy/streams" class="p-2 text-gray-400 hover:text-white hover:bg-dark-700 rounded-lg">
-					<i class="fas fa-arrow-left"></i>
+					<i aria-hidden="true" class="fas fa-arrow-left"></i>
 				</a>
 				<div>
 					if data.IsEdit {
@@ -156,7 +156,7 @@ templ StreamForm(data StreamFormData) {
 
 			if data.Error != "" {
 				<div class="bg-red-500/10 border border-red-500/20 rounded-lg p-4 text-red-400">
-					<i class="fas fa-exclamation-triangle mr-2"></i>{ data.Error }
+					<i aria-hidden="true" class="fas fa-exclamation-triangle mr-2"></i>{ data.Error }
 				</div>
 			}
 
@@ -170,6 +170,7 @@ templ StreamForm(data StreamFormData) {
 						}
 						placeholder="3306"
 						class="input w-40"
+						aria-label="Incoming Port"
 					/>
 					<p class="text-xs text-gray-500 mt-1">Port NPM will listen on for this stream.</p>
 				</div>
@@ -183,6 +184,7 @@ templ StreamForm(data StreamFormData) {
 							}
 							placeholder="192.168.1.100 or container-name"
 							class="input w-full"
+							aria-label="Forwarding Host"
 						/>
 					</div>
 					<div>
@@ -193,6 +195,7 @@ templ StreamForm(data StreamFormData) {
 							}
 							placeholder="3306"
 							class="input w-full"
+							aria-label="Port"
 						/>
 					</div>
 				</div>
@@ -231,9 +234,9 @@ templ StreamForm(data StreamFormData) {
 					<a href="/proxy/streams" class="btn-secondary">Cancel</a>
 					<button type="submit" class="btn-primary">
 						if data.IsEdit {
-							<i class="fas fa-save mr-2"></i>Save Changes
+							<i aria-hidden="true" class="fas fa-save mr-2"></i>Save Changes
 						} else {
-							<i class="fas fa-plus mr-2"></i>Create Stream
+							<i aria-hidden="true" class="fas fa-plus mr-2"></i>Create Stream
 						}
 					</button>
 				</div>
@@ -248,7 +251,7 @@ templ StreamForm(data StreamFormData) {
 							<div class="text-xs text-gray-400">This cannot be undone.</div>
 						</div>
 						<button hx-delete={ fmt.Sprintf("/proxy/streams/%d", data.Stream.ID) } hx-confirm="Delete this stream?" class="btn-danger">
-							<i class="fas fa-trash mr-2"></i>Delete
+							<i aria-hidden="true" class="fas fa-trash mr-2"></i>Delete
 						</button>
 					</div>
 				</div>

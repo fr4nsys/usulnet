@@ -6,14 +6,15 @@ package web
 
 import (
 	"context"
-	"fmt"
 	"mime"
 	"net/http"
 	"os"
+	"strconv"
 	"strings"
 	"time"
 
 	"github.com/go-chi/chi/v5"
+	chimiddleware "github.com/go-chi/chi/v5/middleware"
 )
 
 func init() {
@@ -64,6 +65,23 @@ func staticCacheHeaders(next http.Handler) http.Handler {
 	})
 }
 
+// compressibleTypes is the explicit allow-list of content types that
+// chi's Compress middleware will gzip. Default chi list misses
+// application/javascript (older MIME) and font formats; we add them so
+// the vendor bundle (Monaco 5.4 MB, Swagger 1.7 MB, htmx/alpine, etc.)
+// ships compressed on first load. WOFF2 is already deflate-compressed —
+// re-gzipping would waste CPU for no win — so it stays off the list.
+var compressibleTypes = []string{
+	"text/html",
+	"text/css",
+	"text/plain",
+	"text/xml",
+	"application/javascript",
+	"application/json",
+	"application/xml",
+	"image/svg+xml",
+}
+
 // RegisterFrontendRoutes registers all web routes using Templ handlers.
 // All routes are wrapped in a Group so that Use() calls do not conflict
 // with routes already registered on the parent router (API routes).
@@ -77,7 +95,7 @@ func RegisterFrontendRoutes(r chi.Router, h *Handler, m *Middleware) {
 			return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				reqID := r.Header.Get("X-Request-ID")
 				if reqID == "" {
-					reqID = fmt.Sprintf("%d", time.Now().UnixNano())
+					reqID = strconv.FormatInt(time.Now().UnixNano(), 10)
 				}
 				w.Header().Set("X-Request-ID", reqID)
 				ctx := context.WithValue(r.Context(), ContextKeyRequestID, reqID)
@@ -85,17 +103,26 @@ func RegisterFrontendRoutes(r chi.Router, h *Handler, m *Middleware) {
 			})
 		})
 
-		// Static files
-		fileServer := http.FileServer(noListFS{http.Dir("./web/static")})
-		r.Handle("/static/*", staticCacheHeaders(http.StripPrefix("/static/", fileServer)))
+		// Static assets — vendor JS/CSS bundles benefit hugely from gzip
+		// (Monaco editor ~5.4 MB, Swagger UI ~1.7 MB). No secrets travel
+		// in these responses, so BREACH does not apply. Level 5 trades a
+		// small CPU cost for ~70 % size reduction; WOFF2 fonts are
+		// already deflate-compressed and are excluded via compressibleTypes.
+		r.Group(func(r chi.Router) {
+			r.Use(chimiddleware.NewCompressor(5, compressibleTypes...).Handler)
 
-		// Favicon
-		r.Get("/favicon.ico", func(w http.ResponseWriter, r *http.Request) {
-			http.ServeFile(w, r, "./web/static/favicon.ico")
+			fileServer := http.FileServer(noListFS{http.Dir("./web/static")})
+			r.Handle("/static/*", staticCacheHeaders(http.StripPrefix("/static/", fileServer)))
+
+			r.Get("/favicon.ico", func(w http.ResponseWriter, r *http.Request) {
+				http.ServeFile(w, r, "./web/static/favicon.ico")
+			})
 		})
 
-		// Public routes (no auth required)
+		// Public routes (no auth required, no CSRF token in the body —
+		// BREACH does not apply, gzip is safe).
 		r.Group(func(r chi.Router) {
+			r.Use(chimiddleware.NewCompressor(5, compressibleTypes...).Handler)
 			r.Use(m.ThemeMiddleware)
 			r.Use(SecureHeaders)
 
@@ -127,7 +154,21 @@ func RegisterFrontendRoutes(r chi.Router, h *Handler, m *Middleware) {
 			r.Post("/webhooks/gitea", h.GiteaWebhookReceiver)
 		})
 
-		// Protected routes (auth required)
+		// Protected routes (auth required).
+		//
+		// No NewCompressor here — the responses below embed the session
+		// CSRF token (rendered in <meta name="csrf-token"> by base.templ
+		// and in hidden form fields on every state-changing form). The
+		// combination of (a) compressed response, (b) a server-side
+		// secret in the response, and (c) any future reflection of
+		// attacker-controlled input is the BREACH pre-condition.
+		// Gzipping these responses would expose the CSRF token to a
+		// network-positioned attacker through the compression-ratio
+		// side-channel. Static assets and unauthenticated pages stay
+		// compressed in their own groups above; the trade-off here is
+		// roughly 70 % more HTML bytes on the wire for logged-in users,
+		// which the v26.5.2 hardening audit accepted as the safer
+		// default (docs/v26.5/security-review-v26.5.2.md §6.6).
 		r.Group(func(r chi.Router) {
 			r.Use(m.AuthRequired)
 			r.Use(m.ResourceScopeMiddleware) // Compute user scope for team-based filtering
@@ -137,6 +178,21 @@ func RegisterFrontendRoutes(r chi.Router, h *Handler, m *Middleware) {
 			r.Use(SecureHeaders)
 			r.Use(NoCache)
 			r.Use(MaxRequestBody(10 * 1024 * 1024)) // 10 MB body size limit
+			// OnboardingRequired must be registered BEFORE any
+			// routes on this Group — chi v5 panics if Use() is
+			// called after a route on the same mux. The middleware
+			// internally exempts /onboarding/* paths, so the
+			// wizard routes below are reachable during onboarding
+			// without a loop.
+			r.Use(OnboardingRequired(h.OnboardingSvc()))
+
+			// Onboarding wizard routes. The middleware above
+			// short-circuits the redirect for these paths via the
+			// /onboarding/ prefix in onboardingExemptPrefixes.
+			r.Get("/onboarding/welcome", h.OnboardingWelcomeTempl)
+			r.Post("/onboarding/welcome", h.OnboardingWelcomeSubmit)
+			r.Get("/onboarding/done", h.OnboardingDoneTempl)
+			r.Post("/onboarding/finish", h.OnboardingFinish)
 
 			// Dashboard
 			r.Get("/", h.DashboardTempl)
@@ -1870,6 +1926,16 @@ func RegisterFrontendRoutes(r chi.Router, h *Handler, m *Middleware) {
 			// into the binary via go:embed; there are no outbound HTTP
 			// requests at runtime.
 			RegisterMarketplaceRoutes(r, h, m)
+
+			// L7 egress filter (v26.5.2). Same nil-safe pattern: the
+			// handler renders an "unavailable" page when egress_proxy is
+			// disabled in config, so registration is unconditional.
+			RegisterEgressRoutes(r, h, m)
+
+			// YARA scanner (v26.5.2). Same nil-safe pattern: the
+			// handler renders an "unavailable" page when the toolkit
+			// image / docker client is unavailable.
+			RegisterYARARoutes(r, h, m)
 		})
 	}) // end r.Group wrapper
 }

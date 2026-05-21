@@ -8,7 +8,6 @@ import (
 	"context"
 	"net"
 	"net/http"
-	"strconv"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/google/uuid"
@@ -87,36 +86,11 @@ func (h *Handler) PacketCaptureStart(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := r.ParseForm(); err != nil {
-		h.setFlash(w, r, "error", "Invalid form data")
+	var form captureStartForm
+	if msg := BindForm(r, &form); msg != "" {
+		h.setFlash(w, r, "error", msg)
 		http.Redirect(w, r, "/tools/capture", http.StatusSeeOther)
 		return
-	}
-
-	name := r.FormValue("name")
-	iface := r.FormValue("interface")
-	filter := r.FormValue("filter")
-	maxPacketsStr := r.FormValue("max_packets")
-	maxDurationStr := r.FormValue("max_duration")
-
-	if name == "" || iface == "" {
-		h.setFlash(w, r, "error", "Name and interface are required")
-		http.Redirect(w, r, "/tools/capture", http.StatusSeeOther)
-		return
-	}
-
-	maxPackets := 0
-	if maxPacketsStr != "" {
-		if p, err := strconv.Atoi(maxPacketsStr); err == nil {
-			maxPackets = p
-		}
-	}
-
-	maxDuration := 0
-	if maxDurationStr != "" {
-		if d, err := strconv.Atoi(maxDurationStr); err == nil {
-			maxDuration = d
-		}
 	}
 
 	user := h.getUserData(r)
@@ -133,11 +107,11 @@ func (h *Handler) PacketCaptureStart(w http.ResponseWriter, r *http.Request) {
 	}
 
 	input := models.CreateCaptureInput{
-		Name:        name,
-		Interface:   iface,
-		Filter:      filter,
-		MaxPackets:  maxPackets,
-		MaxDuration: maxDuration,
+		Name:        form.Name,
+		Interface:   form.Interface,
+		Filter:      form.Filter,
+		MaxPackets:  form.MaxPackets,
+		MaxDuration: form.MaxDuration,
 	}
 
 	capture, err := h.captureService.StartCapture(r.Context(), userID, input)
@@ -147,8 +121,19 @@ func (h *Handler) PacketCaptureStart(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	h.setFlash(w, r, "success", "Capture started: "+name)
+	h.setFlash(w, r, "success", "Capture started: "+form.Name)
 	http.Redirect(w, r, "/tools/capture?id="+capture.ID.String(), http.StatusSeeOther)
+}
+
+// captureStartForm pins the inputs of the start-capture form. The
+// max-* numerics default to 0 (unlimited) when the field is blank
+// or absent; that mirrors the original silent fallback.
+type captureStartForm struct {
+	Name        string `form:"name" validate:"required"`
+	Interface   string `form:"interface" validate:"required"`
+	Filter      string `form:"filter"`
+	MaxPackets  int    `form:"max_packets" validate:"gte=0"`
+	MaxDuration int    `form:"max_duration" validate:"gte=0"`
 }
 
 // PacketCaptureStop stops a running capture.

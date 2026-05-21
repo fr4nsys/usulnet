@@ -94,7 +94,7 @@ func LogManagement(data LogManagementData) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"space-y-6\"><!-- Header --><div class=\"flex items-center justify-between\"><div><h1 class=\"text-2xl font-display font-bold text-white\">Log Management</h1><p class=\"text-gray-400 mt-1\">Centralized logging with parsing, analysis, and pattern detection</p></div><div class=\"flex items-center gap-3\"><button onclick=\"document.getElementById('upload-modal').classList.remove('hidden')\" class=\"btn-secondary\"><i class=\"fas fa-upload mr-2\"></i>Upload Logs</button> <a href=\"/logs\" class=\"btn-primary\"><i class=\"fas fa-stream mr-2\"></i>Live Stream</a></div></div><!-- Tabs --><div class=\"flex gap-2 border-b border-dark-600 pb-0\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"space-y-6\"><!-- Header --><div class=\"flex items-center justify-between\"><div><h1 class=\"text-2xl font-display font-bold text-white\">Log Management</h1><p class=\"text-gray-400 mt-1\">Centralized logging with parsing, analysis, and pattern detection</p></div><div class=\"flex items-center gap-3\"><button onclick=\"document.getElementById('upload-modal').classList.remove('hidden')\" class=\"btn-secondary\"><i aria-hidden=\"true\" class=\"fas fa-upload mr-2\"></i>Upload Logs</button> <a href=\"/logs\" class=\"btn-primary\"><i aria-hidden=\"true\" class=\"fas fa-stream mr-2\"></i>Live Stream</a></div></div><!-- Tabs --><div class=\"flex gap-2 border-b border-dark-600 pb-0\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -118,7 +118,7 @@ func LogManagement(data LogManagementData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "\"><i class=\"fas fa-chart-bar mr-2\"></i>Aggregation</a> ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "\"><i aria-hidden=\"true\" class=\"fas fa-chart-bar mr-2\"></i>Aggregation</a> ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -142,14 +142,14 @@ func LogManagement(data LogManagementData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "\"><i class=\"fas fa-exclamation-triangle mr-2\"></i>Error Patterns (")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "\"><i aria-hidden=\"true\" class=\"fas fa-exclamation-triangle mr-2\"></i>Error Patterns (")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var7 string
 			templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", len(data.Patterns)))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/logs/management.templ`, Line: 95, Col: 108}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/logs/management.templ`, Line: 95, Col: 127}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 			if templ_7745c5c3_Err != nil {
@@ -179,14 +179,14 @@ func LogManagement(data LogManagementData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "\"><i class=\"fas fa-file-upload mr-2\"></i>Uploaded Logs (")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "\"><i aria-hidden=\"true\" class=\"fas fa-file-upload mr-2\"></i>Uploaded Logs (")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var10 string
 			templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", len(data.Uploads)))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/logs/management.templ`, Line: 103, Col: 97}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/logs/management.templ`, Line: 103, Col: 116}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 			if templ_7745c5c3_Err != nil {
@@ -216,7 +216,7 @@ func LogManagement(data LogManagementData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "\"><i class=\"fas fa-search mr-2\"></i>Search</a></div><!-- Tab Content -->")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "\"><i aria-hidden=\"true\" class=\"fas fa-search mr-2\"></i>Search</a></div><!-- Tab Content -->")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -352,7 +352,7 @@ func aggregationTab(data LogManagementData) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "</div><div class=\"text-sm text-gray-400\">Error Rate</div></div></div><!-- Severity Distribution --><div class=\"grid grid-cols-1 lg:grid-cols-2 gap-6\"><div class=\"card p-6\"><h3 class=\"text-lg font-semibold text-white mb-4\"><i class=\"fas fa-chart-pie text-primary-400 mr-2\"></i>Severity Distribution</h3><div class=\"space-y-3\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "</div><div class=\"text-sm text-gray-400\">Error Rate</div></div></div><!-- Severity Distribution --><div class=\"grid grid-cols-1 lg:grid-cols-2 gap-6\"><div class=\"card p-6\"><h3 class=\"text-lg font-semibold text-white mb-4\"><i aria-hidden=\"true\" class=\"fas fa-chart-pie text-primary-400 mr-2\"></i>Severity Distribution</h3><div class=\"space-y-3\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -376,7 +376,7 @@ func aggregationTab(data LogManagementData) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 20, "</div></div><div class=\"card p-6\"><h3 class=\"text-lg font-semibold text-white mb-4\"><i class=\"fas fa-server text-primary-400 mr-2\"></i>Top Sources</h3><div class=\"space-y-2\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 20, "</div></div><div class=\"card p-6\"><h3 class=\"text-lg font-semibold text-white mb-4\"><i aria-hidden=\"true\" class=\"fas fa-server text-primary-400 mr-2\"></i>Top Sources</h3><div class=\"space-y-2\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -418,7 +418,7 @@ func aggregationTab(data LogManagementData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 25, "</div></div></div><!-- Top Error Patterns --><div class=\"card\"><div class=\"p-4 border-b border-dark-600\"><h3 class=\"text-lg font-semibold text-white\"><i class=\"fas fa-bug text-red-400 mr-2\"></i>Top Error Patterns</h3></div><div class=\"overflow-x-auto\"><table class=\"table\"><thead><tr><th>Pattern</th><th>Type</th><th>Count</th><th>Last Seen</th><th>Actions</th></tr></thead> <tbody>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 25, "</div></div></div><!-- Top Error Patterns --><div class=\"card\"><div class=\"p-4 border-b border-dark-600\"><h3 class=\"text-lg font-semibold text-white\"><i aria-hidden=\"true\" class=\"fas fa-bug text-red-400 mr-2\"></i>Top Error Patterns</h3></div><div class=\"overflow-x-auto\"><table class=\"table\"><thead><tr><th scope=\"col\">Pattern</th><th scope=\"col\">Type</th><th scope=\"col\">Count</th><th scope=\"col\">Last Seen</th><th scope=\"col\">Actions</th></tr></thead> <tbody>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -714,12 +714,12 @@ func patternsTab(data LogManagementData) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 48, "</div><div class=\"text-sm text-gray-400\">Total Patterns</div></div></div><!-- Patterns Table --><div class=\"card\"><div class=\"overflow-x-auto\"><table class=\"table\"><thead><tr><th>Error Pattern</th><th>Type</th><th>Severity</th><th>Occurrences</th><th>Sources</th><th>Time Range</th></tr></thead> <tbody>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 48, "</div><div class=\"text-sm text-gray-400\">Total Patterns</div></div></div><!-- Patterns Table --><div class=\"card\"><div class=\"overflow-x-auto\"><table class=\"table\"><thead><tr><th scope=\"col\">Error Pattern</th><th scope=\"col\">Type</th><th scope=\"col\">Severity</th><th scope=\"col\">Occurrences</th><th scope=\"col\">Sources</th><th scope=\"col\">Time Range</th></tr></thead> <tbody>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		if len(data.Patterns) == 0 {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 49, "<tr><td colspan=\"6\" class=\"text-center text-gray-500 py-8\"><i class=\"fas fa-check-circle text-green-400 text-2xl mb-2\"></i><p>No error patterns detected</p></td></tr>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 49, "<tr><td colspan=\"6\" class=\"text-center text-gray-500 py-8\"><i aria-hidden=\"true\" class=\"fas fa-check-circle text-green-400 text-2xl mb-2\"></i><p>No error patterns detected</p></td></tr>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -942,7 +942,7 @@ func uploadsTab(data LogManagementData) templ.Component {
 			templ_7745c5c3_Var54 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 68, "<div class=\"space-y-4\"><!-- Upload Area --><div class=\"card p-8 border-2 border-dashed border-dark-500 hover:border-primary-500/50 transition-colors\"><div class=\"text-center\"><i class=\"fas fa-cloud-upload-alt text-4xl text-gray-500 mb-4\"></i><h3 class=\"text-lg font-medium text-white mb-2\">Upload Log Files</h3><p class=\"text-gray-400 text-sm mb-4\">Drag and drop log files here, or click to browse. Supports .log, .txt, .json, and compressed archives.</p><button onclick=\"document.getElementById('upload-modal').classList.remove('hidden')\" class=\"btn-primary\"><i class=\"fas fa-upload mr-2\"></i>Select Files</button></div></div><!-- Uploaded Files Table --><div class=\"card\"><div class=\"p-4 border-b border-dark-600\"><h3 class=\"text-lg font-semibold text-white\">Uploaded Log Files</h3></div><div class=\"overflow-x-auto\"><table class=\"table\"><thead><tr><th>Filename</th><th>Format</th><th>Lines</th><th>Errors</th><th>Size</th><th>Uploaded</th><th>Actions</th></tr></thead> <tbody>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 68, "<div class=\"space-y-4\"><!-- Upload Area --><div class=\"card p-8 border-2 border-dashed border-dark-500 hover:border-primary-500/50 transition-colors\"><div class=\"text-center\"><i aria-hidden=\"true\" class=\"fas fa-cloud-upload-alt text-4xl text-gray-500 mb-4\"></i><h3 class=\"text-lg font-medium text-white mb-2\">Upload Log Files</h3><p class=\"text-gray-400 text-sm mb-4\">Drag and drop log files here, or click to browse. Supports .log, .txt, .json, and compressed archives.</p><button onclick=\"document.getElementById('upload-modal').classList.remove('hidden')\" class=\"btn-primary\"><i aria-hidden=\"true\" class=\"fas fa-upload mr-2\"></i>Select Files</button></div></div><!-- Uploaded Files Table --><div class=\"card\"><div class=\"p-4 border-b border-dark-600\"><h3 class=\"text-lg font-semibold text-white\">Uploaded Log Files</h3></div><div class=\"overflow-x-auto\"><table class=\"table\"><thead><tr><th scope=\"col\">Filename</th><th scope=\"col\">Format</th><th scope=\"col\">Lines</th><th scope=\"col\">Errors</th><th scope=\"col\">Size</th><th scope=\"col\">Uploaded</th><th scope=\"col\">Actions</th></tr></thead> <tbody>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -1154,7 +1154,7 @@ func searchTab(data LogManagementData) templ.Component {
 			templ_7745c5c3_Var66 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 88, "<div class=\"space-y-4\" x-data=\"logSearch()\"><!-- Search Form --><div class=\"card p-6\"><form @submit.prevent=\"search()\" class=\"space-y-4\"><div class=\"grid grid-cols-1 lg:grid-cols-3 gap-4\"><div class=\"lg:col-span-2\"><label class=\"block text-sm font-medium text-gray-300 mb-2\">Search Query</label> <input type=\"text\" x-model=\"query\" class=\"input\" placeholder=\"Enter search terms, regex, or field:value...\"></div><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Time Range</label> <select x-model=\"timeRange\" class=\"input\"><option value=\"1h\">Last 1 hour</option> <option value=\"6h\">Last 6 hours</option> <option value=\"24h\">Last 24 hours</option> <option value=\"7d\">Last 7 days</option> <option value=\"30d\">Last 30 days</option> <option value=\"custom\">Custom range</option></select></div></div><div class=\"grid grid-cols-2 md:grid-cols-4 gap-4\"><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Severity</label> <select x-model=\"severity\" class=\"input\"><option value=\"\">All</option> <option value=\"critical\">Critical</option> <option value=\"error\">Error</option> <option value=\"warning\">Warning</option> <option value=\"info\">Info</option> <option value=\"debug\">Debug</option></select></div><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Source</label> <select x-model=\"source\" class=\"input\"><option value=\"\">All Sources</option> ")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 88, "<div class=\"space-y-4\" x-data=\"logSearch()\"><!-- Search Form --><div class=\"card p-6\"><form @submit.prevent=\"search()\" class=\"space-y-4\"><div class=\"grid grid-cols-1 lg:grid-cols-3 gap-4\"><div class=\"lg:col-span-2\"><label class=\"block text-sm font-medium text-gray-300 mb-2\">Search Query</label> <input type=\"text\" x-model=\"query\" class=\"input\" placeholder=\"Enter search terms, regex, or field:value...\" aria-label=\"Search Query\"></div><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Time Range</label> <select x-model=\"timeRange\" class=\"input\"><option value=\"1h\">Last 1 hour</option> <option value=\"6h\">Last 6 hours</option> <option value=\"24h\">Last 24 hours</option> <option value=\"7d\">Last 7 days</option> <option value=\"30d\">Last 30 days</option> <option value=\"custom\">Custom range</option></select></div></div><div class=\"grid grid-cols-2 md:grid-cols-4 gap-4\"><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Severity</label> <select x-model=\"severity\" class=\"input\"><option value=\"\">All</option> <option value=\"critical\">Critical</option> <option value=\"error\">Error</option> <option value=\"warning\">Warning</option> <option value=\"info\">Info</option> <option value=\"debug\">Debug</option></select></div><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Source</label> <select x-model=\"source\" class=\"input\"><option value=\"\">All Sources</option> ")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -1166,7 +1166,7 @@ func searchTab(data LogManagementData) templ.Component {
 			var templ_7745c5c3_Var67 string
 			templ_7745c5c3_Var67, templ_7745c5c3_Err = templ.JoinStringErrs(c.ID)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/logs/management.templ`, Line: 521, Col: 28}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/logs/management.templ`, Line: 522, Col: 28}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var67))
 			if templ_7745c5c3_Err != nil {
@@ -1179,7 +1179,7 @@ func searchTab(data LogManagementData) templ.Component {
 			var templ_7745c5c3_Var68 string
 			templ_7745c5c3_Var68, templ_7745c5c3_Err = templ.JoinStringErrs(c.Name)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/logs/management.templ`, Line: 521, Col: 39}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/logs/management.templ`, Line: 522, Col: 39}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var68))
 			if templ_7745c5c3_Err != nil {
@@ -1190,7 +1190,7 @@ func searchTab(data LogManagementData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 92, "</select></div><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Format</label> <select x-model=\"format\" class=\"input\"><option value=\"\">All</option> <option value=\"json\">JSON</option> <option value=\"syslog\">Syslog</option> <option value=\"apache\">Apache/Nginx</option> <option value=\"plain\">Plain Text</option></select></div><div class=\"flex items-end\"><button type=\"submit\" class=\"btn-primary w-full\"><i class=\"fas fa-search mr-2\"></i>Search</button></div></div></form></div><!-- Results --><div class=\"card\"><div class=\"p-4 border-b border-dark-600 flex items-center justify-between\"><h3 class=\"text-lg font-semibold text-white\">Search Results <span x-show=\"results.length > 0\" class=\"text-sm text-gray-400 font-normal ml-2\">(<span x-text=\"results.length\"></span> logs found)</span></h3><div class=\"flex items-center gap-2\"><button @click=\"exportResults()\" x-show=\"results.length > 0\" class=\"btn-sm btn-secondary\"><i class=\"fas fa-download mr-1\"></i>Export</button></div></div><div class=\"divide-y divide-dark-600 max-h-[600px] overflow-y-auto\" id=\"search-results\"><template x-if=\"loading\"><div class=\"p-8 text-center text-gray-500\"><i class=\"fas fa-spinner fa-spin text-2xl mb-2\"></i><p>Searching...</p></div></template><template x-if=\"!loading && results.length === 0\"><div class=\"p-8 text-center text-gray-500\"><i class=\"fas fa-search text-2xl mb-2\"></i><p>No results. Try adjusting your search criteria.</p></div></template><template x-for=\"log in results\" :key=\"log.id\"><div class=\"p-4 hover:bg-dark-700/50\"><div class=\"flex items-start gap-3\"><span :class=\"severityDot(log.severity)\" class=\"w-2 h-2 rounded-full mt-2 flex-shrink-0\"></span><div class=\"flex-1 min-w-0\"><div class=\"flex items-center gap-2 text-sm mb-1\"><span class=\"text-gray-500\" x-text=\"log.timestamp\"></span> <span class=\"text-primary-400\" x-text=\"log.source_name\"></span> <span :class=\"severityBadgeClass(log.severity)\" class=\"badge text-xs\" x-text=\"log.severity\"></span></div><pre class=\"text-white text-sm font-mono whitespace-pre-wrap break-all\" x-text=\"log.message\"></pre><template x-if=\"log.fields && Object.keys(log.fields).length > 0\"><div class=\"mt-2 flex flex-wrap gap-2\"><template x-for=\"(value, key) in log.fields\" :key=\"key\"><span class=\"text-xs bg-dark-600 text-gray-300 px-2 py-0.5 rounded\"><span class=\"text-gray-500\" x-text=\"key + ': '\"></span> <span x-text=\"value\"></span></span></template></div></template></div></div></div></template></div></div><script>\n\t\t\tfunction logSearch() {\n\t\t\t\treturn {\n\t\t\t\t\tquery: '',\n\t\t\t\t\ttimeRange: '24h',\n\t\t\t\t\tseverity: '',\n\t\t\t\t\tsource: '',\n\t\t\t\t\tformat: '',\n\t\t\t\t\tloading: false,\n\t\t\t\t\tresults: [],\n\t\t\t\t\tasync search() {\n\t\t\t\t\t\tthis.loading = true;\n\t\t\t\t\t\ttry {\n\t\t\t\t\t\t\tconst params = new URLSearchParams({\n\t\t\t\t\t\t\t\tquery: this.query,\n\t\t\t\t\t\t\t\ttime_range: this.timeRange,\n\t\t\t\t\t\t\t\tseverity: this.severity,\n\t\t\t\t\t\t\t\tsource: this.source,\n\t\t\t\t\t\t\t\tformat: this.format\n\t\t\t\t\t\t\t});\n\t\t\t\t\t\t\tconst resp = await fetch('/api/logs/search?' + params);\n\t\t\t\t\t\t\tconst data = await resp.json();\n\t\t\t\t\t\t\tthis.results = data.logs || [];\n\t\t\t\t\t\t} catch (e) {\n\t\t\t\t\t\t\tconsole.error('Search failed:', e);\n\t\t\t\t\t\t\tthis.results = [];\n\t\t\t\t\t\t}\n\t\t\t\t\t\tthis.loading = false;\n\t\t\t\t\t},\n\t\t\t\t\tseverityDot(sev) {\n\t\t\t\t\t\tconst colors = {\n\t\t\t\t\t\t\tcritical: 'bg-red-600',\n\t\t\t\t\t\t\terror: 'bg-red-400',\n\t\t\t\t\t\t\twarning: 'bg-yellow-400',\n\t\t\t\t\t\t\tinfo: 'bg-blue-400',\n\t\t\t\t\t\t\tdebug: 'bg-gray-400'\n\t\t\t\t\t\t};\n\t\t\t\t\t\treturn colors[sev] || 'bg-gray-500';\n\t\t\t\t\t},\n\t\t\t\t\tseverityBadgeClass(sev) {\n\t\t\t\t\t\tconst classes = {\n\t\t\t\t\t\t\tcritical: 'bg-red-500/20 text-red-400',\n\t\t\t\t\t\t\terror: 'bg-red-500/20 text-red-400',\n\t\t\t\t\t\t\twarning: 'bg-yellow-500/20 text-yellow-400',\n\t\t\t\t\t\t\tinfo: 'bg-blue-500/20 text-blue-400',\n\t\t\t\t\t\t\tdebug: 'bg-gray-500/20 text-gray-400'\n\t\t\t\t\t\t};\n\t\t\t\t\t\treturn classes[sev] || 'bg-gray-500/20 text-gray-400';\n\t\t\t\t\t},\n\t\t\t\t\texportResults() {\n\t\t\t\t\t\tconst blob = new Blob([JSON.stringify(this.results, null, 2)], {type: 'application/json'});\n\t\t\t\t\t\tconst url = URL.createObjectURL(blob);\n\t\t\t\t\t\tconst a = document.createElement('a');\n\t\t\t\t\t\ta.href = url;\n\t\t\t\t\t\ta.download = 'log-search-results.json';\n\t\t\t\t\t\ta.click();\n\t\t\t\t\t\tURL.revokeObjectURL(url);\n\t\t\t\t\t}\n\t\t\t\t};\n\t\t\t}\n\t\t</script></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 92, "</select></div><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Format</label> <select x-model=\"format\" class=\"input\"><option value=\"\">All</option> <option value=\"json\">JSON</option> <option value=\"syslog\">Syslog</option> <option value=\"apache\">Apache/Nginx</option> <option value=\"plain\">Plain Text</option></select></div><div class=\"flex items-end\"><button type=\"submit\" class=\"btn-primary w-full\"><i aria-hidden=\"true\" class=\"fas fa-search mr-2\"></i>Search</button></div></div></form></div><!-- Results --><div class=\"card\"><div class=\"p-4 border-b border-dark-600 flex items-center justify-between\"><h3 class=\"text-lg font-semibold text-white\">Search Results <span x-show=\"results.length > 0\" class=\"text-sm text-gray-400 font-normal ml-2\">(<span x-text=\"results.length\"></span> logs found)</span></h3><div class=\"flex items-center gap-2\"><button @click=\"exportResults()\" x-show=\"results.length > 0\" class=\"btn-sm btn-secondary\"><i aria-hidden=\"true\" class=\"fas fa-download mr-1\"></i>Export</button></div></div><div class=\"divide-y divide-dark-600 max-h-[600px] overflow-y-auto\" id=\"search-results\"><template x-if=\"loading\"><div class=\"p-8 text-center text-gray-500\"><i aria-hidden=\"true\" class=\"fas fa-spinner fa-spin text-2xl mb-2\"></i><p>Searching...</p></div></template><template x-if=\"!loading && results.length === 0\"><div class=\"p-8 text-center text-gray-500\"><i aria-hidden=\"true\" class=\"fas fa-search text-2xl mb-2\"></i><p>No results. Try adjusting your search criteria.</p></div></template><template x-for=\"log in results\" :key=\"log.id\"><div class=\"p-4 hover:bg-dark-700/50\"><div class=\"flex items-start gap-3\"><span :class=\"severityDot(log.severity)\" class=\"w-2 h-2 rounded-full mt-2 flex-shrink-0\"></span><div class=\"flex-1 min-w-0\"><div class=\"flex items-center gap-2 text-sm mb-1\"><span class=\"text-gray-500\" x-text=\"log.timestamp\"></span> <span class=\"text-primary-400\" x-text=\"log.source_name\"></span> <span :class=\"severityBadgeClass(log.severity)\" class=\"badge text-xs\" x-text=\"log.severity\"></span></div><pre class=\"text-white text-sm font-mono whitespace-pre-wrap break-all\" x-text=\"log.message\"></pre><template x-if=\"log.fields && Object.keys(log.fields).length > 0\"><div class=\"mt-2 flex flex-wrap gap-2\"><template x-for=\"(value, key) in log.fields\" :key=\"key\"><span class=\"text-xs bg-dark-600 text-gray-300 px-2 py-0.5 rounded\"><span class=\"text-gray-500\" x-text=\"key + ': '\"></span> <span x-text=\"value\"></span></span></template></div></template></div></div></div></template></div></div><script>\n\t\t\tfunction logSearch() {\n\t\t\t\treturn {\n\t\t\t\t\tquery: '',\n\t\t\t\t\ttimeRange: '24h',\n\t\t\t\t\tseverity: '',\n\t\t\t\t\tsource: '',\n\t\t\t\t\tformat: '',\n\t\t\t\t\tloading: false,\n\t\t\t\t\tresults: [],\n\t\t\t\t\tasync search() {\n\t\t\t\t\t\tthis.loading = true;\n\t\t\t\t\t\ttry {\n\t\t\t\t\t\t\tconst params = new URLSearchParams({\n\t\t\t\t\t\t\t\tquery: this.query,\n\t\t\t\t\t\t\t\ttime_range: this.timeRange,\n\t\t\t\t\t\t\t\tseverity: this.severity,\n\t\t\t\t\t\t\t\tsource: this.source,\n\t\t\t\t\t\t\t\tformat: this.format\n\t\t\t\t\t\t\t});\n\t\t\t\t\t\t\tconst resp = await fetch('/api/logs/search?' + params);\n\t\t\t\t\t\t\tconst data = await resp.json();\n\t\t\t\t\t\t\tthis.results = data.logs || [];\n\t\t\t\t\t\t} catch (e) {\n\t\t\t\t\t\t\tconsole.error('Search failed:', e);\n\t\t\t\t\t\t\tthis.results = [];\n\t\t\t\t\t\t}\n\t\t\t\t\t\tthis.loading = false;\n\t\t\t\t\t},\n\t\t\t\t\tseverityDot(sev) {\n\t\t\t\t\t\tconst colors = {\n\t\t\t\t\t\t\tcritical: 'bg-red-600',\n\t\t\t\t\t\t\terror: 'bg-red-400',\n\t\t\t\t\t\t\twarning: 'bg-yellow-400',\n\t\t\t\t\t\t\tinfo: 'bg-blue-400',\n\t\t\t\t\t\t\tdebug: 'bg-gray-400'\n\t\t\t\t\t\t};\n\t\t\t\t\t\treturn colors[sev] || 'bg-gray-500';\n\t\t\t\t\t},\n\t\t\t\t\tseverityBadgeClass(sev) {\n\t\t\t\t\t\tconst classes = {\n\t\t\t\t\t\t\tcritical: 'bg-red-500/20 text-red-400',\n\t\t\t\t\t\t\terror: 'bg-red-500/20 text-red-400',\n\t\t\t\t\t\t\twarning: 'bg-yellow-500/20 text-yellow-400',\n\t\t\t\t\t\t\tinfo: 'bg-blue-500/20 text-blue-400',\n\t\t\t\t\t\t\tdebug: 'bg-gray-500/20 text-gray-400'\n\t\t\t\t\t\t};\n\t\t\t\t\t\treturn classes[sev] || 'bg-gray-500/20 text-gray-400';\n\t\t\t\t\t},\n\t\t\t\t\texportResults() {\n\t\t\t\t\t\tconst blob = new Blob([JSON.stringify(this.results, null, 2)], {type: 'application/json'});\n\t\t\t\t\t\tconst url = URL.createObjectURL(blob);\n\t\t\t\t\t\tconst a = document.createElement('a');\n\t\t\t\t\t\ta.href = url;\n\t\t\t\t\t\ta.download = 'log-search-results.json';\n\t\t\t\t\t\ta.click();\n\t\t\t\t\t\tURL.revokeObjectURL(url);\n\t\t\t\t\t}\n\t\t\t\t};\n\t\t\t}\n\t\t</script></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -1222,20 +1222,20 @@ func uploadModal(csrfToken string) templ.Component {
 			templ_7745c5c3_Var69 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 93, "<div id=\"upload-modal\" class=\"hidden fixed inset-0 z-50 overflow-y-auto\"><div class=\"fixed inset-0 bg-black/50\" onclick=\"document.getElementById('upload-modal').classList.add('hidden')\"></div><div class=\"relative min-h-screen flex items-center justify-center p-4\"><div class=\"relative bg-dark-800 rounded-xl border border-dark-600 max-w-lg w-full p-6\"><div class=\"flex items-center justify-between mb-6\"><h2 class=\"text-xl font-display font-bold text-white\">Upload Log File</h2><button onclick=\"document.getElementById('upload-modal').classList.add('hidden')\" class=\"text-gray-400 hover:text-white\"><i class=\"fas fa-times\"></i></button></div><form action=\"/logs/uploads\" method=\"POST\" enctype=\"multipart/form-data\" class=\"space-y-4\"><input type=\"hidden\" name=\"csrf_token\" value=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 93, "<div id=\"upload-modal\" class=\"hidden fixed inset-0 z-50 overflow-y-auto\"><div class=\"fixed inset-0 bg-black/50\" onclick=\"document.getElementById('upload-modal').classList.add('hidden')\"></div><div class=\"relative min-h-screen flex items-center justify-center p-4\"><div class=\"relative card max-w-lg w-full p-6\"><div class=\"flex items-center justify-between mb-6\"><h2 class=\"text-xl font-display font-bold text-white\">Upload Log File</h2><button onclick=\"document.getElementById('upload-modal').classList.add('hidden')\" class=\"text-gray-400 hover:text-white\"><i aria-hidden=\"true\" class=\"fas fa-times\"></i></button></div><form action=\"/logs/uploads\" method=\"POST\" enctype=\"multipart/form-data\" class=\"space-y-4\"><input type=\"hidden\" name=\"csrf_token\" value=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var70 string
 		templ_7745c5c3_Var70, templ_7745c5c3_Err = templ.JoinStringErrs(csrfToken)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/logs/management.templ`, Line: 684, Col: 61}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/logs/management.templ`, Line: 685, Col: 61}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var70))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 94, "\"><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Log File</label> <input type=\"file\" name=\"file\" required accept=\".log,.txt,.json,.gz,.tar.gz,.zip\" class=\"input file:mr-4 file:py-1 file:px-3 file:rounded-lg file:border-0 file:bg-primary-500 file:text-black file:font-medium file:cursor-pointer\"><p class=\"text-xs text-gray-500 mt-1\">Max file size: 100MB. Supported: .log, .txt, .json, .gz, .tar.gz, .zip</p></div><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Description (optional)</label> <input type=\"text\" name=\"description\" class=\"input\" placeholder=\"e.g. Production server logs from incident\"></div><div class=\"grid grid-cols-2 gap-4\"><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Log Format</label> <select name=\"format\" class=\"input\"><option value=\"auto\">Auto-detect</option> <option value=\"json\">JSON</option> <option value=\"syslog\">Syslog</option> <option value=\"apache\">Apache/Nginx</option> <option value=\"plain\">Plain Text</option></select></div><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Severity Filter</label> <select name=\"min_severity\" class=\"input\"><option value=\"\">All levels</option> <option value=\"debug\">Debug+</option> <option value=\"info\">Info+</option> <option value=\"warning\">Warning+</option> <option value=\"error\">Error+</option> <option value=\"critical\">Critical only</option></select></div></div><div class=\"flex justify-end gap-3 pt-4 border-t border-dark-600\"><button type=\"button\" onclick=\"document.getElementById('upload-modal').classList.add('hidden')\" class=\"btn-secondary\">Cancel</button> <button type=\"submit\" class=\"btn-primary\"><i class=\"fas fa-upload mr-2\"></i>Upload & Analyze</button></div></form></div></div></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 94, "\"><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Log File</label> <input type=\"file\" name=\"file\" required accept=\".log,.txt,.json,.gz,.tar.gz,.zip\" class=\"input file:mr-4 file:py-1 file:px-3 file:rounded-lg file:border-0 file:bg-primary-500 file:text-black file:font-medium file:cursor-pointer\" aria-label=\"Log File\"><p class=\"text-xs text-gray-500 mt-1\">Max file size: 100MB. Supported: .log, .txt, .json, .gz, .tar.gz, .zip</p></div><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Description (optional)</label> <input type=\"text\" name=\"description\" class=\"input\" placeholder=\"e.g. Production server logs from incident\" aria-label=\"e.g. Production server logs from incident\"></div><div class=\"grid grid-cols-2 gap-4\"><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Log Format</label> <select name=\"format\" class=\"input\"><option value=\"auto\">Auto-detect</option> <option value=\"json\">JSON</option> <option value=\"syslog\">Syslog</option> <option value=\"apache\">Apache/Nginx</option> <option value=\"plain\">Plain Text</option></select></div><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Severity Filter</label> <select name=\"min_severity\" class=\"input\"><option value=\"\">All levels</option> <option value=\"debug\">Debug+</option> <option value=\"info\">Info+</option> <option value=\"warning\">Warning+</option> <option value=\"error\">Error+</option> <option value=\"critical\">Critical only</option></select></div></div><div class=\"flex justify-end gap-3 pt-4 border-t border-dark-600\"><button type=\"button\" onclick=\"document.getElementById('upload-modal').classList.add('hidden')\" class=\"btn-secondary\">Cancel</button> <button type=\"submit\" class=\"btn-primary\"><i aria-hidden=\"true\" class=\"fas fa-upload mr-2\"></i>Upload & Analyze</button></div></form></div></div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

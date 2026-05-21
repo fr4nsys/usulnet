@@ -45,7 +45,7 @@ templ OAuthProvidersList(data OAuthProvidersData) {
 					onclick="showNewProviderModal()"
 					class="btn-primary"
 				>
-					<i class="fas fa-plus mr-2"></i>Add Provider
+					<i aria-hidden="true" class="fas fa-plus mr-2"></i>Add Provider
 				</button>
 			</div>
 
@@ -71,20 +71,20 @@ templ OAuthProvidersList(data OAuthProvidersData) {
 					<table class="table">
 						<thead>
 							<tr>
-								<th>Provider</th>
-								<th>Type</th>
-								<th>Client ID</th>
-								<th>Default Role</th>
-								<th>Auto Provision</th>
-								<th>Status</th>
-								<th>Actions</th>
+								<th scope="col">Provider</th>
+								<th scope="col">Type</th>
+								<th scope="col">Client ID</th>
+								<th scope="col">Default Role</th>
+								<th scope="col">Auto Provision</th>
+								<th scope="col">Status</th>
+								<th scope="col">Actions</th>
 							</tr>
 						</thead>
 						<tbody>
 							if len(data.Providers) == 0 {
 								<tr>
 									<td colspan="7" class="text-center text-gray-500 py-8">
-										<i class="fas fa-key text-4xl mb-3 block"></i>
+										<i aria-hidden="true" class="fas fa-key text-4xl mb-3 block"></i>
 										No OAuth providers configured yet
 									</td>
 								</tr>
@@ -119,9 +119,9 @@ templ OAuthProvidersList(data OAuthProvidersData) {
 									</td>
 									<td>
 										if provider.AutoProvision {
-											<span class="text-green-400"><i class="fas fa-check"></i></span>
+											<span class="text-green-400"><i aria-hidden="true" class="fas fa-check"></i></span>
 										} else {
-											<span class="text-gray-500"><i class="fas fa-times"></i></span>
+											<span class="text-gray-500"><i aria-hidden="true" class="fas fa-times"></i></span>
 										}
 									</td>
 									<td>
@@ -179,7 +179,7 @@ templ OAuthProvidersList(data OAuthProvidersData) {
 				<div class="grid grid-cols-2 md:grid-cols-5 gap-4">
 					<div class="flex items-center gap-3 p-3 bg-dark-700 rounded-lg">
 						<div class="w-10 h-10 rounded-lg bg-gray-500/20 flex items-center justify-center">
-							<i class="fas fa-globe text-gray-400"></i>
+							<i aria-hidden="true" class="fas fa-globe text-gray-400"></i>
 						</div>
 						<div>
 							<div class="font-medium text-white">Generic</div>
@@ -188,7 +188,7 @@ templ OAuthProvidersList(data OAuthProvidersData) {
 					</div>
 					<div class="flex items-center gap-3 p-3 bg-dark-700 rounded-lg">
 						<div class="w-10 h-10 rounded-lg bg-blue-500/20 flex items-center justify-center">
-							<i class="fas fa-id-card text-blue-400"></i>
+							<i aria-hidden="true" class="fas fa-id-card text-blue-400"></i>
 						</div>
 						<div>
 							<div class="font-medium text-white">OIDC</div>
@@ -197,7 +197,7 @@ templ OAuthProvidersList(data OAuthProvidersData) {
 					</div>
 					<div class="flex items-center gap-3 p-3 bg-dark-700 rounded-lg">
 						<div class="w-10 h-10 rounded-lg bg-[#24292e] flex items-center justify-center">
-							<i class="fab fa-github text-white"></i>
+							<i aria-hidden="true" class="fab fa-github text-white"></i>
 						</div>
 						<div>
 							<div class="font-medium text-white">GitHub</div>
@@ -206,7 +206,7 @@ templ OAuthProvidersList(data OAuthProvidersData) {
 					</div>
 					<div class="flex items-center gap-3 p-3 bg-dark-700 rounded-lg">
 						<div class="w-10 h-10 rounded-lg bg-red-500/20 flex items-center justify-center">
-							<i class="fab fa-google text-red-400"></i>
+							<i aria-hidden="true" class="fab fa-google text-red-400"></i>
 						</div>
 						<div>
 							<div class="font-medium text-white">Google</div>
@@ -215,7 +215,7 @@ templ OAuthProvidersList(data OAuthProvidersData) {
 					</div>
 					<div class="flex items-center gap-3 p-3 bg-dark-700 rounded-lg">
 						<div class="w-10 h-10 rounded-lg bg-blue-600/20 flex items-center justify-center">
-							<i class="fab fa-microsoft text-blue-500"></i>
+							<i aria-hidden="true" class="fab fa-microsoft text-blue-500"></i>
 						</div>
 						<div>
 							<div class="font-medium text-white">Microsoft</div>
@@ -238,7 +238,7 @@ templ OAuthProvidersList(data OAuthProvidersData) {
 					<div class="grid grid-cols-2 gap-4">
 						<div>
 							<label class="block text-sm font-medium text-gray-300 mb-2">Provider Name</label>
-							<input type="text" name="name" required class="input" placeholder="e.g. GitHub SSO"/>
+							<input type="text" name="name" required class="input" placeholder="e.g. GitHub SSO" aria-label="e.g. GitHub SSO"/>
 						</div>
 						<div>
 							<label class="block text-sm font-medium text-gray-300 mb-2">Provider Type</label>
@@ -256,38 +256,38 @@ templ OAuthProvidersList(data OAuthProvidersData) {
 					<div class="grid grid-cols-2 gap-4">
 						<div>
 							<label class="block text-sm font-medium text-gray-300 mb-2">Client ID</label>
-							<input type="text" name="client_id" required class="input" placeholder="Your OAuth client ID"/>
+							<input type="text" name="client_id" required class="input" placeholder="Your OAuth client ID" aria-label="Your OAuth client ID"/>
 						</div>
 						<div>
 							<label class="block text-sm font-medium text-gray-300 mb-2">Client Secret</label>
-							<input type="password" name="client_secret" required class="input" placeholder="Your OAuth client secret"/>
+							<input type="password" name="client_secret" required class="input" placeholder="Your OAuth client secret" aria-label="Your OAuth client secret"/>
 						</div>
 					</div>
 
 					<div id="urlFields" class="space-y-4">
 						<div>
 							<label class="block text-sm font-medium text-gray-300 mb-2">Authorization URL</label>
-							<input type="url" name="auth_url" id="authUrl" class="input" placeholder="https://example.com/oauth/authorize"/>
+							<input type="url" name="auth_url" id="authUrl" class="input" placeholder="https://example.com/oauth/authorize" aria-label="https://example.com/oauth/authorize"/>
 						</div>
 						<div>
 							<label class="block text-sm font-medium text-gray-300 mb-2">Token URL</label>
-							<input type="url" name="token_url" id="tokenUrl" class="input" placeholder="https://example.com/oauth/token"/>
+							<input type="url" name="token_url" id="tokenUrl" class="input" placeholder="https://example.com/oauth/token" aria-label="https://example.com/oauth/token"/>
 						</div>
 						<div>
 							<label class="block text-sm font-medium text-gray-300 mb-2">User Info URL</label>
-							<input type="url" name="user_info_url" id="userInfoUrl" class="input" placeholder="https://example.com/oauth/userinfo"/>
+							<input type="url" name="user_info_url" id="userInfoUrl" class="input" placeholder="https://example.com/oauth/userinfo" aria-label="https://example.com/oauth/userinfo"/>
 						</div>
 					</div>
 
 					<div>
 						<label class="block text-sm font-medium text-gray-300 mb-2">Scopes</label>
-						<input type="text" name="scopes" id="scopesInput" class="input" placeholder="openid profile email"/>
+						<input type="text" name="scopes" id="scopesInput" class="input" placeholder="openid profile email" aria-label="openid profile email"/>
 						<p class="text-xs text-gray-500 mt-1">Space-separated list of scopes</p>
 					</div>
 
 					<div>
 						<label class="block text-sm font-medium text-gray-300 mb-2">Redirect URL</label>
-						<input type="url" name="redirect_url" class="input" placeholder="Leave empty for auto-generated"/>
+						<input type="url" name="redirect_url" class="input" placeholder="Leave empty for auto-generated" aria-label="Leave empty for auto-generated"/>
 						<p class="text-xs text-gray-500 mt-1">Usually: https://your-domain/auth/oauth/callback</p>
 					</div>
 
@@ -315,16 +315,16 @@ templ OAuthProvidersList(data OAuthProvidersData) {
 					<!-- Group Mapping -->
 					<details class="bg-dark-700 rounded-lg">
 						<summary class="p-4 cursor-pointer text-gray-300 hover:text-white">
-							<i class="fas fa-users-cog mr-2"></i>Group Role Mapping (optional)
+							<i aria-hidden="true" class="fas fa-users-cog mr-2"></i>Group Role Mapping (optional)
 						</summary>
 						<div class="p-4 pt-0 space-y-4">
 							<div>
 								<label class="block text-sm font-medium text-gray-300 mb-2">Admin Group</label>
-								<input type="text" name="admin_group" class="input" placeholder="Group name for admin role"/>
+								<input type="text" name="admin_group" class="input" placeholder="Group name for admin role" aria-label="Group name for admin role"/>
 							</div>
 							<div>
 								<label class="block text-sm font-medium text-gray-300 mb-2">Operator Group</label>
-								<input type="text" name="operator_group" class="input" placeholder="Group name for operator role"/>
+								<input type="text" name="operator_group" class="input" placeholder="Group name for operator role" aria-label="Group name for operator role"/>
 							</div>
 						</div>
 					</details>
@@ -332,7 +332,7 @@ templ OAuthProvidersList(data OAuthProvidersData) {
 					<!-- Claim Mapping -->
 					<details class="bg-dark-700 rounded-lg">
 						<summary class="p-4 cursor-pointer text-gray-300 hover:text-white">
-							<i class="fas fa-tags mr-2"></i>Claim Mapping (advanced)
+							<i aria-hidden="true" class="fas fa-tags mr-2"></i>Claim Mapping (advanced)
 						</summary>
 						<div class="p-4 pt-0 grid grid-cols-2 gap-4">
 							<div>
@@ -540,7 +540,7 @@ templ OAuthProviderEdit(data OAuthProviderEditData) {
 		<div class="max-w-2xl mx-auto space-y-6">
 			<div class="flex items-center gap-4">
 				<a href="/admin/oauth" class="p-2 text-gray-400 hover:text-white hover:bg-dark-700 rounded-lg">
-					<i class="fas fa-arrow-left"></i>
+					<i aria-hidden="true" class="fas fa-arrow-left"></i>
 				</a>
 				<div>
 					<h1 class="text-2xl font-display font-bold text-white">Edit OAuth Provider</h1>
@@ -581,7 +581,7 @@ templ OAuthProviderEdit(data OAuthProviderEditData) {
 					</div>
 					<div>
 						<label class="block text-sm font-medium text-gray-300 mb-2">Client Secret</label>
-						<input type="password" name="client_secret" class="input" placeholder="Leave blank to keep current"/>
+						<input type="password" name="client_secret" class="input" placeholder="Leave blank to keep current" aria-label="Leave blank to keep current"/>
 					</div>
 				</div>
 
@@ -633,7 +633,7 @@ templ OAuthProviderEdit(data OAuthProviderEditData) {
 				<!-- Group Mapping -->
 				<details class="bg-dark-700 rounded-lg" open?={ data.Provider.AdminGroup != "" || data.Provider.OperatorGroup != "" }>
 					<summary class="p-4 cursor-pointer text-gray-300 hover:text-white">
-						<i class="fas fa-users-cog mr-2"></i>Group Role Mapping
+						<i aria-hidden="true" class="fas fa-users-cog mr-2"></i>Group Role Mapping
 					</summary>
 					<div class="p-4 pt-0 space-y-4">
 						<div>
@@ -650,7 +650,7 @@ templ OAuthProviderEdit(data OAuthProviderEditData) {
 				<!-- Claim Mapping -->
 				<details class="bg-dark-700 rounded-lg">
 					<summary class="p-4 cursor-pointer text-gray-300 hover:text-white">
-						<i class="fas fa-tags mr-2"></i>Claim Mapping
+						<i aria-hidden="true" class="fas fa-tags mr-2"></i>Claim Mapping
 					</summary>
 					<div class="p-4 pt-0 grid grid-cols-2 gap-4">
 						<div>

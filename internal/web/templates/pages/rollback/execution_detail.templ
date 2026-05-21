@@ -16,7 +16,7 @@ templ ExecutionDetail(data ExecutionDetailData) {
 		<div class="space-y-6">
 			<div>
 				<a href="/rollback/executions" class="text-sm text-gray-400 hover:text-white">
-					<i class="fas fa-chevron-left mr-1"></i>back to execution log
+					<i aria-hidden="true" class="fas fa-chevron-left mr-1"></i>back to execution log
 				</a>
 				<div class="flex items-center gap-3 mt-1">
 					<h1 class="text-2xl font-display font-bold text-white">Execution { data.Execution.ID }</h1>
@@ -90,7 +90,7 @@ templ ExecutionDetail(data ExecutionDetailData) {
 			}
 			if data.Execution.Error != "" {
 				<div class="card p-4 border border-red-500/40 bg-red-500/5">
-					<h3 class="text-sm font-semibold text-red-200 mb-2"><i class="fas fa-triangle-exclamation mr-1"></i>Error</h3>
+					<h3 class="text-sm font-semibold text-red-200 mb-2"><i aria-hidden="true" class="fas fa-triangle-exclamation mr-1"></i>Error</h3>
 					<p class="text-sm text-red-300 whitespace-pre-wrap">{ data.Execution.Error }</p>
 				</div>
 			}

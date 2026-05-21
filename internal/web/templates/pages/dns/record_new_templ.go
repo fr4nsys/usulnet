@@ -130,7 +130,7 @@ func RecordNew(data RecordNewData) templ.Component {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "<div><label for=\"name\" class=\"block text-sm font-medium text-gray-300 mb-1\">Name (FQDN)</label> <input id=\"name\" name=\"name\" type=\"text\" class=\"input w-full font-mono\" required placeholder=\"app.example.com\"></div><div><label for=\"type\" class=\"block text-sm font-medium text-gray-300 mb-1\">Type</label> <select id=\"type\" name=\"type\" class=\"input w-full\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "<div><label for=\"name\" class=\"block text-sm font-medium text-gray-300 mb-1\">Name (FQDN)</label> <input id=\"name\" name=\"name\" type=\"text\" class=\"input w-full font-mono\" required placeholder=\"app.example.com\" aria-label=\"app.example.com\"></div><div><label for=\"type\" class=\"block text-sm font-medium text-gray-300 mb-1\">Type</label> <select id=\"type\" name=\"type\" class=\"input w-full\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

@@ -105,6 +105,17 @@ func (h *Handler) RunbooksTempl(w http.ResponseWriter, r *http.Request) {
 }
 
 // RunbookCreate handles creation of a new runbook.
+// runbookCreateForm captures the create-runbook inputs. Steps is
+// a JSON-encoded array stored verbatim as RawMessage; the
+// validator only enforces structural rules on the scalar fields.
+type runbookCreateForm struct {
+	Name        string `form:"name" validate:"required"`
+	Description string `form:"description"`
+	Category    string `form:"category"`
+	Steps       string `form:"steps"`
+	IsEnabled   bool   `form:"is_enabled"`
+}
+
 func (h *Handler) RunbookCreate(w http.ResponseWriter, r *http.Request) {
 	if h.runbookRepo == nil {
 		h.setFlash(w, r, "error", "Runbook service not configured")
@@ -112,30 +123,24 @@ func (h *Handler) RunbookCreate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := r.ParseForm(); err != nil {
-		h.setFlash(w, r, "error", "Invalid form data")
+	var form runbookCreateForm
+	if msg := BindForm(r, &form); msg != "" {
+		h.setFlash(w, r, "error", msg)
 		h.redirect(w, r, "/runbooks")
 		return
 	}
 
-	name := r.FormValue("name")
-	if name == "" {
-		h.setFlash(w, r, "error", "Runbook name is required")
-		h.redirect(w, r, "/runbooks")
-		return
-	}
-
-	stepsJSON := r.FormValue("steps")
+	stepsJSON := form.Steps
 	if stepsJSON == "" {
 		stepsJSON = "[]"
 	}
 
 	rb := &models.Runbook{
-		Name:        name,
-		Description: r.FormValue("description"),
-		Category:    r.FormValue("category"),
+		Name:        form.Name,
+		Description: form.Description,
+		Category:    form.Category,
 		Steps:       json.RawMessage(stepsJSON),
-		IsEnabled:   r.FormValue("is_enabled") == "on",
+		IsEnabled:   form.IsEnabled,
 		Version:     1,
 	}
 

@@ -140,7 +140,7 @@ templ Monitoring(data MonitoringData) {
 						<span id="ws-label" class="text-gray-400">Connecting...</span>
 					</div>
 					<button onclick="togglePause()" id="btn-pause" class="px-3 py-1.5 bg-dark-700 hover:bg-dark-600 text-gray-300 rounded-lg transition-colors text-sm font-medium">
-						<i class="fas fa-pause mr-1.5"></i>Pause
+						<i aria-hidden="true" class="fas fa-pause mr-1.5"></i>Pause
 					</button>
 				</div>
 			</div>
@@ -148,7 +148,7 @@ templ Monitoring(data MonitoringData) {
 			<!-- Host Summary Cards -->
 			<div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
 				<!-- CPU -->
-				<div class="bg-dark-800 rounded-xl border border-dark-600 p-4">
+				<div class="card p-4">
 					<div class="flex items-center justify-between mb-2">
 						<span class="text-xs text-gray-500 font-medium uppercase tracking-wider">CPU</span>
 						<span class="text-xs text-gray-500">{ fmt.Sprintf("%d cores", data.Host.CPUCores) }</span>
@@ -162,7 +162,7 @@ templ Monitoring(data MonitoringData) {
 				</div>
 
 				<!-- Memory -->
-				<div class="bg-dark-800 rounded-xl border border-dark-600 p-4">
+				<div class="card p-4">
 					<div class="flex items-center justify-between mb-2">
 						<span class="text-xs text-gray-500 font-medium uppercase tracking-wider">Memory</span>
 						<span class="text-xs text-gray-500">{ formatBytes(data.Host.MemTotal) }</span>
@@ -176,7 +176,7 @@ templ Monitoring(data MonitoringData) {
 				</div>
 
 				<!-- Disk -->
-				<div class="bg-dark-800 rounded-xl border border-dark-600 p-4">
+				<div class="card p-4">
 					<div class="flex items-center justify-between mb-2">
 						<span class="text-xs text-gray-500 font-medium uppercase tracking-wider">Disk</span>
 						<span class="text-xs text-gray-500">{ formatBytes(data.Host.DiskTotal) }</span>
@@ -190,7 +190,7 @@ templ Monitoring(data MonitoringData) {
 				</div>
 
 				<!-- Containers -->
-				<div class="bg-dark-800 rounded-xl border border-dark-600 p-4">
+				<div class="card p-4">
 					<div class="flex items-center justify-between mb-2">
 						<span class="text-xs text-gray-500 font-medium uppercase tracking-wider">Containers</span>
 						<span class="text-xs text-gray-500">{ fmt.Sprintf("%d total", data.Host.Containers) }</span>
@@ -220,7 +220,7 @@ templ Monitoring(data MonitoringData) {
 			<!-- Charts Row -->
 			<div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
 				<!-- CPU History Chart -->
-				<div class="bg-dark-800 rounded-xl border border-dark-600 p-4">
+				<div class="card p-4">
 					<div class="flex items-center justify-between mb-3">
 						<h2 class="text-sm font-semibold text-white">CPU History</h2>
 						<span id="chart-cpu-current" class="text-xs text-gray-400"></span>
@@ -231,7 +231,7 @@ templ Monitoring(data MonitoringData) {
 				</div>
 
 				<!-- Memory History Chart -->
-				<div class="bg-dark-800 rounded-xl border border-dark-600 p-4">
+				<div class="card p-4">
 					<div class="flex items-center justify-between mb-3">
 						<h2 class="text-sm font-semibold text-white">Memory History</h2>
 						<span id="chart-mem-current" class="text-xs text-gray-400"></span>
@@ -245,7 +245,7 @@ templ Monitoring(data MonitoringData) {
 			<!-- Network + Block I/O Charts -->
 			<div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
 				<!-- Network I/O -->
-				<div class="bg-dark-800 rounded-xl border border-dark-600 p-4">
+				<div class="card p-4">
 					<div class="flex items-center justify-between mb-3">
 						<h2 class="text-sm font-semibold text-white">Network I/O</h2>
 						<span id="chart-net-current" class="text-xs text-gray-400"></span>
@@ -256,7 +256,7 @@ templ Monitoring(data MonitoringData) {
 				</div>
 
 				<!-- Block I/O -->
-				<div class="bg-dark-800 rounded-xl border border-dark-600 p-4">
+				<div class="card p-4">
 					<div class="flex items-center justify-between mb-3">
 						<h2 class="text-sm font-semibold text-white">Block I/O</h2>
 						<span id="chart-blk-current" class="text-xs text-gray-400"></span>
@@ -268,13 +268,13 @@ templ Monitoring(data MonitoringData) {
 			</div>
 
 			<!-- Container Stats Table -->
-			<div class="bg-dark-800 rounded-xl border border-dark-600 overflow-hidden">
+			<div class="card overflow-hidden">
 				<div class="px-4 py-3 border-b border-dark-600 flex items-center justify-between">
 					<h2 class="text-sm font-semibold text-white">Container Resources</h2>
 					<div class="flex items-center gap-2">
 						<input type="text" id="filter-input" placeholder="Filter containers..."
 							class="px-3 py-1.5 bg-dark-700 border border-dark-600 rounded-lg text-sm text-gray-300 placeholder-gray-500 focus:outline-none focus:border-primary-500 w-48"
-							oninput="filterContainers(this.value)" />
+							oninput="filterContainers(this.value)"  aria-label="Filter containers..."/>
 						<select id="sort-select" onchange="sortContainers(this.value)"
 							class="px-3 py-1.5 bg-dark-700 border border-dark-600 rounded-lg text-sm text-gray-300 focus:outline-none focus:border-primary-500">
 							<option value="cpu">Sort: CPU</option>
@@ -288,17 +288,17 @@ templ Monitoring(data MonitoringData) {
 					<table class="w-full text-sm">
 						<thead>
 							<tr class="text-xs text-gray-500 uppercase tracking-wider border-b border-dark-700">
-								<th class="px-4 py-2 text-left font-medium">Container</th>
-								<th class="px-4 py-2 text-right font-medium">CPU %</th>
-								<th class="px-4 py-2 text-right font-medium">Memory</th>
-								<th class="px-4 py-2 text-right font-medium">Mem %</th>
-								<th class="px-4 py-2 text-right font-medium">Net Rx</th>
-								<th class="px-4 py-2 text-right font-medium">Net Tx</th>
-								<th class="px-4 py-2 text-right font-medium">Block R</th>
-								<th class="px-4 py-2 text-right font-medium">Block W</th>
-								<th class="px-4 py-2 text-right font-medium">PIDs</th>
-								<th class="px-4 py-2 text-left font-medium">Uptime</th>
-								<th class="px-4 py-2 text-center font-medium"></th>
+								<th scope="col" class="px-4 py-2 text-left font-medium">Container</th>
+								<th scope="col" class="px-4 py-2 text-right font-medium">CPU %</th>
+								<th scope="col" class="px-4 py-2 text-right font-medium">Memory</th>
+								<th scope="col" class="px-4 py-2 text-right font-medium">Mem %</th>
+								<th scope="col" class="px-4 py-2 text-right font-medium">Net Rx</th>
+								<th scope="col" class="px-4 py-2 text-right font-medium">Net Tx</th>
+								<th scope="col" class="px-4 py-2 text-right font-medium">Block R</th>
+								<th scope="col" class="px-4 py-2 text-right font-medium">Block W</th>
+								<th scope="col" class="px-4 py-2 text-right font-medium">PIDs</th>
+								<th scope="col" class="px-4 py-2 text-left font-medium">Uptime</th>
+								<th scope="col" class="px-4 py-2 text-center font-medium"></th>
 							</tr>
 						</thead>
 						<tbody id="container-table">
@@ -652,7 +652,7 @@ templ Monitoring(data MonitoringData) {
 						'<td class="px-4 py-2.5 text-xs text-gray-500">' + escapeHtml(c.uptime || '') + '</td>' +
 						'<td class="px-4 py-2.5 text-center">' +
 							'<a href="/monitoring/' + c.id + '" class="text-gray-500 hover:text-primary-400 transition-colors" title="Detail">' +
-								'<i class="fas fa-chart-line"></i>' +
+								'<i aria-hidden="true" class="fas fa-chart-line"></i>' +
 							'</a>' +
 						'</td>' +
 					'</tr>';
@@ -672,11 +672,11 @@ templ Monitoring(data MonitoringData) {
 				paused = !paused;
 				const btn = document.getElementById('btn-pause');
 				if (paused) {
-					btn.innerHTML = '<i class="fas fa-play mr-1.5"></i>Resume';
+					btn.innerHTML = '<i aria-hidden="true" class="fas fa-play mr-1.5"></i>Resume';
 					btn.classList.add('bg-primary-600', 'hover:bg-primary-700');
 					btn.classList.remove('bg-dark-700', 'hover:bg-dark-600');
 				} else {
-					btn.innerHTML = '<i class="fas fa-pause mr-1.5"></i>Pause';
+					btn.innerHTML = '<i aria-hidden="true" class="fas fa-pause mr-1.5"></i>Pause';
 					btn.classList.remove('bg-primary-600', 'hover:bg-primary-700');
 					btn.classList.add('bg-dark-700', 'hover:bg-dark-600');
 				}
@@ -734,7 +734,7 @@ templ containerRow(c ContainerStat) {
 		<td class="px-4 py-2.5 text-xs text-gray-500">{ c.Uptime }</td>
 		<td class="px-4 py-2.5 text-center">
 			<a href={ templ.SafeURL(fmt.Sprintf("/monitoring/%s", c.ID)) } class="text-gray-500 hover:text-primary-400 transition-colors" title="Detail">
-				<i class="fas fa-chart-line"></i>
+				<i aria-hidden="true" class="fas fa-chart-line"></i>
 			</a>
 		</td>
 	</tr>

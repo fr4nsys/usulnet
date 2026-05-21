@@ -81,20 +81,26 @@ func (h *Handler) BulkOpsTempl(w http.ResponseWriter, r *http.Request) {
 	h.renderTempl(w, r, bulktmpl.BulkOps(data))
 }
 
+// bulkOpsForm captures the bulk-ops inputs. ContainerIDs is the
+// list of checkbox values; Force is the optional confirmation flag
+// for destructive actions (remove).
+type bulkOpsForm struct {
+	ContainerIDs []string `form:"container_ids" validate:"required,min=1,dive,required"`
+	Force        bool     `form:"force"`
+}
+
 // BulkOpsAction handles bulk operations from the dedicated page and stores results.
 func (h *Handler) BulkOpsAction(w http.ResponseWriter, r *http.Request) {
-	if err := r.ParseForm(); err != nil {
-		h.setFlash(w, r, "error", "Invalid form data")
+	var form bulkOpsForm
+	if msg := BindForm(r, &form); msg != "" {
+		// The "required" / "min=1" rule on container_ids is what
+		// surfaces "No containers selected" — keep the validator
+		// wording so the flash is consistent across the codebase.
+		h.setFlash(w, r, "error", msg)
 		http.Redirect(w, r, "/bulk-ops", http.StatusSeeOther)
 		return
 	}
-
-	containerIDs := r.Form["container_ids"]
-	if len(containerIDs) == 0 {
-		h.setFlash(w, r, "error", "No containers selected")
-		http.Redirect(w, r, "/bulk-ops", http.StatusSeeOther)
-		return
-	}
+	containerIDs := form.ContainerIDs
 
 	action := r.URL.Query().Get("action")
 	if action == "" {
@@ -129,8 +135,7 @@ func (h *Handler) BulkOpsAction(w http.ResponseWriter, r *http.Request) {
 	case "kill":
 		results, execErr = containerSvc.BulkKill(ctx, containerIDs)
 	case "remove":
-		force := r.FormValue("force") == "true"
-		results, execErr = containerSvc.BulkRemove(ctx, containerIDs, force)
+		results, execErr = containerSvc.BulkRemove(ctx, containerIDs, form.Force)
 	default:
 		h.setFlash(w, r, "error", "Unknown action: "+action)
 		http.Redirect(w, r, "/bulk-ops", http.StatusSeeOther)

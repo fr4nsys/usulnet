@@ -145,9 +145,10 @@ func (h *Handler) FirewallListTempl(w http.ResponseWriter, r *http.Request) {
 	}
 
 	h.renderTempl(w, r, firewalltpl.List(firewalltpl.ListData{
-		PageData: pageData,
-		Rules:    ruleViews,
-		Stats:    stats,
+		PageData:   pageData,
+		Rules:      ruleViews,
+		Stats:      stats,
+		EmptyState: EmptyStateCatalogFirewall(),
 	}))
 }
 
@@ -165,13 +166,42 @@ func (h *Handler) FirewallNewTempl(w http.ResponseWriter, r *http.Request) {
 }
 
 // FirewallCreateTempl handles POST /firewall — creates a new firewall rule.
+// firewallWriteForm captures the inputs shared between rule
+// create and update — both endpoints accept the same fields.
+// Validation is intentionally minimal: name and chain / action /
+// direction are required because the rule cannot do anything
+// without them; the rest depend on the rule's purpose and are
+// validated by the firewall service.
+type firewallWriteForm struct {
+	Name          string `form:"name" validate:"required"`
+	Description   string `form:"description"`
+	Chain         string `form:"chain" validate:"required"`
+	Protocol      string `form:"protocol"`
+	Source        string `form:"source"`
+	Destination   string `form:"destination"`
+	SrcPort       string `form:"src_port"`
+	DstPort       string `form:"dst_port"`
+	Action        string `form:"action" validate:"required"`
+	Direction     string `form:"direction"`
+	InterfaceName string `form:"interface_name"`
+	ContainerID   string `form:"container_id"`
+	NetworkName   string `form:"network_name"`
+	Comment       string `form:"comment"`
+	Enabled       bool   `form:"enabled"`
+}
+
 func (h *Handler) FirewallCreateTempl(w http.ResponseWriter, r *http.Request) {
 	svc := h.requireFirewallSvc(w, r)
 	if svc == nil {
 		return
 	}
-	if err := r.ParseForm(); err != nil {
-		http.Error(w, "Error parsing form", http.StatusBadRequest)
+	var form firewallWriteForm
+	if msg := BindForm(r, &form); msg != "" {
+		pageData := h.prepareTemplPageData(r, "New Firewall Rule", "firewall")
+		h.renderTempl(w, r, firewalltpl.New(firewalltpl.NewData{
+			PageData: pageData,
+			Error:    msg,
+		}))
 		return
 	}
 
@@ -179,21 +209,21 @@ func (h *Handler) FirewallCreateTempl(w http.ResponseWriter, r *http.Request) {
 	userID := h.firewallUserUUID(r)
 
 	input := models.CreateFirewallRuleInput{
-		Name:          r.FormValue("name"),
-		Description:   r.FormValue("description"),
-		Chain:         models.FirewallChain(r.FormValue("chain")),
-		Protocol:      r.FormValue("protocol"),
-		Source:        r.FormValue("source"),
-		Destination:   r.FormValue("destination"),
-		SrcPort:       r.FormValue("src_port"),
-		DstPort:       r.FormValue("dst_port"),
-		Action:        models.FirewallAction(r.FormValue("action")),
-		Direction:     r.FormValue("direction"),
-		InterfaceName: r.FormValue("interface_name"),
-		ContainerID:   r.FormValue("container_id"),
-		NetworkName:   r.FormValue("network_name"),
-		Comment:       r.FormValue("comment"),
-		Enabled:       r.FormValue("enabled") == "on" || r.FormValue("enabled") == "true",
+		Name:          form.Name,
+		Description:   form.Description,
+		Chain:         models.FirewallChain(form.Chain),
+		Protocol:      form.Protocol,
+		Source:        form.Source,
+		Destination:   form.Destination,
+		SrcPort:       form.SrcPort,
+		DstPort:       form.DstPort,
+		Action:        models.FirewallAction(form.Action),
+		Direction:     form.Direction,
+		InterfaceName: form.InterfaceName,
+		ContainerID:   form.ContainerID,
+		NetworkName:   form.NetworkName,
+		Comment:       form.Comment,
+		Enabled:       form.Enabled,
 	}
 
 	if _, err := svc.CreateRule(r.Context(), hostID, input, userID); err != nil {
@@ -275,51 +305,38 @@ func (h *Handler) FirewallUpdateTempl(w http.ResponseWriter, r *http.Request) {
 	if svc == nil {
 		return
 	}
-	if err := r.ParseForm(); err != nil {
-		http.Error(w, "Error parsing form", http.StatusBadRequest)
-		return
-	}
-
 	ruleID, err := uuid.Parse(chi.URLParam(r, "id"))
 	if err != nil {
 		h.RenderErrorTempl(w, r, http.StatusBadRequest, "Invalid ID", "The rule ID is not valid.")
 		return
 	}
 
+	var form firewallWriteForm
+	if msg := BindForm(r, &form); msg != "" {
+		http.Error(w, msg, http.StatusBadRequest)
+		return
+	}
+
 	userID := h.firewallUserUUID(r)
 
-	name := r.FormValue("name")
-	desc := r.FormValue("description")
-	chain := models.FirewallChain(r.FormValue("chain"))
-	proto := r.FormValue("protocol")
-	src := r.FormValue("source")
-	dst := r.FormValue("destination")
-	srcPort := r.FormValue("src_port")
-	dstPort := r.FormValue("dst_port")
-	action := models.FirewallAction(r.FormValue("action"))
-	dir := r.FormValue("direction")
-	iface := r.FormValue("interface_name")
-	ctrID := r.FormValue("container_id")
-	netName := r.FormValue("network_name")
-	comment := r.FormValue("comment")
-	enabled := r.FormValue("enabled") == "on" || r.FormValue("enabled") == "true"
-
+	chain := models.FirewallChain(form.Chain)
+	action := models.FirewallAction(form.Action)
 	input := models.UpdateFirewallRuleInput{
-		Name:          &name,
-		Description:   &desc,
+		Name:          &form.Name,
+		Description:   &form.Description,
 		Chain:         &chain,
-		Protocol:      &proto,
-		Source:        &src,
-		Destination:   &dst,
-		SrcPort:       &srcPort,
-		DstPort:       &dstPort,
+		Protocol:      &form.Protocol,
+		Source:        &form.Source,
+		Destination:   &form.Destination,
+		SrcPort:       &form.SrcPort,
+		DstPort:       &form.DstPort,
 		Action:        &action,
-		Direction:     &dir,
-		InterfaceName: &iface,
-		ContainerID:   &ctrID,
-		NetworkName:   &netName,
-		Comment:       &comment,
-		Enabled:       &enabled,
+		Direction:     &form.Direction,
+		InterfaceName: &form.InterfaceName,
+		ContainerID:   &form.ContainerID,
+		NetworkName:   &form.NetworkName,
+		Comment:       &form.Comment,
+		Enabled:       &form.Enabled,
 	}
 
 	if _, err := svc.UpdateRule(r.Context(), ruleID, input, userID); err != nil {
@@ -328,7 +345,7 @@ func (h *Handler) FirewallUpdateTempl(w http.ResponseWriter, r *http.Request) {
 			PageData: pageData,
 			Rule: firewalltpl.RuleView{
 				ID:   ruleID.String(),
-				Name: name,
+				Name: form.Name,
 			},
 			Error: "Failed to update rule: " + err.Error(),
 		}))

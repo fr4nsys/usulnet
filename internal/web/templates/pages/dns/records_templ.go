@@ -64,12 +64,12 @@ func Records(data RecordsAcrossProvidersData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			if len(data.Providers) == 0 {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<div class=\"card p-8 text-center\"><i class=\"fas fa-list text-4xl text-gray-400 mb-4\"></i><h3 class=\"text-lg font-medium text-white mb-2\">No DNS providers</h3><p class=\"text-gray-400 mb-4\">Add a provider first to create records.</p><a href=\"/dns/new\" class=\"btn-primary\"><i class=\"fas fa-plus mr-2\"></i>Add provider</a></div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<div class=\"card p-8 text-center\"><i aria-hidden=\"true\" class=\"fas fa-list text-4xl text-gray-400 mb-4\"></i><h3 class=\"text-lg font-medium text-white mb-2\">No DNS providers</h3><p class=\"text-gray-400 mb-4\">Add a provider first to create records.</p><a href=\"/dns/new\" class=\"btn-primary\"><i aria-hidden=\"true\" class=\"fas fa-plus mr-2\"></i>Add provider</a></div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			} else {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<div class=\"card\"><div class=\"overflow-x-auto\"><table class=\"table\"><thead><tr><th>Provider</th><th>Name</th><th>Type</th><th>Content</th><th>TTL</th><th>Managed by</th></tr></thead> <tbody>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<div class=\"card\"><div class=\"overflow-x-auto\"><table class=\"table\"><thead><tr><th scope=\"col\">Provider</th><th scope=\"col\">Name</th><th scope=\"col\">Type</th><th scope=\"col\">Content</th><th scope=\"col\">TTL</th><th scope=\"col\">Managed by</th></tr></thead> <tbody>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}

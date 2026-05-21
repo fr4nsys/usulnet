@@ -16,6 +16,8 @@ templ Header(user *types.UserData, notificationsCount int, hosts []types.HostSel
 					<div x-data="{ open: false }" class="relative flex-shrink-0">
 						<button
 							@click="open = !open"
+							:aria-expanded="open ? 'true' : 'false'"
+							aria-label="Switch active node"
 							class="flex items-center gap-2 px-3 py-1.5 bg-dark-800 border border-dark-600 rounded-lg hover:border-primary-500/50 transition-colors min-w-[180px]"
 						>
 							@hostStatusDot(activeHostStatus(hosts, activeHostID))
@@ -32,7 +34,7 @@ templ Header(user *types.UserData, notificationsCount int, hosts []types.HostSel
 							x-transition:leave-start="transform opacity-100 scale-100"
 							x-transition:leave-end="transform opacity-0 scale-95"
 							@click.outside="open = false"
-							class="absolute left-0 mt-2 w-64 bg-dark-800 rounded-xl border border-dark-600 shadow-xl py-1 z-50"
+							class="absolute left-0 mt-2 w-64 card shadow-xl py-1 z-50"
 							style="display: none;"
 						>
 							<div class="px-3 py-2 border-b border-dark-600">
@@ -80,6 +82,7 @@ templ Header(user *types.UserData, notificationsCount int, hosts []types.HostSel
 							hx-get="/partials/search"
 							hx-trigger="keyup changed delay:300ms"
 							hx-target="#search-results"
+							aria-label="Search containers, images, networks..."
 						/>
 						<i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-500"></i>
 					</div>
@@ -94,6 +97,7 @@ templ Header(user *types.UserData, notificationsCount int, hosts []types.HostSel
 					onclick="usulnet.toggleTheme()"
 					class="p-2 text-gray-400 hover:text-white transition-colors"
 					title="Toggle theme"
+					aria-label="Toggle theme"
 				>
 					<i id="theme-toggle-icon" class="fas fa-moon"></i>
 				</button>
@@ -109,11 +113,13 @@ templ Header(user *types.UserData, notificationsCount int, hosts []types.HostSel
 				<div x-data="{ open: false }" class="relative">
 					<button
 						@click="open = !open"
+						:aria-expanded="open ? 'true' : 'false'"
+						aria-label={ notificationsAriaLabel(notificationsCount) }
 						class="relative p-2 text-gray-400 hover:text-white transition-colors"
 					>
 						<i class="fas fa-bell"></i>
 						if notificationsCount > 0 {
-							<span class="absolute top-0 right-0 w-4 h-4 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
+							<span class="absolute top-0 right-0 w-4 h-4 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center" aria-hidden="true">
 								{ formatCount(notificationsCount) }
 							</span>
 						}
@@ -129,7 +135,7 @@ templ Header(user *types.UserData, notificationsCount int, hosts []types.HostSel
 						x-transition:leave-start="transform opacity-100 scale-100"
 						x-transition:leave-end="transform opacity-0 scale-95"
 						@click.outside="open = false"
-						class="absolute right-0 mt-2 w-80 bg-dark-800 rounded-xl border border-dark-600 shadow-xl"
+						class="absolute right-0 mt-2 w-80 card shadow-xl"
 						style="display: none;"
 					>
 						<div class="p-4 border-b border-dark-600">
@@ -155,6 +161,8 @@ templ Header(user *types.UserData, notificationsCount int, hosts []types.HostSel
 				<div x-data="{ open: false }" class="relative">
 					<button
 						@click="open = !open"
+						:aria-expanded="open ? 'true' : 'false'"
+						aria-label="Quick actions"
 						class="flex items-center gap-2 px-3 py-2 bg-primary-500 hover:bg-primary-600 text-black font-medium rounded-lg transition-colors"
 					>
 						<i class="fas fa-plus"></i>
@@ -166,7 +174,7 @@ templ Header(user *types.UserData, notificationsCount int, hosts []types.HostSel
 						x-show="open"
 						x-transition
 						@click.outside="open = false"
-						class="absolute right-0 mt-2 w-48 bg-dark-800 rounded-xl border border-dark-600 shadow-xl py-2"
+						class="absolute right-0 mt-2 w-48 card shadow-xl py-2"
 						style="display: none;"
 					>
 						<a href="/stacks/new" class="flex items-center gap-3 px-4 py-2 text-gray-300 hover:bg-dark-700 hover:text-white transition-colors">
@@ -234,4 +242,18 @@ func formatCount(n int) string {
 		return "9+"
 	}
 	return fmt.Sprintf("%d", n)
+}
+
+// notificationsAriaLabel returns the screen-reader-friendly label for
+// the notifications bell. The visual count badge is aria-hidden because
+// it duplicates this announcement; the label has the canonical number.
+func notificationsAriaLabel(count int) string {
+	switch {
+	case count == 0:
+		return "Notifications, none unread"
+	case count == 1:
+		return "Notifications, 1 unread"
+	default:
+		return fmt.Sprintf("Notifications, %d unread", count)
+	}
 }

@@ -38,6 +38,24 @@ type Config struct {
 	Recon         ReconConfig         `mapstructure:"recon"`
 	ImageBuilder  ImageBuilderConfig  `mapstructure:"image_builder"`
 	ImageSign     ImageSignConfig     `mapstructure:"image_sign"`
+	EgressProxy   EgressProxyConfig   `mapstructure:"egress_proxy"`
+}
+
+// EgressProxyConfig holds runtime knobs for the v26.5.2 L7 egress filter.
+// The proxy listens on ListenAddr; workloads route HTTP_PROXY /
+// HTTPS_PROXY at it; the service evaluates each request against the
+// operator's per-host policies. Disabled by default — operators opt in
+// because the proxy binds a TCP port on the host.
+type EgressProxyConfig struct {
+	// Enabled gates both the proxy listener and the web UI. When false
+	// the egress service is unwired and /egress renders an "unavailable"
+	// page.
+	Enabled bool `mapstructure:"enabled"`
+
+	// ListenAddr is the TCP address the proxy binds. Defaults to ":18080"
+	// inside the egress package when blank. Common alternatives:
+	// "127.0.0.1:18080" (local-only) or "0.0.0.0:8888" (replace tinyproxy).
+	ListenAddr string `mapstructure:"listen_addr"`
 }
 
 // ImageBuilderConfig holds runtime knobs for the image builder module.
@@ -598,6 +616,12 @@ func setDefaults(v *viper.Viper) {
 	// Optional image signing hook on successful builds. Off by default;
 	// turn on with `image_sign.enabled=true` (and have cosign on PATH).
 	v.SetDefault("image_sign.enabled", false)
+
+	// L7 egress filter (v26.5.2). Disabled by default — the operator
+	// opts in because the proxy binds a TCP port on the host. When
+	// enabled with a blank ListenAddr the egress package picks ":18080".
+	v.SetDefault("egress_proxy.enabled", false)
+	v.SetDefault("egress_proxy.listen_addr", "")
 }
 
 // Validate validates the configuration.

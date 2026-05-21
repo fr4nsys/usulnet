@@ -1,0 +1,228 @@
+// SPDX-License-Identifier: AGPL-3.0-or-later
+// Copyright (c) 2024-2026 usulnet contributors
+// https://github.com/fr4nsys/usulnet
+
+package egress
+
+import (
+	"fmt"
+
+	"github.com/fr4nsys/usulnet/internal/web/templates/layouts"
+)
+
+// ListData is the render bundle for the L7 egress page. Error is the
+// only flash-style field — successful actions redirect, so the page
+// never has to surface a "success" banner.
+type ListData struct {
+	PageData    layouts.PageData
+	Policies    []PolicyView
+	Denies      []DenyView
+	ListenAddr  string
+	HostID      string
+	HelperHosts []string
+	Error       string
+}
+
+// PolicyView is the read-only template projection of models.EgressPolicy.
+type PolicyView struct {
+	ID         string
+	TargetGlob string
+	Allow      bool
+	CreatedAt  string
+}
+
+// DenyView is one row in the recent-denies side panel.
+type DenyView struct {
+	Target    string
+	Method    string
+	CreatedAt string
+}
+
+templ List(data ListData) {
+	@layouts.Base(data.PageData) {
+		<div class="space-y-6">
+			<div class="flex items-center justify-between">
+				<div>
+					<h1 class="text-2xl font-display font-bold text-white">L7 Egress Filter</h1>
+					<p class="text-gray-400 mt-1">
+						Allow- and deny-list outbound HTTP/HTTPS per host. Point a workload's
+						<code class="text-primary-400">HTTP_PROXY</code> /
+						<code class="text-primary-400">HTTPS_PROXY</code> at the listener and the
+						proxy enforces these rules.
+					</p>
+				</div>
+			</div>
+
+			if data.Error != "" {
+				<div class="bg-red-500/10 border border-red-500/30 text-red-300 rounded-lg p-3 text-sm">
+					{ data.Error }
+				</div>
+			}
+
+			<div class="card p-4 text-sm text-gray-300">
+				<div class="flex flex-wrap items-center gap-4">
+					<div>
+						<span class="text-gray-500 mr-1">Proxy listener:</span>
+						<code class="text-primary-400 font-mono">{ data.ListenAddr }</code>
+					</div>
+					<div>
+						<span class="text-gray-500 mr-1">Host:</span>
+						<code class="text-gray-300 font-mono">{ data.HostID }</code>
+					</div>
+					<div>
+						<span class="text-gray-500 mr-1">Policies:</span>
+						<span class="text-white">{ fmt.Sprintf("%d", len(data.Policies)) }</span>
+					</div>
+				</div>
+				if len(data.Policies) == 0 {
+					<p class="text-xs text-gray-500 mt-2">
+						No policies — the proxy passes through every request for this host. Add a
+						rule below to start filtering.
+					</p>
+				}
+			</div>
+
+			<!-- Add policy form -->
+			<form method="POST" action="/egress" class="card p-4 space-y-3">
+				<input type="hidden" name="csrf_token" value={ data.PageData.CSRFToken }/>
+				<h2 class="text-lg font-semibold text-white">Add policy</h2>
+				<div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+					<div class="md:col-span-2">
+						<label for="target_glob" class="block text-xs text-gray-400 mb-1">Target (filepath.Match glob)</label>
+						<input
+							id="target_glob"
+							name="target_glob"
+							type="text"
+							required
+							placeholder="*.github.com"
+							class="input w-full font-mono"
+						/>
+					</div>
+					<div>
+						<label for="allow" class="block text-xs text-gray-400 mb-1">Decision</label>
+						<select id="allow" name="allow" class="input w-full">
+							<option value="true">Allow</option>
+							<option value="false">Deny</option>
+						</select>
+					</div>
+				</div>
+				<div class="flex items-center justify-between">
+					<p class="text-xs text-gray-500">
+						<span class="font-semibold text-gray-400">Example:</span>
+						<code class="text-primary-400">*.github.com</code> matches every github subdomain;
+						<code class="text-primary-400">*</code> matches everything (use as the last
+						rule for an explicit catch-all deny).
+					</p>
+					<button type="submit" class="btn-primary">
+						<i aria-hidden="true" class="fas fa-plus mr-2"></i>Add
+					</button>
+				</div>
+			</form>
+
+			<!-- Policies table -->
+			if len(data.Policies) > 0 {
+				<div class="card">
+					<div class="overflow-x-auto">
+						<table class="table">
+							<thead>
+								<tr>
+									<th scope="col">Target glob</th>
+									<th scope="col">Decision</th>
+									<th scope="col">Created</th>
+									<th scope="col">Actions</th>
+								</tr>
+							</thead>
+							<tbody>
+								for _, p := range data.Policies {
+									<tr>
+										<td>
+											<code class="text-sm font-mono text-gray-200">{ p.TargetGlob }</code>
+										</td>
+										<td>
+											@decisionBadge(p.Allow)
+										</td>
+										<td>
+											<span class="text-sm text-gray-400">{ p.CreatedAt }</span>
+										</td>
+										<td>
+											<form
+												method="POST"
+												action={ templ.SafeURL("/egress/" + p.ID + "/delete") }
+												style="display:inline"
+												onsubmit="return confirm('Delete this egress policy?')"
+											>
+												<input type="hidden" name="csrf_token" value={ data.PageData.CSRFToken }/>
+												<button type="submit" class="text-red-400 hover:text-red-300 text-sm">
+													Delete
+												</button>
+											</form>
+										</td>
+									</tr>
+								}
+							</tbody>
+						</table>
+					</div>
+				</div>
+			} else {
+				<div class="card p-8 text-center">
+					<i aria-hidden="true" class="fas fa-filter text-4xl text-gray-500 mb-4"></i>
+					<h3 class="text-lg font-medium text-white mb-1">No egress policies yet</h3>
+					<p class="text-sm text-gray-400">
+						Add an allow- or deny-rule above. A host with zero policies passes traffic through unchanged.
+					</p>
+				</div>
+			}
+
+			<!-- Recent denies -->
+			if len(data.Denies) > 0 {
+				<div class="card">
+					<div class="px-4 pt-4">
+						<h2 class="text-lg font-semibold text-white">Recent denies</h2>
+						<p class="text-xs text-gray-500 mt-1">
+							The last { fmt.Sprintf("%d", len(data.Denies)) } outbound requests this proxy refused.
+							Allowed requests are not logged.
+						</p>
+					</div>
+					<div class="overflow-x-auto">
+						<table class="table">
+							<thead>
+								<tr>
+									<th scope="col">Target</th>
+									<th scope="col">Method</th>
+									<th scope="col">When</th>
+								</tr>
+							</thead>
+							<tbody>
+								for _, d := range data.Denies {
+									<tr>
+										<td>
+											<code class="text-sm font-mono text-gray-200">{ d.Target }</code>
+										</td>
+										<td>
+											<span class="text-sm text-gray-300">{ d.Method }</span>
+										</td>
+										<td>
+											<span class="text-sm text-gray-400">{ d.CreatedAt }</span>
+										</td>
+									</tr>
+								}
+							</tbody>
+						</table>
+					</div>
+				</div>
+			}
+		</div>
+	}
+}
+
+templ decisionBadge(allow bool) {
+	if allow {
+		<span class="inline-flex items-center gap-1 text-xs bg-green-500/10 text-green-400 px-2 py-0.5 rounded font-bold">
+			<i aria-hidden="true" class="fas fa-check"></i> ALLOW
+		</span>
+	} else {
+		<span class="inline-flex items-center gap-1 text-xs bg-red-500/10 text-red-400 px-2 py-0.5 rounded font-bold">
+			<i aria-hidden="true" class="fas fa-ban"></i> DENY
+		</span>
+	}
+}

@@ -37,7 +37,7 @@ templ SupportMatrixBanner(s BackendSupport) {
 	<div class="mb-4 rounded border border-dark-700 bg-dark-800 px-4 py-3 text-xs text-gray-400">
 		<div class="flex flex-wrap items-center gap-x-4 gap-y-1">
 			<span class="font-medium text-gray-300">
-				<i class="fas fa-server mr-1"></i>
+				<i aria-hidden="true" class="fas fa-server mr-1"></i>
 				if s.Mode != "" {
 					Active backend: <span class="text-primary-400">{ s.Mode }</span>
 				} else {
@@ -53,7 +53,7 @@ templ SupportMatrixBanner(s BackendSupport) {
 		</div>
 		if !s.Streams {
 			<div class="mt-2 text-amber-400">
-				<i class="fas fa-info-circle mr-1"></i>
+				<i aria-hidden="true" class="fas fa-info-circle mr-1"></i>
 				Streams (raw TCP/UDP) cannot be applied with the active backend.
 				Switch to nginx if you need this feature.
 			</div>
@@ -64,12 +64,12 @@ templ SupportMatrixBanner(s BackendSupport) {
 templ supportBadge(label string, supported bool) {
 	if supported {
 		<span class="inline-flex items-center gap-1 rounded bg-green-900/40 px-2 py-0.5 text-green-300">
-			<i class="fas fa-check text-[10px]"></i>
+			<i aria-hidden="true" class="fas fa-check text-[10px]"></i>
 			{ label }
 		</span>
 	} else {
 		<span class="inline-flex items-center gap-1 rounded bg-red-900/40 px-2 py-0.5 text-red-300">
-			<i class="fas fa-times text-[10px]"></i>
+			<i aria-hidden="true" class="fas fa-times text-[10px]"></i>
 			{ label }
 		</span>
 	}

@@ -83,7 +83,7 @@ func Notifications(data NotificationsData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			if data.UnreadCount > 0 {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<button hx-post=\"/notifications/mark-all-read\" hx-swap=\"none\" class=\"btn-secondary\"><i class=\"fas fa-check-double mr-2\"></i>Mark All Read</button>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<button hx-post=\"/notifications/mark-all-read\" hx-swap=\"none\" class=\"btn-secondary\"><i aria-hidden=\"true\" class=\"fas fa-check-double mr-2\"></i>Mark All Read</button>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -93,7 +93,7 @@ func Notifications(data NotificationsData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			if len(data.Notifications) == 0 {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<div class=\"p-8 text-center text-gray-400\"><i class=\"fas fa-bell-slash text-3xl mb-3\"></i><p>No notifications</p></div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<div class=\"p-8 text-center text-gray-400\"><i aria-hidden=\"true\" class=\"fas fa-bell-slash text-3xl mb-3\"></i><p>No notifications</p></div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -187,7 +187,7 @@ func Notifications(data NotificationsData) templ.Component {
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
-						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "\" hx-swap=\"none\" class=\"text-gray-400 hover:text-white\" title=\"Mark as read\"><i class=\"fas fa-check\"></i></button> ")
+						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "\" hx-swap=\"none\" class=\"text-gray-400 hover:text-white\" title=\"Mark as read\"><i aria-hidden=\"true\" class=\"fas fa-check\"></i></button> ")
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
@@ -205,7 +205,7 @@ func Notifications(data NotificationsData) templ.Component {
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "\" hx-swap=\"none\" class=\"text-gray-400 hover:text-red-400\" title=\"Delete\"><i class=\"fas fa-trash\"></i></button></div></div><div class=\"flex items-center gap-4 mt-2\"><span class=\"text-xs text-gray-500\">")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "\" hx-swap=\"none\" class=\"text-gray-400 hover:text-red-400\" title=\"Delete\"><i aria-hidden=\"true\" class=\"fas fa-trash\"></i></button></div></div><div class=\"flex items-center gap-4 mt-2\"><span class=\"text-xs text-gray-500\">")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}

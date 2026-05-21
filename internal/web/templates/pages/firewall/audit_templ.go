@@ -69,7 +69,7 @@ func Audit(data AuditData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			if len(data.Entries) > 0 {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<div class=\"card\"><div class=\"overflow-x-auto\"><table class=\"table\"><thead><tr><th>Time</th><th>Action</th><th>Rule Summary</th><th>Details</th></tr></thead> <tbody>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<div class=\"card\"><div class=\"overflow-x-auto\"><table class=\"table\"><thead><tr><th scope=\"col\">Time</th><th scope=\"col\">Action</th><th scope=\"col\">Rule Summary</th><th scope=\"col\">Details</th></tr></thead> <tbody>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -238,7 +238,7 @@ func Audit(data AuditData) templ.Component {
 				}
 			}
 			if len(data.Entries) == 0 {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 22, "<div class=\"card p-8 text-center\"><i class=\"fas fa-history text-4xl text-gray-400 mb-4\"></i><h3 class=\"text-lg font-medium text-white mb-2\">No audit entries</h3><p class=\"text-gray-400\">Firewall changes will appear here when rules are created, modified, or applied</p></div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 22, "<div class=\"card p-8 text-center\"><i aria-hidden=\"true\" class=\"fas fa-history text-4xl text-gray-400 mb-4\"></i><h3 class=\"text-lg font-medium text-white mb-2\">No audit entries</h3><p class=\"text-gray-400\">Firewall changes will appear here when rules are created, modified, or applied</p></div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -279,27 +279,27 @@ func auditActionBadge(action string) templ.Component {
 		}
 		ctx = templ.ClearChildren(ctx)
 		if action == "create" {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 24, "<span class=\"inline-flex items-center gap-1 text-xs bg-green-500/10 text-green-400 px-2 py-0.5 rounded\"><i class=\"fas fa-plus\"></i> Create</span>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 24, "<span class=\"inline-flex items-center gap-1 text-xs bg-green-500/10 text-green-400 px-2 py-0.5 rounded\"><i aria-hidden=\"true\" class=\"fas fa-plus\"></i> Create</span>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		} else if action == "update" {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 25, "<span class=\"inline-flex items-center gap-1 text-xs bg-blue-500/10 text-blue-400 px-2 py-0.5 rounded\"><i class=\"fas fa-edit\"></i> Update</span>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 25, "<span class=\"inline-flex items-center gap-1 text-xs bg-blue-500/10 text-blue-400 px-2 py-0.5 rounded\"><i aria-hidden=\"true\" class=\"fas fa-edit\"></i> Update</span>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		} else if action == "delete" {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 26, "<span class=\"inline-flex items-center gap-1 text-xs bg-red-500/10 text-red-400 px-2 py-0.5 rounded\"><i class=\"fas fa-trash\"></i> Delete</span>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 26, "<span class=\"inline-flex items-center gap-1 text-xs bg-red-500/10 text-red-400 px-2 py-0.5 rounded\"><i aria-hidden=\"true\" class=\"fas fa-trash\"></i> Delete</span>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		} else if action == "apply" {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 27, "<span class=\"inline-flex items-center gap-1 text-xs bg-yellow-500/10 text-yellow-400 px-2 py-0.5 rounded\"><i class=\"fas fa-bolt\"></i> Apply</span>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 27, "<span class=\"inline-flex items-center gap-1 text-xs bg-yellow-500/10 text-yellow-400 px-2 py-0.5 rounded\"><i aria-hidden=\"true\" class=\"fas fa-bolt\"></i> Apply</span>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		} else if action == "sync" {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 28, "<span class=\"inline-flex items-center gap-1 text-xs bg-purple-500/10 text-purple-400 px-2 py-0.5 rounded\"><i class=\"fas fa-sync\"></i> Sync</span>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 28, "<span class=\"inline-flex items-center gap-1 text-xs bg-purple-500/10 text-purple-400 px-2 py-0.5 rounded\"><i aria-hidden=\"true\" class=\"fas fa-sync\"></i> Sync</span>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

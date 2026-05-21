@@ -54,12 +54,12 @@ func Login(data LoginData) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"min-h-screen flex items-center justify-center bg-dark-900 px-4\"><div class=\"w-full max-w-md\"><!-- Logo and Title --><div class=\"text-center mb-8\"><div class=\"inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-primary-500 to-primary-600 mb-4 shadow-lg shadow-primary-500/25\"><span class=\"text-black font-bold text-2xl font-display\">U</span></div><h1 class=\"text-2xl font-bold font-display text-white\">usulnet</h1><p class=\"text-sm text-gray-400 mt-1\">Docker Management Platform</p></div><!-- Login Card --><div class=\"bg-dark-800 rounded-xl border border-dark-600 shadow-xl p-8\"><!-- Error Message -->")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"min-h-screen flex items-center justify-center bg-dark-900 px-4\"><div class=\"w-full max-w-md\"><!-- Logo and Title --><div class=\"text-center mb-8\"><div class=\"inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-primary-500 to-primary-600 mb-4 shadow-lg shadow-primary-500/25\"><span class=\"text-black font-bold text-2xl font-display\">U</span></div><h1 class=\"text-2xl font-bold font-display text-white\">usulnet</h1><p class=\"text-sm text-gray-400 mt-1\">Docker Management Platform</p></div><!-- Login Card --><div class=\"card shadow-xl p-8\"><!-- Error Message -->")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			if data.Error != "" {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<div class=\"mb-6 p-4 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-sm flex items-start gap-3\"><i class=\"fas fa-exclamation-circle mt-0.5\"></i> <span>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<div class=\"mb-6 p-4 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-sm flex items-start gap-3\"><i aria-hidden=\"true\" class=\"fas fa-exclamation-circle mt-0.5\"></i> <span>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -113,7 +113,7 @@ func Login(data LoginData) templ.Component {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "<!-- Username --><div><label for=\"username\" class=\"block text-sm font-medium text-gray-300 mb-2\">Username</label><div class=\"relative\"><div class=\"absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none\"><i class=\"fas fa-user text-gray-500\"></i></div><input type=\"text\" id=\"username\" name=\"username\" required autocomplete=\"username\" autofocus class=\"w-full pl-10 pr-4 py-3 rounded-lg bg-dark-700 border border-dark-600 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500 transition-colors\" placeholder=\"Enter your username\" value=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "<!-- Username --><div><label for=\"username\" class=\"block text-sm font-medium text-gray-300 mb-2\">Username</label><div class=\"relative\"><div class=\"absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none\"><i aria-hidden=\"true\" class=\"fas fa-user text-gray-500\"></i></div><input type=\"text\" id=\"username\" name=\"username\" required autocomplete=\"username\" autofocus class=\"w-full pl-10 pr-4 py-3 rounded-lg bg-dark-700 border border-dark-600 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500 transition-colors\" placeholder=\"Enter your username\" value=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -126,7 +126,7 @@ func Login(data LoginData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "\"></div></div><!-- Password --><div><label for=\"password\" class=\"block text-sm font-medium text-gray-300 mb-2\">Password</label><div class=\"relative\" x-data=\"{ show: false }\"><div class=\"absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none\"><i class=\"fas fa-lock text-gray-500\"></i></div><input type=\"password\" x-bind:type=\"show ? 'text' : 'password'\" id=\"password\" name=\"password\" required autocomplete=\"current-password\" class=\"w-full pl-10 pr-12 py-3 rounded-lg bg-dark-700 border border-dark-600 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500 transition-colors\" placeholder=\"Enter your password\"> <button type=\"button\" @click=\"show = !show\" class=\"absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-primary-400 transition-colors\"><i class=\"fas\" :class=\"show ? 'fa-eye-slash' : 'fa-eye'\"></i></button></div></div><!-- Remember Me --><div class=\"flex items-center justify-between\"><label class=\"flex items-center gap-2 cursor-pointer\"><input type=\"checkbox\" name=\"remember\" class=\"w-4 h-4 rounded border-gray-600 text-primary-500 focus:ring-primary-500 focus:ring-offset-0 bg-dark-700\"> <span class=\"text-sm text-gray-400\">Remember me</span></label></div><!-- Submit Button --><button type=\"submit\" class=\"w-full py-3 px-4 bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-black font-medium rounded-lg shadow-lg shadow-primary-500/25 hover:shadow-primary-500/40 transition-all duration-200 flex items-center justify-center gap-2\"><i class=\"fas fa-sign-in-alt\"></i> Sign In</button></form><!-- Alternative Auth Methods -->")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "\"></div></div><!-- Password --><div><label for=\"password\" class=\"block text-sm font-medium text-gray-300 mb-2\">Password</label><div class=\"relative\" x-data=\"{ show: false }\"><div class=\"absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none\"><i aria-hidden=\"true\" class=\"fas fa-lock text-gray-500\"></i></div><input type=\"password\" x-bind:type=\"show ? 'text' : 'password'\" id=\"password\" name=\"password\" required autocomplete=\"current-password\" class=\"w-full pl-10 pr-12 py-3 rounded-lg bg-dark-700 border border-dark-600 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500 transition-colors\" placeholder=\"Enter your password\"> <button type=\"button\" @click=\"show = !show\" class=\"absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-primary-400 transition-colors\"><i aria-hidden=\"true\" class=\"fas\" :class=\"show ? 'fa-eye-slash' : 'fa-eye'\"></i></button></div></div><!-- Remember Me --><div class=\"flex items-center justify-between\"><label class=\"flex items-center gap-2 cursor-pointer\"><input type=\"checkbox\" name=\"remember\" class=\"w-4 h-4 rounded border-gray-600 text-primary-500 focus:ring-primary-500 focus:ring-offset-0 bg-dark-700\"> <span class=\"text-sm text-gray-400\">Remember me</span></label></div><!-- Submit Button --><button type=\"submit\" class=\"w-full py-3 px-4 bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-black font-medium rounded-lg shadow-lg shadow-primary-500/25 hover:shadow-primary-500/40 transition-all duration-200 flex items-center justify-center gap-2\"><i aria-hidden=\"true\" class=\"fas fa-sign-in-alt\"></i> Sign In</button></form><!-- Alternative Auth Methods -->")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -136,13 +136,13 @@ func Login(data LoginData) templ.Component {
 					return templ_7745c5c3_Err
 				}
 				if data.LDAPEnabled {
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "<a href=\"/login/ldap\" class=\"w-full py-3 px-4 bg-dark-700 hover:bg-dark-600 text-gray-300 font-medium rounded-lg border border-dark-600 transition-colors flex items-center justify-center gap-2\"><i class=\"fas fa-sitemap\"></i> Sign in with LDAP</a> ")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "<a href=\"/login/ldap\" class=\"w-full py-3 px-4 bg-dark-700 hover:bg-dark-600 text-gray-300 font-medium rounded-lg border border-dark-600 transition-colors flex items-center justify-center gap-2\"><i aria-hidden=\"true\" class=\"fas fa-sitemap\"></i> Sign in with LDAP</a> ")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
 				}
 				if data.OAuthEnabled {
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "<a href=\"/login/oauth\" class=\"w-full py-3 px-4 bg-dark-700 hover:bg-dark-600 text-gray-300 font-medium rounded-lg border border-dark-600 transition-colors flex items-center justify-center gap-2\"><i class=\"fab fa-openid\"></i> Sign in with ")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "<a href=\"/login/oauth\" class=\"w-full py-3 px-4 bg-dark-700 hover:bg-dark-600 text-gray-300 font-medium rounded-lg border border-dark-600 transition-colors flex items-center justify-center gap-2\"><i aria-hidden=\"true\" class=\"fab fa-openid\"></i> Sign in with ")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
@@ -178,7 +178,7 @@ func Login(data LoginData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, " · Community Edition</p><p class=\"text-xs text-gray-400\"><a href=\"https://github.com/fr4nsys/usulnet\" target=\"_blank\" rel=\"noopener\" class=\"hover:text-primary-400 transition-colors\"><i class=\"fab fa-github mr-1\"></i>GitHub</a> <span class=\"mx-1\">·</span> <a href=\"https://www.gnu.org/licenses/agpl-3.0.html\" target=\"_blank\" rel=\"noopener\" class=\"hover:text-primary-400 transition-colors\">AGPLv3</a></p></div></div></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, " · Community Edition</p><p class=\"text-xs text-gray-400\"><a href=\"https://github.com/fr4nsys/usulnet\" target=\"_blank\" rel=\"noopener\" class=\"hover:text-primary-400 transition-colors\"><i aria-hidden=\"true\" class=\"fab fa-github mr-1\"></i>GitHub</a> <span class=\"mx-1\">·</span> <a href=\"https://www.gnu.org/licenses/agpl-3.0.html\" target=\"_blank\" rel=\"noopener\" class=\"hover:text-primary-400 transition-colors\">AGPLv3</a></p></div></div></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

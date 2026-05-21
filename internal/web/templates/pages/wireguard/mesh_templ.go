@@ -85,14 +85,14 @@ func Mesh(data MeshData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			if data.StandaloneMsg != "" {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<div class=\"bg-blue-500/10 border border-blue-500/30 text-blue-300 rounded-lg p-4 text-sm\"><i class=\"fas fa-info-circle mr-2\"></i>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<div class=\"bg-blue-500/10 border border-blue-500/30 text-blue-300 rounded-lg p-4 text-sm\"><i aria-hidden=\"true\" class=\"fas fa-info-circle mr-2\"></i>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var3 string
 				templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(data.StandaloneMsg)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/wireguard/mesh.templ`, Line: 42, Col: 64}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/wireguard/mesh.templ`, Line: 42, Col: 83}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 				if templ_7745c5c3_Err != nil {
@@ -155,7 +155,7 @@ func Mesh(data MeshData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "</p></div></div><div class=\"bg-dark-700 rounded-lg border border-dark-600 overflow-hidden\"><div class=\"p-4 border-b border-dark-600\"><h3 class=\"text-sm font-semibold text-white\">Mesh links</h3><p class=\"text-xs text-gray-500 mt-1\">Each row is a (peer, agent) pair pushed from this master.</p></div><table class=\"w-full\"><thead><tr class=\"border-b border-dark-600 text-xs text-gray-500 uppercase tracking-wide\"><th class=\"text-left p-4\">Peer</th><th class=\"text-left p-4\">Agent</th><th class=\"text-left p-4\">Status</th><th class=\"text-left p-4\">Last handshake</th><th class=\"text-left p-4\">Applied at</th><th class=\"text-left p-4\">Updated at</th><th class=\"text-left p-4\">Last error</th></tr></thead> <tbody>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "</p></div></div><div class=\"bg-dark-700 rounded-lg border border-dark-600 overflow-hidden\"><div class=\"p-4 border-b border-dark-600\"><h3 class=\"text-sm font-semibold text-white\">Mesh links</h3><p class=\"text-xs text-gray-500 mt-1\">Each row is a (peer, agent) pair pushed from this master.</p></div><table class=\"w-full\"><thead><tr class=\"border-b border-dark-600 text-xs text-gray-500 uppercase tracking-wide\"><th scope=\"col\" class=\"text-left p-4\">Peer</th><th scope=\"col\" class=\"text-left p-4\">Agent</th><th scope=\"col\" class=\"text-left p-4\">Status</th><th scope=\"col\" class=\"text-left p-4\">Last handshake</th><th scope=\"col\" class=\"text-left p-4\">Applied at</th><th scope=\"col\" class=\"text-left p-4\">Updated at</th><th scope=\"col\" class=\"text-left p-4\">Last error</th></tr></thead> <tbody>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

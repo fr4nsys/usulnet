@@ -7,7 +7,6 @@ package web
 import (
 	"log/slog"
 	"net/http"
-	"strconv"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/google/uuid"
@@ -66,39 +65,30 @@ func (h *Handler) ScheduledJobCreate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := r.ParseForm(); err != nil {
-		h.setFlash(w, r, "error", "Invalid form data")
+	var form scheduledJobCreateForm
+	if msg := BindForm(r, &form); msg != "" {
+		h.setFlash(w, r, "error", msg)
 		h.redirect(w, r, "/jobs/scheduled")
 		return
 	}
 
-	name := r.FormValue("name")
-	jobType := r.FormValue("type")
-	schedule := r.FormValue("schedule")
-	if name == "" || jobType == "" || schedule == "" {
-		h.setFlash(w, r, "error", "Name, type, and schedule are required")
-		h.redirect(w, r, "/jobs/scheduled")
-		return
-	}
-
-	maxAttempts := 3
-	if ma := r.FormValue("max_attempts"); ma != "" {
-		if v, err := strconv.Atoi(ma); err == nil && v >= 1 && v <= 10 {
-			maxAttempts = v
-		}
+	maxAttempts := form.MaxAttempts
+	if maxAttempts < 1 || maxAttempts > 10 {
+		maxAttempts = 3
 	}
 
 	input := models.CreateScheduledJobInput{
-		Name:        name,
-		Type:        models.JobType(jobType),
-		Schedule:    schedule,
-		IsEnabled:   r.FormValue("is_enabled") == "on",
+		Name:        form.Name,
+		Type:        models.JobType(form.Type),
+		Schedule:    form.Schedule,
+		IsEnabled:   form.IsEnabled,
 		Priority:    models.JobPriorityNormal,
 		MaxAttempts: maxAttempts,
 	}
 
-	if targetName := r.FormValue("target_name"); targetName != "" {
-		input.TargetName = &targetName
+	if form.TargetName != "" {
+		tn := form.TargetName
+		input.TargetName = &tn
 	}
 
 	// CreatedBy is not part of the public input struct: the scheduler
@@ -106,14 +96,26 @@ func (h *Handler) ScheduledJobCreate(w http.ResponseWriter, r *http.Request) {
 	_ = GetUserFromContext(r.Context())
 
 	if _, err := sched.CreateScheduledJob(r.Context(), input); err != nil {
-		slog.Error("Failed to create scheduled job", "name", name, "error", err)
+		slog.Error("Failed to create scheduled job", "name", form.Name, "error", err)
 		h.setFlash(w, r, "error", "Failed to create scheduled job: "+err.Error())
 		h.redirect(w, r, "/jobs/scheduled")
 		return
 	}
 
-	h.setFlash(w, r, "success", "Scheduled job '"+name+"' created")
+	h.setFlash(w, r, "success", "Scheduled job '"+form.Name+"' created")
 	h.redirect(w, r, "/jobs/scheduled")
+}
+
+// scheduledJobCreateForm captures the create inputs. max_attempts
+// defaults to 3 outside the 1..10 range to match the previous
+// silent-fallback behaviour.
+type scheduledJobCreateForm struct {
+	Name        string `form:"name" validate:"required"`
+	Type        string `form:"type" validate:"required"`
+	Schedule    string `form:"schedule" validate:"required"`
+	IsEnabled   bool   `form:"is_enabled"`
+	MaxAttempts int    `form:"max_attempts" validate:"gte=0,lte=10"`
+	TargetName  string `form:"target_name"`
 }
 
 // ScheduledJobDelete handles deletion of a scheduled job.

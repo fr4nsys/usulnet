@@ -1,0 +1,228 @@
+// SPDX-License-Identifier: AGPL-3.0-or-later
+// Copyright (c) 2024-2026 usulnet contributors
+// https://github.com/fr4nsys/usulnet
+
+package yara
+
+import (
+	"fmt"
+
+	"github.com/fr4nsys/usulnet/internal/web/templates/layouts"
+)
+
+// PageData is the render bundle for /scan/yara.
+type PageData struct {
+	PageData     layouts.PageData
+	Rulesets     []string
+	Form         FormView
+	Result       *ResultView
+	Error        string
+	ToolkitImage string
+}
+
+// FormView captures what the operator typed on the last submit so the
+// form re-renders with their input rather than blanking out.
+type FormView struct {
+	Ruleset     string
+	Mode        string // "host" or "container"
+	HostPath    string
+	ContainerID string
+	Path        string
+}
+
+// ResultView is one rendered scan outcome.
+type ResultView struct {
+	Ruleset   string
+	Target    string
+	Duration  string
+	StartedAt string
+	Matches   []MatchView
+}
+
+// MatchView is one row in the results table.
+type MatchView struct {
+	Rule      string
+	Namespace string
+	Tags      []string
+	Target    string
+}
+
+templ Scan(data PageData) {
+	@layouts.Base(data.PageData) {
+		<div class="space-y-6">
+			<div class="flex items-center justify-between">
+				<div>
+					<h1 class="text-2xl font-display font-bold text-white">YARA Scanner</h1>
+					<p class="text-gray-400 mt-1">
+						Run an embedded ruleset against a host file or a path inside a container.
+						Scans run in the sandboxed recon-toolkit image — no in-process libyara.
+					</p>
+				</div>
+			</div>
+
+			if data.Error != "" {
+				<div class="bg-red-500/10 border border-red-500/30 text-red-300 rounded-lg p-3 text-sm">
+					{ data.Error }
+				</div>
+			}
+
+			<div class="card p-4 text-sm text-gray-300">
+				<div class="flex flex-wrap items-center gap-4">
+					<div>
+						<span class="text-gray-500 mr-1">Toolkit image:</span>
+						<code class="text-primary-400 font-mono">{ data.ToolkitImage }</code>
+					</div>
+					<div>
+						<span class="text-gray-500 mr-1">Embedded rulesets:</span>
+						<span class="text-white">{ fmt.Sprintf("%d", len(data.Rulesets)) }</span>
+					</div>
+				</div>
+			</div>
+
+			<form
+				method="POST"
+				action="/scan/yara"
+				class="card p-4 space-y-3"
+				x-data={ fmt.Sprintf(`{ mode: %q }`, defaultStr(data.Form.Mode, "host")) }
+			>
+				<input type="hidden" name="csrf_token" value={ data.PageData.CSRFToken }/>
+				<h2 class="text-lg font-semibold text-white">Run a scan</h2>
+
+				<div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+					<div>
+						<label for="ruleset" class="block text-xs text-gray-400 mb-1">Ruleset</label>
+						<select id="ruleset" name="ruleset" class="input w-full">
+							for _, name := range data.Rulesets {
+								if name == data.Form.Ruleset {
+									<option value={ name } selected>{ name }</option>
+								} else {
+									<option value={ name }>{ name }</option>
+								}
+							}
+						</select>
+					</div>
+					<div>
+						<label for="mode" class="block text-xs text-gray-400 mb-1">Target type</label>
+						<select id="mode" name="mode" x-model="mode" class="input w-full">
+							if data.Form.Mode == "container" {
+								<option value="host">Host file path</option>
+								<option value="container" selected>Container path</option>
+							} else {
+								<option value="host" selected>Host file path</option>
+								<option value="container">Container path</option>
+							}
+						</select>
+					</div>
+				</div>
+
+				<div x-show="mode === 'host'" class="space-y-1">
+					<label for="host_path" class="block text-xs text-gray-400">Host file path (absolute)</label>
+					<input
+						id="host_path"
+						name="host_path"
+						type="text"
+						value={ data.Form.HostPath }
+						placeholder="/var/lib/docker/volumes/something/_data/binary"
+						class="input w-full font-mono"
+					/>
+				</div>
+
+				<div x-show="mode === 'container'" class="grid grid-cols-1 md:grid-cols-2 gap-3">
+					<div>
+						<label for="container_id" class="block text-xs text-gray-400 mb-1">Container ID or name</label>
+						<input
+							id="container_id"
+							name="container_id"
+							type="text"
+							value={ data.Form.ContainerID }
+							placeholder="abc123 or my-service"
+							class="input w-full font-mono"
+						/>
+					</div>
+					<div>
+						<label for="path" class="block text-xs text-gray-400 mb-1">Path inside the container</label>
+						<input
+							id="path"
+							name="path"
+							type="text"
+							value={ data.Form.Path }
+							placeholder="/usr/local/bin/myapp"
+							class="input w-full font-mono"
+						/>
+					</div>
+				</div>
+
+				<div class="flex items-center justify-end">
+					<button type="submit" class="btn-primary">
+						<i aria-hidden="true" class="fas fa-microscope mr-2"></i>Scan
+					</button>
+				</div>
+			</form>
+
+			if data.Result != nil {
+				<div class="card">
+					<div class="px-4 pt-4">
+						<h2 class="text-lg font-semibold text-white">Scan result</h2>
+						<p class="text-xs text-gray-500 mt-1">
+							Ruleset <code class="text-primary-400">{ data.Result.Ruleset }</code>
+							against <code class="text-primary-400">{ data.Result.Target }</code> in { data.Result.Duration }
+							<span class="text-gray-600">({ data.Result.StartedAt })</span>
+						</p>
+					</div>
+					if len(data.Result.Matches) == 0 {
+						<div class="p-8 text-center">
+							<i aria-hidden="true" class="fas fa-shield-check text-4xl text-green-400 mb-3"></i>
+							<h3 class="text-base font-medium text-white">No matches</h3>
+							<p class="text-sm text-gray-400">The ruleset found nothing of interest on the target.</p>
+						</div>
+					} else {
+						<div class="overflow-x-auto">
+							<table class="table">
+								<thead>
+									<tr>
+										<th scope="col">Rule</th>
+										<th scope="col">Tags</th>
+										<th scope="col">Target</th>
+									</tr>
+								</thead>
+								<tbody>
+									for _, m := range data.Result.Matches {
+										<tr>
+											<td>
+												<code class="text-sm font-mono text-red-300">{ m.Rule }</code>
+												if m.Namespace != "" {
+													<span class="text-xs text-gray-500"> ({ m.Namespace })</span>
+												}
+											</td>
+											<td>
+												if len(m.Tags) == 0 {
+													<span class="text-xs text-gray-500">—</span>
+												} else {
+													<div class="flex flex-wrap gap-1">
+														for _, tag := range m.Tags {
+															<span class="text-xs bg-yellow-500/10 text-yellow-300 px-2 py-0.5 rounded">{ tag }</span>
+														}
+													</div>
+												}
+											</td>
+											<td>
+												<code class="text-xs font-mono text-gray-300">{ m.Target }</code>
+											</td>
+										</tr>
+									}
+								</tbody>
+							</table>
+						</div>
+					}
+				</div>
+			}
+		</div>
+	}
+}
+
+func defaultStr(s, fallback string) string {
+	if s == "" {
+		return fallback
+	}
+	return s
+}

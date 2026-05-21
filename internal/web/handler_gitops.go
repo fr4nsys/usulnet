@@ -7,7 +7,6 @@ package web
 import (
 	"fmt"
 	"net/http"
-	"strings"
 	"time"
 
 	"github.com/go-chi/chi/v5"
@@ -107,28 +106,30 @@ func (h *Handler) GitOpsTempl(w http.ResponseWriter, r *http.Request) {
 }
 
 // GitOpsPipelineCreate creates a new GitOps pipeline.
+// gitOpsPipelineCreateForm captures the pipeline-create inputs.
+// Branch defaults to "main" after binding when blank.
+type gitOpsPipelineCreateForm struct {
+	Name          string `form:"name" validate:"required"`
+	Repository    string `form:"repository" validate:"required"`
+	Branch        string `form:"branch"`
+	Provider      string `form:"provider"`
+	TargetStack   string `form:"target_stack"`
+	TargetService string `form:"target_service"`
+	Action        string `form:"action"`
+	TriggerType   string `form:"trigger_type"`
+	Schedule      string `form:"schedule"`
+	AutoRollback  bool   `form:"auto_rollback"`
+}
+
 func (h *Handler) GitOpsPipelineCreate(w http.ResponseWriter, r *http.Request) {
-	if err := r.ParseForm(); err != nil {
-		h.setFlash(w, r, "error", "Invalid form data")
+	var form gitOpsPipelineCreateForm
+	if msg := BindForm(r, &form); msg != "" {
+		h.setFlash(w, r, "error", msg)
 		http.Redirect(w, r, "/gitops", http.StatusSeeOther)
 		return
 	}
 
-	name := strings.TrimSpace(r.FormValue("name"))
-	if name == "" {
-		h.setFlash(w, r, "error", "Pipeline name is required")
-		http.Redirect(w, r, "/gitops", http.StatusSeeOther)
-		return
-	}
-
-	repo := strings.TrimSpace(r.FormValue("repository"))
-	if repo == "" {
-		h.setFlash(w, r, "error", "Repository is required")
-		http.Redirect(w, r, "/gitops", http.StatusSeeOther)
-		return
-	}
-
-	branch := strings.TrimSpace(r.FormValue("branch"))
+	branch := form.Branch
 	if branch == "" {
 		branch = "main"
 	}
@@ -136,17 +137,17 @@ func (h *Handler) GitOpsPipelineCreate(w http.ResponseWriter, r *http.Request) {
 	if h.gitOpsRepo != nil {
 		p := &GitOpsPipelineRecord{
 			ID:            uuid.New(),
-			Name:          name,
-			Repository:    repo,
+			Name:          form.Name,
+			Repository:    form.Repository,
 			Branch:        branch,
-			Provider:      r.FormValue("provider"),
-			TargetStack:   strings.TrimSpace(r.FormValue("target_stack")),
-			TargetService: strings.TrimSpace(r.FormValue("target_service")),
-			Action:        r.FormValue("action"),
-			TriggerType:   r.FormValue("trigger_type"),
-			Schedule:      r.FormValue("schedule"),
+			Provider:      form.Provider,
+			TargetStack:   form.TargetStack,
+			TargetService: form.TargetService,
+			Action:        form.Action,
+			TriggerType:   form.TriggerType,
+			Schedule:      form.Schedule,
 			IsEnabled:     true,
-			AutoRollback:  r.FormValue("auto_rollback") == "on",
+			AutoRollback:  form.AutoRollback,
 		}
 		if err := h.gitOpsRepo.CreatePipeline(r.Context(), p); err != nil {
 			h.setFlash(w, r, "error", "Failed to create pipeline: "+err.Error())
@@ -155,7 +156,7 @@ func (h *Handler) GitOpsPipelineCreate(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	h.setFlash(w, r, "success", "GitOps pipeline '"+name+"' created")
+	h.setFlash(w, r, "success", "GitOps pipeline '"+form.Name+"' created")
 	http.Redirect(w, r, "/gitops", http.StatusSeeOther)
 }
 

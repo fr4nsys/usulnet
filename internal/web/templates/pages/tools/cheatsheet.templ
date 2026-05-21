@@ -58,7 +58,7 @@ templ CheatSheet(data CheatSheetData) {
 			<div class="flex items-center justify-between">
 				<div>
 					<h1 class="text-2xl font-display font-bold text-white">
-						<i class="fas fa-book text-primary-400 mr-2"></i>Command Cheat Sheet
+						<i aria-hidden="true" class="fas fa-book text-primary-400 mr-2"></i>Command Cheat Sheet
 					</h1>
 					<p class="text-gray-400 mt-1">Quick reference for common Linux, Docker, Git, and DevOps commands</p>
 				</div>
@@ -66,7 +66,7 @@ templ CheatSheet(data CheatSheetData) {
 					onclick="document.getElementById('add-command-modal').classList.remove('hidden')"
 					class="btn-secondary"
 				>
-					<i class="fas fa-plus mr-2"></i>Add Custom
+					<i aria-hidden="true" class="fas fa-plus mr-2"></i>Add Custom
 				</button>
 			</div>
 
@@ -75,12 +75,13 @@ templ CheatSheet(data CheatSheetData) {
 				<div class="flex flex-wrap items-center gap-4">
 					<div class="flex-1 min-w-[200px]">
 						<div class="relative">
-							<i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-500"></i>
+							<i aria-hidden="true" class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-500"></i>
 							<input
 								type="text"
 								x-model="searchQuery"
 								placeholder="Search commands..."
 								class="input pl-10"
+								aria-label="Search commands..."
 							/>
 						</div>
 					</div>
@@ -141,7 +142,7 @@ templ CheatSheet(data CheatSheetData) {
 													@click={ "copyCommand('" + escapeJS(cmd.Command) + "')" }
 													class="absolute right-2 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-dark-700 text-gray-400 hover:text-white px-2 py-1 rounded text-xs"
 												>
-													<i class="fas fa-copy mr-1"></i>Copy
+													<i aria-hidden="true" class="fas fa-copy mr-1"></i>Copy
 												</button>
 											</div>
 											if cmd.Example != "" {
@@ -159,7 +160,7 @@ templ CheatSheet(data CheatSheetData) {
 													class="inline-flex items-center gap-1 bg-yellow-500/10 text-yellow-400 px-2 py-0.5 rounded text-xs cursor-pointer hover:bg-yellow-500/20"
 													title={ v.Description }
 												>
-													<i class="fas fa-edit text-[10px]"></i>
+													<i aria-hidden="true" class="fas fa-edit text-[10px]"></i>
 													{ v.Placeholder }
 												</span>
 											}
@@ -180,7 +181,7 @@ templ CheatSheet(data CheatSheetData) {
 					>
 						<div class="p-4 border-b border-dark-600 flex items-center gap-3">
 							<div class="w-10 h-10 rounded-lg bg-purple-500/10 flex items-center justify-center">
-								<i class="fas fa-user-edit text-purple-400"></i>
+								<i aria-hidden="true" class="fas fa-user-edit text-purple-400"></i>
 							</div>
 							<div>
 								<h2 class="text-lg font-semibold text-white">My Commands</h2>
@@ -203,7 +204,7 @@ templ CheatSheet(data CheatSheetData) {
 														@click={ "copyCommand('" + escapeJS(cmd.Command) + "')" }
 														class="bg-dark-700 text-gray-400 hover:text-white px-2 py-1 rounded text-xs"
 													>
-														<i class="fas fa-copy"></i>
+														<i aria-hidden="true" class="fas fa-copy"></i>
 													</button>
 													<button
 														hx-delete={ "/tools/cheatsheet/custom/" + cmd.ID }
@@ -211,7 +212,7 @@ templ CheatSheet(data CheatSheetData) {
 														hx-confirm="Delete this command?"
 														class="bg-dark-700 text-red-400 hover:text-red-300 px-2 py-1 rounded text-xs"
 													>
-														<i class="fas fa-trash"></i>
+														<i aria-hidden="true" class="fas fa-trash"></i>
 													</button>
 												</div>
 											</div>
@@ -233,7 +234,7 @@ templ CheatSheet(data CheatSheetData) {
 				x-transition
 				class="fixed bottom-4 right-4 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg"
 			>
-				<i class="fas fa-check mr-2"></i>Command copied to clipboard
+				<i aria-hidden="true" class="fas fa-check mr-2"></i>Command copied to clipboard
 			</div>
 
 			<script>
@@ -267,14 +268,14 @@ templ addCommandModal(csrfToken string) {
 	<div id="add-command-modal" class="hidden fixed inset-0 z-50 overflow-y-auto">
 		<div class="fixed inset-0 bg-black/50" onclick="document.getElementById('add-command-modal').classList.add('hidden')"></div>
 		<div class="relative min-h-screen flex items-center justify-center p-4">
-			<div class="relative bg-dark-800 rounded-xl border border-dark-600 max-w-lg w-full p-6">
+			<div class="relative card max-w-lg w-full p-6">
 				<div class="flex items-center justify-between mb-6">
 					<h2 class="text-xl font-display font-bold text-white">Add Custom Command</h2>
 					<button
 						onclick="document.getElementById('add-command-modal').classList.add('hidden')"
 						class="text-gray-400 hover:text-white"
 					>
-						<i class="fas fa-times"></i>
+						<i aria-hidden="true" class="fas fa-times"></i>
 					</button>
 				</div>
 
@@ -283,7 +284,7 @@ templ addCommandModal(csrfToken string) {
 
 					<div>
 						<label class="block text-sm font-medium text-gray-300 mb-2">Title</label>
-						<input type="text" name="title" required class="input" placeholder="e.g. Start production server"/>
+						<input type="text" name="title" required class="input" placeholder="e.g. Start production server" aria-label="e.g. Start production server"/>
 					</div>
 
 					<div>
@@ -293,7 +294,7 @@ templ addCommandModal(csrfToken string) {
 
 					<div>
 						<label class="block text-sm font-medium text-gray-300 mb-2">Description</label>
-						<input type="text" name="description" class="input" placeholder="Optional description"/>
+						<input type="text" name="description" class="input" placeholder="Optional description" aria-label="Optional description"/>
 					</div>
 
 					<div>
@@ -316,7 +317,7 @@ templ addCommandModal(csrfToken string) {
 							Cancel
 						</button>
 						<button type="submit" class="btn-primary">
-							<i class="fas fa-plus mr-2"></i>Add Command
+							<i aria-hidden="true" class="fas fa-plus mr-2"></i>Add Command
 						</button>
 					</div>
 				</form>

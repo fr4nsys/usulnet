@@ -101,7 +101,7 @@ func CertList(data CertListData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			if data.Connected {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<span class=\"badge badge-success\"><i class=\"fas fa-link mr-1\"></i>Connected</span><div class=\"relative group\"><button class=\"btn-primary\"><i class=\"fas fa-plus mr-2\"></i>New Certificate <i class=\"fas fa-chevron-down ml-2 text-xs\"></i></button><div class=\"absolute right-0 mt-1 w-56 bg-dark-800 border border-dark-600 rounded-lg shadow-lg hidden group-hover:block z-10\"><a href=\"/proxy/certificates/new/letsencrypt\" class=\"flex items-center gap-3 px-4 py-3 text-sm text-gray-300 hover:bg-dark-700 hover:text-white rounded-t-lg\"><i class=\"fas fa-robot text-green-400\"></i> Let's Encrypt</a> <a href=\"/proxy/certificates/new/custom\" class=\"flex items-center gap-3 px-4 py-3 text-sm text-gray-300 hover:bg-dark-700 hover:text-white rounded-b-lg\"><i class=\"fas fa-upload text-blue-400\"></i> Custom Certificate</a></div></div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<span class=\"badge badge-success\"><i aria-hidden=\"true\" class=\"fas fa-link mr-1\"></i>Connected</span><div class=\"relative group\"><button class=\"btn-primary\"><i aria-hidden=\"true\" class=\"fas fa-plus mr-2\"></i>New Certificate <i aria-hidden=\"true\" class=\"fas fa-chevron-down ml-2 text-xs\"></i></button><div class=\"absolute right-0 mt-1 w-56 bg-dark-800 border border-dark-600 rounded-lg shadow-lg hidden group-hover:block z-10\"><a href=\"/proxy/certificates/new/letsencrypt\" class=\"flex items-center gap-3 px-4 py-3 text-sm text-gray-300 hover:bg-dark-700 hover:text-white rounded-t-lg\"><i aria-hidden=\"true\" class=\"fas fa-robot text-green-400\"></i> Let's Encrypt</a> <a href=\"/proxy/certificates/new/custom\" class=\"flex items-center gap-3 px-4 py-3 text-sm text-gray-300 hover:bg-dark-700 hover:text-white rounded-b-lg\"><i aria-hidden=\"true\" class=\"fas fa-upload text-blue-400\"></i> Custom Certificate</a></div></div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -116,7 +116,7 @@ func CertList(data CertListData) templ.Component {
 			}
 			if data.Connected {
 				if len(data.Certificates) > 0 {
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<div class=\"card\"><div class=\"overflow-x-auto\"><table class=\"table\"><thead><tr><th>Name</th><th>Domains</th><th>Provider</th><th>Expires</th><th>Actions</th></tr></thead> <tbody>")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<div class=\"card\"><div class=\"overflow-x-auto\"><table class=\"table\"><thead><tr><th scope=\"col\">Name</th><th scope=\"col\">Domains</th><th scope=\"col\">Provider</th><th scope=\"col\">Expires</th><th scope=\"col\">Actions</th></tr></thead> <tbody>")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
@@ -296,13 +296,13 @@ func CertList(data CertListData) templ.Component {
 						return templ_7745c5c3_Err
 					}
 				} else {
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 22, "<div class=\"card p-8 text-center\"><i class=\"fas fa-certificate text-4xl text-gray-400 mb-4\"></i><h3 class=\"text-lg font-medium text-white mb-2\">No SSL certificates</h3><p class=\"text-gray-400 mb-4\">Add a Let's Encrypt or custom certificate</p><div class=\"flex items-center justify-center gap-3\"><a href=\"/proxy/certificates/new/letsencrypt\" class=\"btn-primary\"><i class=\"fas fa-robot mr-2\"></i>Let's Encrypt</a> <a href=\"/proxy/certificates/new/custom\" class=\"btn-secondary\"><i class=\"fas fa-upload mr-2\"></i>Custom</a></div></div>")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 22, "<div class=\"card p-8 text-center\"><i aria-hidden=\"true\" class=\"fas fa-certificate text-4xl text-gray-400 mb-4\"></i><h3 class=\"text-lg font-medium text-white mb-2\">No SSL certificates</h3><p class=\"text-gray-400 mb-4\">Add a Let's Encrypt or custom certificate</p><div class=\"flex items-center justify-center gap-3\"><a href=\"/proxy/certificates/new/letsencrypt\" class=\"btn-primary\"><i aria-hidden=\"true\" class=\"fas fa-robot mr-2\"></i>Let's Encrypt</a> <a href=\"/proxy/certificates/new/custom\" class=\"btn-secondary\"><i aria-hidden=\"true\" class=\"fas fa-upload mr-2\"></i>Custom</a></div></div>")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
 				}
 			} else {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 23, "<div class=\"card p-8 text-center\"><i class=\"fas fa-plug text-4xl text-gray-400 mb-4\"></i><h3 class=\"text-lg font-medium text-white mb-2\">NPM Not Connected</h3><p class=\"text-gray-400 mb-4\">Connect to NPM to manage SSL certificates.</p><a href=\"/proxy/setup\" class=\"btn-primary\"><i class=\"fas fa-link mr-2\"></i>Setup Connection</a></div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 23, "<div class=\"card p-8 text-center\"><i aria-hidden=\"true\" class=\"fas fa-plug text-4xl text-gray-400 mb-4\"></i><h3 class=\"text-lg font-medium text-white mb-2\">NPM Not Connected</h3><p class=\"text-gray-400 mb-4\">Connect to NPM to manage SSL certificates.</p><a href=\"/proxy/setup\" class=\"btn-primary\"><i aria-hidden=\"true\" class=\"fas fa-link mr-2\"></i>Setup Connection</a></div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}

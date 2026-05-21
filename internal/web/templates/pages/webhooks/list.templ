@@ -116,7 +116,7 @@ templ List(data WebhooksData) {
 								</div>
 								<div>
 									<label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Events (comma-separated)</label>
-									<input type="text" name="events" required x-model="whEdit.events" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white sm:text-sm" placeholder="container.start, container.stop, stack.deploy"/>
+									<input type="text" name="events" required x-model="whEdit.events" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white sm:text-sm" placeholder="container.start, container.stop, stack.deploy" aria-label="container.start, container.stop, stack.deploy"/>
 									<p class="mt-1 text-xs text-gray-400">Events: container.start, container.stop, container.die, image.pull, stack.deploy, backup.completed, security.alert, host.offline</p>
 								</div>
 								<div>
@@ -158,7 +158,7 @@ templ List(data WebhooksData) {
 							<div class="space-y-4">
 								<div>
 									<label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Name</label>
-									<input type="text" name="name" required placeholder="e.g., Deploy on push" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white sm:text-sm"/>
+									<input type="text" name="name" required placeholder="e.g., Deploy on push" aria-label="e.g., Deploy on push" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white sm:text-sm"/>
 								</div>
 								<div>
 									<label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Source Type</label>
@@ -172,11 +172,11 @@ templ List(data WebhooksData) {
 								</div>
 								<div>
 									<label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Source Repository</label>
-									<input type="text" name="source_repo" required placeholder="e.g., owner/repo or image:tag" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white sm:text-sm"/>
+									<input type="text" name="source_repo" required placeholder="e.g., owner/repo or image:tag" aria-label="e.g., owner/repo or image:tag" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white sm:text-sm"/>
 								</div>
 								<div>
 									<label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Branch (optional)</label>
-									<input type="text" name="source_branch" placeholder="e.g., main" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white sm:text-sm"/>
+									<input type="text" name="source_branch" placeholder="e.g., main" aria-label="e.g., main" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white sm:text-sm"/>
 								</div>
 								<div>
 									<label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Action</label>
@@ -188,11 +188,11 @@ templ List(data WebhooksData) {
 								</div>
 								<div>
 									<label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Target Stack ID (optional)</label>
-									<input type="text" name="target_stack_id" placeholder="Stack UUID" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white sm:text-sm"/>
+									<input type="text" name="target_stack_id" placeholder="Stack UUID" aria-label="Stack UUID" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white sm:text-sm"/>
 								</div>
 								<div>
 									<label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Target Service (optional)</label>
-									<input type="text" name="target_service" placeholder="Service name within stack" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white sm:text-sm"/>
+									<input type="text" name="target_service" placeholder="Service name within stack" aria-label="Service name within stack" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white sm:text-sm"/>
 								</div>
 								<div class="flex items-center">
 									<input type="checkbox" name="is_enabled" id="ad_enabled" checked class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"/>
@@ -257,12 +257,12 @@ templ webhooksTab(data WebhooksData) {
 			<table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
 				<thead class="bg-gray-50 dark:bg-gray-900">
 					<tr>
-						<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Name</th>
-						<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">URL</th>
-						<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Events</th>
-						<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Config</th>
-						<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Status</th>
-						<th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Actions</th>
+						<th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Name</th>
+						<th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">URL</th>
+						<th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Events</th>
+						<th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Config</th>
+						<th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Status</th>
+						<th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Actions</th>
 					</tr>
 				</thead>
 				<tbody class="divide-y divide-gray-200 dark:divide-gray-700">
@@ -317,12 +317,12 @@ templ deliveriesTab(data WebhooksData) {
 			<table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
 				<thead class="bg-gray-50 dark:bg-gray-900">
 					<tr>
-						<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Webhook</th>
-						<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Event</th>
-						<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Status</th>
-						<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Response</th>
-						<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Duration</th>
-						<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Delivered</th>
+						<th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Webhook</th>
+						<th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Event</th>
+						<th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Status</th>
+						<th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Response</th>
+						<th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Duration</th>
+						<th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Delivered</th>
 					</tr>
 				</thead>
 				<tbody class="divide-y divide-gray-200 dark:divide-gray-700">
@@ -372,12 +372,12 @@ templ autoDeployTab(data WebhooksData) {
 			<table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
 				<thead class="bg-gray-50 dark:bg-gray-900">
 					<tr>
-						<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Name</th>
-						<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Source</th>
-						<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Target</th>
-						<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Action</th>
-						<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Status</th>
-						<th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Actions</th>
+						<th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Name</th>
+						<th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Source</th>
+						<th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Target</th>
+						<th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Action</th>
+						<th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Status</th>
+						<th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Actions</th>
 					</tr>
 				</thead>
 				<tbody class="divide-y divide-gray-200 dark:divide-gray-700">

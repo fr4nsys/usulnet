@@ -6,6 +6,7 @@ package calendar
 
 import (
 	"fmt"
+	"github.com/fr4nsys/usulnet/internal/web/templates/components"
 	"github.com/fr4nsys/usulnet/internal/web/templates/layouts"
 )
 
@@ -23,6 +24,7 @@ type ListData struct {
 	RangeTo     string
 	Sources     []string
 	CreateError string
+	EmptyState  components.EmptyStateData
 }
 
 // EventView is the row representation of one calendar event.
@@ -102,10 +104,10 @@ templ List(data ListData) {
 				</div>
 				<div class="flex items-center gap-2">
 					<a href="/api/v1/calendar/export.ics" class="btn-secondary" target="_blank" rel="noopener">
-						<i class="fas fa-file-export mr-2"></i>Export .ics
+						<i aria-hidden="true" class="fas fa-file-export mr-2"></i>Export .ics
 					</a>
 					<a href="/calendar/new" class="btn-primary">
-						<i class="fas fa-plus mr-2"></i>New Event
+						<i aria-hidden="true" class="fas fa-plus mr-2"></i>New Event
 					</a>
 				</div>
 			</div>
@@ -123,11 +125,11 @@ templ List(data ListData) {
 				<div class="flex items-center justify-between mb-4">
 					<div class="flex items-center gap-3">
 						<a href={ templ.SafeURL("/calendar?month=" + data.PrevMonth) } class="btn-secondary btn-sm">
-							<i class="fas fa-chevron-left"></i>
+							<i aria-hidden="true" class="fas fa-chevron-left"></i>
 						</a>
 						<h2 class="text-xl font-semibold text-white">{ data.MonthLabel }</h2>
 						<a href={ templ.SafeURL("/calendar?month=" + data.NextMonth) } class="btn-secondary btn-sm">
-							<i class="fas fa-chevron-right"></i>
+							<i aria-hidden="true" class="fas fa-chevron-right"></i>
 						</a>
 					</div>
 					<a href="/calendar" class="text-sm text-primary-400 hover:text-primary-300">Today</a>
@@ -157,7 +159,7 @@ templ List(data ListData) {
 											title={ ev.Title + " — " + ev.StartsLabel }
 										>
 											if ev.AllDay {
-												<i class="fas fa-circle text-[6px] mr-1"></i>
+												<i aria-hidden="true" class="fas fa-circle text-[6px] mr-1"></i>
 											} else {
 												<span class="opacity-70 mr-1">{ ev.StartsLabel }</span>
 											}
@@ -183,12 +185,12 @@ templ List(data ListData) {
 						<table class="table">
 							<thead>
 								<tr>
-									<th>Title</th>
-									<th>Kind</th>
-									<th>Source</th>
-									<th>Starts</th>
-									<th>Ends</th>
-									<th>Actions</th>
+									<th scope="col">Title</th>
+									<th scope="col">Kind</th>
+									<th scope="col">Source</th>
+									<th scope="col">Starts</th>
+									<th scope="col">Ends</th>
+									<th scope="col">Actions</th>
 								</tr>
 							</thead>
 							<tbody>
@@ -239,14 +241,7 @@ templ List(data ListData) {
 					</div>
 				}
 				if len(data.Events) == 0 {
-					<div class="p-8 text-center">
-						<i class="fas fa-calendar-plus text-4xl text-gray-400 mb-4"></i>
-						<h3 class="text-lg font-medium text-white mb-2">No events in this range</h3>
-						<p class="text-gray-400 mb-4">Create a maintenance window, schedule a backup, or invite the calendar to pick up scheduled jobs.</p>
-						<a href="/calendar/new" class="btn-primary">
-							<i class="fas fa-plus mr-2"></i>New Event
-						</a>
-					</div>
+					@components.EmptyStateCTAs(data.EmptyState)
 				}
 			</div>
 

@@ -56,7 +56,7 @@ func Orders(data OrderListData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			if len(data.Orders) > 0 {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<div class=\"card\"><div class=\"overflow-x-auto\"><table class=\"table\"><thead><tr><th>Domain</th><th>Provider</th><th>State</th><th>Prop checks</th><th>Created</th><th>Completed</th><th></th></tr></thead> <tbody>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<div class=\"card\"><div class=\"overflow-x-auto\"><table class=\"table\"><thead><tr><th scope=\"col\">Domain</th><th scope=\"col\">Provider</th><th scope=\"col\">State</th><th scope=\"col\">Prop checks</th><th scope=\"col\">Created</th><th scope=\"col\">Completed</th><th scope=\"col\"></th></tr></thead> <tbody>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -227,7 +227,7 @@ func Orders(data OrderListData) templ.Component {
 					return templ_7745c5c3_Err
 				}
 			} else {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "<div class=\"card p-8 text-center\"><i class=\"fas fa-certificate text-4xl text-gray-400 mb-4\"></i><h3 class=\"text-lg font-medium text-white mb-2\">No ACME orders yet</h3><p class=\"text-gray-400\">The proxy module triggers DNS-01 orders when a host is configured to use one of the registered DNS providers for ACME challenges.</p></div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "<div class=\"card p-8 text-center\"><i aria-hidden=\"true\" class=\"fas fa-certificate text-4xl text-gray-400 mb-4\"></i><h3 class=\"text-lg font-medium text-white mb-2\">No ACME orders yet</h3><p class=\"text-gray-400\">The proxy module triggers DNS-01 orders when a host is configured to use one of the registered DNS providers for ACME challenges.</p></div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}

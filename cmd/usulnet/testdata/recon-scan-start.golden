@@ -1,7 +1,19 @@
-Start a scan against a target using the named profile
+Queue a scan against the given target with the named profile.
+
+--profile is required; pass either the profile name (see "recon
+profile list") or a UUID.
+
+Without --watch, the command returns once the scan is queued and
+prints the scan record. With --watch the command streams scan
+events from /api/v1/recon/scans/<id>/events until the scan
+completes or the connection drops.
 
 Usage:
   usulnet recon scan start <target-id> [flags]
+
+Examples:
+  usulnet recon scan start 11111111-1111-1111-1111-111111111111 --profile default
+  usulnet recon scan start <target-id> --profile osint --watch
 
 Flags:
   -h, --help             help for start
@@ -10,6 +22,8 @@ Flags:
 
 Global Flags:
   -c, --config string   config file path (default: /etc/usulnet/config.yaml or ./config.yaml)
+      --json            shortcut for --output json (overrides --output)
       --output string   output format: table|json|yaml (default "table")
+  -q, --quiet           suppress informational output (errors and primary data still print)
       --server string   usulnet API URL (default $USULNET_API_URL)
       --token string    API token (default $USULNET_API_TOKEN)

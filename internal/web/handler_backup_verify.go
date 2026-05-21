@@ -108,6 +108,7 @@ func (h *Handler) BackupVerifyListTempl(w http.ResponseWriter, r *http.Request) 
 		Total:         total,
 		Page:          page,
 		PageSize:      pageSize,
+		EmptyState:    EmptyStateCatalogBackupVerify(),
 	}))
 }
 
@@ -147,14 +148,21 @@ func (h *Handler) BackupVerifyDetailTempl(w http.ResponseWriter, r *http.Request
 // Run Verification
 // ============================================================================
 
+// backupVerifyRunForm captures the verify-run inputs. Method is
+// validated against the model enum after binding (IsValid()).
+type backupVerifyRunForm struct {
+	Method string `form:"method"`
+}
+
 // BackupVerifyRunTempl handles POST /backup-verify/{backupID}/verify.
 func (h *Handler) BackupVerifyRunTempl(w http.ResponseWriter, r *http.Request) {
 	svc := h.requireBackupVerifySvc(w, r)
 	if svc == nil {
 		return
 	}
-	if err := r.ParseForm(); err != nil {
-		http.Error(w, "Error parsing form", http.StatusBadRequest)
+	var form backupVerifyRunForm
+	if msg := BindForm(r, &form); msg != "" {
+		h.RenderErrorTempl(w, r, http.StatusBadRequest, "Invalid Form", msg)
 		return
 	}
 
@@ -165,7 +173,7 @@ func (h *Handler) BackupVerifyRunTempl(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	method := models.VerificationMethod(r.FormValue("method"))
+	method := models.VerificationMethod(form.Method)
 	if method == "" {
 		method = models.VerificationMethodExtract
 	}
@@ -247,41 +255,46 @@ func (h *Handler) BackupVerifyScheduleNewTempl(w http.ResponseWriter, r *http.Re
 	h.renderTempl(w, r, bvtpl.ScheduleNew(bvtpl.ScheduleNewData{PageData: pageData}))
 }
 
+// backupVerifyScheduleCreateForm captures the create-schedule
+// inputs. method defaults to "extract" and max_backups to 5 when
+// blank — both fallbacks are applied after binding so an explicit
+// 0 still parses as a validation failure rather than silently
+// becoming 5.
+type backupVerifyScheduleCreateForm struct {
+	Schedule   string `form:"schedule" validate:"required"`
+	Method     string `form:"method"`
+	MaxBackups int    `form:"max_backups" validate:"gte=0"`
+}
+
 // BackupVerifyScheduleCreateTempl handles POST /backup-verify/schedules.
 func (h *Handler) BackupVerifyScheduleCreateTempl(w http.ResponseWriter, r *http.Request) {
 	svc := h.requireBackupVerifySvc(w, r)
 	if svc == nil {
 		return
 	}
-	if err := r.ParseForm(); err != nil {
-		http.Error(w, "Error parsing form", http.StatusBadRequest)
+
+	var form backupVerifyScheduleCreateForm
+	if msg := BindForm(r, &form); msg != "" {
+		pageData := h.prepareTemplPageData(r, "New Verification Schedule", "backup-verify")
+		h.renderTempl(w, r, bvtpl.ScheduleNew(bvtpl.ScheduleNewData{
+			PageData: pageData,
+			Error:    msg,
+		}))
 		return
 	}
 
 	hostID := h.getBVHostID(r)
 
-	schedule := r.FormValue("schedule")
-	method := r.FormValue("method")
+	method := form.Method
 	if method == "" {
 		method = "extract"
 	}
-	maxBackups := 5
-	if mb := r.FormValue("max_backups"); mb != "" {
-		if v, err := strconv.Atoi(mb); err == nil && v > 0 {
-			maxBackups = v
-		}
+	maxBackups := form.MaxBackups
+	if maxBackups <= 0 {
+		maxBackups = 5
 	}
 
-	if schedule == "" {
-		pageData := h.prepareTemplPageData(r, "New Verification Schedule", "backup-verify")
-		h.renderTempl(w, r, bvtpl.ScheduleNew(bvtpl.ScheduleNewData{
-			PageData: pageData,
-			Error:    "Schedule is required.",
-		}))
-		return
-	}
-
-	if _, err := svc.CreateSchedule(r.Context(), hostID, schedule, method, maxBackups); err != nil {
+	if _, err := svc.CreateSchedule(r.Context(), hostID, form.Schedule, method, maxBackups); err != nil {
 		pageData := h.prepareTemplPageData(r, "New Verification Schedule", "backup-verify")
 		h.renderTempl(w, r, bvtpl.ScheduleNew(bvtpl.ScheduleNewData{
 			PageData: pageData,

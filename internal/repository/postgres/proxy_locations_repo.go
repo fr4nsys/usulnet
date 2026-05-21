@@ -48,6 +48,33 @@ func (r *ProxyLocationRepository) ListByHost(ctx context.Context, proxyHostID uu
 	return pgx.CollectRows(rows, pgx.RowToStructByName[models.ProxyLocation])
 }
 
+// ListAllGrouped returns every location across all proxy hosts, grouped by
+// proxy_host_id. Replaces N per-host queries with a single scan for callers
+// that need the full snapshot (e.g. the extended-sync apply loop).
+// Hosts with no locations are absent from the map.
+func (r *ProxyLocationRepository) ListAllGrouped(ctx context.Context) (map[uuid.UUID][]models.ProxyLocation, error) {
+	rows, err := r.db.Query(ctx,
+		`SELECT id, proxy_host_id, path, upstream_scheme, upstream_host, upstream_port, enabled
+		   FROM proxy_locations
+		  ORDER BY proxy_host_id, path`,
+	)
+	if err != nil {
+		return nil, pkgerrors.Wrap(err, pkgerrors.CodeDatabaseError, "failed to list proxy locations")
+	}
+	defer rows.Close()
+
+	all, err := pgx.CollectRows(rows, pgx.RowToStructByName[models.ProxyLocation])
+	if err != nil {
+		return nil, pkgerrors.Wrap(err, pkgerrors.CodeDatabaseError, "failed to scan proxy locations")
+	}
+
+	out := make(map[uuid.UUID][]models.ProxyLocation)
+	for _, loc := range all {
+		out[loc.ProxyHostID] = append(out[loc.ProxyHostID], loc)
+	}
+	return out, nil
+}
+
 // ReplaceForHost replaces all locations for a proxy host atomically.
 func (r *ProxyLocationRepository) ReplaceForHost(ctx context.Context, proxyHostID uuid.UUID, locations []models.ProxyLocation) error {
 	if _, err := r.db.Exec(ctx, `DELETE FROM proxy_locations WHERE proxy_host_id = $1`, proxyHostID); err != nil {

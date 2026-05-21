@@ -307,14 +307,54 @@ Middleware stack: existing JWT/API-key auth → recon-feature-flag middleware �
 
 ## 12. Container images
 
-Two Dockerfiles land in `deploy/recon/`:
+Two image sources, each with its own CI pipeline:
 
-- `deploy/recon/spiderfoot/Dockerfile` — pulls upstream SpiderFoot at a pinned tag, runs as non-root, exposes 5001 internally only.
-- `deploy/recon/toolkit/Dockerfile` — `debian:stable-slim` + apt-installed `mat2`, `libimage-exiftool-perl`, `python3-pip`; pip-installed `holehe`, `h8mail`, `phoneinfoga`, `oletools`; binaries downloaded for `katana`, `subfinder` (Go-built, ProjectDiscovery, MIT).
+- **SpiderFoot** — `deploy/recon/spiderfoot/Dockerfile`. Pulls upstream
+  SpiderFoot at a pinned tag, runs as non-root, exposes 5001 internally
+  only. Built by `.github/workflows/build-recon-images.yml` on every
+  push to `main` that touches `deploy/recon/spiderfoot/`.
+- **Toolkit** — `images/recon-toolkit/Dockerfile`. Bases on
+  `archlinux:latest`. Built by `.github/workflows/recon-toolkit-weekly.yml`:
 
-Image build is wired into the existing `make docker-build` chain with new targets `make docker-build-recon-spiderfoot` and `make docker-build-recon-toolkit`. CI publishes them alongside the main image.
+  - Monday 04:00 UTC cron rebuilds the image so arch + extra package
+    updates land within a week of upstream.
+  - `workflow_dispatch` for ad-hoc rebuilds (CVE response, etc.).
+  - PR validation on changes under `images/recon-toolkit/`.
+  - Gates: `docker build` succeeds, `smoke.sh` passes (every
+    declared tool answers `--help`), compressed image size below the
+    2.5 GiB ceiling.
 
-usulnet pulls these images on first feature use if not present locally; the image references are pinned in `internal/services/recon/images.go` to a specific digest per release.
+  v26.5.2 initial-landing scope:
+    - **arch core + extra**: `mat2`, `perl-image-exiftool` (exiftool),
+      `yara`, plus python/pip support.
+    - **pip-installed under `/opt/venv`**: `holehe`, `h8mail`,
+      `oletools` (provides `olemeta`), `pdfid`.
+    - Out of scope until a follow-up: BlackArch overlay and the wider
+      OSINT/discovery tool set (`amass`, `subfinder`, `katana`,
+      `nuclei`, etc.). The first three CI attempts to bootstrap
+      BlackArch on top of `archlinux:latest` failed in the PR build
+      job with no recoverable log; the follow-up PR adds the overlay
+      with logs in hand.
+
+  Tools managed by pacman are declared in
+  `images/recon-toolkit/tools.list`. The same manifest is mirrored
+  into `internal/services/recon/sandboxtools/tools.list` and surfaced
+  in the operator UI at `/recon/connectors` under "Sandbox tools";
+  `TestManifestInSync` guards against drift between the two copies.
+  Python tools live in the venv at `/opt/venv` and are intentionally
+  not in `tools.list` — the catalogue surfaces what pacman manages.
+
+  **Platform**: the toolkit image is `linux/amd64` only — the official
+  `archlinux` Docker image is x86_64-only. arm64 hosts can either
+  (a) set `recon.toolkit.image` to a custom multi-arch alternative or
+  (b) disable the recon module via `recon.enabled: false`. The prior
+  Debian-slim toolkit at `deploy/recon/toolkit/` has been removed in
+  favour of the Arch path.
+
+Image references are pinned in `internal/services/recon/images.go` to
+a specific digest. CI opens a PR (`peter-evans/create-pull-request`)
+that rewrites the digest constants whenever a new build lands on
+`main`, keeping the Go binary tracking the exact image it should pull.
 
 ---
 
@@ -340,6 +380,85 @@ recon:
 ```
 
 All values overridable via `USULNET_RECON_*` env vars, following the existing Viper convention.
+
+### 13.1 Connectors
+
+Connectors are optional external-API integrations under
+`internal/services/recon/connectors/`. Each one ships as a
+self-contained package implementing `recon.Connector`
+(`Kind` / `Enabled` / `HealthCheck`). All connectors are
+**bring-your-own-key** — the AGPL binary never bundles credentials,
+and a connector is registered at startup only when the corresponding
+`recon.connectors.<kind>.enabled` toggle is `true`. Credentials are
+managed by the operator via the `/recon/connectors` UI or the
+`PUT /api/v1/recon/connectors/{kind}` API; the credential row in
+`recon_connectors` is encrypted at rest with the installation-wide
+AES-256-GCM data key.
+
+#### Have I Been Pwned (HIBP)
+
+- **Kind:** `hibp`
+- **Targets covered:** `email`
+- **Free tier:** none — HIBP's v3 API requires a paid subscription
+  (~$3.95/mo "Pwned 1" plan as of writing). Higher tiers raise the
+  per-key rate limit.
+- **Rate limit:** 1.5 seconds between requests for a single key.
+  The connector does not pace requests itself; callers should
+  back off on `ErrRateLimited` (429).
+- **Configure via UI:** Recon → Connectors → "Have I Been Pwned"
+  card → paste API key → Save.
+- **Configure via API:** `PUT /api/v1/recon/connectors/hibp`
+  body `{"enabled": true, "credentials": {"api_key": "<value>"}}`.
+- **Configure via env (boot-time only):**
+  `USULNET_RECON_HIBP_API_KEY=<value>` — kept as a migration grace
+  for installs that predate the credential store.
+- **Error semantics:** `ErrNoAPIKey` (no key set), `ErrUnauthorized`
+  (401 — bad key), `ErrRateLimited` (429), `ErrUnexpectedStatus`
+  (any other non-2xx).
+
+#### Shodan
+
+- **Kind:** `shodan`
+- **Targets covered:** `ip`, `domain` (hostname), `ip_range` (CIDR).
+  - `ip` → `GET /shodan/host/{ip}` — emits one finding per
+    observed service/port on the host.
+  - `domain` → `GET /dns/resolve?hostnames=<host>` — emits one
+    finding per resolved IP (info severity); follow up with an
+    `ip`-kind lookup to enumerate services.
+  - `ip_range` → `GET /shodan/host/search?query=net:<cidr>` —
+    emits one finding per match, capped at
+    `shodan.MaxSearchResults` (100) to bound query-credit burn.
+- **Free tier:** Shodan offers a free account whose API key only
+  exposes `/api-info` and a limited set of read endpoints. The
+  paid "freelancer" tier (~$69/mo as of writing) unlocks
+  `/shodan/host/search` and grants query credits. The connector
+  works with both tiers — search-only paths will fail with
+  `ErrUnauthorized` on a free key.
+- **Rate limit:** ~1 request per second per key on freelancer.
+  Each `/shodan/host/{ip}` and `/shodan/host/search` call
+  consumes 1 query credit; `/dns/resolve` and `/api-info` are
+  free. The connector does not pace requests itself; callers
+  should back off on `ErrRateLimited` (429).
+- **Configure via UI:** Recon → Connectors → "Shodan" card →
+  paste API key → Save.
+- **Configure via API:** `PUT /api/v1/recon/connectors/shodan`
+  body `{"enabled": true, "credentials": {"api_key": "<value>"}}`.
+- **Configure via env (boot-time only):**
+  `USULNET_RECON_SHODAN_API_KEY=<value>`.
+- **HealthCheck:** `GET /api-info` with the configured key;
+  asserts a 200 whose body decodes to a struct carrying the
+  documented `query_credits` field. Burns no credits.
+- **Error semantics:** `ErrNoAPIKey`, `ErrUnauthorized` (401 or
+  403), `ErrRateLimited` (429), `ErrUnexpectedStatus`,
+  `ErrUnsupportedTarget` (kind outside `{ip, domain, ip_range}`),
+  `ErrInvalidTargetValue` (empty value, malformed IP, malformed
+  CIDR), `ErrUnhealthyResponse` (HealthCheck 200 with no
+  `query_credits` in the body).
+- **Overlap with SpiderFoot:** SpiderFoot ships an `sfp_shodan`
+  module that consumes the same key. Operators who have already
+  configured their key inside SpiderFoot do not need this
+  connector — it is the BYO-key fallback for installs where
+  `sfp_shodan` is unconfigured.
 
 ---
 

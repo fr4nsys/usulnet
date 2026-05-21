@@ -8,7 +8,6 @@ import (
 	"context"
 	"net/http"
 	"strconv"
-	"strings"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/google/uuid"
@@ -155,8 +154,9 @@ func (h *Handler) RollbackListTempl(w http.ResponseWriter, r *http.Request) {
 	policies, err := svc.ListPolicies(ctx)
 	if err != nil {
 		h.renderTempl(w, r, rollbacktpl.List(rollbacktpl.ListData{
-			PageData: pageData,
-			Error:    "Failed to load policies: " + err.Error(),
+			PageData:   pageData,
+			Error:      "Failed to load policies: " + err.Error(),
+			EmptyState: EmptyStateCatalogRollback(),
 		}))
 		return
 	}
@@ -175,9 +175,10 @@ func (h *Handler) RollbackListTempl(w http.ResponseWriter, r *http.Request) {
 	}
 
 	h.renderTempl(w, r, rollbacktpl.List(rollbacktpl.ListData{
-		PageData: pageData,
-		Policies: views,
-		Stats:    stats,
+		PageData:   pageData,
+		Policies:   views,
+		Stats:      stats,
+		EmptyState: EmptyStateCatalogRollback(),
 	}))
 }
 
@@ -214,10 +215,6 @@ func (h *Handler) RollbackNewTempl(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) RollbackCreateTempl(w http.ResponseWriter, r *http.Request) {
 	svc := h.requireRollbackSvc(w, r)
 	if svc == nil {
-		return
-	}
-	if err := r.ParseForm(); err != nil {
-		http.Error(w, "Error parsing form", http.StatusBadRequest)
 		return
 	}
 	in, parseErr := h.parseRollbackPolicyForm(r)
@@ -317,10 +314,6 @@ func (h *Handler) RollbackUpdateTempl(w http.ResponseWriter, r *http.Request) {
 		h.RenderErrorTempl(w, r, http.StatusBadRequest, "Invalid ID", "The policy ID is not valid.")
 		return
 	}
-	if err := r.ParseForm(); err != nil {
-		http.Error(w, "Error parsing form", http.StatusBadRequest)
-		return
-	}
 	in, parseErr := h.parseRollbackPolicyForm(r)
 	if parseErr != nil {
 		h.renderPolicyFormWithError(w, r, "Edit policy", in, parseErr.Error(), true, policyID.String())
@@ -415,10 +408,10 @@ func (h *Handler) RollbackDryRunPostTempl(w http.ResponseWriter, r *http.Request
 		h.RenderErrorTempl(w, r, http.StatusBadRequest, "Invalid ID", "The policy ID is not valid.")
 		return
 	}
-	if err := r.ParseForm(); err != nil {
-		http.Error(w, "Error parsing form", http.StatusBadRequest)
-		return
+	var dryRunForm struct {
+		StackID string `form:"stack_id" validate:"required,uuid"`
 	}
+	bindMsg := BindForm(r, &dryRunForm)
 	p, err := svc.GetPolicy(r.Context(), policyID)
 	if err != nil {
 		h.RenderErrorTempl(w, r, http.StatusNotFound, "Not Found", "The requested rollback policy was not found.")
@@ -431,20 +424,14 @@ func (h *Handler) RollbackDryRunPostTempl(w http.ResponseWriter, r *http.Request
 		Stacks:    h.rollbackStackOptions(r.Context(), r),
 		CSRFToken: pageData.CSRFToken,
 	}
-
-	stackIDStr := strings.TrimSpace(r.FormValue("stack_id"))
-	if stackIDStr == "" {
-		data.Error = "stack_id is required"
+	if bindMsg != "" {
+		data.Error = bindMsg
 		h.renderTempl(w, r, rollbacktpl.DryRun(data))
 		return
 	}
-	stackID, err := uuid.Parse(stackIDStr)
-	if err != nil {
-		data.Error = "invalid stack_id"
-		h.renderTempl(w, r, rollbacktpl.DryRun(data))
-		return
-	}
-	data.StackID = stackIDStr
+	// Validator already confirmed the UUID shape; parse cannot fail.
+	stackID, _ := uuid.Parse(dryRunForm.StackID)
+	data.StackID = dryRunForm.StackID
 
 	result, err := svc.DryRun(r.Context(), policyID, stackID, h.rollbackUserUUID(r))
 	if err != nil {
@@ -609,44 +596,55 @@ func (h *Handler) rollbackAuditView(ctx context.Context, e *models.RollbackAudit
 // Form parsing
 // ============================================================================
 
+// rollbackPolicyForm captures the rollback policy inputs. The
+// three threshold-style numerics are plain ints — 0 is treated as
+// "absent" because the underlying CreateInput uses *int to express
+// optionality and 0 is never a valid sentinel (failure_threshold /
+// window_seconds must be >0; cooldown_seconds is always-present
+// with a 0-default).
+type rollbackPolicyForm struct {
+	Name             string `form:"name" validate:"required"`
+	Description      string `form:"description"`
+	Enabled          bool   `form:"enabled"`
+	Scope            string `form:"scope"`
+	ScopeStackID     string `form:"scope_stack_id" validate:"omitempty,uuid"`
+	ScopeValue       string `form:"scope_value"`
+	TriggerKind      string `form:"trigger_kind"`
+	FailureThreshold int    `form:"failure_threshold" validate:"gte=0"`
+	WindowSeconds    int    `form:"window_seconds" validate:"gte=0"`
+	LastGoodStrategy string `form:"last_good_strategy"`
+	CooldownSeconds  int    `form:"cooldown_seconds" validate:"gte=0"`
+	DryRun           bool   `form:"dry_run"`
+}
+
 func (h *Handler) parseRollbackPolicyForm(r *http.Request) (models.CreateRollbackPolicyInput, error) {
+	var form rollbackPolicyForm
+	if msg := BindForm(r, &form); msg != "" {
+		return models.CreateRollbackPolicyInput{}, errInvalidField(msg)
+	}
 	in := models.CreateRollbackPolicyInput{
-		Name:             strings.TrimSpace(r.FormValue("name")),
-		Description:      strings.TrimSpace(r.FormValue("description")),
-		Enabled:          r.FormValue("enabled") == "true" || r.FormValue("enabled") == "on",
-		Scope:            models.RollbackScope(r.FormValue("scope")),
-		ScopeValue:       strings.TrimSpace(r.FormValue("scope_value")),
-		TriggerKind:      models.RollbackTriggerKind(r.FormValue("trigger_kind")),
-		LastGoodStrategy: models.RollbackStrategy(r.FormValue("last_good_strategy")),
-		DryRun:           r.FormValue("dry_run") == "true" || r.FormValue("dry_run") == "on",
+		Name:             form.Name,
+		Description:      form.Description,
+		Enabled:          form.Enabled,
+		Scope:            models.RollbackScope(form.Scope),
+		ScopeValue:       form.ScopeValue,
+		TriggerKind:      models.RollbackTriggerKind(form.TriggerKind),
+		LastGoodStrategy: models.RollbackStrategy(form.LastGoodStrategy),
+		DryRun:           form.DryRun,
+		CooldownSeconds:  form.CooldownSeconds,
 	}
-	if v := r.FormValue("cooldown_seconds"); v != "" {
-		n, err := strconv.Atoi(v)
-		if err != nil || n < 0 {
-			return in, errInvalidField("cooldown_seconds must be a non-negative integer")
-		}
-		in.CooldownSeconds = n
-	}
-	if v := strings.TrimSpace(r.FormValue("scope_stack_id")); v != "" {
-		id, err := uuid.Parse(v)
-		if err != nil {
-			return in, errInvalidField("scope_stack_id must be a valid UUID")
-		}
+	if form.ScopeStackID != "" {
+		// Validator already confirmed the UUID shape; parse cannot fail.
+		id, _ := uuid.Parse(form.ScopeStackID)
 		in.ScopeStackID = &id
 	}
-	if v := r.FormValue("failure_threshold"); v != "" {
-		n, err := strconv.Atoi(v)
-		if err != nil || n <= 0 {
-			return in, errInvalidField("failure_threshold must be > 0")
-		}
-		in.FailureThreshold = &n
+	if form.FailureThreshold > 0 {
+		v := form.FailureThreshold
+		in.FailureThreshold = &v
 	}
-	if v := r.FormValue("window_seconds"); v != "" {
-		n, err := strconv.Atoi(v)
-		if err != nil || n <= 0 {
-			return in, errInvalidField("window_seconds must be > 0")
-		}
-		in.WindowSeconds = &n
+	if form.WindowSeconds > 0 {
+		v := form.WindowSeconds
+		in.WindowSeconds = &v
 	}
 	return in, nil
 }

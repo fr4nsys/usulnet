@@ -1,0 +1,17 @@
+services:
+  dionaea:
+    image: dinotools/dionaea:0.11.0
+    restart: unless-stopped
+    ports:
+      - "{{FTP_PORT}}:21"
+      - "{{HTTP_PORT}}:80"
+      - "{{SMB_PORT}}:445"
+      - "{{MSSQL_PORT}}:1433"
+      - "{{MYSQL_PORT}}:3306"
+    volumes:
+      - dionaea-binaries:/opt/dionaea/var/dionaea/binaries
+      - dionaea-log:/opt/dionaea/var/log
+
+volumes:
+  dionaea-binaries: {}
+  dionaea-log: {}

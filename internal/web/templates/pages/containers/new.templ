@@ -15,7 +15,7 @@ templ New(data ContainerNewData) {
 		<div class="max-w-4xl mx-auto space-y-6">
 			<div class="flex items-center gap-4">
 				<a href="/containers" class="p-2 text-gray-400 hover:text-white hover:bg-dark-700 rounded-lg">
-					<i class="fas fa-arrow-left"></i>
+					<i aria-hidden="true" class="fas fa-arrow-left"></i>
 				</a>
 				<div>
 					<h1 class="text-2xl font-display font-bold text-white">Create Container</h1>
@@ -25,7 +25,7 @@ templ New(data ContainerNewData) {
 
 			if data.Error != "" {
 				<div class="bg-red-500/10 border border-red-500/20 rounded-lg p-4 text-red-400">
-					<i class="fas fa-exclamation-circle mr-2"></i>{ data.Error }
+					<i aria-hidden="true" class="fas fa-exclamation-circle mr-2"></i>{ data.Error }
 				</div>
 			}
 
@@ -37,11 +37,11 @@ templ New(data ContainerNewData) {
 					<div class="grid grid-cols-2 gap-4">
 						<div>
 							<label class="block text-sm font-medium text-gray-300 mb-2">Container Name</label>
-							<input type="text" name="name" required class="input" placeholder="my-container"/>
+							<input type="text" name="name" required class="input" placeholder="my-container" aria-label="my-container"/>
 						</div>
 						<div>
 							<label class="block text-sm font-medium text-gray-300 mb-2">Image</label>
-							<input type="text" name="image" required list="images" class="input" placeholder="nginx:alpine"/>
+							<input type="text" name="image" required list="images" class="input" placeholder="nginx:alpine" aria-label="nginx:alpine"/>
 							<datalist id="images">
 								for _, img := range data.Images {
 									<option value={ img }/>
@@ -56,9 +56,9 @@ templ New(data ContainerNewData) {
 					<h2 class="text-lg font-medium text-white mb-4">Port Mapping</h2>
 					<div id="ports-container" class="space-y-2">
 						<div class="flex items-center gap-2">
-							<input type="text" name="ports[]" class="input flex-1 font-mono" placeholder="8080:80"/>
+							<input type="text" name="ports[]" class="input flex-1 font-mono" placeholder="8080:80" aria-label="8080:80"/>
 							<button type="button" onclick="addPort()" class="btn-secondary">
-								<i class="fas fa-plus"></i>
+								<i aria-hidden="true" class="fas fa-plus"></i>
 							</button>
 						</div>
 					</div>
@@ -77,9 +77,9 @@ templ New(data ContainerNewData) {
 					<h2 class="text-lg font-medium text-white mb-4">Volumes</h2>
 					<div id="volumes-container" class="space-y-2">
 						<div class="flex items-center gap-2">
-							<input type="text" name="volumes[]" class="input flex-1 font-mono" placeholder="/host/path:/container/path"/>
+							<input type="text" name="volumes[]" class="input flex-1 font-mono" placeholder="/host/path:/container/path" aria-label="/host/path:/container/path"/>
 							<button type="button" onclick="addVolume()" class="btn-secondary">
-								<i class="fas fa-plus"></i>
+								<i aria-hidden="true" class="fas fa-plus"></i>
 							</button>
 						</div>
 					</div>
@@ -102,7 +102,7 @@ templ New(data ContainerNewData) {
 					<div class="space-y-4">
 						<div>
 							<label class="block text-sm font-medium text-gray-300 mb-2">Command (optional)</label>
-							<input type="text" name="command" class="input font-mono" placeholder="/bin/sh -c 'echo hello'"/>
+							<input type="text" name="command" class="input font-mono" placeholder="/bin/sh -c 'echo hello'" aria-label="/bin/sh -c 'echo hello'"/>
 						</div>
 						<div>
 							<label class="block text-sm font-medium text-gray-300 mb-2">Restart Policy</label>
@@ -129,7 +129,7 @@ templ New(data ContainerNewData) {
 				<div class="flex justify-end gap-3">
 					<a href="/containers" class="btn-secondary">Cancel</a>
 					<button type="submit" class="btn-primary">
-						<i class="fas fa-play mr-2"></i>Create & Start
+						<i aria-hidden="true" class="fas fa-play mr-2"></i>Create & Start
 					</button>
 				</div>
 			</form>
@@ -141,9 +141,9 @@ templ New(data ContainerNewData) {
 				const div = document.createElement('div');
 				div.className = 'flex items-center gap-2';
 				div.innerHTML = `
-					<input type="text" name="ports[]" class="input flex-1 font-mono" placeholder="8080:80"/>
+					<input type="text" name="ports[]" class="input flex-1 font-mono" placeholder="8080:80" aria-label="8080:80"/>
 					<button type="button" onclick="this.parentElement.remove()" class="btn-secondary text-red-400">
-						<i class="fas fa-minus"></i>
+						<i aria-hidden="true" class="fas fa-minus"></i>
 					</button>
 				`;
 				container.appendChild(div);
@@ -154,9 +154,9 @@ templ New(data ContainerNewData) {
 				const div = document.createElement('div');
 				div.className = 'flex items-center gap-2';
 				div.innerHTML = `
-					<input type="text" name="volumes[]" class="input flex-1 font-mono" placeholder="/host/path:/container/path"/>
+					<input type="text" name="volumes[]" class="input flex-1 font-mono" placeholder="/host/path:/container/path" aria-label="/host/path:/container/path"/>
 					<button type="button" onclick="this.parentElement.remove()" class="btn-secondary text-red-400">
-						<i class="fas fa-minus"></i>
+						<i aria-hidden="true" class="fas fa-minus"></i>
 					</button>
 				`;
 				container.appendChild(div);

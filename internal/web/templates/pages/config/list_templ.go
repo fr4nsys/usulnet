@@ -76,7 +76,7 @@ func List(data ConfigData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			if data.WarningMessage == "" {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<div class=\"flex items-center gap-2\"><a href=\"/config/audit\" class=\"btn-secondary\"><i class=\"fas fa-history mr-2\"></i>Audit Log</a> <button onclick=\"document.getElementById('new-var-modal').showModal()\" class=\"btn-primary\"><i class=\"fas fa-plus mr-2\"></i>New Variable</button></div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<div class=\"flex items-center gap-2\"><a href=\"/config/audit\" class=\"btn-secondary\"><i aria-hidden=\"true\" class=\"fas fa-history mr-2\"></i>Audit Log</a> <button onclick=\"document.getElementById('new-var-modal').showModal()\" class=\"btn-primary\"><i aria-hidden=\"true\" class=\"fas fa-plus mr-2\"></i>New Variable</button></div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -86,7 +86,7 @@ func List(data ConfigData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			if data.WarningMessage != "" {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<div class=\"bg-yellow-900/30 border border-yellow-700 rounded-lg p-4 flex items-start gap-3\"><i class=\"fas fa-exclamation-triangle text-yellow-400 mt-0.5\"></i><div><p class=\"text-yellow-300 font-medium\">Service Unavailable</p><p class=\"text-yellow-400/80 text-sm mt-1\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<div class=\"bg-yellow-900/30 border border-yellow-700 rounded-lg p-4 flex items-start gap-3\"><i aria-hidden=\"true\" class=\"fas fa-exclamation-triangle text-yellow-400 mt-0.5\"></i><div><p class=\"text-yellow-300 font-medium\">Service Unavailable</p><p class=\"text-yellow-400/80 text-sm mt-1\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -166,7 +166,7 @@ func List(data ConfigData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, ")</h2></div><div class=\"overflow-x-auto\"><table class=\"table\"><thead><tr><th>Name</th><th>Value</th><th>Scope</th><th>Used By</th><th>Updated</th><th>Actions</th></tr></thead> <tbody>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, ")</h2></div><div class=\"overflow-x-auto\"><table class=\"table\"><thead><tr><th scope=\"col\">Name</th><th scope=\"col\">Value</th><th scope=\"col\">Scope</th><th scope=\"col\">Used By</th><th scope=\"col\">Updated</th><th scope=\"col\">Actions</th></tr></thead> <tbody>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -189,7 +189,7 @@ func List(data ConfigData) templ.Component {
 					return templ_7745c5c3_Err
 				}
 				if v.IsSecret {
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "<span class=\"text-gray-500\">••••••••</span> <button class=\"ml-2 text-gray-400 hover:text-white text-xs\" title=\"Show\"><i class=\"fas fa-eye\"></i></button>")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "<span class=\"text-gray-500\">••••••••</span> <button class=\"ml-2 text-gray-400 hover:text-white text-xs\" title=\"Show\"><i aria-hidden=\"true\" class=\"fas fa-eye\"></i></button>")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
@@ -317,7 +317,7 @@ func List(data ConfigData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 27, "\"><div class=\"px-6 py-4 border-b border-dark-700\"><h3 class=\"text-lg font-medium text-white\">New Variable</h3></div><div class=\"p-6 space-y-4\"><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Name</label> <input type=\"text\" name=\"name\" required class=\"input\" placeholder=\"MY_VARIABLE\"></div><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Value</label> <input type=\"text\" name=\"value\" required class=\"input\"></div><div class=\"flex items-center gap-2\"><input type=\"checkbox\" id=\"is_secret\" name=\"is_secret\" class=\"rounded border-dark-600 bg-dark-700 text-primary-500\"> <label for=\"is_secret\" class=\"text-sm text-gray-300\">This is a secret</label></div></div><div class=\"px-6 py-4 border-t border-dark-700 flex justify-end gap-3\"><button type=\"button\" onclick=\"this.closest('dialog').close()\" class=\"btn-secondary\">Cancel</button> <button type=\"submit\" class=\"btn-primary\">Create</button></div></form></dialog>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 27, "\"><div class=\"px-6 py-4 border-b border-dark-700\"><h3 class=\"text-lg font-medium text-white\">New Variable</h3></div><div class=\"p-6 space-y-4\"><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Name</label> <input type=\"text\" name=\"name\" required class=\"input\" placeholder=\"MY_VARIABLE\" aria-label=\"MY_VARIABLE\"></div><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Value</label> <input type=\"text\" name=\"value\" required class=\"input\"></div><div class=\"flex items-center gap-2\"><input type=\"checkbox\" id=\"is_secret\" name=\"is_secret\" class=\"rounded border-dark-600 bg-dark-700 text-primary-500\"> <label for=\"is_secret\" class=\"text-sm text-gray-300\">This is a secret</label></div></div><div class=\"px-6 py-4 border-t border-dark-700 flex justify-end gap-3\"><button type=\"button\" onclick=\"this.closest('dialog').close()\" class=\"btn-secondary\">Cancel</button> <button type=\"submit\" class=\"btn-primary\">Create</button></div></form></dialog>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

@@ -26,6 +26,7 @@ import (
 	crontabsvc "github.com/fr4nsys/usulnet/internal/services/crontab"
 	dnssvc "github.com/fr4nsys/usulnet/internal/services/dns"
 	dockerconfigsvc "github.com/fr4nsys/usulnet/internal/services/dockerconfig"
+	egresssvc "github.com/fr4nsys/usulnet/internal/services/egress"
 	firewallsvc "github.com/fr4nsys/usulnet/internal/services/firewall"
 	gitsvc "github.com/fr4nsys/usulnet/internal/services/git"
 	hostsvc "github.com/fr4nsys/usulnet/internal/services/host"
@@ -47,6 +48,7 @@ import (
 	updatesvc "github.com/fr4nsys/usulnet/internal/services/update"
 	volumesvc "github.com/fr4nsys/usulnet/internal/services/volume"
 	wireguardsvc "github.com/fr4nsys/usulnet/internal/services/wireguard"
+	yarasvc "github.com/fr4nsys/usulnet/internal/services/yara"
 )
 
 // ErrServiceNotConfigured is returned when an operation is attempted on a service that is not configured.
@@ -88,6 +90,10 @@ type ServiceRegistry struct {
 	dnsSvc          *dnssvc.Service
 	calendarSvc     *calendarsvc.Service
 	marketplaceSvc  *marketplacesvc.Service
+	egressSvc        *egresssvc.Service
+	egressListenAddr string
+	yaraSvc          *yarasvc.Service
+	yaraToolkitImage string
 
 	// Recon / privacy module (v26.5.0). All three are optional and nil
 	// when the recon feature flag is off — see docs/v26.5/technical-notes.md.
@@ -152,6 +158,10 @@ type ServiceRegistryDeps struct {
 	DNSService            *dnssvc.Service          // Optional: DNS provider plugins (v26.5.1)
 	CalendarService       *calendarsvc.Service     // Optional: operations calendar (v26.5.1)
 	MarketplaceService    *marketplacesvc.Service  // Optional: curated app marketplace (v26.5.1)
+	EgressService         *egresssvc.Service       // Optional: L7 egress forward proxy (v26.5.2)
+	EgressListenAddr      string                   // Optional: proxy listener address for the UI info panel
+	YARAService           *yarasvc.Service         // Optional: one-shot YARA scanner (v26.5.2)
+	YARAToolkitImage      string                   // Optional: toolkit image name for the UI info panel
 	UserRepository        *postgres.UserRepository
 	AuditLogRepo          *postgres.AuditLogRepository // Optional: for recent events feed
 	Encryptor             *crypto.AESEncryptor         // Optional: requires encryption key
@@ -204,6 +214,10 @@ func NewServiceRegistry(deps ServiceRegistryDeps) *ServiceRegistry {
 		dnsSvc:          deps.DNSService,
 		calendarSvc:     deps.CalendarService,
 		marketplaceSvc:  deps.MarketplaceService,
+		egressSvc:        deps.EgressService,
+		egressListenAddr: deps.EgressListenAddr,
+		yaraSvc:          deps.YARAService,
+		yaraToolkitImage: deps.YARAToolkitImage,
 		userRepo:        deps.UserRepository,
 		auditLogRepo:    deps.AuditLogRepo,
 		encryptor:       deps.Encryptor,
@@ -421,6 +435,20 @@ func (r *ServiceRegistry) Calendar() *calendarsvc.Service {
 // not configured. v26.5.1 wires this in every install — no biz gate.
 func (r *ServiceRegistry) Marketplace() *marketplacesvc.Service {
 	return r.marketplaceSvc
+}
+
+// Egress returns the L7 egress filter service, or nil if not configured
+// (typically because cfg.EgressProxy.Enabled is false). v26.5.2 wires
+// this in every install — no biz gate.
+func (r *ServiceRegistry) Egress() *egresssvc.Service {
+	return r.egressSvc
+}
+
+// YARA returns the YARA scanner service, or nil if not configured
+// (typically because recon is disabled and the toolkit image isn't
+// available). v26.5.2 wires this in every install — no biz gate.
+func (r *ServiceRegistry) YARA() *yarasvc.Service {
+	return r.yaraSvc
 }
 
 // Recon returns the recon module adapter. It always returns a non-nil

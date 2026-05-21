@@ -87,14 +87,14 @@ func Form(data FormData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			if data.Error != "" {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<div class=\"rounded-md bg-red-500/10 border border-red-500/30 px-4 py-3 text-red-300 text-sm\"><i class=\"fas fa-exclamation-circle mr-2\"></i>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<div class=\"rounded-md bg-red-500/10 border border-red-500/30 px-4 py-3 text-red-300 text-sm\"><i aria-hidden=\"true\" class=\"fas fa-exclamation-circle mr-2\"></i>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var3 string
 				templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(data.Error)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/calendar/form.templ`, Line: 41, Col: 63}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/calendar/form.templ`, Line: 41, Col: 82}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 				if templ_7745c5c3_Err != nil {
@@ -236,7 +236,7 @@ func Form(data FormData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "\" maxlength=\"255\" class=\"input w-full\" placeholder=\"optional\"></div><div><label class=\"block text-sm font-medium text-gray-200 mb-1\">URL</label> <input type=\"url\" name=\"url\" value=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "\" maxlength=\"255\" class=\"input w-full\" placeholder=\"optional\" aria-label=\"optional\"></div><div><label class=\"block text-sm font-medium text-gray-200 mb-1\">URL</label> <input type=\"url\" name=\"url\" value=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -249,7 +249,7 @@ func Form(data FormData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 20, "\" maxlength=\"2048\" class=\"input w-full\" placeholder=\"https://...\"></div></div><div><label class=\"block text-sm font-medium text-gray-200 mb-1\">Description</label> <textarea name=\"description\" rows=\"4\" maxlength=\"4096\" class=\"input w-full\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 20, "\" maxlength=\"2048\" class=\"input w-full\" placeholder=\"https://...\" aria-label=\"https://...\"></div></div><div><label class=\"block text-sm font-medium text-gray-200 mb-1\">Description</label> <textarea name=\"description\" rows=\"4\" maxlength=\"4096\" class=\"input w-full\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

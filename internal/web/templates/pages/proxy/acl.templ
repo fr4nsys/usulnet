@@ -31,9 +31,9 @@ templ ACLList(data ACLListData) {
 				</div>
 				<div class="flex items-center gap-2">
 					if data.Connected {
-						<span class="badge badge-success"><i class="fas fa-link mr-1"></i>Connected</span>
+						<span class="badge badge-success"><i aria-hidden="true" class="fas fa-link mr-1"></i>Connected</span>
 						<a href="/proxy/access-lists/new" class="btn-primary">
-							<i class="fas fa-plus mr-2"></i>New Access List
+							<i aria-hidden="true" class="fas fa-plus mr-2"></i>New Access List
 						</a>
 					}
 				</div>
@@ -50,11 +50,11 @@ templ ACLList(data ACLListData) {
 							<table class="table">
 								<thead>
 									<tr>
-										<th>Name</th>
-										<th>Auth Users</th>
-										<th>IP Rules</th>
-										<th>Policy</th>
-										<th>Actions</th>
+										<th scope="col">Name</th>
+										<th scope="col">Auth Users</th>
+										<th scope="col">IP Rules</th>
+										<th scope="col">Policy</th>
+										<th scope="col">Actions</th>
 									</tr>
 								</thead>
 								<tbody>
@@ -96,18 +96,18 @@ templ ACLList(data ACLListData) {
 					</div>
 				} else {
 					<div class="card p-8 text-center">
-						<i class="fas fa-shield-alt text-4xl text-gray-400 mb-4"></i>
+						<i aria-hidden="true" class="fas fa-shield-alt text-4xl text-gray-400 mb-4"></i>
 						<h3 class="text-lg font-medium text-white mb-2">No access lists</h3>
 						<p class="text-gray-400 mb-4">Protect proxy hosts with HTTP basic auth or IP restrictions</p>
-						<a href="/proxy/access-lists/new" class="btn-primary"><i class="fas fa-plus mr-2"></i>New Access List</a>
+						<a href="/proxy/access-lists/new" class="btn-primary"><i aria-hidden="true" class="fas fa-plus mr-2"></i>New Access List</a>
 					</div>
 				}
 			} else {
 				<div class="card p-8 text-center">
-					<i class="fas fa-plug text-4xl text-gray-400 mb-4"></i>
+					<i aria-hidden="true" class="fas fa-plug text-4xl text-gray-400 mb-4"></i>
 					<h3 class="text-lg font-medium text-white mb-2">NPM Not Connected</h3>
 					<p class="text-gray-400 mb-4">Connect to NPM first.</p>
-					<a href="/proxy/setup" class="btn-primary"><i class="fas fa-link mr-2"></i>Setup Connection</a>
+					<a href="/proxy/setup" class="btn-primary"><i aria-hidden="true" class="fas fa-link mr-2"></i>Setup Connection</a>
 				</div>
 			}
 		</div>
@@ -151,7 +151,7 @@ templ ACLForm(data ACLFormData) {
 		<div class="max-w-2xl mx-auto space-y-6">
 			<div class="flex items-center gap-4">
 				<a href="/proxy/access-lists" class="p-2 text-gray-400 hover:text-white hover:bg-dark-700 rounded-lg">
-					<i class="fas fa-arrow-left"></i>
+					<i aria-hidden="true" class="fas fa-arrow-left"></i>
 				</a>
 				<div>
 					if data.IsEdit {
@@ -165,7 +165,7 @@ templ ACLForm(data ACLFormData) {
 
 			if data.Error != "" {
 				<div class="bg-red-500/10 border border-red-500/20 rounded-lg p-4 text-red-400">
-					<i class="fas fa-exclamation-triangle mr-2"></i>{ data.Error }
+					<i aria-hidden="true" class="fas fa-exclamation-triangle mr-2"></i>{ data.Error }
 				</div>
 			}
 
@@ -181,6 +181,7 @@ templ ACLForm(data ACLFormData) {
 							}
 							placeholder="My Access List"
 							class="input w-full"
+							aria-label="Name"
 						/>
 					</div>
 					<div class="flex items-center gap-6">
@@ -210,26 +211,26 @@ templ ACLForm(data ACLFormData) {
 					<div class="flex items-center justify-between mb-4">
 						<h3 class="text-sm font-medium text-gray-400 uppercase tracking-wider">Authorization Users</h3>
 						<button type="button" onclick="addAuthRow()" class="text-sm text-primary-400 hover:text-primary-300">
-							<i class="fas fa-plus mr-1"></i>Add User
+							<i aria-hidden="true" class="fas fa-plus mr-1"></i>Add User
 						</button>
 					</div>
 					<div id="auth-rows" class="space-y-2">
 						if len(data.Items) > 0 {
 							for _, item := range data.Items {
 								<div class="flex items-center gap-2 auth-row">
-									<input type="text" name="auth_username[]" value={ item.Username } placeholder="username" class="input flex-1"/>
-									<input type="password" name="auth_password[]" value={ item.Password } placeholder="password" class="input flex-1"/>
+									<input type="text" name="auth_username[]" value={ item.Username } placeholder="username" aria-label="username" class="input flex-1"/>
+									<input type="password" name="auth_password[]" value={ item.Password } placeholder="password" aria-label="password" class="input flex-1"/>
 									<button type="button" onclick="this.parentElement.remove()" class="p-2 text-red-400 hover:text-red-300">
-										<i class="fas fa-times"></i>
+										<i aria-hidden="true" class="fas fa-times"></i>
 									</button>
 								</div>
 							}
 						} else {
 							<div class="flex items-center gap-2 auth-row">
-								<input type="text" name="auth_username[]" placeholder="username" class="input flex-1"/>
-								<input type="password" name="auth_password[]" placeholder="password" class="input flex-1"/>
+								<input type="text" name="auth_username[]" placeholder="username" aria-label="username" class="input flex-1"/>
+								<input type="password" name="auth_password[]" placeholder="password" aria-label="password" class="input flex-1"/>
 								<button type="button" onclick="this.parentElement.remove()" class="p-2 text-red-400 hover:text-red-300">
-									<i class="fas fa-times"></i>
+									<i aria-hidden="true" class="fas fa-times"></i>
 								</button>
 							</div>
 						}
@@ -241,24 +242,24 @@ templ ACLForm(data ACLFormData) {
 					<div class="flex items-center justify-between mb-4">
 						<h3 class="text-sm font-medium text-gray-400 uppercase tracking-wider">IP Address Rules</h3>
 						<button type="button" onclick="addClientRow()" class="text-sm text-primary-400 hover:text-primary-300">
-							<i class="fas fa-plus mr-1"></i>Add Rule
+							<i aria-hidden="true" class="fas fa-plus mr-1"></i>Add Rule
 						</button>
 					</div>
 					<div id="client-rows" class="space-y-2">
 						if len(data.Clients) > 0 {
 							for _, c := range data.Clients {
 								<div class="flex items-center gap-2 client-row">
-									<input type="text" name="client_address[]" value={ c.Address } placeholder="192.168.1.0/24 or allow/deny IP" class="input flex-1"/>
+									<input type="text" name="client_address[]" value={ c.Address } placeholder="192.168.1.0/24 or allow/deny IP" aria-label="192.168.1.0/24 or allow/deny IP" class="input flex-1"/>
 									<button type="button" onclick="this.parentElement.remove()" class="p-2 text-red-400 hover:text-red-300">
-										<i class="fas fa-times"></i>
+										<i aria-hidden="true" class="fas fa-times"></i>
 									</button>
 								</div>
 							}
 						} else {
 							<div class="flex items-center gap-2 client-row">
-								<input type="text" name="client_address[]" placeholder="192.168.1.0/24" class="input flex-1"/>
+								<input type="text" name="client_address[]" placeholder="192.168.1.0/24" aria-label="192.168.1.0/24" class="input flex-1"/>
 								<button type="button" onclick="this.parentElement.remove()" class="p-2 text-red-400 hover:text-red-300">
-									<i class="fas fa-times"></i>
+									<i aria-hidden="true" class="fas fa-times"></i>
 								</button>
 							</div>
 						}
@@ -270,9 +271,9 @@ templ ACLForm(data ACLFormData) {
 					<a href="/proxy/access-lists" class="btn-secondary">Cancel</a>
 					<button type="submit" class="btn-primary">
 						if data.IsEdit {
-							<i class="fas fa-save mr-2"></i>Save Changes
+							<i aria-hidden="true" class="fas fa-save mr-2"></i>Save Changes
 						} else {
-							<i class="fas fa-plus mr-2"></i>Create Access List
+							<i aria-hidden="true" class="fas fa-plus mr-2"></i>Create Access List
 						}
 					</button>
 				</div>
@@ -287,7 +288,7 @@ templ ACLForm(data ACLFormData) {
 							<div class="text-xs text-gray-400">Proxy hosts using this list will become unprotected.</div>
 						</div>
 						<button hx-delete={ fmt.Sprintf("/proxy/access-lists/%d", data.ACL.ID) } hx-confirm="Delete this access list?" class="btn-danger">
-							<i class="fas fa-trash mr-2"></i>Delete
+							<i aria-hidden="true" class="fas fa-trash mr-2"></i>Delete
 						</button>
 					</div>
 				</div>
@@ -299,9 +300,9 @@ templ ACLForm(data ACLFormData) {
 				const container = document.getElementById('auth-rows');
 				const row = document.createElement('div');
 				row.className = 'flex items-center gap-2 auth-row';
-				row.innerHTML = '<input type="text" name="auth_username[]" placeholder="username" class="input flex-1"/>' +
-					'<input type="password" name="auth_password[]" placeholder="password" class="input flex-1"/>' +
-					'<button type="button" onclick="this.parentElement.remove()" class="p-2 text-red-400 hover:text-red-300"><i class="fas fa-times"></i></button>';
+				row.innerHTML = '<input type="text" name="auth_username[]" placeholder="username" aria-label="username" class="input flex-1"/>' +
+					'<input type="password" name="auth_password[]" placeholder="password" aria-label="password" class="input flex-1"/>' +
+					'<button type="button" onclick="this.parentElement.remove()" class="p-2 text-red-400 hover:text-red-300"><i aria-hidden="true" class="fas fa-times"></i></button>';
 				container.appendChild(row);
 			}
 
@@ -309,8 +310,8 @@ templ ACLForm(data ACLFormData) {
 				const container = document.getElementById('client-rows');
 				const row = document.createElement('div');
 				row.className = 'flex items-center gap-2 client-row';
-				row.innerHTML = '<input type="text" name="client_address[]" placeholder="192.168.1.0/24" class="input flex-1"/>' +
-					'<button type="button" onclick="this.parentElement.remove()" class="p-2 text-red-400 hover:text-red-300"><i class="fas fa-times"></i></button>';
+				row.innerHTML = '<input type="text" name="client_address[]" placeholder="192.168.1.0/24" aria-label="192.168.1.0/24" class="input flex-1"/>' +
+					'<button type="button" onclick="this.parentElement.remove()" class="p-2 text-red-400 hover:text-red-300"><i aria-hidden="true" class="fas fa-times"></i></button>';
 				container.appendChild(row);
 			}
 		</script>

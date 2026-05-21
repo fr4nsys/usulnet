@@ -54,7 +54,7 @@ func New(data NewData) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"space-y-6\"><div><a href=\"/rollback\" class=\"text-sm text-gray-400 hover:text-white\"><i class=\"fas fa-chevron-left mr-1\"></i>back to policies</a><h1 class=\"text-2xl font-display font-bold text-white mt-1\">New rollback policy</h1><p class=\"text-gray-400 mt-1\">Define how usulnet should react when a stack deploy fails.</p></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"space-y-6\"><div><a href=\"/rollback\" class=\"text-sm text-gray-400 hover:text-white\"><i aria-hidden=\"true\" class=\"fas fa-chevron-left mr-1\"></i>back to policies</a><h1 class=\"text-2xl font-display font-bold text-white mt-1\">New rollback policy</h1><p class=\"text-gray-400 mt-1\">Define how usulnet should react when a stack deploy fails.</p></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

@@ -90,7 +90,7 @@ func CatalogDeploy(data CatalogDeployData) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"max-w-3xl mx-auto space-y-6\"><!-- Header --><div class=\"flex items-center gap-4\"><a href=\"/stacks/catalog\" class=\"p-2 text-gray-400 hover:text-white hover:bg-dark-700 rounded-lg\"><i class=\"fas fa-arrow-left\"></i></a>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"max-w-3xl mx-auto space-y-6\"><!-- Header --><div class=\"flex items-center gap-4\"><a href=\"/stacks/catalog\" class=\"p-2 text-gray-400 hover:text-white hover:bg-dark-700 rounded-lg\"><i aria-hidden=\"true\" class=\"fas fa-arrow-left\"></i></a>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -160,27 +160,27 @@ func CatalogDeploy(data CatalogDeployData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "</p></div></div><!-- App Info Bar --><div class=\"flex items-center gap-4 text-sm text-gray-400\"><span><i class=\"fas fa-tag mr-1.5\"></i>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "</p></div></div><!-- App Info Bar --><div class=\"flex items-center gap-4 text-sm text-gray-400\"><span><i aria-hidden=\"true\" class=\"fas fa-tag mr-1.5\"></i>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var9 string
 			templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(data.App.Category)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/stacks/catalog_deploy.templ`, Line: 71, Col: 62}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/stacks/catalog_deploy.templ`, Line: 71, Col: 81}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "</span> <span><i class=\"fas fa-code-branch mr-1.5\"></i>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "</span> <span><i aria-hidden=\"true\" class=\"fas fa-code-branch mr-1.5\"></i>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var10 string
 			templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(data.App.Version)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/stacks/catalog_deploy.templ`, Line: 72, Col: 69}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/stacks/catalog_deploy.templ`, Line: 72, Col: 88}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 			if templ_7745c5c3_Err != nil {
@@ -204,7 +204,7 @@ func CatalogDeploy(data CatalogDeployData) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "\" target=\"_blank\" rel=\"noopener\" class=\"text-primary-400 hover:text-primary-300\"><i class=\"fas fa-external-link-alt mr-1.5\"></i>Web</a> ")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "\" target=\"_blank\" rel=\"noopener\" class=\"text-primary-400 hover:text-primary-300\"><i aria-hidden=\"true\" class=\"fas fa-external-link-alt mr-1.5\"></i>Web</a> ")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -223,7 +223,7 @@ func CatalogDeploy(data CatalogDeployData) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "\" target=\"_blank\" rel=\"noopener\" class=\"text-primary-400 hover:text-primary-300\"><i class=\"fab fa-github mr-1.5\"></i>Source</a>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "\" target=\"_blank\" rel=\"noopener\" class=\"text-primary-400 hover:text-primary-300\"><i aria-hidden=\"true\" class=\"fab fa-github mr-1.5\"></i>Source</a>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -233,14 +233,14 @@ func CatalogDeploy(data CatalogDeployData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			if data.Error != "" {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "<div class=\"bg-red-500/10 border border-red-500/20 rounded-lg p-4 text-red-400\"><i class=\"fas fa-exclamation-circle mr-2\"></i>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "<div class=\"bg-red-500/10 border border-red-500/20 rounded-lg p-4 text-red-400\"><i aria-hidden=\"true\" class=\"fas fa-exclamation-circle mr-2\"></i>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var13 string
 				templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(data.Error)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/stacks/catalog_deploy.templ`, Line: 88, Col: 63}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/stacks/catalog_deploy.templ`, Line: 88, Col: 82}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
 				if templ_7745c5c3_Err != nil {
@@ -252,7 +252,7 @@ func CatalogDeploy(data CatalogDeployData) templ.Component {
 				}
 			}
 			if len(data.Errors) > 0 {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "<div class=\"bg-red-500/10 border border-red-500/20 rounded-lg p-4 text-red-400 space-y-1\"><p class=\"font-medium\"><i class=\"fas fa-exclamation-triangle mr-2\"></i>Corrige los siguientes errores:</p>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "<div class=\"bg-red-500/10 border border-red-500/20 rounded-lg p-4 text-red-400 space-y-1\"><p class=\"font-medium\"><i aria-hidden=\"true\" class=\"fas fa-exclamation-triangle mr-2\"></i>Corrige los siguientes errores:</p>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -285,14 +285,14 @@ func CatalogDeploy(data CatalogDeployData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			if data.App.Notes != "" {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 22, "<div class=\"bg-blue-500/10 border border-blue-500/20 rounded-lg p-4 text-blue-300 text-sm\"><i class=\"fas fa-info-circle mr-2\"></i>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 22, "<div class=\"bg-blue-500/10 border border-blue-500/20 rounded-lg p-4 text-blue-300 text-sm\"><i aria-hidden=\"true\" class=\"fas fa-info-circle mr-2\"></i>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var15 string
 				templ_7745c5c3_Var15, templ_7745c5c3_Err = templ.JoinStringErrs(data.App.Notes)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/stacks/catalog_deploy.templ`, Line: 103, Col: 60}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/stacks/catalog_deploy.templ`, Line: 103, Col: 79}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var15))
 				if templ_7745c5c3_Err != nil {
@@ -329,7 +329,7 @@ func CatalogDeploy(data CatalogDeployData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 26, "\"><div class=\"card p-6 space-y-5\"><h2 class=\"font-medium text-white text-lg border-b border-dark-700 pb-3\"><i class=\"fas fa-sliders-h mr-2 text-primary-400\"></i>Configuration</h2>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 26, "\"><div class=\"card p-6 space-y-5\"><h2 class=\"font-medium text-white text-lg border-b border-dark-700 pb-3\"><i aria-hidden=\"true\" class=\"fas fa-sliders-h mr-2 text-primary-400\"></i>Configuration</h2>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -641,7 +641,7 @@ func CatalogDeploy(data CatalogDeployData) templ.Component {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 59, "</div><!-- Compose Template Preview --><details class=\"card\"><summary class=\"px-5 py-4 cursor-pointer text-sm text-gray-400 hover:text-white transition-colors select-none\"><i class=\"fas fa-code mr-2\"></i>View docker-compose.yml template</summary><pre class=\"px-5 pb-4 text-xs font-mono text-gray-500 overflow-x-auto whitespace-pre\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 59, "</div><!-- Compose Template Preview --><details class=\"card\"><summary class=\"px-5 py-4 cursor-pointer text-sm text-gray-400 hover:text-white transition-colors select-none\"><i aria-hidden=\"true\" class=\"fas fa-code mr-2\"></i>View docker-compose.yml template</summary><pre class=\"px-5 pb-4 text-xs font-mono text-gray-500 overflow-x-auto whitespace-pre\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -654,14 +654,14 @@ func CatalogDeploy(data CatalogDeployData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 60, "</pre></details><!-- Deploy Actions --><div class=\"flex justify-end gap-3\"><a href=\"/stacks/catalog\" class=\"btn-secondary\">Cancel</a> <button type=\"submit\" class=\"btn-primary\"><i class=\"fas fa-rocket mr-2\"></i>Deploy ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 60, "</pre></details><!-- Deploy Actions --><div class=\"flex justify-end gap-3\"><a href=\"/stacks/catalog\" class=\"btn-secondary\">Cancel</a> <button type=\"submit\" class=\"btn-primary\"><i aria-hidden=\"true\" class=\"fas fa-rocket mr-2\"></i>Deploy ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var37 string
 			templ_7745c5c3_Var37, templ_7745c5c3_Err = templ.JoinStringErrs(data.App.Name)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/stacks/catalog_deploy.templ`, Line: 188, Col: 62}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/stacks/catalog_deploy.templ`, Line: 188, Col: 81}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var37))
 			if templ_7745c5c3_Err != nil {

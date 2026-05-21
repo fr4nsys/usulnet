@@ -8,8 +8,6 @@ import (
 	"crypto/rand"
 	"encoding/hex"
 	"net/http"
-	"strconv"
-	"strings"
 	"time"
 
 	"github.com/go-chi/chi/v5"
@@ -83,24 +81,36 @@ func (h *Handler) SecretsTempl(w http.ResponseWriter, r *http.Request) {
 }
 
 // SecretCreate creates a new managed secret.
+// secretCreateForm captures the secret creation inputs. The
+// `value_long` field mirrors the textarea variant the template
+// renders for multi-line secrets; the handler accepts whichever one
+// the form submitted so existing templates do not need a rewrite.
+type secretCreateForm struct {
+	Name          string `form:"name" validate:"required,min=1,max=200"`
+	Description   string `form:"description"`
+	Type          string `form:"type"`
+	Scope         string `form:"scope"`
+	ScopeTarget   string `form:"scope_target"`
+	Value         string `form:"value"`
+	ValueLong     string `form:"value_long"`
+	RotationDays  int    `form:"rotation_days" validate:"gte=0"`
+	ExpiresInDays int    `form:"expires_in_days" validate:"gte=0"`
+}
+
 func (h *Handler) SecretCreate(w http.ResponseWriter, r *http.Request) {
-	if err := r.ParseForm(); err != nil {
-		h.setFlash(w, r, "error", "Invalid form data")
+	var form secretCreateForm
+	if msg := BindForm(r, &form); msg != "" {
+		h.setFlash(w, r, "error", msg)
 		http.Redirect(w, r, "/secrets", http.StatusSeeOther)
 		return
 	}
 
-	name := strings.TrimSpace(r.FormValue("name"))
-	if name == "" {
-		h.setFlash(w, r, "error", "Secret name is required")
-		http.Redirect(w, r, "/secrets", http.StatusSeeOther)
-		return
-	}
-
-	// Get value from either short or long form field
-	value := r.FormValue("value")
+	// Secret value can come from either the short input or the
+	// textarea fallback. validator cannot express this either-or
+	// constraint so it stays as an explicit check after binding.
+	value := form.Value
 	if value == "" {
-		value = r.FormValue("value_long")
+		value = form.ValueLong
 	}
 	if value == "" {
 		h.setFlash(w, r, "error", "Secret value is required")
@@ -108,26 +118,23 @@ func (h *Handler) SecretCreate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	rotationDays, _ := strconv.Atoi(r.FormValue("rotation_days"))
-	expiresInDays, _ := strconv.Atoi(r.FormValue("expires_in_days"))
-
 	if h.managedSecretRepo != nil {
 		now := time.Now()
 		s := &ManagedSecretRecord{
 			ID:             uuid.New(),
-			Name:           name,
-			Description:    strings.TrimSpace(r.FormValue("description")),
-			Type:           r.FormValue("type"),
-			Scope:          r.FormValue("scope"),
-			ScopeTarget:    strings.TrimSpace(r.FormValue("scope_target")),
+			Name:           form.Name,
+			Description:    form.Description,
+			Type:           form.Type,
+			Scope:          form.Scope,
+			ScopeTarget:    form.ScopeTarget,
 			EncryptedValue: value,
-			RotationDays:   rotationDays,
+			RotationDays:   form.RotationDays,
 			CreatedAt:      now,
 			UpdatedAt:      now,
 		}
 
-		if expiresInDays > 0 {
-			expires := now.Add(time.Duration(expiresInDays) * 24 * time.Hour)
+		if form.ExpiresInDays > 0 {
+			expires := now.Add(time.Duration(form.ExpiresInDays) * 24 * time.Hour)
 			s.ExpiresAt = &expires
 		}
 
@@ -138,7 +145,7 @@ func (h *Handler) SecretCreate(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	h.setFlash(w, r, "success", "Secret '"+name+"' created securely")
+	h.setFlash(w, r, "success", "Secret '"+form.Name+"' created securely")
 	http.Redirect(w, r, "/secrets", http.StatusSeeOther)
 }
 

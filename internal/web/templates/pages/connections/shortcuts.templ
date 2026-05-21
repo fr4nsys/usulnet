@@ -56,7 +56,7 @@ templ ShortcutsList(data ShortcutsListData) {
 					href="/connections/shortcuts/new"
 					class="px-4 py-2 bg-primary-500 hover:bg-primary-600 text-white rounded-lg transition-colors flex items-center gap-2"
 				>
-					<i class="fas fa-plus"></i>
+					<i aria-hidden="true" class="fas fa-plus"></i>
 					New Shortcut
 				</a>
 			</div>
@@ -91,14 +91,14 @@ templ ShortcutsList(data ShortcutsListData) {
 				</div>
 			} else {
 				<div class="card p-12 text-center">
-					<i class="fas fa-external-link-alt text-4xl text-gray-400 mb-4"></i>
+					<i aria-hidden="true" class="fas fa-external-link-alt text-4xl text-gray-400 mb-4"></i>
 					<h3 class="text-lg font-medium text-white mb-2">No shortcuts yet</h3>
 					<p class="text-gray-400 mb-4">Create shortcuts to quickly access your favorite websites and services</p>
 					<a
 						href="/connections/shortcuts/new"
 						class="inline-flex items-center gap-2 px-4 py-2 bg-primary-500 hover:bg-primary-600 text-white rounded-lg transition-colors"
 					>
-						<i class="fas fa-plus"></i>
+						<i aria-hidden="true" class="fas fa-plus"></i>
 						Create Shortcut
 					</a>
 				</div>
@@ -114,7 +114,7 @@ templ ShortcutsList(data ShortcutsListData) {
 			class="fixed inset-0 z-50 flex items-center justify-center"
 		>
 			<div class="fixed inset-0 bg-black/50" @click="open = false"></div>
-			<div class="relative bg-dark-800 rounded-xl border border-dark-600 p-6 max-w-md w-full mx-4">
+			<div class="relative card p-6 max-w-md w-full mx-4">
 				<h3 class="text-lg font-semibold text-white mb-4">Delete Shortcut</h3>
 				<p class="text-gray-400 mb-6">
 					Are you sure you want to delete "<span class="text-white" x-text="shortcutName"></span>"?
@@ -163,14 +163,14 @@ templ shortcutCard(shortcut ShortcutData) {
 				class="p-1.5 bg-dark-700 hover:bg-dark-600 text-gray-400 hover:text-white rounded transition-colors"
 				title="Edit"
 			>
-				<i class="fas fa-edit text-xs"></i>
+				<i aria-hidden="true" class="fas fa-edit text-xs"></i>
 			</a>
 			<button
 				@click={ fmt.Sprintf("$dispatch('open-delete-modal', {id: '%s', name: '%s'})", shortcut.ID, shortcut.Name) }
 				class="p-1.5 bg-dark-700 hover:bg-red-500/20 text-gray-400 hover:text-red-400 rounded transition-colors"
 				title="Delete"
 			>
-				<i class="fas fa-trash text-xs"></i>
+				<i aria-hidden="true" class="fas fa-trash text-xs"></i>
 			</button>
 		</div>
 
@@ -232,7 +232,7 @@ templ shortcutIcon(shortcut ShortcutData) {
 				class="w-8 h-8 object-contain"
 				onerror="this.style.display='none';this.parentElement.classList.add('fallback-icon')"
 			/>
-			<i class="fas fa-globe text-2xl hidden"></i>
+			<i aria-hidden="true" class="fas fa-globe text-2xl hidden"></i>
 		</div>
 	} else if shortcut.IconType == "emoji" {
 		<div
@@ -246,7 +246,7 @@ templ shortcutIcon(shortcut ShortcutData) {
 			class="w-14 h-14 rounded-xl flex items-center justify-center text-2xl"
 			style={ getIconStyle(shortcut.Color) }
 		>
-			<i class="fas fa-globe"></i>
+			<i aria-hidden="true" class="fas fa-globe"></i>
 		</div>
 	}
 }
@@ -258,7 +258,7 @@ templ ShortcutNew(data ShortcutNewData) {
 			<!-- Breadcrumb -->
 			<nav class="flex items-center gap-2 text-sm text-gray-400 mb-4">
 				<a href="/connections/shortcuts" class="hover:text-primary-400 transition-colors">Shortcuts</a>
-				<i class="fas fa-chevron-right text-xs"></i>
+				<i aria-hidden="true" class="fas fa-chevron-right text-xs"></i>
 				<span class="text-white">New Shortcut</span>
 			</nav>
 
@@ -278,6 +278,7 @@ templ ShortcutNew(data ShortcutNewData) {
 							required
 							placeholder="My Favorite Site"
 							class="w-full px-4 py-2.5 bg-dark-700 border border-dark-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-primary-500"
+							aria-label="Name"
 						/>
 					</div>
 
@@ -290,6 +291,7 @@ templ ShortcutNew(data ShortcutNewData) {
 							required
 							placeholder="https://example.com"
 							class="w-full px-4 py-2.5 bg-dark-700 border border-dark-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-primary-500"
+							aria-label="URL"
 						/>
 					</div>
 
@@ -301,6 +303,7 @@ templ ShortcutNew(data ShortcutNewData) {
 							name="description"
 							placeholder="Optional description"
 							class="w-full px-4 py-2.5 bg-dark-700 border border-dark-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-primary-500"
+							aria-label="Description"
 						/>
 					</div>
 
@@ -340,6 +343,7 @@ templ ShortcutNew(data ShortcutNewData) {
 							x-show="iconType === 'fa'"
 							placeholder="fa-globe, fa-server, fa-database..."
 							class="w-full px-4 py-2.5 bg-dark-700 border border-dark-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-primary-500"
+							aria-label="fa-globe, fa-server, fa-database..."
 						/>
 						<input
 							type="url"
@@ -347,6 +351,7 @@ templ ShortcutNew(data ShortcutNewData) {
 							x-show="iconType === 'url'"
 							placeholder="https://example.com/favicon.ico"
 							class="w-full px-4 py-2.5 bg-dark-700 border border-dark-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-primary-500"
+							aria-label="https://example.com/favicon.ico"
 						/>
 						<input
 							type="text"
@@ -354,6 +359,7 @@ templ ShortcutNew(data ShortcutNewData) {
 							x-show="iconType === 'emoji'"
 							placeholder="🚀"
 							class="w-full px-4 py-2.5 bg-dark-700 border border-dark-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-primary-500"
+							aria-label="🚀"
 						/>
 						<p class="text-xs text-gray-500 mt-1" x-show="iconType === 'url'">
 							Leave empty to auto-fetch favicon from the URL
@@ -369,6 +375,7 @@ templ ShortcutNew(data ShortcutNewData) {
 								name="color"
 								value="#1e293b"
 								class="w-12 h-10 rounded cursor-pointer bg-transparent"
+								aria-label="Background Color"
 							/>
 							<span class="text-gray-400 text-sm">Icon background color</span>
 						</div>
@@ -383,6 +390,7 @@ templ ShortcutNew(data ShortcutNewData) {
 							list="categories"
 							placeholder="Development, Tools, etc."
 							class="w-full px-4 py-2.5 bg-dark-700 border border-dark-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-primary-500"
+							aria-label="Category"
 						/>
 						<datalist id="categories">
 							for _, cat := range data.Categories {
@@ -454,7 +462,7 @@ templ ShortcutEdit(data ShortcutEditData) {
 			<!-- Breadcrumb -->
 			<nav class="flex items-center gap-2 text-sm text-gray-400 mb-4">
 				<a href="/connections/shortcuts" class="hover:text-primary-400 transition-colors">Shortcuts</a>
-				<i class="fas fa-chevron-right text-xs"></i>
+				<i aria-hidden="true" class="fas fa-chevron-right text-xs"></i>
 				<span class="text-white">Edit Shortcut</span>
 			</nav>
 
@@ -474,6 +482,7 @@ templ ShortcutEdit(data ShortcutEditData) {
 							required
 							value={ data.Shortcut.Name }
 							class="w-full px-4 py-2.5 bg-dark-700 border border-dark-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-primary-500"
+							aria-label="Name"
 						/>
 					</div>
 
@@ -486,6 +495,7 @@ templ ShortcutEdit(data ShortcutEditData) {
 							required
 							value={ data.Shortcut.URL }
 							class="w-full px-4 py-2.5 bg-dark-700 border border-dark-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-primary-500"
+							aria-label="URL"
 						/>
 					</div>
 
@@ -497,6 +507,7 @@ templ ShortcutEdit(data ShortcutEditData) {
 							name="description"
 							value={ data.Shortcut.Description }
 							class="w-full px-4 py-2.5 bg-dark-700 border border-dark-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-primary-500"
+							aria-label="Description"
 						/>
 					</div>
 
@@ -537,6 +548,7 @@ templ ShortcutEdit(data ShortcutEditData) {
 							value={ getIconValue(data.Shortcut.IconType, data.Shortcut.Icon, "fa") }
 							placeholder="fa-globe, fa-server, fa-database..."
 							class="w-full px-4 py-2.5 bg-dark-700 border border-dark-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-primary-500"
+							aria-label="fa-globe, fa-server, fa-database..."
 						/>
 						<input
 							type="url"
@@ -545,6 +557,7 @@ templ ShortcutEdit(data ShortcutEditData) {
 							value={ getIconValue(data.Shortcut.IconType, data.Shortcut.Icon, "url") }
 							placeholder="https://example.com/favicon.ico"
 							class="w-full px-4 py-2.5 bg-dark-700 border border-dark-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-primary-500"
+							aria-label="https://example.com/favicon.ico"
 						/>
 						<input
 							type="text"
@@ -553,6 +566,7 @@ templ ShortcutEdit(data ShortcutEditData) {
 							value={ getIconValue(data.Shortcut.IconType, data.Shortcut.Icon, "emoji") }
 							placeholder="🚀"
 							class="w-full px-4 py-2.5 bg-dark-700 border border-dark-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-primary-500"
+							aria-label="🚀"
 						/>
 					</div>
 
@@ -565,6 +579,7 @@ templ ShortcutEdit(data ShortcutEditData) {
 								name="color"
 								value={ getColorValue(data.Shortcut.Color) }
 								class="w-12 h-10 rounded cursor-pointer bg-transparent"
+								aria-label="Background Color"
 							/>
 							<span class="text-gray-400 text-sm">Icon background color</span>
 						</div>
@@ -580,6 +595,7 @@ templ ShortcutEdit(data ShortcutEditData) {
 							value={ data.Shortcut.Category }
 							placeholder="Development, Tools, etc."
 							class="w-full px-4 py-2.5 bg-dark-700 border border-dark-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-primary-500"
+							aria-label="Category"
 						/>
 						<datalist id="categories">
 							for _, cat := range data.Categories {

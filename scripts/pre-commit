@@ -54,7 +54,7 @@ fi
 
 # 5. Public-split deny-list integrity. Verifies that scripts/publish-public.sh
 #    does not leak any path listed under "Explicit denials" in
-#    docs/0526/PUBLIC_FILES.md. This is a check on the publish tooling, not
+#    dev/PUBLIC_FILES.md. This is a check on the publish tooling, not
 #    on what the developer is committing — editing a denied file (e.g.,
 #    CLAUDE.md) does not fail this step.
 run_check "Public-split deny list" bash scripts/publish-public.sh --check-denied

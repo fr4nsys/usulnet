@@ -103,13 +103,13 @@ templ Overview(data OverviewData) {
 			<div class="card">
 				<div class="px-5 py-4 border-b border-dark-700 flex items-center justify-between">
 					<h2 class="font-medium text-white">
-						<i class="fas fa-server mr-2 text-primary-400"></i>Nodes ({ fmt.Sprintf("%d", data.TotalNodes) })
+						<i aria-hidden="true" class="fas fa-server mr-2 text-primary-400"></i>Nodes ({ fmt.Sprintf("%d", data.TotalNodes) })
 					</h2>
 					<a href="/nodes" class="text-sm text-primary-400 hover:text-primary-300">Manage Nodes</a>
 				</div>
 				if len(data.Nodes) == 0 {
 					<div class="p-8 text-center text-gray-400">
-						<i class="fas fa-server text-3xl mb-3 text-gray-400"></i>
+						<i aria-hidden="true" class="fas fa-server text-3xl mb-3 text-gray-400"></i>
 						<p>No nodes configured</p>
 						<a href="/nodes/new" class="text-primary-400 hover:text-primary-300 text-sm mt-2 inline-block">Add a node</a>
 					</div>
@@ -127,7 +127,7 @@ templ Overview(data OverviewData) {
 				<div class="card">
 					<div class="px-5 py-4 border-b border-dark-700 flex items-center justify-between">
 						<h2 class="font-medium text-white">
-							<i class="fas fa-bell mr-2 text-yellow-400"></i>Recent Alerts
+							<i aria-hidden="true" class="fas fa-bell mr-2 text-yellow-400"></i>Recent Alerts
 						</h2>
 						<a href="/alerts" class="text-sm text-primary-400 hover:text-primary-300">View All</a>
 					</div>

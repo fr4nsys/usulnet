@@ -120,16 +120,23 @@ func (h *Handler) ComplianceTempl(w http.ResponseWriter, r *http.Request) {
 }
 
 // CompliancePolicyCreate creates a new compliance policy.
-func (h *Handler) CompliancePolicyCreate(w http.ResponseWriter, r *http.Request) {
-	if err := r.ParseForm(); err != nil {
-		h.setFlash(w, r, "error", "Invalid form data")
-		http.Redirect(w, r, "/compliance", http.StatusSeeOther)
-		return
-	}
+// compliancePolicyCreateForm carries the inputs of the policy
+// creation form. Tag rules are evaluated by BindForm via the shared
+// internal/pkg/validator pipeline so error wording stays consistent
+// with the JSON API.
+type compliancePolicyCreateForm struct {
+	Name        string `form:"name" validate:"required,min=1,max=200"`
+	Description string `form:"description"`
+	Category    string `form:"category"`
+	Severity    string `form:"severity"`
+	Rule        string `form:"rule"`
+	IsEnforced  bool   `form:"is_enforced"`
+}
 
-	name := strings.TrimSpace(r.FormValue("name"))
-	if name == "" {
-		h.setFlash(w, r, "error", "Policy name is required")
+func (h *Handler) CompliancePolicyCreate(w http.ResponseWriter, r *http.Request) {
+	var form compliancePolicyCreateForm
+	if msg := BindForm(r, &form); msg != "" {
+		h.setFlash(w, r, "error", msg)
 		http.Redirect(w, r, "/compliance", http.StatusSeeOther)
 		return
 	}
@@ -137,13 +144,13 @@ func (h *Handler) CompliancePolicyCreate(w http.ResponseWriter, r *http.Request)
 	if h.complianceRepo != nil {
 		p := &CompliancePolicyRecord{
 			ID:          uuid.New(),
-			Name:        name,
-			Description: strings.TrimSpace(r.FormValue("description")),
-			Category:    r.FormValue("category"),
-			Severity:    r.FormValue("severity"),
-			Rule:        r.FormValue("rule"),
+			Name:        form.Name,
+			Description: form.Description,
+			Category:    form.Category,
+			Severity:    form.Severity,
+			Rule:        form.Rule,
 			IsEnabled:   true,
-			IsEnforced:  r.FormValue("is_enforced") == "on",
+			IsEnforced:  form.IsEnforced,
 		}
 		if err := h.complianceRepo.CreatePolicy(r.Context(), p); err != nil {
 			h.setFlash(w, r, "error", "Failed to create policy: "+err.Error())
@@ -152,7 +159,7 @@ func (h *Handler) CompliancePolicyCreate(w http.ResponseWriter, r *http.Request)
 		}
 	}
 
-	h.setFlash(w, r, "success", "Compliance policy '"+name+"' created")
+	h.setFlash(w, r, "success", "Compliance policy '"+form.Name+"' created")
 	http.Redirect(w, r, "/compliance", http.StatusSeeOther)
 }
 

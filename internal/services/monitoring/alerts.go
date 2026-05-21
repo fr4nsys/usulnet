@@ -34,6 +34,7 @@ type AlertRepository interface {
 	UpdateEvent(ctx context.Context, event *models.AlertEvent) error
 	ListEvents(ctx context.Context, opts models.AlertEventListOptions) ([]*models.AlertEvent, int64, error)
 	GetActiveEvents(ctx context.Context) ([]*models.AlertEvent, error)
+	ResolveActiveEvents(ctx context.Context, ruleID uuid.UUID, resolvedAt time.Time) error
 
 	// Silences
 	CreateSilence(ctx context.Context, silence *models.AlertSilence) error
@@ -391,17 +392,14 @@ func (s *AlertService) fireAlert(
 	}
 }
 
-// resolveActiveEvents resolves all active events for a rule.
+// resolveActiveEvents resolves all active events for a rule. One UPDATE
+// per call regardless of how many events are firing — previously a per-
+// event UpdateEvent loop, which round-tripped to Postgres N times for
+// every rule recovery.
 func (s *AlertService) resolveActiveEvents(ctx context.Context, ruleID uuid.UUID, resolvedAt time.Time) {
-	events, _, _ := s.repo.ListEvents(ctx, models.AlertEventListOptions{
-		AlertID: &ruleID,
-		State:   ptr(models.AlertStateFiring),
-	})
-
-	for _, event := range events {
-		event.State = models.AlertStateResolved
-		event.ResolvedAt = &resolvedAt
-		s.repo.UpdateEvent(ctx, event)
+	if err := s.repo.ResolveActiveEvents(ctx, ruleID, resolvedAt); err != nil {
+		s.logger.Warn("failed to resolve active alert events",
+			"rule_id", ruleID, "error", err)
 	}
 }
 
@@ -678,9 +676,4 @@ func (s *AlertService) InitializeDefaults(ctx context.Context, createdBy *uuid.U
 // EvaluateNow triggers immediate evaluation of all rules.
 func (s *AlertService) EvaluateNow(ctx context.Context) {
 	s.evaluateAllRules(ctx)
-}
-
-// Helper function for pointer to AlertState
-func ptr[T any](v T) *T {
-	return &v
 }

@@ -77,20 +77,20 @@ func (h *Handler) TeamNewTempl(w http.ResponseWriter, r *http.Request) {
 	h.renderTempl(w, r, teams.New(data))
 }
 
+// teamWriteForm carries the inputs shared between create and
+// update — the two endpoints accept the same fields with the same
+// validation rules.
+type teamWriteForm struct {
+	Name        string `form:"name" validate:"required,min=1,max=200"`
+	Description string `form:"description"`
+}
+
 func (h *Handler) TeamCreate(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
-	if err := r.ParseForm(); err != nil {
-		slog.Error("Failed to parse form", "error", err)
-		h.redirect(w, r, "/teams/new")
-		return
-	}
-
-	name := r.FormValue("name")
-	description := r.FormValue("description")
-
-	if name == "" {
-		h.setFlash(w, r, "error", "Team name is required")
+	var form teamWriteForm
+	if msg := BindForm(r, &form); msg != "" {
+		h.setFlash(w, r, "error", msg)
 		h.redirect(w, r, "/teams/new")
 		return
 	}
@@ -101,9 +101,9 @@ func (h *Handler) TeamCreate(w http.ResponseWriter, r *http.Request) {
 		createdBy, _ = uuid.Parse(user.ID)
 	}
 
-	_, err := h.services.Teams().CreateTeam(ctx, name, description, createdBy)
+	_, err := h.services.Teams().CreateTeam(ctx, form.Name, form.Description, createdBy)
 	if err != nil {
-		slog.Error("Failed to create team", "name", name, "error", err)
+		slog.Error("Failed to create team", "name", form.Name, "error", err)
 		h.setFlash(w, r, "error", "Failed to create team: "+err.Error())
 		h.redirect(w, r, "/teams/new")
 		return
@@ -334,22 +334,14 @@ func (h *Handler) TeamUpdate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := r.ParseForm(); err != nil {
-		slog.Error("Failed to parse form", "error", err)
+	var form teamWriteForm
+	if msg := BindForm(r, &form); msg != "" {
+		h.setFlash(w, r, "error", msg)
 		h.redirect(w, r, "/teams/"+idStr+"/edit")
 		return
 	}
 
-	name := r.FormValue("name")
-	description := r.FormValue("description")
-
-	if name == "" {
-		h.setFlash(w, r, "error", "Team name is required")
-		h.redirect(w, r, "/teams/"+idStr+"/edit")
-		return
-	}
-
-	_, err = h.services.Teams().UpdateTeam(ctx, teamID, name, description)
+	_, err = h.services.Teams().UpdateTeam(ctx, teamID, form.Name, form.Description)
 	if err != nil {
 		slog.Error("Failed to update team", "id", teamID, "error", err)
 		h.setFlash(w, r, "error", "Failed to update team: "+err.Error())
@@ -389,6 +381,14 @@ func (h *Handler) TeamDelete(w http.ResponseWriter, r *http.Request) {
 // Team Members
 // ============================================================================
 
+// teamAddMemberForm captures the add-member inputs. user_id is a
+// required UUID; role is free-text and validated against the
+// TeamRole enum after binding (defaulting to member when invalid).
+type teamAddMemberForm struct {
+	UserID string `form:"user_id" validate:"required,uuid"`
+	Role   string `form:"role"`
+}
+
 func (h *Handler) TeamAddMember(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	idStr := chi.URLParam(r, "id")
@@ -399,23 +399,17 @@ func (h *Handler) TeamAddMember(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := r.ParseForm(); err != nil {
-		slog.Error("Failed to parse form", "error", err)
+	var form teamAddMemberForm
+	if msg := BindForm(r, &form); msg != "" {
+		h.setFlash(w, r, "error", msg)
 		h.redirect(w, r, "/teams/"+idStr+"?tab=members")
 		return
 	}
 
-	userIDStr := r.FormValue("user_id")
-	roleStr := r.FormValue("role")
+	// Validator already confirmed the UUID shape; parse cannot fail.
+	userID, _ := uuid.Parse(form.UserID)
 
-	userID, err := uuid.Parse(userIDStr)
-	if err != nil {
-		slog.Error("Invalid user ID", "user_id", userIDStr, "error", err)
-		h.redirect(w, r, "/teams/"+idStr+"?tab=members")
-		return
-	}
-
-	role := models.TeamRole(roleStr)
+	role := models.TeamRole(form.Role)
 	if !role.IsValid() {
 		role = models.TeamRoleMember
 	}
@@ -469,6 +463,18 @@ func (h *Handler) TeamRemoveMember(w http.ResponseWriter, r *http.Request) {
 // Team Permissions
 // ============================================================================
 
+// teamGrantPermissionForm captures the permission-grant inputs.
+// resource_type and access_level are validated against their model
+// enums after binding because the enum's IsValid() method is the
+// only source of truth for the legal set; resource_id is required
+// but its shape varies per resource type, so we only enforce
+// non-empty here.
+type teamGrantPermissionForm struct {
+	ResourceType string `form:"resource_type" validate:"required"`
+	ResourceID   string `form:"resource_id" validate:"required"`
+	AccessLevel  string `form:"access_level"`
+}
+
 func (h *Handler) TeamGrantPermission(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	idStr := chi.URLParam(r, "id")
@@ -479,29 +485,21 @@ func (h *Handler) TeamGrantPermission(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := r.ParseForm(); err != nil {
-		slog.Error("Failed to parse form", "error", err)
+	var form teamGrantPermissionForm
+	if msg := BindForm(r, &form); msg != "" {
+		h.setFlash(w, r, "error", msg)
 		h.redirect(w, r, "/teams/"+idStr+"?tab=permissions")
 		return
 	}
 
-	resourceTypeStr := r.FormValue("resource_type")
-	resourceID := r.FormValue("resource_id")
-	accessLevelStr := r.FormValue("access_level")
-
-	resourceType := models.ResourceType(resourceTypeStr)
+	resourceType := models.ResourceType(form.ResourceType)
 	if !resourceType.IsValid() {
-		slog.Error("Invalid resource type", "resource_type", resourceTypeStr)
+		slog.Error("Invalid resource type", "resource_type", form.ResourceType)
 		h.redirect(w, r, "/teams/"+idStr+"?tab=permissions")
 		return
 	}
 
-	if resourceID == "" {
-		h.redirect(w, r, "/teams/"+idStr+"?tab=permissions")
-		return
-	}
-
-	accessLevel := models.AccessLevel(accessLevelStr)
+	accessLevel := models.AccessLevel(form.AccessLevel)
 	if !accessLevel.IsValid() {
 		accessLevel = models.AccessLevelView
 	}
@@ -512,8 +510,8 @@ func (h *Handler) TeamGrantPermission(w http.ResponseWriter, r *http.Request) {
 		grantedBy, _ = uuid.Parse(user.ID)
 	}
 
-	if err := h.services.Teams().GrantAccess(ctx, teamID, resourceType, resourceID, accessLevel, grantedBy); err != nil {
-		slog.Error("Failed to grant permission", "team_id", teamID, "resource_type", resourceType, "resource_id", resourceID, "error", err)
+	if err := h.services.Teams().GrantAccess(ctx, teamID, resourceType, form.ResourceID, accessLevel, grantedBy); err != nil {
+		slog.Error("Failed to grant permission", "team_id", teamID, "resource_type", resourceType, "resource_id", form.ResourceID, "error", err)
 		h.setFlash(w, r, "error", "Failed to grant permission: "+err.Error())
 		h.redirect(w, r, "/teams/"+idStr+"?tab=permissions")
 		return

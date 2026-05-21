@@ -80,7 +80,7 @@ func PeerList(data PeerListData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, " peers across all interfaces</p></div><div class=\"bg-dark-700 rounded-lg border border-dark-600 overflow-hidden\"><table class=\"w-full\"><thead><tr class=\"border-b border-dark-600 text-xs text-gray-500 uppercase tracking-wide\"><th class=\"text-left p-4\">Name</th><th class=\"text-left p-4\">Public Key</th><th class=\"text-left p-4\">Allowed IPs</th><th class=\"text-left p-4\">Endpoint</th><th class=\"text-left p-4\">Last Handshake</th><th class=\"text-left p-4\">Transfer</th></tr></thead> <tbody>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, " peers across all interfaces</p></div><div class=\"bg-dark-700 rounded-lg border border-dark-600 overflow-hidden\"><table class=\"w-full\"><thead><tr class=\"border-b border-dark-600 text-xs text-gray-500 uppercase tracking-wide\"><th scope=\"col\" class=\"text-left p-4\">Name</th><th scope=\"col\" class=\"text-left p-4\">Public Key</th><th scope=\"col\" class=\"text-left p-4\">Allowed IPs</th><th scope=\"col\" class=\"text-left p-4\">Endpoint</th><th scope=\"col\" class=\"text-left p-4\">Last Handshake</th><th scope=\"col\" class=\"text-left p-4\">Transfer</th></tr></thead> <tbody>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

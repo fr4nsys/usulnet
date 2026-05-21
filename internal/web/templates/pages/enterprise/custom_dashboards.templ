@@ -30,27 +30,27 @@ templ CustomDashboards(data CustomDashboardsData) {
 						@click="showCreateModal = true"
 						class="btn-primary flex items-center gap-2"
 					>
-						<i class="fas fa-plus"></i>
+						<i aria-hidden="true" class="fas fa-plus"></i>
 						New Dashboard
 					</button>
 				</div>
 
 				<!-- Loading -->
 				<div x-show="layoutsLoading" class="card p-12 text-center">
-					<i class="fas fa-spinner fa-spin text-2xl text-gray-400 mb-3"></i>
+					<i aria-hidden="true" class="fas fa-spinner fa-spin text-2xl text-gray-400 mb-3"></i>
 					<p class="text-gray-400">Loading dashboards...</p>
 				</div>
 
 				<!-- Empty State -->
 				<div x-show="!layoutsLoading && layouts.length === 0" x-cloak class="card p-12 text-center">
-					<i class="fas fa-th-large text-4xl text-gray-400 mb-4"></i>
+					<i aria-hidden="true" class="fas fa-th-large text-4xl text-gray-400 mb-4"></i>
 					<h3 class="text-lg font-medium text-white mb-2">No Dashboards</h3>
 					<p class="text-gray-400 mb-4">Create a custom dashboard to arrange widgets for monitoring your infrastructure</p>
 					<button
 						@click="showCreateModal = true"
 						class="btn-primary inline-flex items-center gap-2"
 					>
-						<i class="fas fa-plus"></i>
+						<i aria-hidden="true" class="fas fa-plus"></i>
 						Create Dashboard
 					</button>
 				</div>
@@ -62,7 +62,7 @@ templ CustomDashboards(data CustomDashboardsData) {
 							<div class="flex items-start justify-between mb-3">
 								<div class="flex items-center gap-2">
 									<div class="w-10 h-10 rounded-lg bg-primary-500/20 flex items-center justify-center">
-										<i class="fas fa-th-large text-primary-400"></i>
+										<i aria-hidden="true" class="fas fa-th-large text-primary-400"></i>
 									</div>
 									<div>
 										<h3 class="font-medium text-white" x-text="layout.name"></h3>
@@ -79,14 +79,14 @@ templ CustomDashboards(data CustomDashboardsData) {
 									@click="openLayout(layout)"
 									class="text-sm text-primary-400 hover:text-primary-300 transition-colors flex items-center gap-1"
 								>
-									<i class="fas fa-edit text-xs"></i>
+									<i aria-hidden="true" class="fas fa-edit text-xs"></i>
 									Edit Layout
 								</button>
 								<button
 									@click="deleteLayout(layout.id)"
 									class="text-sm text-gray-500 hover:text-red-400 transition-colors flex items-center gap-1"
 								>
-									<i class="fas fa-trash text-xs"></i>
+									<i aria-hidden="true" class="fas fa-trash text-xs"></i>
 									Delete
 								</button>
 							</div>
@@ -104,7 +104,7 @@ templ CustomDashboards(data CustomDashboardsData) {
 							@click="selectedLayout = null; widgets = []"
 							class="p-2 text-gray-400 hover:text-white hover:bg-dark-700 rounded-lg transition-colors"
 						>
-							<i class="fas fa-arrow-left"></i>
+							<i aria-hidden="true" class="fas fa-arrow-left"></i>
 						</button>
 						<div>
 							<h1 class="text-2xl font-display font-bold text-white" x-text="selectedLayout ? selectedLayout.name : ''"></h1>
@@ -115,27 +115,27 @@ templ CustomDashboards(data CustomDashboardsData) {
 						@click="showWidgetModal = true"
 						class="btn-primary flex items-center gap-2"
 					>
-						<i class="fas fa-plus"></i>
+						<i aria-hidden="true" class="fas fa-plus"></i>
 						Add Widget
 					</button>
 				</div>
 
 				<!-- Widgets Loading -->
 				<div x-show="widgetsLoading" class="card p-12 text-center">
-					<i class="fas fa-spinner fa-spin text-2xl text-gray-400 mb-3"></i>
+					<i aria-hidden="true" class="fas fa-spinner fa-spin text-2xl text-gray-400 mb-3"></i>
 					<p class="text-gray-400">Loading widgets...</p>
 				</div>
 
 				<!-- Empty Widgets -->
 				<div x-show="!widgetsLoading && widgets.length === 0" x-cloak class="card p-12 text-center">
-					<i class="fas fa-puzzle-piece text-4xl text-gray-400 mb-4"></i>
+					<i aria-hidden="true" class="fas fa-puzzle-piece text-4xl text-gray-400 mb-4"></i>
 					<h3 class="text-lg font-medium text-white mb-2">No Widgets</h3>
 					<p class="text-gray-400 mb-4">Add widgets to populate this dashboard</p>
 					<button
 						@click="showWidgetModal = true"
 						class="btn-primary inline-flex items-center gap-2"
 					>
-						<i class="fas fa-plus"></i>
+						<i aria-hidden="true" class="fas fa-plus"></i>
 						Add Widget
 					</button>
 				</div>
@@ -147,7 +147,7 @@ templ CustomDashboards(data CustomDashboardsData) {
 							<!-- Drag Handle + Header -->
 							<div class="flex items-center justify-between px-4 py-3 border-b border-dark-700 bg-dark-800">
 								<div class="flex items-center gap-2">
-									<i class="fas fa-grip-vertical text-gray-600 cursor-move"></i>
+									<i aria-hidden="true" class="fas fa-grip-vertical text-gray-600 cursor-move"></i>
 									<span class="text-sm font-medium text-white" x-text="widget.title"></span>
 								</div>
 								<div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -160,7 +160,7 @@ templ CustomDashboards(data CustomDashboardsData) {
 										class="p-1 text-gray-500 hover:text-red-400 transition-colors"
 										title="Remove widget"
 									>
-										<i class="fas fa-times text-xs"></i>
+										<i aria-hidden="true" class="fas fa-times text-xs"></i>
 									</button>
 								</div>
 							</div>
@@ -187,7 +187,7 @@ templ CustomDashboards(data CustomDashboardsData) {
 					<div class="flex items-center justify-between p-6 border-b border-dark-600">
 						<h2 class="text-lg font-display font-bold text-white">Create Dashboard</h2>
 						<button @click="showCreateModal = false" class="text-gray-400 hover:text-white">
-							<i class="fas fa-times"></i>
+							<i aria-hidden="true" class="fas fa-times"></i>
 						</button>
 					</div>
 					<div class="p-6 space-y-4">
@@ -198,6 +198,7 @@ templ CustomDashboards(data CustomDashboardsData) {
 								x-model="newLayout.name"
 								class="input w-full"
 								placeholder="e.g. Production Overview"
+								aria-label="Name"
 							/>
 						</div>
 						<div>
@@ -224,7 +225,7 @@ templ CustomDashboards(data CustomDashboardsData) {
 								:disabled="!newLayout.name.trim() || createLoading"
 								class="btn-primary disabled:opacity-50"
 							>
-								<i class="fas fa-plus mr-2"></i>Create
+								<i aria-hidden="true" class="fas fa-plus mr-2"></i>Create
 							</button>
 						</div>
 					</div>
@@ -241,7 +242,7 @@ templ CustomDashboards(data CustomDashboardsData) {
 					<div class="flex items-center justify-between p-6 border-b border-dark-600 sticky top-0 bg-dark-800 z-10">
 						<h2 class="text-lg font-display font-bold text-white">Add Widget</h2>
 						<button @click="showWidgetModal = false" class="text-gray-400 hover:text-white">
-							<i class="fas fa-times"></i>
+							<i aria-hidden="true" class="fas fa-times"></i>
 						</button>
 					</div>
 					<div class="p-6 space-y-4">
@@ -273,6 +274,7 @@ templ CustomDashboards(data CustomDashboardsData) {
 								x-model="newWidget.title"
 								class="input w-full"
 								placeholder="Widget title"
+								aria-label="Title"
 							/>
 						</div>
 						<div>
@@ -292,6 +294,7 @@ templ CustomDashboards(data CustomDashboardsData) {
 									x-model.number="newWidget.position_x"
 									class="input w-full"
 									min="0"
+									aria-label="Position X"
 								/>
 							</div>
 							<div>
@@ -301,6 +304,7 @@ templ CustomDashboards(data CustomDashboardsData) {
 									x-model.number="newWidget.position_y"
 									class="input w-full"
 									min="0"
+									aria-label="Position Y"
 								/>
 							</div>
 							<div>
@@ -310,6 +314,7 @@ templ CustomDashboards(data CustomDashboardsData) {
 									x-model.number="newWidget.width"
 									class="input w-full"
 									min="1"
+									aria-label="Width"
 								/>
 							</div>
 							<div>
@@ -319,6 +324,7 @@ templ CustomDashboards(data CustomDashboardsData) {
 									x-model.number="newWidget.height"
 									class="input w-full"
 									min="1"
+									aria-label="Height"
 								/>
 							</div>
 						</div>
@@ -329,7 +335,7 @@ templ CustomDashboards(data CustomDashboardsData) {
 								:disabled="!newWidget.type || !newWidget.title.trim() || addWidgetLoading"
 								class="btn-primary disabled:opacity-50"
 							>
-								<i class="fas fa-plus mr-2"></i>Add Widget
+								<i aria-hidden="true" class="fas fa-plus mr-2"></i>Add Widget
 							</button>
 						</div>
 					</div>

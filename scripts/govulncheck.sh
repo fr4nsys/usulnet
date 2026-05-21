@@ -11,6 +11,12 @@
 # to the upstream advisory. The list is small on purpose — if a future
 # release patches an entry, drop it from the allowlist instead of carrying
 # stale exclusions.
+#
+# The empirical claims behind each allowlist entry (e.g. "usulnet does not
+# call client.PluginInstall") are pinned by scripts/check-govulncheck-allowlist.sh,
+# which runs in the same CI workflow. If a new commit introduces one of the
+# forbidden symbols, that script fails first with a clear pointer at this
+# allowlist — drop the entry instead of growing the carve-out silently.
 # =============================================================================
 set -euo pipefail
 

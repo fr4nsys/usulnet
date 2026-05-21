@@ -3,8 +3,17 @@
 # usulnet - Test Coverage Threshold Checker
 # =============================================================================
 # Usage: ./scripts/check-coverage.sh [threshold]
-# Default threshold: 15% (interim — long-term target is 40%, tracked
-# as tech debt; see docs/development.md).
+#
+# Default threshold history:
+#   - v26.5.1 and earlier: 15% (initial gate)
+#   - v26.5.2 (this commit): 16% — bumped after PR adding routes_
+#     register tests + recon wiring tests. Empirical measurement after
+#     those tests was 16.5%, so 16% gives ~0.5% margin to flake.
+#
+# Long-term targets are 25% (v26.5.3) and 40% (v26.6). Reaching 25%
+# requires meaningful handler / service tests beyond the cheap
+# structural tests added in v26.5.2; tracked in
+# docs/v26.5.2/plan/sessions/02-coverage-uplift.md.
 #
 # Auto-generated templ files (*_templ.go) are excluded to match
 # .golangci.yml — testing generated code is not meaningful.
@@ -12,7 +21,7 @@
 
 set -euo pipefail
 
-THRESHOLD="${1:-15}"
+THRESHOLD="${1:-16}"
 COVERAGE_FILE="coverage.out"
 COVERAGE_FILTERED="coverage.filtered.out"
 

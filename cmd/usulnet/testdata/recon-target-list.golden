@@ -1,13 +1,22 @@
-List recon targets
+Print every registered recon target.
+
+Default output is a table with ID, TYPE, VALUE, LABEL, and CREATED
+columns. Use --output json|yaml for scripting.
 
 Usage:
   usulnet recon target list [flags]
+
+Examples:
+  usulnet recon target list
+  usulnet recon target list --output json
 
 Flags:
   -h, --help   help for list
 
 Global Flags:
   -c, --config string   config file path (default: /etc/usulnet/config.yaml or ./config.yaml)
+      --json            shortcut for --output json (overrides --output)
       --output string   output format: table|json|yaml (default "table")
+  -q, --quiet           suppress informational output (errors and primary data still print)
       --server string   usulnet API URL (default $USULNET_API_URL)
       --token string    API token (default $USULNET_API_TOKEN)

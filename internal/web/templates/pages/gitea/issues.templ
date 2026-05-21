@@ -37,27 +37,27 @@ templ IssuesList(data IssueListData) {
 			<!-- Breadcrumb -->
 			<div class="flex items-center gap-2 text-sm text-gray-400">
 				<a href="/integrations/gitea" class="hover:text-white transition-colors">
-					<i class="fas fa-code-branch mr-1"></i>Gitea
+					<i aria-hidden="true" class="fas fa-code-branch mr-1"></i>Gitea
 				</a>
-				<i class="fas fa-chevron-right text-xs"></i>
+				<i aria-hidden="true" class="fas fa-chevron-right text-xs"></i>
 				<a href={ templ.SafeURL(fmt.Sprintf("/integrations/gitea/repos/%s", data.Repo.ID)) } class="hover:text-white transition-colors">
 					{ data.Repo.FullName }
 				</a>
-				<i class="fas fa-chevron-right text-xs"></i>
+				<i aria-hidden="true" class="fas fa-chevron-right text-xs"></i>
 				<span class="text-white">Issues</span>
 			</div>
 
 			<!-- Header -->
 			<div class="flex items-center justify-between">
 				<div class="flex items-center gap-3">
-					<i class="fas fa-circle-exclamation text-2xl text-yellow-400"></i>
+					<i aria-hidden="true" class="fas fa-circle-exclamation text-2xl text-yellow-400"></i>
 					<div>
 						<h1 class="text-2xl font-display font-bold text-white">Issues</h1>
 						<p class="text-gray-400 text-sm">{ data.Repo.FullName }</p>
 					</div>
 				</div>
 				<button onclick="openCreateIssueModal()" class="btn-primary">
-					<i class="fas fa-plus mr-2"></i>New Issue
+					<i aria-hidden="true" class="fas fa-plus mr-2"></i>New Issue
 				</button>
 			</div>
 
@@ -69,14 +69,14 @@ templ IssuesList(data IssueListData) {
 				<div class="flex rounded-lg overflow-hidden border border-gray-700">
 					<a href={ templ.SafeURL(fmt.Sprintf("/integrations/gitea/repos/%s/issues?state=open", data.Repo.ID)) }
 						class={ "px-4 py-2 text-sm", issueStateTabClass(data.State, "open") }>
-						<i class="fas fa-circle-dot mr-1"></i>Open
+						<i aria-hidden="true" class="fas fa-circle-dot mr-1"></i>Open
 						if data.OpenCount > 0 {
 							<span class="ml-1 bg-gray-600 px-1.5 py-0.5 rounded-full text-xs">{ fmt.Sprintf("%d", data.OpenCount) }</span>
 						}
 					</a>
 					<a href={ templ.SafeURL(fmt.Sprintf("/integrations/gitea/repos/%s/issues?state=closed", data.Repo.ID)) }
 						class={ "px-4 py-2 text-sm border-l border-gray-700", issueStateTabClass(data.State, "closed") }>
-						<i class="fas fa-check mr-1"></i>Closed
+						<i aria-hidden="true" class="fas fa-check mr-1"></i>Closed
 						if data.ClosedCount > 0 {
 							<span class="ml-1 bg-gray-600 px-1.5 py-0.5 rounded-full text-xs">{ fmt.Sprintf("%d", data.ClosedCount) }</span>
 						}
@@ -88,7 +88,7 @@ templ IssuesList(data IssueListData) {
 			<div class="card">
 				if len(data.Issues) == 0 {
 					<div class="text-center py-12 text-gray-400">
-						<i class="fas fa-circle-check text-4xl mb-4"></i>
+						<i aria-hidden="true" class="fas fa-circle-check text-4xl mb-4"></i>
 						<p class="text-lg">No issues found</p>
 						<p class="text-sm mt-2">Create an issue to track bugs or feature requests</p>
 					</div>
@@ -137,7 +137,7 @@ templ issueRow(issue IssueItem, repoID string) {
 		</div>
 		<div class="flex items-center gap-4 text-sm text-gray-400">
 			if issue.Comments > 0 {
-				<span><i class="fas fa-comment mr-1"></i>{ fmt.Sprintf("%d", issue.Comments) }</span>
+				<span><i aria-hidden="true" class="fas fa-comment mr-1"></i>{ fmt.Sprintf("%d", issue.Comments) }</span>
 			}
 		</div>
 	</div>
@@ -165,14 +165,14 @@ templ createIssueModal(data IssueListData) {
 	<div id="create-issue-modal" class="fixed inset-0 bg-black/60 z-50 hidden items-center justify-center">
 		<div class="bg-gray-800 rounded-xl border border-gray-700 p-6 w-full max-w-lg mx-4">
 			<h3 class="text-lg font-semibold text-white mb-4">
-				<i class="fas fa-circle-exclamation mr-2 text-yellow-400"></i>New Issue
+				<i aria-hidden="true" class="fas fa-circle-exclamation mr-2 text-yellow-400"></i>New Issue
 			</h3>
 			<form id="create-issue-form" class="space-y-4">
 				<input type="hidden" name="csrf_token" value={ data.CSRFToken }/>
 				<div>
 					<label class="block text-sm text-gray-400 mb-1">Title</label>
 					<input type="text" name="title" required placeholder="Issue title"
-						class="w-full px-3 py-2 bg-gray-900 border border-gray-600 rounded-lg text-white focus:border-blue-500"/>
+						class="w-full px-3 py-2 bg-gray-900 border border-gray-600 rounded-lg text-white focus:border-blue-500" aria-label="Title"/>
 				</div>
 				<div>
 					<label class="block text-sm text-gray-400 mb-1">Description</label>
@@ -206,16 +206,16 @@ templ issueDetailModalPartial() {
 		<div class="bg-gray-800 rounded-xl border border-gray-700 p-6 w-full max-w-3xl mx-4 max-h-[85vh] flex flex-col">
 			<div class="flex items-center justify-between mb-4">
 				<h3 class="text-lg font-semibold text-white">
-					<i class="fas fa-circle-exclamation mr-2 text-yellow-400"></i>
+					<i aria-hidden="true" class="fas fa-circle-exclamation mr-2 text-yellow-400"></i>
 					<span id="issue-detail-title">Issue</span>
 				</h3>
 				<button onclick="closeModal('issue-detail-modal')" class="text-gray-400 hover:text-white">
-					<i class="fas fa-times"></i>
+					<i aria-hidden="true" class="fas fa-times"></i>
 				</button>
 			</div>
 			<div id="issue-detail-content" class="flex-1 overflow-y-auto">
 				<div class="text-center py-8 text-gray-400">
-					<i class="fas fa-spinner fa-spin text-2xl"></i>
+					<i aria-hidden="true" class="fas fa-spinner fa-spin text-2xl"></i>
 				</div>
 			</div>
 		</div>
@@ -275,7 +275,7 @@ templ issueScripts(data IssueListData) {
 		// View Issue detail
 		async function viewIssue(number) {
 			openModal('issue-detail-modal');
-			document.getElementById('issue-detail-content').innerHTML = '<div class="text-center py-8"><i class="fas fa-spinner fa-spin text-2xl text-gray-400"></i></div>';
+			document.getElementById('issue-detail-content').innerHTML = '<div class="text-center py-8"><i aria-hidden="true" class="fas fa-spinner fa-spin text-2xl text-gray-400"></i></div>';
 
 			try {
 				const resp = await fetch(`/integrations/gitea/repos/${issueRepoID}/issues/${number}`);
@@ -318,22 +318,22 @@ templ issueScripts(data IssueListData) {
 						<div class="border-t border-gray-700 pt-4">
 							<form id="add-comment-form" class="flex gap-2">
 								<input type="text" name="body" placeholder="Add a comment..."
-									class="flex-1 px-3 py-2 bg-gray-900 border border-gray-600 rounded-lg text-white text-sm"\/>
+									class="flex-1 px-3 py-2 bg-gray-900 border border-gray-600 rounded-lg text-white text-sm"\ aria-label="Add a comment..."/>
 								<button type="submit" class="btn-primary text-sm">Comment<\/button>
 							<\/form>
 						<\/div>
 
 						<div class="flex items-center gap-4 pt-2">
 							<a href="${escapeHtml(issue.html_url)}" target="_blank" class="btn-ghost text-sm">
-								<i class="fas fa-external-link-alt mr-2"><\/i>View in Gitea
+								<i aria-hidden="true" class="fas fa-external-link-alt mr-2"><\/i>View in Gitea
 							<\/a>
 							${issue.state === 'open' ? `
 								<button onclick="closeIssue(${issue.number})" class="btn-ghost text-sm text-purple-400">
-									<i class="fas fa-circle-check mr-2"><\/i>Close Issue
+									<i aria-hidden="true" class="fas fa-circle-check mr-2"><\/i>Close Issue
 								<\/button>
 							` : `
 								<button onclick="reopenIssue(${issue.number})" class="btn-ghost text-sm text-green-400">
-									<i class="fas fa-circle-dot mr-2"><\/i>Reopen Issue
+									<i aria-hidden="true" class="fas fa-circle-dot mr-2"><\/i>Reopen Issue
 								<\/button>
 							`}
 						<\/div>

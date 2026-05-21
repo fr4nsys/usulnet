@@ -95,7 +95,7 @@ func Installed(data InstalledData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, " installed apps</p></div><div class=\"bg-dark-700 rounded-lg border border-dark-600 overflow-hidden\"><table class=\"w-full\"><thead><tr class=\"border-b border-dark-600 text-xs text-gray-500 uppercase tracking-wide\"><th class=\"text-left p-4\">App</th><th class=\"text-left p-4\">Instance Name</th><th class=\"text-left p-4\">Stack</th><th class=\"text-left p-4\">Version</th><th class=\"text-left p-4\">Status</th><th class=\"text-left p-4\">Installed</th><th class=\"text-left p-4\">Actions</th></tr></thead> <tbody>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, " installed apps</p></div><div class=\"bg-dark-700 rounded-lg border border-dark-600 overflow-hidden\"><table class=\"w-full\"><thead><tr class=\"border-b border-dark-600 text-xs text-gray-500 uppercase tracking-wide\"><th scope=\"col\" class=\"text-left p-4\">App</th><th scope=\"col\" class=\"text-left p-4\">Instance Name</th><th scope=\"col\" class=\"text-left p-4\">Stack</th><th scope=\"col\" class=\"text-left p-4\">Version</th><th scope=\"col\" class=\"text-left p-4\">Status</th><th scope=\"col\" class=\"text-left p-4\">Installed</th><th scope=\"col\" class=\"text-left p-4\">Actions</th></tr></thead> <tbody>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -260,7 +260,7 @@ func Installed(data InstalledData) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 20, "\" onsubmit=\"return confirm('Mark this app as uninstalled? The underlying stack stays — remove it from the Stacks page if you want to free its resources.');\"><button type=\"submit\" class=\"text-gray-400 hover:text-red-400 transition-colors\" title=\"Mark as uninstalled\"><i class=\"fas fa-trash\"></i></button></form></td></tr>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 20, "\" onsubmit=\"return confirm('Mark this app as uninstalled? The underlying stack stays — remove it from the Stacks page if you want to free its resources.');\"><button type=\"submit\" class=\"text-gray-400 hover:text-red-400 transition-colors\" title=\"Mark as uninstalled\"><i aria-hidden=\"true\" class=\"fas fa-trash\"></i></button></form></td></tr>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}

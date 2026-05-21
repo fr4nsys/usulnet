@@ -61,7 +61,7 @@ templ LDAPConnectionsList(data LDAPConnectionsListData) {
 					<p class="text-gray-400 mt-1">Browse and manage LDAP directories</p>
 				</div>
 				<button onclick="showNewLDAPModal()" class="btn-primary">
-					<i class="fas fa-plus mr-2"></i>New Connection
+					<i aria-hidden="true" class="fas fa-plus mr-2"></i>New Connection
 				</button>
 			</div>
 
@@ -69,10 +69,10 @@ templ LDAPConnectionsList(data LDAPConnectionsListData) {
 			<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
 				if len(data.Connections) == 0 {
 					<div class="col-span-full card p-8 text-center">
-						<i class="fas fa-sitemap text-4xl text-gray-400 mb-4"></i>
+						<i aria-hidden="true" class="fas fa-sitemap text-4xl text-gray-400 mb-4"></i>
 						<p class="text-gray-400">No LDAP connections configured</p>
 						<button onclick="showNewLDAPModal()" class="btn-primary mt-4">
-							<i class="fas fa-plus mr-2"></i>Add Connection
+							<i aria-hidden="true" class="fas fa-plus mr-2"></i>Add Connection
 						</button>
 					</div>
 				}
@@ -81,7 +81,7 @@ templ LDAPConnectionsList(data LDAPConnectionsListData) {
 						<div class="flex items-start justify-between mb-3">
 							<div class="flex items-center gap-3">
 								<div class="w-10 h-10 rounded-lg bg-indigo-500/20 flex items-center justify-center">
-									<i class="fas fa-sitemap text-indigo-400"></i>
+									<i aria-hidden="true" class="fas fa-sitemap text-indigo-400"></i>
 								</div>
 								<div>
 									<h3 class="text-white font-medium">{ conn.Name }</h3>
@@ -117,27 +117,27 @@ templ LDAPConnectionsList(data LDAPConnectionsListData) {
 								<a href={ templ.SafeURL(fmt.Sprintf("/connections/ldap/%s", conn.ID)) }
 									class="p-2 text-gray-400 hover:text-white hover:bg-dark-600 rounded-lg"
 									title="Browse">
-									<i class="fas fa-folder-tree"></i>
+									<i aria-hidden="true" class="fas fa-folder-tree"></i>
 								</a>
 								<a href={ templ.SafeURL(fmt.Sprintf("/connections/ldap/%s/search", conn.ID)) }
 									class="p-2 text-gray-400 hover:text-white hover:bg-dark-600 rounded-lg"
 									title="Search">
-									<i class="fas fa-search"></i>
+									<i aria-hidden="true" class="fas fa-search"></i>
 								</a>
 								<button onclick={ testLDAPConnection(conn.ID) }
 									class="p-2 text-gray-400 hover:text-white hover:bg-dark-600 rounded-lg"
 									title="Test Connection">
-									<i class="fas fa-plug"></i>
+									<i aria-hidden="true" class="fas fa-plug"></i>
 								</button>
 								<a href={ templ.SafeURL(fmt.Sprintf("/connections/ldap/%s/settings", conn.ID)) }
 									class="p-2 text-gray-400 hover:text-white hover:bg-dark-600 rounded-lg"
 									title="Settings">
-									<i class="fas fa-cog"></i>
+									<i aria-hidden="true" class="fas fa-cog"></i>
 								</a>
 								<button onclick={ deleteLDAPConnection(conn.ID, conn.Name) }
 									class="p-2 text-gray-400 hover:text-red-400 hover:bg-dark-600 rounded-lg"
 									title="Delete">
-									<i class="fas fa-trash"></i>
+									<i aria-hidden="true" class="fas fa-trash"></i>
 								</button>
 							</div>
 						</div>
@@ -152,7 +152,7 @@ templ LDAPConnectionsList(data LDAPConnectionsListData) {
 				<div class="fixed inset-0 bg-black/60" onclick="hideNewLDAPModal()"></div>
 				<div class="relative card w-full max-w-lg p-6">
 					<h3 class="text-lg font-semibold text-white mb-4">
-						<i class="fas fa-sitemap text-indigo-400 mr-2"></i>New LDAP Connection
+						<i aria-hidden="true" class="fas fa-sitemap text-indigo-400 mr-2"></i>New LDAP Connection
 					</h3>
 					<form action="/connections/ldap" method="POST">
 						<input type="hidden" name="csrf_token" value={ data.PageData.CSRFToken }/>
@@ -160,13 +160,13 @@ templ LDAPConnectionsList(data LDAPConnectionsListData) {
 						<div class="space-y-4">
 							<div>
 								<label class="block text-sm font-medium text-gray-300 mb-1">Connection Name</label>
-								<input type="text" name="name" required class="input w-full" placeholder="Active Directory"/>
+								<input type="text" name="name" required class="input w-full" placeholder="Active Directory" aria-label="Active Directory"/>
 							</div>
 
 							<div class="grid grid-cols-3 gap-4">
 								<div class="col-span-2">
 									<label class="block text-sm font-medium text-gray-300 mb-1">Host</label>
-									<input type="text" name="host" required class="input w-full" placeholder="ldap.example.com"/>
+									<input type="text" name="host" required class="input w-full" placeholder="ldap.example.com" aria-label="ldap.example.com"/>
 								</div>
 								<div>
 									<label class="block text-sm font-medium text-gray-300 mb-1">Port</label>
@@ -176,12 +176,12 @@ templ LDAPConnectionsList(data LDAPConnectionsListData) {
 
 							<div>
 								<label class="block text-sm font-medium text-gray-300 mb-1">Base DN</label>
-								<input type="text" name="base_dn" required class="input w-full" placeholder="dc=example,dc=com"/>
+								<input type="text" name="base_dn" required class="input w-full" placeholder="dc=example,dc=com" aria-label="dc=example,dc=com"/>
 							</div>
 
 							<div>
 								<label class="block text-sm font-medium text-gray-300 mb-1">Bind DN (Admin)</label>
-								<input type="text" name="bind_dn" class="input w-full" placeholder="cn=admin,dc=example,dc=com"/>
+								<input type="text" name="bind_dn" class="input w-full" placeholder="cn=admin,dc=example,dc=com" aria-label="cn=admin,dc=example,dc=com"/>
 							</div>
 
 							<div>
@@ -204,7 +204,7 @@ templ LDAPConnectionsList(data LDAPConnectionsListData) {
 						<div class="flex justify-end gap-3 mt-6">
 							<button type="button" onclick="hideNewLDAPModal()" class="btn-ghost">Cancel</button>
 							<button type="submit" class="btn-primary">
-								<i class="fas fa-plus mr-2"></i>Create Connection
+								<i aria-hidden="true" class="fas fa-plus mr-2"></i>Create Connection
 							</button>
 						</div>
 					</form>
@@ -244,7 +244,7 @@ templ LDAPBrowser(data LDAPBrowserData) {
 				<div class="p-4 border-b border-dark-600">
 					<div class="flex items-center gap-3 mb-3">
 						<a href="/connections/ldap" class="text-gray-400 hover:text-white">
-							<i class="fas fa-arrow-left"></i>
+							<i aria-hidden="true" class="fas fa-arrow-left"></i>
 						</a>
 						<h2 class="text-white font-medium truncate">{ data.Connection.Name }</h2>
 					</div>
@@ -253,8 +253,8 @@ templ LDAPBrowser(data LDAPBrowserData) {
 						<input type="text" placeholder="Search entries..."
 							class="input w-full text-sm pl-8"
 							x-model="searchQuery"
-							@keyup.enter="doSearch()"/>
-						<i class="fas fa-search absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-500 text-xs"></i>
+							@keyup.enter="doSearch()" aria-label="Search entries..."/>
+						<i aria-hidden="true" class="fas fa-search absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-500 text-xs"></i>
 					</div>
 				</div>
 
@@ -264,7 +264,7 @@ templ LDAPBrowser(data LDAPBrowserData) {
 					<div class="px-2">
 						<div class="flex items-center gap-1 px-2 py-1.5 text-gray-300 hover:bg-dark-700 rounded cursor-pointer"
 							@click="loadEntries('')">
-							<i class="fas fa-sitemap text-indigo-400 text-xs w-4"></i>
+							<i aria-hidden="true" class="fas fa-sitemap text-indigo-400 text-xs w-4"></i>
 							<span class="text-sm truncate">{ data.BaseDN }</span>
 						</div>
 					</div>
@@ -275,7 +275,7 @@ templ LDAPBrowser(data LDAPBrowserData) {
 							<div class={ "flex items-center gap-1 px-2 py-1.5 hover:bg-dark-700 rounded cursor-pointer", entryClass(entry.DN, data.CurrentDN) }
 								@click={ fmt.Sprintf("selectEntry('%s')", entry.DN) }>
 								if entry.HasChildren {
-									<i class="fas fa-caret-right text-gray-500 text-xs w-4"></i>
+									<i aria-hidden="true" class="fas fa-caret-right text-gray-500 text-xs w-4"></i>
 								} else {
 									<span class="w-4"></span>
 								}
@@ -302,21 +302,21 @@ templ LDAPBrowser(data LDAPBrowserData) {
 						<!-- Read-only indicator -->
 						if !data.WriteEnabled {
 							<span class="flex items-center gap-1.5 px-2 py-1 bg-blue-500/10 text-blue-400 text-xs rounded">
-								<i class="fas fa-lock"></i>
+								<i aria-hidden="true" class="fas fa-lock"></i>
 								Read-Only
 							</span>
 						} else {
 							<span class="flex items-center gap-1.5 px-2 py-1 bg-red-500/10 text-red-400 text-xs rounded">
-								<i class="fas fa-exclamation-triangle"></i>
+								<i aria-hidden="true" class="fas fa-exclamation-triangle"></i>
 								Write Enabled
 							</span>
 						}
 						<a href={ templ.SafeURL(fmt.Sprintf("/connections/ldap/%s/search", data.Connection.ID)) }
 							class="btn-ghost text-sm">
-							<i class="fas fa-search mr-1"></i>Advanced Search
+							<i aria-hidden="true" class="fas fa-search mr-1"></i>Advanced Search
 						</a>
 						<button @click="showSettingsModal = true" class="btn-ghost text-sm">
-							<i class="fas fa-cog mr-1"></i>Settings
+							<i aria-hidden="true" class="fas fa-cog mr-1"></i>Settings
 						</button>
 					</div>
 				</div>
@@ -369,7 +369,7 @@ templ LDAPBrowser(data LDAPBrowserData) {
 										</div>
 										if data.WriteEnabled {
 											<button class="text-gray-500 hover:text-white p-1" title="Edit">
-												<i class="fas fa-edit text-xs"></i>
+												<i aria-hidden="true" class="fas fa-edit text-xs"></i>
 											</button>
 										}
 									</div>
@@ -381,10 +381,10 @@ templ LDAPBrowser(data LDAPBrowserData) {
 						if data.WriteEnabled {
 							<div class="mt-4 flex items-center gap-2">
 								<button @click="showAddAttributeModal = true" class="btn-ghost text-sm">
-									<i class="fas fa-plus mr-1"></i>Add Attribute
+									<i aria-hidden="true" class="fas fa-plus mr-1"></i>Add Attribute
 								</button>
 								<button @click="confirmDelete()" class="btn-ghost text-sm text-red-400 hover:text-red-300">
-									<i class="fas fa-trash mr-1"></i>Delete Entry
+									<i aria-hidden="true" class="fas fa-trash mr-1"></i>Delete Entry
 								</button>
 							</div>
 						}
@@ -392,7 +392,7 @@ templ LDAPBrowser(data LDAPBrowserData) {
 				} else {
 					<div class="flex-1 flex items-center justify-center">
 						<div class="text-center">
-							<i class="fas fa-sitemap text-4xl text-gray-400 mb-4"></i>
+							<i aria-hidden="true" class="fas fa-sitemap text-4xl text-gray-400 mb-4"></i>
 							<p class="text-gray-400">Select an entry from the tree to view details</p>
 						</div>
 					</div>
@@ -405,13 +405,13 @@ templ LDAPBrowser(data LDAPBrowserData) {
 					<div class="fixed inset-0 bg-black/60" @click="showSettingsModal = false"></div>
 					<div class="relative card w-full max-w-md p-6">
 						<h3 class="text-lg font-semibold text-white mb-4">
-							<i class="fas fa-cog text-gray-400 mr-2"></i>Browser Settings
+							<i aria-hidden="true" class="fas fa-cog text-gray-400 mr-2"></i>Browser Settings
 						</h3>
 
 						<!-- Danger Zone -->
 						<div class="border border-red-500/30 rounded-lg p-4 bg-red-500/5 mb-4">
 							<h4 class="text-red-400 font-medium flex items-center gap-2 mb-2">
-								<i class="fas fa-exclamation-triangle"></i>
+								<i aria-hidden="true" class="fas fa-exclamation-triangle"></i>
 								Danger Zone
 							</h4>
 							<p class="text-gray-400 text-sm mb-3">
@@ -435,7 +435,7 @@ templ LDAPBrowser(data LDAPBrowserData) {
 
 							<div x-show="writeEnabled" class="mt-3 p-3 bg-red-500/10 border border-red-500/20 rounded-lg">
 								<p class="text-red-400 text-xs flex items-center gap-2">
-									<i class="fas fa-shield-alt"></i>
+									<i aria-hidden="true" class="fas fa-shield-alt"></i>
 									Write mode is now enabled. Changes affect production directory!
 								</p>
 							</div>
@@ -607,7 +607,7 @@ templ LDAPConnectionSettings(data LDAPConnectionSettingsData) {
 			<!-- Header -->
 			<div class="flex items-center gap-4">
 				<a href="/connections/ldap" class="p-2 text-gray-400 hover:text-white hover:bg-dark-700 rounded-lg">
-					<i class="fas fa-arrow-left"></i>
+					<i aria-hidden="true" class="fas fa-arrow-left"></i>
 				</a>
 				<div class="flex-1">
 					<div class="flex items-center gap-3">
@@ -631,7 +631,7 @@ templ LDAPConnectionSettings(data LDAPConnectionSettingsData) {
 				<a href={ templ.SafeURL(fmt.Sprintf("/connections/ldap/%s", data.Connection.ID)) }
 					class="card p-4 flex items-center gap-3 hover:bg-dark-700/50 transition-colors">
 					<div class="w-10 h-10 bg-indigo-500/10 rounded-lg flex items-center justify-center">
-						<i class="fas fa-folder-tree text-indigo-400"></i>
+						<i aria-hidden="true" class="fas fa-folder-tree text-indigo-400"></i>
 					</div>
 					<div>
 						<p class="text-white font-medium">Browse</p>
@@ -641,7 +641,7 @@ templ LDAPConnectionSettings(data LDAPConnectionSettingsData) {
 				<a href={ templ.SafeURL(fmt.Sprintf("/connections/ldap/%s/search", data.Connection.ID)) }
 					class="card p-4 flex items-center gap-3 hover:bg-dark-700/50 transition-colors">
 					<div class="w-10 h-10 bg-blue-500/10 rounded-lg flex items-center justify-center">
-						<i class="fas fa-search text-blue-400"></i>
+						<i aria-hidden="true" class="fas fa-search text-blue-400"></i>
 					</div>
 					<div>
 						<p class="text-white font-medium">Search</p>
@@ -653,7 +653,7 @@ templ LDAPConnectionSettings(data LDAPConnectionSettingsData) {
 					onclick={ testLDAPConnection(data.Connection.ID) }
 				>
 					<div class="w-10 h-10 bg-green-500/10 rounded-lg flex items-center justify-center">
-						<i class="fas fa-plug text-green-400"></i>
+						<i aria-hidden="true" class="fas fa-plug text-green-400"></i>
 					</div>
 					<div>
 						<p class="text-white font-medium">Test</p>
@@ -697,7 +697,7 @@ templ LDAPConnectionSettings(data LDAPConnectionSettingsData) {
 
 					<div>
 						<label for="bind_password" class="block text-sm font-medium text-gray-300 mb-1">Bind Password</label>
-						<input type="password" id="bind_password" name="bind_password" class="input w-full" placeholder="Leave blank to keep current"/>
+						<input type="password" id="bind_password" name="bind_password" class="input w-full" placeholder="Leave blank to keep current" aria-label="Leave blank to keep current"/>
 					</div>
 
 					<div class="flex items-center gap-6">
@@ -728,7 +728,7 @@ templ LDAPConnectionSettings(data LDAPConnectionSettingsData) {
 				<div class="flex justify-end gap-3">
 					<a href="/connections/ldap" class="btn-secondary">Cancel</a>
 					<button type="submit" class="btn-primary">
-						<i class="fas fa-save mr-2"></i>Save Changes
+						<i aria-hidden="true" class="fas fa-save mr-2"></i>Save Changes
 					</button>
 				</div>
 			</form>
@@ -753,7 +753,7 @@ templ LDAPConnectionSettings(data LDAPConnectionSettingsData) {
 			<!-- Danger Zone -->
 			<div class="card border-red-500/30 p-6">
 				<h2 class="text-lg font-medium text-red-400 mb-4">
-					<i class="fas fa-exclamation-triangle mr-2"></i>Danger Zone
+					<i aria-hidden="true" class="fas fa-exclamation-triangle mr-2"></i>Danger Zone
 				</h2>
 				<div class="flex items-center justify-between p-4 bg-red-500/5 border border-red-500/20 rounded-lg">
 					<div>
@@ -762,7 +762,7 @@ templ LDAPConnectionSettings(data LDAPConnectionSettingsData) {
 					</div>
 					<button onclick={ deleteLDAPConnection(data.Connection.ID, data.Connection.Name) }
 						class="px-4 py-2 bg-red-500/10 text-red-400 hover:bg-red-500/20 rounded-lg transition-colors text-sm font-medium">
-						<i class="fas fa-trash mr-2"></i>Delete
+						<i aria-hidden="true" class="fas fa-trash mr-2"></i>Delete
 					</button>
 				</div>
 			</div>

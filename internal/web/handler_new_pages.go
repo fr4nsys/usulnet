@@ -289,17 +289,18 @@ func (h *Handler) LicenseTempl(w http.ResponseWriter, r *http.Request) {
 	h.renderTempl(w, r, license.LicensePage(data))
 }
 
+// licenseActivateForm captures the activation input. The license
+// key is the only field; we add a generous max length to catch
+// pathological pastes without artificially rejecting any real key.
+type licenseActivateForm struct {
+	LicenseKey string `form:"license_key" validate:"required,min=1,max=8192"`
+}
+
 // LicenseActivate handles license key activation via JWT.
 func (h *Handler) LicenseActivate(w http.ResponseWriter, r *http.Request) {
-	if err := r.ParseForm(); err != nil {
-		h.setFlash(w, r, "error", "Invalid form data")
-		http.Redirect(w, r, "/license", http.StatusSeeOther)
-		return
-	}
-
-	licenseKey := strings.TrimSpace(r.FormValue("license_key"))
-	if licenseKey == "" {
-		h.setFlash(w, r, "error", "License key is required")
+	var form licenseActivateForm
+	if msg := BindForm(r, &form); msg != "" {
+		h.setFlash(w, r, "error", msg)
 		http.Redirect(w, r, "/license", http.StatusSeeOther)
 		return
 	}
@@ -310,7 +311,7 @@ func (h *Handler) LicenseActivate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := h.licenseProvider.Activate(licenseKey); err != nil {
+	if err := h.licenseProvider.Activate(form.LicenseKey); err != nil {
 		h.setFlash(w, r, "error", fmt.Sprintf("License activation failed: %v", err))
 		http.Redirect(w, r, "/license", http.StatusSeeOther)
 		return

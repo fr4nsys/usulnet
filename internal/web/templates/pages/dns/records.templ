@@ -25,10 +25,10 @@ templ Records(data RecordsAcrossProvidersData) {
 
 			if len(data.Providers) == 0 {
 				<div class="card p-8 text-center">
-					<i class="fas fa-list text-4xl text-gray-400 mb-4"></i>
+					<i aria-hidden="true" class="fas fa-list text-4xl text-gray-400 mb-4"></i>
 					<h3 class="text-lg font-medium text-white mb-2">No DNS providers</h3>
 					<p class="text-gray-400 mb-4">Add a provider first to create records.</p>
-					<a href="/dns/new" class="btn-primary"><i class="fas fa-plus mr-2"></i>Add provider</a>
+					<a href="/dns/new" class="btn-primary"><i aria-hidden="true" class="fas fa-plus mr-2"></i>Add provider</a>
 				</div>
 			} else {
 				<div class="card">
@@ -36,12 +36,12 @@ templ Records(data RecordsAcrossProvidersData) {
 						<table class="table">
 							<thead>
 								<tr>
-									<th>Provider</th>
-									<th>Name</th>
-									<th>Type</th>
-									<th>Content</th>
-									<th>TTL</th>
-									<th>Managed by</th>
+									<th scope="col">Provider</th>
+									<th scope="col">Name</th>
+									<th scope="col">Type</th>
+									<th scope="col">Content</th>
+									<th scope="col">TTL</th>
+									<th scope="col">Managed by</th>
 								</tr>
 							</thead>
 							<tbody>

@@ -23,7 +23,7 @@ templ History(data HistoryData) {
 				</div>
 				<div>
 					<a href="/config/docker" class="btn-secondary text-sm">
-						<i class="fas fa-arrow-left mr-1"></i>Back to editor
+						<i aria-hidden="true" class="fas fa-arrow-left mr-1"></i>Back to editor
 					</a>
 				</div>
 			</div>
@@ -39,7 +39,7 @@ templ History(data HistoryData) {
 
 				if len(data.Snapshots) == 0 {
 					<div class="card p-8 text-center">
-						<i class="fas fa-clock text-4xl text-gray-500 mb-4"></i>
+						<i aria-hidden="true" class="fas fa-clock text-4xl text-gray-500 mb-4"></i>
 						<p class="text-gray-300">No snapshots recorded yet.</p>
 						<p class="text-sm text-gray-500 mt-1">Each successful apply writes a snapshot of the prior daemon.json into the snapshot directory.</p>
 					</div>
@@ -48,10 +48,10 @@ templ History(data HistoryData) {
 						<table class="w-full text-sm">
 							<thead class="bg-dark-800 text-gray-400 text-xs uppercase">
 								<tr>
-									<th class="px-4 py-3 text-left font-semibold">Snapshot ID</th>
-									<th class="px-4 py-3 text-left font-semibold">Timestamp</th>
-									<th class="px-4 py-3 text-left font-semibold">Size</th>
-									<th class="px-4 py-3 text-right font-semibold">Action</th>
+									<th scope="col" class="px-4 py-3 text-left font-semibold">Snapshot ID</th>
+									<th scope="col" class="px-4 py-3 text-left font-semibold">Timestamp</th>
+									<th scope="col" class="px-4 py-3 text-left font-semibold">Size</th>
+									<th scope="col" class="px-4 py-3 text-right font-semibold">Action</th>
 								</tr>
 							</thead>
 							<tbody class="divide-y divide-dark-600">
@@ -66,7 +66,7 @@ templ History(data HistoryData) {
 												<button type="submit"
 													class="btn-warning text-xs"
 													onclick="return confirm('Restore this snapshot? The daemon will reload — usulnet will roll back automatically if it does not return healthy.')">
-													<i class="fas fa-undo mr-1"></i>Restore
+													<i aria-hidden="true" class="fas fa-undo mr-1"></i>Restore
 												</button>
 											</form>
 										</td>

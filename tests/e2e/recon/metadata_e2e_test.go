@@ -230,9 +230,9 @@ func extractedContains(m map[string]any, substr string) bool {
 //
 // JPEG layout produced:
 //
-//   SOI (FFD8)
-//   APP1 (FFE1, length, "Exif\0\0", TIFF header, IFD0 with Software)
-//   The rest is a stock 2x2 grey JPEG body (DQT, SOF, DHT, SOS, scan, EOI).
+//	SOI (FFD8)
+//	APP1 (FFE1, length, "Exif\0\0", TIFF header, IFD0 with Software)
+//	The rest is a stock 2x2 grey JPEG body (DQT, SOF, DHT, SOS, scan, EOI).
 //
 // The function intentionally avoids importing image/jpeg so the
 // fixture remains transparent to a reviewer.

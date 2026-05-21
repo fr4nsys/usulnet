@@ -48,17 +48,17 @@ func TargetsList(data TargetsListData) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"space-y-6\"><div class=\"flex items-center justify-between\"><div><h1 class=\"text-2xl font-display font-bold text-white\">Recon Targets</h1><p class=\"text-gray-400 mt-1\">Identifiers you own and have submitted for OSINT scanning.</p></div><div class=\"flex items-center gap-2\"><button type=\"button\" class=\"btn-primary\" hx-get=\"/recon/targets/new\" hx-target=\"#modal-container\" hx-swap=\"innerHTML\"><i class=\"fas fa-plus mr-2\"></i>Add Target</button></div></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"space-y-6\"><div class=\"flex items-center justify-between\"><div><h1 class=\"text-2xl font-display font-bold text-white\">Recon Targets</h1><p class=\"text-gray-400 mt-1\">Identifiers you own and have submitted for OSINT scanning.</p></div><div class=\"flex items-center gap-2\"><button type=\"button\" class=\"btn-primary\" hx-get=\"/recon/targets/new\" hx-target=\"#modal-container\" hx-swap=\"innerHTML\"><i aria-hidden=\"true\" class=\"fas fa-plus mr-2\"></i>Add Target</button></div></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			if len(data.Targets) == 0 {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<div class=\"card p-12 text-center\"><i class=\"fas fa-bullseye text-4xl text-gray-500 mb-4\"></i><h3 class=\"text-lg font-medium text-white mb-2\">No Targets</h3><p class=\"text-gray-400\">Add an email, domain, IP, or username target to start scanning.</p></div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<div class=\"card p-12 text-center\"><i aria-hidden=\"true\" class=\"fas fa-bullseye text-4xl text-gray-500 mb-4\"></i><h3 class=\"text-lg font-medium text-white mb-2\">No Targets</h3><p class=\"text-gray-400\">Add an email, domain, IP, or username target to start scanning.</p></div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			} else {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<div class=\"card overflow-hidden\"><table class=\"w-full text-sm\"><thead class=\"bg-dark-800 text-gray-400 text-xs uppercase tracking-wide\"><tr><th class=\"text-left px-4 py-3\">Type</th><th class=\"text-left px-4 py-3\">Value</th><th class=\"text-left px-4 py-3\">Ownership</th><th class=\"text-left px-4 py-3\">Scans</th><th class=\"text-left px-4 py-3\">Created</th><th class=\"text-right px-4 py-3\">Actions</th></tr></thead> <tbody class=\"divide-y divide-dark-700\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<div class=\"card overflow-hidden\"><table class=\"w-full text-sm\"><thead class=\"bg-dark-800 text-gray-400 text-xs uppercase tracking-wide\"><tr><th scope=\"col\" class=\"text-left px-4 py-3\">Type</th><th scope=\"col\" class=\"text-left px-4 py-3\">Value</th><th scope=\"col\" class=\"text-left px-4 py-3\">Ownership</th><th scope=\"col\" class=\"text-left px-4 py-3\">Scans</th><th scope=\"col\" class=\"text-left px-4 py-3\">Created</th><th scope=\"col\" class=\"text-right px-4 py-3\">Actions</th></tr></thead> <tbody class=\"divide-y divide-dark-700\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -191,7 +191,7 @@ func targetRow(t TargetView) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		if t.OwnershipOK {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "<span class=\"inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium bg-green-500/10 text-green-400 border border-green-500/20\"><i class=\"fas fa-check\"></i>verified</span>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "<span class=\"inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium bg-green-500/10 text-green-400 border border-green-500/20\"><i aria-hidden=\"true\" class=\"fas fa-check\"></i>verified</span>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -258,7 +258,7 @@ func targetRow(t TargetView) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 22, "\" class=\"text-gray-400 hover:text-primary-400\" title=\"Details\"><i class=\"fas fa-eye\"></i></a></td></tr>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 22, "\" class=\"text-gray-400 hover:text-primary-400\" title=\"Details\"><i aria-hidden=\"true\" class=\"fas fa-eye\"></i></a></td></tr>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

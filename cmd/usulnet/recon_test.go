@@ -207,6 +207,62 @@ func TestReconNoServerConfigured(t *testing.T) {
 	}
 }
 
+// TestReconTokenFlagHeader verifies that the --token persistent flag on
+// the recon root reaches the outgoing Authorization header. The audit (H3)
+// flagged the risk of the flag being silently dropped if the resolution
+// path were ever to read $USULNET_API_TOKEN directly instead of going
+// through reconClient → newAPIClient.
+func TestReconTokenFlagHeader(t *testing.T) {
+	var gotAuth string
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		gotAuth = r.Header.Get("Authorization")
+		w.Header().Set("Content-Type", "application/json")
+		_, _ = io.WriteString(w, `[]`)
+	}))
+	defer srv.Close()
+
+	// Force the env values empty so the flag is the only source of truth.
+	t.Setenv("USULNET_API_URL", "")
+	t.Setenv("USULNET_API_TOKEN", "")
+
+	_, err := runRoot(t, []string{"recon", "scan", "list",
+		"--server", srv.URL,
+		"--token", "TOKEN_FROM_FLAG",
+	})
+	if err != nil {
+		t.Fatalf("execute: %v", err)
+	}
+	if gotAuth != "Bearer TOKEN_FROM_FLAG" {
+		t.Errorf("--token was not propagated to Authorization header: got %q, want %q",
+			gotAuth, "Bearer TOKEN_FROM_FLAG")
+	}
+}
+
+// TestReconTokenFlagOverridesEnv asserts the flag wins over the env var when
+// both are set — mirroring how meta resolves the same precedence.
+func TestReconTokenFlagOverridesEnv(t *testing.T) {
+	var gotAuth string
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		gotAuth = r.Header.Get("Authorization")
+		w.Header().Set("Content-Type", "application/json")
+		_, _ = io.WriteString(w, `[]`)
+	}))
+	defer srv.Close()
+
+	t.Setenv("USULNET_API_URL", srv.URL)
+	t.Setenv("USULNET_API_TOKEN", "FROM_ENV")
+
+	_, err := runRoot(t, []string{"recon", "scan", "list",
+		"--token", "FROM_FLAG",
+	})
+	if err != nil {
+		t.Fatalf("execute: %v", err)
+	}
+	if gotAuth != "Bearer FROM_FLAG" {
+		t.Errorf("--token should override $USULNET_API_TOKEN: got %q", gotAuth)
+	}
+}
+
 func TestReconFindingsListFilterRoundTrip(t *testing.T) {
 	calls := 0
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -299,4 +355,6 @@ func resetReconFlags() {
 	findingsTarget = ""
 	findingsSeverity = ""
 	outputFormat = "table"
+	outputJSONShortcut = false
+	quietMode = false
 }

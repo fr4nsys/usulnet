@@ -128,6 +128,8 @@ func formatValidationError(e validator.FieldError) string {
 		return "must be a valid Docker image reference"
 	case "docker_container_name":
 		return "must be a valid Docker container name"
+	case "datetime":
+		return "must be a valid date/time (format: " + e.Param() + ")"
 	default:
 		return "is invalid"
 	}

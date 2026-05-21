@@ -32,7 +32,7 @@ func ServiceNotConfigured(serviceName, configHint string) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"flex flex-col items-center justify-center py-16 px-4\"><div class=\"bg-dark-800 rounded-xl border border-dark-600 p-8 max-w-lg text-center shadow-lg\"><div class=\"mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-dark-700\"><i class=\"fas fa-puzzle-piece text-2xl text-gray-400\"></i></div><h3 class=\"text-xl font-semibold text-gray-200 mb-2\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"flex flex-col items-center justify-center py-16 px-4\"><div class=\"card p-8 max-w-lg text-center shadow-lg\"><div class=\"mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-dark-700\"><i aria-hidden=\"true\" class=\"fas fa-puzzle-piece text-2xl text-gray-400\"></i></div><h3 class=\"text-xl font-semibold text-gray-200 mb-2\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

@@ -19,7 +19,7 @@ templ TOTPSetup(data TOTPSetupData) {
 			<!-- Header -->
 			<div class="flex items-center gap-4 mb-8">
 				<a href="/settings" class="p-2 rounded-lg hover:bg-dark-700 text-gray-400 hover:text-white transition-colors">
-					<i class="fas fa-arrow-left"></i>
+					<i aria-hidden="true" class="fas fa-arrow-left"></i>
 				</a>
 				<div>
 					<h1 class="text-2xl font-bold font-display text-white">Two-Factor Authentication</h1>
@@ -29,24 +29,24 @@ templ TOTPSetup(data TOTPSetupData) {
 
 			if data.Error != "" {
 				<div class="mb-6 p-4 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-sm flex items-start gap-3">
-					<i class="fas fa-exclamation-circle mt-0.5"></i>
+					<i aria-hidden="true" class="fas fa-exclamation-circle mt-0.5"></i>
 					<span>{ data.Error }</span>
 				</div>
 			}
 
 			if data.Success != "" {
 				<div class="mb-6 p-4 rounded-lg bg-green-500/10 border border-green-500/20 text-green-400 text-sm flex items-start gap-3">
-					<i class="fas fa-check-circle mt-0.5"></i>
+					<i aria-hidden="true" class="fas fa-check-circle mt-0.5"></i>
 					<span>{ data.Success }</span>
 				</div>
 			}
 
 			if data.Enabled {
 				<!-- 2FA is enabled -->
-				<div class="bg-dark-800 rounded-xl border border-dark-600 p-6">
+				<div class="card p-6">
 					<div class="flex items-center gap-4 mb-6">
 						<div class="flex items-center justify-center w-12 h-12 rounded-xl bg-green-500/10">
-							<i class="fas fa-shield-alt text-green-400 text-xl"></i>
+							<i aria-hidden="true" class="fas fa-shield-alt text-green-400 text-xl"></i>
 						</div>
 						<div>
 							<h2 class="text-lg font-semibold text-white">2FA Enabled</h2>
@@ -56,7 +56,7 @@ templ TOTPSetup(data TOTPSetupData) {
 
 					<div class="p-4 rounded-lg bg-yellow-500/5 border border-yellow-500/20 mb-6">
 						<p class="text-sm text-yellow-400">
-							<i class="fas fa-exclamation-triangle mr-2"></i>
+							<i aria-hidden="true" class="fas fa-exclamation-triangle mr-2"></i>
 							Disabling 2FA will reduce your account security. You'll need to enter your current TOTP code to confirm.
 						</p>
 					</div>
@@ -85,7 +85,7 @@ templ TOTPSetup(data TOTPSetupData) {
 							@click="confirm = true"
 							class="px-4 py-2.5 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-lg border border-red-500/20 transition-colors text-sm"
 						>
-							<i class="fas fa-times mr-2"></i>Disable 2FA
+							<i aria-hidden="true" class="fas fa-times mr-2"></i>Disable 2FA
 						</button>
 						<button
 							x-show="confirm"
@@ -108,10 +108,10 @@ templ TOTPSetup(data TOTPSetupData) {
 				</div>
 			} else {
 				<!-- 2FA setup flow -->
-				<div class="bg-dark-800 rounded-xl border border-dark-600 p-6">
+				<div class="card p-6">
 					<div class="flex items-center gap-4 mb-6">
 						<div class="flex items-center justify-center w-12 h-12 rounded-xl bg-primary-500/10">
-							<i class="fas fa-qrcode text-primary-400 text-xl"></i>
+							<i aria-hidden="true" class="fas fa-qrcode text-primary-400 text-xl"></i>
 						</div>
 						<div>
 							<h2 class="text-lg font-semibold text-white">Setup Authenticator</h2>
@@ -136,10 +136,10 @@ templ TOTPSetup(data TOTPSetupData) {
 							@click="showKey = !showKey"
 							class="w-full text-left text-sm text-gray-400 hover:text-primary-400 transition-colors flex items-center gap-2"
 						>
-							<i class="fas fa-keyboard"></i>
+							<i aria-hidden="true" class="fas fa-keyboard"></i>
 							<span x-show="!showKey">Cannot scan? Enter key manually</span>
 							<span x-show="showKey" x-cloak>Hide manual key</span>
-							<i class="fas fa-chevron-down text-xs ml-auto transition-transform" x-bind:class="showKey ? 'rotate-180' : ''"></i>
+							<i aria-hidden="true" class="fas fa-chevron-down text-xs ml-auto transition-transform" x-bind:class="showKey ? 'rotate-180' : ''"></i>
 						</button>
 						<div x-show="showKey" x-cloak class="mt-3 p-4 rounded-lg bg-dark-700 border border-dark-600">
 							<label class="block text-xs font-medium text-gray-400 mb-2">Secret Key</label>
@@ -151,8 +151,8 @@ templ TOTPSetup(data TOTPSetupData) {
 									class="p-2 rounded-lg hover:bg-dark-600 text-gray-400 hover:text-white transition-colors"
 									title="Copy to clipboard"
 								>
-									<i class="fas fa-copy" x-show="!copied"></i>
-									<i class="fas fa-check text-green-400" x-show="copied" x-cloak></i>
+									<i aria-hidden="true" class="fas fa-copy" x-show="!copied"></i>
+									<i aria-hidden="true" class="fas fa-check text-green-400" x-show="copied" x-cloak></i>
 								</button>
 							</div>
 							<p class="mt-2 text-xs text-gray-500">Type: TOTP · Algorithm: SHA1 · Digits: 6 · Period: 30s</p>
@@ -163,7 +163,7 @@ templ TOTPSetup(data TOTPSetupData) {
 					<form method="POST" action="/settings/totp/verify" class="border-t border-dark-600 pt-6">
 						<input type="hidden" name="csrf_token" value={ data.CSRFToken }/>
 						<label for="verify_code" class="block text-sm font-medium text-gray-300 mb-2">
-							<i class="fas fa-check-circle mr-1 text-primary-400"></i>
+							<i aria-hidden="true" class="fas fa-check-circle mr-1 text-primary-400"></i>
 							Verify — enter the code shown in your app
 						</label>
 						<div class="flex gap-3">

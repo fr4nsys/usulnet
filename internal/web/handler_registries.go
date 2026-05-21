@@ -51,6 +51,18 @@ func (h *Handler) RegistriesTempl(w http.ResponseWriter, r *http.Request) {
 }
 
 // RegistryCreate handles creation of a new registry.
+// registryForm captures the registry create/update inputs.
+// Username / Password are optional; an empty Password on Update
+// preserves the existing credential (the handler only assigns
+// when the form value is non-empty).
+type registryForm struct {
+	Name      string `form:"name" validate:"required"`
+	URL       string `form:"url" validate:"required"`
+	IsDefault bool   `form:"is_default"`
+	Username  string `form:"username"`
+	Password  string `form:"password"`
+}
+
 func (h *Handler) RegistryCreate(w http.ResponseWriter, r *http.Request) {
 	if h.registryRepo == nil {
 		h.setFlash(w, r, "error", "Registry service not configured")
@@ -58,32 +70,26 @@ func (h *Handler) RegistryCreate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := r.ParseForm(); err != nil {
-		h.setFlash(w, r, "error", "Invalid form data")
-		h.redirect(w, r, "/registries")
-		return
-	}
-
-	name := r.FormValue("name")
-	registryURL := r.FormValue("url")
-	if name == "" || registryURL == "" {
-		h.setFlash(w, r, "error", "Name and URL are required")
+	var form registryForm
+	if msg := BindForm(r, &form); msg != "" {
+		h.setFlash(w, r, "error", msg)
 		h.redirect(w, r, "/registries")
 		return
 	}
 
 	input := models.CreateRegistryInput{
-		Name:      name,
-		URL:       registryURL,
-		IsDefault: r.FormValue("is_default") == "on",
+		Name:      form.Name,
+		URL:       form.URL,
+		IsDefault: form.IsDefault,
 	}
 
-	if username := r.FormValue("username"); username != "" {
-		input.Username = &username
+	if form.Username != "" {
+		u := form.Username
+		input.Username = &u
 	}
-	if password := r.FormValue("password"); password != "" {
+	if form.Password != "" {
 		if h.encryptor != nil {
-			encrypted, err := h.encryptor.Encrypt(password)
+			encrypted, err := h.encryptor.Encrypt(form.Password)
 			if err == nil {
 				input.Password = &encrypted
 			} else {
@@ -93,7 +99,8 @@ func (h *Handler) RegistryCreate(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 		} else {
-			input.Password = &password
+			p := form.Password
+			input.Password = &p
 		}
 	}
 
@@ -124,42 +131,37 @@ func (h *Handler) RegistryUpdate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := r.ParseForm(); err != nil {
-		h.setFlash(w, r, "error", "Invalid form data")
-		h.redirect(w, r, "/registries")
-		return
-	}
-
-	name := r.FormValue("name")
-	registryURL := r.FormValue("url")
-	if name == "" || registryURL == "" {
-		h.setFlash(w, r, "error", "Name and URL are required")
+	var form registryForm
+	if msg := BindForm(r, &form); msg != "" {
+		h.setFlash(w, r, "error", msg)
 		h.redirect(w, r, "/registries")
 		return
 	}
 
 	input := models.CreateRegistryInput{
-		Name:      name,
-		URL:       registryURL,
-		IsDefault: r.FormValue("is_default") == "on",
+		Name:      form.Name,
+		URL:       form.URL,
+		IsDefault: form.IsDefault,
 	}
 
-	if username := r.FormValue("username"); username != "" {
-		input.Username = &username
+	if form.Username != "" {
+		u := form.Username
+		input.Username = &u
 	}
-	if password := r.FormValue("password"); password != "" {
+	if form.Password != "" {
 		if h.encryptor != nil {
-			encrypted, err := h.encryptor.Encrypt(password)
-			if err == nil {
+			encrypted, encErr := h.encryptor.Encrypt(form.Password)
+			if encErr == nil {
 				input.Password = &encrypted
 			} else {
-				slog.Error("Failed to encrypt registry password", "error", err)
+				slog.Error("Failed to encrypt registry password", "error", encErr)
 				h.setFlash(w, r, "error", "Failed to encrypt password")
 				h.redirect(w, r, "/registries")
 				return
 			}
 		} else {
-			input.Password = &password
+			p := form.Password
+			input.Password = &p
 		}
 	}
 

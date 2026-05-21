@@ -129,7 +129,7 @@ func Detail(data HostDetailData) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<!-- Breadcrumb --> <nav class=\"flex items-center gap-2 text-sm text-gray-400 mb-4\"><a href=\"/nodes\" class=\"hover:text-primary-400 transition-colors\">Nodes</a> <i class=\"fas fa-chevron-right text-xs\"></i> <span class=\"text-white\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<!-- Breadcrumb --> <nav class=\"flex items-center gap-2 text-sm text-gray-400 mb-4\"><a href=\"/nodes\" class=\"hover:text-primary-400 transition-colors\">Nodes</a> <i aria-hidden=\"true\" class=\"fas fa-chevron-right text-xs\"></i> <span class=\"text-white\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -239,28 +239,28 @@ func Detail(data HostDetailData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			if data.Host.EndpointType == "local" {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "<span class=\"px-2.5 py-1 rounded-full text-xs font-medium bg-primary-500/20 text-primary-400\"><i class=\"fas fa-home mr-1\"></i>Local</span>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "<span class=\"px-2.5 py-1 rounded-full text-xs font-medium bg-primary-500/20 text-primary-400\"><i aria-hidden=\"true\" class=\"fas fa-home mr-1\"></i>Local</span>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			} else if data.Host.EndpointType == "tcp" {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "<span class=\"px-2.5 py-1 rounded-full text-xs font-medium bg-blue-500/20 text-blue-400\"><i class=\"fas fa-network-wired mr-1\"></i>TCP</span> ")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "<span class=\"px-2.5 py-1 rounded-full text-xs font-medium bg-blue-500/20 text-blue-400\"><i aria-hidden=\"true\" class=\"fas fa-network-wired mr-1\"></i>TCP</span> ")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				if data.Host.TLSEnabled {
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "<span class=\"px-2 py-0.5 rounded text-xs font-medium bg-green-500/15 text-green-400\"><i class=\"fas fa-lock mr-1\"></i>TLS</span>")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "<span class=\"px-2 py-0.5 rounded text-xs font-medium bg-green-500/15 text-green-400\"><i aria-hidden=\"true\" class=\"fas fa-lock mr-1\"></i>TLS</span>")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
 				}
 			} else if data.Host.EndpointType == "agent" {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "<span class=\"px-2.5 py-1 rounded-full text-xs font-medium bg-green-500/20 text-green-400\"><i class=\"fas fa-satellite-dish mr-1\"></i>Agent</span> ")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "<span class=\"px-2.5 py-1 rounded-full text-xs font-medium bg-green-500/20 text-green-400\"><i aria-hidden=\"true\" class=\"fas fa-satellite-dish mr-1\"></i>Agent</span> ")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				if data.Host.TLSEnabled {
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "<span class=\"px-2 py-0.5 rounded text-xs font-medium bg-green-500/15 text-green-400\"><i class=\"fas fa-lock mr-1\"></i>TLS</span>")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "<span class=\"px-2 py-0.5 rounded text-xs font-medium bg-green-500/15 text-green-400\"><i aria-hidden=\"true\" class=\"fas fa-lock mr-1\"></i>TLS</span>")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
@@ -297,7 +297,7 @@ func Detail(data HostDetailData) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "\" class=\"px-4 py-2 bg-dark-700 hover:bg-green-600 text-gray-300 hover:text-white rounded-lg transition-colors\"><i class=\"fas fa-folder-open mr-2\"></i>Files</a> <a href=\"")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "\" class=\"px-4 py-2 bg-dark-700 hover:bg-green-600 text-gray-300 hover:text-white rounded-lg transition-colors\"><i aria-hidden=\"true\" class=\"fas fa-folder-open mr-2\"></i>Files</a> <a href=\"")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -310,7 +310,7 @@ func Detail(data HostDetailData) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 20, "\" class=\"px-4 py-2 bg-dark-700 hover:bg-primary-600 text-gray-300 hover:text-white rounded-lg transition-colors\"><i class=\"fas fa-terminal mr-2\"></i>Terminal</a> ")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 20, "\" class=\"px-4 py-2 bg-dark-700 hover:bg-primary-600 text-gray-300 hover:text-white rounded-lg transition-colors\"><i aria-hidden=\"true\" class=\"fas fa-terminal mr-2\"></i>Terminal</a> ")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -328,7 +328,7 @@ func Detail(data HostDetailData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 22, "\" class=\"px-4 py-2 bg-dark-700 hover:bg-dark-600 text-gray-300 hover:text-white rounded-lg transition-colors\"><i class=\"fas fa-edit mr-2\"></i>Edit</a> <button hx-post=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 22, "\" class=\"px-4 py-2 bg-dark-700 hover:bg-dark-600 text-gray-300 hover:text-white rounded-lg transition-colors\"><i aria-hidden=\"true\" class=\"fas fa-edit mr-2\"></i>Edit</a> <button hx-post=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -341,7 +341,7 @@ func Detail(data HostDetailData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 23, "\" hx-swap=\"none\" class=\"px-4 py-2 bg-dark-700 hover:bg-dark-600 text-gray-300 rounded-lg transition-colors\"><i class=\"fas fa-heartbeat mr-2\"></i>Test</button></div></div><!-- Stats Cards --> <div class=\"grid grid-cols-2 md:grid-cols-4 gap-4 mb-6\"><!-- Containers --><div class=\"card p-4\"><div class=\"flex items-center gap-3\"><div class=\"w-10 h-10 rounded-lg bg-primary-500/10 flex items-center justify-center\"><i class=\"fas fa-cube text-primary-400\"></i></div><div><p class=\"text-2xl font-bold text-white\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 23, "\" hx-swap=\"none\" class=\"px-4 py-2 bg-dark-700 hover:bg-dark-600 text-gray-300 rounded-lg transition-colors\"><i aria-hidden=\"true\" class=\"fas fa-heartbeat mr-2\"></i>Test</button></div></div><!-- Stats Cards --> <div class=\"grid grid-cols-2 md:grid-cols-4 gap-4 mb-6\"><!-- Containers --><div class=\"card p-4\"><div class=\"flex items-center gap-3\"><div class=\"w-10 h-10 rounded-lg bg-primary-500/10 flex items-center justify-center\"><i aria-hidden=\"true\" class=\"fas fa-cube text-primary-400\"></i></div><div><p class=\"text-2xl font-bold text-white\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -354,27 +354,27 @@ func Detail(data HostDetailData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 24, "</p><p class=\"text-xs text-gray-400\">Containers</p></div></div><div class=\"mt-3 flex gap-3 text-xs\"><span class=\"text-green-400\"><i class=\"fas fa-play mr-1\"></i>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 24, "</p><p class=\"text-xs text-gray-400\">Containers</p></div></div><div class=\"mt-3 flex gap-3 text-xs\"><span class=\"text-green-400\"><i aria-hidden=\"true\" class=\"fas fa-play mr-1\"></i>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var18 string
 			templ_7745c5c3_Var18, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", data.Host.ContainersRunning))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/hosts/detail.templ`, Line: 185, Col: 86}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/hosts/detail.templ`, Line: 185, Col: 105}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var18))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 25, "</span> <span class=\"text-gray-500\"><i class=\"fas fa-stop mr-1\"></i>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 25, "</span> <span class=\"text-gray-500\"><i aria-hidden=\"true\" class=\"fas fa-stop mr-1\"></i>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var19 string
 			templ_7745c5c3_Var19, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", data.Host.ContainersStopped))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/hosts/detail.templ`, Line: 188, Col: 86}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/hosts/detail.templ`, Line: 188, Col: 105}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var19))
 			if templ_7745c5c3_Err != nil {
@@ -385,14 +385,14 @@ func Detail(data HostDetailData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			if data.Host.ContainersPaused > 0 {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 27, "<span class=\"text-yellow-400\"><i class=\"fas fa-pause mr-1\"></i>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 27, "<span class=\"text-yellow-400\"><i aria-hidden=\"true\" class=\"fas fa-pause mr-1\"></i>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var20 string
 				templ_7745c5c3_Var20, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", data.Host.ContainersPaused))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/hosts/detail.templ`, Line: 192, Col: 87}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/hosts/detail.templ`, Line: 192, Col: 106}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var20))
 				if templ_7745c5c3_Err != nil {
@@ -403,7 +403,7 @@ func Detail(data HostDetailData) templ.Component {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 29, "</div></div><!-- Images --><div class=\"card p-4\"><div class=\"flex items-center gap-3\"><div class=\"w-10 h-10 rounded-lg bg-blue-500/10 flex items-center justify-center\"><i class=\"fas fa-layer-group text-blue-400\"></i></div><div><p class=\"text-2xl font-bold text-white\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 29, "</div></div><!-- Images --><div class=\"card p-4\"><div class=\"flex items-center gap-3\"><div class=\"w-10 h-10 rounded-lg bg-blue-500/10 flex items-center justify-center\"><i aria-hidden=\"true\" class=\"fas fa-layer-group text-blue-400\"></i></div><div><p class=\"text-2xl font-bold text-white\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -416,7 +416,7 @@ func Detail(data HostDetailData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 30, "</p><p class=\"text-xs text-gray-400\">Images</p></div></div></div><!-- CPUs --><div class=\"card p-4\"><div class=\"flex items-center gap-3\"><div class=\"w-10 h-10 rounded-lg bg-yellow-500/10 flex items-center justify-center\"><i class=\"fas fa-microchip text-yellow-400\"></i></div><div><p class=\"text-2xl font-bold text-white\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 30, "</p><p class=\"text-xs text-gray-400\">Images</p></div></div></div><!-- CPUs --><div class=\"card p-4\"><div class=\"flex items-center gap-3\"><div class=\"w-10 h-10 rounded-lg bg-yellow-500/10 flex items-center justify-center\"><i aria-hidden=\"true\" class=\"fas fa-microchip text-yellow-400\"></i></div><div><p class=\"text-2xl font-bold text-white\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -429,7 +429,7 @@ func Detail(data HostDetailData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 31, "</p><p class=\"text-xs text-gray-400\">CPUs</p></div></div></div><!-- Memory --><div class=\"card p-4\"><div class=\"flex items-center gap-3\"><div class=\"w-10 h-10 rounded-lg bg-purple-500/10 flex items-center justify-center\"><i class=\"fas fa-memory text-purple-400\"></i></div><div><p class=\"text-2xl font-bold text-white\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 31, "</p><p class=\"text-xs text-gray-400\">CPUs</p></div></div></div><!-- Memory --><div class=\"card p-4\"><div class=\"flex items-center gap-3\"><div class=\"w-10 h-10 rounded-lg bg-purple-500/10 flex items-center justify-center\"><i aria-hidden=\"true\" class=\"fas fa-memory text-purple-400\"></i></div><div><p class=\"text-2xl font-bold text-white\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -447,7 +447,7 @@ func Detail(data HostDetailData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			if data.Host.EndpointType == "agent" {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 33, "<div class=\"bg-dark-800 rounded-xl border border-dark-600 p-5 mb-6\"><div class=\"flex items-center justify-between\"><div class=\"flex items-center gap-4\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 33, "<div class=\"card p-5 mb-6\"><div class=\"flex items-center justify-between\"><div class=\"flex items-center gap-4\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -553,7 +553,7 @@ func Detail(data HostDetailData) templ.Component {
 					}
 				}
 				if data.Host.TLSEnabled {
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 45, "<div class=\"px-3 py-1.5 bg-green-500/10 rounded-lg\"><span class=\"text-xs text-green-400 font-medium\"><i class=\"fas fa-shield-alt mr-1\"></i>mTLS Secured</span></div>")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 45, "<div class=\"px-3 py-1.5 bg-green-500/10 rounded-lg\"><span class=\"text-xs text-green-400 font-medium\"><i aria-hidden=\"true\" class=\"fas fa-shield-alt mr-1\"></i>mTLS Secured</span></div>")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
@@ -563,7 +563,7 @@ func Detail(data HostDetailData) templ.Component {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 47, " <div class=\"grid grid-cols-1 lg:grid-cols-2 gap-6\"><!-- Docker Engine Info --><div class=\"card\"><div class=\"px-5 py-4 border-b border-dark-700\"><h2 class=\"text-lg font-semibold text-white flex items-center gap-2\"><i class=\"fab fa-docker text-blue-400\"></i> Docker Engine</h2></div><div class=\"p-5 space-y-3\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 47, " <div class=\"grid grid-cols-1 lg:grid-cols-2 gap-6\"><!-- Docker Engine Info --><div class=\"card\"><div class=\"px-5 py-4 border-b border-dark-700\"><h2 class=\"text-lg font-semibold text-white flex items-center gap-2\"><i aria-hidden=\"true\" class=\"fab fa-docker text-blue-400\"></i> Docker Engine</h2></div><div class=\"p-5 space-y-3\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -675,7 +675,7 @@ func Detail(data HostDetailData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 58, "</span></div></div></div><!-- System Info --><div class=\"card\"><div class=\"px-5 py-4 border-b border-dark-700\"><h2 class=\"text-lg font-semibold text-white flex items-center gap-2\"><i class=\"fas fa-desktop text-green-400\"></i> System</h2></div><div class=\"p-5 space-y-3\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 58, "</span></div></div></div><!-- System Info --><div class=\"card\"><div class=\"px-5 py-4 border-b border-dark-700\"><h2 class=\"text-lg font-semibold text-white flex items-center gap-2\"><i aria-hidden=\"true\" class=\"fas fa-desktop text-green-400\"></i> System</h2></div><div class=\"p-5 space-y-3\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -754,7 +754,7 @@ func Detail(data HostDetailData) templ.Component {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 63, "</div></div><!-- Storage & Resources --><div class=\"card\"><div class=\"px-5 py-4 border-b border-dark-700\"><h2 class=\"text-lg font-semibold text-white flex items-center gap-2\"><i class=\"fas fa-hdd text-emerald-400\"></i> Storage &amp; Resources</h2></div><div class=\"p-5 space-y-4\"><!-- Disk Usage -->")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 63, "</div></div><!-- Storage & Resources --><div class=\"card\"><div class=\"px-5 py-4 border-b border-dark-700\"><h2 class=\"text-lg font-semibold text-white flex items-center gap-2\"><i aria-hidden=\"true\" class=\"fas fa-hdd text-emerald-400\"></i> Storage &amp; Resources</h2></div><div class=\"p-5 space-y-4\"><!-- Disk Usage -->")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -985,27 +985,27 @@ func Detail(data HostDetailData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			if data.Host.NetworkRxStr != "" || data.Host.NetworkTxStr != "" {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 86, "<div class=\"grid grid-cols-2 gap-4 pt-2 border-t border-dark-700/50\"><div><p class=\"text-xs text-gray-500 mb-1\">Network Received</p><p class=\"text-sm text-gray-300 font-mono\"><i class=\"fas fa-arrow-down text-green-400 mr-1 text-xs\"></i>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 86, "<div class=\"grid grid-cols-2 gap-4 pt-2 border-t border-dark-700/50\"><div><p class=\"text-xs text-gray-500 mb-1\">Network Received</p><p class=\"text-sm text-gray-300 font-mono\"><i aria-hidden=\"true\" class=\"fas fa-arrow-down text-green-400 mr-1 text-xs\"></i>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var50 string
 				templ_7745c5c3_Var50, templ_7745c5c3_Err = templ.JoinStringErrs(data.Host.NetworkRxStr)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/hosts/detail.templ`, Line: 434, Col: 94}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/hosts/detail.templ`, Line: 434, Col: 113}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var50))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 87, "</p></div><div><p class=\"text-xs text-gray-500 mb-1\">Network Transmitted</p><p class=\"text-sm text-gray-300 font-mono\"><i class=\"fas fa-arrow-up text-blue-400 mr-1 text-xs\"></i>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 87, "</p></div><div><p class=\"text-xs text-gray-500 mb-1\">Network Transmitted</p><p class=\"text-sm text-gray-300 font-mono\"><i aria-hidden=\"true\" class=\"fas fa-arrow-up text-blue-400 mr-1 text-xs\"></i>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var51 string
 				templ_7745c5c3_Var51, templ_7745c5c3_Err = templ.JoinStringErrs(data.Host.NetworkTxStr)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/hosts/detail.templ`, Line: 440, Col: 91}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/hosts/detail.templ`, Line: 440, Col: 110}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var51))
 				if templ_7745c5c3_Err != nil {
@@ -1027,7 +1027,7 @@ func Detail(data HostDetailData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			if len(data.Host.Runtimes) > 0 {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 91, "<div class=\"card\"><div class=\"px-5 py-4 border-b border-dark-700\"><h2 class=\"text-lg font-semibold text-white flex items-center gap-2\"><i class=\"fas fa-cogs text-orange-400\"></i> Runtimes</h2></div><div class=\"p-5\"><div class=\"flex flex-wrap gap-2\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 91, "<div class=\"card\"><div class=\"px-5 py-4 border-b border-dark-700\"><h2 class=\"text-lg font-semibold text-white flex items-center gap-2\"><i aria-hidden=\"true\" class=\"fas fa-cogs text-orange-400\"></i> Runtimes</h2></div><div class=\"p-5\"><div class=\"flex flex-wrap gap-2\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -1088,7 +1088,7 @@ func Detail(data HostDetailData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			if len(data.Host.Plugins) > 0 {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 99, "<div class=\"card\"><div class=\"px-5 py-4 border-b border-dark-700\"><h2 class=\"text-lg font-semibold text-white flex items-center gap-2\"><i class=\"fas fa-puzzle-piece text-cyan-400\"></i> Plugins</h2></div><div class=\"p-5 space-y-4\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 99, "<div class=\"card\"><div class=\"px-5 py-4 border-b border-dark-700\"><h2 class=\"text-lg font-semibold text-white flex items-center gap-2\"><i aria-hidden=\"true\" class=\"fas fa-puzzle-piece text-cyan-400\"></i> Plugins</h2></div><div class=\"p-5 space-y-4\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -1144,7 +1144,7 @@ func Detail(data HostDetailData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			if len(data.Host.Registries) > 0 {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 107, "<div class=\"card\"><div class=\"px-5 py-4 border-b border-dark-700\"><h2 class=\"text-lg font-semibold text-white flex items-center gap-2\"><i class=\"fas fa-warehouse text-yellow-400\"></i> Registries</h2></div><div class=\"p-5\"><div class=\"flex flex-wrap gap-2\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 107, "<div class=\"card\"><div class=\"px-5 py-4 border-b border-dark-700\"><h2 class=\"text-lg font-semibold text-white flex items-center gap-2\"><i aria-hidden=\"true\" class=\"fas fa-warehouse text-yellow-400\"></i> Registries</h2></div><div class=\"p-5\"><div class=\"flex flex-wrap gap-2\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -1177,7 +1177,7 @@ func Detail(data HostDetailData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			if len(data.Host.Labels) > 0 {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 112, "<div class=\"card\"><div class=\"px-5 py-4 border-b border-dark-700\"><h2 class=\"text-lg font-semibold text-white flex items-center gap-2\"><i class=\"fas fa-tags text-pink-400\"></i> Labels</h2></div><div class=\"p-5 space-y-2\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 112, "<div class=\"card\"><div class=\"px-5 py-4 border-b border-dark-700\"><h2 class=\"text-lg font-semibold text-white flex items-center gap-2\"><i aria-hidden=\"true\" class=\"fas fa-tags text-pink-400\"></i> Labels</h2></div><div class=\"p-5 space-y-2\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}

@@ -74,7 +74,7 @@ templ Events(data EventsData) {
 
 			<!-- Connection Status -->
 			<div id="ws-status" class="hidden bg-yellow-500/10 border border-yellow-500/20 rounded-lg p-3 text-yellow-400 text-sm">
-				<i class="fas fa-plug mr-2"></i>Connecting to event stream...
+				<i aria-hidden="true" class="fas fa-plug mr-2"></i>Connecting to event stream...
 			</div>
 
 			<!-- Events List -->
@@ -100,7 +100,7 @@ templ Events(data EventsData) {
 					}
 					<div id="empty-state" class="p-8 text-center text-gray-400">
 						if len(data.Events) == 0 {
-							<i class="fas fa-stream text-3xl mb-3"></i>
+							<i aria-hidden="true" class="fas fa-stream text-3xl mb-3"></i>
 							<p>Waiting for events... Events will appear here in real-time.</p>
 						}
 					</div>
@@ -181,7 +181,7 @@ templ Events(data EventsData) {
 
 					const html = `<div class="p-4 flex items-start gap-4" data-event-type="${escapeHtml(msg.event_type)}" style="display:${display}">
 						<div class="w-10 h-10 rounded-lg flex items-center justify-center bg-dark-700 ${color}">
-							<i class="fas ${icon}"></i>
+							<i aria-hidden="true" class="fas ${icon}"></i>
 						</div>
 						<div class="flex-1 min-w-0">
 							<div class="flex items-center gap-2 mb-1">

@@ -128,7 +128,7 @@ func Container(data ContainerSecurityData) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"space-y-6\"><!-- Breadcrumb --><nav class=\"flex items-center gap-2 text-sm text-gray-400\"><a href=\"/security\" class=\"hover:text-primary-400 transition-colors\">Security</a> <i class=\"fas fa-chevron-right text-xs\"></i> <span class=\"text-white\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"space-y-6\"><!-- Breadcrumb --><nav class=\"flex items-center gap-2 text-sm text-gray-400\"><a href=\"/security\" class=\"hover:text-primary-400 transition-colors\">Security</a> <i aria-hidden=\"true\" class=\"fas fa-chevron-right text-xs\"></i> <span class=\"text-white\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -141,7 +141,7 @@ func Container(data ContainerSecurityData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</span></nav><!-- Header --><div class=\"flex items-center justify-between\"><div class=\"flex items-center gap-4\"><div class=\"w-12 h-12 rounded-lg bg-dark-700 flex items-center justify-center\"><i class=\"fas fa-shield-alt text-xl text-primary-400\"></i></div><div><h1 class=\"text-2xl font-display font-bold text-white\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</span></nav><!-- Header --><div class=\"flex items-center justify-between\"><div class=\"flex items-center gap-4\"><div class=\"w-12 h-12 rounded-lg bg-dark-700 flex items-center justify-center\"><i aria-hidden=\"true\" class=\"fas fa-shield-alt text-xl text-primary-400\"></i></div><div><h1 class=\"text-2xl font-display font-bold text-white\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -180,7 +180,7 @@ func Container(data ContainerSecurityData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "\" hx-swap=\"none\" class=\"btn-primary\" hx-disabled-elt=\"this\"><i class=\"fas fa-sync mr-2\"></i>Rescan</button></div><!-- Score + Severity Summary --><div class=\"grid grid-cols-1 lg:grid-cols-3 gap-4\"><!-- Score Card --><div class=\"card p-6\"><div class=\"flex items-center gap-6\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "\" hx-swap=\"none\" class=\"btn-primary\" hx-disabled-elt=\"this\"><i aria-hidden=\"true\" class=\"fas fa-sync mr-2\"></i>Rescan</button></div><!-- Score + Severity Summary --><div class=\"grid grid-cols-1 lg:grid-cols-3 gap-4\"><!-- Score Card --><div class=\"card p-6\"><div class=\"flex items-center gap-6\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -233,14 +233,14 @@ func Container(data ContainerSecurityData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			if data.Container.LastScanned != "" {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "<div class=\"text-xs text-gray-500 mt-1\"><i class=\"fas fa-clock mr-1\"></i>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "<div class=\"text-xs text-gray-500 mt-1\"><i aria-hidden=\"true\" class=\"fas fa-clock mr-1\"></i>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var11 string
 				templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(data.Container.LastScanned)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/security/container.templ`, Line: 134, Col: 70}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/security/container.templ`, Line: 134, Col: 89}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 				if templ_7745c5c3_Err != nil {
@@ -303,7 +303,7 @@ func Container(data ContainerSecurityData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "</span></div></div></div><!-- Scan Info --><div class=\"card p-6\"><h3 class=\"text-sm font-medium text-gray-400 mb-3\">Scan Details</h3><div class=\"space-y-3\"><div class=\"flex items-center justify-between\"><span class=\"text-sm text-gray-400\"><i class=\"fas fa-exclamation-circle mr-1.5 w-4 text-center\"></i>Total Issues</span> <span class=\"text-sm font-bold text-white\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "</span></div></div></div><!-- Scan Info --><div class=\"card p-6\"><h3 class=\"text-sm font-medium text-gray-400 mb-3\">Scan Details</h3><div class=\"space-y-3\"><div class=\"flex items-center justify-between\"><span class=\"text-sm text-gray-400\"><i aria-hidden=\"true\" class=\"fas fa-exclamation-circle mr-1.5 w-4 text-center\"></i>Total Issues</span> <span class=\"text-sm font-bold text-white\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -316,7 +316,7 @@ func Container(data ContainerSecurityData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "</span></div><div class=\"flex items-center justify-between\"><span class=\"text-sm text-gray-400\"><i class=\"fas fa-bug mr-1.5 w-4 text-center\"></i>CVEs Found</span> <span class=\"text-sm font-bold text-white\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "</span></div><div class=\"flex items-center justify-between\"><span class=\"text-sm text-gray-400\"><i aria-hidden=\"true\" class=\"fas fa-bug mr-1.5 w-4 text-center\"></i>CVEs Found</span> <span class=\"text-sm font-bold text-white\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -329,12 +329,12 @@ func Container(data ContainerSecurityData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "</span></div><div class=\"flex items-center justify-between\"><span class=\"text-sm text-gray-400\"><i class=\"fas fa-search mr-1.5 w-4 text-center\"></i>CVE Scanning</span> ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "</span></div><div class=\"flex items-center justify-between\"><span class=\"text-sm text-gray-400\"><i aria-hidden=\"true\" class=\"fas fa-search mr-1.5 w-4 text-center\"></i>CVE Scanning</span> ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			if data.Container.IncludedCVE {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "<span class=\"text-xs px-2 py-0.5 rounded bg-green-500/10 text-green-400\"><i class=\"fas fa-check mr-1\"></i>Enabled</span>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "<span class=\"text-xs px-2 py-0.5 rounded bg-green-500/10 text-green-400\"><i aria-hidden=\"true\" class=\"fas fa-check mr-1\"></i>Enabled</span>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -362,7 +362,7 @@ func Container(data ContainerSecurityData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			if len(data.Issues) == 0 {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 23, "<div class=\"p-8 text-center text-gray-400\"><i class=\"fas fa-check-circle text-green-400 text-3xl mb-3\"></i><p>No security issues found</p></div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 23, "<div class=\"p-8 text-center text-gray-400\"><i aria-hidden=\"true\" class=\"fas fa-check-circle text-green-400 text-3xl mb-3\"></i><p>No security issues found</p></div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -473,7 +473,7 @@ func Container(data ContainerSecurityData) templ.Component {
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
-						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 34, "\" target=\"_blank\" rel=\"noopener\" class=\"text-sm text-gray-400 hover:text-primary-400\" title=\"Documentation\"><i class=\"fas fa-external-link-alt\"></i></a> ")
+						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 34, "\" target=\"_blank\" rel=\"noopener\" class=\"text-sm text-gray-400 hover:text-primary-400\" title=\"Documentation\"><i aria-hidden=\"true\" class=\"fas fa-external-link-alt\"></i></a> ")
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
@@ -492,7 +492,7 @@ func Container(data ContainerSecurityData) templ.Component {
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
-						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 36, "\" hx-swap=\"none\" class=\"text-sm text-gray-400 hover:text-white\" title=\"Ignore this issue\"><i class=\"fas fa-eye-slash\"></i></button> <button hx-post=\"")
+						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 36, "\" hx-swap=\"none\" class=\"text-sm text-gray-400 hover:text-white\" title=\"Ignore this issue\"><i aria-hidden=\"true\" class=\"fas fa-eye-slash\"></i></button> <button hx-post=\"")
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
@@ -505,7 +505,7 @@ func Container(data ContainerSecurityData) templ.Component {
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
-						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 37, "\" hx-swap=\"none\" class=\"text-sm text-gray-400 hover:text-green-400\" title=\"Mark resolved\"><i class=\"fas fa-check\"></i></button>")
+						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 37, "\" hx-swap=\"none\" class=\"text-sm text-gray-400 hover:text-green-400\" title=\"Mark resolved\"><i aria-hidden=\"true\" class=\"fas fa-check\"></i></button>")
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
@@ -554,7 +554,7 @@ func Container(data ContainerSecurityData) templ.Component {
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
-						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 42, "\" onclick=\"navigator.clipboard.writeText(this.dataset.clipboard)\" class=\"text-gray-400 hover:text-white ml-2 flex-shrink-0\"><i class=\"fas fa-copy\"></i></button></div>")
+						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 42, "\" onclick=\"navigator.clipboard.writeText(this.dataset.clipboard)\" class=\"text-gray-400 hover:text-white ml-2 flex-shrink-0\"><i aria-hidden=\"true\" class=\"fas fa-copy\"></i></button></div>")
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
@@ -574,7 +574,7 @@ func Container(data ContainerSecurityData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			if len(data.CVEs) > 0 {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 46, "<div class=\"card\"><div class=\"px-5 py-4 border-b border-dark-700 flex items-center justify-between\"><div class=\"flex items-center gap-2\"><h2 class=\"font-medium text-white\">Vulnerabilities (CVEs)</h2><span class=\"text-xs px-2 py-0.5 rounded bg-primary-500/10 text-primary-400\"><i class=\"fas fa-bug mr-1\"></i>Trivy</span></div><span class=\"text-xs text-gray-500\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 46, "<div class=\"card\"><div class=\"px-5 py-4 border-b border-dark-700 flex items-center justify-between\"><div class=\"flex items-center gap-2\"><h2 class=\"font-medium text-white\">Vulnerabilities (CVEs)</h2><span class=\"text-xs px-2 py-0.5 rounded bg-primary-500/10 text-primary-400\"><i aria-hidden=\"true\" class=\"fas fa-bug mr-1\"></i>Trivy</span></div><span class=\"text-xs text-gray-500\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -587,7 +587,7 @@ func Container(data ContainerSecurityData) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 47, "</span></div><div class=\"overflow-x-auto\"><table class=\"table\"><thead><tr><th>CVE ID</th><th>Severity</th><th>CVSS</th><th>Package</th><th>Installed</th><th>Fixed In</th></tr></thead> <tbody>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 47, "</span></div><div class=\"overflow-x-auto\"><table class=\"table\"><thead><tr><th scope=\"col\">CVE ID</th><th scope=\"col\">Severity</th><th scope=\"col\">CVSS</th><th scope=\"col\">Package</th><th scope=\"col\">Installed</th><th scope=\"col\">Fixed In</th></tr></thead> <tbody>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -763,7 +763,7 @@ func Container(data ContainerSecurityData) templ.Component {
 					return templ_7745c5c3_Err
 				}
 			} else if !data.Container.IncludedCVE {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 66, "<div class=\"card p-6 text-center\"><i class=\"fas fa-bug text-3xl text-gray-400 mb-3\"></i><p class=\"text-gray-400 mb-2\">CVE scanning was not included in this scan</p><p class=\"text-xs text-gray-500\">Install Trivy to enable image vulnerability scanning</p></div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 66, "<div class=\"card p-6 text-center\"><i aria-hidden=\"true\" class=\"fas fa-bug text-3xl text-gray-400 mb-3\"></i><p class=\"text-gray-400 mb-2\">CVE scanning was not included in this scan</p><p class=\"text-xs text-gray-500\">Install Trivy to enable image vulnerability scanning</p></div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}

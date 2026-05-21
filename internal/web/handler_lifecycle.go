@@ -7,8 +7,6 @@ package web
 import (
 	"fmt"
 	"net/http"
-	"strconv"
-	"strings"
 	"time"
 
 	"github.com/go-chi/chi/v5"
@@ -154,40 +152,49 @@ func (h *Handler) LifecyclePoliciesTempl(w http.ResponseWriter, r *http.Request)
 	h.renderTempl(w, r, lifecycletmpl.Lifecycle(data))
 }
 
+// lifecyclePolicyCreateForm captures the lifecycle policy inputs.
+// The "only_*" filters are checkbox bools; max_age_days /
+// keep_latest are non-negative numerics.
+type lifecyclePolicyCreateForm struct {
+	Name          string `form:"name" validate:"required,min=1,max=200"`
+	Description   string `form:"description"`
+	ResourceType  string `form:"resource_type" validate:"required"`
+	Action        string `form:"action" validate:"required"`
+	Schedule      string `form:"schedule"`
+	OnlyDangling  bool   `form:"only_dangling"`
+	OnlyStopped   bool   `form:"only_stopped"`
+	OnlyUnused    bool   `form:"only_unused"`
+	MaxAgeDays    int    `form:"max_age_days" validate:"gte=0"`
+	KeepLatest    int    `form:"keep_latest" validate:"gte=0"`
+	ExcludeLabels string `form:"exclude_labels"`
+	IncludeLabels string `form:"include_labels"`
+}
+
 // LifecyclePolicyCreate creates a new lifecycle policy.
 func (h *Handler) LifecyclePolicyCreate(w http.ResponseWriter, r *http.Request) {
-	if err := r.ParseForm(); err != nil {
-		h.setFlash(w, r, "error", "Invalid form data")
+	var form lifecyclePolicyCreateForm
+	if msg := BindForm(r, &form); msg != "" {
+		h.setFlash(w, r, "error", msg)
 		http.Redirect(w, r, "/lifecycle", http.StatusSeeOther)
 		return
 	}
-
-	name := strings.TrimSpace(r.FormValue("name"))
-	if name == "" {
-		h.setFlash(w, r, "error", "Policy name is required")
-		http.Redirect(w, r, "/lifecycle", http.StatusSeeOther)
-		return
-	}
-
-	maxAgeDays, _ := strconv.Atoi(r.FormValue("max_age_days"))
-	keepLatest, _ := strconv.Atoi(r.FormValue("keep_latest"))
 
 	if h.lifecycleRepo != nil {
 		p := &LifecyclePolicyRecord{
 			ID:            uuid.New(),
-			Name:          name,
-			Description:   strings.TrimSpace(r.FormValue("description")),
-			ResourceType:  r.FormValue("resource_type"),
-			Action:        r.FormValue("action"),
-			Schedule:      r.FormValue("schedule"),
+			Name:          form.Name,
+			Description:   form.Description,
+			ResourceType:  form.ResourceType,
+			Action:        form.Action,
+			Schedule:      form.Schedule,
 			IsEnabled:     true,
-			OnlyDangling:  r.FormValue("only_dangling") == "on",
-			OnlyStopped:   r.FormValue("only_stopped") == "on",
-			OnlyUnused:    r.FormValue("only_unused") == "on",
-			MaxAgeDays:    maxAgeDays,
-			KeepLatest:    keepLatest,
-			ExcludeLabels: strings.TrimSpace(r.FormValue("exclude_labels")),
-			IncludeLabels: strings.TrimSpace(r.FormValue("include_labels")),
+			OnlyDangling:  form.OnlyDangling,
+			OnlyStopped:   form.OnlyStopped,
+			OnlyUnused:    form.OnlyUnused,
+			MaxAgeDays:    form.MaxAgeDays,
+			KeepLatest:    form.KeepLatest,
+			ExcludeLabels: form.ExcludeLabels,
+			IncludeLabels: form.IncludeLabels,
 		}
 		if err := h.lifecycleRepo.CreatePolicy(r.Context(), p); err != nil {
 			h.setFlash(w, r, "error", "Failed to create policy: "+err.Error())
@@ -196,7 +203,7 @@ func (h *Handler) LifecyclePolicyCreate(w http.ResponseWriter, r *http.Request) 
 		}
 	}
 
-	h.setFlash(w, r, "success", "Lifecycle policy '"+name+"' created")
+	h.setFlash(w, r, "success", "Lifecycle policy '"+form.Name+"' created")
 	http.Redirect(w, r, "/lifecycle", http.StatusSeeOther)
 }
 

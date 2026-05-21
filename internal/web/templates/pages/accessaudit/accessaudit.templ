@@ -83,7 +83,7 @@ templ AccessAudit(data AccessAuditData) {
 				<form method="POST" action="/access-audit/export">
 					<input type="hidden" name="csrf_token" value={ data.PageData.CSRFToken }/>
 					<button type="submit" class="btn-secondary flex items-center gap-2">
-						<i class="fas fa-download"></i>
+						<i aria-hidden="true" class="fas fa-download"></i>
 						Export Report
 					</button>
 				</form>
@@ -103,7 +103,7 @@ templ AccessAudit(data AccessAuditData) {
 			if data.Stats.FailedLogins > 5 {
 				<div class="card border-l-4 border-l-red-500 p-4">
 					<div class="flex items-center gap-3">
-						<i class="fas fa-shield-alt text-red-400"></i>
+						<i aria-hidden="true" class="fas fa-shield-alt text-red-400"></i>
 						<div>
 							<h3 class="text-sm font-medium text-red-400">Multiple Failed Login Attempts</h3>
 							<p class="text-xs text-gray-400 mt-0.5">{ fmt.Sprintf("%d failed login attempts detected. Review for potential brute force attacks.", data.Stats.FailedLogins) }</p>
@@ -115,13 +115,13 @@ templ AccessAudit(data AccessAuditData) {
 			<!-- Tabs -->
 			<div x-data={ fmt.Sprintf("{ tab: '%s' }", auditActiveTab(data.ActiveTab)) } class="space-y-4">
 				<div class="flex gap-1 border-b border-dark-600">
-					<button @click="tab = 'events'" :class="tab === 'events' ? 'border-primary-500 text-white' : 'border-transparent text-gray-400 hover:text-gray-300'" class="px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors">
+					<button @click="tab = 'events'" :class="tab === 'events' ? 'border-primary-500 text-white' : 'border-transparent text-gray-400 hover:text-gray-300'" class="tab-underline">
 						Audit Log ({ fmt.Sprintf("%d", len(data.AuditLogs)) })
 					</button>
-					<button @click="tab = 'sessions'" :class="tab === 'sessions' ? 'border-primary-500 text-white' : 'border-transparent text-gray-400 hover:text-gray-300'" class="px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors">
+					<button @click="tab = 'sessions'" :class="tab === 'sessions' ? 'border-primary-500 text-white' : 'border-transparent text-gray-400 hover:text-gray-300'" class="tab-underline">
 						Active Sessions ({ fmt.Sprintf("%d", len(data.Sessions)) })
 					</button>
-					<button @click="tab = 'users'" :class="tab === 'users' ? 'border-primary-500 text-white' : 'border-transparent text-gray-400 hover:text-gray-300'" class="px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors">
+					<button @click="tab = 'users'" :class="tab === 'users' ? 'border-primary-500 text-white' : 'border-transparent text-gray-400 hover:text-gray-300'" class="tab-underline">
 						User Activity ({ fmt.Sprintf("%d", len(data.Users)) })
 					</button>
 				</div>
@@ -130,7 +130,7 @@ templ AccessAudit(data AccessAuditData) {
 				<div x-show="tab === 'events'" x-cloak>
 					if len(data.AuditLogs) == 0 {
 						<div class="card p-12 text-center">
-							<i class="fas fa-list text-4xl text-gray-400 mb-4"></i>
+							<i aria-hidden="true" class="fas fa-list text-4xl text-gray-400 mb-4"></i>
 							<h3 class="text-lg font-medium text-white mb-2">No Audit Events</h3>
 							<p class="text-gray-400">Audit events will appear here as users interact with the system</p>
 						</div>
@@ -139,13 +139,13 @@ templ AccessAudit(data AccessAuditData) {
 							<table class="w-full">
 								<thead>
 									<tr class="border-b border-dark-600">
-										<th class="text-left text-xs font-medium text-gray-400 uppercase px-4 py-3">Time</th>
-										<th class="text-left text-xs font-medium text-gray-400 uppercase px-4 py-3">User</th>
-										<th class="text-left text-xs font-medium text-gray-400 uppercase px-4 py-3">Action</th>
-										<th class="text-left text-xs font-medium text-gray-400 uppercase px-4 py-3">Resource</th>
-										<th class="text-left text-xs font-medium text-gray-400 uppercase px-4 py-3">Details</th>
-										<th class="text-left text-xs font-medium text-gray-400 uppercase px-4 py-3">IP</th>
-										<th class="text-left text-xs font-medium text-gray-400 uppercase px-4 py-3">Status</th>
+										<th scope="col" class="text-left text-xs font-medium text-gray-400 uppercase px-4 py-3">Time</th>
+										<th scope="col" class="text-left text-xs font-medium text-gray-400 uppercase px-4 py-3">User</th>
+										<th scope="col" class="text-left text-xs font-medium text-gray-400 uppercase px-4 py-3">Action</th>
+										<th scope="col" class="text-left text-xs font-medium text-gray-400 uppercase px-4 py-3">Resource</th>
+										<th scope="col" class="text-left text-xs font-medium text-gray-400 uppercase px-4 py-3">Details</th>
+										<th scope="col" class="text-left text-xs font-medium text-gray-400 uppercase px-4 py-3">IP</th>
+										<th scope="col" class="text-left text-xs font-medium text-gray-400 uppercase px-4 py-3">Status</th>
 									</tr>
 								</thead>
 								<tbody class="divide-y divide-dark-700">
@@ -190,7 +190,7 @@ templ AccessAudit(data AccessAuditData) {
 				<div x-show="tab === 'sessions'" x-cloak>
 					if len(data.Sessions) == 0 {
 						<div class="card p-12 text-center">
-							<i class="fas fa-users text-4xl text-gray-400 mb-4"></i>
+							<i aria-hidden="true" class="fas fa-users text-4xl text-gray-400 mb-4"></i>
 							<h3 class="text-lg font-medium text-white mb-2">No Active Sessions</h3>
 							<p class="text-gray-400">Active user sessions will appear here</p>
 						</div>
@@ -207,7 +207,7 @@ templ AccessAudit(data AccessAuditData) {
 				<div x-show="tab === 'users'" x-cloak>
 					if len(data.Users) == 0 {
 						<div class="card p-12 text-center">
-							<i class="fas fa-user text-4xl text-gray-400 mb-4"></i>
+							<i aria-hidden="true" class="fas fa-user text-4xl text-gray-400 mb-4"></i>
 							<h3 class="text-lg font-medium text-white mb-2">No User Activity</h3>
 							<p class="text-gray-400">User activity data will appear here</p>
 						</div>
@@ -216,13 +216,13 @@ templ AccessAudit(data AccessAuditData) {
 							<table class="w-full">
 								<thead>
 									<tr class="border-b border-dark-600">
-										<th class="text-left text-xs font-medium text-gray-400 uppercase px-4 py-3">User</th>
-										<th class="text-left text-xs font-medium text-gray-400 uppercase px-4 py-3">Role</th>
-										<th class="text-left text-xs font-medium text-gray-400 uppercase px-4 py-3">Last Login</th>
-										<th class="text-left text-xs font-medium text-gray-400 uppercase px-4 py-3">Last IP</th>
-										<th class="text-center text-xs font-medium text-gray-400 uppercase px-4 py-3">Actions</th>
-										<th class="text-center text-xs font-medium text-gray-400 uppercase px-4 py-3">Failed Logins</th>
-										<th class="text-left text-xs font-medium text-gray-400 uppercase px-4 py-3">Status</th>
+										<th scope="col" class="text-left text-xs font-medium text-gray-400 uppercase px-4 py-3">User</th>
+										<th scope="col" class="text-left text-xs font-medium text-gray-400 uppercase px-4 py-3">Role</th>
+										<th scope="col" class="text-left text-xs font-medium text-gray-400 uppercase px-4 py-3">Last Login</th>
+										<th scope="col" class="text-left text-xs font-medium text-gray-400 uppercase px-4 py-3">Last IP</th>
+										<th scope="col" class="text-center text-xs font-medium text-gray-400 uppercase px-4 py-3">Actions</th>
+										<th scope="col" class="text-center text-xs font-medium text-gray-400 uppercase px-4 py-3">Failed Logins</th>
+										<th scope="col" class="text-left text-xs font-medium text-gray-400 uppercase px-4 py-3">Status</th>
 									</tr>
 								</thead>
 								<tbody class="divide-y divide-dark-700">
@@ -247,7 +247,7 @@ templ AccessAudit(data AccessAuditData) {
 											</td>
 											<td class="px-4 py-3">
 												if u.IsLocked {
-													<span class="px-2 py-0.5 text-xs bg-red-500/20 text-red-400 rounded flex items-center gap-1 w-fit"><i class="fas fa-lock text-[10px]"></i>Locked</span>
+													<span class="px-2 py-0.5 text-xs bg-red-500/20 text-red-400 rounded flex items-center gap-1 w-fit"><i aria-hidden="true" class="fas fa-lock text-[10px]"></i>Locked</span>
 												} else if u.IsActive {
 													<span class="px-2 py-0.5 text-xs bg-green-500/20 text-green-400 rounded">Active</span>
 												} else {
@@ -291,12 +291,12 @@ templ sessionCard(s SessionView, csrfToken string) {
 						}
 					</div>
 					<div class="flex items-center gap-4 mt-1 text-xs text-gray-500">
-						<span><i class="fas fa-network-wired mr-1"></i>{ s.IPAddress }</span>
+						<span><i aria-hidden="true" class="fas fa-network-wired mr-1"></i>{ s.IPAddress }</span>
 						if s.Location != "" {
-							<span><i class="fas fa-map-marker-alt mr-1"></i>{ s.Location }</span>
+							<span><i aria-hidden="true" class="fas fa-map-marker-alt mr-1"></i>{ s.Location }</span>
 						}
-						<span><i class="fas fa-clock mr-1"></i>Started: { s.StartedAt }</span>
-						<span><i class="fas fa-history mr-1"></i>Last active: { s.LastActiveAt }</span>
+						<span><i aria-hidden="true" class="fas fa-clock mr-1"></i>Started: { s.StartedAt }</span>
+						<span><i aria-hidden="true" class="fas fa-history mr-1"></i>Last active: { s.LastActiveAt }</span>
 					</div>
 					<div class="text-xs text-gray-400 mt-1 truncate max-w-[500px]">{ s.UserAgent }</div>
 				</div>
@@ -305,7 +305,7 @@ templ sessionCard(s SessionView, csrfToken string) {
 				<form method="POST" action={ templ.SafeURL("/access-audit/sessions/" + s.ID + "/revoke") } onsubmit="return confirm('Revoke this session?')">
 					<input type="hidden" name="csrf_token" value={ csrfToken }/>
 					<button type="submit" class="btn-secondary text-sm text-red-400 hover:text-red-300">
-						<i class="fas fa-times mr-1"></i>Revoke
+						<i aria-hidden="true" class="fas fa-times mr-1"></i>Revoke
 					</button>
 				</form>
 			}

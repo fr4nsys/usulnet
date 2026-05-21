@@ -1,0 +1,14 @@
+services:
+  cowrie:
+    image: cowrie/cowrie:2.5.0
+    restart: unless-stopped
+    ports:
+      - "{{SSH_PORT}}:2222"
+      - "{{TELNET_PORT}}:2223"
+    volumes:
+      - cowrie-var:/cowrie/cowrie-git/var
+      - cowrie-etc:/cowrie/cowrie-git/etc
+
+volumes:
+  cowrie-var: {}
+  cowrie-etc: {}

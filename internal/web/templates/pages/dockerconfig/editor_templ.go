@@ -87,7 +87,7 @@ func Editor(data EditorData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, ")</p></div><div class=\"flex items-center gap-2\"><a href=\"/config/docker/history\" class=\"btn-secondary text-sm\"><i class=\"fas fa-history mr-1\"></i>History</a></div></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, ")</p></div><div class=\"flex items-center gap-2\"><a href=\"/config/docker/history\" class=\"btn-secondary text-sm\"><i aria-hidden=\"true\" class=\"fas fa-history mr-1\"></i>History</a></div></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -126,7 +126,7 @@ func Editor(data EditorData) templ.Component {
 						return templ_7745c5c3_Err
 					}
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, " <!-- Editor + side panel --> <div class=\"grid grid-cols-1 lg:grid-cols-4 gap-4\"><div class=\"lg:col-span-3 card overflow-hidden\"><div class=\"px-4 py-2 bg-dark-800 border-b border-dark-600 flex items-center justify-between\"><div class=\"flex items-center gap-2 text-xs text-gray-400\"><span class=\"px-2 py-0.5 rounded bg-blue-500/10 text-blue-300\">on-disk</span> <span>vs</span> <span class=\"px-2 py-0.5 rounded bg-primary-500/10 text-primary-400\">working copy</span></div><div class=\"flex items-center gap-2\"><button type=\"button\" id=\"btn-format\" class=\"text-xs btn-ghost\"><i class=\"fas fa-magic mr-1\"></i>Format</button> <button type=\"button\" id=\"btn-revert\" class=\"text-xs btn-ghost\"><i class=\"fas fa-undo mr-1\"></i>Revert</button> <button type=\"button\" id=\"btn-apply\" class=\"btn-primary text-sm\" data-rollback-warning=\"If the daemon does not return healthy within { data.ReloadTimeout } usulnet will roll back automatically.\"><i class=\"fas fa-bolt mr-1\"></i>Apply</button></div></div><div id=\"monaco-diff\" data-original=\"")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, " <!-- Editor + side panel --> <div class=\"grid grid-cols-1 lg:grid-cols-4 gap-4\"><div class=\"lg:col-span-3 card overflow-hidden\"><div class=\"px-4 py-2 bg-dark-800 border-b border-dark-600 flex items-center justify-between\"><div class=\"flex items-center gap-2 text-xs text-gray-400\"><span class=\"px-2 py-0.5 rounded bg-blue-500/10 text-blue-300\">on-disk</span> <span>vs</span> <span class=\"px-2 py-0.5 rounded bg-primary-500/10 text-primary-400\">working copy</span></div><div class=\"flex items-center gap-2\"><button type=\"button\" id=\"btn-format\" class=\"text-xs btn-ghost\"><i aria-hidden=\"true\" class=\"fas fa-magic mr-1\"></i>Format</button> <button type=\"button\" id=\"btn-revert\" class=\"text-xs btn-ghost\"><i aria-hidden=\"true\" class=\"fas fa-undo mr-1\"></i>Revert</button> <button type=\"button\" id=\"btn-apply\" class=\"btn-primary text-sm\" data-rollback-warning=\"If the daemon does not return healthy within { data.ReloadTimeout } usulnet will roll back automatically.\"><i aria-hidden=\"true\" class=\"fas fa-bolt mr-1\"></i>Apply</button></div></div><div id=\"monaco-diff\" data-original=\"")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -139,7 +139,7 @@ func Editor(data EditorData) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "\" class=\"w-full\" style=\"height: 60vh\"></div></div><div class=\"space-y-3\"><div class=\"card p-4\"><h3 class=\"text-sm font-semibold text-white mb-2\">Safety</h3><ul class=\"text-xs text-gray-400 space-y-2\"><li class=\"flex items-start gap-2\"><i class=\"fas fa-check text-green-400 mt-0.5\"></i> <span>Atomic write (temp + fsync + rename)</span></li><li class=\"flex items-start gap-2\"><i class=\"fas fa-check text-green-400 mt-0.5\"></i> <span>Snapshot before write</span></li><li class=\"flex items-start gap-2\"><i class=\"fas fa-check text-green-400 mt-0.5\"></i> <span>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "\" class=\"w-full\" style=\"height: 60vh\"></div></div><div class=\"space-y-3\"><div class=\"card p-4\"><h3 class=\"text-sm font-semibold text-white mb-2\">Safety</h3><ul class=\"text-xs text-gray-400 space-y-2\"><li class=\"flex items-start gap-2\"><i aria-hidden=\"true\" class=\"fas fa-check text-green-400 mt-0.5\"></i> <span>Atomic write (temp + fsync + rename)</span></li><li class=\"flex items-start gap-2\"><i aria-hidden=\"true\" class=\"fas fa-check text-green-400 mt-0.5\"></i> <span>Snapshot before write</span></li><li class=\"flex items-start gap-2\"><i aria-hidden=\"true\" class=\"fas fa-check text-green-400 mt-0.5\"></i> <span>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -152,7 +152,7 @@ func Editor(data EditorData) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, " hard reload timeout</span></li><li class=\"flex items-start gap-2\"><i class=\"fas fa-check text-green-400 mt-0.5\"></i> <span>Automatic rollback on reload failure</span></li></ul></div><div class=\"card p-4\"><h3 class=\"text-sm font-semibold text-white mb-2\">Recent snapshots</h3>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, " hard reload timeout</span></li><li class=\"flex items-start gap-2\"><i aria-hidden=\"true\" class=\"fas fa-check text-green-400 mt-0.5\"></i> <span>Automatic rollback on reload failure</span></li></ul></div><div class=\"card p-4\"><h3 class=\"text-sm font-semibold text-white mb-2\">Recent snapshots</h3>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -181,14 +181,14 @@ func Editor(data EditorData) templ.Component {
 							if templ_7745c5c3_Err != nil {
 								return templ_7745c5c3_Err
 							}
-							templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "\" class=\"text-gray-300 hover:text-primary-400 truncate\"><i class=\"fas fa-clock text-gray-500 mr-1\"></i>")
+							templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "\" class=\"text-gray-300 hover:text-primary-400 truncate\"><i aria-hidden=\"true\" class=\"fas fa-clock text-gray-500 mr-1\"></i>")
 							if templ_7745c5c3_Err != nil {
 								return templ_7745c5c3_Err
 							}
 							var templ_7745c5c3_Var9 string
 							templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(snap.Timestamp)
 							if templ_7745c5c3_Err != nil {
-								return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/dockerconfig/editor.templ`, Line: 107, Col: 76}
+								return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/dockerconfig/editor.templ`, Line: 107, Col: 95}
 							}
 							_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 							if templ_7745c5c3_Err != nil {
@@ -213,7 +213,7 @@ func Editor(data EditorData) templ.Component {
 							}
 						}
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "</ul><a href=\"/config/docker/history\" class=\"text-xs text-primary-400 hover:underline mt-3 inline-block\">View all <i class=\"fas fa-arrow-right text-[10px] ml-0.5\"></i></a>")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "</ul><a href=\"/config/docker/history\" class=\"text-xs text-primary-400 hover:underline mt-3 inline-block\">View all <i aria-hidden=\"true\" class=\"fas fa-arrow-right text-[10px] ml-0.5\"></i></a>")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
@@ -223,7 +223,7 @@ func Editor(data EditorData) templ.Component {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "</div><!-- Monaco loader --> <script src=\"/static/vendor/monaco-editor/min/vs/loader.js\"></script> <script>\n\t\t(function() {\n\t\t\tvar container = document.getElementById('monaco-diff');\n\t\t\tif (!container) return;\n\t\t\tvar originalText = container.dataset.original || \"{}\";\n\n\t\t\trequire.config({ paths: { vs: '/static/vendor/monaco-editor/min/vs' } });\n\t\t\trequire(['vs/editor/editor.main'], function() {\n\t\t\t\tmonaco.editor.defineTheme('usulnet-dark', {\n\t\t\t\t\tbase: 'vs-dark',\n\t\t\t\t\tinherit: true,\n\t\t\t\t\trules: [\n\t\t\t\t\t\t{ token: '', foreground: 'e6edf3', background: '0d1117' },\n\t\t\t\t\t],\n\t\t\t\t\tcolors: {\n\t\t\t\t\t\t'editor.background': '#0d1117',\n\t\t\t\t\t\t'editorLineNumber.foreground': '#484f58',\n\t\t\t\t\t\t'editorLineNumber.activeForeground': '#e6edf3',\n\t\t\t\t\t\t'diffEditor.insertedTextBackground': '#22863a22',\n\t\t\t\t\t\t'diffEditor.removedTextBackground': '#cb242122',\n\t\t\t\t\t}\n\t\t\t\t});\n\n\t\t\t\tvar origModel = monaco.editor.createModel(originalText, 'json');\n\t\t\t\tvar workModel = monaco.editor.createModel(originalText, 'json');\n\n\t\t\t\tvar diffEditor = monaco.editor.createDiffEditor(container, {\n\t\t\t\t\ttheme: 'usulnet-dark',\n\t\t\t\t\tautomaticLayout: true,\n\t\t\t\t\toriginalEditable: false,\n\t\t\t\t\treadOnly: false,\n\t\t\t\t\trenderSideBySide: true,\n\t\t\t\t\tfontSize: 13,\n\t\t\t\t\tfontFamily: \"'IBM Plex Mono', monospace\",\n\t\t\t\t\tminimap: { enabled: false },\n\t\t\t\t});\n\t\t\t\tdiffEditor.setModel({ original: origModel, modified: workModel });\n\n\t\t\t\tdocument.getElementById('btn-revert').addEventListener('click', function() {\n\t\t\t\t\tworkModel.setValue(originalText);\n\t\t\t\t});\n\n\t\t\t\tdocument.getElementById('btn-format').addEventListener('click', function() {\n\t\t\t\t\ttry {\n\t\t\t\t\t\tvar parsed = JSON.parse(workModel.getValue());\n\t\t\t\t\t\tworkModel.setValue(JSON.stringify(parsed, null, 2));\n\t\t\t\t\t} catch (e) {\n\t\t\t\t\t\talert('Cannot format: invalid JSON: ' + e.message);\n\t\t\t\t\t}\n\t\t\t\t});\n\n\t\t\t\tdocument.getElementById('btn-apply').addEventListener('click', function() {\n\t\t\t\t\tvar msg = this.dataset.rollbackWarning || '';\n\t\t\t\t\tif (!confirm('Apply changes to /etc/docker/daemon.json?\\n\\n' + msg)) return;\n\n\t\t\t\t\tvar btn = this;\n\t\t\t\t\tbtn.disabled = true;\n\t\t\t\t\tbtn.innerHTML = '<i class=\"fas fa-circle-notch fa-spin mr-1\"></i>Applying...';\n\n\t\t\t\t\tvar csrf = document.querySelector('meta[name=\"csrf-token\"]');\n\t\t\t\t\tvar headers = { 'Content-Type': 'application/x-www-form-urlencoded' };\n\t\t\t\t\tif (csrf) headers['X-CSRF-Token'] = csrf.content;\n\n\t\t\t\t\tvar body = new URLSearchParams();\n\t\t\t\t\tbody.set('raw', workModel.getValue());\n\t\t\t\t\tif (csrf) body.set('csrf_token', csrf.content);\n\n\t\t\t\t\tfetch('/config/docker/apply', {\n\t\t\t\t\t\tmethod: 'POST',\n\t\t\t\t\t\theaders: headers,\n\t\t\t\t\t\tbody: body.toString(),\n\t\t\t\t\t}).then(function(resp) {\n\t\t\t\t\t\t// Replace the page with the server-rendered response\n\t\t\t\t\t\t// so the apply / rollback banner is shown inline.\n\t\t\t\t\t\twindow.location.href = '/config/docker';\n\t\t\t\t\t}).catch(function(err) {\n\t\t\t\t\t\talert('Apply failed: ' + err);\n\t\t\t\t\t\tbtn.disabled = false;\n\t\t\t\t\t\tbtn.innerHTML = '<i class=\"fas fa-bolt mr-1\"></i>Apply';\n\t\t\t\t\t});\n\t\t\t\t});\n\t\t\t});\n\t\t})();\n\t\t</script>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "</div><!-- Monaco loader --> <script src=\"/static/vendor/monaco-editor/min/vs/loader.js\"></script> <script>\n\t\t(function() {\n\t\t\tvar container = document.getElementById('monaco-diff');\n\t\t\tif (!container) return;\n\t\t\tvar originalText = container.dataset.original || \"{}\";\n\n\t\t\trequire.config({ paths: { vs: '/static/vendor/monaco-editor/min/vs' } });\n\t\t\trequire(['vs/editor/editor.main'], function() {\n\t\t\t\tmonaco.editor.defineTheme('usulnet-dark', {\n\t\t\t\t\tbase: 'vs-dark',\n\t\t\t\t\tinherit: true,\n\t\t\t\t\trules: [\n\t\t\t\t\t\t{ token: '', foreground: 'e6edf3', background: '0d1117' },\n\t\t\t\t\t],\n\t\t\t\t\tcolors: {\n\t\t\t\t\t\t'editor.background': '#0d1117',\n\t\t\t\t\t\t'editorLineNumber.foreground': '#484f58',\n\t\t\t\t\t\t'editorLineNumber.activeForeground': '#e6edf3',\n\t\t\t\t\t\t'diffEditor.insertedTextBackground': '#22863a22',\n\t\t\t\t\t\t'diffEditor.removedTextBackground': '#cb242122',\n\t\t\t\t\t}\n\t\t\t\t});\n\n\t\t\t\tvar origModel = monaco.editor.createModel(originalText, 'json');\n\t\t\t\tvar workModel = monaco.editor.createModel(originalText, 'json');\n\n\t\t\t\tvar diffEditor = monaco.editor.createDiffEditor(container, {\n\t\t\t\t\ttheme: 'usulnet-dark',\n\t\t\t\t\tautomaticLayout: true,\n\t\t\t\t\toriginalEditable: false,\n\t\t\t\t\treadOnly: false,\n\t\t\t\t\trenderSideBySide: true,\n\t\t\t\t\tfontSize: 13,\n\t\t\t\t\tfontFamily: \"'IBM Plex Mono', monospace\",\n\t\t\t\t\tminimap: { enabled: false },\n\t\t\t\t});\n\t\t\t\tdiffEditor.setModel({ original: origModel, modified: workModel });\n\n\t\t\t\tdocument.getElementById('btn-revert').addEventListener('click', function() {\n\t\t\t\t\tworkModel.setValue(originalText);\n\t\t\t\t});\n\n\t\t\t\tdocument.getElementById('btn-format').addEventListener('click', function() {\n\t\t\t\t\ttry {\n\t\t\t\t\t\tvar parsed = JSON.parse(workModel.getValue());\n\t\t\t\t\t\tworkModel.setValue(JSON.stringify(parsed, null, 2));\n\t\t\t\t\t} catch (e) {\n\t\t\t\t\t\talert('Cannot format: invalid JSON: ' + e.message);\n\t\t\t\t\t}\n\t\t\t\t});\n\n\t\t\t\tdocument.getElementById('btn-apply').addEventListener('click', function() {\n\t\t\t\t\tvar msg = this.dataset.rollbackWarning || '';\n\t\t\t\t\tif (!confirm('Apply changes to /etc/docker/daemon.json?\\n\\n' + msg)) return;\n\n\t\t\t\t\tvar btn = this;\n\t\t\t\t\tbtn.disabled = true;\n\t\t\t\t\tbtn.innerHTML = '<i aria-hidden=\"true\" class=\"fas fa-circle-notch fa-spin mr-1\"></i>Applying...';\n\n\t\t\t\t\tvar csrf = document.querySelector('meta[name=\"csrf-token\"]');\n\t\t\t\t\tvar headers = { 'Content-Type': 'application/x-www-form-urlencoded' };\n\t\t\t\t\tif (csrf) headers['X-CSRF-Token'] = csrf.content;\n\n\t\t\t\t\tvar body = new URLSearchParams();\n\t\t\t\t\tbody.set('raw', workModel.getValue());\n\t\t\t\t\tif (csrf) body.set('csrf_token', csrf.content);\n\n\t\t\t\t\tfetch('/config/docker/apply', {\n\t\t\t\t\t\tmethod: 'POST',\n\t\t\t\t\t\theaders: headers,\n\t\t\t\t\t\tbody: body.toString(),\n\t\t\t\t\t}).then(function(resp) {\n\t\t\t\t\t\t// Replace the page with the server-rendered response\n\t\t\t\t\t\t// so the apply / rollback banner is shown inline.\n\t\t\t\t\t\twindow.location.href = '/config/docker';\n\t\t\t\t\t}).catch(function(err) {\n\t\t\t\t\t\talert('Apply failed: ' + err);\n\t\t\t\t\t\tbtn.disabled = false;\n\t\t\t\t\t\tbtn.innerHTML = '<i aria-hidden=\"true\" class=\"fas fa-bolt mr-1\"></i>Apply';\n\t\t\t\t\t});\n\t\t\t\t});\n\t\t\t});\n\t\t})();\n\t\t</script>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -323,7 +323,7 @@ func AppliedBanner(a AppliedView) templ.Component {
 		}
 		ctx = templ.ClearChildren(ctx)
 		if a.RolledBack {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 22, "<div class=\"rounded-lg p-4 border bg-red-500/10 border-red-500/20\"><div class=\"flex items-start gap-3\"><i class=\"fas fa-undo text-red-400 mt-0.5\"></i><div class=\"flex-1 min-w-0\"><p class=\"text-sm font-medium text-red-300\">Rollback fired</p><p class=\"text-xs text-red-200/80 mt-1\">The daemon did not return healthy after reload — daemon.json was restored to snapshot <code>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 22, "<div class=\"rounded-lg p-4 border bg-red-500/10 border-red-500/20\"><div class=\"flex items-start gap-3\"><i aria-hidden=\"true\" class=\"fas fa-undo text-red-400 mt-0.5\"></i><div class=\"flex-1 min-w-0\"><p class=\"text-sm font-medium text-red-300\">Rollback fired</p><p class=\"text-xs text-red-200/80 mt-1\">The daemon did not return healthy after reload — daemon.json was restored to snapshot <code>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -364,7 +364,7 @@ func AppliedBanner(a AppliedView) templ.Component {
 				return templ_7745c5c3_Err
 			}
 		} else if a.Reloaded {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 27, "<div class=\"rounded-lg p-4 border bg-green-500/10 border-green-500/20\"><div class=\"flex items-start gap-3\"><i class=\"fas fa-check text-green-400 mt-0.5\"></i><div class=\"flex-1 min-w-0\"><p class=\"text-sm font-medium text-green-300\">Applied — daemon reloaded</p><p class=\"text-xs text-green-200/80 mt-1\">Snapshot: <code>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 27, "<div class=\"rounded-lg p-4 border bg-green-500/10 border-green-500/20\"><div class=\"flex items-start gap-3\"><i aria-hidden=\"true\" class=\"fas fa-check text-green-400 mt-0.5\"></i><div class=\"flex-1 min-w-0\"><p class=\"text-sm font-medium text-green-300\">Applied — daemon reloaded</p><p class=\"text-xs text-green-200/80 mt-1\">Snapshot: <code>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -418,7 +418,7 @@ func AppliedBanner(a AppliedView) templ.Component {
 				return templ_7745c5c3_Err
 			}
 		} else {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 33, "<div class=\"rounded-lg p-4 border bg-blue-500/10 border-blue-500/20\"><div class=\"flex items-start gap-3\"><i class=\"fas fa-info-circle text-blue-400 mt-0.5\"></i><div class=\"flex-1 min-w-0\"><p class=\"text-sm font-medium text-blue-300\">Applied — ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 33, "<div class=\"rounded-lg p-4 border bg-blue-500/10 border-blue-500/20\"><div class=\"flex items-start gap-3\"><i aria-hidden=\"true\" class=\"fas fa-info-circle text-blue-400 mt-0.5\"></i><div class=\"flex-1 min-w-0\"><p class=\"text-sm font-medium text-blue-300\">Applied — ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

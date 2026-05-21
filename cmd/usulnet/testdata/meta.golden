@@ -8,6 +8,7 @@ Two execution modes:
                                                   Docker daemon.
 
 Usage:
+  usulnet meta [flags]
   usulnet meta [command]
 
 Available Commands:
@@ -24,6 +25,8 @@ Flags:
 
 Global Flags:
   -c, --config string   config file path (default: /etc/usulnet/config.yaml or ./config.yaml)
+      --json            shortcut for --output json (overrides --output)
       --output string   output format: table|json|yaml (default "table")
+  -q, --quiet           suppress informational output (errors and primary data still print)
 
 Use "usulnet meta [command] --help" for more information about a command.

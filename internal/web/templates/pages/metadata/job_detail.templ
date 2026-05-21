@@ -1,6 +1,7 @@
 package metadata
 
 import (
+	"github.com/fr4nsys/usulnet/internal/web/templates/components"
 	"github.com/fr4nsys/usulnet/internal/web/templates/layouts"
 )
 
@@ -9,7 +10,7 @@ templ JobDetail(data JobDetailData) {
 		<div class="space-y-6">
 			<div>
 				<a href="/recon/metadata" class="text-xs text-primary-400 hover:underline">
-					<i class="fas fa-chevron-left mr-1"></i>Back to metadata
+					<i aria-hidden="true" class="fas fa-chevron-left mr-1"></i>Back to metadata
 				</a>
 				<h1 class="text-2xl font-display font-bold text-white mt-1">Metadata Job</h1>
 				<p class="text-gray-400 mt-1">
@@ -21,15 +22,13 @@ templ JobDetail(data JobDetailData) {
 			if data.Job.Error != "" {
 				<div class="card p-4 border border-red-500/30 bg-red-500/5">
 					<p class="text-sm text-red-400">
-						<i class="fas fa-exclamation-triangle mr-2"></i>{ data.Job.Error }
+						<i aria-hidden="true" class="fas fa-exclamation-triangle mr-2"></i>{ data.Job.Error }
 					</p>
 				</div>
 			}
 
 			if len(data.Artifacts) == 0 {
-				<div class="card p-12 text-center">
-					<p class="text-gray-400">No artifacts recorded for this job yet.</p>
-				</div>
+				@components.EmptyState("", "", "No artifacts recorded for this job yet.")
 			} else {
 				<div class="space-y-3">
 					for _, a := range data.Artifacts {
@@ -53,7 +52,7 @@ templ artifactCard(a ArtifactView) {
 			</div>
 			if a.StrippedAvailable {
 				<a href={ templ.SafeURL(a.DownloadURL) } class="btn-primary text-sm">
-					<i class="fas fa-download mr-2"></i>Download stripped
+					<i aria-hidden="true" class="fas fa-download mr-2"></i>Download stripped
 				</a>
 			}
 		</div>

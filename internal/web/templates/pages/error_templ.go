@@ -93,7 +93,7 @@ func Error(data ErrorData) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "</p><!-- Actions --><div class=\"flex items-center justify-center gap-4\"><a href=\"/\" class=\"px-6 py-3 bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-black font-medium rounded-lg shadow-lg shadow-primary-500/25 transition-all\"><i class=\"fas fa-home mr-2\"></i> Go Home</a> <button onclick=\"history.back()\" class=\"px-6 py-3 bg-dark-700 hover:bg-dark-600 text-gray-300 font-medium rounded-lg transition-colors\"><i class=\"fas fa-arrow-left mr-2\"></i> Go Back</button></div><!-- Additional help for specific errors -->")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "</p><!-- Actions --><div class=\"flex items-center justify-center gap-4\"><a href=\"/\" class=\"px-6 py-3 bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-black font-medium rounded-lg shadow-lg shadow-primary-500/25 transition-all\"><i aria-hidden=\"true\" class=\"fas fa-home mr-2\"></i> Go Home</a> <button onclick=\"history.back()\" class=\"px-6 py-3 bg-dark-700 hover:bg-dark-600 text-gray-300 font-medium rounded-lg transition-colors\"><i aria-hidden=\"true\" class=\"fas fa-arrow-left mr-2\"></i> Go Back</button></div><!-- Additional help for specific errors -->")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

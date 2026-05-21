@@ -95,7 +95,7 @@ func HealthDashboard(data HealthDashData) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"space-y-6\"><!-- Header --><div class=\"flex items-center justify-between\"><div><h1 class=\"text-2xl font-display font-bold text-white\">Container Health Dashboard</h1><p class=\"text-gray-400 mt-1\">Monitor health check status, output, and failure history</p></div><a href=\"/containers\" class=\"btn-secondary flex items-center gap-2\"><i class=\"fas fa-list\"></i> All Containers</a></div><!-- Stats --><div class=\"grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"space-y-6\"><!-- Header --><div class=\"flex items-center justify-between\"><div><h1 class=\"text-2xl font-display font-bold text-white\">Container Health Dashboard</h1><p class=\"text-gray-400 mt-1\">Monitor health check status, output, and failure history</p></div><a href=\"/containers\" class=\"btn-secondary flex items-center gap-2\"><i aria-hidden=\"true\" class=\"fas fa-list\"></i> All Containers</a></div><!-- Stats --><div class=\"grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -128,7 +128,7 @@ func HealthDashboard(data HealthDashData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			if data.Stats.Unhealthy > 0 {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<div class=\"card border-l-4 border-l-red-500 p-4\"><div class=\"flex items-center gap-3\"><i class=\"fas fa-exclamation-triangle text-red-400\"></i><div><h3 class=\"text-sm font-medium text-red-400\">Unhealthy Containers Detected</h3><p class=\"text-xs text-gray-400 mt-0.5\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<div class=\"card border-l-4 border-l-red-500 p-4\"><div class=\"flex items-center gap-3\"><i aria-hidden=\"true\" class=\"fas fa-exclamation-triangle text-red-400\"></i><div><h3 class=\"text-sm font-medium text-red-400\">Unhealthy Containers Detected</h3><p class=\"text-xs text-gray-400 mt-0.5\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -151,7 +151,7 @@ func HealthDashboard(data HealthDashData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			if len(data.Containers) == 0 {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<div class=\"card p-12 text-center\"><i class=\"fas fa-heartbeat text-4xl text-gray-400 mb-4\"></i><h3 class=\"text-lg font-medium text-white mb-2\">No Containers Found</h3><p class=\"text-gray-400\">Container health data will appear here when containers are running</p></div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<div class=\"card p-12 text-center\"><i aria-hidden=\"true\" class=\"fas fa-heartbeat text-4xl text-gray-400 mb-4\"></i><h3 class=\"text-lg font-medium text-white mb-2\">No Containers Found</h3><p class=\"text-gray-400\">Container health data will appear here when containers are running</p></div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -169,53 +169,53 @@ func HealthDashboard(data HealthDashData) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, ")</button> <button @click=\"filter = 'healthy'\" :class=\"filter === 'healthy' ? 'bg-green-600 text-white' : 'bg-dark-700 text-gray-400 hover:text-white'\" class=\"px-3 py-1.5 rounded-lg text-sm transition-colors\"><i class=\"fas fa-heart mr-1\"></i>Healthy (")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, ")</button> <button @click=\"filter = 'healthy'\" :class=\"filter === 'healthy' ? 'bg-green-600 text-white' : 'bg-dark-700 text-gray-400 hover:text-white'\" class=\"px-3 py-1.5 rounded-lg text-sm transition-colors\"><i aria-hidden=\"true\" class=\"fas fa-heart mr-1\"></i>Healthy (")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var5 string
 				templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", data.Stats.Healthy))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/healthdash/healthdash.templ`, Line: 110, Col: 88}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/healthdash/healthdash.templ`, Line: 110, Col: 107}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, ")</button> <button @click=\"filter = 'unhealthy'\" :class=\"filter === 'unhealthy' ? 'bg-red-600 text-white' : 'bg-dark-700 text-gray-400 hover:text-white'\" class=\"px-3 py-1.5 rounded-lg text-sm transition-colors\"><i class=\"fas fa-heart-broken mr-1\"></i>Unhealthy (")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, ")</button> <button @click=\"filter = 'unhealthy'\" :class=\"filter === 'unhealthy' ? 'bg-red-600 text-white' : 'bg-dark-700 text-gray-400 hover:text-white'\" class=\"px-3 py-1.5 rounded-lg text-sm transition-colors\"><i aria-hidden=\"true\" class=\"fas fa-heart-broken mr-1\"></i>Unhealthy (")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var6 string
 				templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", data.Stats.Unhealthy))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/healthdash/healthdash.templ`, Line: 113, Col: 99}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/healthdash/healthdash.templ`, Line: 113, Col: 118}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, ")</button> <button @click=\"filter = 'starting'\" :class=\"filter === 'starting' ? 'bg-yellow-600 text-white' : 'bg-dark-700 text-gray-400 hover:text-white'\" class=\"px-3 py-1.5 rounded-lg text-sm transition-colors\"><i class=\"fas fa-spinner mr-1\"></i>Starting (")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, ")</button> <button @click=\"filter = 'starting'\" :class=\"filter === 'starting' ? 'bg-yellow-600 text-white' : 'bg-dark-700 text-gray-400 hover:text-white'\" class=\"px-3 py-1.5 rounded-lg text-sm transition-colors\"><i aria-hidden=\"true\" class=\"fas fa-spinner mr-1\"></i>Starting (")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var7 string
 				templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", data.Stats.Starting))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/healthdash/healthdash.templ`, Line: 116, Col: 92}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/healthdash/healthdash.templ`, Line: 116, Col: 111}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, ")</button> <button @click=\"filter = 'none'\" :class=\"filter === 'none' ? 'bg-gray-600 text-white' : 'bg-dark-700 text-gray-400 hover:text-white'\" class=\"px-3 py-1.5 rounded-lg text-sm transition-colors\"><i class=\"fas fa-question-circle mr-1\"></i>No Check (")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, ")</button> <button @click=\"filter = 'none'\" :class=\"filter === 'none' ? 'bg-gray-600 text-white' : 'bg-dark-700 text-gray-400 hover:text-white'\" class=\"px-3 py-1.5 rounded-lg text-sm transition-colors\"><i aria-hidden=\"true\" class=\"fas fa-question-circle mr-1\"></i>No Check (")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var8 string
 				templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", data.Stats.NoHealthCheck))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/healthdash/healthdash.templ`, Line: 119, Col: 105}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/healthdash/healthdash.templ`, Line: 119, Col: 124}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 				if templ_7745c5c3_Err != nil {
@@ -500,53 +500,53 @@ func healthCard(c HealthContainerView) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		if c.HealthCheck.IsConfigured {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 34, "<div class=\"flex items-center gap-4 mt-2 text-xs text-gray-500 flex-wrap\"><span><i class=\"fas fa-terminal mr-1\"></i>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 34, "<div class=\"flex items-center gap-4 mt-2 text-xs text-gray-500 flex-wrap\"><span><i aria-hidden=\"true\" class=\"fas fa-terminal mr-1\"></i>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var26 string
 			templ_7745c5c3_Var26, templ_7745c5c3_Err = templ.JoinStringErrs(c.HealthCheck.Test)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/healthdash/healthdash.templ`, Line: 163, Col: 69}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/healthdash/healthdash.templ`, Line: 163, Col: 88}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var26))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 35, "</span> <span><i class=\"fas fa-clock mr-1\"></i>Interval: ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 35, "</span> <span><i aria-hidden=\"true\" class=\"fas fa-clock mr-1\"></i>Interval: ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var27 string
 			templ_7745c5c3_Var27, templ_7745c5c3_Err = templ.JoinStringErrs(c.HealthCheck.Interval)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/healthdash/healthdash.templ`, Line: 164, Col: 80}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/healthdash/healthdash.templ`, Line: 164, Col: 99}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var27))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 36, "</span> <span><i class=\"fas fa-hourglass mr-1\"></i>Timeout: ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 36, "</span> <span><i aria-hidden=\"true\" class=\"fas fa-hourglass mr-1\"></i>Timeout: ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var28 string
 			templ_7745c5c3_Var28, templ_7745c5c3_Err = templ.JoinStringErrs(c.HealthCheck.Timeout)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/healthdash/healthdash.templ`, Line: 165, Col: 82}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/healthdash/healthdash.templ`, Line: 165, Col: 101}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var28))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 37, "</span> <span><i class=\"fas fa-redo mr-1\"></i>Retries: ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 37, "</span> <span><i aria-hidden=\"true\" class=\"fas fa-redo mr-1\"></i>Retries: ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var29 string
 			templ_7745c5c3_Var29, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", c.HealthCheck.Retries))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/healthdash/healthdash.templ`, Line: 166, Col: 96}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/healthdash/healthdash.templ`, Line: 166, Col: 115}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var29))
 			if templ_7745c5c3_Err != nil {
@@ -557,14 +557,14 @@ func healthCard(c HealthContainerView) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			if c.FailingStreak > 0 {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 39, "<span class=\"text-red-400\"><i class=\"fas fa-exclamation-triangle mr-1\"></i>Failing streak: ")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 39, "<span class=\"text-red-400\"><i aria-hidden=\"true\" class=\"fas fa-exclamation-triangle mr-1\"></i>Failing streak: ")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var30 string
 				templ_7745c5c3_Var30, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", c.FailingStreak))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/healthdash/healthdash.templ`, Line: 168, Col: 135}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/healthdash/healthdash.templ`, Line: 168, Col: 154}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var30))
 				if templ_7745c5c3_Err != nil {
@@ -576,14 +576,14 @@ func healthCard(c HealthContainerView) templ.Component {
 				}
 			}
 			if c.LastCheckedAt != "" {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 41, "<span><i class=\"fas fa-history mr-1\"></i>Last: ")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 41, "<span><i aria-hidden=\"true\" class=\"fas fa-history mr-1\"></i>Last: ")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var31 string
 				templ_7745c5c3_Var31, templ_7745c5c3_Err = templ.JoinStringErrs(c.LastCheckedAt)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/healthdash/healthdash.templ`, Line: 171, Col: 72}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/healthdash/healthdash.templ`, Line: 171, Col: 91}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var31))
 				if templ_7745c5c3_Err != nil {
@@ -599,7 +599,7 @@ func healthCard(c HealthContainerView) templ.Component {
 				return templ_7745c5c3_Err
 			}
 		} else {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 44, "<div class=\"flex items-center gap-2 mt-2 text-xs text-gray-500\"><i class=\"fas fa-info-circle\"></i> <span>No health check configured</span></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 44, "<div class=\"flex items-center gap-2 mt-2 text-xs text-gray-500\"><i aria-hidden=\"true\" class=\"fas fa-info-circle\"></i> <span>No health check configured</span></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -619,14 +619,14 @@ func healthCard(c HealthContainerView) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		if c.HealthCheck.IsConfigured && len(c.HealthLogs) > 0 {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 48, "<div x-show=\"expanded\" x-cloak x-transition class=\"mt-4 border-t border-dark-600 pt-4\"><h4 class=\"text-sm font-medium text-gray-300 mb-2\"><i class=\"fas fa-clipboard-list mr-1\"></i>Health Check History (last ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 48, "<div x-show=\"expanded\" x-cloak x-transition class=\"mt-4 border-t border-dark-600 pt-4\"><h4 class=\"text-sm font-medium text-gray-300 mb-2\"><i aria-hidden=\"true\" class=\"fas fa-clipboard-list mr-1\"></i>Health Check History (last ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var32 string
 			templ_7745c5c3_Var32, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", len(c.HealthLogs)))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/healthdash/healthdash.templ`, Line: 194, Col: 112}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/healthdash/healthdash.templ`, Line: 194, Col: 131}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var32))
 			if templ_7745c5c3_Err != nil {
@@ -760,22 +760,22 @@ func healthIcon(health string) templ.Component {
 		ctx = templ.ClearChildren(ctx)
 		switch health {
 		case "healthy":
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 62, "<i class=\"fas fa-heart text-green-400 text-lg\"></i>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 62, "<i aria-hidden=\"true\" class=\"fas fa-heart text-green-400 text-lg\"></i>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		case "unhealthy":
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 63, "<i class=\"fas fa-heart-broken text-red-400 text-lg animate-pulse\"></i>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 63, "<i aria-hidden=\"true\" class=\"fas fa-heart-broken text-red-400 text-lg animate-pulse\"></i>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		case "starting":
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 64, "<i class=\"fas fa-spinner text-yellow-400 text-lg animate-spin\"></i>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 64, "<i aria-hidden=\"true\" class=\"fas fa-spinner text-yellow-400 text-lg animate-spin\"></i>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		default:
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 65, "<i class=\"fas fa-question-circle text-gray-500 text-lg\"></i>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 65, "<i aria-hidden=\"true\" class=\"fas fa-question-circle text-gray-500 text-lg\"></i>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

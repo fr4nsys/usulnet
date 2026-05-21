@@ -89,7 +89,7 @@ func TargetDetail(data TargetDetailData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<div class=\"max-w-5xl\"><!-- Header --><div class=\"flex items-center justify-between mb-6\"><div class=\"flex items-center gap-3\"><a href=\"/ssl/targets\" class=\"text-gray-400 hover:text-white\"><i class=\"fas fa-arrow-left\"></i></a><h2 class=\"text-xl font-display font-bold text-white\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<div class=\"max-w-5xl\"><!-- Header --><div class=\"flex items-center justify-between mb-6\"><div class=\"flex items-center gap-3\"><a href=\"/ssl/targets\" class=\"text-gray-400 hover:text-white\"><i aria-hidden=\"true\" class=\"fas fa-arrow-left\"></i></a><h2 class=\"text-xl font-display font-bold text-white\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -138,7 +138,7 @@ func TargetDetail(data TargetDetailData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "\"> <button type=\"submit\" class=\"btn btn-primary\"><i class=\"fas fa-sync-alt mr-1\"></i> Scan Now</button></form><a href=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "\"> <button type=\"submit\" class=\"btn btn-primary\"><i aria-hidden=\"true\" class=\"fas fa-sync-alt mr-1\"></i> Scan Now</button></form><a href=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -151,7 +151,7 @@ func TargetDetail(data TargetDetailData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "\" class=\"btn btn-secondary\"><i class=\"fas fa-edit mr-1\"></i> Edit</a> <button hx-delete=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "\" class=\"btn btn-secondary\"><i aria-hidden=\"true\" class=\"fas fa-edit mr-1\"></i> Edit</a> <button hx-delete=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -164,7 +164,7 @@ func TargetDetail(data TargetDetailData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "\" hx-confirm=\"Delete this SSL target?\" class=\"btn btn-danger\"><i class=\"fas fa-trash mr-1\"></i> Delete</button></div></div><!-- Target Info --><div class=\"card p-6 mb-6\"><h3 class=\"text-lg font-semibold text-white mb-4\">Target Information</h3><div class=\"grid grid-cols-2 md:grid-cols-4 gap-4\"><div><p class=\"text-xs text-gray-500 uppercase tracking-wider\">Hostname</p><p class=\"text-sm font-mono text-white\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "\" hx-confirm=\"Delete this SSL target?\" class=\"btn btn-danger\"><i aria-hidden=\"true\" class=\"fas fa-trash mr-1\"></i> Delete</button></div></div><!-- Target Info --><div class=\"card p-6 mb-6\"><h3 class=\"text-lg font-semibold text-white mb-4\">Target Information</h3><div class=\"grid grid-cols-2 md:grid-cols-4 gap-4\"><div><p class=\"text-xs text-gray-500 uppercase tracking-wider\">Hostname</p><p class=\"text-sm font-mono text-white\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -297,7 +297,7 @@ func TargetDetail(data TargetDetailData) templ.Component {
 					}
 				}
 			} else {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 26, "<div class=\"card p-6 mb-6 text-center\"><i class=\"fas fa-search text-3xl text-gray-400 mb-3\"></i><p class=\"text-gray-400\">No scan results yet. Run a scan to analyze this target.</p></div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 26, "<div class=\"card p-6 mb-6 text-center\"><i aria-hidden=\"true\" class=\"fas fa-search text-3xl text-gray-400 mb-3\"></i><p class=\"text-gray-400\">No scan results yet. Run a scan to analyze this target.</p></div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -307,7 +307,7 @@ func TargetDetail(data TargetDetailData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			if len(data.ScanHistory) > 0 {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 28, "<div class=\"card\"><div class=\"p-4 border-b border-dark-700\"><h3 class=\"text-lg font-semibold text-white\">Scan History</h3></div><div class=\"overflow-x-auto\"><table class=\"table\"><thead><tr><th>Date</th><th>Hostname</th><th>Grade</th><th>Score</th><th>Protocol</th><th>Chain Valid</th><th>Duration</th><th>Error</th></tr></thead> <tbody>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 28, "<div class=\"card\"><div class=\"p-4 border-b border-dark-700\"><h3 class=\"text-lg font-semibold text-white\">Scan History</h3></div><div class=\"overflow-x-auto\"><table class=\"table\"><thead><tr><th scope=\"col\">Date</th><th scope=\"col\">Hostname</th><th scope=\"col\">Grade</th><th scope=\"col\">Score</th><th scope=\"col\">Protocol</th><th scope=\"col\">Chain Valid</th><th scope=\"col\">Duration</th><th scope=\"col\">Error</th></tr></thead> <tbody>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -729,12 +729,12 @@ func latestScanCard(scan ScanView) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		if scan.HasHSTS {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 70, "<i class=\"fas fa-check-circle text-green-400\"></i> ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 70, "<i aria-hidden=\"true\" class=\"fas fa-check-circle text-green-400\"></i> ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		} else {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 71, "<i class=\"fas fa-times-circle text-red-400\"></i> ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 71, "<i aria-hidden=\"true\" class=\"fas fa-times-circle text-red-400\"></i> ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -744,12 +744,12 @@ func latestScanCard(scan ScanView) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		if scan.HasOCSP {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 73, "<i class=\"fas fa-check-circle text-green-400\"></i> ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 73, "<i aria-hidden=\"true\" class=\"fas fa-check-circle text-green-400\"></i> ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		} else {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 74, "<i class=\"fas fa-times-circle text-red-400\"></i> ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 74, "<i aria-hidden=\"true\" class=\"fas fa-times-circle text-red-400\"></i> ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -759,12 +759,12 @@ func latestScanCard(scan ScanView) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		if scan.HasSCT {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 76, "<i class=\"fas fa-check-circle text-green-400\"></i> ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 76, "<i aria-hidden=\"true\" class=\"fas fa-check-circle text-green-400\"></i> ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		} else {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 77, "<i class=\"fas fa-times-circle text-red-400\"></i> ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 77, "<i aria-hidden=\"true\" class=\"fas fa-times-circle text-red-400\"></i> ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

@@ -23,14 +23,14 @@ templ TargetsList(data TargetsListData) {
 						hx-target="#modal-container"
 						hx-swap="innerHTML"
 					>
-						<i class="fas fa-plus mr-2"></i>Add Target
+						<i aria-hidden="true" class="fas fa-plus mr-2"></i>Add Target
 					</button>
 				</div>
 			</div>
 
 			if len(data.Targets) == 0 {
 				<div class="card p-12 text-center">
-					<i class="fas fa-bullseye text-4xl text-gray-500 mb-4"></i>
+					<i aria-hidden="true" class="fas fa-bullseye text-4xl text-gray-500 mb-4"></i>
 					<h3 class="text-lg font-medium text-white mb-2">No Targets</h3>
 					<p class="text-gray-400">Add an email, domain, IP, or username target to start scanning.</p>
 				</div>
@@ -39,12 +39,12 @@ templ TargetsList(data TargetsListData) {
 					<table class="w-full text-sm">
 						<thead class="bg-dark-800 text-gray-400 text-xs uppercase tracking-wide">
 							<tr>
-								<th class="text-left px-4 py-3">Type</th>
-								<th class="text-left px-4 py-3">Value</th>
-								<th class="text-left px-4 py-3">Ownership</th>
-								<th class="text-left px-4 py-3">Scans</th>
-								<th class="text-left px-4 py-3">Created</th>
-								<th class="text-right px-4 py-3">Actions</th>
+								<th scope="col" class="text-left px-4 py-3">Type</th>
+								<th scope="col" class="text-left px-4 py-3">Value</th>
+								<th scope="col" class="text-left px-4 py-3">Ownership</th>
+								<th scope="col" class="text-left px-4 py-3">Scans</th>
+								<th scope="col" class="text-left px-4 py-3">Created</th>
+								<th scope="col" class="text-right px-4 py-3">Actions</th>
 							</tr>
 						</thead>
 						<tbody class="divide-y divide-dark-700">
@@ -84,7 +84,7 @@ templ targetRow(t TargetView) {
 		<td class="px-4 py-3">
 			if t.OwnershipOK {
 				<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium bg-green-500/10 text-green-400 border border-green-500/20">
-					<i class="fas fa-check"></i>verified
+					<i aria-hidden="true" class="fas fa-check"></i>verified
 				</span>
 			} else if t.OwnershipStatus != "" {
 				<span class="px-2 py-0.5 rounded text-xs font-medium bg-yellow-500/10 text-yellow-400 border border-yellow-500/20">{ t.OwnershipStatus }</span>
@@ -96,7 +96,7 @@ templ targetRow(t TargetView) {
 		<td class="px-4 py-3 text-gray-400">{ t.CreatedAt }</td>
 		<td class="px-4 py-3 text-right space-x-2">
 			<a href={ templ.SafeURL("/recon/targets/" + t.ID) } class="text-gray-400 hover:text-primary-400" title="Details">
-				<i class="fas fa-eye"></i>
+				<i aria-hidden="true" class="fas fa-eye"></i>
 			</a>
 		</td>
 	</tr>

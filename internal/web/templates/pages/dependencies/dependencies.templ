@@ -90,7 +90,7 @@ templ Dependencies(data DependencyData) {
 					<p class="text-gray-400 mt-1">Visualize relationships between containers, networks, volumes, and images</p>
 				</div>
 				<a href="/topology" class="btn-secondary flex items-center gap-2">
-					<i class="fas fa-project-diagram"></i>
+					<i aria-hidden="true" class="fas fa-project-diagram"></i>
 					Network Topology
 				</a>
 			</div>
@@ -111,7 +111,7 @@ templ Dependencies(data DependencyData) {
 			if len(data.Warnings) > 0 {
 				<div class="card p-4">
 					<h3 class="text-sm font-medium text-yellow-400 mb-3">
-						<i class="fas fa-exclamation-triangle mr-2"></i>Dependency Warnings ({ fmt.Sprintf("%d", len(data.Warnings)) })
+						<i aria-hidden="true" class="fas fa-exclamation-triangle mr-2"></i>Dependency Warnings ({ fmt.Sprintf("%d", len(data.Warnings)) })
 					</h3>
 					<div class="space-y-2">
 						for _, w := range data.Warnings {
@@ -133,19 +133,19 @@ templ Dependencies(data DependencyData) {
 			<!-- Tabs -->
 			<div x-data="{ tab: 'graph' }" class="space-y-4">
 				<div class="flex gap-1 border-b border-dark-600">
-					<button @click="tab = 'graph'" :class="tab === 'graph' ? 'border-primary-500 text-white' : 'border-transparent text-gray-400 hover:text-gray-300'" class="px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors">
+					<button @click="tab = 'graph'" :class="tab === 'graph' ? 'border-primary-500 text-white' : 'border-transparent text-gray-400 hover:text-gray-300'" class="tab-underline">
 						Dependency Map
 					</button>
-					<button @click="tab = 'containers'" :class="tab === 'containers' ? 'border-primary-500 text-white' : 'border-transparent text-gray-400 hover:text-gray-300'" class="px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors">
+					<button @click="tab = 'containers'" :class="tab === 'containers' ? 'border-primary-500 text-white' : 'border-transparent text-gray-400 hover:text-gray-300'" class="tab-underline">
 						Containers ({ fmt.Sprintf("%d", len(data.Containers)) })
 					</button>
-					<button @click="tab = 'networks'" :class="tab === 'networks' ? 'border-primary-500 text-white' : 'border-transparent text-gray-400 hover:text-gray-300'" class="px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors">
+					<button @click="tab = 'networks'" :class="tab === 'networks' ? 'border-primary-500 text-white' : 'border-transparent text-gray-400 hover:text-gray-300'" class="tab-underline">
 						Networks ({ fmt.Sprintf("%d", len(data.Networks)) })
 					</button>
-					<button @click="tab = 'volumes'" :class="tab === 'volumes' ? 'border-primary-500 text-white' : 'border-transparent text-gray-400 hover:text-gray-300'" class="px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors">
+					<button @click="tab = 'volumes'" :class="tab === 'volumes' ? 'border-primary-500 text-white' : 'border-transparent text-gray-400 hover:text-gray-300'" class="tab-underline">
 						Volumes ({ fmt.Sprintf("%d", len(data.Volumes)) })
 					</button>
-					<button @click="tab = 'images'" :class="tab === 'images' ? 'border-primary-500 text-white' : 'border-transparent text-gray-400 hover:text-gray-300'" class="px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors">
+					<button @click="tab = 'images'" :class="tab === 'images' ? 'border-primary-500 text-white' : 'border-transparent text-gray-400 hover:text-gray-300'" class="tab-underline">
 						Images ({ fmt.Sprintf("%d", len(data.Images)) })
 					</button>
 				</div>
@@ -164,7 +164,7 @@ templ Dependencies(data DependencyData) {
 							if data.Stats.IsolatedContainers > 0 {
 								<div class="card p-4 border border-yellow-500/30">
 									<h3 class="text-sm font-medium text-yellow-400 mb-3">
-										<i class="fas fa-unlink mr-2"></i>Isolated Containers (no network)
+										<i aria-hidden="true" class="fas fa-unlink mr-2"></i>Isolated Containers (no network)
 									</h3>
 									<div class="flex flex-wrap gap-2">
 										for _, c := range data.Containers {
@@ -182,7 +182,7 @@ templ Dependencies(data DependencyData) {
 							<!-- Shared Volumes -->
 							<div class="card p-4">
 								<h3 class="font-medium text-white mb-3">
-									<i class="fas fa-database text-purple-400 mr-2"></i>Volumes
+									<i aria-hidden="true" class="fas fa-database text-purple-400 mr-2"></i>Volumes
 								</h3>
 								<div class="space-y-2">
 									for _, vol := range data.Volumes {
@@ -214,7 +214,7 @@ templ Dependencies(data DependencyData) {
 							<!-- Images -->
 							<div class="card p-4">
 								<h3 class="font-medium text-white mb-3">
-									<i class="fas fa-layer-group text-cyan-400 mr-2"></i>Images
+									<i aria-hidden="true" class="fas fa-layer-group text-cyan-400 mr-2"></i>Images
 								</h3>
 								<div class="space-y-2">
 									for _, img := range data.Images {
@@ -245,12 +245,12 @@ templ Dependencies(data DependencyData) {
 						<table class="w-full">
 							<thead>
 								<tr class="border-b border-dark-600">
-									<th class="text-left text-xs font-medium text-gray-400 uppercase px-4 py-3">Container</th>
-									<th class="text-left text-xs font-medium text-gray-400 uppercase px-4 py-3">Image</th>
-									<th class="text-left text-xs font-medium text-gray-400 uppercase px-4 py-3">State</th>
-									<th class="text-left text-xs font-medium text-gray-400 uppercase px-4 py-3">Networks</th>
-									<th class="text-left text-xs font-medium text-gray-400 uppercase px-4 py-3">Volumes</th>
-									<th class="text-left text-xs font-medium text-gray-400 uppercase px-4 py-3">Dependencies</th>
+									<th scope="col" class="text-left text-xs font-medium text-gray-400 uppercase px-4 py-3">Container</th>
+									<th scope="col" class="text-left text-xs font-medium text-gray-400 uppercase px-4 py-3">Image</th>
+									<th scope="col" class="text-left text-xs font-medium text-gray-400 uppercase px-4 py-3">State</th>
+									<th scope="col" class="text-left text-xs font-medium text-gray-400 uppercase px-4 py-3">Networks</th>
+									<th scope="col" class="text-left text-xs font-medium text-gray-400 uppercase px-4 py-3">Volumes</th>
+									<th scope="col" class="text-left text-xs font-medium text-gray-400 uppercase px-4 py-3">Dependencies</th>
 								</tr>
 							</thead>
 							<tbody class="divide-y divide-dark-700">
@@ -301,7 +301,7 @@ templ Dependencies(data DependencyData) {
 								<div class="flex items-center justify-between mb-3">
 									<div class="flex items-center gap-3">
 										<div class="w-10 h-10 rounded-lg bg-blue-500/20 flex items-center justify-center">
-											<i class="fas fa-network-wired text-blue-400"></i>
+											<i aria-hidden="true" class="fas fa-network-wired text-blue-400"></i>
 										</div>
 										<div>
 											<div class="flex items-center gap-2">
@@ -342,11 +342,11 @@ templ Dependencies(data DependencyData) {
 						<table class="w-full">
 							<thead>
 								<tr class="border-b border-dark-600">
-									<th class="text-left text-xs font-medium text-gray-400 uppercase px-4 py-3">Volume</th>
-									<th class="text-left text-xs font-medium text-gray-400 uppercase px-4 py-3">Driver</th>
-									<th class="text-left text-xs font-medium text-gray-400 uppercase px-4 py-3">Size</th>
-									<th class="text-left text-xs font-medium text-gray-400 uppercase px-4 py-3">Status</th>
-									<th class="text-left text-xs font-medium text-gray-400 uppercase px-4 py-3">Used By</th>
+									<th scope="col" class="text-left text-xs font-medium text-gray-400 uppercase px-4 py-3">Volume</th>
+									<th scope="col" class="text-left text-xs font-medium text-gray-400 uppercase px-4 py-3">Driver</th>
+									<th scope="col" class="text-left text-xs font-medium text-gray-400 uppercase px-4 py-3">Size</th>
+									<th scope="col" class="text-left text-xs font-medium text-gray-400 uppercase px-4 py-3">Status</th>
+									<th scope="col" class="text-left text-xs font-medium text-gray-400 uppercase px-4 py-3">Used By</th>
 								</tr>
 							</thead>
 							<tbody class="divide-y divide-dark-700">
@@ -387,10 +387,10 @@ templ Dependencies(data DependencyData) {
 						<table class="w-full">
 							<thead>
 								<tr class="border-b border-dark-600">
-									<th class="text-left text-xs font-medium text-gray-400 uppercase px-4 py-3">Image</th>
-									<th class="text-left text-xs font-medium text-gray-400 uppercase px-4 py-3">Size</th>
-									<th class="text-left text-xs font-medium text-gray-400 uppercase px-4 py-3">Containers</th>
-									<th class="text-left text-xs font-medium text-gray-400 uppercase px-4 py-3">Status</th>
+									<th scope="col" class="text-left text-xs font-medium text-gray-400 uppercase px-4 py-3">Image</th>
+									<th scope="col" class="text-left text-xs font-medium text-gray-400 uppercase px-4 py-3">Size</th>
+									<th scope="col" class="text-left text-xs font-medium text-gray-400 uppercase px-4 py-3">Containers</th>
+									<th scope="col" class="text-left text-xs font-medium text-gray-400 uppercase px-4 py-3">Status</th>
 								</tr>
 							</thead>
 							<tbody class="divide-y divide-dark-700">
@@ -460,12 +460,12 @@ templ containerChip(c ContainerDep) {
 			<div class="flex items-center gap-2 mt-1">
 				if len(c.Volumes) > 0 {
 					<span class="text-xs text-purple-400">
-						<i class="fas fa-database mr-0.5"></i>{ fmt.Sprintf("%d vol", len(c.Volumes)) }
+						<i aria-hidden="true" class="fas fa-database mr-0.5"></i>{ fmt.Sprintf("%d vol", len(c.Volumes)) }
 					</span>
 				}
 				if len(c.Ports) > 0 {
 					<span class="text-xs text-cyan-400">
-						<i class="fas fa-plug mr-0.5"></i>{ fmt.Sprintf("%d port", len(c.Ports)) }
+						<i aria-hidden="true" class="fas fa-plug mr-0.5"></i>{ fmt.Sprintf("%d port", len(c.Ports)) }
 					</span>
 				}
 			</div>

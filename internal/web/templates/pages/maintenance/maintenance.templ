@@ -68,7 +68,7 @@ templ Maintenance(data MaintenanceData) {
 					<p class="text-gray-400 mt-1">Schedule automated maintenance periods for your Docker hosts</p>
 				</div>
 				<button onclick="document.getElementById('createMaintenanceModal').classList.remove('hidden')" class="btn-primary flex items-center gap-2">
-					<i class="fas fa-plus"></i>
+					<i aria-hidden="true" class="fas fa-plus"></i>
 					New Window
 				</button>
 			</div>
@@ -93,7 +93,7 @@ templ Maintenance(data MaintenanceData) {
 							<span class="w-3 h-3 rounded-full bg-yellow-500 animate-pulse"></span>
 							<div>
 								<h3 class="text-sm font-medium text-yellow-400">
-									<i class="fas fa-wrench mr-2"></i>Maintenance In Progress: { w.Name }
+									<i aria-hidden="true" class="fas fa-wrench mr-2"></i>Maintenance In Progress: { w.Name }
 								</h3>
 								<p class="text-xs text-gray-400 mt-0.5">Host: { w.HostName } - Duration: { w.Duration }</p>
 							</div>
@@ -105,7 +105,7 @@ templ Maintenance(data MaintenanceData) {
 			<!-- Windows List -->
 			if len(data.Windows) == 0 {
 				<div class="card p-12 text-center">
-					<i class="fas fa-calendar-alt text-4xl text-gray-400 mb-4"></i>
+					<i aria-hidden="true" class="fas fa-calendar-alt text-4xl text-gray-400 mb-4"></i>
 					<h3 class="text-lg font-medium text-white mb-2">No Maintenance Windows</h3>
 					<p class="text-gray-400 mb-4">Schedule maintenance periods to automatically manage container lifecycle and cleanup</p>
 				</div>
@@ -137,9 +137,9 @@ templ windowCard(w MaintenanceWindowView, csrfToken string) {
 			<div class="flex items-start gap-4 flex-1">
 				<div class={ "w-10 h-10 rounded-lg flex items-center justify-center", windowIconBg(w.IsActive) }>
 					if w.IsActive {
-						<i class="fas fa-wrench text-yellow-400 animate-spin-slow"></i>
+						<i aria-hidden="true" class="fas fa-wrench text-yellow-400 animate-spin-slow"></i>
 					} else {
-						<i class="fas fa-calendar-check text-primary-400"></i>
+						<i aria-hidden="true" class="fas fa-calendar-check text-primary-400"></i>
 					}
 				</div>
 				<div class="flex-1 min-w-0">
@@ -158,13 +158,13 @@ templ windowCard(w MaintenanceWindowView, csrfToken string) {
 						<p class="text-sm text-gray-400 mt-1">{ w.Description }</p>
 					}
 					<div class="flex items-center gap-4 mt-2 flex-wrap">
-						<span class="text-xs text-gray-500"><i class="fas fa-clock mr-1"></i>{ w.ScheduleHuman }</span>
-						<span class="text-xs text-gray-500"><i class="fas fa-hourglass-half mr-1"></i>Duration: { w.Duration }</span>
+						<span class="text-xs text-gray-500"><i aria-hidden="true" class="fas fa-clock mr-1"></i>{ w.ScheduleHuman }</span>
+						<span class="text-xs text-gray-500"><i aria-hidden="true" class="fas fa-hourglass-half mr-1"></i>Duration: { w.Duration }</span>
 						if w.NextRunAt != "" {
-							<span class="text-xs text-gray-500"><i class="fas fa-forward mr-1"></i>Next: { w.NextRunAt }</span>
+							<span class="text-xs text-gray-500"><i aria-hidden="true" class="fas fa-forward mr-1"></i>Next: { w.NextRunAt }</span>
 						}
 						if w.LastRunAt != "" {
-							<span class="text-xs text-gray-500"><i class="fas fa-history mr-1"></i>Last: { w.LastRunAt }</span>
+							<span class="text-xs text-gray-500"><i aria-hidden="true" class="fas fa-history mr-1"></i>Last: { w.LastRunAt }</span>
 						}
 					</div>
 					<!-- Actions Summary -->
@@ -197,23 +197,23 @@ templ windowCard(w MaintenanceWindowView, csrfToken string) {
 				<form method="POST" action={ templ.SafeURL("/maintenance/" + w.ID + "/execute") }>
 					<input type="hidden" name="csrf_token" value={ csrfToken }/>
 					<button type="submit" class="p-2 text-gray-400 hover:text-green-400 transition-colors" title="Execute now">
-						<i class="fas fa-play"></i>
+						<i aria-hidden="true" class="fas fa-play"></i>
 					</button>
 				</form>
 				<form method="POST" action={ templ.SafeURL("/maintenance/" + w.ID + "/toggle") }>
 					<input type="hidden" name="csrf_token" value={ csrfToken }/>
 					<button type="submit" class="p-2 text-gray-400 hover:text-yellow-400 transition-colors" title="Toggle">
 						if w.IsEnabled {
-							<i class="fas fa-pause"></i>
+							<i aria-hidden="true" class="fas fa-pause"></i>
 						} else {
-							<i class="fas fa-play"></i>
+							<i aria-hidden="true" class="fas fa-play"></i>
 						}
 					</button>
 				</form>
 				<form method="POST" action={ templ.SafeURL("/maintenance/" + w.ID + "/delete") } onsubmit="return confirm('Delete this maintenance window?')">
 					<input type="hidden" name="csrf_token" value={ csrfToken }/>
 					<button type="submit" class="p-2 text-gray-400 hover:text-red-400 transition-colors" title="Delete">
-						<i class="fas fa-trash"></i>
+						<i aria-hidden="true" class="fas fa-trash"></i>
 					</button>
 				</form>
 			</div>
@@ -227,7 +227,7 @@ templ createMaintenanceModal(csrfToken string, hosts []HostOption) {
 			<div class="flex items-center justify-between p-6 border-b border-dark-600 sticky top-0 bg-dark-800 z-10">
 				<h2 class="text-lg font-display font-bold text-white">Create Maintenance Window</h2>
 				<button onclick="document.getElementById('createMaintenanceModal').classList.add('hidden')" class="text-gray-400 hover:text-white">
-					<i class="fas fa-times"></i>
+					<i aria-hidden="true" class="fas fa-times"></i>
 				</button>
 			</div>
 			<form method="POST" action="/maintenance" class="p-6 space-y-4">
@@ -235,7 +235,7 @@ templ createMaintenanceModal(csrfToken string, hosts []HostOption) {
 
 				<div>
 					<label class="block text-sm font-medium text-gray-300 mb-1">Window Name</label>
-					<input type="text" name="name" required class="input w-full" placeholder="e.g., Weekly cleanup"/>
+					<input type="text" name="name" required class="input w-full" placeholder="e.g., Weekly cleanup" aria-label="e.g., Weekly cleanup"/>
 				</div>
 
 				<div>
@@ -308,7 +308,7 @@ templ createMaintenanceModal(csrfToken string, hosts []HostOption) {
 				<div class="flex justify-end gap-3 pt-4 border-t border-dark-600">
 					<button type="button" onclick="document.getElementById('createMaintenanceModal').classList.add('hidden')" class="btn-secondary">Cancel</button>
 					<button type="submit" class="btn-primary">
-						<i class="fas fa-plus mr-2"></i>Create Window
+						<i aria-hidden="true" class="fas fa-plus mr-2"></i>Create Window
 					</button>
 				</div>
 			</form>

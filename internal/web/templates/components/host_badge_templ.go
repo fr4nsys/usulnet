@@ -32,14 +32,14 @@ func HostBadge(hostName string) templ.Component {
 		}
 		ctx = templ.ClearChildren(ctx)
 		if hostName != "" && hostName != "Local" {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<span class=\"px-2.5 py-1 rounded-full text-xs font-medium bg-primary-500/20 text-primary-400 border border-primary-500/30\"><i class=\"fas fa-server mr-1\"></i>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<span class=\"px-2.5 py-1 rounded-full text-xs font-medium bg-primary-500/20 text-primary-400 border border-primary-500/30\"><i aria-hidden=\"true\" class=\"fas fa-server mr-1\"></i>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var2 string
 			templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(hostName)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/components/host_badge.templ`, Line: 8, Col: 47}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/components/host_badge.templ`, Line: 8, Col: 66}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 			if templ_7745c5c3_Err != nil {

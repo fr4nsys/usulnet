@@ -91,7 +91,7 @@ func CheatSheet(data CheatSheetData) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"space-y-6\" x-data=\"cheatSheet()\"><!-- Header --><div class=\"flex items-center justify-between\"><div><h1 class=\"text-2xl font-display font-bold text-white\"><i class=\"fas fa-book text-primary-400 mr-2\"></i>Command Cheat Sheet</h1><p class=\"text-gray-400 mt-1\">Quick reference for common Linux, Docker, Git, and DevOps commands</p></div><button onclick=\"document.getElementById('add-command-modal').classList.remove('hidden')\" class=\"btn-secondary\"><i class=\"fas fa-plus mr-2\"></i>Add Custom</button></div><!-- Search & Filter --><div class=\"card p-4\"><div class=\"flex flex-wrap items-center gap-4\"><div class=\"flex-1 min-w-[200px]\"><div class=\"relative\"><i class=\"fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-500\"></i> <input type=\"text\" x-model=\"searchQuery\" placeholder=\"Search commands...\" class=\"input pl-10\"></div></div><div class=\"flex flex-wrap gap-2\"><button @click=\"activeCategory = ''\" :class=\"activeCategory === '' ? 'bg-primary-500 text-black' : 'bg-dark-600 text-gray-300 hover:text-white'\" class=\"px-3 py-1.5 rounded-lg text-sm font-medium transition-colors\">All</button> ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"space-y-6\" x-data=\"cheatSheet()\"><!-- Header --><div class=\"flex items-center justify-between\"><div><h1 class=\"text-2xl font-display font-bold text-white\"><i aria-hidden=\"true\" class=\"fas fa-book text-primary-400 mr-2\"></i>Command Cheat Sheet</h1><p class=\"text-gray-400 mt-1\">Quick reference for common Linux, Docker, Git, and DevOps commands</p></div><button onclick=\"document.getElementById('add-command-modal').classList.remove('hidden')\" class=\"btn-secondary\"><i aria-hidden=\"true\" class=\"fas fa-plus mr-2\"></i>Add Custom</button></div><!-- Search & Filter --><div class=\"card p-4\"><div class=\"flex flex-wrap items-center gap-4\"><div class=\"flex-1 min-w-[200px]\"><div class=\"relative\"><i aria-hidden=\"true\" class=\"fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-500\"></i> <input type=\"text\" x-model=\"searchQuery\" placeholder=\"Search commands...\" class=\"input pl-10\" aria-label=\"Search commands...\"></div></div><div class=\"flex flex-wrap gap-2\"><button @click=\"activeCategory = ''\" :class=\"activeCategory === '' ? 'bg-primary-500 text-black' : 'bg-dark-600 text-gray-300 hover:text-white'\" class=\"px-3 py-1.5 rounded-lg text-sm font-medium transition-colors\">All</button> ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -103,7 +103,7 @@ func CheatSheet(data CheatSheetData) templ.Component {
 				var templ_7745c5c3_Var3 string
 				templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs("activeCategory = '" + cat.ID + "'")
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/tools/cheatsheet.templ`, Line: 97, Col: 52}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/tools/cheatsheet.templ`, Line: 98, Col: 52}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 				if templ_7745c5c3_Err != nil {
@@ -116,7 +116,7 @@ func CheatSheet(data CheatSheetData) templ.Component {
 				var templ_7745c5c3_Var4 string
 				templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs("activeCategory === '" + cat.ID + "' ? 'bg-primary-500 text-black' : 'bg-dark-600 text-gray-300 hover:text-white'")
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/tools/cheatsheet.templ`, Line: 98, Col: 131}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/tools/cheatsheet.templ`, Line: 99, Col: 131}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 				if templ_7745c5c3_Err != nil {
@@ -151,7 +151,7 @@ func CheatSheet(data CheatSheetData) templ.Component {
 				var templ_7745c5c3_Var7 string
 				templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(cat.Name)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/tools/cheatsheet.templ`, Line: 102, Col: 18}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/tools/cheatsheet.templ`, Line: 103, Col: 18}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 				if templ_7745c5c3_Err != nil {
@@ -174,7 +174,7 @@ func CheatSheet(data CheatSheetData) templ.Component {
 				var templ_7745c5c3_Var8 string
 				templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs("activeCategory === '' || activeCategory === '" + cat.ID + "'")
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/tools/cheatsheet.templ`, Line: 113, Col: 77}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/tools/cheatsheet.templ`, Line: 114, Col: 77}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 				if templ_7745c5c3_Err != nil {
@@ -209,7 +209,7 @@ func CheatSheet(data CheatSheetData) templ.Component {
 				var templ_7745c5c3_Var11 string
 				templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(cat.Name)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/tools/cheatsheet.templ`, Line: 122, Col: 63}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/tools/cheatsheet.templ`, Line: 123, Col: 63}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 				if templ_7745c5c3_Err != nil {
@@ -222,7 +222,7 @@ func CheatSheet(data CheatSheetData) templ.Component {
 				var templ_7745c5c3_Var12 string
 				templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(cat.Description)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/tools/cheatsheet.templ`, Line: 123, Col: 58}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/tools/cheatsheet.templ`, Line: 124, Col: 58}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
 				if templ_7745c5c3_Err != nil {
@@ -240,7 +240,7 @@ func CheatSheet(data CheatSheetData) templ.Component {
 					var templ_7745c5c3_Var13 string
 					templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs("matchesSearch('" + escapeJS(cmd.Title) + "', '" + escapeJS(cmd.Command) + "', '" + escapeJS(cmd.Description) + "')")
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/tools/cheatsheet.templ`, Line: 129, Col: 134}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/tools/cheatsheet.templ`, Line: 130, Col: 134}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
 					if templ_7745c5c3_Err != nil {
@@ -253,7 +253,7 @@ func CheatSheet(data CheatSheetData) templ.Component {
 					var templ_7745c5c3_Var14 string
 					templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.JoinStringErrs(cmd.Title)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/tools/cheatsheet.templ`, Line: 134, Col: 57}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/tools/cheatsheet.templ`, Line: 135, Col: 57}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var14))
 					if templ_7745c5c3_Err != nil {
@@ -266,7 +266,7 @@ func CheatSheet(data CheatSheetData) templ.Component {
 					var templ_7745c5c3_Var15 string
 					templ_7745c5c3_Var15, templ_7745c5c3_Err = templ.JoinStringErrs(cmd.Description)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/tools/cheatsheet.templ`, Line: 135, Col: 68}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/tools/cheatsheet.templ`, Line: 136, Col: 68}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var15))
 					if templ_7745c5c3_Err != nil {
@@ -279,7 +279,7 @@ func CheatSheet(data CheatSheetData) templ.Component {
 					var templ_7745c5c3_Var16 string
 					templ_7745c5c3_Var16, templ_7745c5c3_Err = templ.JoinStringErrs(cmd.Command)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/tools/cheatsheet.templ`, Line: 138, Col: 26}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/tools/cheatsheet.templ`, Line: 139, Col: 26}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var16))
 					if templ_7745c5c3_Err != nil {
@@ -292,13 +292,13 @@ func CheatSheet(data CheatSheetData) templ.Component {
 					var templ_7745c5c3_Var17 string
 					templ_7745c5c3_Var17, templ_7745c5c3_Err = templ.JoinStringErrs("copyCommand('" + escapeJS(cmd.Command) + "')")
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/tools/cheatsheet.templ`, Line: 141, Col: 68}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/tools/cheatsheet.templ`, Line: 142, Col: 68}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var17))
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 20, "\" class=\"absolute right-2 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-dark-700 text-gray-400 hover:text-white px-2 py-1 rounded text-xs\"><i class=\"fas fa-copy mr-1\"></i>Copy</button></div>")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 20, "\" class=\"absolute right-2 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-dark-700 text-gray-400 hover:text-white px-2 py-1 rounded text-xs\"><i aria-hidden=\"true\" class=\"fas fa-copy mr-1\"></i>Copy</button></div>")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
@@ -310,7 +310,7 @@ func CheatSheet(data CheatSheetData) templ.Component {
 						var templ_7745c5c3_Var18 string
 						templ_7745c5c3_Var18, templ_7745c5c3_Err = templ.JoinStringErrs(cmd.Example)
 						if templ_7745c5c3_Err != nil {
-							return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/tools/cheatsheet.templ`, Line: 150, Col: 59}
+							return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/tools/cheatsheet.templ`, Line: 151, Col: 59}
 						}
 						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var18))
 						if templ_7745c5c3_Err != nil {
@@ -338,20 +338,20 @@ func CheatSheet(data CheatSheetData) templ.Component {
 							var templ_7745c5c3_Var19 string
 							templ_7745c5c3_Var19, templ_7745c5c3_Err = templ.JoinStringErrs(v.Description)
 							if templ_7745c5c3_Err != nil {
-								return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/tools/cheatsheet.templ`, Line: 160, Col: 34}
+								return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/tools/cheatsheet.templ`, Line: 161, Col: 34}
 							}
 							_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var19))
 							if templ_7745c5c3_Err != nil {
 								return templ_7745c5c3_Err
 							}
-							templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 26, "\"><i class=\"fas fa-edit text-[10px]\"></i> ")
+							templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 26, "\"><i aria-hidden=\"true\" class=\"fas fa-edit text-[10px]\"></i> ")
 							if templ_7745c5c3_Err != nil {
 								return templ_7745c5c3_Err
 							}
 							var templ_7745c5c3_Var20 string
 							templ_7745c5c3_Var20, templ_7745c5c3_Err = templ.JoinStringErrs(v.Placeholder)
 							if templ_7745c5c3_Err != nil {
-								return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/tools/cheatsheet.templ`, Line: 163, Col: 28}
+								return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/tools/cheatsheet.templ`, Line: 164, Col: 28}
 							}
 							_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var20))
 							if templ_7745c5c3_Err != nil {
@@ -382,7 +382,7 @@ func CheatSheet(data CheatSheetData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			if len(data.Custom) > 0 {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 32, "<div x-show=\"activeCategory === '' || activeCategory === 'custom'\" x-transition class=\"card\"><div class=\"p-4 border-b border-dark-600 flex items-center gap-3\"><div class=\"w-10 h-10 rounded-lg bg-purple-500/10 flex items-center justify-center\"><i class=\"fas fa-user-edit text-purple-400\"></i></div><div><h2 class=\"text-lg font-semibold text-white\">My Commands</h2><p class=\"text-sm text-gray-400\">Your custom saved commands</p></div></div><div class=\"divide-y divide-dark-600\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 32, "<div x-show=\"activeCategory === '' || activeCategory === 'custom'\" x-transition class=\"card\"><div class=\"p-4 border-b border-dark-600 flex items-center gap-3\"><div class=\"w-10 h-10 rounded-lg bg-purple-500/10 flex items-center justify-center\"><i aria-hidden=\"true\" class=\"fas fa-user-edit text-purple-400\"></i></div><div><h2 class=\"text-lg font-semibold text-white\">My Commands</h2><p class=\"text-sm text-gray-400\">Your custom saved commands</p></div></div><div class=\"divide-y divide-dark-600\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -394,7 +394,7 @@ func CheatSheet(data CheatSheetData) templ.Component {
 					var templ_7745c5c3_Var21 string
 					templ_7745c5c3_Var21, templ_7745c5c3_Err = templ.JoinStringErrs(cmd.Title)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/tools/cheatsheet.templ`, Line: 195, Col: 57}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/tools/cheatsheet.templ`, Line: 196, Col: 57}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var21))
 					if templ_7745c5c3_Err != nil {
@@ -407,7 +407,7 @@ func CheatSheet(data CheatSheetData) templ.Component {
 					var templ_7745c5c3_Var22 string
 					templ_7745c5c3_Var22, templ_7745c5c3_Err = templ.JoinStringErrs(cmd.Description)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/tools/cheatsheet.templ`, Line: 196, Col: 68}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/tools/cheatsheet.templ`, Line: 197, Col: 68}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var22))
 					if templ_7745c5c3_Err != nil {
@@ -420,7 +420,7 @@ func CheatSheet(data CheatSheetData) templ.Component {
 					var templ_7745c5c3_Var23 string
 					templ_7745c5c3_Var23, templ_7745c5c3_Err = templ.JoinStringErrs(cmd.Command)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/tools/cheatsheet.templ`, Line: 199, Col: 26}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/tools/cheatsheet.templ`, Line: 200, Col: 26}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var23))
 					if templ_7745c5c3_Err != nil {
@@ -433,26 +433,26 @@ func CheatSheet(data CheatSheetData) templ.Component {
 					var templ_7745c5c3_Var24 string
 					templ_7745c5c3_Var24, templ_7745c5c3_Err = templ.JoinStringErrs("copyCommand('" + escapeJS(cmd.Command) + "')")
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/tools/cheatsheet.templ`, Line: 203, Col: 69}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/tools/cheatsheet.templ`, Line: 204, Col: 69}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var24))
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 37, "\" class=\"bg-dark-700 text-gray-400 hover:text-white px-2 py-1 rounded text-xs\"><i class=\"fas fa-copy\"></i></button> <button hx-delete=\"")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 37, "\" class=\"bg-dark-700 text-gray-400 hover:text-white px-2 py-1 rounded text-xs\"><i aria-hidden=\"true\" class=\"fas fa-copy\"></i></button> <button hx-delete=\"")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
 					var templ_7745c5c3_Var25 string
 					templ_7745c5c3_Var25, templ_7745c5c3_Err = templ.JoinStringErrs("/tools/cheatsheet/custom/" + cmd.ID)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/tools/cheatsheet.templ`, Line: 209, Col: 62}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/tools/cheatsheet.templ`, Line: 210, Col: 62}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var25))
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 38, "\" hx-target=\"body\" hx-confirm=\"Delete this command?\" class=\"bg-dark-700 text-red-400 hover:text-red-300 px-2 py-1 rounded text-xs\"><i class=\"fas fa-trash\"></i></button></div></div></div></div></div>")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 38, "\" hx-target=\"body\" hx-confirm=\"Delete this command?\" class=\"bg-dark-700 text-red-400 hover:text-red-300 px-2 py-1 rounded text-xs\"><i aria-hidden=\"true\" class=\"fas fa-trash\"></i></button></div></div></div></div></div>")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
@@ -470,7 +470,7 @@ func CheatSheet(data CheatSheetData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 41, "<!-- Toast for copy feedback --><div x-show=\"showCopyToast\" x-transition class=\"fixed bottom-4 right-4 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg\"><i class=\"fas fa-check mr-2\"></i>Command copied to clipboard</div><script>\n\t\t\t\tfunction cheatSheet() {\n\t\t\t\t\treturn {\n\t\t\t\t\t\tsearchQuery: '',\n\t\t\t\t\t\tactiveCategory: '',\n\t\t\t\t\t\tshowCopyToast: false,\n\t\t\t\t\t\tmatchesSearch(title, command, description) {\n\t\t\t\t\t\t\tif (!this.searchQuery) return true;\n\t\t\t\t\t\t\tconst q = this.searchQuery.toLowerCase();\n\t\t\t\t\t\t\treturn title.toLowerCase().includes(q) ||\n\t\t\t\t\t\t\t\tcommand.toLowerCase().includes(q) ||\n\t\t\t\t\t\t\t\tdescription.toLowerCase().includes(q);\n\t\t\t\t\t\t},\n\t\t\t\t\t\tcopyCommand(cmd) {\n\t\t\t\t\t\t\t// Replace variable placeholders with actual clipboard-friendly format\n\t\t\t\t\t\t\tnavigator.clipboard.writeText(cmd).then(() => {\n\t\t\t\t\t\t\t\tthis.showCopyToast = true;\n\t\t\t\t\t\t\t\tsetTimeout(() => this.showCopyToast = false, 2000);\n\t\t\t\t\t\t\t});\n\t\t\t\t\t\t}\n\t\t\t\t\t};\n\t\t\t\t}\n\t\t\t</script></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 41, "<!-- Toast for copy feedback --><div x-show=\"showCopyToast\" x-transition class=\"fixed bottom-4 right-4 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg\"><i aria-hidden=\"true\" class=\"fas fa-check mr-2\"></i>Command copied to clipboard</div><script>\n\t\t\t\tfunction cheatSheet() {\n\t\t\t\t\treturn {\n\t\t\t\t\t\tsearchQuery: '',\n\t\t\t\t\t\tactiveCategory: '',\n\t\t\t\t\t\tshowCopyToast: false,\n\t\t\t\t\t\tmatchesSearch(title, command, description) {\n\t\t\t\t\t\t\tif (!this.searchQuery) return true;\n\t\t\t\t\t\t\tconst q = this.searchQuery.toLowerCase();\n\t\t\t\t\t\t\treturn title.toLowerCase().includes(q) ||\n\t\t\t\t\t\t\t\tcommand.toLowerCase().includes(q) ||\n\t\t\t\t\t\t\t\tdescription.toLowerCase().includes(q);\n\t\t\t\t\t\t},\n\t\t\t\t\t\tcopyCommand(cmd) {\n\t\t\t\t\t\t\t// Replace variable placeholders with actual clipboard-friendly format\n\t\t\t\t\t\t\tnavigator.clipboard.writeText(cmd).then(() => {\n\t\t\t\t\t\t\t\tthis.showCopyToast = true;\n\t\t\t\t\t\t\t\tsetTimeout(() => this.showCopyToast = false, 2000);\n\t\t\t\t\t\t\t});\n\t\t\t\t\t\t}\n\t\t\t\t\t};\n\t\t\t\t}\n\t\t\t</script></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -505,20 +505,20 @@ func addCommandModal(csrfToken string) templ.Component {
 			templ_7745c5c3_Var26 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 42, "<div id=\"add-command-modal\" class=\"hidden fixed inset-0 z-50 overflow-y-auto\"><div class=\"fixed inset-0 bg-black/50\" onclick=\"document.getElementById('add-command-modal').classList.add('hidden')\"></div><div class=\"relative min-h-screen flex items-center justify-center p-4\"><div class=\"relative bg-dark-800 rounded-xl border border-dark-600 max-w-lg w-full p-6\"><div class=\"flex items-center justify-between mb-6\"><h2 class=\"text-xl font-display font-bold text-white\">Add Custom Command</h2><button onclick=\"document.getElementById('add-command-modal').classList.add('hidden')\" class=\"text-gray-400 hover:text-white\"><i class=\"fas fa-times\"></i></button></div><form action=\"/tools/cheatsheet/custom\" method=\"POST\" class=\"space-y-4\"><input type=\"hidden\" name=\"csrf_token\" value=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 42, "<div id=\"add-command-modal\" class=\"hidden fixed inset-0 z-50 overflow-y-auto\"><div class=\"fixed inset-0 bg-black/50\" onclick=\"document.getElementById('add-command-modal').classList.add('hidden')\"></div><div class=\"relative min-h-screen flex items-center justify-center p-4\"><div class=\"relative card max-w-lg w-full p-6\"><div class=\"flex items-center justify-between mb-6\"><h2 class=\"text-xl font-display font-bold text-white\">Add Custom Command</h2><button onclick=\"document.getElementById('add-command-modal').classList.add('hidden')\" class=\"text-gray-400 hover:text-white\"><i aria-hidden=\"true\" class=\"fas fa-times\"></i></button></div><form action=\"/tools/cheatsheet/custom\" method=\"POST\" class=\"space-y-4\"><input type=\"hidden\" name=\"csrf_token\" value=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var27 string
 		templ_7745c5c3_Var27, templ_7745c5c3_Err = templ.JoinStringErrs(csrfToken)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/tools/cheatsheet.templ`, Line: 282, Col: 61}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/tools/cheatsheet.templ`, Line: 283, Col: 61}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var27))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 43, "\"><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Title</label> <input type=\"text\" name=\"title\" required class=\"input\" placeholder=\"e.g. Start production server\"></div><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Command</label> <textarea name=\"command\" required rows=\"3\" class=\"input font-mono\" placeholder=\"e.g. docker-compose -f docker-compose.prod.yml up -d\"></textarea></div><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Description</label> <input type=\"text\" name=\"description\" class=\"input\" placeholder=\"Optional description\"></div><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Category</label> <select name=\"category\" class=\"input\"><option value=\"docker\">Docker</option> <option value=\"linux\">Linux</option> <option value=\"git\">Git</option> <option value=\"network\">Networking</option> <option value=\"other\">Other</option></select></div><div class=\"flex justify-end gap-3 pt-4 border-t border-dark-600\"><button type=\"button\" onclick=\"document.getElementById('add-command-modal').classList.add('hidden')\" class=\"btn-secondary\">Cancel</button> <button type=\"submit\" class=\"btn-primary\"><i class=\"fas fa-plus mr-2\"></i>Add Command</button></div></form></div></div></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 43, "\"><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Title</label> <input type=\"text\" name=\"title\" required class=\"input\" placeholder=\"e.g. Start production server\" aria-label=\"e.g. Start production server\"></div><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Command</label> <textarea name=\"command\" required rows=\"3\" class=\"input font-mono\" placeholder=\"e.g. docker-compose -f docker-compose.prod.yml up -d\"></textarea></div><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Description</label> <input type=\"text\" name=\"description\" class=\"input\" placeholder=\"Optional description\" aria-label=\"Optional description\"></div><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Category</label> <select name=\"category\" class=\"input\"><option value=\"docker\">Docker</option> <option value=\"linux\">Linux</option> <option value=\"git\">Git</option> <option value=\"network\">Networking</option> <option value=\"other\">Other</option></select></div><div class=\"flex justify-end gap-3 pt-4 border-t border-dark-600\"><button type=\"button\" onclick=\"document.getElementById('add-command-modal').classList.add('hidden')\" class=\"btn-secondary\">Cancel</button> <button type=\"submit\" class=\"btn-primary\"><i aria-hidden=\"true\" class=\"fas fa-plus mr-2\"></i>Add Command</button></div></form></div></div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

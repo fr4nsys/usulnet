@@ -37,28 +37,28 @@ templ Monaco(data MonacoData) {
 					if data.RepoID != "" {
 						<a href={ templ.SafeURL(fmt.Sprintf("/integrations/gitea/repos/%s?ref=%s", data.RepoID, data.Ref)) }
 							class="text-gray-400 hover:text-white transition-colors" title="Back to repo">
-							<i class="fas fa-arrow-left"></i>
+							<i aria-hidden="true" class="fas fa-arrow-left"></i>
 						</a>
 					} else {
 						<a href="/editor"
 							class="text-gray-400 hover:text-white transition-colors" title="Back to editor">
-							<i class="fas fa-arrow-left"></i>
+							<i aria-hidden="true" class="fas fa-arrow-left"></i>
 						</a>
 					}
 					<!-- File info -->
 					<div class="flex items-center gap-2 min-w-0">
-						<i class="fas fa-file-code text-blue-400"></i>
+						<i aria-hidden="true" class="fas fa-file-code text-blue-400"></i>
 						<span class="text-sm text-white font-medium truncate">{ data.FilePath }</span>
 						if data.Ref != "" {
 							<span class="text-xs px-1.5 py-0.5 rounded bg-gray-700 text-gray-400 whitespace-nowrap">
-								<i class="fas fa-code-branch mr-1"></i>{ data.Ref }
+								<i aria-hidden="true" class="fas fa-code-branch mr-1"></i>{ data.Ref }
 							</span>
 						}
 						if data.RepoName != "" {
 							<span class="text-xs text-gray-500">{ data.RepoName }</span>
 						} else if data.SnippetID != "" {
 							<span class="text-xs px-1.5 py-0.5 rounded bg-yellow-500/10 text-yellow-400">
-								<i class="fas fa-file-alt mr-1"></i>snippet
+								<i aria-hidden="true" class="fas fa-file-alt mr-1"></i>snippet
 							</span>
 						} else {
 							<span class="text-xs px-1.5 py-0.5 rounded bg-blue-500/10 text-blue-400">scratch</span>
@@ -68,35 +68,35 @@ templ Monaco(data MonacoData) {
 				<div class="flex items-center gap-2">
 					<!-- Save indicator -->
 					<span id="save-status" class="text-xs text-gray-500 hidden">
-						<i class="fas fa-check text-green-400 mr-1"></i>Saved
+						<i aria-hidden="true" class="fas fa-check text-green-400 mr-1"></i>Saved
 					</span>
 					<span id="save-dirty" class="text-xs text-yellow-400 hidden">
-						<i class="fas fa-circle text-[6px] mr-1"></i>Modified
+						<i aria-hidden="true" class="fas fa-circle text-[6px] mr-1"></i>Modified
 					</span>
 					<!-- Language indicator -->
 					<span class="text-xs px-2 py-1 rounded bg-dark-700 text-gray-400">{ data.Language }</span>
 					<!-- Save button (git mode) -->
 					if data.RepoID != "" && !data.ReadOnly {
 						<button id="btn-save" onclick="saveFile()" class="btn-primary text-sm" title="Ctrl+S">
-							<i class="fas fa-save mr-1"></i>Save & Commit
+							<i aria-hidden="true" class="fas fa-save mr-1"></i>Save & Commit
 						</button>
 					}
 					<!-- Save button (snippet mode) -->
 					if data.SnippetID != "" {
 						<button id="btn-save-snippet" onclick="saveSnippet()" class="btn-primary text-sm" title="Ctrl+S">
-							<i class="fas fa-save mr-1"></i>Save
+							<i aria-hidden="true" class="fas fa-save mr-1"></i>Save
 						</button>
 					}
 					<!-- Open in nvim -->
 					if data.RepoID != "" {
 						<a href={ templ.SafeURL(fmt.Sprintf("/editor/nvim?repo=%s&file=%s&ref=%s", data.RepoID, data.FilePath, data.Ref)) }
 							class="btn-ghost text-sm" title="Open in Neovim">
-							<i class="fas fa-terminal mr-1"></i>nvim
+							<i aria-hidden="true" class="fas fa-terminal mr-1"></i>nvim
 						</a>
 					} else {
 						<a href="/editor/nvim"
 							class="btn-ghost text-sm" title="Open Neovim">
-							<i class="fas fa-terminal mr-1"></i>nvim
+							<i aria-hidden="true" class="fas fa-terminal mr-1"></i>nvim
 						</a>
 					}
 				</div>
@@ -119,19 +119,19 @@ templ Monaco(data MonacoData) {
 					<div class="fixed inset-0 bg-black/60" onclick="closeCommitModal()"></div>
 					<div class="relative card w-full max-w-md p-6">
 						<h3 class="text-lg font-semibold text-white mb-4">
-							<i class="fas fa-code-commit text-green-400 mr-2"></i>Commit Changes
+							<i aria-hidden="true" class="fas fa-code-commit text-green-400 mr-2"></i>Commit Changes
 						</h3>
 						<div class="space-y-4">
 							<div>
 								<label class="block text-sm font-medium text-gray-300 mb-1">Commit message</label>
 								<input type="text" id="commit-message"
 									placeholder={ fmt.Sprintf("Update %s", filepath.Base(data.FilePath)) }
-									class="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-500 focus:border-blue-500 focus:ring-1 focus:ring-blue-500"/>
+									class="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-500 focus:border-blue-500 focus:ring-1 focus:ring-blue-500" aria-label="Commit message"/>
 							</div>
 							<div class="flex justify-end gap-3">
 								<button onclick="closeCommitModal()" class="btn-ghost">Cancel</button>
 								<button onclick="doCommit()" class="btn-primary">
-									<i class="fas fa-check mr-1"></i>Commit
+									<i aria-hidden="true" class="fas fa-check mr-1"></i>Commit
 								</button>
 							</div>
 						</div>
@@ -302,7 +302,7 @@ templ Monaco(data MonacoData) {
 
 			var btn = document.querySelector('#commit-modal .btn-primary');
 			btn.disabled = true;
-			btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i>Committing...';
+			btn.innerHTML = '<i aria-hidden="true" class="fas fa-spinner fa-spin mr-1"></i>Committing...';
 
 			var content = monacoEditor.getValue();
 			var csrfToken = (document.querySelector('meta[name="csrf-token"]') || {}).content || '';
@@ -343,7 +343,7 @@ templ Monaco(data MonacoData) {
 			})
 			.finally(function() {
 				btn.disabled = false;
-				btn.innerHTML = '<i class="fas fa-check mr-1"></i>Commit';
+				btn.innerHTML = '<i aria-hidden="true" class="fas fa-check mr-1"></i>Commit';
 			});
 		}
 
@@ -357,7 +357,7 @@ templ Monaco(data MonacoData) {
 			var btn = document.getElementById('btn-save-snippet');
 			if (btn) {
 				btn.disabled = true;
-				btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i>Saving...';
+				btn.innerHTML = '<i aria-hidden="true" class="fas fa-spinner fa-spin mr-1"></i>Saving...';
 			}
 
 			var content = monacoEditor.getValue();
@@ -389,7 +389,7 @@ templ Monaco(data MonacoData) {
 			.finally(function() {
 				if (btn) {
 					btn.disabled = false;
-					btn.innerHTML = '<i class="fas fa-save mr-1"></i>Save';
+					btn.innerHTML = '<i aria-hidden="true" class="fas fa-save mr-1"></i>Save';
 				}
 			});
 		}

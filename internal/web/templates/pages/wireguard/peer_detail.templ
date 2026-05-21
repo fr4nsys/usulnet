@@ -27,7 +27,7 @@ templ PeerDetail(data PeerDetailData) {
 					<form method="POST" action={ templ.SafeURL("/wireguard/peers/" + data.Peer.ID + "/delete") }
 						onsubmit="return confirm('Delete this peer?');">
 						<button type="submit" class="px-3 py-2 bg-red-600/20 hover:bg-red-600/30 text-red-400 rounded-lg transition-colors text-sm">
-							<i class="fas fa-trash mr-1"></i>Delete
+							<i aria-hidden="true" class="fas fa-trash mr-1"></i>Delete
 						</button>
 					</form>
 				</div>
@@ -79,7 +79,7 @@ templ PeerDetail(data PeerDetailData) {
 					<button type="button"
 						@click={ "fetch('/api/v1/wireguard/peers/" + data.Peer.ID + "/qr/issue', { method: 'POST', credentials: 'include' }).then(r => r.json()).then(j => { token = j.token; expires = j.expires_at; fetch(j.url, { credentials: 'include' }).then(r => r.json()).then(c => { cfg = c.config; setTimeout(() => { var el = document.getElementById('wg-qr'); if (el && window.QRCode) { el.innerHTML = ''; new QRCode(el, { text: c.config, width: 220, height: 220, colorDark: '#000', colorLight: '#fff' }); } }, 50); }); }).catch(e => { err = e.message; })" }
 						class="px-3 py-2 bg-primary-600 hover:bg-primary-700 text-black font-medium rounded-lg transition-colors text-sm">
-						<i class="fas fa-qrcode mr-1"></i>Issue QR token
+						<i aria-hidden="true" class="fas fa-qrcode mr-1"></i>Issue QR token
 					</button>
 					<template x-if="cfg">
 						<div class="mt-4 space-y-3">
@@ -98,10 +98,10 @@ templ PeerDetail(data PeerDetailData) {
 						<table class="w-full text-sm">
 							<thead>
 								<tr class="text-xs text-gray-500 uppercase tracking-wide border-b border-dark-600">
-									<th class="text-left p-2">Agent</th>
-									<th class="text-left p-2">Status</th>
-									<th class="text-left p-2">Applied at</th>
-									<th class="text-left p-2">Last error</th>
+									<th scope="col" class="text-left p-2">Agent</th>
+									<th scope="col" class="text-left p-2">Status</th>
+									<th scope="col" class="text-left p-2">Applied at</th>
+									<th scope="col" class="text-left p-2">Last error</th>
 								</tr>
 							</thead>
 							<tbody>

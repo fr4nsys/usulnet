@@ -73,17 +73,17 @@ tls:
 	if cfg.LogLevel != "debug" {
 		t.Errorf("LogLevel = %q, want %q", cfg.LogLevel, "debug")
 	}
-	if !cfg.TLSEnabled {
+	if !cfg.TLS.Enabled {
 		t.Error("TLSEnabled should be true")
 	}
-	if cfg.TLSCertFile != "/app/certs/agent.crt" {
-		t.Errorf("TLSCertFile = %q, want %q", cfg.TLSCertFile, "/app/certs/agent.crt")
+	if cfg.TLS.CertFile != "/app/certs/agent.crt" {
+		t.Errorf("TLSCertFile = %q, want %q", cfg.TLS.CertFile, "/app/certs/agent.crt")
 	}
-	if cfg.TLSKeyFile != "/app/certs/agent.key" {
-		t.Errorf("TLSKeyFile = %q, want %q", cfg.TLSKeyFile, "/app/certs/agent.key")
+	if cfg.TLS.KeyFile != "/app/certs/agent.key" {
+		t.Errorf("TLSKeyFile = %q, want %q", cfg.TLS.KeyFile, "/app/certs/agent.key")
 	}
-	if cfg.TLSCAFile != "/app/certs/ca.crt" {
-		t.Errorf("TLSCAFile = %q, want %q", cfg.TLSCAFile, "/app/certs/ca.crt")
+	if cfg.TLS.CAFile != "/app/certs/ca.crt" {
+		t.Errorf("TLSCAFile = %q, want %q", cfg.TLS.CAFile, "/app/certs/ca.crt")
 	}
 }
 
@@ -118,7 +118,7 @@ token: "tok"
 	if cfg.DataDir != originalDataDir {
 		t.Errorf("DataDir should remain default %q, got %q", originalDataDir, cfg.DataDir)
 	}
-	if cfg.TLSEnabled {
+	if cfg.TLS.Enabled {
 		t.Error("TLSEnabled should remain false when not set in config")
 	}
 }
@@ -139,11 +139,11 @@ tls:
 		t.Fatalf("loadConfigFile() error: %v", err)
 	}
 
-	if cfg.TLSEnabled {
+	if cfg.TLS.Enabled {
 		t.Error("TLSEnabled should be false")
 	}
-	if cfg.TLSCertFile != "" {
-		t.Errorf("TLSCertFile should be empty, got %q", cfg.TLSCertFile)
+	if cfg.TLS.CertFile != "" {
+		t.Errorf("TLSCertFile should be empty, got %q", cfg.TLS.CertFile)
 	}
 }
 
@@ -261,17 +261,17 @@ tls:
 	if cfg.LogLevel != "info" {
 		t.Errorf("LogLevel = %q", cfg.LogLevel)
 	}
-	if !cfg.TLSEnabled {
+	if !cfg.TLS.Enabled {
 		t.Error("TLSEnabled should be true")
 	}
-	if cfg.TLSCertFile != "/app/certs/agent.crt" {
-		t.Errorf("TLSCertFile = %q", cfg.TLSCertFile)
+	if cfg.TLS.CertFile != "/app/certs/agent.crt" {
+		t.Errorf("TLSCertFile = %q", cfg.TLS.CertFile)
 	}
-	if cfg.TLSKeyFile != "/app/certs/agent.key" {
-		t.Errorf("TLSKeyFile = %q", cfg.TLSKeyFile)
+	if cfg.TLS.KeyFile != "/app/certs/agent.key" {
+		t.Errorf("TLSKeyFile = %q", cfg.TLS.KeyFile)
 	}
-	if cfg.TLSCAFile != "/app/certs/ca.crt" {
-		t.Errorf("TLSCAFile = %q", cfg.TLSCAFile)
+	if cfg.TLS.CAFile != "/app/certs/ca.crt" {
+		t.Errorf("TLSCAFile = %q", cfg.TLS.CAFile)
 	}
 }
 
@@ -295,7 +295,7 @@ log_format: "json"
 		t.Fatalf("loadConfigFile() error: %v", err)
 	}
 
-	if cfg.TLSEnabled {
+	if cfg.TLS.Enabled {
 		t.Error("TLSEnabled should be false for no-TLS config")
 	}
 	if cfg.GatewayURL != "nats://10.0.0.1:4222" {

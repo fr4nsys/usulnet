@@ -65,7 +65,7 @@ func DeadList(data DeadListData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			if data.Connected {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<span class=\"badge badge-success\"><i class=\"fas fa-link mr-1\"></i>Connected</span> <a href=\"/proxy/dead-hosts/new\" class=\"btn-primary\"><i class=\"fas fa-plus mr-2\"></i>New 404 Host</a>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<span class=\"badge badge-success\"><i aria-hidden=\"true\" class=\"fas fa-link mr-1\"></i>Connected</span> <a href=\"/proxy/dead-hosts/new\" class=\"btn-primary\"><i aria-hidden=\"true\" class=\"fas fa-plus mr-2\"></i>New 404 Host</a>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -80,7 +80,7 @@ func DeadList(data DeadListData) templ.Component {
 			}
 			if data.Connected {
 				if len(data.DeadHosts) > 0 {
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<div class=\"card\"><div class=\"overflow-x-auto\"><table class=\"table\"><thead><tr><th>Domains</th><th>SSL</th><th>Status</th><th>Actions</th></tr></thead> <tbody>")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<div class=\"card\"><div class=\"overflow-x-auto\"><table class=\"table\"><thead><tr><th scope=\"col\">Domains</th><th scope=\"col\">SSL</th><th scope=\"col\">Status</th><th scope=\"col\">Actions</th></tr></thead> <tbody>")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
@@ -151,13 +151,13 @@ func DeadList(data DeadListData) templ.Component {
 						return templ_7745c5c3_Err
 					}
 				} else {
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "<div class=\"card p-8 text-center\"><i class=\"fas fa-ban text-4xl text-gray-400 mb-4\"></i><h3 class=\"text-lg font-medium text-white mb-2\">No 404 hosts</h3><p class=\"text-gray-400 mb-4\">Block domains by serving a 404 page</p><a href=\"/proxy/dead-hosts/new\" class=\"btn-primary\"><i class=\"fas fa-plus mr-2\"></i>New 404 Host</a></div>")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "<div class=\"card p-8 text-center\"><i aria-hidden=\"true\" class=\"fas fa-ban text-4xl text-gray-400 mb-4\"></i><h3 class=\"text-lg font-medium text-white mb-2\">No 404 hosts</h3><p class=\"text-gray-400 mb-4\">Block domains by serving a 404 page</p><a href=\"/proxy/dead-hosts/new\" class=\"btn-primary\"><i aria-hidden=\"true\" class=\"fas fa-plus mr-2\"></i>New 404 Host</a></div>")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
 				}
 			} else {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "<div class=\"card p-8 text-center\"><i class=\"fas fa-plug text-4xl text-gray-400 mb-4\"></i><h3 class=\"text-lg font-medium text-white mb-2\">NPM Not Connected</h3><p class=\"text-gray-400 mb-4\">Connect to NPM first.</p><a href=\"/proxy/setup\" class=\"btn-primary\"><i class=\"fas fa-link mr-2\"></i>Setup Connection</a></div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "<div class=\"card p-8 text-center\"><i aria-hidden=\"true\" class=\"fas fa-plug text-4xl text-gray-400 mb-4\"></i><h3 class=\"text-lg font-medium text-white mb-2\">NPM Not Connected</h3><p class=\"text-gray-400 mb-4\">Connect to NPM first.</p><a href=\"/proxy/setup\" class=\"btn-primary\"><i aria-hidden=\"true\" class=\"fas fa-link mr-2\"></i>Setup Connection</a></div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -215,19 +215,19 @@ func DeadForm(data DeadFormData) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "<div class=\"max-w-2xl mx-auto space-y-6\"><div class=\"flex items-center gap-4\"><a href=\"/proxy/dead-hosts\" class=\"p-2 text-gray-400 hover:text-white hover:bg-dark-700 rounded-lg\"><i class=\"fas fa-arrow-left\"></i></a><div><h1 class=\"text-2xl font-display font-bold text-white\">New 404 Host</h1><p class=\"text-gray-400 mt-1\">Block a domain by serving a 404 page</p></div></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "<div class=\"max-w-2xl mx-auto space-y-6\"><div class=\"flex items-center gap-4\"><a href=\"/proxy/dead-hosts\" class=\"p-2 text-gray-400 hover:text-white hover:bg-dark-700 rounded-lg\"><i aria-hidden=\"true\" class=\"fas fa-arrow-left\"></i></a><div><h1 class=\"text-2xl font-display font-bold text-white\">New 404 Host</h1><p class=\"text-gray-400 mt-1\">Block a domain by serving a 404 page</p></div></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			if data.Error != "" {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "<div class=\"bg-red-500/10 border border-red-500/20 rounded-lg p-4 text-red-400\"><i class=\"fas fa-exclamation-triangle mr-2\"></i>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "<div class=\"bg-red-500/10 border border-red-500/20 rounded-lg p-4 text-red-400\"><i aria-hidden=\"true\" class=\"fas fa-exclamation-triangle mr-2\"></i>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var7 string
 				templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(data.Error)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/proxy/dead.templ`, Line: 127, Col: 65}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/proxy/dead.templ`, Line: 127, Col: 84}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 				if templ_7745c5c3_Err != nil {
@@ -251,7 +251,7 @@ func DeadForm(data DeadFormData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 22, "\"><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Domain Names</label> <input type=\"text\" name=\"domain_names\" required placeholder=\"blocked.example.com\" class=\"input w-full\"><p class=\"text-xs text-gray-500 mt-1\">Comma-separated. These domains will return a 404.</p></div><div class=\"space-y-3\"><div class=\"flex items-center gap-3\"><input type=\"checkbox\" name=\"ssl_forced\" id=\"dead-ssl\" class=\"rounded border-gray-600 bg-dark-700 text-primary-500 focus:ring-primary-500\"> <label for=\"dead-ssl\" class=\"text-sm text-gray-300\">Force SSL</label></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 22, "\"><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Domain Names</label> <input type=\"text\" name=\"domain_names\" required placeholder=\"blocked.example.com\" class=\"input w-full\" aria-label=\"Domain Names\"><p class=\"text-xs text-gray-500 mt-1\">Comma-separated. These domains will return a 404.</p></div><div class=\"space-y-3\"><div class=\"flex items-center gap-3\"><input type=\"checkbox\" name=\"ssl_forced\" id=\"dead-ssl\" class=\"rounded border-gray-600 bg-dark-700 text-primary-500 focus:ring-primary-500\"> <label for=\"dead-ssl\" class=\"text-sm text-gray-300\">Force SSL</label></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -268,7 +268,7 @@ func DeadForm(data DeadFormData) templ.Component {
 					var templ_7745c5c3_Var9 string
 					templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", cert.ID))
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/proxy/dead.templ`, Line: 156, Col: 51}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/proxy/dead.templ`, Line: 157, Col: 51}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 					if templ_7745c5c3_Err != nil {
@@ -281,7 +281,7 @@ func DeadForm(data DeadFormData) templ.Component {
 					var templ_7745c5c3_Var10 string
 					templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(cert.NiceName)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/proxy/dead.templ`, Line: 157, Col: 25}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/proxy/dead.templ`, Line: 158, Col: 25}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 					if templ_7745c5c3_Err != nil {
@@ -294,7 +294,7 @@ func DeadForm(data DeadFormData) templ.Component {
 					var templ_7745c5c3_Var11 string
 					templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(certDomainsDisplay(cert.DomainNames))
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/proxy/dead.templ`, Line: 157, Col: 70}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/proxy/dead.templ`, Line: 158, Col: 70}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 					if templ_7745c5c3_Err != nil {
@@ -310,7 +310,7 @@ func DeadForm(data DeadFormData) templ.Component {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 29, "</div><div class=\"flex items-center justify-end gap-3\"><a href=\"/proxy/dead-hosts\" class=\"btn-secondary\">Cancel</a> <button type=\"submit\" class=\"btn-primary\"><i class=\"fas fa-plus mr-2\"></i>Create 404 Host</button></div></form></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 29, "</div><div class=\"flex items-center justify-end gap-3\"><a href=\"/proxy/dead-hosts\" class=\"btn-secondary\">Cancel</a> <button type=\"submit\" class=\"btn-primary\"><i aria-hidden=\"true\" class=\"fas fa-plus mr-2\"></i>Create 404 Host</button></div></form></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

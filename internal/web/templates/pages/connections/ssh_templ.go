@@ -651,7 +651,7 @@ func SSHTerminal(data SSHTerminalData) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 37, "<!-- Breadcrumb --> <nav class=\"flex items-center gap-2 text-sm text-gray-400 mb-4\"><a href=\"/connections/ssh\" class=\"hover:text-primary-400 transition-colors\">SSH Connections</a> <i class=\"fas fa-chevron-right text-xs\"></i> <a href=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 37, "<!-- Breadcrumb --> <nav class=\"flex items-center gap-2 text-sm text-gray-400 mb-4\"><a href=\"/connections/ssh\" class=\"hover:text-primary-400 transition-colors\">SSH Connections</a> <i aria-hidden=\"true\" class=\"fas fa-chevron-right text-xs\"></i> <a href=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -677,7 +677,7 @@ func SSHTerminal(data SSHTerminalData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 39, "</a> <i class=\"fas fa-chevron-right text-xs\"></i> <span class=\"text-white\">Terminal</span></nav><!-- Header --> <div class=\"flex items-center justify-between mb-6\"><div class=\"flex items-center gap-4\"><div class=\"w-10 h-10 rounded-lg bg-dark-700 flex items-center justify-center\"><i class=\"fas fa-terminal text-lg text-primary-400\"></i></div><div><h1 class=\"text-2xl font-bold font-display text-white\">Terminal</h1><p class=\"text-gray-400 text-sm\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 39, "</a> <i aria-hidden=\"true\" class=\"fas fa-chevron-right text-xs\"></i> <span class=\"text-white\">Terminal</span></nav><!-- Header --> <div class=\"flex items-center justify-between mb-6\"><div class=\"flex items-center gap-4\"><div class=\"w-10 h-10 rounded-lg bg-dark-700 flex items-center justify-center\"><i aria-hidden=\"true\" class=\"fas fa-terminal text-lg text-primary-400\"></i></div><div><h1 class=\"text-2xl font-bold font-display text-white\">Terminal</h1><p class=\"text-gray-400 text-sm\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -703,7 +703,7 @@ func SSHTerminal(data SSHTerminalData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 41, "\" class=\"px-4 py-2 bg-dark-700 hover:bg-dark-600 text-gray-300 rounded-lg transition-colors\"><i class=\"fas fa-arrow-left mr-2\"></i>Back</a> <a href=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 41, "\" class=\"px-4 py-2 bg-dark-700 hover:bg-dark-600 text-gray-300 rounded-lg transition-colors\"><i aria-hidden=\"true\" class=\"fas fa-arrow-left mr-2\"></i>Back</a> <a href=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -716,7 +716,7 @@ func SSHTerminal(data SSHTerminalData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 42, "\" class=\"px-4 py-2 bg-dark-700 hover:bg-dark-600 text-gray-300 rounded-lg transition-colors\"><i class=\"fas fa-folder mr-2\"></i>Files</a></div></div><!-- Terminal Container --> <div x-data=\"sshTerminal()\" data-conn-id=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 42, "\" class=\"px-4 py-2 bg-dark-700 hover:bg-dark-600 text-gray-300 rounded-lg transition-colors\"><i aria-hidden=\"true\" class=\"fas fa-folder mr-2\"></i>Files</a></div></div><!-- Terminal Container --> <div x-data=\"sshTerminal()\" data-conn-id=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -742,7 +742,7 @@ func SSHTerminal(data SSHTerminalData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 44, "\" class=\"bg-dark-800 rounded-xl border border-dark-600 overflow-hidden\"><!-- Terminal Header --><div class=\"flex items-center justify-between px-4 py-3 border-b border-dark-600 bg-dark-850\"><div class=\"flex items-center gap-3\"><!-- Window controls (decorative) --><div class=\"flex items-center gap-1.5\"><span class=\"w-3 h-3 rounded-full bg-red-500\"></span> <span class=\"w-3 h-3 rounded-full bg-yellow-500\"></span> <span class=\"w-3 h-3 rounded-full bg-green-500\"></span></div><span class=\"text-sm text-gray-400\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 44, "\" class=\"card overflow-hidden\"><!-- Terminal Header --><div class=\"flex items-center justify-between px-4 py-3 border-b border-dark-600 bg-dark-850\"><div class=\"flex items-center gap-3\"><!-- Window controls (decorative) --><div class=\"flex items-center gap-1.5\"><span class=\"w-3 h-3 rounded-full bg-red-500\"></span> <span class=\"w-3 h-3 rounded-full bg-yellow-500\"></span> <span class=\"w-3 h-3 rounded-full bg-green-500\"></span></div><span class=\"text-sm text-gray-400\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -768,7 +768,7 @@ func SSHTerminal(data SSHTerminalData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 46, "</span></div><div class=\"flex items-center gap-2\"><!-- Connection status --><span x-show=\"connected\" class=\"flex items-center gap-1.5 text-xs text-green-400\"><span class=\"w-2 h-2 bg-green-500 rounded-full animate-pulse\"></span> Connected</span> <span x-show=\"!connected && !connecting\" class=\"flex items-center gap-1.5 text-xs text-red-400\"><span class=\"w-2 h-2 bg-red-500 rounded-full\"></span> Disconnected</span> <span x-show=\"connecting\" class=\"flex items-center gap-1.5 text-xs text-yellow-400\"><i class=\"fas fa-spinner fa-spin\"></i> Connecting...</span><!-- Actions --><button @click=\"reconnect()\" class=\"p-2 text-gray-400 hover:text-white hover:bg-dark-600 rounded-lg transition-colors\" title=\"Reconnect\"><i class=\"fas fa-redo\"></i></button> <button @click=\"toggleFullscreen()\" class=\"p-2 text-gray-400 hover:text-white hover:bg-dark-600 rounded-lg transition-colors\" title=\"Fullscreen\"><i class=\"fas fa-expand\"></i></button></div></div><!-- Terminal Display --><div x-ref=\"terminalContainer\" id=\"ssh-terminal\" class=\"h-[500px]\"></div><!-- Credential Modal --><div x-show=\"credentialModal.show\" x-transition:enter=\"transition ease-out duration-150\" x-transition:enter-start=\"opacity-0\" x-transition:enter-end=\"opacity-100\" x-transition:leave=\"transition ease-in duration-100\" x-transition:leave-start=\"opacity-100\" x-transition:leave-end=\"opacity-0\" class=\"fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm\" @keydown.escape.window=\"cancelCredential()\"><div class=\"bg-dark-800 border border-dark-600 rounded-xl shadow-2xl w-full max-w-md mx-4 p-6\"><div class=\"flex items-center gap-3 mb-4\"><div class=\"w-10 h-10 rounded-lg bg-primary-500/20 flex items-center justify-center\"><i class=\"fas fa-key text-primary-400\"></i></div><div><h3 class=\"text-white font-semibold text-lg\">Authentication Required</h3><p class=\"text-gray-400 text-sm\" x-text=\"credentialModal.message\"></p></div></div><form @submit.prevent=\"submitCredential()\"><div class=\"mb-4\"><label class=\"block text-sm font-medium text-gray-300 mb-1.5\" x-text=\"credentialModal.label\"></label> <input x-ref=\"credentialInput\" :type=\"credentialModal.field === 'password' ? 'password' : 'text'\" x-model=\"credentialModal.value\" :placeholder=\"credentialModal.field === 'password' ? '••••••••' : 'Enter username'\" class=\"w-full px-3 py-2.5 bg-dark-700 border border-dark-500 rounded-lg text-white placeholder-gray-500 focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none\" autocomplete=\"off\"></div><div class=\"flex items-center justify-end gap-3\"><button type=\"button\" @click=\"cancelCredential()\" class=\"px-4 py-2 text-gray-400 hover:text-white transition-colors text-sm\">Cancel</button> <button type=\"submit\" class=\"px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors text-sm font-medium\">Connect</button></div></form></div></div></div><!-- xterm.js (self-hosted) --> <link rel=\"stylesheet\" href=\"/static/vendor/xterm/css/xterm.css\"><script src=\"/static/vendor/xterm/lib/xterm.js\"></script> <script src=\"/static/vendor/xterm/addons/xterm-addon-fit.js\"></script> <script src=\"/static/vendor/xterm/addons/xterm-addon-web-links.js\"></script> <script>\n\t\t\tfunction sshTerminal() {\n\t\t\t\treturn {\n\t\t\t\t\tterm: null,\n\t\t\t\t\tws: null,\n\t\t\t\t\tfitAddon: null,\n\t\t\t\t\tconnected: false,\n\t\t\t\t\tconnecting: false,\n\t\t\t\t\tconnId: '',\n\t\t\t\t\tconnName: '',\n\t\t\t\t\t_initialized: false,\n\t\t\t\t\t_resizeHandler: null,\n\t\t\t\t\t_reconnectAttempts: 0,\n\t\t\t\t\tcredentialModal: {\n\t\t\t\t\t\tshow: false,\n\t\t\t\t\t\tfield: '',\n\t\t\t\t\t\tlabel: '',\n\t\t\t\t\t\tmessage: '',\n\t\t\t\t\t\tvalue: ''\n\t\t\t\t\t},\n\n\t\t\t\t\tinit() {\n\t\t\t\t\t\tif (this._initialized) return;\n\t\t\t\t\t\tthis._initialized = true;\n\n\t\t\t\t\t\tthis.connId = this.$el.dataset.connId;\n\t\t\t\t\t\tthis.connName = this.$el.dataset.connName;\n\n\t\t\t\t\t\t// Initialize xterm.js\n\t\t\t\t\t\tthis.term = new Terminal({\n\t\t\t\t\t\t\tcursorBlink: true,\n\t\t\t\t\t\t\tcursorStyle: 'block',\n\t\t\t\t\t\t\tfontSize: 14,\n\t\t\t\t\t\t\tfontFamily: \"'IBM Plex Mono', 'Fira Code', 'Menlo', monospace\",\n\t\t\t\t\t\t\ttheme: {\n\t\t\t\t\t\t\t\tbackground: '#0d1117',\n\t\t\t\t\t\t\t\tforeground: '#e6edf3',\n\t\t\t\t\t\t\t\tcursor: '#ff6b35',\n\t\t\t\t\t\t\t\tcursorAccent: '#0d1117',\n\t\t\t\t\t\t\t\tselection: 'rgba(255, 107, 53, 0.3)',\n\t\t\t\t\t\t\t\tblack: '#0d1117',\n\t\t\t\t\t\t\t\tred: '#f85149',\n\t\t\t\t\t\t\t\tgreen: '#3fb950',\n\t\t\t\t\t\t\t\tyellow: '#d29922',\n\t\t\t\t\t\t\t\tblue: '#58a6ff',\n\t\t\t\t\t\t\t\tmagenta: '#bc8cff',\n\t\t\t\t\t\t\t\tcyan: '#76e3ea',\n\t\t\t\t\t\t\t\twhite: '#e6edf3',\n\t\t\t\t\t\t\t\tbrightBlack: '#484f58',\n\t\t\t\t\t\t\t\tbrightRed: '#ff7b72',\n\t\t\t\t\t\t\t\tbrightGreen: '#56d364',\n\t\t\t\t\t\t\t\tbrightYellow: '#e3b341',\n\t\t\t\t\t\t\t\tbrightBlue: '#79c0ff',\n\t\t\t\t\t\t\t\tbrightMagenta: '#d2a8ff',\n\t\t\t\t\t\t\t\tbrightCyan: '#a5d6ff',\n\t\t\t\t\t\t\t\tbrightWhite: '#ffffff'\n\t\t\t\t\t\t\t},\n\t\t\t\t\t\t\tscrollback: 10000,\n\t\t\t\t\t\t\tconvertEol: true,\n\t\t\t\t\t\t});\n\n\t\t\t\t\t\t// Load addons\n\t\t\t\t\t\tthis.fitAddon = new FitAddon.FitAddon();\n\t\t\t\t\t\tthis.term.loadAddon(this.fitAddon);\n\t\t\t\t\t\tthis.term.loadAddon(new WebLinksAddon.WebLinksAddon());\n\n\t\t\t\t\t\t// Open terminal in container\n\t\t\t\t\t\tthis.term.open(this.$refs.terminalContainer);\n\n\t\t\t\t\t\t// Delay fit and connect to ensure DOM layout is fully computed\n\t\t\t\t\t\tthis.$nextTick(() => {\n\t\t\t\t\t\t\tsetTimeout(() => {\n\t\t\t\t\t\t\t\tthis.fitAddon.fit();\n\t\t\t\t\t\t\t\tthis.connect();\n\t\t\t\t\t\t\t}, 50);\n\t\t\t\t\t\t});\n\n\t\t\t\t\t\t// Handle resize\n\t\t\t\t\t\tthis._resizeHandler = () => {\n\t\t\t\t\t\t\tif (this.fitAddon) {\n\t\t\t\t\t\t\t\tthis.fitAddon.fit();\n\t\t\t\t\t\t\t\tthis.sendResize();\n\t\t\t\t\t\t\t}\n\t\t\t\t\t\t};\n\t\t\t\t\t\twindow.addEventListener('resize', this._resizeHandler);\n\n\t\t\t\t\t\t// Handle terminal input\n\t\t\t\t\t\tthis.term.onData(data => {\n\t\t\t\t\t\t\tif (this.ws && this.ws.readyState === WebSocket.OPEN) {\n\t\t\t\t\t\t\t\tthis.ws.send(JSON.stringify({ type: 'input', data: data }));\n\t\t\t\t\t\t\t}\n\t\t\t\t\t\t});\n\n\t\t\t\t\t\t// Handle terminal resize\n\t\t\t\t\t\tthis.term.onResize(({ cols, rows }) => {\n\t\t\t\t\t\t\tthis.sendResize();\n\t\t\t\t\t\t});\n\t\t\t\t\t},\n\n\t\t\t\t\tdestroy() {\n\t\t\t\t\t\tif (this._resizeHandler) {\n\t\t\t\t\t\t\twindow.removeEventListener('resize', this._resizeHandler);\n\t\t\t\t\t\t}\n\t\t\t\t\t\tif (this.ws) {\n\t\t\t\t\t\t\tthis.ws.onclose = null;\n\t\t\t\t\t\t\tthis.ws.close();\n\t\t\t\t\t\t\tthis.ws = null;\n\t\t\t\t\t\t}\n\t\t\t\t\t\tif (this.term) {\n\t\t\t\t\t\t\tthis.term.dispose();\n\t\t\t\t\t\t\tthis.term = null;\n\t\t\t\t\t\t}\n\t\t\t\t\t},\n\n\t\t\t\t\tconnect() {\n\t\t\t\t\t\tthis.connecting = true;\n\n\t\t\t\t\t\tconst protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';\n\t\t\t\t\t\tconst { cols, rows } = this.term;\n\t\t\t\t\t\tconst url = `${protocol}//${window.location.host}/ws/ssh/${this.connId}?cols=${cols}&rows=${rows}`;\n\n\t\t\t\t\t\tthis.ws = new WebSocket(url);\n\n\t\t\t\t\t\tthis.ws.onopen = () => {\n\t\t\t\t\t\t\tthis.connected = true;\n\t\t\t\t\t\t\tthis.connecting = false;\n\t\t\t\t\t\t\tthis._reconnectAttempts = 0;\n\t\t\t\t\t\t\tthis.fitAddon.fit();\n\t\t\t\t\t\t\tthis.sendResize();\n\t\t\t\t\t\t\tthis.term.focus();\n\t\t\t\t\t\t};\n\n\t\t\t\t\t\tthis.ws.onmessage = (event) => {\n\t\t\t\t\t\t\ttry {\n\t\t\t\t\t\t\t\tconst msg = JSON.parse(event.data);\n\t\t\t\t\t\t\t\tif (msg.type === 'output') {\n\t\t\t\t\t\t\t\t\tthis.term.write(msg.data);\n\t\t\t\t\t\t\t\t} else if (msg.type === 'error') {\n\t\t\t\t\t\t\t\t\tthis.term.write('\\r\\n\\x1b[31mError: ' + (msg.data || msg.message || 'Unknown error') + '\\x1b[0m\\r\\n');\n\t\t\t\t\t\t\t\t} else if (msg.type === 'connected') {\n\t\t\t\t\t\t\t\t\tthis.term.write('\\r\\n\\x1b[32m' + (msg.data || 'Connected') + '\\x1b[0m\\r\\n');\n\t\t\t\t\t\t\t\t} else if (msg.type === 'disconnected') {\n\t\t\t\t\t\t\t\t\tthis.term.write('\\r\\n\\x1b[33m' + (msg.data || 'Disconnected') + '\\x1b[0m\\r\\n');\n\t\t\t\t\t\t\t\t} else if (msg.type === 'credential_request') {\n\t\t\t\t\t\t\t\t\tthis.requestCredential(msg.field, msg.data);\n\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t} catch(e) {\n\t\t\t\t\t\t\t\tthis.term.write(event.data);\n\t\t\t\t\t\t\t}\n\t\t\t\t\t\t};\n\n\t\t\t\t\t\tthis.ws.onclose = (event) => {\n\t\t\t\t\t\t\tthis.connected = false;\n\t\t\t\t\t\t\tthis.connecting = false;\n\t\t\t\t\t\t\tconst graceful = (event.code === 1000 || event.code === 1001);\n\t\t\t\t\t\t\tif (!this._destroyed && !graceful && this._reconnectAttempts < 5) {\n\t\t\t\t\t\t\t\tconst delay = Math.min(30000, 1000 * Math.pow(2, this._reconnectAttempts));\n\t\t\t\t\t\t\t\tthis._reconnectAttempts++;\n\t\t\t\t\t\t\t\tconst delaySec = delay * 0.001;\n\t\t\t\t\t\t\t\tthis.term.write('\\r\\n\\x1b[31mDisconnected — reconnecting in ' + delaySec + 's... (attempt ' + this._reconnectAttempts + ' of 5)\\x1b[0m\\r\\n');\n\t\t\t\t\t\t\t\tsetTimeout(() => this.connect(), delay);\n\t\t\t\t\t\t\t} else if (!graceful && this._reconnectAttempts >= 5) {\n\t\t\t\t\t\t\t\tthis.term.write('\\r\\n\\x1b[31mDisconnected — max reconnect attempts reached.\\x1b[0m\\r\\n');\n\t\t\t\t\t\t\t} else {\n\t\t\t\t\t\t\t\tthis.term.write('\\r\\n\\x1b[31mDisconnected.\\x1b[0m\\r\\n');\n\t\t\t\t\t\t\t}\n\t\t\t\t\t\t};\n\n\t\t\t\t\t\tthis.ws.onerror = () => {\n\t\t\t\t\t\t\tthis.connected = false;\n\t\t\t\t\t\t\tthis.connecting = false;\n\t\t\t\t\t\t\tthis.term.write('\\r\\n\\x1b[31mConnection error\\x1b[0m\\r\\n');\n\t\t\t\t\t\t};\n\t\t\t\t\t},\n\n\t\t\t\t\tsendResize() {\n\t\t\t\t\t\tif (this.ws && this.ws.readyState === WebSocket.OPEN) {\n\t\t\t\t\t\t\tconst { cols, rows } = this.term;\n\t\t\t\t\t\t\tthis.ws.send(JSON.stringify({ type: 'resize', cols: cols, rows: rows }));\n\t\t\t\t\t\t}\n\t\t\t\t\t},\n\n\t\t\t\t\treconnect() {\n\t\t\t\t\t\tif (this.ws) this.ws.close();\n\t\t\t\t\t\tthis._reconnectAttempts = 0;\n\t\t\t\t\t\tthis.term.clear();\n\t\t\t\t\t\tthis.term.write('\\x1b[33mReconnecting...\\x1b[0m\\r\\n');\n\t\t\t\t\t\tthis.connect();\n\t\t\t\t\t},\n\n\t\t\t\t\ttoggleFullscreen() {\n\t\t\t\t\t\tconst container = this.$refs.terminalContainer;\n\t\t\t\t\t\tif (document.fullscreenElement) {\n\t\t\t\t\t\t\tdocument.exitFullscreen();\n\t\t\t\t\t\t} else {\n\t\t\t\t\t\t\tcontainer.requestFullscreen();\n\t\t\t\t\t\t}\n\t\t\t\t\t\tsetTimeout(() => {\n\t\t\t\t\t\t\tthis.fitAddon.fit();\n\t\t\t\t\t\t\tthis.sendResize();\n\t\t\t\t\t\t}, 100);\n\t\t\t\t\t},\n\n\t\t\t\t\t// Credential modal methods\n\t\t\t\t\trequestCredential(field, message) {\n\t\t\t\t\t\tconst label = field === 'password' ? 'Password' : 'Username';\n\t\t\t\t\t\tthis.credentialModal = {\n\t\t\t\t\t\t\tshow: true,\n\t\t\t\t\t\t\tfield: field,\n\t\t\t\t\t\t\tlabel: label,\n\t\t\t\t\t\t\tmessage: message || (field === 'username' ? 'Enter username' : 'Enter password'),\n\t\t\t\t\t\t\tvalue: ''\n\t\t\t\t\t\t};\n\t\t\t\t\t\tthis.$nextTick(() => {\n\t\t\t\t\t\t\tif (this.$refs.credentialInput) {\n\t\t\t\t\t\t\t\tthis.$refs.credentialInput.focus();\n\t\t\t\t\t\t\t}\n\t\t\t\t\t\t});\n\t\t\t\t\t},\n\n\t\t\t\t\tsubmitCredential() {\n\t\t\t\t\t\tconst { field, value } = this.credentialModal;\n\t\t\t\t\t\tif (!value || !this.ws) return;\n\n\t\t\t\t\t\tconst resp = { type: 'credential_response' };\n\t\t\t\t\t\tif (field === 'username') resp.username = value;\n\t\t\t\t\t\telse resp.password = value;\n\t\t\t\t\t\tthis.ws.send(JSON.stringify(resp));\n\n\t\t\t\t\t\tthis.credentialModal.show = false;\n\t\t\t\t\t\tthis.credentialModal.value = '';\n\n\t\t\t\t\t\tthis.$nextTick(() => {\n\t\t\t\t\t\t\tif (this.term) this.term.focus();\n\t\t\t\t\t\t});\n\t\t\t\t\t},\n\n\t\t\t\t\tcancelCredential() {\n\t\t\t\t\t\tif (this.ws) {\n\t\t\t\t\t\t\tthis.ws.close();\n\t\t\t\t\t\t}\n\t\t\t\t\t\tthis.credentialModal.show = false;\n\t\t\t\t\t\tthis.credentialModal.value = '';\n\t\t\t\t\t}\n\t\t\t\t};\n\t\t\t}\n\t\t</script> <style>\n\t\t\t#ssh-terminal {\n\t\t\t\tpadding: 8px;\n\t\t\t\tbackground: #0d1117;\n\t\t\t}\n\n\t\t\t#ssh-terminal:fullscreen {\n\t\t\t\tpadding: 16px;\n\t\t\t}\n\n\t\t\t.xterm-viewport::-webkit-scrollbar {\n\t\t\t\twidth: 8px;\n\t\t\t}\n\n\t\t\t.xterm-viewport::-webkit-scrollbar-track {\n\t\t\t\tbackground: #0d1117;\n\t\t\t}\n\n\t\t\t.xterm-viewport::-webkit-scrollbar-thumb {\n\t\t\t\tbackground: #30363d;\n\t\t\t\tborder-radius: 4px;\n\t\t\t}\n\n\t\t\t.xterm-viewport::-webkit-scrollbar-thumb:hover {\n\t\t\t\tbackground: #484f58;\n\t\t\t}\n\t\t</style>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 46, "</span></div><div class=\"flex items-center gap-2\"><!-- Connection status --><span x-show=\"connected\" class=\"flex items-center gap-1.5 text-xs text-green-400\"><span class=\"w-2 h-2 bg-green-500 rounded-full animate-pulse\"></span> Connected</span> <span x-show=\"!connected && !connecting\" class=\"flex items-center gap-1.5 text-xs text-red-400\"><span class=\"w-2 h-2 bg-red-500 rounded-full\"></span> Disconnected</span> <span x-show=\"connecting\" class=\"flex items-center gap-1.5 text-xs text-yellow-400\"><i aria-hidden=\"true\" class=\"fas fa-spinner fa-spin\"></i> Connecting...</span><!-- Actions --><button @click=\"reconnect()\" class=\"p-2 text-gray-400 hover:text-white hover:bg-dark-600 rounded-lg transition-colors\" title=\"Reconnect\"><i aria-hidden=\"true\" class=\"fas fa-redo\"></i></button> <button @click=\"toggleFullscreen()\" class=\"p-2 text-gray-400 hover:text-white hover:bg-dark-600 rounded-lg transition-colors\" title=\"Fullscreen\"><i aria-hidden=\"true\" class=\"fas fa-expand\"></i></button></div></div><!-- Terminal Display --><div x-ref=\"terminalContainer\" id=\"ssh-terminal\" class=\"h-[500px]\"></div><!-- Credential Modal --><div x-show=\"credentialModal.show\" x-transition:enter=\"transition ease-out duration-150\" x-transition:enter-start=\"opacity-0\" x-transition:enter-end=\"opacity-100\" x-transition:leave=\"transition ease-in duration-100\" x-transition:leave-start=\"opacity-100\" x-transition:leave-end=\"opacity-0\" class=\"fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm\" @keydown.escape.window=\"cancelCredential()\"><div class=\"bg-dark-800 border border-dark-600 rounded-xl shadow-2xl w-full max-w-md mx-4 p-6\"><div class=\"flex items-center gap-3 mb-4\"><div class=\"w-10 h-10 rounded-lg bg-primary-500/20 flex items-center justify-center\"><i aria-hidden=\"true\" class=\"fas fa-key text-primary-400\"></i></div><div><h3 class=\"text-white font-semibold text-lg\">Authentication Required</h3><p class=\"text-gray-400 text-sm\" x-text=\"credentialModal.message\"></p></div></div><form @submit.prevent=\"submitCredential()\"><div class=\"mb-4\"><label class=\"block text-sm font-medium text-gray-300 mb-1.5\" x-text=\"credentialModal.label\"></label> <input x-ref=\"credentialInput\" :type=\"credentialModal.field === 'password' ? 'password' : 'text'\" x-model=\"credentialModal.value\" :placeholder=\"credentialModal.field === 'password' ? '••••••••' : 'Enter username'\" class=\"w-full px-3 py-2.5 bg-dark-700 border border-dark-500 rounded-lg text-white placeholder-gray-500 focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none\" autocomplete=\"off\" aria-label=\"credentialModal.field === 'password' ? '••••••••' : 'Enter username'\"></div><div class=\"flex items-center justify-end gap-3\"><button type=\"button\" @click=\"cancelCredential()\" class=\"px-4 py-2 text-gray-400 hover:text-white transition-colors text-sm\">Cancel</button> <button type=\"submit\" class=\"px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors text-sm font-medium\">Connect</button></div></form></div></div></div><!-- xterm.js (self-hosted) --> <link rel=\"stylesheet\" href=\"/static/vendor/xterm/css/xterm.css\"><script src=\"/static/vendor/xterm/lib/xterm.js\"></script> <script src=\"/static/vendor/xterm/addons/xterm-addon-fit.js\"></script> <script src=\"/static/vendor/xterm/addons/xterm-addon-web-links.js\"></script> <script>\n\t\t\tfunction sshTerminal() {\n\t\t\t\treturn {\n\t\t\t\t\tterm: null,\n\t\t\t\t\tws: null,\n\t\t\t\t\tfitAddon: null,\n\t\t\t\t\tconnected: false,\n\t\t\t\t\tconnecting: false,\n\t\t\t\t\tconnId: '',\n\t\t\t\t\tconnName: '',\n\t\t\t\t\t_initialized: false,\n\t\t\t\t\t_resizeHandler: null,\n\t\t\t\t\t_reconnectAttempts: 0,\n\t\t\t\t\tcredentialModal: {\n\t\t\t\t\t\tshow: false,\n\t\t\t\t\t\tfield: '',\n\t\t\t\t\t\tlabel: '',\n\t\t\t\t\t\tmessage: '',\n\t\t\t\t\t\tvalue: ''\n\t\t\t\t\t},\n\n\t\t\t\t\tinit() {\n\t\t\t\t\t\tif (this._initialized) return;\n\t\t\t\t\t\tthis._initialized = true;\n\n\t\t\t\t\t\tthis.connId = this.$el.dataset.connId;\n\t\t\t\t\t\tthis.connName = this.$el.dataset.connName;\n\n\t\t\t\t\t\t// Initialize xterm.js\n\t\t\t\t\t\tthis.term = new Terminal({\n\t\t\t\t\t\t\tcursorBlink: true,\n\t\t\t\t\t\t\tcursorStyle: 'block',\n\t\t\t\t\t\t\tfontSize: 14,\n\t\t\t\t\t\t\tfontFamily: \"'IBM Plex Mono', 'Fira Code', 'Menlo', monospace\",\n\t\t\t\t\t\t\ttheme: {\n\t\t\t\t\t\t\t\tbackground: '#0d1117',\n\t\t\t\t\t\t\t\tforeground: '#e6edf3',\n\t\t\t\t\t\t\t\tcursor: '#ff6b35',\n\t\t\t\t\t\t\t\tcursorAccent: '#0d1117',\n\t\t\t\t\t\t\t\tselection: 'rgba(255, 107, 53, 0.3)',\n\t\t\t\t\t\t\t\tblack: '#0d1117',\n\t\t\t\t\t\t\t\tred: '#f85149',\n\t\t\t\t\t\t\t\tgreen: '#3fb950',\n\t\t\t\t\t\t\t\tyellow: '#d29922',\n\t\t\t\t\t\t\t\tblue: '#58a6ff',\n\t\t\t\t\t\t\t\tmagenta: '#bc8cff',\n\t\t\t\t\t\t\t\tcyan: '#76e3ea',\n\t\t\t\t\t\t\t\twhite: '#e6edf3',\n\t\t\t\t\t\t\t\tbrightBlack: '#484f58',\n\t\t\t\t\t\t\t\tbrightRed: '#ff7b72',\n\t\t\t\t\t\t\t\tbrightGreen: '#56d364',\n\t\t\t\t\t\t\t\tbrightYellow: '#e3b341',\n\t\t\t\t\t\t\t\tbrightBlue: '#79c0ff',\n\t\t\t\t\t\t\t\tbrightMagenta: '#d2a8ff',\n\t\t\t\t\t\t\t\tbrightCyan: '#a5d6ff',\n\t\t\t\t\t\t\t\tbrightWhite: '#ffffff'\n\t\t\t\t\t\t\t},\n\t\t\t\t\t\t\tscrollback: 10000,\n\t\t\t\t\t\t\tconvertEol: true,\n\t\t\t\t\t\t});\n\n\t\t\t\t\t\t// Load addons\n\t\t\t\t\t\tthis.fitAddon = new FitAddon.FitAddon();\n\t\t\t\t\t\tthis.term.loadAddon(this.fitAddon);\n\t\t\t\t\t\tthis.term.loadAddon(new WebLinksAddon.WebLinksAddon());\n\n\t\t\t\t\t\t// Open terminal in container\n\t\t\t\t\t\tthis.term.open(this.$refs.terminalContainer);\n\n\t\t\t\t\t\t// Delay fit and connect to ensure DOM layout is fully computed\n\t\t\t\t\t\tthis.$nextTick(() => {\n\t\t\t\t\t\t\tsetTimeout(() => {\n\t\t\t\t\t\t\t\tthis.fitAddon.fit();\n\t\t\t\t\t\t\t\tthis.connect();\n\t\t\t\t\t\t\t}, 50);\n\t\t\t\t\t\t});\n\n\t\t\t\t\t\t// Handle resize\n\t\t\t\t\t\tthis._resizeHandler = () => {\n\t\t\t\t\t\t\tif (this.fitAddon) {\n\t\t\t\t\t\t\t\tthis.fitAddon.fit();\n\t\t\t\t\t\t\t\tthis.sendResize();\n\t\t\t\t\t\t\t}\n\t\t\t\t\t\t};\n\t\t\t\t\t\twindow.addEventListener('resize', this._resizeHandler);\n\n\t\t\t\t\t\t// Handle terminal input\n\t\t\t\t\t\tthis.term.onData(data => {\n\t\t\t\t\t\t\tif (this.ws && this.ws.readyState === WebSocket.OPEN) {\n\t\t\t\t\t\t\t\tthis.ws.send(JSON.stringify({ type: 'input', data: data }));\n\t\t\t\t\t\t\t}\n\t\t\t\t\t\t});\n\n\t\t\t\t\t\t// Handle terminal resize\n\t\t\t\t\t\tthis.term.onResize(({ cols, rows }) => {\n\t\t\t\t\t\t\tthis.sendResize();\n\t\t\t\t\t\t});\n\t\t\t\t\t},\n\n\t\t\t\t\tdestroy() {\n\t\t\t\t\t\tif (this._resizeHandler) {\n\t\t\t\t\t\t\twindow.removeEventListener('resize', this._resizeHandler);\n\t\t\t\t\t\t}\n\t\t\t\t\t\tif (this.ws) {\n\t\t\t\t\t\t\tthis.ws.onclose = null;\n\t\t\t\t\t\t\tthis.ws.close();\n\t\t\t\t\t\t\tthis.ws = null;\n\t\t\t\t\t\t}\n\t\t\t\t\t\tif (this.term) {\n\t\t\t\t\t\t\tthis.term.dispose();\n\t\t\t\t\t\t\tthis.term = null;\n\t\t\t\t\t\t}\n\t\t\t\t\t},\n\n\t\t\t\t\tconnect() {\n\t\t\t\t\t\tthis.connecting = true;\n\n\t\t\t\t\t\tconst protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';\n\t\t\t\t\t\tconst { cols, rows } = this.term;\n\t\t\t\t\t\tconst url = `${protocol}//${window.location.host}/ws/ssh/${this.connId}?cols=${cols}&rows=${rows}`;\n\n\t\t\t\t\t\tthis.ws = new WebSocket(url);\n\n\t\t\t\t\t\tthis.ws.onopen = () => {\n\t\t\t\t\t\t\tthis.connected = true;\n\t\t\t\t\t\t\tthis.connecting = false;\n\t\t\t\t\t\t\tthis._reconnectAttempts = 0;\n\t\t\t\t\t\t\tthis.fitAddon.fit();\n\t\t\t\t\t\t\tthis.sendResize();\n\t\t\t\t\t\t\tthis.term.focus();\n\t\t\t\t\t\t};\n\n\t\t\t\t\t\tthis.ws.onmessage = (event) => {\n\t\t\t\t\t\t\ttry {\n\t\t\t\t\t\t\t\tconst msg = JSON.parse(event.data);\n\t\t\t\t\t\t\t\tif (msg.type === 'output') {\n\t\t\t\t\t\t\t\t\tthis.term.write(msg.data);\n\t\t\t\t\t\t\t\t} else if (msg.type === 'error') {\n\t\t\t\t\t\t\t\t\tthis.term.write('\\r\\n\\x1b[31mError: ' + (msg.data || msg.message || 'Unknown error') + '\\x1b[0m\\r\\n');\n\t\t\t\t\t\t\t\t} else if (msg.type === 'connected') {\n\t\t\t\t\t\t\t\t\tthis.term.write('\\r\\n\\x1b[32m' + (msg.data || 'Connected') + '\\x1b[0m\\r\\n');\n\t\t\t\t\t\t\t\t} else if (msg.type === 'disconnected') {\n\t\t\t\t\t\t\t\t\tthis.term.write('\\r\\n\\x1b[33m' + (msg.data || 'Disconnected') + '\\x1b[0m\\r\\n');\n\t\t\t\t\t\t\t\t} else if (msg.type === 'credential_request') {\n\t\t\t\t\t\t\t\t\tthis.requestCredential(msg.field, msg.data);\n\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t} catch(e) {\n\t\t\t\t\t\t\t\tthis.term.write(event.data);\n\t\t\t\t\t\t\t}\n\t\t\t\t\t\t};\n\n\t\t\t\t\t\tthis.ws.onclose = (event) => {\n\t\t\t\t\t\t\tthis.connected = false;\n\t\t\t\t\t\t\tthis.connecting = false;\n\t\t\t\t\t\t\tconst graceful = (event.code === 1000 || event.code === 1001);\n\t\t\t\t\t\t\tif (!this._destroyed && !graceful && this._reconnectAttempts < 5) {\n\t\t\t\t\t\t\t\tconst delay = Math.min(30000, 1000 * Math.pow(2, this._reconnectAttempts));\n\t\t\t\t\t\t\t\tthis._reconnectAttempts++;\n\t\t\t\t\t\t\t\tconst delaySec = delay * 0.001;\n\t\t\t\t\t\t\t\tthis.term.write('\\r\\n\\x1b[31mDisconnected — reconnecting in ' + delaySec + 's... (attempt ' + this._reconnectAttempts + ' of 5)\\x1b[0m\\r\\n');\n\t\t\t\t\t\t\t\tsetTimeout(() => this.connect(), delay);\n\t\t\t\t\t\t\t} else if (!graceful && this._reconnectAttempts >= 5) {\n\t\t\t\t\t\t\t\tthis.term.write('\\r\\n\\x1b[31mDisconnected — max reconnect attempts reached.\\x1b[0m\\r\\n');\n\t\t\t\t\t\t\t} else {\n\t\t\t\t\t\t\t\tthis.term.write('\\r\\n\\x1b[31mDisconnected.\\x1b[0m\\r\\n');\n\t\t\t\t\t\t\t}\n\t\t\t\t\t\t};\n\n\t\t\t\t\t\tthis.ws.onerror = () => {\n\t\t\t\t\t\t\tthis.connected = false;\n\t\t\t\t\t\t\tthis.connecting = false;\n\t\t\t\t\t\t\tthis.term.write('\\r\\n\\x1b[31mConnection error\\x1b[0m\\r\\n');\n\t\t\t\t\t\t};\n\t\t\t\t\t},\n\n\t\t\t\t\tsendResize() {\n\t\t\t\t\t\tif (this.ws && this.ws.readyState === WebSocket.OPEN) {\n\t\t\t\t\t\t\tconst { cols, rows } = this.term;\n\t\t\t\t\t\t\tthis.ws.send(JSON.stringify({ type: 'resize', cols: cols, rows: rows }));\n\t\t\t\t\t\t}\n\t\t\t\t\t},\n\n\t\t\t\t\treconnect() {\n\t\t\t\t\t\tif (this.ws) this.ws.close();\n\t\t\t\t\t\tthis._reconnectAttempts = 0;\n\t\t\t\t\t\tthis.term.clear();\n\t\t\t\t\t\tthis.term.write('\\x1b[33mReconnecting...\\x1b[0m\\r\\n');\n\t\t\t\t\t\tthis.connect();\n\t\t\t\t\t},\n\n\t\t\t\t\ttoggleFullscreen() {\n\t\t\t\t\t\tconst container = this.$refs.terminalContainer;\n\t\t\t\t\t\tif (document.fullscreenElement) {\n\t\t\t\t\t\t\tdocument.exitFullscreen();\n\t\t\t\t\t\t} else {\n\t\t\t\t\t\t\tcontainer.requestFullscreen();\n\t\t\t\t\t\t}\n\t\t\t\t\t\tsetTimeout(() => {\n\t\t\t\t\t\t\tthis.fitAddon.fit();\n\t\t\t\t\t\t\tthis.sendResize();\n\t\t\t\t\t\t}, 100);\n\t\t\t\t\t},\n\n\t\t\t\t\t// Credential modal methods\n\t\t\t\t\trequestCredential(field, message) {\n\t\t\t\t\t\tconst label = field === 'password' ? 'Password' : 'Username';\n\t\t\t\t\t\tthis.credentialModal = {\n\t\t\t\t\t\t\tshow: true,\n\t\t\t\t\t\t\tfield: field,\n\t\t\t\t\t\t\tlabel: label,\n\t\t\t\t\t\t\tmessage: message || (field === 'username' ? 'Enter username' : 'Enter password'),\n\t\t\t\t\t\t\tvalue: ''\n\t\t\t\t\t\t};\n\t\t\t\t\t\tthis.$nextTick(() => {\n\t\t\t\t\t\t\tif (this.$refs.credentialInput) {\n\t\t\t\t\t\t\t\tthis.$refs.credentialInput.focus();\n\t\t\t\t\t\t\t}\n\t\t\t\t\t\t});\n\t\t\t\t\t},\n\n\t\t\t\t\tsubmitCredential() {\n\t\t\t\t\t\tconst { field, value } = this.credentialModal;\n\t\t\t\t\t\tif (!value || !this.ws) return;\n\n\t\t\t\t\t\tconst resp = { type: 'credential_response' };\n\t\t\t\t\t\tif (field === 'username') resp.username = value;\n\t\t\t\t\t\telse resp.password = value;\n\t\t\t\t\t\tthis.ws.send(JSON.stringify(resp));\n\n\t\t\t\t\t\tthis.credentialModal.show = false;\n\t\t\t\t\t\tthis.credentialModal.value = '';\n\n\t\t\t\t\t\tthis.$nextTick(() => {\n\t\t\t\t\t\t\tif (this.term) this.term.focus();\n\t\t\t\t\t\t});\n\t\t\t\t\t},\n\n\t\t\t\t\tcancelCredential() {\n\t\t\t\t\t\tif (this.ws) {\n\t\t\t\t\t\t\tthis.ws.close();\n\t\t\t\t\t\t}\n\t\t\t\t\t\tthis.credentialModal.show = false;\n\t\t\t\t\t\tthis.credentialModal.value = '';\n\t\t\t\t\t}\n\t\t\t\t};\n\t\t\t}\n\t\t</script> <style>\n\t\t\t#ssh-terminal {\n\t\t\t\tpadding: 8px;\n\t\t\t\tbackground: #0d1117;\n\t\t\t}\n\n\t\t\t#ssh-terminal:fullscreen {\n\t\t\t\tpadding: 16px;\n\t\t\t}\n\n\t\t\t.xterm-viewport::-webkit-scrollbar {\n\t\t\t\twidth: 8px;\n\t\t\t}\n\n\t\t\t.xterm-viewport::-webkit-scrollbar-track {\n\t\t\t\tbackground: #0d1117;\n\t\t\t}\n\n\t\t\t.xterm-viewport::-webkit-scrollbar-thumb {\n\t\t\t\tbackground: #30363d;\n\t\t\t\tborder-radius: 4px;\n\t\t\t}\n\n\t\t\t.xterm-viewport::-webkit-scrollbar-thumb:hover {\n\t\t\t\tbackground: #484f58;\n\t\t\t}\n\t\t</style>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -831,7 +831,7 @@ func SSHConnectionDetail(data SSHConnectionDetailData) templ.Component {
 			var templ_7745c5c3_Var39 string
 			templ_7745c5c3_Var39, templ_7745c5c3_Err = templ.JoinStringErrs(data.Connection.Name)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/ssh.templ`, Line: 789, Col: 83}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/ssh.templ`, Line: 790, Col: 83}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var39))
 			if templ_7745c5c3_Err != nil {
@@ -844,7 +844,7 @@ func SSHConnectionDetail(data SSHConnectionDetailData) templ.Component {
 			var templ_7745c5c3_Var40 string
 			templ_7745c5c3_Var40, templ_7745c5c3_Err = templ.JoinStringErrs(formatSSHAddress(data.Connection.Username, data.Connection.Host, data.Connection.Port))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/ssh.templ`, Line: 790, Col: 124}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/ssh.templ`, Line: 791, Col: 124}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var40))
 			if templ_7745c5c3_Err != nil {
@@ -857,7 +857,7 @@ func SSHConnectionDetail(data SSHConnectionDetailData) templ.Component {
 			var templ_7745c5c3_Var41 templ.SafeURL
 			templ_7745c5c3_Var41, templ_7745c5c3_Err = templ.JoinURLErrs(templ.SafeURL(fmt.Sprintf("/connections/ssh/%s/terminal", data.Connection.ID)))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/ssh.templ`, Line: 795, Col: 91}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/ssh.templ`, Line: 796, Col: 91}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var41))
 			if templ_7745c5c3_Err != nil {
@@ -870,7 +870,7 @@ func SSHConnectionDetail(data SSHConnectionDetailData) templ.Component {
 			var templ_7745c5c3_Var42 templ.SafeURL
 			templ_7745c5c3_Var42, templ_7745c5c3_Err = templ.JoinURLErrs(templ.SafeURL(fmt.Sprintf("/connections/ssh/%s/files", data.Connection.ID)))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/ssh.templ`, Line: 804, Col: 88}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/ssh.templ`, Line: 805, Col: 88}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var42))
 			if templ_7745c5c3_Err != nil {
@@ -883,7 +883,7 @@ func SSHConnectionDetail(data SSHConnectionDetailData) templ.Component {
 			var templ_7745c5c3_Var43 templ.SafeURL
 			templ_7745c5c3_Var43, templ_7745c5c3_Err = templ.JoinURLErrs(templ.SafeURL(fmt.Sprintf("/connections/ssh/%s", data.Connection.ID)))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/ssh.templ`, Line: 824, Col: 85}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/ssh.templ`, Line: 825, Col: 85}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var43))
 			if templ_7745c5c3_Err != nil {
@@ -896,7 +896,7 @@ func SSHConnectionDetail(data SSHConnectionDetailData) templ.Component {
 			var templ_7745c5c3_Var44 string
 			templ_7745c5c3_Var44, templ_7745c5c3_Err = templ.JoinStringErrs(data.PageData.CSRFToken)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/ssh.templ`, Line: 827, Col: 77}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/ssh.templ`, Line: 828, Col: 77}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var44))
 			if templ_7745c5c3_Err != nil {
@@ -909,52 +909,52 @@ func SSHConnectionDetail(data SSHConnectionDetailData) templ.Component {
 			var templ_7745c5c3_Var45 string
 			templ_7745c5c3_Var45, templ_7745c5c3_Err = templ.JoinStringErrs(data.Connection.Name)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/ssh.templ`, Line: 834, Col: 38}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/ssh.templ`, Line: 835, Col: 38}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var45))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 55, "\" required class=\"w-full px-3 py-2 bg-dark-700 border border-dark-600 rounded-lg text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent\"></div><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Host</label> <input type=\"text\" name=\"host\" value=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 55, "\" required class=\"w-full px-3 py-2 bg-dark-700 border border-dark-600 rounded-lg text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent\" aria-label=\"Name\"></div><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Host</label> <input type=\"text\" name=\"host\" value=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var46 string
 			templ_7745c5c3_Var46, templ_7745c5c3_Err = templ.JoinStringErrs(data.Connection.Host)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/ssh.templ`, Line: 844, Col: 38}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/ssh.templ`, Line: 846, Col: 38}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var46))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 56, "\" required class=\"w-full px-3 py-2 bg-dark-700 border border-dark-600 rounded-lg text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent\"></div><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Port</label> <input type=\"number\" name=\"port\" value=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 56, "\" required class=\"w-full px-3 py-2 bg-dark-700 border border-dark-600 rounded-lg text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent\" aria-label=\"Host\"></div><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Port</label> <input type=\"number\" name=\"port\" value=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var47 string
 			templ_7745c5c3_Var47, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", data.Connection.Port))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/ssh.templ`, Line: 854, Col: 57}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/ssh.templ`, Line: 857, Col: 57}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var47))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 57, "\" required min=\"1\" max=\"65535\" class=\"w-full px-3 py-2 bg-dark-700 border border-dark-600 rounded-lg text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent\"></div><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Username</label> <input type=\"text\" name=\"username\" value=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 57, "\" required min=\"1\" max=\"65535\" class=\"w-full px-3 py-2 bg-dark-700 border border-dark-600 rounded-lg text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent\" aria-label=\"Port\"></div><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Username</label> <input type=\"text\" name=\"username\" value=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var48 string
 			templ_7745c5c3_Var48, templ_7745c5c3_Err = templ.JoinStringErrs(data.Connection.Username)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/ssh.templ`, Line: 866, Col: 42}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/ssh.templ`, Line: 870, Col: 42}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var48))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 58, "\" placeholder=\"Leave empty to prompt on connect\" class=\"w-full px-3 py-2 bg-dark-700 border border-dark-600 rounded-lg text-white placeholder-gray-500 focus:ring-2 focus:ring-primary-500 focus:border-transparent\"></div></div><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Authentication</label> <select name=\"auth_type\" class=\"w-full px-3 py-2 bg-dark-700 border border-dark-600 rounded-lg text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent\"><option value=\"password\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 58, "\" placeholder=\"Leave empty to prompt on connect\" class=\"w-full px-3 py-2 bg-dark-700 border border-dark-600 rounded-lg text-white placeholder-gray-500 focus:ring-2 focus:ring-primary-500 focus:border-transparent\" aria-label=\"Username\"></div></div><div><label class=\"block text-sm font-medium text-gray-300 mb-1\">Authentication</label> <select name=\"auth_type\" class=\"w-full px-3 py-2 bg-dark-700 border border-dark-600 rounded-lg text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent\"><option value=\"password\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -984,7 +984,7 @@ func SSHConnectionDetail(data SSHConnectionDetailData) templ.Component {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 64, ">SSH Agent</option></select></div><!-- Password field (shown for password auth) --><div x-show=\"document.querySelector('[name=auth_type]')?.value === 'password'\" class=\"transition-all\"><label class=\"block text-sm font-medium text-gray-300 mb-1\">Password</label> <input type=\"password\" name=\"password\" placeholder=\"Enter new password (leave blank to keep current)\" class=\"w-full px-3 py-2 bg-dark-700 border border-dark-600 rounded-lg text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent\"></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 64, ">SSH Agent</option></select></div><!-- Password field (shown for password auth) --><div x-show=\"document.querySelector('[name=auth_type]')?.value === 'password'\" class=\"transition-all\"><label class=\"block text-sm font-medium text-gray-300 mb-1\">Password</label> <input type=\"password\" name=\"password\" placeholder=\"Enter new password (leave blank to keep current)\" class=\"w-full px-3 py-2 bg-dark-700 border border-dark-600 rounded-lg text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent\" aria-label=\"Password\"></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -996,7 +996,7 @@ func SSHConnectionDetail(data SSHConnectionDetailData) templ.Component {
 				var templ_7745c5c3_Var49 string
 				templ_7745c5c3_Var49, templ_7745c5c3_Err = templ.JoinStringErrs(data.Connection.KeyName)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/ssh.templ`, Line: 901, Col: 98}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/ssh.templ`, Line: 907, Col: 98}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var49))
 				if templ_7745c5c3_Err != nil {
@@ -1015,7 +1015,7 @@ func SSHConnectionDetail(data SSHConnectionDetailData) templ.Component {
 				var templ_7745c5c3_Var50 string
 				templ_7745c5c3_Var50, templ_7745c5c3_Err = templ.JoinStringErrs(data.Connection.JumpHost)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/ssh.templ`, Line: 910, Col: 99}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/ssh.templ`, Line: 916, Col: 99}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var50))
 				if templ_7745c5c3_Err != nil {
@@ -1053,7 +1053,7 @@ func SSHConnectionDetail(data SSHConnectionDetailData) templ.Component {
 					return templ_7745c5c3_Err
 				}
 			} else {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 73, "<div class=\"overflow-x-auto\"><table class=\"w-full\"><thead><tr class=\"text-left text-gray-400 text-sm border-b border-dark-700\"><th class=\"pb-3 font-medium\">User</th><th class=\"pb-3 font-medium\">Client IP</th><th class=\"pb-3 font-medium\">Started</th><th class=\"pb-3 font-medium\">Duration</th><th class=\"pb-3 font-medium\">Status</th></tr></thead> <tbody>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 73, "<div class=\"overflow-x-auto\"><table class=\"w-full\"><thead><tr class=\"text-left text-gray-400 text-sm border-b border-dark-700\"><th scope=\"col\" class=\"pb-3 font-medium\">User</th><th scope=\"col\" class=\"pb-3 font-medium\">Client IP</th><th scope=\"col\" class=\"pb-3 font-medium\">Started</th><th scope=\"col\" class=\"pb-3 font-medium\">Duration</th><th scope=\"col\" class=\"pb-3 font-medium\">Status</th></tr></thead> <tbody>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -1065,7 +1065,7 @@ func SSHConnectionDetail(data SSHConnectionDetailData) templ.Component {
 					var templ_7745c5c3_Var52 string
 					templ_7745c5c3_Var52, templ_7745c5c3_Err = templ.JoinStringErrs(session.Username)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/ssh.templ`, Line: 956, Col: 58}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/ssh.templ`, Line: 962, Col: 58}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var52))
 					if templ_7745c5c3_Err != nil {
@@ -1078,7 +1078,7 @@ func SSHConnectionDetail(data SSHConnectionDetailData) templ.Component {
 					var templ_7745c5c3_Var53 string
 					templ_7745c5c3_Var53, templ_7745c5c3_Err = templ.JoinStringErrs(session.ClientIP)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/ssh.templ`, Line: 957, Col: 61}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/ssh.templ`, Line: 963, Col: 61}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var53))
 					if templ_7745c5c3_Err != nil {
@@ -1091,7 +1091,7 @@ func SSHConnectionDetail(data SSHConnectionDetailData) templ.Component {
 					var templ_7745c5c3_Var54 string
 					templ_7745c5c3_Var54, templ_7745c5c3_Err = templ.JoinStringErrs(session.StartedAt)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/ssh.templ`, Line: 958, Col: 62}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/ssh.templ`, Line: 964, Col: 62}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var54))
 					if templ_7745c5c3_Err != nil {
@@ -1104,7 +1104,7 @@ func SSHConnectionDetail(data SSHConnectionDetailData) templ.Component {
 					var templ_7745c5c3_Var55 string
 					templ_7745c5c3_Var55, templ_7745c5c3_Err = templ.JoinStringErrs(session.Duration)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/ssh.templ`, Line: 959, Col: 61}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/ssh.templ`, Line: 965, Col: 61}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var55))
 					if templ_7745c5c3_Err != nil {
@@ -1139,7 +1139,7 @@ func SSHConnectionDetail(data SSHConnectionDetailData) templ.Component {
 					var templ_7745c5c3_Var58 string
 					templ_7745c5c3_Var58, templ_7745c5c3_Err = templ.JoinStringErrs(session.Status)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/ssh.templ`, Line: 962, Col: 30}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/ssh.templ`, Line: 968, Col: 30}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var58))
 					if templ_7745c5c3_Err != nil {
@@ -1184,7 +1184,7 @@ func SSHConnectionDetail(data SSHConnectionDetailData) templ.Component {
 			var templ_7745c5c3_Var61 string
 			templ_7745c5c3_Var61, templ_7745c5c3_Err = templ.JoinStringErrs(data.Connection.Status)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/ssh.templ`, Line: 981, Col: 79}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/ssh.templ`, Line: 987, Col: 79}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var61))
 			if templ_7745c5c3_Err != nil {
@@ -1202,7 +1202,7 @@ func SSHConnectionDetail(data SSHConnectionDetailData) templ.Component {
 				var templ_7745c5c3_Var62 string
 				templ_7745c5c3_Var62, templ_7745c5c3_Err = templ.JoinStringErrs(data.Connection.LastUsed)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/ssh.templ`, Line: 984, Col: 81}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/ssh.templ`, Line: 990, Col: 81}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var62))
 				if templ_7745c5c3_Err != nil {
@@ -1220,7 +1220,7 @@ func SSHConnectionDetail(data SSHConnectionDetailData) templ.Component {
 			var templ_7745c5c3_Var63 string
 			templ_7745c5c3_Var63, templ_7745c5c3_Err = templ.JoinStringErrs(data.Connection.CreatedAt)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/ssh.templ`, Line: 986, Col: 79}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/ssh.templ`, Line: 992, Col: 79}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var63))
 			if templ_7745c5c3_Err != nil {
@@ -1233,7 +1233,7 @@ func SSHConnectionDetail(data SSHConnectionDetailData) templ.Component {
 			var templ_7745c5c3_Var64 templ.SafeURL
 			templ_7745c5c3_Var64, templ_7745c5c3_Err = templ.JoinURLErrs(templ.SafeURL(fmt.Sprintf("/connections/ssh/%s/terminal", data.Connection.ID)))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/ssh.templ`, Line: 994, Col: 93}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/ssh.templ`, Line: 1000, Col: 93}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var64))
 			if templ_7745c5c3_Err != nil {
@@ -1246,7 +1246,7 @@ func SSHConnectionDetail(data SSHConnectionDetailData) templ.Component {
 			var templ_7745c5c3_Var65 templ.SafeURL
 			templ_7745c5c3_Var65, templ_7745c5c3_Err = templ.JoinURLErrs(templ.SafeURL(fmt.Sprintf("/connections/ssh/%s/files", data.Connection.ID)))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/ssh.templ`, Line: 1003, Col: 90}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/ssh.templ`, Line: 1009, Col: 90}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var65))
 			if templ_7745c5c3_Err != nil {
@@ -1286,7 +1286,7 @@ func SSHConnectionDetail(data SSHConnectionDetailData) templ.Component {
 					var templ_7745c5c3_Var67 string
 					templ_7745c5c3_Var67, templ_7745c5c3_Err = templ.JoinStringErrs(tag)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/ssh.templ`, Line: 1029, Col: 80}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/connections/ssh.templ`, Line: 1035, Col: 80}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var67))
 					if templ_7745c5c3_Err != nil {

@@ -23,7 +23,7 @@ templ Edit(data EditData) {
 			<div class="max-w-3xl">
 				<div class="flex items-center gap-3 mb-6">
 					<a href={ templ.SafeURL(fmt.Sprintf("/crontab/%s", data.Entry.ID)) } class="text-gray-400 hover:text-white">
-						<i class="fas fa-arrow-left"></i>
+						<i aria-hidden="true" class="fas fa-arrow-left"></i>
 					</a>
 					<h2 class="text-xl font-display font-bold text-white">Edit: { data.Entry.Name }</h2>
 				</div>
@@ -45,6 +45,7 @@ templ Edit(data EditData) {
 							value={ data.Entry.Name }
 							required
 							class="w-full bg-dark-800 border border-dark-600 text-white rounded-lg px-3 py-2 focus:ring-2 focus:ring-accent-500 focus:border-transparent"
+							aria-label="Name"
 						/>
 					</div>
 
@@ -65,6 +66,7 @@ templ Edit(data EditData) {
 							value={ data.Entry.Schedule }
 							required
 							class="w-full bg-dark-800 border border-dark-600 text-white font-mono rounded-lg px-3 py-2 focus:ring-2 focus:ring-accent-500 focus:border-transparent"
+							aria-label="Schedule (Cron Expression)"
 						/>
 						<p class="text-xs text-gray-500 mt-1">
 							Standard 5-field cron expression: minute hour day-of-month month day-of-week
@@ -101,6 +103,7 @@ templ Edit(data EditData) {
 								name="working_dir"
 								value={ derefStr(data.Entry.WorkingDir) }
 								class="w-full bg-dark-800 border border-dark-600 text-white rounded-lg px-3 py-2 focus:ring-2 focus:ring-accent-500 focus:border-transparent"
+								aria-label="Working Directory"
 							/>
 						</div>
 					</div>
@@ -113,6 +116,7 @@ templ Edit(data EditData) {
 								name="container_id"
 								value={ derefStr(data.Entry.ContainerID) }
 								class="w-full bg-dark-800 border border-dark-600 text-white rounded-lg px-3 py-2 focus:ring-2 focus:ring-accent-500 focus:border-transparent"
+								aria-label="Container ID / Name"
 							/>
 						</div>
 					</div>
@@ -134,6 +138,7 @@ templ Edit(data EditData) {
 								name="http_url"
 								value={ derefStr(data.Entry.HTTPURL) }
 								class="w-full bg-dark-800 border border-dark-600 text-white rounded-lg px-3 py-2 focus:ring-2 focus:ring-accent-500 focus:border-transparent"
+								aria-label="URL"
 							/>
 						</div>
 					</div>
@@ -151,7 +156,7 @@ templ Edit(data EditData) {
 
 					<div class="flex gap-2 pt-4">
 						<button type="submit" class="btn btn-primary">
-							<i class="fas fa-save mr-1"></i> Save Changes
+							<i aria-hidden="true" class="fas fa-save mr-1"></i> Save Changes
 						</button>
 						<a href={ templ.SafeURL(fmt.Sprintf("/crontab/%s", data.Entry.ID)) } class="btn btn-secondary">Cancel</a>
 					</div>

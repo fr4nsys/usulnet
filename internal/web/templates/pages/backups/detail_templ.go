@@ -114,7 +114,7 @@ func Detail(data DetailData) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "\" class=\"btn-secondary\"><i class=\"fas fa-download mr-2\"></i>Download</a><form method=\"POST\" action=\"")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "\" class=\"btn-secondary\"><i aria-hidden=\"true\" class=\"fas fa-download mr-2\"></i>Download</a><form method=\"POST\" action=\"")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -140,17 +140,17 @@ func Detail(data DetailData) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "\"> <button type=\"submit\" class=\"btn-primary\" onclick=\"return confirm('Restore this backup? Current data will be replaced.')\"><i class=\"fas fa-undo mr-2\"></i>Restore</button></form>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "\"> <button type=\"submit\" class=\"btn-primary\" onclick=\"return confirm('Restore this backup? Current data will be replaced.')\"><i aria-hidden=\"true\" class=\"fas fa-undo mr-2\"></i>Restore</button></form>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "<a href=\"/backups\" class=\"btn-secondary\"><i class=\"fas fa-arrow-left mr-2\"></i>Back</a></div></div><!-- Status Banner -->")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "<a href=\"/backups\" class=\"btn-secondary\"><i aria-hidden=\"true\" class=\"fas fa-arrow-left mr-2\"></i>Back</a></div></div><!-- Status Banner -->")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			if data.Backup.Status == "failed" {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "<div class=\"bg-red-900/30 border border-red-700 rounded-lg p-4 flex items-start gap-3\"><i class=\"fas fa-times-circle text-red-400 mt-0.5\"></i><div><p class=\"text-red-300 font-medium\">Backup Failed</p>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "<div class=\"bg-red-900/30 border border-red-700 rounded-lg p-4 flex items-start gap-3\"><i aria-hidden=\"true\" class=\"fas fa-times-circle text-red-400 mt-0.5\"></i><div><p class=\"text-red-300 font-medium\">Backup Failed</p>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -192,7 +192,7 @@ func Detail(data DetailData) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "\" hx-trigger=\"every 3s\" hx-select=\".space-y-6\" hx-target=\"closest .space-y-6\" hx-swap=\"outerHTML\"><i class=\"fas fa-spinner fa-spin text-blue-400 mt-0.5\"></i><div><p class=\"text-blue-300 font-medium\">Backup In Progress</p><p class=\"text-blue-400/80 text-sm mt-1\">This page will refresh automatically when the backup completes.</p></div></div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "\" hx-trigger=\"every 3s\" hx-select=\".space-y-6\" hx-target=\"closest .space-y-6\" hx-swap=\"outerHTML\"><i aria-hidden=\"true\" class=\"fas fa-spinner fa-spin text-blue-400 mt-0.5\"></i><div><p class=\"text-blue-300 font-medium\">Backup In Progress</p><p class=\"text-blue-400/80 text-sm mt-1\">This page will refresh automatically when the backup completes.</p></div></div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -360,12 +360,12 @@ func Detail(data DetailData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			if data.Backup.Encrypted {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 30, "<span class=\"text-green-400\"><i class=\"fas fa-lock mr-1\"></i>Yes</span>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 30, "<span class=\"text-green-400\"><i aria-hidden=\"true\" class=\"fas fa-lock mr-1\"></i>Yes</span>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			} else {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 31, "<span class=\"text-gray-500\"><i class=\"fas fa-lock-open mr-1\"></i>No</span>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 31, "<span class=\"text-gray-500\"><i aria-hidden=\"true\" class=\"fas fa-lock-open mr-1\"></i>No</span>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -375,7 +375,7 @@ func Detail(data DetailData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			if data.Backup.Verified {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 33, "<span class=\"text-green-400\"><i class=\"fas fa-check-circle mr-1\"></i>Yes</span>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 33, "<span class=\"text-green-400\"><i aria-hidden=\"true\" class=\"fas fa-check-circle mr-1\"></i>Yes</span>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -524,7 +524,7 @@ func Detail(data DetailData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 49, "\"> <button type=\"submit\" class=\"btn-danger\" onclick=\"return confirm('Are you sure you want to delete this backup?')\"><i class=\"fas fa-trash mr-2\"></i>Delete</button></form></div></div></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 49, "\"> <button type=\"submit\" class=\"btn-danger\" onclick=\"return confirm('Are you sure you want to delete this backup?')\"><i aria-hidden=\"true\" class=\"fas fa-trash mr-2\"></i>Delete</button></form></div></div></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

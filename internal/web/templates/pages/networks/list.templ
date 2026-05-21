@@ -56,11 +56,11 @@ templ NetworksList(data NetworksListData) {
 			</div>
 			<div class="flex items-center gap-3">
 				<a href="/topology" class="px-4 py-2 bg-dark-700 hover:bg-dark-600 text-gray-300 rounded-lg transition-colors">
-					<i class="fas fa-project-diagram mr-2"></i>
+					<i aria-hidden="true" class="fas fa-project-diagram mr-2"></i>
 					Topology
 				</a>
 				<a href="/networks/new" class="btn-primary">
-					<i class="fas fa-plus mr-2"></i>
+					<i aria-hidden="true" class="fas fa-plus mr-2"></i>
 					New Network
 				</a>
 				<button 
@@ -69,14 +69,14 @@ templ NetworksList(data NetworksListData) {
 					hx-swap="none"
 					class="px-4 py-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-lg transition-colors"
 				>
-					<i class="fas fa-broom mr-2"></i>
+					<i aria-hidden="true" class="fas fa-broom mr-2"></i>
 					Prune
 				</button>
 			</div>
 		</div>
 
 		<!-- Filters -->
-		<div class="bg-dark-800 rounded-xl border border-dark-600 p-4 mb-6">
+		<div class="card p-4 mb-6">
 			<div class="flex flex-col md:flex-row gap-4">
 				<!-- Search -->
 				<div class="flex-1">
@@ -92,8 +92,9 @@ templ NetworksList(data NetworksListData) {
 							hx-target="#network-table"
 							hx-select="#network-table"
 							hx-push-url="true"
+							aria-label="Search networks..."
 						/>
-						<i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-500"></i>
+						<i aria-hidden="true" class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-500"></i>
 					</div>
 				</div>
 				
@@ -138,7 +139,7 @@ templ NetworksList(data NetworksListData) {
 		</div>
 
 		<!-- Networks Table -->
-		<div id="network-table" class="bg-dark-800 rounded-xl border border-dark-600 overflow-hidden">
+		<div id="network-table" class="card overflow-hidden">
 			@components.Table() {
 				@components.TableHead() {
 					@components.TableHeader("Network", "")
@@ -218,7 +219,7 @@ templ networkRow(net Network) {
 					class="p-2 text-gray-400 hover:text-primary-400 hover:bg-primary-500/10 rounded-lg transition-colors"
 					title="Details"
 				>
-					<i class="fas fa-info-circle text-sm"></i>
+					<i aria-hidden="true" class="fas fa-info-circle text-sm"></i>
 				</a>
 				if !isSystemNetwork(net.Name) && net.ContainerCount == 0 {
 					<button 
@@ -228,7 +229,7 @@ templ networkRow(net Network) {
 						class="p-2 text-gray-400 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
 						title="Remove"
 					>
-						<i class="fas fa-trash text-sm"></i>
+						<i aria-hidden="true" class="fas fa-trash text-sm"></i>
 					</button>
 				}
 			</div>

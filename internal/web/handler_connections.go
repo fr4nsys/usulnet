@@ -281,6 +281,25 @@ func (h *Handler) SSHConnectionNewTempl(w http.ResponseWriter, r *http.Request) 
 }
 
 // SSHConnectionCreate handles creating a new SSH connection.
+// sshConnectionForm captures the SSH connection inputs shared
+// between Create and Update. auth_type is free-text and validated
+// against the SSHAuthType enum at the input-build site (so an
+// unknown value reaches CreateConnection / UpdateConnection as
+// "" and surfaces a service-side error). key_id / jump_host_id /
+// timeout are optional and parsed conditionally below.
+type sshConnectionForm struct {
+	Name       string `form:"name" validate:"required"`
+	Host       string `form:"host" validate:"required"`
+	Port       int    `form:"port" validate:"gte=0,lte=65535"`
+	Username   string `form:"username" validate:"required"`
+	AuthType   string `form:"auth_type" validate:"required"`
+	Password   string `form:"password"`
+	KeyID      string `form:"key_id" validate:"omitempty,uuid"`
+	JumpHostID string `form:"jump_host_id" validate:"omitempty,uuid"`
+	Tags       string `form:"tags"`
+	Timeout    int    `form:"timeout" validate:"gte=0"`
+}
+
 func (h *Handler) SSHConnectionCreate(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	userData := h.getUserData(r)
@@ -302,62 +321,57 @@ func (h *Handler) SSHConnectionCreate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := r.ParseForm(); err != nil {
-		http.Error(w, "Invalid form data", http.StatusBadRequest)
+	var form sshConnectionForm
+	if msg := BindForm(r, &form); msg != "" {
+		h.setFlash(w, r, "error", msg)
+		http.Redirect(w, r, "/connections/ssh/new", http.StatusSeeOther)
 		return
 	}
 
-	port, _ := strconv.Atoi(r.FormValue("port"))
+	port := form.Port
 	if port == 0 {
 		port = 22
 	}
 
 	input := models.CreateSSHConnectionInput{
-		Name:     r.FormValue("name"),
-		Host:     r.FormValue("host"),
+		Name:     form.Name,
+		Host:     form.Host,
 		Port:     port,
-		Username: r.FormValue("username"),
-		AuthType: models.SSHAuthType(r.FormValue("auth_type")),
+		Username: form.Username,
+		AuthType: models.SSHAuthType(form.AuthType),
 	}
 
 	// Handle password auth
 	if input.AuthType == models.SSHAuthPassword {
-		input.Password = r.FormValue("password")
+		input.Password = form.Password
 	}
 
 	// Handle key auth
-	if input.AuthType == models.SSHAuthKey {
-		if keyID := r.FormValue("key_id"); keyID != "" {
-			id, err := uuid.Parse(keyID)
-			if err == nil {
-				input.KeyID = &id
-			}
+	if input.AuthType == models.SSHAuthKey && form.KeyID != "" {
+		if id, err := uuid.Parse(form.KeyID); err == nil {
+			input.KeyID = &id
 		}
 	}
 
 	// Handle jump host
-	if jumpHostID := r.FormValue("jump_host_id"); jumpHostID != "" {
-		id, err := uuid.Parse(jumpHostID)
-		if err == nil {
+	if form.JumpHostID != "" {
+		if id, err := uuid.Parse(form.JumpHostID); err == nil {
 			input.JumpHost = &id
 		}
 	}
 
 	// Handle tags
-	if tags := r.FormValue("tags"); tags != "" {
-		input.Tags = strings.Split(tags, ",")
+	if form.Tags != "" {
+		input.Tags = strings.Split(form.Tags, ",")
 		for i := range input.Tags {
 			input.Tags[i] = strings.TrimSpace(input.Tags[i])
 		}
 	}
 
 	// Handle timeout option
-	if timeout := r.FormValue("timeout"); timeout != "" {
-		t, _ := strconv.Atoi(timeout)
-		if t > 0 {
-			input.Options = &models.SSHConnectionOptions{
-				ConnectionTimeout: t,
-			}
+	if form.Timeout > 0 {
+		input.Options = &models.SSHConnectionOptions{
+			ConnectionTimeout: form.Timeout,
 		}
 	}
 
@@ -463,6 +477,22 @@ func (h *Handler) SSHConnectionTerminalTempl(w http.ResponseWriter, r *http.Requ
 	}
 }
 
+// sshConnectionUpdateForm captures the SSH connection PATCH inputs.
+// Pointers distinguish "absent in form → leave alone" from
+// "present in form → overwrite". username uses *string to carry
+// the "present-but-empty → set to empty" case (the original used
+// r.Form.Has() for this); the rest use *string + nilIfEmpty so a
+// present-but-empty value behaves like absent.
+type sshConnectionUpdateForm struct {
+	Name     *string `form:"name"`
+	Host     *string `form:"host"`
+	Port     *int    `form:"port" validate:"omitempty,gte=0,lte=65535"`
+	Username *string `form:"username"`
+	AuthType *string `form:"auth_type"`
+	Password *string `form:"password"`
+	KeyID    *string `form:"key_id" validate:"omitempty,uuid"`
+}
+
 // SSHConnectionUpdate handles updating an SSH connection.
 func (h *Handler) SSHConnectionUpdate(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
@@ -484,45 +514,27 @@ func (h *Handler) SSHConnectionUpdate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := r.ParseForm(); err != nil {
-		http.Error(w, "Invalid form data", http.StatusBadRequest)
+	var form sshConnectionUpdateForm
+	if msg := BindForm(r, &form); msg != "" {
+		http.Error(w, msg, http.StatusBadRequest)
 		return
 	}
 
-	input := models.UpdateSSHConnectionInput{}
-
-	if name := r.FormValue("name"); name != "" {
-		input.Name = &name
+	input := models.UpdateSSHConnectionInput{
+		Name:     nilIfEmpty(form.Name),
+		Host:     nilIfEmpty(form.Host),
+		Username: form.Username, // *string preserves "present empty"
+		Password: nilIfEmpty(form.Password),
 	}
-	if host := r.FormValue("host"); host != "" {
-		input.Host = &host
+	if form.Port != nil && *form.Port > 0 {
+		input.Port = form.Port
 	}
-	if portStr := r.FormValue("port"); portStr != "" {
-		port, _ := strconv.Atoi(portStr)
-		if port > 0 {
-			input.Port = &port
-		}
-	}
-	// Username can be empty (will prompt on connect)
-	if r.Form.Has("username") {
-		username := r.FormValue("username")
-		input.Username = &username
-	}
-
-	if authType := r.FormValue("auth_type"); authType != "" {
-		at := models.SSHAuthType(authType)
+	if form.AuthType != nil && *form.AuthType != "" {
+		at := models.SSHAuthType(*form.AuthType)
 		input.AuthType = &at
 	}
-
-	// Handle password - only update if non-empty
-	if password := r.FormValue("password"); password != "" {
-		input.Password = &password
-	}
-
-	// Handle key ID
-	if keyID := r.FormValue("key_id"); keyID != "" {
-		id, parseErr := uuid.Parse(keyID)
-		if parseErr == nil {
+	if form.KeyID != nil && *form.KeyID != "" {
+		if id, perr := uuid.Parse(*form.KeyID); perr == nil {
 			input.KeyID = &id
 		}
 	}
@@ -1141,6 +1153,18 @@ func (h *Handler) SSHKeyNewTempl(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// sshKeyCreateForm captures the SSH key create inputs.
+// `import=true` routes the request to ImportKey (with private_key);
+// otherwise GenerateKey produces a fresh pair.
+type sshKeyCreateForm struct {
+	Name       string `form:"name" validate:"required"`
+	Type       string `form:"type"`
+	Passphrase string `form:"passphrase"`
+	Comment    string `form:"comment"`
+	Import     bool   `form:"import"`
+	PrivateKey string `form:"private_key"`
+}
+
 // SSHKeyCreate handles creating/generating a new SSH key.
 func (h *Handler) SSHKeyCreate(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
@@ -1163,28 +1187,26 @@ func (h *Handler) SSHKeyCreate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := r.ParseForm(); err != nil {
-		http.Error(w, "Invalid form data", http.StatusBadRequest)
+	var form sshKeyCreateForm
+	if msg := BindForm(r, &form); msg != "" {
+		http.Error(w, msg, http.StatusBadRequest)
 		return
 	}
 
-	// Check if importing or generating
-	isImport := r.FormValue("import") == "true"
-
 	input := models.CreateSSHKeyInput{
-		Name:       r.FormValue("name"),
-		KeyType:    models.SSHKeyType(r.FormValue("type")),
-		Passphrase: r.FormValue("passphrase"),
-		Comment:    r.FormValue("comment"),
-		Generate:   !isImport,
+		Name:       form.Name,
+		KeyType:    models.SSHKeyType(form.Type),
+		Passphrase: form.Passphrase,
+		Comment:    form.Comment,
+		Generate:   !form.Import,
 	}
 
-	if isImport {
-		input.PrivateKey = r.FormValue("private_key")
+	if form.Import {
+		input.PrivateKey = form.PrivateKey
 	}
 
 	var key *models.SSHKey
-	if isImport {
+	if form.Import {
 		key, err = svc.ImportKey(ctx, input, userID)
 	} else {
 		key, err = svc.GenerateKey(ctx, input, userID)

@@ -85,12 +85,12 @@ func Cluster(data ClusterData) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"space-y-6\"><!-- Header --><div class=\"flex items-center justify-between\"><div><h1 class=\"text-2xl font-display font-bold text-white\"><i class=\"fas fa-network-wired mr-2 text-primary-400\"></i>Swarm Cluster</h1><p class=\"text-gray-400 mt-1\">Docker Swarm high availability management</p></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"space-y-6\"><!-- Header --><div class=\"flex items-center justify-between\"><div><h1 class=\"text-2xl font-display font-bold text-white\"><i aria-hidden=\"true\" class=\"fas fa-network-wired mr-2 text-primary-400\"></i>Swarm Cluster</h1><p class=\"text-gray-400 mt-1\">Docker Swarm high availability management</p></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			if !data.Active {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<button hx-post=\"/swarm/init\" hx-confirm=\"Initialize Docker Swarm on this node? This will make it the cluster manager.\" class=\"btn btn-primary\"><i class=\"fas fa-play mr-2\"></i>Initialize Swarm</button>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<button hx-post=\"/swarm/init\" hx-confirm=\"Initialize Docker Swarm on this node? This will make it the cluster manager.\" class=\"btn btn-primary\"><i aria-hidden=\"true\" class=\"fas fa-play mr-2\"></i>Initialize Swarm</button>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -145,7 +145,7 @@ func clusterInactive() templ.Component {
 			templ_7745c5c3_Var3 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<div class=\"card p-8 text-center\"><div class=\"text-gray-400 mb-4\"><i class=\"fas fa-network-wired text-6xl opacity-30\"></i></div><h2 class=\"text-xl font-semibold text-white mb-2\">Swarm Not Initialized</h2><p class=\"text-gray-400 mb-6 max-w-lg mx-auto\">Docker Swarm allows you to create a cluster of Docker nodes for high availability. Initialize Swarm to start managing replicated services across multiple hosts.</p><div class=\"card bg-dark-700 p-4 max-w-md mx-auto text-left\"><h3 class=\"text-sm font-semibold text-gray-300 mb-2\">What happens when you initialize:</h3><ul class=\"text-sm text-gray-400 space-y-1\"><li><i class=\"fas fa-check text-green-400 mr-2\"></i>This node becomes the Swarm manager</li><li><i class=\"fas fa-check text-green-400 mr-2\"></i>Join tokens are generated for workers</li><li><i class=\"fas fa-check text-green-400 mr-2\"></i>You can then add agent nodes as workers</li><li><i class=\"fas fa-check text-green-400 mr-2\"></i>Enable HA for any container with replicas</li></ul></div></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<div class=\"card p-8 text-center\"><div class=\"text-gray-400 mb-4\"><i aria-hidden=\"true\" class=\"fas fa-network-wired text-6xl opacity-30\"></i></div><h2 class=\"text-xl font-semibold text-white mb-2\">Swarm Not Initialized</h2><p class=\"text-gray-400 mb-6 max-w-lg mx-auto\">Docker Swarm allows you to create a cluster of Docker nodes for high availability. Initialize Swarm to start managing replicated services across multiple hosts.</p><div class=\"card bg-dark-700 p-4 max-w-md mx-auto text-left\"><h3 class=\"text-sm font-semibold text-gray-300 mb-2\">What happens when you initialize:</h3><ul class=\"text-sm text-gray-400 space-y-1\"><li><i aria-hidden=\"true\" class=\"fas fa-check text-green-400 mr-2\"></i>This node becomes the Swarm manager</li><li><i aria-hidden=\"true\" class=\"fas fa-check text-green-400 mr-2\"></i>Join tokens are generated for workers</li><li><i aria-hidden=\"true\" class=\"fas fa-check text-green-400 mr-2\"></i>You can then add agent nodes as workers</li><li><i aria-hidden=\"true\" class=\"fas fa-check text-green-400 mr-2\"></i>Enable HA for any container with replicas</li></ul></div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -257,7 +257,7 @@ func clusterActive(data ClusterData) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		if data.JoinTokenWorker != "" {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "<div class=\"card p-4\"><h3 class=\"text-sm font-semibold text-gray-300 mb-3\"><i class=\"fas fa-key mr-2 text-yellow-400\"></i>Join Tokens</h3><div class=\"grid grid-cols-1 lg:grid-cols-2 gap-4\"><div><label class=\"text-xs text-gray-500 block mb-1\">Worker Token</label><div class=\"relative\"><input type=\"password\" value=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "<div class=\"card p-4\"><h3 class=\"text-sm font-semibold text-gray-300 mb-3\"><i aria-hidden=\"true\" class=\"fas fa-key mr-2 text-yellow-400\"></i>Join Tokens</h3><div class=\"grid grid-cols-1 lg:grid-cols-2 gap-4\"><div><label class=\"text-xs text-gray-500 block mb-1\">Worker Token</label><div class=\"relative\"><input type=\"password\" value=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -270,7 +270,7 @@ func clusterActive(data ClusterData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "\" readonly class=\"w-full bg-dark-800 text-gray-300 text-xs font-mono p-2 rounded border border-dark-600 pr-20\" id=\"worker-token\"> <button onclick=\"toggleToken('worker-token')\" class=\"absolute right-1 top-1 btn btn-sm btn-ghost text-xs\"><i class=\"fas fa-eye\"></i></button></div></div><div><label class=\"text-xs text-gray-500 block mb-1\">Manager Token</label><div class=\"relative\"><input type=\"password\" value=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "\" readonly class=\"w-full bg-dark-800 text-gray-300 text-xs font-mono p-2 rounded border border-dark-600 pr-20\" id=\"worker-token\" aria-label=\"Worker Token\"> <button onclick=\"toggleToken('worker-token')\" class=\"absolute right-1 top-1 btn btn-sm btn-ghost text-xs\"><i aria-hidden=\"true\" class=\"fas fa-eye\"></i></button></div></div><div><label class=\"text-xs text-gray-500 block mb-1\">Manager Token</label><div class=\"relative\"><input type=\"password\" value=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -283,12 +283,12 @@ func clusterActive(data ClusterData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "\" readonly class=\"w-full bg-dark-800 text-gray-300 text-xs font-mono p-2 rounded border border-dark-600 pr-20\" id=\"manager-token\"> <button onclick=\"toggleToken('manager-token')\" class=\"absolute right-1 top-1 btn btn-sm btn-ghost text-xs\"><i class=\"fas fa-eye\"></i></button></div></div></div></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "\" readonly class=\"w-full bg-dark-800 text-gray-300 text-xs font-mono p-2 rounded border border-dark-600 pr-20\" id=\"manager-token\" aria-label=\"Manager Token\"> <button onclick=\"toggleToken('manager-token')\" class=\"absolute right-1 top-1 btn btn-sm btn-ghost text-xs\"><i aria-hidden=\"true\" class=\"fas fa-eye\"></i></button></div></div></div></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "<!-- Nodes Table --><div class=\"card\"><div class=\"p-4 border-b border-dark-600 flex items-center justify-between\"><h3 class=\"font-semibold text-white\"><i class=\"fas fa-server mr-2 text-blue-400\"></i>Cluster Nodes</h3></div><div class=\"overflow-x-auto\"><table class=\"w-full\"><thead><tr class=\"border-b border-dark-600 text-left text-xs text-gray-500 uppercase\"><th class=\"p-3\">Hostname</th><th class=\"p-3\">Role</th><th class=\"p-3\">Status</th><th class=\"p-3\">Availability</th><th class=\"p-3\">Address</th><th class=\"p-3\">Engine</th><th class=\"p-3\">Resources</th><th class=\"p-3\">Actions</th></tr></thead> <tbody>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "<!-- Nodes Table --><div class=\"card\"><div class=\"p-4 border-b border-dark-600 flex items-center justify-between\"><h3 class=\"font-semibold text-white\"><i aria-hidden=\"true\" class=\"fas fa-server mr-2 text-blue-400\"></i>Cluster Nodes</h3></div><div class=\"overflow-x-auto\"><table class=\"w-full\"><thead><tr class=\"border-b border-dark-600 text-left text-xs text-gray-500 uppercase\"><th scope=\"col\" class=\"p-3\">Hostname</th><th scope=\"col\" class=\"p-3\">Role</th><th scope=\"col\" class=\"p-3\">Status</th><th scope=\"col\" class=\"p-3\">Availability</th><th scope=\"col\" class=\"p-3\">Address</th><th scope=\"col\" class=\"p-3\">Engine</th><th scope=\"col\" class=\"p-3\">Resources</th><th scope=\"col\" class=\"p-3\">Actions</th></tr></thead> <tbody>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -336,19 +336,19 @@ func clusterActive(data ClusterData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			if node.Status == "ready" {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 24, "<span class=\"text-green-400\"><i class=\"fas fa-circle text-xs mr-1\"></i>Ready</span>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 24, "<span class=\"text-green-400\"><i aria-hidden=\"true\" class=\"fas fa-circle text-xs mr-1\"></i>Ready</span>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			} else {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 25, "<span class=\"text-red-400\"><i class=\"fas fa-circle text-xs mr-1\"></i>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 25, "<span class=\"text-red-400\"><i aria-hidden=\"true\" class=\"fas fa-circle text-xs mr-1\"></i>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var14 string
 				templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.JoinStringErrs(node.Status)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/swarm/cluster.templ`, Line: 205, Col: 92}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/swarm/cluster.templ`, Line: 205, Col: 111}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var14))
 				if templ_7745c5c3_Err != nil {
@@ -455,7 +455,7 @@ func clusterActive(data ClusterData) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 35, "\" class=\"btn btn-sm btn-ghost text-red-400 hover:text-red-300\"><i class=\"fas fa-times\"></i></button>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 35, "\" class=\"btn btn-sm btn-ghost text-red-400 hover:text-red-300\"><i aria-hidden=\"true\" class=\"fas fa-times\"></i></button>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -465,17 +465,17 @@ func clusterActive(data ClusterData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 37, "</tbody></table></div></div><!-- Services Table --><div class=\"card\"><div class=\"p-4 border-b border-dark-600 flex items-center justify-between\"><h3 class=\"font-semibold text-white\"><i class=\"fas fa-cubes mr-2 text-green-400\"></i>Services</h3><a href=\"/swarm/services/new\" class=\"btn btn-sm btn-primary\"><i class=\"fas fa-plus mr-1\"></i>Create Service</a></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 37, "</tbody></table></div></div><!-- Services Table --><div class=\"card\"><div class=\"p-4 border-b border-dark-600 flex items-center justify-between\"><h3 class=\"font-semibold text-white\"><i aria-hidden=\"true\" class=\"fas fa-cubes mr-2 text-green-400\"></i>Services</h3><a href=\"/swarm/services/new\" class=\"btn btn-sm btn-primary\"><i aria-hidden=\"true\" class=\"fas fa-plus mr-1\"></i>Create Service</a></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		if len(data.Services) == 0 {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 38, "<div class=\"p-8 text-center text-gray-500\"><i class=\"fas fa-cubes text-4xl mb-3 opacity-30\"></i><p>No Swarm services yet.</p><p class=\"text-sm mt-1\">Create a service or convert a container to enable HA.</p></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 38, "<div class=\"p-8 text-center text-gray-500\"><i aria-hidden=\"true\" class=\"fas fa-cubes text-4xl mb-3 opacity-30\"></i><p>No Swarm services yet.</p><p class=\"text-sm mt-1\">Create a service or convert a container to enable HA.</p></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		} else {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 39, "<div class=\"overflow-x-auto\"><table class=\"w-full\"><thead><tr class=\"border-b border-dark-600 text-left text-xs text-gray-500 uppercase\"><th class=\"p-3\">Name</th><th class=\"p-3\">Image</th><th class=\"p-3\">Mode</th><th class=\"p-3\">Replicas</th><th class=\"p-3\">Ports</th><th class=\"p-3\">Actions</th></tr></thead> <tbody>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 39, "<div class=\"overflow-x-auto\"><table class=\"w-full\"><thead><tr class=\"border-b border-dark-600 text-left text-xs text-gray-500 uppercase\"><th scope=\"col\" class=\"p-3\">Name</th><th scope=\"col\" class=\"p-3\">Image</th><th scope=\"col\" class=\"p-3\">Mode</th><th scope=\"col\" class=\"p-3\">Replicas</th><th scope=\"col\" class=\"p-3\">Ports</th><th scope=\"col\" class=\"p-3\">Actions</th></tr></thead> <tbody>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -612,7 +612,7 @@ func clusterActive(data ClusterData) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 52, "\" class=\"btn btn-sm btn-ghost text-red-400 hover:text-red-300\"><i class=\"fas fa-trash\"></i></button></td></tr>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 52, "\" class=\"btn btn-sm btn-ghost text-red-400 hover:text-red-300\"><i aria-hidden=\"true\" class=\"fas fa-trash\"></i></button></td></tr>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -622,7 +622,7 @@ func clusterActive(data ClusterData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 54, "</div><!-- Leave Swarm --><div class=\"card p-4 border-red-500/30\"><h3 class=\"text-sm font-semibold text-red-400 mb-2\"><i class=\"fas fa-exclamation-triangle mr-1\"></i>Danger Zone</h3><div class=\"flex items-center justify-between\"><p class=\"text-sm text-gray-400\">Leave the Swarm cluster. This will stop all services on this node.</p><button hx-post=\"/swarm/leave\" hx-confirm=\"Are you sure? This will remove this node from the Swarm cluster and stop all Swarm services.\" class=\"btn btn-sm bg-red-500/20 text-red-400 hover:bg-red-500/30 border border-red-500/30\"><i class=\"fas fa-sign-out-alt mr-1\"></i>Leave Swarm</button></div></div></div><script>\n\tfunction toggleToken(id) {\n\t\tconst input = document.getElementById(id);\n\t\tinput.type = input.type === 'password' ? 'text' : 'password';\n\t}\n\t</script>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 54, "</div><!-- Leave Swarm --><div class=\"card p-4 border-red-500/30\"><h3 class=\"text-sm font-semibold text-red-400 mb-2\"><i aria-hidden=\"true\" class=\"fas fa-exclamation-triangle mr-1\"></i>Danger Zone</h3><div class=\"flex items-center justify-between\"><p class=\"text-sm text-gray-400\">Leave the Swarm cluster. This will stop all services on this node.</p><button hx-post=\"/swarm/leave\" hx-confirm=\"Are you sure? This will remove this node from the Swarm cluster and stop all Swarm services.\" class=\"btn btn-sm bg-red-500/20 text-red-400 hover:bg-red-500/30 border border-red-500/30\"><i aria-hidden=\"true\" class=\"fas fa-sign-out-alt mr-1\"></i>Leave Swarm</button></div></div></div><script>\n\tfunction toggleToken(id) {\n\t\tconst input = document.getElementById(id);\n\t\tinput.type = input.type === 'password' ? 'text' : 'password';\n\t}\n\t</script>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -676,7 +676,7 @@ func ServiceCreateForm(data ServiceCreateData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 56, "\"><div><label class=\"label\">Service Name</label> <input type=\"text\" name=\"name\" required placeholder=\"my-service\" class=\"input w-full\"></div><div><label class=\"label\">Image</label> <input type=\"text\" name=\"image\" required placeholder=\"nginx:latest\" class=\"input w-full\"></div><div class=\"grid grid-cols-2 gap-4\"><div><label class=\"label\">Replicas</label> <input type=\"number\" name=\"replicas\" value=\"2\" min=\"1\" max=\"100\" class=\"input w-full\"></div><div><label class=\"label\">Published Port</label> <input type=\"number\" name=\"published_port\" placeholder=\"80\" class=\"input w-full\"></div></div><div><label class=\"label\">Target Port (container)</label> <input type=\"number\" name=\"target_port\" placeholder=\"80\" class=\"input w-full\"></div><div><label class=\"label\">Environment Variables (one per line, KEY=VALUE)</label> <textarea name=\"env\" rows=\"3\" placeholder=\"KEY=VALUE\" class=\"input w-full\"></textarea></div><div class=\"flex gap-3 pt-2\"><button type=\"submit\" class=\"btn btn-primary\"><i class=\"fas fa-plus mr-2\"></i>Create Service</button> <a href=\"/swarm\" class=\"btn btn-ghost\">Cancel</a></div></form></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 56, "\"><div><label class=\"label\">Service Name</label> <input type=\"text\" name=\"name\" required placeholder=\"my-service\" class=\"input w-full\" aria-label=\"Service Name\"></div><div><label class=\"label\">Image</label> <input type=\"text\" name=\"image\" required placeholder=\"nginx:latest\" class=\"input w-full\" aria-label=\"Image\"></div><div class=\"grid grid-cols-2 gap-4\"><div><label class=\"label\">Replicas</label> <input type=\"number\" name=\"replicas\" value=\"2\" min=\"1\" max=\"100\" class=\"input w-full\" aria-label=\"Replicas\"></div><div><label class=\"label\">Published Port</label> <input type=\"number\" name=\"published_port\" placeholder=\"80\" class=\"input w-full\" aria-label=\"Published Port\"></div></div><div><label class=\"label\">Target Port (container)</label> <input type=\"number\" name=\"target_port\" placeholder=\"80\" class=\"input w-full\" aria-label=\"Target Port (container)\"></div><div><label class=\"label\">Environment Variables (one per line, KEY=VALUE)</label> <textarea name=\"env\" rows=\"3\" placeholder=\"KEY=VALUE\" class=\"input w-full\"></textarea></div><div class=\"flex gap-3 pt-2\"><button type=\"submit\" class=\"btn btn-primary\"><i aria-hidden=\"true\" class=\"fas fa-plus mr-2\"></i>Create Service</button> <a href=\"/swarm\" class=\"btn btn-ghost\">Cancel</a></div></form></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

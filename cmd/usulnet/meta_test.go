@@ -241,6 +241,41 @@ func TestMetaStripLocalIntegration(t *testing.T) {
 	}
 }
 
+// TestMetaStripOutputFileFlag pins the rename of the strip destination flag.
+// Before this PR the destination flag was --output, which shadowed the global
+// --output table|json|yaml format flag. The destination is now --output-file
+// (short -o); --output keeps its parent-tree meaning (output format).
+func TestMetaStripOutputFileFlag(t *testing.T) {
+	local := metaStripCmd.LocalFlags()
+	if f := local.Lookup("output-file"); f == nil {
+		t.Fatal("meta strip is missing --output-file flag")
+	}
+	// LocalFlags excludes inherited persistent flags, so a hit here would
+	// mean strip redeclared --output and re-introduced the shadow.
+	if f := local.Lookup("output"); f != nil {
+		t.Errorf("meta strip should not declare its own --output flag (shadows the global format flag); got %v", f)
+	}
+	if f := local.ShorthandLookup("o"); f == nil || f.Name != "output-file" {
+		t.Errorf("expected -o shorthand to map to --output-file, got %+v", f)
+	}
+	// The global format flag must still be present on the root and visible
+	// in strip's effective flag set (i.e. inherited as a persistent flag).
+	root := rootCmd.PersistentFlags().Lookup("output")
+	if root == nil {
+		t.Fatal("root --output (format) flag is missing")
+	}
+	if !strings.Contains(root.Usage, "table|json|yaml") {
+		t.Errorf("global --output should still describe table|json|yaml; got %q", root.Usage)
+	}
+	// The effective set on strip should now also include the global --output,
+	// which it previously hid by shadowing.
+	if f := metaStripCmd.Flags().Lookup("output"); f == nil {
+		t.Error("global --output (format) is not visible on meta strip — rename should have un-shadowed it")
+	} else if !strings.Contains(f.Usage, "table|json|yaml") {
+		t.Errorf("meta strip's --output is not the format flag; got %q", f.Usage)
+	}
+}
+
 // Compile-time reference so a stray refactor that drops the context import
 // from local-mode code surfaces here rather than at link time.
 var _ = context.Background

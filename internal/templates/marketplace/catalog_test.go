@@ -5,6 +5,7 @@
 package marketplace
 
 import (
+	"os"
 	"strings"
 	"testing"
 )
@@ -94,6 +95,38 @@ func TestLoadEntry_Found(t *testing.T) {
 func TestLoadEntry_NotFound(t *testing.T) {
 	if _, err := LoadEntry("does-not-exist-12345"); err == nil {
 		t.Error("expected error for unknown slug")
+	}
+}
+
+// TestLicensesTableCoversEveryApp guards against the
+// "added an app, forgot the LICENSES.md row" mistake. LICENSES.md
+// is the audit surface a reviewer scans when a marketplace PR
+// lands; if a slug ships without an entry there, the audit is
+// silently incomplete. This test reads the markdown table directly
+// and asserts every catalogue slug appears in it.
+//
+// The match is on the inline-code form (`<slug>`), which is the
+// shape every existing row uses. A row using a different format
+// would not break the rest of the table — it would just look
+// inconsistent and the test would still pass — so the cost of
+// the strict-form choice is low.
+func TestLicensesTableCoversEveryApp(t *testing.T) {
+	entries, err := Load()
+	if err != nil {
+		t.Fatalf("Load: %v", err)
+	}
+	body, err := os.ReadFile("LICENSES.md")
+	if err != nil {
+		t.Fatalf("read LICENSES.md: %v", err)
+	}
+	text := string(body)
+	for _, e := range entries {
+		t.Run(e.Slug, func(t *testing.T) {
+			needle := "`" + e.Slug + "`"
+			if !strings.Contains(text, needle) {
+				t.Errorf("LICENSES.md has no row for slug %q — add one before merging", e.Slug)
+			}
+		})
 	}
 }
 

@@ -18,7 +18,7 @@ templ Detail(data DetailData) {
 		<div class="space-y-6">
 			<div>
 				<a href="/rollback" class="text-sm text-gray-400 hover:text-white">
-					<i class="fas fa-chevron-left mr-1"></i>back to policies
+					<i aria-hidden="true" class="fas fa-chevron-left mr-1"></i>back to policies
 				</a>
 				<div class="flex items-center gap-3 mt-1">
 					<h1 class="text-2xl font-display font-bold text-white">{ data.Policy.Name }</h1>
@@ -38,15 +38,15 @@ templ Detail(data DetailData) {
 
 			<div class="flex items-center gap-2">
 				<a href={ templ.SafeURL("/rollback/" + data.Policy.ID + "/edit") } class="btn-secondary text-sm">
-					<i class="fas fa-pen mr-2"></i>Edit
+					<i aria-hidden="true" class="fas fa-pen mr-2"></i>Edit
 				</a>
 				<a href={ templ.SafeURL("/rollback/" + data.Policy.ID + "/dry-run") } class="btn-secondary text-sm">
-					<i class="fas fa-vial mr-2"></i>Dry-run
+					<i aria-hidden="true" class="fas fa-vial mr-2"></i>Dry-run
 				</a>
 				<form method="POST" action={ templ.SafeURL("/rollback/" + data.Policy.ID + "/delete") } style="display:inline" onsubmit="return confirm('Delete this policy? Executions will be cascade-deleted; the audit log is preserved.')">
 					<input type="hidden" name="csrf_token" value={ data.CSRFToken }/>
 					<button type="submit" class="btn-danger text-sm">
-						<i class="fas fa-trash mr-2"></i>Delete
+						<i aria-hidden="true" class="fas fa-trash mr-2"></i>Delete
 					</button>
 				</form>
 			</div>

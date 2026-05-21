@@ -68,7 +68,7 @@ templ List(data GiteaData) {
 			<div class="flex items-center justify-between">
 				<div>
 					<h1 class="text-2xl font-display font-bold text-white">
-						<i class="fas fa-code-branch text-blue-400 mr-2"></i>Repositories
+						<i aria-hidden="true" class="fas fa-code-branch text-blue-400 mr-2"></i>Repositories
 					</h1>
 					<p class="text-gray-400 mt-1">
 						{ fmt.Sprintf("%d connections, %d repositories", data.Stats.TotalConnections, data.Stats.TotalRepos) }
@@ -80,14 +80,14 @@ templ List(data GiteaData) {
 							onclick="document.getElementById('new-repo-modal').classList.remove('hidden')"
 							class="btn-primary bg-green-600 hover:bg-green-700"
 						>
-							<i class="fas fa-plus mr-2"></i>New Repository
+							<i aria-hidden="true" class="fas fa-plus mr-2"></i>New Repository
 						</button>
 					}
 					<button
 						onclick="document.getElementById('new-connection-modal').classList.remove('hidden')"
 						class="btn-primary"
 					>
-						<i class="fas fa-plug mr-2"></i>Add Connection
+						<i aria-hidden="true" class="fas fa-plug mr-2"></i>Add Connection
 					</button>
 				</div>
 			</div>
@@ -119,7 +119,7 @@ templ List(data GiteaData) {
 				</div>
 				if len(data.Connections) == 0 {
 					<div class="p-8 text-center">
-						<i class="fas fa-plug text-4xl text-gray-400 mb-3"></i>
+						<i aria-hidden="true" class="fas fa-plug text-4xl text-gray-400 mb-3"></i>
 						<p class="text-gray-400">No Git connections configured</p>
 						<p class="text-sm text-gray-500 mt-1">Add a connection to Gitea, GitHub, or GitLab to start syncing repositories</p>
 					</div>
@@ -183,18 +183,18 @@ templ connectionRow(conn ConnectionItem, csrfToken string) {
 						}
 						if conn.AutoSync {
 							<span class="text-xs px-1.5 py-0.5 rounded bg-blue-500/10 text-blue-400">
-								<i class="fas fa-sync-alt mr-1"></i>auto-sync
+								<i aria-hidden="true" class="fas fa-sync-alt mr-1"></i>auto-sync
 							</span>
 						}
 					</div>
 					<div class="text-sm text-gray-400 mt-0.5">
 						<a href={ templ.SafeURL(conn.URL) } target="_blank" class="hover:text-gray-300">
-							{ conn.URL } <i class="fas fa-external-link-alt text-[10px] ml-1"></i>
+							{ conn.URL } <i aria-hidden="true" class="fas fa-external-link-alt text-[10px] ml-1"></i>
 						</a>
 					</div>
 					if conn.Status == "error" && conn.StatusMsg != "" {
 						<div class="text-xs text-red-400 mt-1">
-							<i class="fas fa-exclamation-triangle mr-1"></i>{ conn.StatusMsg }
+							<i aria-hidden="true" class="fas fa-exclamation-triangle mr-1"></i>{ conn.StatusMsg }
 						</div>
 					}
 				</div>
@@ -207,20 +207,20 @@ templ connectionRow(conn ConnectionItem, csrfToken string) {
 				<form method="post" action={ templ.SafeURL(fmt.Sprintf("/integrations/git/connections/%s/test", conn.ID)) } class="inline">
 					<input type="hidden" name="csrf_token" value={ csrfToken }/>
 					<button type="submit" class="btn-sm btn-ghost" title="Test connection">
-						<i class="fas fa-heartbeat"></i>
+						<i aria-hidden="true" class="fas fa-heartbeat"></i>
 					</button>
 				</form>
 				<form method="post" action={ templ.SafeURL(fmt.Sprintf("/integrations/git/connections/%s/sync", conn.ID)) } class="inline">
 					<input type="hidden" name="csrf_token" value={ csrfToken }/>
 					<button type="submit" class="btn-sm btn-ghost" title="Sync repositories">
-						<i class="fas fa-sync-alt"></i>
+						<i aria-hidden="true" class="fas fa-sync-alt"></i>
 					</button>
 				</form>
 				<form method="post" action={ templ.SafeURL(fmt.Sprintf("/integrations/git/connections/%s/delete", conn.ID)) } class="inline"
 					onsubmit="return confirm('Delete this connection and all synced repos?')">
 					<input type="hidden" name="csrf_token" value={ csrfToken }/>
 					<button type="submit" class="btn-sm btn-ghost text-red-400 hover:text-red-300" title="Delete">
-						<i class="fas fa-trash"></i>
+						<i aria-hidden="true" class="fas fa-trash"></i>
 					</button>
 				</form>
 			</div>
@@ -249,17 +249,17 @@ templ repoRow(repo RepoItem) {
 						</a>
 						if repo.IsPrivate {
 							<span class="text-xs px-1.5 py-0.5 rounded bg-yellow-500/10 text-yellow-400">
-								<i class="fas fa-lock mr-0.5"></i>private
+								<i aria-hidden="true" class="fas fa-lock mr-0.5"></i>private
 							</span>
 						}
 						if repo.IsArchived {
 							<span class="text-xs px-1.5 py-0.5 rounded bg-gray-500/10 text-gray-400">
-								<i class="fas fa-archive mr-0.5"></i>archived
+								<i aria-hidden="true" class="fas fa-archive mr-0.5"></i>archived
 							</span>
 						}
 						if repo.IsFork {
 							<span class="text-xs px-1.5 py-0.5 rounded bg-purple-500/10 text-purple-400">
-								<i class="fas fa-code-branch mr-0.5"></i>fork
+								<i aria-hidden="true" class="fas fa-code-branch mr-0.5"></i>fork
 							</span>
 						}
 					</div>
@@ -267,22 +267,22 @@ templ repoRow(repo RepoItem) {
 						<p class="text-sm text-gray-400 mt-0.5 line-clamp-1">{ repo.Description }</p>
 					}
 					<div class="flex items-center gap-3 mt-1 text-xs text-gray-500">
-						<span><i class="fas fa-code-branch mr-1"></i>{ repo.DefaultBranch }</span>
+						<span><i aria-hidden="true" class="fas fa-code-branch mr-1"></i>{ repo.DefaultBranch }</span>
 						<span class="text-gray-400">via { repo.ConnectionName }</span>
 					</div>
 				</div>
 			</div>
 			<div class="flex items-center gap-4 text-sm text-gray-400">
 				if repo.Stars > 0 {
-					<span><i class="fas fa-star text-yellow-500 mr-1"></i>{ fmt.Sprintf("%d", repo.Stars) }</span>
+					<span><i aria-hidden="true" class="fas fa-star text-yellow-500 mr-1"></i>{ fmt.Sprintf("%d", repo.Stars) }</span>
 				}
 				if repo.Forks > 0 {
-					<span><i class="fas fa-code-branch mr-1"></i>{ fmt.Sprintf("%d", repo.Forks) }</span>
+					<span><i aria-hidden="true" class="fas fa-code-branch mr-1"></i>{ fmt.Sprintf("%d", repo.Forks) }</span>
 				}
 				if repo.HTMLURL != "" {
 					<a href={ templ.SafeURL(repo.HTMLURL) } target="_blank"
 						class="hover:text-gray-300" title={ "Open in " + providerName(repo.ProviderType) }>
-						<i class="fas fa-external-link-alt"></i>
+						<i aria-hidden="true" class="fas fa-external-link-alt"></i>
 					</a>
 				}
 			</div>
@@ -303,11 +303,11 @@ templ newConnectionModal(csrfToken string) {
 			<div class="relative card w-full max-w-lg p-6">
 				<div class="flex items-center justify-between mb-6">
 					<h3 class="text-lg font-semibold text-white">
-						<i class="fas fa-plug text-blue-400 mr-2"></i>Add Git Connection
+						<i aria-hidden="true" class="fas fa-plug text-blue-400 mr-2"></i>Add Git Connection
 					</h3>
 					<button onclick="document.getElementById('new-connection-modal').classList.add('hidden')"
 						class="text-gray-400 hover:text-white">
-						<i class="fas fa-times"></i>
+						<i aria-hidden="true" class="fas fa-times"></i>
 					</button>
 				</div>
 				<form method="post" action="/integrations/git/connections" id="new-connection-form" class="space-y-4">
@@ -322,7 +322,7 @@ templ newConnectionModal(csrfToken string) {
 									onchange="updateConnectionForm('gitea')"/>
 								<div class="flex flex-col items-center p-3 rounded-lg border-2 border-gray-600 cursor-pointer
 									peer-checked:border-green-500 peer-checked:bg-green-500/10 hover:border-gray-500 transition-colors">
-									<i class="fas fa-mug-hot text-2xl text-green-400 mb-1"></i>
+									<i aria-hidden="true" class="fas fa-mug-hot text-2xl text-green-400 mb-1"></i>
 									<span class="text-sm text-gray-300">Gitea</span>
 								</div>
 							</label>
@@ -331,7 +331,7 @@ templ newConnectionModal(csrfToken string) {
 									onchange="updateConnectionForm('github')"/>
 								<div class="flex flex-col items-center p-3 rounded-lg border-2 border-gray-600 cursor-pointer
 									peer-checked:border-gray-100 peer-checked:bg-gray-100/10 hover:border-gray-500 transition-colors">
-									<i class="fab fa-github text-2xl text-gray-100 mb-1"></i>
+									<i aria-hidden="true" class="fab fa-github text-2xl text-gray-100 mb-1"></i>
 									<span class="text-sm text-gray-300">GitHub</span>
 								</div>
 							</label>
@@ -340,7 +340,7 @@ templ newConnectionModal(csrfToken string) {
 									onchange="updateConnectionForm('gitlab')"/>
 								<div class="flex flex-col items-center p-3 rounded-lg border-2 border-gray-600 cursor-pointer
 									peer-checked:border-orange-500 peer-checked:bg-orange-500/10 hover:border-gray-500 transition-colors">
-									<i class="fab fa-gitlab text-2xl text-orange-400 mb-1"></i>
+									<i aria-hidden="true" class="fab fa-gitlab text-2xl text-orange-400 mb-1"></i>
 									<span class="text-sm text-gray-300">GitLab</span>
 								</div>
 							</label>
@@ -389,7 +389,7 @@ templ newConnectionModal(csrfToken string) {
 							Cancel
 						</button>
 						<button type="submit" class="btn-primary">
-							<i class="fas fa-plus mr-2"></i>Create Connection
+							<i aria-hidden="true" class="fas fa-plus mr-2"></i>Create Connection
 						</button>
 					</div>
 				</form>
@@ -453,11 +453,11 @@ templ newRepoModal(connections []ConnectionItem, csrfToken string) {
 			<div class="relative card w-full max-w-lg p-6">
 				<div class="flex items-center justify-between mb-6">
 					<h3 class="text-lg font-semibold text-white">
-						<i class="fas fa-folder-plus text-green-400 mr-2"></i>Create Repository
+						<i aria-hidden="true" class="fas fa-folder-plus text-green-400 mr-2"></i>Create Repository
 					</h3>
 					<button onclick="document.getElementById('new-repo-modal').classList.add('hidden')"
 						class="text-gray-400 hover:text-white">
-						<i class="fas fa-times"></i>
+						<i aria-hidden="true" class="fas fa-times"></i>
 					</button>
 				</div>
 				<form method="post" action="/integrations/git/repos" class="space-y-4">
@@ -480,7 +480,7 @@ templ newRepoModal(connections []ConnectionItem, csrfToken string) {
 						<input type="text" name="name" required
 							placeholder="my-awesome-project"
 							pattern="^[a-zA-Z0-9_.-]+$"
-							class="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-500 focus:border-blue-500 focus:ring-1 focus:ring-blue-500"/>
+							class="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-500 focus:border-blue-500 focus:ring-1 focus:ring-blue-500" aria-label="Repository Name"/>
 						<p class="text-xs text-gray-500 mt-1">Letters, numbers, hyphens, underscores, and dots only</p>
 					</div>
 					<div>
@@ -526,7 +526,7 @@ templ newRepoModal(connections []ConnectionItem, csrfToken string) {
 							Cancel
 						</button>
 						<button type="submit" class="btn-primary bg-green-600 hover:bg-green-700">
-							<i class="fas fa-plus mr-2"></i>Create Repository
+							<i aria-hidden="true" class="fas fa-plus mr-2"></i>Create Repository
 						</button>
 					</div>
 				</form>

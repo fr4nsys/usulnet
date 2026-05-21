@@ -8,6 +8,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"sync"
 	"testing"
 	"time"
 
@@ -24,6 +25,11 @@ import (
 // ---------------------------------------------------------------------------
 
 type testContainerRepo struct {
+	// mu guards every map / slice below. The parallel reconciliation
+	// worker (syncAllHosts) writes from multiple goroutines, so the
+	// test repo must be safe against concurrent Upsert / Delete /
+	// GetContainerIDs calls — otherwise -race would flag the map writes.
+	mu            sync.Mutex
 	containers    map[string]*models.Container
 	byHost        map[uuid.UUID][]*models.Container
 	stateUpdates  map[string]models.ContainerState
@@ -53,11 +59,15 @@ func (r *testContainerRepo) addContainer(c *models.Container) {
 }
 
 func (r *testContainerRepo) Upsert(_ context.Context, c *models.Container) error {
+	r.mu.Lock()
+	defer r.mu.Unlock()
 	r.containers[c.ID] = c
 	return nil
 }
 
 func (r *testContainerRepo) UpsertBatch(_ context.Context, containers []*models.Container) error {
+	r.mu.Lock()
+	defer r.mu.Unlock()
 	r.batchUpserted = append(r.batchUpserted, containers...)
 	for _, c := range containers {
 		r.containers[c.ID] = c
@@ -82,6 +92,8 @@ func (r *testContainerRepo) GetByName(_ context.Context, hostID uuid.UUID, name 
 }
 
 func (r *testContainerRepo) Delete(_ context.Context, id string) error {
+	r.mu.Lock()
+	defer r.mu.Unlock()
 	r.deleted = append(r.deleted, id)
 	delete(r.containers, id)
 	return nil
@@ -137,7 +149,12 @@ func (r *testContainerRepo) UpdateSecurityInfo(_ context.Context, id string, sco
 }
 
 func (r *testContainerRepo) GetContainerIDs(_ context.Context, _ uuid.UUID) ([]string, error) {
-	return r.containerIDs, nil
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	// Return a copy so the caller can iterate without holding the lock.
+	out := make([]string, len(r.containerIDs))
+	copy(out, r.containerIDs)
+	return out, nil
 }
 
 func (r *testContainerRepo) GetStats(_ context.Context, _ *uuid.UUID) (*postgres.ContainerStats, error) {
@@ -600,6 +617,85 @@ func TestGetDockerClient(t *testing.T) {
 	}
 	if client != expected {
 		t.Error("expected same client instance")
+	}
+}
+
+// TestSyncAllHosts_NoHosts pins the early-return path: zero online
+// hosts produces no goroutines, no work, and no panic.
+func TestSyncAllHosts_NoHosts(t *testing.T) {
+	svc, _, _ := newTestContainerService(t)
+	// hostSvc.hosts is empty by default.
+	done := make(chan struct{})
+	go func() {
+		svc.syncAllHosts(context.Background())
+		close(done)
+	}()
+	select {
+	case <-done:
+		// Pass.
+	case <-time.After(2 * time.Second):
+		t.Fatal("syncAllHosts blocked on empty hosts list")
+	}
+}
+
+// TestSyncAllHosts_FansOutAcrossHosts pins the parallel reconciliation
+// path: every online host's container set should land in the repo by
+// the time syncAllHosts returns, regardless of how the goroutine pool
+// schedules them. Uses more hosts than the containerSyncFanoutCap so
+// the semaphore path runs at least one wait.
+func TestSyncAllHosts_FansOutAcrossHosts(t *testing.T) {
+	svc, repo, hostSvc := newTestContainerService(t)
+
+	const numHosts = containerSyncFanoutCap + 4 // 12 hosts on a cap of 8
+	type fixture struct {
+		hostID      uuid.UUID
+		containerID string
+	}
+	fixtures := make([]fixture, 0, numHosts)
+	for i := 0; i < numHosts; i++ {
+		hostID := uuid.New()
+		containerID := fmt.Sprintf("c-%d", i)
+		fixtures = append(fixtures, fixture{hostID: hostID, containerID: containerID})
+
+		hostSvc.hosts = append(hostSvc.hosts, &models.Host{
+			ID:     hostID,
+			Status: models.HostStatusOnline,
+		})
+
+		client := newTestDockerClientForService()
+		client.containerList = []docker.Container{{ID: containerID}}
+		// containerInspectFromContainer keeps the inspect lookup simple — every
+		// container has only itself.
+		client.containers[containerID] = &docker.ContainerDetails{
+			Container: docker.Container{
+				ID:   containerID,
+				Name: "/svc-" + containerID,
+			},
+		}
+		hostSvc.clients[hostID] = client
+	}
+
+	done := make(chan struct{})
+	go func() {
+		svc.syncAllHosts(context.Background())
+		close(done)
+	}()
+	select {
+	case <-done:
+		// Pass.
+	case <-time.After(5 * time.Second):
+		t.Fatal("syncAllHosts blocked — fan-out semaphore or WaitGroup deadlock?")
+	}
+
+	// Every host's container should now be in the repo. Holding the test
+	// repo's mutex while reading keeps the assertion safe against any
+	// in-flight goroutine that the WaitGroup might somehow have missed.
+	repo.mu.Lock()
+	defer repo.mu.Unlock()
+	for _, f := range fixtures {
+		if _, ok := repo.containers[f.containerID]; !ok {
+			t.Errorf("host %s: container %q not Upserted into repo", f.hostID, f.containerID)
+		}
 	}
 }
 

@@ -3,7 +3,7 @@
 # usulnet — publish-public split
 # =============================================================================
 # Builds a curated copy of this dev repo at build/public/ matching the
-# allow-list in docs/0526/PUBLIC_FILES.md. The output is the input to the
+# allow-list in dev/PUBLIC_FILES.md. The output is the input to the
 # mirror workflow (S03) and the website build (S04+).
 #
 # Guarantees:
@@ -11,7 +11,7 @@
 #   - read-only against the source tree (writes only under build/);
 #   - offline: no git, no curl, no gh, no network of any kind.
 #
-# See docs/0526/sessions/02-public-split-allowlist.md.
+# See dev/0526/sessions/02-public-split-allowlist.md.
 # =============================================================================
 
 set -euo pipefail
@@ -21,7 +21,7 @@ DEFAULT_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 
 # Hooks for the test harness. Operators do not set these.
 ROOT="${PUBLISH_PUBLIC_ROOT:-${DEFAULT_ROOT}}"
-ALLOW_LIST="${PUBLISH_PUBLIC_ALLOW_LIST:-${ROOT}/docs/0526/PUBLIC_FILES.md}"
+ALLOW_LIST="${PUBLISH_PUBLIC_ALLOW_LIST:-${ROOT}/dev/PUBLIC_FILES.md}"
 BUILD_DIR="${PUBLISH_PUBLIC_BUILD_DIR:-${ROOT}/build}"
 STAGING="${BUILD_DIR}/public"
 PREVIOUS="${BUILD_DIR}/public-previous"

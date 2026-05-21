@@ -345,9 +345,9 @@ templ SSHTerminal(data SSHTerminalData) {
 		<!-- Breadcrumb -->
 		<nav class="flex items-center gap-2 text-sm text-gray-400 mb-4">
 			<a href="/connections/ssh" class="hover:text-primary-400 transition-colors">SSH Connections</a>
-			<i class="fas fa-chevron-right text-xs"></i>
+			<i aria-hidden="true" class="fas fa-chevron-right text-xs"></i>
 			<a href={ templ.SafeURL("/connections/ssh/" + data.Connection.ID) } class="hover:text-primary-400 transition-colors">{ data.Connection.Name }</a>
-			<i class="fas fa-chevron-right text-xs"></i>
+			<i aria-hidden="true" class="fas fa-chevron-right text-xs"></i>
 			<span class="text-white">Terminal</span>
 		</nav>
 
@@ -355,7 +355,7 @@ templ SSHTerminal(data SSHTerminalData) {
 		<div class="flex items-center justify-between mb-6">
 			<div class="flex items-center gap-4">
 				<div class="w-10 h-10 rounded-lg bg-dark-700 flex items-center justify-center">
-					<i class="fas fa-terminal text-lg text-primary-400"></i>
+					<i aria-hidden="true" class="fas fa-terminal text-lg text-primary-400"></i>
 				</div>
 				<div>
 					<h1 class="text-2xl font-bold font-display text-white">Terminal</h1>
@@ -364,10 +364,10 @@ templ SSHTerminal(data SSHTerminalData) {
 			</div>
 			<div class="flex items-center gap-2">
 				<a href={ templ.SafeURL("/connections/ssh/" + data.Connection.ID) } class="px-4 py-2 bg-dark-700 hover:bg-dark-600 text-gray-300 rounded-lg transition-colors">
-					<i class="fas fa-arrow-left mr-2"></i>Back
+					<i aria-hidden="true" class="fas fa-arrow-left mr-2"></i>Back
 				</a>
 				<a href={ templ.SafeURL("/connections/ssh/" + data.Connection.ID + "/files") } class="px-4 py-2 bg-dark-700 hover:bg-dark-600 text-gray-300 rounded-lg transition-colors">
-					<i class="fas fa-folder mr-2"></i>Files
+					<i aria-hidden="true" class="fas fa-folder mr-2"></i>Files
 				</a>
 			</div>
 		</div>
@@ -377,7 +377,7 @@ templ SSHTerminal(data SSHTerminalData) {
 			x-data="sshTerminal()"
 			data-conn-id={ data.Connection.ID }
 			data-conn-name={ data.Connection.Name }
-			class="bg-dark-800 rounded-xl border border-dark-600 overflow-hidden"
+			class="card overflow-hidden"
 		>
 			<!-- Terminal Header -->
 			<div class="flex items-center justify-between px-4 py-3 border-b border-dark-600 bg-dark-850">
@@ -401,7 +401,7 @@ templ SSHTerminal(data SSHTerminalData) {
 						Disconnected
 					</span>
 					<span x-show="connecting" class="flex items-center gap-1.5 text-xs text-yellow-400">
-						<i class="fas fa-spinner fa-spin"></i>
+						<i aria-hidden="true" class="fas fa-spinner fa-spin"></i>
 						Connecting...
 					</span>
 
@@ -411,14 +411,14 @@ templ SSHTerminal(data SSHTerminalData) {
 						class="p-2 text-gray-400 hover:text-white hover:bg-dark-600 rounded-lg transition-colors"
 						title="Reconnect"
 					>
-						<i class="fas fa-redo"></i>
+						<i aria-hidden="true" class="fas fa-redo"></i>
 					</button>
 					<button
 						@click="toggleFullscreen()"
 						class="p-2 text-gray-400 hover:text-white hover:bg-dark-600 rounded-lg transition-colors"
 						title="Fullscreen"
 					>
-						<i class="fas fa-expand"></i>
+						<i aria-hidden="true" class="fas fa-expand"></i>
 					</button>
 				</div>
 			</div>
@@ -445,7 +445,7 @@ templ SSHTerminal(data SSHTerminalData) {
 				<div class="bg-dark-800 border border-dark-600 rounded-xl shadow-2xl w-full max-w-md mx-4 p-6">
 					<div class="flex items-center gap-3 mb-4">
 						<div class="w-10 h-10 rounded-lg bg-primary-500/20 flex items-center justify-center">
-							<i class="fas fa-key text-primary-400"></i>
+							<i aria-hidden="true" class="fas fa-key text-primary-400"></i>
 						</div>
 						<div>
 							<h3 class="text-white font-semibold text-lg">Authentication Required</h3>
@@ -462,6 +462,7 @@ templ SSHTerminal(data SSHTerminalData) {
 								:placeholder="credentialModal.field === 'password' ? '••••••••' : 'Enter username'"
 								class="w-full px-3 py-2.5 bg-dark-700 border border-dark-500 rounded-lg text-white placeholder-gray-500 focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
 								autocomplete="off"
+								aria-label="credentialModal.field === 'password' ? '••••••••' : 'Enter username'"
 							/>
 						</div>
 						<div class="flex items-center justify-end gap-3">
@@ -834,6 +835,7 @@ templ SSHConnectionDetail(data SSHConnectionDetailData) {
 										value={ data.Connection.Name }
 										required
 										class="w-full px-3 py-2 bg-dark-700 border border-dark-600 rounded-lg text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+										aria-label="Name"
 									/>
 								</div>
 								<div>
@@ -844,6 +846,7 @@ templ SSHConnectionDetail(data SSHConnectionDetailData) {
 										value={ data.Connection.Host }
 										required
 										class="w-full px-3 py-2 bg-dark-700 border border-dark-600 rounded-lg text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+										aria-label="Host"
 									/>
 								</div>
 								<div>
@@ -856,6 +859,7 @@ templ SSHConnectionDetail(data SSHConnectionDetailData) {
 										min="1"
 										max="65535"
 										class="w-full px-3 py-2 bg-dark-700 border border-dark-600 rounded-lg text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+										aria-label="Port"
 									/>
 								</div>
 								<div>
@@ -866,6 +870,7 @@ templ SSHConnectionDetail(data SSHConnectionDetailData) {
 										value={ data.Connection.Username }
 										placeholder="Leave empty to prompt on connect"
 										class="w-full px-3 py-2 bg-dark-700 border border-dark-600 rounded-lg text-white placeholder-gray-500 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+										aria-label="Username"
 									/>
 								</div>
 							</div>
@@ -890,6 +895,7 @@ templ SSHConnectionDetail(data SSHConnectionDetailData) {
 									name="password"
 									placeholder="Enter new password (leave blank to keep current)"
 									class="w-full px-3 py-2 bg-dark-700 border border-dark-600 rounded-lg text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+									aria-label="Password"
 								/>
 							</div>
 
@@ -943,11 +949,11 @@ templ SSHConnectionDetail(data SSHConnectionDetailData) {
 								<table class="w-full">
 									<thead>
 										<tr class="text-left text-gray-400 text-sm border-b border-dark-700">
-											<th class="pb-3 font-medium">User</th>
-											<th class="pb-3 font-medium">Client IP</th>
-											<th class="pb-3 font-medium">Started</th>
-											<th class="pb-3 font-medium">Duration</th>
-											<th class="pb-3 font-medium">Status</th>
+											<th scope="col" class="pb-3 font-medium">User</th>
+											<th scope="col" class="pb-3 font-medium">Client IP</th>
+											<th scope="col" class="pb-3 font-medium">Started</th>
+											<th scope="col" class="pb-3 font-medium">Duration</th>
+											<th scope="col" class="pb-3 font-medium">Status</th>
 										</tr>
 									</thead>
 									<tbody>

@@ -1,6 +1,15 @@
-Manage recon targets
+Manage the targets a recon scan can be aimed at.
+
+  add <type> <value>     register a new target
+  list                   show every target you own
+  verify <id> <method>   prove ownership before a scan can start
+
+Every recon scan requires a verified target. Ownership verification
+runs out of band (DNS TXT, e-mail link, RDAP, admin-attest, or
+self-assert) and is recorded in the audit log.
 
 Usage:
+  usulnet recon target [flags]
   usulnet recon target [command]
 
 Available Commands:
@@ -13,7 +22,9 @@ Flags:
 
 Global Flags:
   -c, --config string   config file path (default: /etc/usulnet/config.yaml or ./config.yaml)
+      --json            shortcut for --output json (overrides --output)
       --output string   output format: table|json|yaml (default "table")
+  -q, --quiet           suppress informational output (errors and primary data still print)
       --server string   usulnet API URL (default $USULNET_API_URL)
       --token string    API token (default $USULNET_API_TOKEN)
 

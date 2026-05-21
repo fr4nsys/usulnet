@@ -99,7 +99,7 @@ func ProviderDetail(data ProviderDetailData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "\" class=\"btn-primary\"><i class=\"fas fa-plus mr-2\"></i>Add record</a></div></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "\" class=\"btn-primary\"><i aria-hidden=\"true\" class=\"fas fa-plus mr-2\"></i>Add record</a></div></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -148,7 +148,7 @@ func ProviderDetail(data ProviderDetailData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "</p></div></div><div class=\"card\"><div class=\"px-6 py-4 border-b border-dark-700\"><h2 class=\"text-lg font-medium text-white\">Records</h2><p class=\"text-xs text-gray-500\">Records the platform owns through this provider. ACME-managed entries cannot be deleted by hand.</p></div><div class=\"overflow-x-auto\"><table class=\"table\"><thead><tr><th>Name</th><th>Type</th><th>Content</th><th>TTL</th><th>Managed by</th><th class=\"text-right\">Actions</th></tr></thead> <tbody>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "</p></div></div><div class=\"card\"><div class=\"px-6 py-4 border-b border-dark-700\"><h2 class=\"text-lg font-medium text-white\">Records</h2><p class=\"text-xs text-gray-500\">Records the platform owns through this provider. ACME-managed entries cannot be deleted by hand.</p></div><div class=\"overflow-x-auto\"><table class=\"table\"><thead><tr><th scope=\"col\">Name</th><th scope=\"col\">Type</th><th scope=\"col\">Content</th><th scope=\"col\">TTL</th><th scope=\"col\">Managed by</th><th scope=\"col\" class=\"text-right\">Actions</th></tr></thead> <tbody>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

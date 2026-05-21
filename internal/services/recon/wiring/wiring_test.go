@@ -74,6 +74,15 @@ func TestBuild_EnabledNoDocker_ConstructsVerifiersOnly(t *testing.T) {
 	if mod.MetadataService != nil {
 		t.Fatalf("metadata service should not exist without a DB")
 	}
+	// The full metadata.Service surface must also be nil when its
+	// narrow scheduler counterpart is nil. PR #142 added
+	// MetadataFullService alongside MetadataService so the web layer
+	// could read the full surface without the wiring being touched
+	// by a worker-only consumer; this asserts the two fields stay
+	// in sync.
+	if mod.MetadataFullService != nil {
+		t.Fatalf("metadata full service should not exist without a DB; got %T", mod.MetadataFullService)
+	}
 	if mod.ReconScanService != nil {
 		t.Fatalf("recon scan service is stubbed pending S02; want nil")
 	}

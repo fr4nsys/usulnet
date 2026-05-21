@@ -16,7 +16,7 @@ templ Edit(data EditData) {
 		<div class="space-y-6">
 			<div>
 				<a href={ templ.SafeURL("/rollback/" + data.Form.Policy.ID) } class="text-sm text-gray-400 hover:text-white">
-					<i class="fas fa-chevron-left mr-1"></i>back to policy
+					<i aria-hidden="true" class="fas fa-chevron-left mr-1"></i>back to policy
 				</a>
 				<h1 class="text-2xl font-display font-bold text-white mt-1">Edit { data.Form.Policy.Name }</h1>
 			</div>

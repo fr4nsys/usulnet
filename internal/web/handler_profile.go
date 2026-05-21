@@ -11,8 +11,6 @@ import (
 	"io"
 	"log/slog"
 	"net/http"
-	"strconv"
-	"strings"
 	"time"
 
 	"github.com/go-chi/chi/v5"
@@ -155,6 +153,14 @@ func (h *Handler) ProfilePage(w http.ResponseWriter, r *http.Request) {
 // Update Profile (PUT /profile)
 // ============================================================================
 
+// updateProfileForm captures the username + email update inputs.
+// Email format is intentionally loose here — the user-repo
+// applies stricter rules and returns a service error if needed.
+type updateProfileForm struct {
+	Username string `form:"username" validate:"required"`
+	Email    string `form:"email"`
+}
+
 func (h *Handler) UpdateProfile(w http.ResponseWriter, r *http.Request) {
 	user := GetUserInfo(r.Context())
 	if user == nil {
@@ -162,23 +168,15 @@ func (h *Handler) UpdateProfile(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := r.ParseForm(); err != nil {
-		h.setFlash(w, r, "error", "Invalid form data")
-		h.redirect(w, r, "/profile")
-		return
-	}
-
-	username := strings.TrimSpace(r.FormValue("username"))
-	email := strings.TrimSpace(r.FormValue("email"))
-
-	if username == "" {
-		h.setFlash(w, r, "error", "Username cannot be empty")
+	var form updateProfileForm
+	if msg := BindForm(r, &form); msg != "" {
+		h.setFlash(w, r, "error", msg)
 		h.redirect(w, r, "/profile")
 		return
 	}
 
 	if h.userRepo != nil {
-		if err := h.userRepo.UpdateUser(user.ID, username, email); err != nil {
+		if err := h.userRepo.UpdateUser(user.ID, form.Username, form.Email); err != nil {
 			h.setFlash(w, r, "error", fmt.Sprintf("Failed to update profile: %s", err.Error()))
 			h.redirect(w, r, "/profile")
 			return
@@ -193,6 +191,17 @@ func (h *Handler) UpdateProfile(w http.ResponseWriter, r *http.Request) {
 // Update Password (PUT /profile/password)
 // ============================================================================
 
+// updatePasswordForm captures the change-password inputs. All
+// three fields are required and the new password has an explicit
+// 8-character minimum (the validator enforces both); equality and
+// "different from current" checks stay in the handler because
+// they are cross-field rules.
+type updatePasswordForm struct {
+	CurrentPassword string `form:"current_password" validate:"required"`
+	NewPassword     string `form:"new_password" validate:"required,min=8"`
+	ConfirmPassword string `form:"confirm_password" validate:"required"`
+}
+
 func (h *Handler) UpdatePassword(w http.ResponseWriter, r *http.Request) {
 	user := GetUserInfo(r.Context())
 	if user == nil {
@@ -200,28 +209,15 @@ func (h *Handler) UpdatePassword(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := r.ParseForm(); err != nil {
-		h.setFlash(w, r, "error", "Invalid form data")
+	var form updatePasswordForm
+	if msg := BindForm(r, &form); msg != "" {
+		h.setFlash(w, r, "error", msg)
 		h.redirect(w, r, "/profile?tab=security")
 		return
 	}
-
-	currentPassword := r.FormValue("current_password")
-	newPassword := r.FormValue("new_password")
-	confirmPassword := r.FormValue("confirm_password")
-
-	// Validation
-	if currentPassword == "" || newPassword == "" || confirmPassword == "" {
-		h.setFlash(w, r, "error", "All password fields are required")
-		h.redirect(w, r, "/profile?tab=security")
-		return
-	}
-
-	if len(newPassword) < 8 {
-		h.setFlash(w, r, "error", "New password must be at least 8 characters")
-		h.redirect(w, r, "/profile?tab=security")
-		return
-	}
+	currentPassword := form.CurrentPassword
+	newPassword := form.NewPassword
+	confirmPassword := form.ConfirmPassword
 
 	if newPassword != confirmPassword {
 		h.setFlash(w, r, "error", "New passwords do not match")
@@ -267,6 +263,27 @@ func (h *Handler) UpdatePassword(w http.ResponseWriter, r *http.Request) {
 // Update Preferences (PUT /profile/preferences)
 // ============================================================================
 
+// updatePreferencesForm captures the dozen-plus preference
+// toggles and numerics from the preferences tab.
+type updatePreferencesForm struct {
+	Theme                 string `form:"theme"`
+	Language              string `form:"language"`
+	Timezone              string `form:"timezone"`
+	DateFormat            string `form:"date_format"`
+	TimeFormat            string `form:"time_format"`
+	ContainerView         string `form:"container_view"`
+	ShowStoppedContainers bool   `form:"show_stopped_containers"`
+	NotifyUpdates         bool   `form:"notify_updates"`
+	NotifySecurity        bool   `form:"notify_security"`
+	NotifyBackups         bool   `form:"notify_backups"`
+	NotifyContainer       bool   `form:"notify_container"`
+	EditorMode            string `form:"editor_mode"`
+	DefaultLogLines       int    `form:"default_log_lines" validate:"gte=0"`
+	RefreshInterval       int    `form:"refresh_interval" validate:"gte=0"`
+	EditorFontSize        int    `form:"editor_font_size" validate:"gte=0"`
+	EditorTabSize         int    `form:"editor_tab_size" validate:"gte=0"`
+}
+
 func (h *Handler) UpdatePreferences(w http.ResponseWriter, r *http.Request) {
 	user := GetUserInfo(r.Context())
 	if user == nil {
@@ -274,39 +291,42 @@ func (h *Handler) UpdatePreferences(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := r.ParseForm(); err != nil {
-		h.setFlash(w, r, "error", "Invalid form data")
+	var form updatePreferencesForm
+	if msg := BindForm(r, &form); msg != "" {
+		h.setFlash(w, r, "error", msg)
 		h.redirect(w, r, "/profile?tab=preferences")
 		return
 	}
 
-	// Parse form into preferences
 	partial := UserPreferences{
-		Theme:                 Theme(r.FormValue("theme")),
-		Language:              r.FormValue("language"),
-		Timezone:              r.FormValue("timezone"),
-		DateFormat:            DateFormat(r.FormValue("date_format")),
-		TimeFormat:            TimeFormat(r.FormValue("time_format")),
-		ContainerView:         ViewMode(r.FormValue("container_view")),
-		ShowStoppedContainers: r.FormValue("show_stopped_containers") == "true",
-		NotifyUpdates:         r.FormValue("notify_updates") == "true",
-		NotifySecurity:        r.FormValue("notify_security") == "true",
-		NotifyBackups:         r.FormValue("notify_backups") == "true",
-		NotifyContainer:       r.FormValue("notify_container") == "true",
-		EditorMode:            r.FormValue("editor_mode"),
+		Theme:                 Theme(form.Theme),
+		Language:              form.Language,
+		Timezone:              form.Timezone,
+		DateFormat:            DateFormat(form.DateFormat),
+		TimeFormat:            TimeFormat(form.TimeFormat),
+		ContainerView:         ViewMode(form.ContainerView),
+		ShowStoppedContainers: form.ShowStoppedContainers,
+		NotifyUpdates:         form.NotifyUpdates,
+		NotifySecurity:        form.NotifySecurity,
+		NotifyBackups:         form.NotifyBackups,
+		NotifyContainer:       form.NotifyContainer,
+		EditorMode:            form.EditorMode,
 	}
 
-	if v, err := strconv.Atoi(r.FormValue("default_log_lines")); err == nil && v > 0 {
-		partial.DefaultLogLines = LogLineCount(v)
+	// Per-field numeric clamps stay in the handler because they
+	// encode "0 means leave default" — the validator's gte=0 alone
+	// would not preserve that nuance (a present 0 would override).
+	if form.DefaultLogLines > 0 {
+		partial.DefaultLogLines = LogLineCount(form.DefaultLogLines)
 	}
-	if v, err := strconv.Atoi(r.FormValue("refresh_interval")); err == nil && v >= 0 {
-		partial.RefreshInterval = RefreshInterval(v)
+	if form.RefreshInterval > 0 {
+		partial.RefreshInterval = RefreshInterval(form.RefreshInterval)
 	}
-	if v, err := strconv.Atoi(r.FormValue("editor_font_size")); err == nil && v >= 10 && v <= 24 {
-		partial.EditorFontSize = v
+	if form.EditorFontSize >= 10 && form.EditorFontSize <= 24 {
+		partial.EditorFontSize = form.EditorFontSize
 	}
-	if v, err := strconv.Atoi(r.FormValue("editor_tab_size")); err == nil && v > 0 {
-		partial.EditorTabSize = v
+	if form.EditorTabSize > 0 {
+		partial.EditorTabSize = form.EditorTabSize
 	}
 
 	// Load current preferences, merge, save

@@ -65,21 +65,21 @@ templ Detail(data DetailData) {
 					<p class="text-sm text-gray-400 mt-1">{ data.App.Description }</p>
 					<div class="flex items-center gap-4 mt-2 text-xs text-gray-500">
 						if data.App.Author != "" {
-							<span><i class="fas fa-user mr-1"></i>{ data.App.Author }</span>
+							<span><i aria-hidden="true" class="fas fa-user mr-1"></i>{ data.App.Author }</span>
 						}
 						if data.App.Version != "" {
-							<span><i class="fas fa-tag mr-1"></i>v{ data.App.Version }</span>
+							<span><i aria-hidden="true" class="fas fa-tag mr-1"></i>v{ data.App.Version }</span>
 						}
 						@categoryBadge(data.App.Category)
 						if data.App.AvgRating > 0 {
-							<span><i class="fas fa-star text-yellow-400 mr-1"></i>{ fmt.Sprintf("%.1f", data.App.AvgRating) } ({ fmt.Sprintf("%d", data.App.RatingCount) })</span>
+							<span><i aria-hidden="true" class="fas fa-star text-yellow-400 mr-1"></i>{ fmt.Sprintf("%.1f", data.App.AvgRating) } ({ fmt.Sprintf("%d", data.App.RatingCount) })</span>
 						}
-						<span><i class="fas fa-download mr-1"></i>{ fmt.Sprintf("%d", data.App.InstallCount) } installs</span>
+						<span><i aria-hidden="true" class="fas fa-download mr-1"></i>{ fmt.Sprintf("%d", data.App.InstallCount) } installs</span>
 					</div>
 				</div>
 				<a href={ templ.SafeURL("/marketplace/" + data.App.Slug + "/install") }
 					class="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-black font-medium rounded-lg transition-colors text-sm whitespace-nowrap">
-					<i class="fas fa-download mr-2"></i>Install
+					<i aria-hidden="true" class="fas fa-download mr-2"></i>Install
 				</a>
 			</div>
 
@@ -103,7 +103,7 @@ templ Detail(data DetailData) {
 						<div class="flex items-center justify-between mb-3">
 							<h3 class="text-sm font-semibold text-white">Reviews ({ fmt.Sprintf("%d", len(data.Reviews)) })</h3>
 							<a href={ templ.SafeURL("/marketplace/" + data.App.Slug + "/review") } class="text-xs text-primary-400 hover:text-primary-300">
-								<i class="fas fa-pen mr-1"></i>Leave a review
+								<i aria-hidden="true" class="fas fa-pen mr-1"></i>Leave a review
 							</a>
 						</div>
 						<p class="text-xs text-gray-500 mb-3">
@@ -118,10 +118,10 @@ templ Detail(data DetailData) {
 												<span class="text-sm font-medium text-white">{ review.UserName }</span>
 												<div class="flex text-yellow-400 text-xs">
 													for i := 0; i < review.Rating; i++ {
-														<i class="fas fa-star"></i>
+														<i aria-hidden="true" class="fas fa-star"></i>
 													}
 													for i := review.Rating; i < 5; i++ {
-														<i class="far fa-star text-gray-600"></i>
+														<i aria-hidden="true" class="far fa-star text-gray-600"></i>
 													}
 												</div>
 											</div>

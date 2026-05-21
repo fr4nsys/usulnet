@@ -10,13 +10,15 @@
 1. [Overview](#overview)
 2. [Agent Requirements](#agent-requirements)
 3. [Installation Methods](#installation-methods)
-4. [Configuration Reference](#configuration-reference)
-5. [Connecting to the Master](#connecting-to-the-master)
-6. [Security](#security)
-7. [Agent Operations](#agent-operations)
-8. [Monitoring Agent Health](#monitoring-agent-health)
-9. [Upgrading Agents](#upgrading-agents)
-10. [Troubleshooting](#troubleshooting)
+4. [CLI Subcommands](#cli-subcommands)
+5. [Configuration Reference](#configuration-reference)
+6. [Recommended Deploy Workflow](#recommended-deploy-workflow)
+7. [Connecting to the Master](#connecting-to-the-master)
+8. [Security](#security)
+9. [Agent Operations](#agent-operations)
+10. [Monitoring Agent Health](#monitoring-agent-health)
+11. [Upgrading Agents](#upgrading-agents)
+12. [Troubleshooting](#troubleshooting)
 
 ---
 
@@ -192,25 +194,122 @@ sudo systemctl status usulnet-agent
 
 ---
 
+## CLI Subcommands
+
+The agent ships as a Cobra command tree (v26.5.2 and later). All
+persistent flags live on the root command and are inherited by every
+subcommand.
+
+| Command | Purpose |
+|---|---|
+| `usulnet-agent` | Equivalent to `usulnet-agent run` — start the agent. |
+| `usulnet-agent run` | Start the agent and connect to the gateway. Serves commands until SIGINT/SIGTERM (graceful) or a second signal (force-exit after 30 s). |
+| `usulnet-agent version` | Print version, commit, and build date and exit. |
+| `usulnet-agent validate-config` | Load the resolved config (`--config` + env + flags) and run the required-fields check. Exit 0 if a startable config can be assembled; non-zero otherwise. |
+
+### Examples
+
+```bash
+# Start the agent (no subcommand)
+usulnet-agent --gateway nats://master:4222 --token "$AGENT_TOKEN"
+
+# Same, explicit subcommand
+usulnet-agent run --gateway nats://master:4222 --token "$AGENT_TOKEN"
+
+# Print version
+usulnet-agent version
+
+# Validate a config file in CI before deploying it
+usulnet-agent validate-config --config /etc/usulnet-agent/config.yaml
+```
+
+`validate-config` exits 0 only when the agent could start with the
+resolved settings (the required-field check today is `token` —
+everything else has a usable default). The recommended workflow runs
+it as a pre-flight in CI / on-host before restarting the agent.
+
+### Shell completion
+
+The agent registers `completion <shell>` for `bash`, `zsh`, `fish`,
+and `powershell`. The fastest install is the helper script — it
+covers both `usulnet` and `usulnet-agent` in one invocation:
+
+```bash
+# Per-user, auto-detect shell, both binaries
+./deploy/install-completions.sh
+
+# System-wide
+sudo ./deploy/install-completions.sh --system
+
+# Only the agent
+./deploy/install-completions.sh --binary usulnet-agent --shell zsh
+```
+
+Manual one-liner:
+
+```bash
+usulnet-agent completion bash | sudo tee /etc/bash_completion.d/usulnet-agent > /dev/null
+```
+
+The agent runtime image bakes the same scripts at
+`/app/completions/{bash,zsh,fish,powershell}/usulnet-agent` so an
+operator running the agent in Docker can `docker cp` the file
+without installing the binary on the host:
+
+```bash
+docker cp usulnet-agent:/app/completions/bash/usulnet-agent \
+  /etc/bash_completion.d/usulnet-agent
+```
+
+Full reference: [`docs/cli.md#tab-completion`](cli.md#tab-completion).
+
+---
+
 ## Configuration Reference
 
 ### CLI Flags
 
+All flags below are **persistent** — they work on every subcommand,
+including `run` (implicit when no subcommand is given).
+
 | Flag | Environment Variable | Default | Description |
 |------|---------------------|---------|-------------|
-| `--gateway` | `USULNET_GATEWAY_URL` | `nats://localhost:4222` | NATS server URL of the master |
+| `--config` | -- | *none* | Path to a YAML config file |
+| `--gateway` | `USULNET_GATEWAY_URL` | `nats://localhost:4222` | Gateway NATS URL |
 | `--token` | `USULNET_AGENT_TOKEN` | *none* | **Required.** Agent authentication token |
-| `--docker` | `USULNET_DOCKER_HOST` | `unix:///var/run/docker.sock` | Docker socket path |
-| `--hostname` | `USULNET_HOSTNAME` | *auto-detected* | Override the reported hostname |
-| `--config` | -- | -- | Path to YAML config file |
-| `--data-dir` | `USULNET_DATA_DIR` | `/app/data` | Local state directory |
+| `--docker` | `USULNET_AGENT_DOCKER_HOST` → `DOCKER_HOST` | `unix:///var/run/docker.sock` | Docker daemon address. See [precedence](#docker-host-precedence) below. |
+| `--hostname` | -- | *auto-detected* | Override the reported hostname |
+| `--data-dir` | `USULNET_DATA_DIR` | `/var/lib/usulnet-agent` | Local state directory |
 | `--log-level` | `USULNET_LOG_LEVEL` | `info` | Log level: `debug`, `info`, `warn`, `error` |
 | `--log-format` | `USULNET_LOG_FORMAT` | `json` | Log format: `json`, `console` |
-| `--version` | -- | -- | Show version and exit |
+
+#### Docker host precedence
+
+The agent resolves `--docker` from four sources, in order:
+
+| Order | Source | Notes |
+|---|---|---|
+| 1 | `--docker` CLI flag | Explicit override always wins. |
+| 2 | `$USULNET_AGENT_DOCKER_HOST` | Canonical environment variable. Use this in compose `.env` files. |
+| 3 | `$DOCKER_HOST` | Fallback for parity with the Docker CLI / SDK tooling. |
+| 4 | `unix:///var/run/docker.sock` | Default if none of the above is set. |
+
+```bash
+# Canonical env var (recommended)
+USULNET_AGENT_DOCKER_HOST=tcp://10.0.0.5:2376 usulnet-agent run
+
+# Falls through to DOCKER_HOST when the canonical var is unset
+DOCKER_HOST=tcp://10.0.0.5:2376 usulnet-agent run
+
+# Explicit flag always wins
+usulnet-agent run --docker unix:///run/user/1000/docker.sock
+```
 
 ### YAML Configuration File
 
-The agent can also be configured via a YAML file (`config.agent.yaml`):
+The YAML file unmarshals directly into the agent's `Config` struct
+via `yaml` tags — operator keys are `snake_case`, the TLS sub-block
+nests under `tls:`. Missing keys keep their defaults.
 
 ```yaml
 # NATS connection to the master
@@ -241,7 +340,7 @@ data_dir: "/var/lib/usulnet-agent"
 log_level: "info"
 log_format: "json"
 
-# TLS configuration for NATS (optional)
+# TLS configuration for NATS (optional). Nests under `tls:`.
 tls:
   enabled: false
   cert_file: "/etc/usulnet-agent/certs/agent.crt"
@@ -254,6 +353,40 @@ tls:
 2. Environment variables
 3. YAML config file
 4. Defaults
+
+---
+
+## Recommended Deploy Workflow
+
+```bash
+# 1. Write or update the agent config (or .env vars)
+sudo install -m 600 config.agent.yaml /etc/usulnet-agent/config.yaml
+
+# 2. Validate before restart — exits non-zero if the required
+#    fields are missing or the YAML is malformed
+usulnet-agent validate-config --config /etc/usulnet-agent/config.yaml
+
+# 3. Restart the agent only if validation succeeded
+sudo systemctl restart usulnet-agent
+
+# 4. Confirm the agent reached the gateway
+sudo journalctl -u usulnet-agent -n 50 --no-pager
+```
+
+For Docker-deployed agents the same step runs as a one-shot
+`docker run --rm`:
+
+```bash
+docker run --rm \
+  -v /etc/usulnet-agent/config.yaml:/app/config.yaml:ro \
+  usulnet/usulnet-agent:latest \
+  validate-config --config /app/config.yaml
+```
+
+Operators running the agent inside the project's Docker Compose
+profile (`docker compose --profile agent up -d`) can hit the same
+exit-code contract via `docker compose run --rm usulnet-agent
+validate-config`.
 
 ---
 

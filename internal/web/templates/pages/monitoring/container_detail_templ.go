@@ -70,7 +70,7 @@ func ContainerDetail(data ContainerDetailData) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"space-y-6\"><!-- Breadcrumb + Header --><div class=\"flex items-center justify-between\"><div><div class=\"flex items-center gap-2 text-sm text-gray-500 mb-1\"><a href=\"/monitoring\" class=\"hover:text-gray-300 transition-colors\">Monitoring</a> <i class=\"fas fa-chevron-right text-[10px]\"></i> <span class=\"text-gray-300\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"space-y-6\"><!-- Breadcrumb + Header --><div class=\"flex items-center justify-between\"><div><div class=\"flex items-center gap-2 text-sm text-gray-500 mb-1\"><a href=\"/monitoring\" class=\"hover:text-gray-300 transition-colors\">Monitoring</a> <i aria-hidden=\"true\" class=\"fas fa-chevron-right text-[10px]\"></i> <span class=\"text-gray-300\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -192,7 +192,7 @@ func ContainerDetail(data ContainerDetailData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "\" class=\"px-3 py-1.5 bg-dark-700 hover:bg-dark-600 text-gray-300 rounded-lg transition-colors text-sm font-medium\"><i class=\"fas fa-cube mr-1.5\"></i>Container</a> <a href=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "\" class=\"px-3 py-1.5 bg-dark-700 hover:bg-dark-600 text-gray-300 rounded-lg transition-colors text-sm font-medium\"><i aria-hidden=\"true\" class=\"fas fa-cube mr-1.5\"></i>Container</a> <a href=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -205,7 +205,7 @@ func ContainerDetail(data ContainerDetailData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "\" class=\"px-3 py-1.5 bg-dark-700 hover:bg-dark-600 text-gray-300 rounded-lg transition-colors text-sm font-medium\"><i class=\"fas fa-file-alt mr-1.5\"></i>Logs</a></div></div><!-- Summary Cards --><div class=\"grid grid-cols-2 lg:grid-cols-5 gap-4\"><div class=\"bg-dark-800 rounded-xl border border-dark-600 p-4\"><span class=\"text-xs text-gray-500 font-medium uppercase tracking-wider\">CPU</span>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "\" class=\"px-3 py-1.5 bg-dark-700 hover:bg-dark-600 text-gray-300 rounded-lg transition-colors text-sm font-medium\"><i aria-hidden=\"true\" class=\"fas fa-file-alt mr-1.5\"></i>Logs</a></div></div><!-- Summary Cards --><div class=\"grid grid-cols-2 lg:grid-cols-5 gap-4\"><div class=\"card p-4\"><span class=\"text-xs text-gray-500 font-medium uppercase tracking-wider\">CPU</span>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -240,7 +240,7 @@ func ContainerDetail(data ContainerDetailData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "</div></div><div class=\"bg-dark-800 rounded-xl border border-dark-600 p-4\"><span class=\"text-xs text-gray-500 font-medium uppercase tracking-wider\">Memory</span><div class=\"mt-1\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "</div></div><div class=\"card p-4\"><span class=\"text-xs text-gray-500 font-medium uppercase tracking-wider\">Memory</span><div class=\"mt-1\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -288,7 +288,7 @@ func ContainerDetail(data ContainerDetailData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "</span></div></div><div class=\"bg-dark-800 rounded-xl border border-dark-600 p-4\"><span class=\"text-xs text-gray-500 font-medium uppercase tracking-wider\">Network Rx</span><div id=\"card-netrx\" class=\"text-xl font-display font-bold text-gray-300 mt-1\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "</span></div></div><div class=\"card p-4\"><span class=\"text-xs text-gray-500 font-medium uppercase tracking-wider\">Network Rx</span><div id=\"card-netrx\" class=\"text-xl font-display font-bold text-gray-300 mt-1\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -301,7 +301,7 @@ func ContainerDetail(data ContainerDetailData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 20, "</div></div><div class=\"bg-dark-800 rounded-xl border border-dark-600 p-4\"><span class=\"text-xs text-gray-500 font-medium uppercase tracking-wider\">Network Tx</span><div id=\"card-nettx\" class=\"text-xl font-display font-bold text-gray-300 mt-1\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 20, "</div></div><div class=\"card p-4\"><span class=\"text-xs text-gray-500 font-medium uppercase tracking-wider\">Network Tx</span><div id=\"card-nettx\" class=\"text-xl font-display font-bold text-gray-300 mt-1\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -314,7 +314,7 @@ func ContainerDetail(data ContainerDetailData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 21, "</div></div><div class=\"bg-dark-800 rounded-xl border border-dark-600 p-4\"><span class=\"text-xs text-gray-500 font-medium uppercase tracking-wider\">PIDs</span><div id=\"card-pids\" class=\"text-xl font-display font-bold text-gray-300 mt-1\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 21, "</div></div><div class=\"card p-4\"><span class=\"text-xs text-gray-500 font-medium uppercase tracking-wider\">PIDs</span><div id=\"card-pids\" class=\"text-xl font-display font-bold text-gray-300 mt-1\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -327,12 +327,12 @@ func ContainerDetail(data ContainerDetailData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 22, "</div></div></div><!-- Charts: CPU + Memory --><div class=\"grid grid-cols-1 lg:grid-cols-2 gap-4\"><div class=\"bg-dark-800 rounded-xl border border-dark-600 p-4\"><div class=\"flex items-center justify-between mb-3\"><h2 class=\"text-sm font-semibold text-white\">CPU Usage</h2><span id=\"chart-cpu-label\" class=\"text-xs text-gray-400\"></span></div><div class=\"h-56\"><canvas id=\"chart-cpu\"></canvas></div></div><div class=\"bg-dark-800 rounded-xl border border-dark-600 p-4\"><div class=\"flex items-center justify-between mb-3\"><h2 class=\"text-sm font-semibold text-white\">Memory Usage</h2><span id=\"chart-mem-label\" class=\"text-xs text-gray-400\"></span></div><div class=\"h-56\"><canvas id=\"chart-mem\"></canvas></div></div></div><!-- Charts: Network + Block I/O --><div class=\"grid grid-cols-1 lg:grid-cols-2 gap-4\"><div class=\"bg-dark-800 rounded-xl border border-dark-600 p-4\"><div class=\"flex items-center justify-between mb-3\"><h2 class=\"text-sm font-semibold text-white\">Network I/O</h2><span id=\"chart-net-label\" class=\"text-xs text-gray-400\"></span></div><div class=\"h-48\"><canvas id=\"chart-net\"></canvas></div></div><div class=\"bg-dark-800 rounded-xl border border-dark-600 p-4\"><div class=\"flex items-center justify-between mb-3\"><h2 class=\"text-sm font-semibold text-white\">Block I/O</h2><span id=\"chart-blk-label\" class=\"text-xs text-gray-400\"></span></div><div class=\"h-48\"><canvas id=\"chart-blk\"></canvas></div></div></div><!-- Process List -->")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 22, "</div></div></div><!-- Charts: CPU + Memory --><div class=\"grid grid-cols-1 lg:grid-cols-2 gap-4\"><div class=\"card p-4\"><div class=\"flex items-center justify-between mb-3\"><h2 class=\"text-sm font-semibold text-white\">CPU Usage</h2><span id=\"chart-cpu-label\" class=\"text-xs text-gray-400\"></span></div><div class=\"h-56\"><canvas id=\"chart-cpu\"></canvas></div></div><div class=\"card p-4\"><div class=\"flex items-center justify-between mb-3\"><h2 class=\"text-sm font-semibold text-white\">Memory Usage</h2><span id=\"chart-mem-label\" class=\"text-xs text-gray-400\"></span></div><div class=\"h-56\"><canvas id=\"chart-mem\"></canvas></div></div></div><!-- Charts: Network + Block I/O --><div class=\"grid grid-cols-1 lg:grid-cols-2 gap-4\"><div class=\"card p-4\"><div class=\"flex items-center justify-between mb-3\"><h2 class=\"text-sm font-semibold text-white\">Network I/O</h2><span id=\"chart-net-label\" class=\"text-xs text-gray-400\"></span></div><div class=\"h-48\"><canvas id=\"chart-net\"></canvas></div></div><div class=\"card p-4\"><div class=\"flex items-center justify-between mb-3\"><h2 class=\"text-sm font-semibold text-white\">Block I/O</h2><span id=\"chart-blk-label\" class=\"text-xs text-gray-400\"></span></div><div class=\"h-48\"><canvas id=\"chart-blk\"></canvas></div></div></div><!-- Process List -->")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			if len(data.Processes) > 0 {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 23, "<div class=\"bg-dark-800 rounded-xl border border-dark-600 overflow-hidden\"><div class=\"px-4 py-3 border-b border-dark-600\"><h2 class=\"text-sm font-semibold text-white\">Processes</h2></div><div class=\"overflow-x-auto\"><table class=\"w-full text-sm\"><thead><tr class=\"text-xs text-gray-500 uppercase tracking-wider border-b border-dark-700\"><th class=\"px-4 py-2 text-left font-medium\">PID</th><th class=\"px-4 py-2 text-left font-medium\">User</th><th class=\"px-4 py-2 text-right font-medium\">CPU %</th><th class=\"px-4 py-2 text-right font-medium\">MEM %</th><th class=\"px-4 py-2 text-right font-medium\">VSZ</th><th class=\"px-4 py-2 text-right font-medium\">RSS</th><th class=\"px-4 py-2 text-left font-medium\">Command</th></tr></thead> <tbody id=\"process-table\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 23, "<div class=\"card overflow-hidden\"><div class=\"px-4 py-3 border-b border-dark-600\"><h2 class=\"text-sm font-semibold text-white\">Processes</h2></div><div class=\"overflow-x-auto\"><table class=\"w-full text-sm\"><thead><tr class=\"text-xs text-gray-500 uppercase tracking-wider border-b border-dark-700\"><th scope=\"col\" class=\"px-4 py-2 text-left font-medium\">PID</th><th scope=\"col\" class=\"px-4 py-2 text-left font-medium\">User</th><th scope=\"col\" class=\"px-4 py-2 text-right font-medium\">CPU %</th><th scope=\"col\" class=\"px-4 py-2 text-right font-medium\">MEM %</th><th scope=\"col\" class=\"px-4 py-2 text-right font-medium\">VSZ</th><th scope=\"col\" class=\"px-4 py-2 text-right font-medium\">RSS</th><th scope=\"col\" class=\"px-4 py-2 text-left font-medium\">Command</th></tr></thead> <tbody id=\"process-table\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}

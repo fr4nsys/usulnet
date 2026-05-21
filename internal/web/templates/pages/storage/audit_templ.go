@@ -46,7 +46,7 @@ func AuditLog(data StorageAuditData) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"space-y-6\"><!-- Breadcrumb --><div class=\"flex items-center gap-2 text-sm text-gray-400\"><a href=\"/storage\" class=\"hover:text-primary-400 transition-colors\">Storage</a> <i class=\"fas fa-chevron-right text-xs text-gray-400\"></i> <a href=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"space-y-6\"><!-- Breadcrumb --><div class=\"flex items-center gap-2 text-sm text-gray-400\"><a href=\"/storage\" class=\"hover:text-primary-400 transition-colors\">Storage</a> <i aria-hidden=\"true\" class=\"fas fa-chevron-right text-xs text-gray-400\"></i> <a href=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -72,7 +72,7 @@ func AuditLog(data StorageAuditData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</a> <i class=\"fas fa-chevron-right text-xs text-gray-400\"></i> <span class=\"text-white\">Audit Log</span></div><div><h1 class=\"text-2xl font-display font-bold text-white\"><i class=\"fas fa-history text-primary-400 mr-2\"></i>Audit Log</h1><p class=\"text-gray-400 mt-1\">Activity history for ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</a> <i aria-hidden=\"true\" class=\"fas fa-chevron-right text-xs text-gray-400\"></i> <span class=\"text-white\">Audit Log</span></div><div><h1 class=\"text-2xl font-display font-bold text-white\"><i aria-hidden=\"true\" class=\"fas fa-history text-primary-400 mr-2\"></i>Audit Log</h1><p class=\"text-gray-400 mt-1\">Activity history for ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -95,7 +95,7 @@ func AuditLog(data StorageAuditData) templ.Component {
 					return templ_7745c5c3_Err
 				}
 			} else {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<table class=\"w-full\"><thead><tr class=\"border-b border-dark-600\"><th class=\"text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider\">Time</th><th class=\"text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider\">Action</th><th class=\"text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider\">Resource</th><th class=\"text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider\">User</th></tr></thead> <tbody class=\"divide-y divide-dark-700\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<table class=\"w-full\"><thead><tr class=\"border-b border-dark-600\"><th scope=\"col\" class=\"text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider\">Time</th><th scope=\"col\" class=\"text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider\">Action</th><th scope=\"col\" class=\"text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider\">Resource</th><th scope=\"col\" class=\"text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider\">User</th></tr></thead> <tbody class=\"divide-y divide-dark-700\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -218,7 +218,7 @@ func AuditLog(data StorageAuditData) templ.Component {
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
-						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "\" class=\"btn-secondary text-xs\"><i class=\"fas fa-chevron-left mr-1\"></i>Previous</a> ")
+						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "\" class=\"btn-secondary text-xs\"><i aria-hidden=\"true\" class=\"fas fa-chevron-left mr-1\"></i>Previous</a> ")
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
@@ -267,7 +267,7 @@ func AuditLog(data StorageAuditData) templ.Component {
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
-						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 23, "\" class=\"btn-secondary text-xs\">Next<i class=\"fas fa-chevron-right ml-1\"></i></a>")
+						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 23, "\" class=\"btn-secondary text-xs\">Next<i aria-hidden=\"true\" class=\"fas fa-chevron-right ml-1\"></i></a>")
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}

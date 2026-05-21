@@ -50,7 +50,7 @@ templ TargetDetail(data TargetDetailData) {
 				<div class="flex items-center justify-between mb-6">
 					<div class="flex items-center gap-3">
 						<a href="/ssl/targets" class="text-gray-400 hover:text-white">
-							<i class="fas fa-arrow-left"></i>
+							<i aria-hidden="true" class="fas fa-arrow-left"></i>
 						</a>
 						<h2 class="text-xl font-display font-bold text-white">{ data.Target.Name }</h2>
 						if !data.Target.Enabled {
@@ -61,18 +61,18 @@ templ TargetDetail(data TargetDetailData) {
 						<form method="POST" action={ templ.SafeURL(fmt.Sprintf("/ssl/targets/%s/scan", data.Target.ID)) } style="display:inline">
 							<input type="hidden" name="csrf_token" value={ data.PageData.CSRFToken }/>
 							<button type="submit" class="btn btn-primary">
-								<i class="fas fa-sync-alt mr-1"></i> Scan Now
+								<i aria-hidden="true" class="fas fa-sync-alt mr-1"></i> Scan Now
 							</button>
 						</form>
 						<a href={ templ.SafeURL(fmt.Sprintf("/ssl/targets/%s/edit", data.Target.ID)) } class="btn btn-secondary">
-							<i class="fas fa-edit mr-1"></i> Edit
+							<i aria-hidden="true" class="fas fa-edit mr-1"></i> Edit
 						</a>
 						<button
 							hx-delete={ fmt.Sprintf("/ssl/targets/%s", data.Target.ID) }
 							hx-confirm="Delete this SSL target?"
 							class="btn btn-danger"
 						>
-							<i class="fas fa-trash mr-1"></i> Delete
+							<i aria-hidden="true" class="fas fa-trash mr-1"></i> Delete
 						</button>
 					</div>
 				</div>
@@ -132,7 +132,7 @@ templ TargetDetail(data TargetDetailData) {
 					}
 				} else {
 					<div class="card p-6 mb-6 text-center">
-						<i class="fas fa-search text-3xl text-gray-400 mb-3"></i>
+						<i aria-hidden="true" class="fas fa-search text-3xl text-gray-400 mb-3"></i>
 						<p class="text-gray-400">No scan results yet. Run a scan to analyze this target.</p>
 					</div>
 				}
@@ -147,14 +147,14 @@ templ TargetDetail(data TargetDetailData) {
 							<table class="table">
 								<thead>
 									<tr>
-										<th>Date</th>
-										<th>Hostname</th>
-										<th>Grade</th>
-										<th>Score</th>
-										<th>Protocol</th>
-										<th>Chain Valid</th>
-										<th>Duration</th>
-										<th>Error</th>
+										<th scope="col">Date</th>
+										<th scope="col">Hostname</th>
+										<th scope="col">Grade</th>
+										<th scope="col">Score</th>
+										<th scope="col">Protocol</th>
+										<th scope="col">Chain Valid</th>
+										<th scope="col">Duration</th>
+										<th scope="col">Error</th>
 									</tr>
 								</thead>
 								<tbody>
@@ -284,25 +284,25 @@ templ latestScanCard(scan ScanView) {
 			<div class="flex flex-wrap gap-3">
 				<div class="flex items-center gap-2">
 					if scan.HasHSTS {
-						<i class="fas fa-check-circle text-green-400"></i>
+						<i aria-hidden="true" class="fas fa-check-circle text-green-400"></i>
 					} else {
-						<i class="fas fa-times-circle text-red-400"></i>
+						<i aria-hidden="true" class="fas fa-times-circle text-red-400"></i>
 					}
 					<span class="text-sm text-gray-300">HSTS</span>
 				</div>
 				<div class="flex items-center gap-2">
 					if scan.HasOCSP {
-						<i class="fas fa-check-circle text-green-400"></i>
+						<i aria-hidden="true" class="fas fa-check-circle text-green-400"></i>
 					} else {
-						<i class="fas fa-times-circle text-red-400"></i>
+						<i aria-hidden="true" class="fas fa-times-circle text-red-400"></i>
 					}
 					<span class="text-sm text-gray-300">OCSP Stapling</span>
 				</div>
 				<div class="flex items-center gap-2">
 					if scan.HasSCT {
-						<i class="fas fa-check-circle text-green-400"></i>
+						<i aria-hidden="true" class="fas fa-check-circle text-green-400"></i>
 					} else {
-						<i class="fas fa-times-circle text-red-400"></i>
+						<i aria-hidden="true" class="fas fa-times-circle text-red-400"></i>
 					}
 					<span class="text-sm text-gray-300">Certificate Transparency</span>
 				</div>

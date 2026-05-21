@@ -29,7 +29,7 @@ templ Editor(data EditorData) {
 				</div>
 				<div class="flex items-center gap-2">
 					<a href="/config/docker/history" class="btn-secondary text-sm">
-						<i class="fas fa-history mr-1"></i>History
+						<i aria-hidden="true" class="fas fa-history mr-1"></i>History
 					</a>
 				</div>
 			</div>
@@ -58,13 +58,13 @@ templ Editor(data EditorData) {
 							</div>
 							<div class="flex items-center gap-2">
 								<button type="button" id="btn-format" class="text-xs btn-ghost">
-									<i class="fas fa-magic mr-1"></i>Format
+									<i aria-hidden="true" class="fas fa-magic mr-1"></i>Format
 								</button>
 								<button type="button" id="btn-revert" class="text-xs btn-ghost">
-									<i class="fas fa-undo mr-1"></i>Revert
+									<i aria-hidden="true" class="fas fa-undo mr-1"></i>Revert
 								</button>
 								<button type="button" id="btn-apply" class="btn-primary text-sm" data-rollback-warning="If the daemon does not return healthy within { data.ReloadTimeout } usulnet will roll back automatically.">
-									<i class="fas fa-bolt mr-1"></i>Apply
+									<i aria-hidden="true" class="fas fa-bolt mr-1"></i>Apply
 								</button>
 							</div>
 						</div>
@@ -76,19 +76,19 @@ templ Editor(data EditorData) {
 							<h3 class="text-sm font-semibold text-white mb-2">Safety</h3>
 							<ul class="text-xs text-gray-400 space-y-2">
 								<li class="flex items-start gap-2">
-									<i class="fas fa-check text-green-400 mt-0.5"></i>
+									<i aria-hidden="true" class="fas fa-check text-green-400 mt-0.5"></i>
 									<span>Atomic write (temp + fsync + rename)</span>
 								</li>
 								<li class="flex items-start gap-2">
-									<i class="fas fa-check text-green-400 mt-0.5"></i>
+									<i aria-hidden="true" class="fas fa-check text-green-400 mt-0.5"></i>
 									<span>Snapshot before write</span>
 								</li>
 								<li class="flex items-start gap-2">
-									<i class="fas fa-check text-green-400 mt-0.5"></i>
+									<i aria-hidden="true" class="fas fa-check text-green-400 mt-0.5"></i>
 									<span>{ data.ReloadTimeout } hard reload timeout</span>
 								</li>
 								<li class="flex items-start gap-2">
-									<i class="fas fa-check text-green-400 mt-0.5"></i>
+									<i aria-hidden="true" class="fas fa-check text-green-400 mt-0.5"></i>
 									<span>Automatic rollback on reload failure</span>
 								</li>
 							</ul>
@@ -104,14 +104,14 @@ templ Editor(data EditorData) {
 										if i < 5 {
 											<li class="text-xs flex items-center justify-between gap-2">
 												<a href={ templ.SafeURL("/config/docker/history#" + snap.ID) } class="text-gray-300 hover:text-primary-400 truncate">
-													<i class="fas fa-clock text-gray-500 mr-1"></i>{ snap.Timestamp }
+													<i aria-hidden="true" class="fas fa-clock text-gray-500 mr-1"></i>{ snap.Timestamp }
 												</a>
 												<span class="text-gray-500 whitespace-nowrap">{ snap.Size }</span>
 											</li>
 										}
 									}
 								</ul>
-								<a href="/config/docker/history" class="text-xs text-primary-400 hover:underline mt-3 inline-block">View all <i class="fas fa-arrow-right text-[10px] ml-0.5"></i></a>
+								<a href="/config/docker/history" class="text-xs text-primary-400 hover:underline mt-3 inline-block">View all <i aria-hidden="true" class="fas fa-arrow-right text-[10px] ml-0.5"></i></a>
 							}
 						</div>
 					</div>
@@ -178,7 +178,7 @@ templ Editor(data EditorData) {
 
 					var btn = this;
 					btn.disabled = true;
-					btn.innerHTML = '<i class="fas fa-circle-notch fa-spin mr-1"></i>Applying...';
+					btn.innerHTML = '<i aria-hidden="true" class="fas fa-circle-notch fa-spin mr-1"></i>Applying...';
 
 					var csrf = document.querySelector('meta[name="csrf-token"]');
 					var headers = { 'Content-Type': 'application/x-www-form-urlencoded' };
@@ -199,7 +199,7 @@ templ Editor(data EditorData) {
 					}).catch(function(err) {
 						alert('Apply failed: ' + err);
 						btn.disabled = false;
-						btn.innerHTML = '<i class="fas fa-bolt mr-1"></i>Apply';
+						btn.innerHTML = '<i aria-hidden="true" class="fas fa-bolt mr-1"></i>Apply';
 					});
 				});
 			});
@@ -222,7 +222,7 @@ templ AppliedBanner(a AppliedView) {
 	if a.RolledBack {
 		<div class="rounded-lg p-4 border bg-red-500/10 border-red-500/20">
 			<div class="flex items-start gap-3">
-				<i class="fas fa-undo text-red-400 mt-0.5"></i>
+				<i aria-hidden="true" class="fas fa-undo text-red-400 mt-0.5"></i>
 				<div class="flex-1 min-w-0">
 					<p class="text-sm font-medium text-red-300">Rollback fired</p>
 					<p class="text-xs text-red-200/80 mt-1">The daemon did not return healthy after reload — daemon.json was restored to snapshot <code>{ a.SnapshotID }</code>.</p>
@@ -235,7 +235,7 @@ templ AppliedBanner(a AppliedView) {
 	} else if a.Reloaded {
 		<div class="rounded-lg p-4 border bg-green-500/10 border-green-500/20">
 			<div class="flex items-start gap-3">
-				<i class="fas fa-check text-green-400 mt-0.5"></i>
+				<i aria-hidden="true" class="fas fa-check text-green-400 mt-0.5"></i>
 				<div class="flex-1 min-w-0">
 					<p class="text-sm font-medium text-green-300">Applied — daemon reloaded</p>
 					<p class="text-xs text-green-200/80 mt-1">Snapshot: <code>{ a.SnapshotID }</code> · Mode: <code>{ a.ApplyMode }</code></p>
@@ -248,7 +248,7 @@ templ AppliedBanner(a AppliedView) {
 	} else {
 		<div class="rounded-lg p-4 border bg-blue-500/10 border-blue-500/20">
 			<div class="flex items-start gap-3">
-				<i class="fas fa-info-circle text-blue-400 mt-0.5"></i>
+				<i aria-hidden="true" class="fas fa-info-circle text-blue-400 mt-0.5"></i>
 				<div class="flex-1 min-w-0">
 					<p class="text-sm font-medium text-blue-300">Applied — { a.ApplyMode } required</p>
 					if a.Warning != "" {

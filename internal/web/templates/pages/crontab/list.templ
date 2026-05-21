@@ -6,13 +6,15 @@ package crontab
 
 import (
 	"fmt"
+	"github.com/fr4nsys/usulnet/internal/web/templates/components"
 	"github.com/fr4nsys/usulnet/internal/web/templates/layouts"
 )
 
 type ListData struct {
-	PageData layouts.PageData
-	Entries  []EntryView
-	Stats    StatsView
+	PageData   layouts.PageData
+	Entries    []EntryView
+	Stats      StatsView
+	EmptyState components.EmptyStateData
 }
 
 type EntryView struct {
@@ -71,7 +73,7 @@ templ List(data ListData) {
 				</div>
 				<div class="flex items-center gap-2">
 					<a href="/crontab/new" class="btn-primary">
-						<i class="fas fa-plus mr-2"></i>New Cron Job
+						<i aria-hidden="true" class="fas fa-plus mr-2"></i>New Cron Job
 					</a>
 				</div>
 			</div>
@@ -86,7 +88,7 @@ templ List(data ListData) {
 							<p class="text-2xl font-bold text-white">{ fmt.Sprintf("%d", data.Stats.Total) }</p>
 						</div>
 						<div class="text-primary-400">
-							<i class="fas fa-clock text-2xl"></i>
+							<i aria-hidden="true" class="fas fa-clock text-2xl"></i>
 						</div>
 					</div>
 				</div>
@@ -97,7 +99,7 @@ templ List(data ListData) {
 							<p class="text-2xl font-bold text-green-400">{ fmt.Sprintf("%d", data.Stats.Enabled) }</p>
 						</div>
 						<div class="text-green-400">
-							<i class="fas fa-check-circle text-2xl"></i>
+							<i aria-hidden="true" class="fas fa-check-circle text-2xl"></i>
 						</div>
 					</div>
 				</div>
@@ -108,7 +110,7 @@ templ List(data ListData) {
 							<p class="text-2xl font-bold text-gray-400">{ fmt.Sprintf("%d", data.Stats.Disabled) }</p>
 						</div>
 						<div class="text-gray-400">
-							<i class="fas fa-pause-circle text-2xl"></i>
+							<i aria-hidden="true" class="fas fa-pause-circle text-2xl"></i>
 						</div>
 					</div>
 				</div>
@@ -119,7 +121,7 @@ templ List(data ListData) {
 							<p class="text-2xl font-bold text-blue-400">{ fmt.Sprintf("%d", data.Stats.Running) }</p>
 						</div>
 						<div class="text-blue-400">
-							<i class="fas fa-spinner text-2xl"></i>
+							<i aria-hidden="true" class="fas fa-spinner text-2xl"></i>
 						</div>
 					</div>
 				</div>
@@ -131,15 +133,15 @@ templ List(data ListData) {
 						<table class="table">
 							<thead>
 								<tr>
-									<th>Name</th>
-									<th>Schedule</th>
-									<th>Type</th>
-									<th>Command</th>
-									<th>Status</th>
-									<th>Runs</th>
-									<th>Last Run</th>
-									<th>Next Run</th>
-									<th>Actions</th>
+									<th scope="col">Name</th>
+									<th scope="col">Schedule</th>
+									<th scope="col">Type</th>
+									<th scope="col">Command</th>
+									<th scope="col">Status</th>
+									<th scope="col">Runs</th>
+									<th scope="col">Last Run</th>
+									<th scope="col">Next Run</th>
+									<th scope="col">Actions</th>
 								</tr>
 							</thead>
 							<tbody>
@@ -147,7 +149,7 @@ templ List(data ListData) {
 									<tr>
 										<td>
 											<div class="flex items-center gap-2">
-												<i class="fas fa-clock text-primary-400"></i>
+												<i aria-hidden="true" class="fas fa-clock text-primary-400"></i>
 												<a href={ templ.SafeURL(fmt.Sprintf("/crontab/%s", entry.ID)) } class="text-white hover:text-primary-400">
 													{ entry.Name }
 												</a>
@@ -183,9 +185,9 @@ templ List(data ListData) {
 													<span class="text-gray-300">{ *entry.LastRunAt }</span>
 													if entry.LastRunStatus != nil {
 														if *entry.LastRunStatus == "success" {
-															<span class="text-green-400 ml-1"><i class="fas fa-check"></i></span>
+															<span class="text-green-400 ml-1"><i aria-hidden="true" class="fas fa-check"></i></span>
 														} else {
-															<span class="text-red-400 ml-1"><i class="fas fa-times"></i></span>
+															<span class="text-red-400 ml-1"><i aria-hidden="true" class="fas fa-times"></i></span>
 														}
 													}
 												</div>
@@ -228,14 +230,7 @@ templ List(data ListData) {
 			}
 
 			if len(data.Entries) == 0 {
-				<div class="card p-8 text-center">
-					<i class="fas fa-clock text-4xl text-gray-400 mb-4"></i>
-					<h3 class="text-lg font-medium text-white mb-2">No cron jobs</h3>
-					<p class="text-gray-400 mb-4">Create your first cron job to get started with scheduled tasks</p>
-					<a href="/crontab/new" class="btn-primary">
-						<i class="fas fa-plus mr-2"></i>New Cron Job
-					</a>
-				</div>
+				@components.EmptyStateCTAs(data.EmptyState)
 			}
 		</div>
 	}
@@ -244,15 +239,15 @@ templ List(data ListData) {
 templ commandTypeBadge(cmdType string) {
 	if cmdType == "shell" {
 		<span class="inline-flex items-center gap-1 text-xs bg-green-500/10 text-green-400 px-2 py-0.5 rounded">
-			<i class="fas fa-terminal"></i> Shell
+			<i aria-hidden="true" class="fas fa-terminal"></i> Shell
 		</span>
 	} else if cmdType == "docker" {
 		<span class="inline-flex items-center gap-1 text-xs bg-blue-500/10 text-blue-400 px-2 py-0.5 rounded">
-			<i class="fab fa-docker"></i> Docker
+			<i aria-hidden="true" class="fab fa-docker"></i> Docker
 		</span>
 	} else if cmdType == "http" {
 		<span class="inline-flex items-center gap-1 text-xs bg-purple-500/10 text-purple-400 px-2 py-0.5 rounded">
-			<i class="fas fa-globe"></i> HTTP
+			<i aria-hidden="true" class="fas fa-globe"></i> HTTP
 		</span>
 	} else {
 		<span class="inline-flex items-center gap-1 text-xs bg-gray-500/10 text-gray-400 px-2 py-0.5 rounded">

@@ -86,14 +86,15 @@ assert_file "allow cmd/** admits cmd/usulnet-agent/main.go" \
 assert_file "allow internal/** admits internal/app/app.go" \
     "internal/app/app.go"
 
-# Allow rule docs/v26.5/** admits its session files.
-v265_session="$(find "${ROOT}/docs/v26.5/sessions" -maxdepth 1 -type f \
-    -name '01-*.md' 2>/dev/null | head -1 | sed "s|${ROOT}/||")"
-if [[ -n "${v265_session}" ]]; then
-    assert_file "allow docs/v26.5/** admits ${v265_session}" \
-        "${v265_session}"
+# Allow rule docs/v26.5/** admits its public files. The release-notes /
+# security-review / status-board sit here. Internal v26.5 docs (merge plan,
+# context, technical notes, sessions/) moved to dev/v26.5/ as of 2026-05-15
+# and are denied below.
+v265_pub="docs/v26.5/release-notes-v26.5.1.md"
+if [[ -f "${ROOT}/${v265_pub}" ]]; then
+    assert_file "allow docs/v26.5/** admits ${v265_pub}" "${v265_pub}"
 else
-    pass "allow docs/v26.5/** (no 01-*.md fixture present — skipped)"
+    pass "allow docs/v26.5/** (no public file present — skipped)"
 fi
 
 # Top-level literal allows.
@@ -113,13 +114,20 @@ assert_file "literal docs/recon.md is published"  "docs/recon.md"
 assert_no_file "deny !CLAUDE.md blocks CLAUDE.md" \
     "CLAUDE.md"
 
-# Deny !docs/0526/** blocks the entire planning folder.
-assert_no_file "deny !docs/0526/** blocks this very session file" \
-    "docs/0526/sessions/02-public-split-allowlist.md"
-assert_no_file "deny !docs/0526/** blocks PUBLIC_FILES.md" \
-    "docs/0526/PUBLIC_FILES.md"
-assert_no_file "deny !docs/0526/** blocks technical-notes.md" \
-    "docs/0526/technical-notes.md"
+# Deny !dev/** blocks the entire dev folder (planning, sessions, internal
+# notes, source-zip snapshots). This is the primary defense-in-depth deny
+# since 2026-05-15; obsolete !docs/0526/** and !docs/v26.5/sessions/**
+# entries are kept in PUBLIC_FILES.md for paths that may reappear.
+assert_no_file "deny !dev/** blocks the cloud session prompts" \
+    "dev/0526/cloud/README.md"
+assert_no_file "deny !dev/** blocks the v26.5.1 merge plan" \
+    "dev/v26.5/merge-plan-v26.5.1.md"
+assert_no_file "deny !dev/** blocks PUBLIC_FILES.md itself" \
+    "dev/PUBLIC_FILES.md"
+assert_no_file "deny !dev/** blocks May-2026 pivot technical notes" \
+    "dev/0526/technical-notes.md"
+assert_no_file "deny !dev/** blocks the v26.2.7 source zip" \
+    "dev/0526/usulnet-26.2.7-17621d7848828b531b92e43cb6cc11286a2bf2c3.zip"
 
 # Deny !scripts/publish-public.sh blocks the script from publishing itself.
 assert_no_file "deny !scripts/publish-public.sh blocks the script" \

@@ -48,7 +48,7 @@ func Dashboard(data DashboardData) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"space-y-6\"><!-- Header --><div class=\"flex items-center justify-between\"><div><h1 class=\"text-2xl font-display font-bold text-white\">Privacy &amp; Recon</h1><p class=\"text-gray-400 mt-1\">OSINT exposure scanning and metadata hygiene for assets you own.</p></div><div class=\"flex items-center gap-2\"><a href=\"/recon/metadata\" class=\"btn-secondary\"><i class=\"fas fa-file-shield mr-2\"></i>Metadata</a> <a href=\"/recon/targets\" class=\"btn-primary\"><i class=\"fas fa-bullseye mr-2\"></i>Targets</a></div></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"space-y-6\"><!-- Header --><div class=\"flex items-center justify-between\"><div><h1 class=\"text-2xl font-display font-bold text-white\">Privacy &amp; Recon</h1><p class=\"text-gray-400 mt-1\">OSINT exposure scanning and metadata hygiene for assets you own.</p></div><div class=\"flex items-center gap-2\"><a href=\"/recon/metadata\" class=\"btn-secondary\"><i aria-hidden=\"true\" class=\"fas fa-file-shield mr-2\"></i>Metadata</a> <a href=\"/recon/targets\" class=\"btn-primary\"><i aria-hidden=\"true\" class=\"fas fa-bullseye mr-2\"></i>Targets</a></div></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

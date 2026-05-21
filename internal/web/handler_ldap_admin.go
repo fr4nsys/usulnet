@@ -9,7 +9,7 @@ import (
 	"crypto/tls"
 	"fmt"
 	"net/http"
-	"strconv"
+	"net/url"
 	"time"
 
 	"github.com/go-chi/chi/v5"
@@ -126,6 +126,33 @@ func (h *Handler) LDAPProviderEditTempl(w http.ResponseWriter, r *http.Request) 
 }
 
 // LDAPProviderCreate handles creating a new LDAP provider.
+// ldapProviderForm captures the LDAP provider inputs shared
+// between Create and Update. Validation here is intentionally
+// thin — the LDAP service / repo enforces tighter rules at the
+// connect layer, and a half-filled provider record is a real
+// state operators sometimes need (e.g. when they have the host
+// but not the bind DN yet).
+type ldapProviderForm struct {
+	Name          string `form:"name" validate:"required"`
+	Host          string `form:"host" validate:"required"`
+	Port          int    `form:"port" validate:"gte=0,lte=65535"`
+	UseTLS        bool   `form:"use_tls"`
+	StartTLS      bool   `form:"start_tls"`
+	SkipTLSVerify bool   `form:"skip_tls_verify"`
+	BindDN        string `form:"bind_dn"`
+	BindPassword  string `form:"bind_password"`
+	BaseDN        string `form:"base_dn"`
+	UserFilter    string `form:"user_filter"`
+	UsernameAttr  string `form:"username_attr"`
+	EmailAttr     string `form:"email_attr"`
+	GroupFilter   string `form:"group_filter"`
+	GroupAttr     string `form:"group_attr"`
+	AdminGroup    string `form:"admin_group"`
+	OperatorGroup string `form:"operator_group"`
+	DefaultRole   string `form:"default_role"`
+	IsEnabled     bool   `form:"is_enabled"`
+}
+
 func (h *Handler) LDAPProviderCreate(w http.ResponseWriter, r *http.Request) {
 	// Enforce MaxLDAPServers license limit
 	if h.licenseProvider != nil {
@@ -142,18 +169,18 @@ func (h *Handler) LDAPProviderCreate(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	if err := r.ParseForm(); err != nil {
-		h.redirect(w, r, "/admin/ldap?error=Invalid+form+data")
+	var form ldapProviderForm
+	if msg := BindForm(r, &form); msg != "" {
+		h.redirect(w, r, "/admin/ldap?error="+url.QueryEscape(msg))
 		return
 	}
 
-	port, _ := strconv.Atoi(r.FormValue("port"))
+	port := form.Port
 	if port == 0 {
 		port = 389
 	}
 
-	// Encrypt bind password
-	encryptedPassword, err := h.encryptor.Encrypt(r.FormValue("bind_password"))
+	encryptedPassword, err := h.encryptor.Encrypt(form.BindPassword)
 	if err != nil {
 		h.logger.Error("failed to encrypt bind password", "error", err)
 		h.redirect(w, r, "/admin/ldap?error=Failed+to+encrypt+credentials")
@@ -161,27 +188,27 @@ func (h *Handler) LDAPProviderCreate(w http.ResponseWriter, r *http.Request) {
 	}
 
 	input := &postgres.CreateLDAPConfigInput{
-		Name:          r.FormValue("name"),
-		Host:          r.FormValue("host"),
+		Name:          form.Name,
+		Host:          form.Host,
 		Port:          port,
-		UseTLS:        r.FormValue("use_tls") == "on",
-		StartTLS:      r.FormValue("start_tls") == "on",
-		SkipTLSVerify: r.FormValue("skip_tls_verify") == "on",
-		BindDN:        r.FormValue("bind_dn"),
+		UseTLS:        form.UseTLS,
+		StartTLS:      form.StartTLS,
+		SkipTLSVerify: form.SkipTLSVerify,
+		BindDN:        form.BindDN,
 		BindPassword:  encryptedPassword,
-		BaseDN:        r.FormValue("base_dn"),
-		UserFilter:    r.FormValue("user_filter"),
-		UsernameAttr:  r.FormValue("username_attr"),
-		EmailAttr:     r.FormValue("email_attr"),
-		GroupFilter:   r.FormValue("group_filter"),
-		GroupAttr:     r.FormValue("group_attr"),
-		AdminGroup:    r.FormValue("admin_group"),
-		OperatorGroup: r.FormValue("operator_group"),
-		DefaultRole:   r.FormValue("default_role"),
-		IsEnabled:     r.FormValue("is_enabled") == "on",
+		BaseDN:        form.BaseDN,
+		UserFilter:    form.UserFilter,
+		UsernameAttr:  form.UsernameAttr,
+		EmailAttr:     form.EmailAttr,
+		GroupFilter:   form.GroupFilter,
+		GroupAttr:     form.GroupAttr,
+		AdminGroup:    form.AdminGroup,
+		OperatorGroup: form.OperatorGroup,
+		DefaultRole:   form.DefaultRole,
+		IsEnabled:     form.IsEnabled,
 	}
 
-	// Set defaults if not provided
+	// Apply per-field defaults when the form left them blank.
 	if input.DefaultRole == "" {
 		input.DefaultRole = "viewer"
 	}
@@ -217,52 +244,35 @@ func (h *Handler) LDAPProviderUpdate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := r.ParseForm(); err != nil {
-		h.redirect(w, r, "/admin/ldap/"+idStr+"?error=Invalid+form+data")
+	var form ldapProviderForm
+	if msg := BindForm(r, &form); msg != "" {
+		h.redirect(w, r, "/admin/ldap/"+idStr+"?error="+url.QueryEscape(msg))
 		return
 	}
 
-	name := r.FormValue("name")
-	host := r.FormValue("host")
-	port, _ := strconv.Atoi(r.FormValue("port"))
-	useTLS := r.FormValue("use_tls") == "on"
-	startTLS := r.FormValue("start_tls") == "on"
-	skipTLSVerify := r.FormValue("skip_tls_verify") == "on"
-	bindDN := r.FormValue("bind_dn")
-	baseDN := r.FormValue("base_dn")
-	userFilter := r.FormValue("user_filter")
-	usernameAttr := r.FormValue("username_attr")
-	emailAttr := r.FormValue("email_attr")
-	groupFilter := r.FormValue("group_filter")
-	groupAttr := r.FormValue("group_attr")
-	adminGroup := r.FormValue("admin_group")
-	operatorGroup := r.FormValue("operator_group")
-	defaultRole := r.FormValue("default_role")
-	isEnabled := r.FormValue("is_enabled") == "on"
-
 	input := &postgres.UpdateLDAPConfigInput{
-		Name:          &name,
-		Host:          &host,
-		Port:          &port,
-		UseTLS:        &useTLS,
-		StartTLS:      &startTLS,
-		SkipTLSVerify: &skipTLSVerify,
-		BindDN:        &bindDN,
-		BaseDN:        &baseDN,
-		UserFilter:    &userFilter,
-		UsernameAttr:  &usernameAttr,
-		EmailAttr:     &emailAttr,
-		GroupFilter:   &groupFilter,
-		GroupAttr:     &groupAttr,
-		AdminGroup:    &adminGroup,
-		OperatorGroup: &operatorGroup,
-		DefaultRole:   &defaultRole,
-		IsEnabled:     &isEnabled,
+		Name:          &form.Name,
+		Host:          &form.Host,
+		Port:          &form.Port,
+		UseTLS:        &form.UseTLS,
+		StartTLS:      &form.StartTLS,
+		SkipTLSVerify: &form.SkipTLSVerify,
+		BindDN:        &form.BindDN,
+		BaseDN:        &form.BaseDN,
+		UserFilter:    &form.UserFilter,
+		UsernameAttr:  &form.UsernameAttr,
+		EmailAttr:     &form.EmailAttr,
+		GroupFilter:   &form.GroupFilter,
+		GroupAttr:     &form.GroupAttr,
+		AdminGroup:    &form.AdminGroup,
+		OperatorGroup: &form.OperatorGroup,
+		DefaultRole:   &form.DefaultRole,
+		IsEnabled:     &form.IsEnabled,
 	}
 
 	// Only update bind password if provided
-	if bindPassword := r.FormValue("bind_password"); bindPassword != "" {
-		encryptedPassword, err := h.encryptor.Encrypt(bindPassword)
+	if form.BindPassword != "" {
+		encryptedPassword, err := h.encryptor.Encrypt(form.BindPassword)
 		if err != nil {
 			h.logger.Error("failed to encrypt bind password", "error", err)
 			h.redirect(w, r, "/admin/ldap/"+idStr+"?error=Failed+to+encrypt+credentials")

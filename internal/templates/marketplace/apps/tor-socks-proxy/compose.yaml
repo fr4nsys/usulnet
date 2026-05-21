@@ -1,0 +1,6 @@
+services:
+  tor:
+    image: peterdavehello/tor-socks-proxy:0.4.8
+    restart: unless-stopped
+    ports:
+      - "{{SOCKS_PORT}}:9150"

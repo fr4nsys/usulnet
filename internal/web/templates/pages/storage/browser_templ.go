@@ -45,7 +45,7 @@ func Browser(data StorageBrowserData) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"space-y-6\"><!-- Breadcrumb --><div class=\"flex items-center gap-2 text-sm text-gray-400 flex-wrap\"><a href=\"/storage\" class=\"hover:text-primary-400 transition-colors\">Storage</a> <i class=\"fas fa-chevron-right text-xs text-gray-400\"></i> <a href=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"space-y-6\"><!-- Breadcrumb --><div class=\"flex items-center gap-2 text-sm text-gray-400 flex-wrap\"><a href=\"/storage\" class=\"hover:text-primary-400 transition-colors\">Storage</a> <i aria-hidden=\"true\" class=\"fas fa-chevron-right text-xs text-gray-400\"></i> <a href=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -71,7 +71,7 @@ func Browser(data StorageBrowserData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</a> <i class=\"fas fa-chevron-right text-xs text-gray-400\"></i> ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</a> <i aria-hidden=\"true\" class=\"fas fa-chevron-right text-xs text-gray-400\"></i> ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -124,7 +124,7 @@ func Browser(data StorageBrowserData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			for i, crumb := range data.Breadcrumbs {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "<i class=\"fas fa-chevron-right text-xs text-gray-400\"></i> ")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "<i aria-hidden=\"true\" class=\"fas fa-chevron-right text-xs text-gray-400\"></i> ")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -179,35 +179,35 @@ func Browser(data StorageBrowserData) templ.Component {
 					}
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "</div><!-- Header --><div class=\"flex items-center justify-between\"><h1 class=\"text-2xl font-display font-bold text-white\"><i class=\"fas fa-archive text-primary-400 mr-2\"></i>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "</div><!-- Header --><div class=\"flex items-center justify-between\"><h1 class=\"text-2xl font-display font-bold text-white\"><i aria-hidden=\"true\" class=\"fas fa-archive text-primary-400 mr-2\"></i>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var12 string
 			templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(data.Bucket)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/storage/browser.templ`, Line: 36, Col: 70}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/storage/browser.templ`, Line: 36, Col: 89}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "</h1><div class=\"flex items-center gap-2\"><button onclick=\"document.getElementById('create-folder-modal').classList.remove('hidden')\" class=\"btn-secondary text-sm\"><i class=\"fas fa-folder-plus mr-2\"></i>New Folder</button> <button onclick=\"document.getElementById('upload-modal').classList.remove('hidden')\" class=\"btn-primary text-sm\"><i class=\"fas fa-upload mr-2\"></i>Upload</button></div></div><!-- Objects table --><div class=\"card overflow-hidden\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "</h1><div class=\"flex items-center gap-2\"><button onclick=\"document.getElementById('create-folder-modal').classList.remove('hidden')\" class=\"btn-secondary text-sm\"><i aria-hidden=\"true\" class=\"fas fa-folder-plus mr-2\"></i>New Folder</button> <button onclick=\"document.getElementById('upload-modal').classList.remove('hidden')\" class=\"btn-primary text-sm\"><i aria-hidden=\"true\" class=\"fas fa-upload mr-2\"></i>Upload</button></div></div><!-- Objects table --><div class=\"card overflow-hidden\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			if len(data.Objects) == 0 && data.Prefix == "" {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "<div class=\"p-12 text-center\"><div class=\"w-16 h-16 mx-auto mb-4 rounded-2xl bg-dark-700 flex items-center justify-center\"><i class=\"fas fa-inbox text-2xl text-gray-500\"></i></div><h3 class=\"text-lg font-medium text-white mb-2\">Empty bucket</h3><p class=\"text-gray-400\">Upload files or create folders to get started.</p></div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "<div class=\"p-12 text-center\"><div class=\"w-16 h-16 mx-auto mb-4 rounded-2xl bg-dark-700 flex items-center justify-center\"><i aria-hidden=\"true\" class=\"fas fa-inbox text-2xl text-gray-500\"></i></div><h3 class=\"text-lg font-medium text-white mb-2\">Empty bucket</h3><p class=\"text-gray-400\">Upload files or create folders to get started.</p></div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			} else if len(data.Objects) == 0 && data.Prefix != "" {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "<div class=\"p-12 text-center\"><div class=\"w-16 h-16 mx-auto mb-4 rounded-2xl bg-dark-700 flex items-center justify-center\"><i class=\"fas fa-folder-open text-2xl text-gray-500\"></i></div><h3 class=\"text-lg font-medium text-white mb-2\">Empty folder</h3></div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "<div class=\"p-12 text-center\"><div class=\"w-16 h-16 mx-auto mb-4 rounded-2xl bg-dark-700 flex items-center justify-center\"><i aria-hidden=\"true\" class=\"fas fa-folder-open text-2xl text-gray-500\"></i></div><h3 class=\"text-lg font-medium text-white mb-2\">Empty folder</h3></div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			} else {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "<table class=\"w-full\"><thead><tr class=\"border-b border-dark-600\"><th class=\"text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider\">Name</th><th class=\"text-right px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider\">Size</th><th class=\"text-right px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider\">Modified</th><th class=\"text-right px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider w-32\">Actions</th></tr></thead> <tbody class=\"divide-y divide-dark-700\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "<table class=\"w-full\"><thead><tr class=\"border-b border-dark-600\"><th scope=\"col\" class=\"text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider\">Name</th><th scope=\"col\" class=\"text-right px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider\">Size</th><th scope=\"col\" class=\"text-right px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider\">Modified</th><th scope=\"col\" class=\"text-right px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider w-32\">Actions</th></tr></thead> <tbody class=\"divide-y divide-dark-700\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -287,14 +287,14 @@ func objectRow(connID, bucket, prefix string, obj StorageObjectData, csrfToken s
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 24, "\" class=\"font-medium text-primary-400 hover:text-primary-300 transition-colors\"><i class=\"fas fa-folder text-yellow-400 mr-2\"></i>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 24, "\" class=\"font-medium text-primary-400 hover:text-primary-300 transition-colors\"><i aria-hidden=\"true\" class=\"fas fa-folder text-yellow-400 mr-2\"></i>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var15 string
 			templ_7745c5c3_Var15, templ_7745c5c3_Err = templ.JoinStringErrs(obj.Name)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/storage/browser.templ`, Line: 96, Col: 65}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/storage/browser.templ`, Line: 96, Col: 84}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var15))
 			if templ_7745c5c3_Err != nil {
@@ -393,7 +393,7 @@ func objectRow(connID, bucket, prefix string, obj StorageObjectData, csrfToken s
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 34, "\" class=\"btn-secondary text-xs\" title=\"Download\"><i class=\"fas fa-download\"></i></a><form method=\"POST\" action=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 34, "\" class=\"btn-secondary text-xs\" title=\"Download\"><i aria-hidden=\"true\" class=\"fas fa-download\"></i></a><form method=\"POST\" action=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -432,7 +432,7 @@ func objectRow(connID, bucket, prefix string, obj StorageObjectData, csrfToken s
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 37, "\"> <button type=\"submit\" class=\"btn-danger text-xs\" title=\"Delete\"><i class=\"fas fa-trash\"></i></button></form></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 37, "\"> <button type=\"submit\" class=\"btn-danger text-xs\" title=\"Delete\"><i aria-hidden=\"true\" class=\"fas fa-trash\"></i></button></form></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -466,7 +466,7 @@ func uploadModal(connID, bucket, prefix, csrfToken string) templ.Component {
 			templ_7745c5c3_Var25 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 39, "<div id=\"upload-modal\" class=\"hidden fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm\"><div class=\"card w-full max-w-md mx-4 p-6\"><div class=\"flex items-center justify-between mb-6\"><h2 class=\"text-lg font-display font-bold text-white\">Upload File</h2><button onclick=\"document.getElementById('upload-modal').classList.add('hidden')\" class=\"text-gray-400 hover:text-white\"><i class=\"fas fa-times\"></i></button></div><form method=\"POST\" action=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 39, "<div id=\"upload-modal\" class=\"hidden fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm\"><div class=\"card w-full max-w-md mx-4 p-6\"><div class=\"flex items-center justify-between mb-6\"><h2 class=\"text-lg font-display font-bold text-white\">Upload File</h2><button onclick=\"document.getElementById('upload-modal').classList.add('hidden')\" class=\"text-gray-400 hover:text-white\"><i aria-hidden=\"true\" class=\"fas fa-times\"></i></button></div><form method=\"POST\" action=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -492,7 +492,7 @@ func uploadModal(connID, bucket, prefix, csrfToken string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 41, "\"><div><label class=\"label\">File</label> <input type=\"file\" name=\"file\" required class=\"w-full text-sm text-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-primary-500 file:text-black hover:file:bg-primary-400 file:cursor-pointer cursor-pointer\"><p class=\"text-xs text-gray-500 mt-1\">Max 100 MB</p></div><div class=\"flex items-center gap-3 pt-2\"><button type=\"submit\" class=\"btn-primary flex-1\">Upload</button> <button type=\"button\" onclick=\"document.getElementById('upload-modal').classList.add('hidden')\" class=\"btn-secondary\">Cancel</button></div></form></div></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 41, "\"><div><label class=\"label\">File</label> <input type=\"file\" name=\"file\" required class=\"w-full text-sm text-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-primary-500 file:text-black hover:file:bg-primary-400 file:cursor-pointer cursor-pointer\" aria-label=\"File\"><p class=\"text-xs text-gray-500 mt-1\">Max 100 MB</p></div><div class=\"flex items-center gap-3 pt-2\"><button type=\"submit\" class=\"btn-primary flex-1\">Upload</button> <button type=\"button\" onclick=\"document.getElementById('upload-modal').classList.add('hidden')\" class=\"btn-secondary\">Cancel</button></div></form></div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -521,7 +521,7 @@ func createFolderModal(connID, bucket, prefix, csrfToken string) templ.Component
 			templ_7745c5c3_Var28 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 42, "<div id=\"create-folder-modal\" class=\"hidden fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm\"><div class=\"card w-full max-w-md mx-4 p-6\"><div class=\"flex items-center justify-between mb-6\"><h2 class=\"text-lg font-display font-bold text-white\">New Folder</h2><button onclick=\"document.getElementById('create-folder-modal').classList.add('hidden')\" class=\"text-gray-400 hover:text-white\"><i class=\"fas fa-times\"></i></button></div><form method=\"POST\" action=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 42, "<div id=\"create-folder-modal\" class=\"hidden fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm\"><div class=\"card w-full max-w-md mx-4 p-6\"><div class=\"flex items-center justify-between mb-6\"><h2 class=\"text-lg font-display font-bold text-white\">New Folder</h2><button onclick=\"document.getElementById('create-folder-modal').classList.add('hidden')\" class=\"text-gray-400 hover:text-white\"><i aria-hidden=\"true\" class=\"fas fa-times\"></i></button></div><form method=\"POST\" action=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -547,7 +547,7 @@ func createFolderModal(connID, bucket, prefix, csrfToken string) templ.Component
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 44, "\"><div><label class=\"label\">Folder Name</label> <input type=\"text\" name=\"folder_name\" required placeholder=\"my-folder\" class=\"input\"></div><div class=\"flex items-center gap-3 pt-2\"><button type=\"submit\" class=\"btn-primary flex-1\">Create</button> <button type=\"button\" onclick=\"document.getElementById('create-folder-modal').classList.add('hidden')\" class=\"btn-secondary\">Cancel</button></div></form></div></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 44, "\"><div><label class=\"label\">Folder Name</label> <input type=\"text\" name=\"folder_name\" required placeholder=\"my-folder\" aria-label=\"my-folder\" class=\"input\"></div><div class=\"flex items-center gap-3 pt-2\"><button type=\"submit\" class=\"btn-primary flex-1\">Create</button> <button type=\"button\" onclick=\"document.getElementById('create-folder-modal').classList.add('hidden')\" class=\"btn-secondary\">Cancel</button></div></form></div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

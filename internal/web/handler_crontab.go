@@ -124,9 +124,10 @@ func (h *Handler) CrontabListTempl(w http.ResponseWriter, r *http.Request) {
 	}
 
 	h.renderTempl(w, r, crontabtpl.List(crontabtpl.ListData{
-		PageData: pageData,
-		Entries:  entryViews,
-		Stats:    statsView,
+		PageData:   pageData,
+		Entries:    entryViews,
+		Stats:      statsView,
+		EmptyState: EmptyStateCatalogCrontab(),
 	}))
 }
 
@@ -145,44 +146,57 @@ func (h *Handler) CrontabNewTempl(w http.ResponseWriter, r *http.Request) {
 }
 
 // CrontabCreateTempl handles POST /crontab.
+// crontabWriteForm captures the inputs shared between cron-job
+// create and update. Pointer fields preserve the "absent vs
+// present-but-empty" distinction the underlying service uses to
+// avoid overwriting an existing value.
+type crontabWriteForm struct {
+	Name        string  `form:"name" validate:"required"`
+	Description string  `form:"description"`
+	Schedule    string  `form:"schedule" validate:"required"`
+	CommandType string  `form:"command_type"`
+	Command     string  `form:"command"`
+	Enabled     bool    `form:"enabled"`
+	ContainerID *string `form:"container_id"`
+	WorkingDir  *string `form:"working_dir"`
+	HTTPMethod  *string `form:"http_method"`
+	HTTPURL     *string `form:"http_url"`
+}
+
 func (h *Handler) CrontabCreateTempl(w http.ResponseWriter, r *http.Request) {
 	svc := h.requireCrontabSvc(w, r)
 	if svc == nil {
 		return
 	}
-	if err := r.ParseForm(); err != nil {
-		http.Error(w, "Error parsing form", http.StatusBadRequest)
+	var form crontabWriteForm
+	if msg := BindForm(r, &form); msg != "" {
+		pageData := h.prepareTemplPageData(r, "New Cron Job", "crontab")
+		h.renderTempl(w, r, crontabtpl.New(crontabtpl.NewData{
+			PageData: pageData,
+			Error:    msg,
+		}))
 		return
 	}
 
 	hostID := h.getCrontabHostID(r)
 	userID := h.crontabUserUUID(r)
 
-	cmdType := models.CrontabCommandType(r.FormValue("command_type"))
+	cmdType := models.CrontabCommandType(form.CommandType)
 	if cmdType == "" {
 		cmdType = models.CrontabCommandShell
 	}
 
 	input := models.CreateCrontabInput{
-		Name:        r.FormValue("name"),
-		Description: r.FormValue("description"),
-		Schedule:    r.FormValue("schedule"),
+		Name:        form.Name,
+		Description: form.Description,
+		Schedule:    form.Schedule,
 		CommandType: cmdType,
-		Command:     r.FormValue("command"),
-		Enabled:     r.FormValue("enabled") == "on" || r.FormValue("enabled") == "true",
-	}
-
-	if v := r.FormValue("container_id"); v != "" {
-		input.ContainerID = &v
-	}
-	if v := r.FormValue("working_dir"); v != "" {
-		input.WorkingDir = &v
-	}
-	if v := r.FormValue("http_method"); v != "" {
-		input.HTTPMethod = &v
-	}
-	if v := r.FormValue("http_url"); v != "" {
-		input.HTTPURL = &v
+		Command:     form.Command,
+		Enabled:     form.Enabled,
+		ContainerID: nilIfEmpty(form.ContainerID),
+		WorkingDir:  nilIfEmpty(form.WorkingDir),
+		HTTPMethod:  nilIfEmpty(form.HTTPMethod),
+		HTTPURL:     nilIfEmpty(form.HTTPURL),
 	}
 
 	if _, err := svc.Create(r.Context(), hostID, input, userID); err != nil {
@@ -298,57 +312,42 @@ func (h *Handler) CrontabUpdateTempl(w http.ResponseWriter, r *http.Request) {
 	if svc == nil {
 		return
 	}
-	if err := r.ParseForm(); err != nil {
-		http.Error(w, "Error parsing form", http.StatusBadRequest)
-		return
-	}
-
 	entryID, err := uuid.Parse(chi.URLParam(r, "id"))
 	if err != nil {
 		h.RenderErrorTempl(w, r, http.StatusBadRequest, "Invalid ID", "The cron job ID is not valid.")
 		return
 	}
 
-	name := r.FormValue("name")
-	desc := r.FormValue("description")
-	schedule := r.FormValue("schedule")
-	command := r.FormValue("command")
-	cmdTypeStr := r.FormValue("command_type")
-	cmdType := models.CrontabCommandType(cmdTypeStr)
-	enabled := r.FormValue("enabled") == "on" || r.FormValue("enabled") == "true"
+	var form crontabWriteForm
+	if msg := BindForm(r, &form); msg != "" {
+		http.Error(w, msg, http.StatusBadRequest)
+		return
+	}
+	cmdType := models.CrontabCommandType(form.CommandType)
 
 	input := models.UpdateCrontabInput{
-		Name:        &name,
-		Description: &desc,
-		Schedule:    &schedule,
-		Command:     &command,
+		Name:        &form.Name,
+		Description: &form.Description,
+		Schedule:    &form.Schedule,
+		Command:     &form.Command,
 		CommandType: &cmdType,
-		Enabled:     &enabled,
-	}
-
-	if v := r.FormValue("container_id"); v != "" {
-		input.ContainerID = &v
-	}
-	if v := r.FormValue("working_dir"); v != "" {
-		input.WorkingDir = &v
-	}
-	if v := r.FormValue("http_method"); v != "" {
-		input.HTTPMethod = &v
-	}
-	if v := r.FormValue("http_url"); v != "" {
-		input.HTTPURL = &v
+		Enabled:     &form.Enabled,
+		ContainerID: nilIfEmpty(form.ContainerID),
+		WorkingDir:  nilIfEmpty(form.WorkingDir),
+		HTTPMethod:  nilIfEmpty(form.HTTPMethod),
+		HTTPURL:     nilIfEmpty(form.HTTPURL),
 	}
 
 	if _, err := svc.Update(r.Context(), entryID, input); err != nil {
 		pageData := h.prepareTemplPageData(r, "Edit Cron Job", "crontab")
 		ev := crontabtpl.EntryView{
 			ID:          entryID.String(),
-			Name:        name,
-			Description: desc,
-			Schedule:    schedule,
-			CommandType: cmdTypeStr,
-			Command:     command,
-			Enabled:     enabled,
+			Name:        form.Name,
+			Description: form.Description,
+			Schedule:    form.Schedule,
+			CommandType: form.CommandType,
+			Command:     form.Command,
+			Enabled:     form.Enabled,
 		}
 		h.renderTempl(w, r, crontabtpl.Edit(crontabtpl.EditData{
 			PageData: pageData,
@@ -401,18 +400,20 @@ func (h *Handler) CrontabToggleTempl(w http.ResponseWriter, r *http.Request) {
 	if svc == nil {
 		return
 	}
-	if err := r.ParseForm(); err != nil {
-		http.Error(w, "Error parsing form", http.StatusBadRequest)
-		return
-	}
-
 	entryID, err := uuid.Parse(chi.URLParam(r, "id"))
 	if err != nil {
 		http.Error(w, "Invalid ID", http.StatusBadRequest)
 		return
 	}
 
-	enabled := r.FormValue("enabled") == "on" || r.FormValue("enabled") == "true"
+	var toggleForm struct {
+		Enabled bool `form:"enabled"`
+	}
+	if msg := BindForm(r, &toggleForm); msg != "" {
+		http.Error(w, msg, http.StatusBadRequest)
+		return
+	}
+	enabled := toggleForm.Enabled
 	if err := svc.ToggleEnabled(r.Context(), entryID, enabled); err != nil {
 		h.RenderErrorTempl(w, r, http.StatusInternalServerError, "Error", "Failed to toggle cron job: "+err.Error())
 		return

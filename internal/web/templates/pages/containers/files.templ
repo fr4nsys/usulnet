@@ -20,9 +20,9 @@ templ ContainerFiles(data ContainerFilesData) {
 		<!-- Breadcrumb -->
 		<nav class="flex items-center gap-2 text-sm text-gray-400 mb-4">
 			<a href="/containers" class="hover:text-primary-400 transition-colors">Containers</a>
-			<i class="fas fa-chevron-right text-xs"></i>
+			<i aria-hidden="true" class="fas fa-chevron-right text-xs"></i>
 			<a href={ templ.SafeURL("/containers/" + data.ContainerID) } class="hover:text-primary-400 transition-colors">{ data.Name }</a>
-			<i class="fas fa-chevron-right text-xs"></i>
+			<i aria-hidden="true" class="fas fa-chevron-right text-xs"></i>
 			<span class="text-white">Files</span>
 		</nav>
 
@@ -30,7 +30,7 @@ templ ContainerFiles(data ContainerFilesData) {
 		<div class="flex items-center justify-between mb-6">
 			<div class="flex items-center gap-4">
 				<div class={ "w-10 h-10 rounded-lg flex items-center justify-center", stateIconBg(data.State) }>
-					<i class="fas fa-folder-open text-lg text-gray-300"></i>
+					<i aria-hidden="true" class="fas fa-folder-open text-lg text-gray-300"></i>
 				</div>
 				<div>
 					<h1 class="text-2xl font-bold font-display text-white">File Browser</h1>
@@ -39,7 +39,7 @@ templ ContainerFiles(data ContainerFilesData) {
 			</div>
 			<div class="flex items-center gap-2">
 				<a href={ templ.SafeURL("/containers/" + data.ContainerID) } class="px-4 py-2 bg-dark-700 hover:bg-dark-600 text-gray-300 rounded-lg transition-colors">
-					<i class="fas fa-arrow-left mr-2"></i>Back
+					<i aria-hidden="true" class="fas fa-arrow-left mr-2"></i>Back
 				</a>
 			</div>
 		</div>
@@ -48,7 +48,7 @@ templ ContainerFiles(data ContainerFilesData) {
 		if data.State != "running" {
 			<div class="mb-6 p-4 bg-yellow-500/10 border border-yellow-500/30 rounded-lg">
 				<div class="flex items-center gap-3">
-					<i class="fas fa-exclamation-triangle text-yellow-400"></i>
+					<i aria-hidden="true" class="fas fa-exclamation-triangle text-yellow-400"></i>
 					<span class="text-yellow-200">
 						Container is not running. File browsing requires a running container.
 					</span>
@@ -64,14 +64,14 @@ templ ContainerFiles(data ContainerFilesData) {
 templ containerBrowser(data ContainerFilesData) {
 	<div
 		x-data={ fmt.Sprintf("containerBrowser('%s', '%s', '%s')", data.HostID, data.ContainerID, data.CurrentPath) }
-		class="bg-dark-800 rounded-xl border border-dark-600 overflow-hidden"
+		class="card overflow-hidden"
 	>
 		<!-- Toolbar -->
 		<div class="flex items-center gap-4 p-4 border-b border-dark-600 bg-dark-850">
 			<!-- Breadcrumb Navigation -->
 			<nav class="flex items-center gap-1 text-sm flex-1 overflow-x-auto">
 				<button @click="navigateTo('/')" class="text-primary-400 hover:text-primary-300">
-					<i class="fas fa-home"></i>
+					<i aria-hidden="true" class="fas fa-home"></i>
 				</button>
 				<template x-for="(part, index) in pathParts" :key="index">
 					<span class="flex items-center">
@@ -91,32 +91,32 @@ templ containerBrowser(data ContainerFilesData) {
 					@click="showUploadModal = true"
 					class="px-3 py-1.5 bg-dark-600 hover:bg-dark-500 text-gray-300 text-sm rounded-lg"
 				>
-					<i class="fas fa-upload mr-1"></i> Upload
+					<i aria-hidden="true" class="fas fa-upload mr-1"></i> Upload
 				</button>
 				<button
 					@click="showNewFolderModal = true"
 					class="px-3 py-1.5 bg-dark-600 hover:bg-dark-500 text-gray-300 text-sm rounded-lg"
 				>
-					<i class="fas fa-folder-plus mr-1"></i> New Folder
+					<i aria-hidden="true" class="fas fa-folder-plus mr-1"></i> New Folder
 				</button>
 				<button
 					@click="refresh()"
 					class="px-3 py-1.5 bg-dark-600 hover:bg-dark-500 text-gray-300 text-sm rounded-lg"
 				>
-					<i class="fas fa-sync-alt mr-1"></i> Refresh
+					<i aria-hidden="true" class="fas fa-sync-alt mr-1"></i> Refresh
 				</button>
 			</div>
 		</div>
 
 		<!-- Loading State -->
 		<div x-show="loading" class="flex items-center justify-center py-12">
-			<i class="fas fa-spinner fa-spin text-2xl text-primary-400"></i>
+			<i aria-hidden="true" class="fas fa-spinner fa-spin text-2xl text-primary-400"></i>
 		</div>
 
 		<!-- Error State -->
 		<div x-show="error" class="text-center py-12" style="display: none;">
 			<div class="w-16 h-16 rounded-full bg-red-500/10 flex items-center justify-center mx-auto mb-4">
-				<i class="fas fa-exclamation-triangle text-red-400 text-2xl"></i>
+				<i aria-hidden="true" class="fas fa-exclamation-triangle text-red-400 text-2xl"></i>
 			</div>
 			<p class="text-red-400" x-text="error"></p>
 			<button @click="refresh()" class="mt-4 px-4 py-2 bg-dark-600 hover:bg-dark-500 text-gray-300 rounded-lg">
@@ -133,7 +133,7 @@ templ containerBrowser(data ContainerFilesData) {
 					class="w-full flex items-center gap-3 p-3 rounded-lg hover:bg-dark-700 text-left group"
 				>
 					<div class="w-8 h-8 rounded-lg bg-yellow-500/10 flex items-center justify-center">
-						<i class="fas fa-level-up-alt text-yellow-400"></i>
+						<i aria-hidden="true" class="fas fa-level-up-alt text-yellow-400"></i>
 					</div>
 					<div class="flex-1">
 						<span class="text-gray-300">..</span>
@@ -170,7 +170,7 @@ templ containerBrowser(data ContainerFilesData) {
 						</template>
 						<template x-if="file.is_symlink">
 							<span class="text-xs text-gray-500 ml-2">
-								<i class="fas fa-arrow-right"></i> <span x-text="file.link_target"></span>
+								<i aria-hidden="true" class="fas fa-arrow-right"></i> <span x-text="file.link_target"></span>
 							</span>
 						</template>
 					</div>
@@ -192,7 +192,7 @@ templ containerBrowser(data ContainerFilesData) {
 								class="p-2 text-gray-400 hover:text-primary-400 hover:bg-primary-500/10 rounded-lg"
 								title="Download"
 							>
-								<i class="fas fa-download text-sm"></i>
+								<i aria-hidden="true" class="fas fa-download text-sm"></i>
 							</a>
 						</template>
 						<template x-if="!file.is_dir">
@@ -201,7 +201,7 @@ templ containerBrowser(data ContainerFilesData) {
 								class="p-2 text-gray-400 hover:text-cyan-400 hover:bg-cyan-500/10 rounded-lg"
 								title="Edit"
 							>
-								<i class="fas fa-edit text-sm"></i>
+								<i aria-hidden="true" class="fas fa-edit text-sm"></i>
 							</button>
 						</template>
 						<button
@@ -209,7 +209,7 @@ templ containerBrowser(data ContainerFilesData) {
 							class="p-2 text-gray-400 hover:text-red-400 hover:bg-red-500/10 rounded-lg"
 							title="Delete"
 						>
-							<i class="fas fa-trash text-sm"></i>
+							<i aria-hidden="true" class="fas fa-trash text-sm"></i>
 						</button>
 					</div>
 				</div>
@@ -218,7 +218,7 @@ templ containerBrowser(data ContainerFilesData) {
 			<!-- Empty State -->
 			<div x-show="files.length === 0" class="text-center py-12">
 				<div class="w-16 h-16 rounded-full bg-dark-700 flex items-center justify-center mx-auto mb-4">
-					<i class="fas fa-folder-open text-gray-500 text-2xl"></i>
+					<i aria-hidden="true" class="fas fa-folder-open text-gray-500 text-2xl"></i>
 				</div>
 				<p class="text-gray-400">This directory is empty</p>
 			</div>
@@ -232,26 +232,26 @@ templ containerBrowser(data ContainerFilesData) {
 			@click.self="closeFileModal()"
 			style="display: none;"
 		>
-			<div class="bg-dark-800 rounded-xl border border-dark-600 w-full max-w-6xl h-[85vh] mx-4 flex flex-col shadow-2xl">
+			<div class="card w-full max-w-6xl h-[85vh] mx-4 flex flex-col shadow-2xl">
 				<div class="flex items-center justify-between px-6 py-3 border-b border-dark-600">
 					<div class="flex items-center gap-3 min-w-0">
-						<i class="fas fa-file-code text-blue-400"></i>
+						<i aria-hidden="true" class="fas fa-file-code text-blue-400"></i>
 						<span class="text-sm text-white font-medium truncate" x-text="viewingFile?.name"></span>
 						<span class="text-xs px-2 py-0.5 rounded bg-dark-700 text-gray-400" x-text="getLanguage(viewingFile?.name)"></span>
 						<template x-if="editingFile">
 							<span class="text-xs px-2 py-0.5 rounded bg-cyan-500/20 text-cyan-400">
-								<i class="fas fa-edit mr-1"></i>Editing
+								<i aria-hidden="true" class="fas fa-edit mr-1"></i>Editing
 							</span>
 						</template>
 					</div>
 					<div class="flex items-center gap-2">
 						<template x-if="!editingFile && !fileContent?.binary">
 							<button @click="startEditing()" class="px-3 py-1.5 bg-cyan-600 hover:bg-cyan-500 text-white rounded-lg text-sm">
-								<i class="fas fa-edit mr-1"></i> Edit
+								<i aria-hidden="true" class="fas fa-edit mr-1"></i> Edit
 							</button>
 						</template>
 						<button @click="closeFileModal()" class="text-gray-400 hover:text-white p-2">
-							<i class="fas fa-times"></i>
+							<i aria-hidden="true" class="fas fa-times"></i>
 						</button>
 					</div>
 				</div>
@@ -259,7 +259,7 @@ templ containerBrowser(data ContainerFilesData) {
 					<template x-if="fileContent?.binary">
 						<div class="flex items-center justify-center h-full text-gray-400">
 							<div class="text-center">
-								<i class="fas fa-file-alt text-4xl mb-4"></i>
+								<i aria-hidden="true" class="fas fa-file-alt text-4xl mb-4"></i>
 								<p>Binary file cannot be displayed</p>
 							</div>
 						</div>
@@ -269,13 +269,13 @@ templ containerBrowser(data ContainerFilesData) {
 					</template>
 					<template x-if="!monacoReady && !fileContent?.binary">
 						<div class="flex items-center justify-center h-full">
-							<i class="fas fa-spinner fa-spin text-2xl text-primary-400"></i>
+							<i aria-hidden="true" class="fas fa-spinner fa-spin text-2xl text-primary-400"></i>
 						</div>
 					</template>
 					<template x-if="fileContent?.truncated">
 						<div class="absolute bottom-16 left-0 right-0 px-6">
 							<p class="text-sm text-yellow-400 bg-yellow-500/10 border border-yellow-500/30 rounded-lg px-3 py-2">
-								<i class="fas fa-info-circle mr-1"></i>
+								<i aria-hidden="true" class="fas fa-info-circle mr-1"></i>
 								File truncated to 1MB. Download for full content.
 							</p>
 						</div>
@@ -292,8 +292,8 @@ templ containerBrowser(data ContainerFilesData) {
 								:disabled="saving"
 								class="px-4 py-2 bg-green-600 hover:bg-green-500 text-white rounded-lg disabled:opacity-50"
 							>
-								<i class="fas fa-save mr-2" x-show="!saving"></i>
-								<i class="fas fa-spinner fa-spin mr-2" x-show="saving"></i>
+								<i aria-hidden="true" class="fas fa-save mr-2" x-show="!saving"></i>
+								<i aria-hidden="true" class="fas fa-spinner fa-spin mr-2" x-show="saving"></i>
 								<span x-text="saving ? 'Saving...' : 'Save'"></span>
 							</button>
 						</template>
@@ -301,7 +301,7 @@ templ containerBrowser(data ContainerFilesData) {
 							:href="getDownloadUrl(viewingFile)"
 							class="px-4 py-2 bg-primary-600 hover:bg-primary-500 text-white rounded-lg"
 						>
-							<i class="fas fa-download mr-2"></i>Download
+							<i aria-hidden="true" class="fas fa-download mr-2"></i>Download
 						</a>
 						<button
 							@click="closeFileModal()"
@@ -322,7 +322,7 @@ templ containerBrowser(data ContainerFilesData) {
 			@click.self="showNewFolderModal = false"
 			style="display: none;"
 		>
-			<div class="bg-dark-800 rounded-xl border border-dark-600 w-full max-w-md mx-4 p-6 shadow-2xl">
+			<div class="card w-full max-w-md mx-4 p-6 shadow-2xl">
 				<h3 class="text-lg font-medium text-white mb-4">Create New Folder</h3>
 				<input
 					type="text"
@@ -330,6 +330,7 @@ templ containerBrowser(data ContainerFilesData) {
 					placeholder="Folder name..."
 					class="w-full px-4 py-2 bg-dark-700 border border-dark-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500/50 mb-4"
 					@keyup.enter="createFolder()"
+					aria-label="Folder name..."
 				/>
 				<div class="flex justify-end gap-3">
 					<button
@@ -357,9 +358,9 @@ templ containerBrowser(data ContainerFilesData) {
 			@click.self="deleteConfirm = null"
 			style="display: none;"
 		>
-			<div class="bg-dark-800 rounded-xl border border-dark-600 w-full max-w-md mx-4 p-6 shadow-2xl">
+			<div class="card w-full max-w-md mx-4 p-6 shadow-2xl">
 				<h3 class="text-lg font-medium text-white mb-4">
-					<i class="fas fa-exclamation-triangle text-red-400 mr-2"></i>
+					<i aria-hidden="true" class="fas fa-exclamation-triangle text-red-400 mr-2"></i>
 					Delete <span x-text="deleteConfirm?.is_dir ? 'Directory' : 'File'"></span>
 				</h3>
 				<p class="text-gray-400 mb-4">
@@ -379,7 +380,7 @@ templ containerBrowser(data ContainerFilesData) {
 						@click="confirmDelete()"
 						class="px-4 py-2 bg-red-600 hover:bg-red-500 text-white rounded-lg"
 					>
-						<i class="fas fa-trash mr-2"></i>Delete
+						<i aria-hidden="true" class="fas fa-trash mr-2"></i>Delete
 					</button>
 				</div>
 			</div>
@@ -393,7 +394,7 @@ templ containerBrowser(data ContainerFilesData) {
 			@click.self="showUploadModal = false"
 			style="display: none;"
 		>
-			<div class="bg-dark-800 rounded-xl border border-dark-600 w-full max-w-md mx-4 p-6 shadow-2xl">
+			<div class="card w-full max-w-md mx-4 p-6 shadow-2xl">
 				<h3 class="text-lg font-medium text-white mb-4">Upload File</h3>
 				<div
 					class="border-2 border-dashed border-dark-500 rounded-lg p-8 text-center mb-4 transition-colors"
@@ -402,7 +403,7 @@ templ containerBrowser(data ContainerFilesData) {
 					@dragleave.prevent="dragOver = false"
 					@drop.prevent="handleFileDrop($event)"
 				>
-					<i class="fas fa-cloud-upload-alt text-4xl text-gray-500 mb-4"></i>
+					<i aria-hidden="true" class="fas fa-cloud-upload-alt text-4xl text-gray-500 mb-4"></i>
 					<p class="text-gray-400 mb-2">Drag & drop files here or</p>
 					<label class="px-4 py-2 bg-primary-600 hover:bg-primary-500 text-white rounded-lg cursor-pointer inline-block">
 						<input type="file" multiple class="hidden" @change="handleFileSelect($event)"/>
@@ -415,7 +416,7 @@ templ containerBrowser(data ContainerFilesData) {
 							<div class="flex items-center justify-between p-2 bg-dark-700 rounded-lg">
 								<span class="text-sm text-gray-300 truncate" x-text="file.name"></span>
 								<button @click="uploadFiles.splice(idx, 1)" class="text-gray-500 hover:text-red-400">
-									<i class="fas fa-times"></i>
+									<i aria-hidden="true" class="fas fa-times"></i>
 								</button>
 							</div>
 						</template>
@@ -433,8 +434,8 @@ templ containerBrowser(data ContainerFilesData) {
 						:disabled="uploadFiles.length === 0 || uploading"
 						class="px-4 py-2 bg-primary-600 hover:bg-primary-500 text-white rounded-lg disabled:opacity-50"
 					>
-						<i class="fas fa-upload mr-2" x-show="!uploading"></i>
-						<i class="fas fa-spinner fa-spin mr-2" x-show="uploading"></i>
+						<i aria-hidden="true" class="fas fa-upload mr-2" x-show="!uploading"></i>
+						<i aria-hidden="true" class="fas fa-spinner fa-spin mr-2" x-show="uploading"></i>
 						<span x-text="uploading ? 'Uploading...' : 'Upload'"></span>
 					</button>
 				</div>

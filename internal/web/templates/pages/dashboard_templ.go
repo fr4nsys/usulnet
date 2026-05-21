@@ -134,7 +134,7 @@ func Dashboard(data DashboardData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "</a></div><!-- Secondary Stats --> <div class=\"grid grid-cols-1 md:grid-cols-3 gap-4 mb-6\"><!-- Security Score --><div class=\"bg-dark-800 rounded-xl border border-dark-600 p-5\"><div class=\"flex items-center justify-between mb-3\"><h3 class=\"text-sm font-medium text-gray-400\">Security Score</h3><a href=\"/security\" class=\"text-xs text-primary-400 hover:text-primary-300\">View details →</a></div><div class=\"flex items-center gap-4\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "</a></div><!-- Secondary Stats --> <div class=\"grid grid-cols-1 md:grid-cols-3 gap-4 mb-6\"><!-- Security Score --><div class=\"card p-5\"><div class=\"flex items-center justify-between mb-3\"><h3 class=\"text-sm font-medium text-gray-400\">Security Score</h3><a href=\"/security\" class=\"text-xs text-primary-400 hover:text-primary-300\">View details →</a></div><div class=\"flex items-center gap-4\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -210,7 +210,7 @@ func Dashboard(data DashboardData) templ.Component {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "</div></div></div><!-- Updates Available --><div class=\"bg-dark-800 rounded-xl border border-dark-600 p-5\"><div class=\"flex items-center justify-between mb-3\"><h3 class=\"text-sm font-medium text-gray-400\">Updates</h3><a href=\"/updates\" class=\"text-xs text-primary-400 hover:text-primary-300\">View all →</a></div><div class=\"flex items-center gap-4\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "</div></div></div><!-- Updates Available --><div class=\"card p-5\"><div class=\"flex items-center justify-between mb-3\"><h3 class=\"text-sm font-medium text-gray-400\">Updates</h3><a href=\"/updates\" class=\"text-xs text-primary-400 hover:text-primary-300\">View all →</a></div><div class=\"flex items-center gap-4\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -282,7 +282,7 @@ func Dashboard(data DashboardData) templ.Component {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 22, "</div></div></div><!-- Container Status --><div class=\"bg-dark-800 rounded-xl border border-dark-600 p-5\"><div class=\"flex items-center justify-between mb-3\"><h3 class=\"text-sm font-medium text-gray-400\">Container Status</h3><a href=\"/containers\" class=\"text-xs text-primary-400 hover:text-primary-300\">View all →</a></div><div class=\"flex items-center gap-6\"><div class=\"text-center\"><div class=\"w-10 h-10 mx-auto rounded-full bg-green-500/20 text-green-400 flex items-center justify-center mb-1\"><i class=\"fas fa-play text-sm\"></i></div><p class=\"text-lg font-bold text-white\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 22, "</div></div></div><!-- Container Status --><div class=\"card p-5\"><div class=\"flex items-center justify-between mb-3\"><h3 class=\"text-sm font-medium text-gray-400\">Container Status</h3><a href=\"/containers\" class=\"text-xs text-primary-400 hover:text-primary-300\">View all →</a></div><div class=\"flex items-center gap-6\"><div class=\"text-center\"><div class=\"w-10 h-10 mx-auto rounded-full bg-green-500/20 text-green-400 flex items-center justify-center mb-1\"><i aria-hidden=\"true\" class=\"fas fa-play text-sm\"></i></div><p class=\"text-lg font-bold text-white\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -295,7 +295,7 @@ func Dashboard(data DashboardData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 23, "</p><p class=\"text-xs text-gray-500\">Running</p></div><div class=\"text-center\"><div class=\"w-10 h-10 mx-auto rounded-full bg-red-500/20 text-red-400 flex items-center justify-center mb-1\"><i class=\"fas fa-stop text-sm\"></i></div><p class=\"text-lg font-bold text-white\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 23, "</p><p class=\"text-xs text-gray-500\">Running</p></div><div class=\"text-center\"><div class=\"w-10 h-10 mx-auto rounded-full bg-red-500/20 text-red-400 flex items-center justify-center mb-1\"><i aria-hidden=\"true\" class=\"fas fa-stop text-sm\"></i></div><p class=\"text-lg font-bold text-white\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -308,7 +308,7 @@ func Dashboard(data DashboardData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 24, "</p><p class=\"text-xs text-gray-500\">Stopped</p></div><div class=\"text-center\"><div class=\"w-10 h-10 mx-auto rounded-full bg-yellow-500/20 text-yellow-400 flex items-center justify-center mb-1\"><i class=\"fas fa-pause text-sm\"></i></div><p class=\"text-lg font-bold text-white\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 24, "</p><p class=\"text-xs text-gray-500\">Stopped</p></div><div class=\"text-center\"><div class=\"w-10 h-10 mx-auto rounded-full bg-yellow-500/20 text-yellow-400 flex items-center justify-center mb-1\"><i aria-hidden=\"true\" class=\"fas fa-pause text-sm\"></i></div><p class=\"text-lg font-bold text-white\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -321,12 +321,12 @@ func Dashboard(data DashboardData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 25, "</p><p class=\"text-xs text-gray-500\">Paused</p></div></div></div></div><!-- Main Content Grid --> <div class=\"grid grid-cols-1 lg:grid-cols-3 gap-6\"><!-- Recent Containers --><div class=\"lg:col-span-2 bg-dark-800 rounded-xl border border-dark-600\"><div class=\"flex items-center justify-between p-4 border-b border-dark-600\"><h2 class=\"font-semibold text-white\">Recent Containers</h2><a href=\"/containers\" class=\"text-sm text-primary-400 hover:text-primary-300\">View all →</a></div><div class=\"divide-y divide-dark-600\" hx-get=\"/partials/containers?limit=5\" hx-trigger=\"load, every 30s\" hx-swap=\"innerHTML\" hx-indicator=\"#recent-containers-loading\"><div id=\"recent-containers-loading\" class=\"p-4 text-center text-gray-500 htmx-indicator\"><i class=\"fas fa-spinner fa-spin mr-2\"></i>Loading containers...</div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 25, "</p><p class=\"text-xs text-gray-500\">Paused</p></div></div></div></div><!-- Main Content Grid --> <div class=\"grid grid-cols-1 lg:grid-cols-3 gap-6\"><!-- Recent Containers --><div class=\"lg:col-span-2 card\"><div class=\"flex items-center justify-between p-4 border-b border-dark-600\"><h2 class=\"font-semibold text-white\">Recent Containers</h2><a href=\"/containers\" class=\"text-sm text-primary-400 hover:text-primary-300\">View all →</a></div><div class=\"divide-y divide-dark-600\" hx-get=\"/partials/containers?limit=5\" hx-trigger=\"load, every 30s\" hx-swap=\"innerHTML\" hx-indicator=\"#recent-containers-loading\"><div id=\"recent-containers-loading\" class=\"p-4 text-center text-gray-500 htmx-indicator\"><i aria-hidden=\"true\" class=\"fas fa-spinner fa-spin mr-2\"></i>Loading containers...</div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			if len(data.RecentContainers) == 0 {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 26, "<div class=\"p-8 text-center text-gray-500\"><i class=\"fas fa-cube text-3xl mb-3 opacity-50\"></i><p>No containers found</p></div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 26, "<div class=\"p-8 text-center text-gray-500\"><i aria-hidden=\"true\" class=\"fas fa-cube text-3xl mb-3 opacity-50\"></i><p>No containers found</p></div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -338,12 +338,12 @@ func Dashboard(data DashboardData) templ.Component {
 					}
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 27, "</div></div><!-- Recent Events --><div class=\"bg-dark-800 rounded-xl border border-dark-600\"><div class=\"flex items-center justify-between p-4 border-b border-dark-600\"><h2 class=\"font-semibold text-white\">Recent Events</h2><a href=\"/events\" class=\"text-sm text-primary-400 hover:text-primary-300\">View all →</a></div><div class=\"divide-y divide-dark-600 max-h-96 overflow-y-auto\" hx-get=\"/partials/events?limit=10\" hx-trigger=\"load, every 10s\" hx-swap=\"innerHTML\" hx-indicator=\"#recent-events-loading\"><div id=\"recent-events-loading\" class=\"p-4 text-center text-gray-500 htmx-indicator\"><i class=\"fas fa-spinner fa-spin mr-2\"></i>Loading events...</div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 27, "</div></div><!-- Recent Events --><div class=\"card\"><div class=\"flex items-center justify-between p-4 border-b border-dark-600\"><h2 class=\"font-semibold text-white\">Recent Events</h2><a href=\"/events\" class=\"text-sm text-primary-400 hover:text-primary-300\">View all →</a></div><div class=\"divide-y divide-dark-600 max-h-96 overflow-y-auto\" hx-get=\"/partials/events?limit=10\" hx-trigger=\"load, every 10s\" hx-swap=\"innerHTML\" hx-indicator=\"#recent-events-loading\"><div id=\"recent-events-loading\" class=\"p-4 text-center text-gray-500 htmx-indicator\"><i aria-hidden=\"true\" class=\"fas fa-spinner fa-spin mr-2\"></i>Loading events...</div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			if len(data.RecentEvents) == 0 {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 28, "<div class=\"p-8 text-center text-gray-500\"><i class=\"fas fa-stream text-3xl mb-3 opacity-50\"></i><p>No recent events</p></div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 28, "<div class=\"p-8 text-center text-gray-500\"><i aria-hidden=\"true\" class=\"fas fa-stream text-3xl mb-3 opacity-50\"></i><p>No recent events</p></div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -360,7 +360,7 @@ func Dashboard(data DashboardData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			if data.SystemInfo != nil {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 30, "<div class=\"mt-6 bg-dark-800 rounded-xl border border-dark-600 p-4\"><h2 class=\"font-semibold text-white mb-4\">System Information</h2><div class=\"grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4 text-sm\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 30, "<div class=\"mt-6 card p-4\"><h2 class=\"font-semibold text-white mb-4\">System Information</h2><div class=\"grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4 text-sm\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -542,7 +542,7 @@ func containerRow(c ContainerSummary) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 42, "\" hx-swap=\"none\" class=\"p-2 text-gray-400 hover:text-red-400 transition-colors\" title=\"Stop\"><i class=\"fas fa-stop text-sm\"></i></button> <button hx-post=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 42, "\" hx-swap=\"none\" class=\"p-2 text-gray-400 hover:text-red-400 transition-colors\" title=\"Stop\"><i aria-hidden=\"true\" class=\"fas fa-stop text-sm\"></i></button> <button hx-post=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -555,7 +555,7 @@ func containerRow(c ContainerSummary) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 43, "\" hx-swap=\"none\" class=\"p-2 text-gray-400 hover:text-yellow-400 transition-colors\" title=\"Restart\"><i class=\"fas fa-redo text-sm\"></i></button> ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 43, "\" hx-swap=\"none\" class=\"p-2 text-gray-400 hover:text-yellow-400 transition-colors\" title=\"Restart\"><i aria-hidden=\"true\" class=\"fas fa-redo text-sm\"></i></button> ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -573,7 +573,7 @@ func containerRow(c ContainerSummary) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 45, "\" hx-swap=\"none\" class=\"p-2 text-gray-400 hover:text-green-400 transition-colors\" title=\"Start\"><i class=\"fas fa-play text-sm\"></i></button> ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 45, "\" hx-swap=\"none\" class=\"p-2 text-gray-400 hover:text-green-400 transition-colors\" title=\"Start\"><i aria-hidden=\"true\" class=\"fas fa-play text-sm\"></i></button> ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -591,7 +591,7 @@ func containerRow(c ContainerSummary) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 47, "\" class=\"p-2 text-gray-400 hover:text-primary-400 transition-colors\" title=\"Logs\"><i class=\"fas fa-file-alt text-sm\"></i></a></div></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 47, "\" class=\"p-2 text-gray-400 hover:text-primary-400 transition-colors\" title=\"Logs\"><i aria-hidden=\"true\" class=\"fas fa-file-alt text-sm\"></i></a></div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

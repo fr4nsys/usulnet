@@ -51,7 +51,18 @@ type Module struct {
 	// at nil and the API surface degrades to 503 engine_unavailable.
 	Service recon.Service
 
-	MetadataService  workers.MetadataJobService
+	// MetadataService is the narrow scheduler-worker interface used to
+	// register the job worker. The concrete implementation also
+	// satisfies metadata.Service; consumers that need the full surface
+	// should read MetadataFullService below.
+	MetadataService workers.MetadataJobService
+
+	// MetadataFullService is the same underlying implementation as
+	// MetadataService but exposed through the full metadata.Service
+	// interface, so the web / API layers can call CreateJob,
+	// ListJobs, OpenStripped, etc. Nil whenever MetadataService is nil.
+	MetadataFullService metadata.Service
+
 	ReconScanService workers.ReconScanService
 	Verifiers        map[recon.OwnershipMethod]recon.OwnershipVerifier
 	RDAPClient       *recon.RDAPClient
@@ -155,6 +166,7 @@ func Build(ctx context.Context, cfg Config, deps Deps) (*Module, error) {
 					)
 				} else {
 					m.MetadataService = svc
+					m.MetadataFullService = svc
 					log.Info("recon metadata service wired",
 						"data_dir", deps.StoragePath,
 					)

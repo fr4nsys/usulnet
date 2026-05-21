@@ -1,0 +1,82 @@
+// SPDX-License-Identifier: AGPL-3.0-or-later
+// Copyright (c) 2024-2026 usulnet contributors
+// https://github.com/fr4nsys/usulnet
+
+package onboarding
+
+import "github.com/fr4nsys/usulnet/internal/web/templates/layouts"
+
+// DoneData drives /onboarding/done — the step that flips the
+// onboarding_completed flag and lets the operator land on the
+// dashboard. Two skippable secondary links surface the next two
+// obvious "now what?" actions (register a remote host, browse the
+// marketplace) without forcing the operator through more forms.
+type DoneData struct {
+	CSRFToken string
+}
+
+templ Done(data DoneData) {
+	@layouts.AuthLayout("You're set") {
+		<div class="min-h-screen flex items-center justify-center bg-dark-900 px-4 py-8">
+			<div class="w-full max-w-lg">
+				<div class="text-center mb-8">
+					<div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-green-500/20 mb-4">
+						<i aria-hidden="true" class="fas fa-check text-green-400 text-3xl"></i>
+					</div>
+					<h1 class="text-2xl font-bold font-display text-white">Admin password set</h1>
+					<p class="text-sm text-gray-400 mt-2">
+						You can finish setup now and explore the app, or jump
+						straight to one of the two most common next steps.
+					</p>
+				</div>
+
+				<div class="card shadow-xl p-8 space-y-4">
+					<a
+						href="/hosts/new"
+						class="flex items-start gap-4 p-4 rounded-lg bg-dark-700 border border-dark-600 hover:border-primary-500/40 transition-colors"
+					>
+						<div class="w-10 h-10 rounded-lg bg-primary-500/10 flex items-center justify-center flex-shrink-0">
+							<i aria-hidden="true" class="fas fa-server text-primary-400"></i>
+						</div>
+						<div class="flex-1">
+							<div class="text-sm font-semibold text-white">Register a remote Docker host</div>
+							<div class="text-xs text-gray-400 mt-1">
+								Optional. Connect a second host via NATS so usulnet manages it
+								the same way as this one.
+							</div>
+						</div>
+						<i aria-hidden="true" class="fas fa-chevron-right text-gray-500"></i>
+					</a>
+
+					<a
+						href="/marketplace"
+						class="flex items-start gap-4 p-4 rounded-lg bg-dark-700 border border-dark-600 hover:border-primary-500/40 transition-colors"
+					>
+						<div class="w-10 h-10 rounded-lg bg-primary-500/10 flex items-center justify-center flex-shrink-0">
+							<i aria-hidden="true" class="fas fa-store text-primary-400"></i>
+						</div>
+						<div class="flex-1">
+							<div class="text-sm font-semibold text-white">Install your first app</div>
+							<div class="text-xs text-gray-400 mt-1">
+								Optional. Browse the offline-first marketplace and one-click
+								an app from the curated catalogue.
+							</div>
+						</div>
+						<i aria-hidden="true" class="fas fa-chevron-right text-gray-500"></i>
+					</a>
+
+					<form method="POST" action="/onboarding/finish" class="pt-2">
+						<input type="hidden" name="csrf_token" value={ data.CSRFToken }/>
+						<button
+							type="submit"
+							class="w-full inline-flex items-center justify-center gap-2 px-4 py-3 bg-primary-500 hover:bg-primary-600 text-black font-semibold rounded-lg transition-colors"
+						>
+							<i aria-hidden="true" class="fas fa-flag-checkered"></i>
+							Finish setup and go to dashboard
+						</button>
+					</form>
+				</div>
+			</div>
+		</div>
+	}
+}

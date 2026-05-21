@@ -83,7 +83,7 @@ func About(data AboutData) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"space-y-6\"><!-- Header --><div class=\"flex items-center justify-between\"><div><h1 class=\"text-2xl font-display font-bold text-white\">About usulnet</h1><p class=\"text-gray-400 mt-1\">System information, connection status, and instance management</p></div></div><!-- Version Card --><div class=\"card\"><div class=\"px-5 py-4 border-b border-dark-700\"><h2 class=\"font-medium text-white\"><i class=\"fas fa-code-branch mr-2 text-primary-400\"></i>Version Information</h2></div><div class=\"p-5\"><div class=\"grid grid-cols-1 md:grid-cols-3 gap-6\"><div><div class=\"text-xs text-gray-500 uppercase tracking-wide mb-1\">Version</div><div class=\"text-lg font-display font-bold text-white\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"space-y-6\"><!-- Header --><div class=\"flex items-center justify-between\"><div><h1 class=\"text-2xl font-display font-bold text-white\">About usulnet</h1><p class=\"text-gray-400 mt-1\">System information, connection status, and instance management</p></div></div><!-- Version Card --><div class=\"card\"><div class=\"px-5 py-4 border-b border-dark-700\"><h2 class=\"font-medium text-white\"><i aria-hidden=\"true\" class=\"fas fa-code-branch mr-2 text-primary-400\"></i>Version Information</h2></div><div class=\"p-5\"><div class=\"grid grid-cols-1 md:grid-cols-3 gap-6\"><div><div class=\"text-xs text-gray-500 uppercase tracking-wide mb-1\">Version</div><div class=\"text-lg font-display font-bold text-white\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -174,7 +174,7 @@ func About(data AboutData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "</div></div></div></div></div><!-- Connection Status Card --><div class=\"card\"><div class=\"px-5 py-4 border-b border-dark-700\"><h2 class=\"font-medium text-white\"><i class=\"fas fa-network-wired mr-2 text-primary-400\"></i>Connection Status</h2></div><div class=\"p-5\"><div class=\"overflow-x-auto\"><table class=\"w-full text-sm\"><thead><tr class=\"text-gray-500 text-left text-xs uppercase tracking-wide\"><th class=\"pb-3\">Service</th><th class=\"pb-3\">Status</th><th class=\"pb-3\">Encryption</th><th class=\"pb-3\">Latency</th><th class=\"pb-3\">Details</th></tr></thead> <tbody class=\"divide-y divide-dark-700\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "</div></div></div></div></div><!-- Connection Status Card --><div class=\"card\"><div class=\"px-5 py-4 border-b border-dark-700\"><h2 class=\"font-medium text-white\"><i aria-hidden=\"true\" class=\"fas fa-network-wired mr-2 text-primary-400\"></i>Connection Status</h2></div><div class=\"p-5\"><div class=\"overflow-x-auto\"><table class=\"w-full text-sm\"><thead><tr class=\"text-gray-500 text-left text-xs uppercase tracking-wide\"><th scope=\"col\" class=\"pb-3\">Service</th><th scope=\"col\" class=\"pb-3\">Status</th><th scope=\"col\" class=\"pb-3\">Encryption</th><th scope=\"col\" class=\"pb-3\">Latency</th><th scope=\"col\" class=\"pb-3\">Details</th></tr></thead> <tbody class=\"divide-y divide-dark-700\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -225,7 +225,7 @@ func About(data AboutData) templ.Component {
 					return templ_7745c5c3_Err
 				}
 				if conn.TLS {
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "<span class=\"inline-flex items-center gap-1 text-green-400 text-xs\"><i class=\"fas fa-lock\"></i> ")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "<span class=\"inline-flex items-center gap-1 text-green-400 text-xs\"><i aria-hidden=\"true\" class=\"fas fa-lock\"></i> ")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
@@ -243,7 +243,7 @@ func About(data AboutData) templ.Component {
 						return templ_7745c5c3_Err
 					}
 				} else {
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "<span class=\"inline-flex items-center gap-1 text-yellow-400 text-xs\"><i class=\"fas fa-lock-open\"></i> ")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "<span class=\"inline-flex items-center gap-1 text-yellow-400 text-xs\"><i aria-hidden=\"true\" class=\"fas fa-lock-open\"></i> ")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
@@ -292,7 +292,7 @@ func About(data AboutData) templ.Component {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 22, "</tbody></table></div></div></div><!-- Docker Info Card --><div class=\"card\"><div class=\"px-5 py-4 border-b border-dark-700\"><h2 class=\"font-medium text-white\"><i class=\"fab fa-docker mr-2 text-primary-400\"></i>Docker Engine</h2></div><div class=\"p-5\"><div class=\"grid grid-cols-2 md:grid-cols-4 gap-6\"><div><div class=\"text-xs text-gray-500 uppercase tracking-wide mb-1\">Docker Version</div><div class=\"text-sm text-gray-300\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 22, "</tbody></table></div></div></div><!-- Docker Info Card --><div class=\"card\"><div class=\"px-5 py-4 border-b border-dark-700\"><h2 class=\"font-medium text-white\"><i aria-hidden=\"true\" class=\"fab fa-docker mr-2 text-primary-400\"></i>Docker Engine</h2></div><div class=\"p-5\"><div class=\"grid grid-cols-2 md:grid-cols-4 gap-6\"><div><div class=\"text-xs text-gray-500 uppercase tracking-wide mb-1\">Docker Version</div><div class=\"text-sm text-gray-300\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -370,7 +370,7 @@ func About(data AboutData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 28, " images</div></div></div></div></div><!-- Instance Backup Card --><div class=\"card\"><div class=\"px-5 py-4 border-b border-dark-700\"><h2 class=\"font-medium text-white\"><i class=\"fas fa-database mr-2 text-primary-400\"></i>Instance Backup &amp; Restore</h2></div><div class=\"p-5 space-y-4\"><p class=\"text-sm text-gray-400\">Export or import the entire usulnet instance state: database, configuration, and encryption keys. Backups are AES-256-GCM encrypted and can be restored on a fresh usulnet installation.</p><div class=\"flex items-center gap-3\"><form method=\"post\" action=\"/about/instance-backup\"><input type=\"hidden\" name=\"csrf_token\" value=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 28, " images</div></div></div></div></div><!-- Instance Backup Card --><div class=\"card\"><div class=\"px-5 py-4 border-b border-dark-700\"><h2 class=\"font-medium text-white\"><i aria-hidden=\"true\" class=\"fas fa-database mr-2 text-primary-400\"></i>Instance Backup &amp; Restore</h2></div><div class=\"p-5 space-y-4\"><p class=\"text-sm text-gray-400\">Export or import the entire usulnet instance state: database, configuration, and encryption keys. Backups are AES-256-GCM encrypted and can be restored on a fresh usulnet installation.</p><div class=\"flex items-center gap-3\"><form method=\"post\" action=\"/about/instance-backup\"><input type=\"hidden\" name=\"csrf_token\" value=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -383,7 +383,7 @@ func About(data AboutData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 29, "\"> <button type=\"submit\" class=\"btn-primary\"><i class=\"fas fa-download mr-2\"></i>Export Instance Backup</button></form><button onclick=\"document.getElementById('restore-file').click()\" class=\"btn-secondary\"><i class=\"fas fa-upload mr-2\"></i>Import Instance Backup</button><form id=\"restore-form\" method=\"post\" action=\"/about/instance-restore\" enctype=\"multipart/form-data\" style=\"display:none;\"><input type=\"hidden\" name=\"csrf_token\" value=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 29, "\"> <button type=\"submit\" class=\"btn-primary\"><i aria-hidden=\"true\" class=\"fas fa-download mr-2\"></i>Export Instance Backup</button></form><button onclick=\"document.getElementById('restore-file').click()\" class=\"btn-secondary\"><i aria-hidden=\"true\" class=\"fas fa-upload mr-2\"></i>Import Instance Backup</button><form id=\"restore-form\" method=\"post\" action=\"/about/instance-restore\" enctype=\"multipart/form-data\" style=\"display:none;\"><input type=\"hidden\" name=\"csrf_token\" value=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

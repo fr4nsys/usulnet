@@ -3,12 +3,14 @@ package sslobservatory
 import (
 	"fmt"
 
+	"github.com/fr4nsys/usulnet/internal/web/templates/components"
 	"github.com/fr4nsys/usulnet/internal/web/templates/layouts"
 )
 
 type TargetListData struct {
-	PageData layouts.PageData
-	Targets  []TargetView
+	PageData   layouts.PageData
+	Targets    []TargetView
+	EmptyState components.EmptyStateData
 }
 
 type TargetView struct {
@@ -34,7 +36,7 @@ templ TargetList(data TargetListData) {
 					<p class="text-gray-400 mt-1">Manage TLS/SSL monitoring targets</p>
 				</div>
 				<a href="/ssl/targets/new" class="btn-primary">
-					<i class="fas fa-plus mr-2"></i>Add Target
+					<i aria-hidden="true" class="fas fa-plus mr-2"></i>Add Target
 				</a>
 			</div>
 
@@ -47,14 +49,14 @@ templ TargetList(data TargetListData) {
 						<table class="table">
 							<thead>
 								<tr>
-									<th>Name</th>
-									<th>Hostname</th>
-									<th>SNI</th>
-									<th>Grade</th>
-									<th>Score</th>
-									<th>Cert Expires</th>
-									<th>Last Scan</th>
-									<th>Actions</th>
+									<th scope="col">Name</th>
+									<th scope="col">Hostname</th>
+									<th scope="col">SNI</th>
+									<th scope="col">Grade</th>
+									<th scope="col">Score</th>
+									<th scope="col">Cert Expires</th>
+									<th scope="col">Last Scan</th>
+									<th scope="col">Actions</th>
 								</tr>
 							</thead>
 							<tbody>
@@ -137,14 +139,7 @@ templ TargetList(data TargetListData) {
 			}
 
 			if len(data.Targets) == 0 {
-				<div class="card p-8 text-center">
-					<i class="fas fa-crosshairs text-4xl text-gray-400 mb-4"></i>
-					<h3 class="text-lg font-medium text-white mb-2">No SSL targets</h3>
-					<p class="text-gray-400 mb-4">Add your first SSL target to start monitoring certificate health</p>
-					<a href="/ssl/targets/new" class="btn-primary">
-						<i class="fas fa-plus mr-2"></i>Add Target
-					</a>
-				</div>
+				@components.EmptyStateCTAs(data.EmptyState)
 			}
 		</div>
 	}

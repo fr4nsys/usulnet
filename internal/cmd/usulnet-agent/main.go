@@ -209,15 +209,15 @@ func loadConfigFile(path string, cfg *agent.Config) error {
 	cfg.ScannerEnabled = fileCfg.ScannerEnabled
 
 	// TLS settings
-	cfg.TLSEnabled = fileCfg.TLS.Enabled
+	cfg.TLS.Enabled = fileCfg.TLS.Enabled
 	if fileCfg.TLS.CertFile != "" {
-		cfg.TLSCertFile = fileCfg.TLS.CertFile
+		cfg.TLS.CertFile = fileCfg.TLS.CertFile
 	}
 	if fileCfg.TLS.KeyFile != "" {
-		cfg.TLSKeyFile = fileCfg.TLS.KeyFile
+		cfg.TLS.KeyFile = fileCfg.TLS.KeyFile
 	}
 	if fileCfg.TLS.CAFile != "" {
-		cfg.TLSCAFile = fileCfg.TLS.CAFile
+		cfg.TLS.CAFile = fileCfg.TLS.CAFile
 	}
 
 	return nil

@@ -110,7 +110,7 @@ func List(data UpdatesData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "\" class=\"btn-secondary\"><i class=\"fas fa-sync mr-2\"></i>Check All</button></div></div><!-- Tab Navigation --><div class=\"border-b border-dark-700\"><nav class=\"flex gap-6\" aria-label=\"Tabs\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "\" class=\"btn-secondary\"><i aria-hidden=\"true\" class=\"fas fa-sync mr-2\"></i>Check All</button></div></div><!-- Tab Navigation --><div class=\"border-b border-dark-700\"><nav class=\"flex gap-6\" aria-label=\"Tabs\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -132,7 +132,7 @@ func List(data UpdatesData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "\"><i class=\"fas fa-download mr-2\"></i>Available Updates ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "\"><i aria-hidden=\"true\" class=\"fas fa-download mr-2\"></i>Available Updates ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -177,7 +177,7 @@ func List(data UpdatesData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "\"><i class=\"fas fa-robot mr-2\"></i>Auto-Update Policies ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "\"><i aria-hidden=\"true\" class=\"fas fa-robot mr-2\"></i>Auto-Update Policies ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -222,7 +222,7 @@ func List(data UpdatesData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "\"><i class=\"fas fa-history mr-2\"></i>History & Rollback</a></nav></div><!-- Tab Content -->")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "\"><i aria-hidden=\"true\" class=\"fas fa-history mr-2\"></i>History & Rollback</a></nav></div><!-- Tab Content -->")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -318,7 +318,7 @@ func updatesTab(data UpdatesData) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		if len(data.Available) == 0 {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 21, "<div class=\"p-8 text-center text-gray-400\"><i class=\"fas fa-check-circle text-green-400 text-3xl mb-3\"></i><p>All containers are up to date</p><p class=\"text-sm mt-2\">Use the manual update form below to target a specific version</p></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 21, "<div class=\"p-8 text-center text-gray-400\"><i aria-hidden=\"true\" class=\"fas fa-check-circle text-green-400 text-3xl mb-3\"></i><p>All containers are up to date</p><p class=\"text-sm mt-2\">Use the manual update form below to target a specific version</p></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -442,7 +442,7 @@ func updatesTab(data UpdatesData) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 33, "\" class=\"input w-32 text-sm\" title=\"Target version (leave empty for latest)\"> <button type=\"submit\" onclick=\"return confirm('Update this container? A backup will be created automatically.')\" class=\"btn-primary text-sm\"><i class=\"fas fa-download mr-1\"></i>Update</button></form></div></div></div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 33, "\" class=\"input w-32 text-sm\" title=\"Target version (leave empty for latest)\"> <button type=\"submit\" onclick=\"return confirm('Update this container? A backup will be created automatically.')\" class=\"btn-primary text-sm\"><i aria-hidden=\"true\" class=\"fas fa-download mr-1\"></i>Update</button></form></div></div></div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -506,7 +506,7 @@ func updatesTab(data UpdatesData) templ.Component {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 41, "</select></div><div class=\"w-48\"><label class=\"block text-sm font-medium text-gray-300 mb-2\">Target Version</label> <input type=\"text\" name=\"target_version\" required class=\"input\" placeholder=\"e.g. 1.2.3 or latest\"></div><div class=\"flex items-center gap-3\"><label class=\"flex items-center gap-2 text-sm text-gray-300\"><input type=\"checkbox\" name=\"backup\" value=\"true\" checked class=\"rounded border-dark-600 bg-dark-700 text-primary-500\"> Backup first</label> <button type=\"submit\" onclick=\"return confirm('Update container to specified version?')\" class=\"btn-primary\"><i class=\"fas fa-download mr-2\"></i>Update</button></div></form></div></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 41, "</select></div><div class=\"w-48\"><label class=\"block text-sm font-medium text-gray-300 mb-2\">Target Version</label> <input type=\"text\" name=\"target_version\" required class=\"input\" placeholder=\"e.g. 1.2.3 or latest\" aria-label=\"e.g. 1.2.3 or latest\"></div><div class=\"flex items-center gap-3\"><label class=\"flex items-center gap-2 text-sm text-gray-300\"><input type=\"checkbox\" name=\"backup\" value=\"true\" checked class=\"rounded border-dark-600 bg-dark-700 text-primary-500\"> Backup first</label> <button type=\"submit\" onclick=\"return confirm('Update container to specified version?')\" class=\"btn-primary\"><i aria-hidden=\"true\" class=\"fas fa-download mr-2\"></i>Update</button></div></form></div></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -536,7 +536,7 @@ func policiesTab(data UpdatesData) templ.Component {
 			templ_7745c5c3_Var26 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 42, "<!-- Active Policies --><div class=\"card\"><div class=\"px-5 py-4 border-b border-dark-700 flex items-center justify-between\"><h2 class=\"font-medium text-white\"><i class=\"fas fa-robot mr-2 text-purple-400\"></i>Auto-Update Policies</h2><span class=\"text-sm text-gray-400\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 42, "<!-- Active Policies --><div class=\"card\"><div class=\"px-5 py-4 border-b border-dark-700 flex items-center justify-between\"><h2 class=\"font-medium text-white\"><i aria-hidden=\"true\" class=\"fas fa-robot mr-2 text-purple-400\"></i>Auto-Update Policies</h2><span class=\"text-sm text-gray-400\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -554,7 +554,7 @@ func policiesTab(data UpdatesData) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		if len(data.Policies) == 0 {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 44, "<div class=\"p-8 text-center text-gray-400\"><i class=\"fas fa-robot text-3xl mb-3 text-gray-400\"></i><p>No auto-update policies configured</p><p class=\"text-sm mt-2\">Create a policy below to automatically update containers when new versions are available</p></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 44, "<div class=\"p-8 text-center text-gray-400\"><i aria-hidden=\"true\" class=\"fas fa-robot text-3xl mb-3 text-gray-400\"></i><p>No auto-update policies configured</p><p class=\"text-sm mt-2\">Create a policy below to automatically update containers when new versions are available</p></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -609,14 +609,14 @@ func policiesTab(data UpdatesData) templ.Component {
 					}
 				}
 				if policy.Schedule != "" {
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 53, "<span class=\"bg-yellow-500/10 text-yellow-400 px-2 py-0.5 rounded-full\"><i class=\"fas fa-clock mr-1\"></i>")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 53, "<span class=\"bg-yellow-500/10 text-yellow-400 px-2 py-0.5 rounded-full\"><i aria-hidden=\"true\" class=\"fas fa-clock mr-1\"></i>")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
 					var templ_7745c5c3_Var29 string
 					templ_7745c5c3_Var29, templ_7745c5c3_Err = templ.JoinStringErrs(policy.Schedule)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/updates/list.templ`, Line: 253, Col: 61}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/updates/list.templ`, Line: 253, Col: 80}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var29))
 					if templ_7745c5c3_Err != nil {
@@ -664,12 +664,12 @@ func policiesTab(data UpdatesData) templ.Component {
 					return templ_7745c5c3_Err
 				}
 				if policy.IsEnabled {
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 59, "<i class=\"fas fa-pause\"></i>")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 59, "<i aria-hidden=\"true\" class=\"fas fa-pause\"></i>")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
 				} else {
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 60, "<i class=\"fas fa-play\"></i>")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 60, "<i aria-hidden=\"true\" class=\"fas fa-play\"></i>")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
@@ -700,7 +700,7 @@ func policiesTab(data UpdatesData) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 63, "\"> <button type=\"submit\" onclick=\"return confirm('Delete this auto-update policy?')\" class=\"text-sm text-red-400 hover:text-red-300 px-2 py-1\" title=\"Delete policy\"><i class=\"fas fa-trash\"></i></button></form></div></div><div class=\"mt-2 text-xs text-gray-500 flex items-center gap-4\"><span>Max retries: ")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 63, "\"> <button type=\"submit\" onclick=\"return confirm('Delete this auto-update policy?')\" class=\"text-sm text-red-400 hover:text-red-300 px-2 py-1\" title=\"Delete policy\"><i aria-hidden=\"true\" class=\"fas fa-trash\"></i></button></form></div></div><div class=\"mt-2 text-xs text-gray-500 flex items-center gap-4\"><span>Max retries: ")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -731,13 +731,13 @@ func policiesTab(data UpdatesData) templ.Component {
 					return templ_7745c5c3_Err
 				}
 				if policy.NotifyOnUpdate {
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 66, "<span><i class=\"fas fa-bell mr-1\"></i>Notify on update</span> ")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 66, "<span><i aria-hidden=\"true\" class=\"fas fa-bell mr-1\"></i>Notify on update</span> ")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
 				}
 				if policy.NotifyOnFailure {
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 67, "<span><i class=\"fas fa-exclamation-triangle mr-1\"></i>Notify on failure</span>")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 67, "<span><i aria-hidden=\"true\" class=\"fas fa-exclamation-triangle mr-1\"></i>Notify on failure</span>")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
@@ -801,7 +801,7 @@ func policiesTab(data UpdatesData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 75, "</select> <input type=\"hidden\" name=\"container_name\" value=\"\"></div><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Schedule (cron, optional)</label> <input type=\"text\" name=\"schedule\" class=\"input\" placeholder=\"e.g. 0 2 * * * (daily at 2 AM)\"><p class=\"text-xs text-gray-500 mt-1\">Leave empty for immediate updates when detected</p></div></div><div class=\"flex flex-wrap items-center gap-6 mb-4\"><label class=\"flex items-center gap-2 text-sm text-gray-300\"><input type=\"checkbox\" name=\"auto_update\" value=\"on\" checked class=\"rounded border-dark-600 bg-dark-700 text-primary-500\"> Auto-update when available</label> <label class=\"flex items-center gap-2 text-sm text-gray-300\"><input type=\"checkbox\" name=\"auto_backup\" value=\"on\" checked class=\"rounded border-dark-600 bg-dark-700 text-primary-500\"> Create backup before update</label> <label class=\"flex items-center gap-2 text-sm text-gray-300\"><input type=\"checkbox\" name=\"include_prerelease\" value=\"on\" class=\"rounded border-dark-600 bg-dark-700 text-primary-500\"> Include pre-release versions</label></div><button type=\"button\" @click=\"showAdvanced = !showAdvanced\" class=\"text-sm text-primary-400 hover:text-primary-300 mb-4\"><i class=\"fas fa-cog mr-1\"></i>Advanced Options <i class=\"fas fa-chevron-down ml-1 text-xs\" x-show=\"!showAdvanced\"></i> <i class=\"fas fa-chevron-up ml-1 text-xs\" x-show=\"showAdvanced\"></i></button><div x-show=\"showAdvanced\" x-cloak class=\"grid grid-cols-1 md:grid-cols-2 gap-4 mb-4 p-4 bg-dark-900 rounded-lg\"><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Max Retries</label> <input type=\"number\" name=\"max_retries\" value=\"3\" min=\"0\" max=\"10\" class=\"input\"></div><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Health Check Wait (seconds)</label> <input type=\"number\" name=\"health_check_wait\" value=\"30\" min=\"5\" max=\"300\" class=\"input\"></div><label class=\"flex items-center gap-2 text-sm text-gray-300\"><input type=\"checkbox\" name=\"notify_update\" value=\"on\" checked class=\"rounded border-dark-600 bg-dark-700 text-primary-500\"> Notify on successful update</label> <label class=\"flex items-center gap-2 text-sm text-gray-300\"><input type=\"checkbox\" name=\"notify_failure\" value=\"on\" checked class=\"rounded border-dark-600 bg-dark-700 text-primary-500\"> Notify on failure</label></div><button type=\"submit\" class=\"btn-primary\"><i class=\"fas fa-plus mr-2\"></i>Create Policy</button></form></div></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 75, "</select> <input type=\"hidden\" name=\"container_name\" value=\"\"></div><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Schedule (cron, optional)</label> <input type=\"text\" name=\"schedule\" class=\"input\" placeholder=\"e.g. 0 2 * * * (daily at 2 AM)\" aria-label=\"e.g. 0 2 * * * (daily at 2 AM)\"><p class=\"text-xs text-gray-500 mt-1\">Leave empty for immediate updates when detected</p></div></div><div class=\"flex flex-wrap items-center gap-6 mb-4\"><label class=\"flex items-center gap-2 text-sm text-gray-300\"><input type=\"checkbox\" name=\"auto_update\" value=\"on\" checked class=\"rounded border-dark-600 bg-dark-700 text-primary-500\"> Auto-update when available</label> <label class=\"flex items-center gap-2 text-sm text-gray-300\"><input type=\"checkbox\" name=\"auto_backup\" value=\"on\" checked class=\"rounded border-dark-600 bg-dark-700 text-primary-500\"> Create backup before update</label> <label class=\"flex items-center gap-2 text-sm text-gray-300\"><input type=\"checkbox\" name=\"include_prerelease\" value=\"on\" class=\"rounded border-dark-600 bg-dark-700 text-primary-500\"> Include pre-release versions</label></div><button type=\"button\" @click=\"showAdvanced = !showAdvanced\" class=\"text-sm text-primary-400 hover:text-primary-300 mb-4\"><i aria-hidden=\"true\" class=\"fas fa-cog mr-1\"></i>Advanced Options <i aria-hidden=\"true\" class=\"fas fa-chevron-down ml-1 text-xs\" x-show=\"!showAdvanced\"></i> <i aria-hidden=\"true\" class=\"fas fa-chevron-up ml-1 text-xs\" x-show=\"showAdvanced\"></i></button><div x-show=\"showAdvanced\" x-cloak class=\"grid grid-cols-1 md:grid-cols-2 gap-4 mb-4 p-4 bg-dark-900 rounded-lg\"><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Max Retries</label> <input type=\"number\" name=\"max_retries\" value=\"3\" min=\"0\" max=\"10\" class=\"input\"></div><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Health Check Wait (seconds)</label> <input type=\"number\" name=\"health_check_wait\" value=\"30\" min=\"5\" max=\"300\" class=\"input\"></div><label class=\"flex items-center gap-2 text-sm text-gray-300\"><input type=\"checkbox\" name=\"notify_update\" value=\"on\" checked class=\"rounded border-dark-600 bg-dark-700 text-primary-500\"> Notify on successful update</label> <label class=\"flex items-center gap-2 text-sm text-gray-300\"><input type=\"checkbox\" name=\"notify_failure\" value=\"on\" checked class=\"rounded border-dark-600 bg-dark-700 text-primary-500\"> Notify on failure</label></div><button type=\"submit\" class=\"btn-primary\"><i aria-hidden=\"true\" class=\"fas fa-plus mr-2\"></i>Create Policy</button></form></div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -830,17 +830,17 @@ func historyTab(data UpdatesData) templ.Component {
 			templ_7745c5c3_Var39 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 76, "<div class=\"card\"><div class=\"px-5 py-4 border-b border-dark-700\"><h2 class=\"font-medium text-white\"><i class=\"fas fa-history mr-2 text-blue-400\"></i>Update History & Rollback</h2></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 76, "<div class=\"card\"><div class=\"px-5 py-4 border-b border-dark-700\"><h2 class=\"font-medium text-white\"><i aria-hidden=\"true\" class=\"fas fa-history mr-2 text-blue-400\"></i>Update History & Rollback</h2></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		if len(data.History) == 0 {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 77, "<div class=\"p-8 text-center text-gray-400\"><i class=\"fas fa-history text-3xl mb-3 text-gray-400\"></i><p>No update history yet</p></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 77, "<div class=\"p-8 text-center text-gray-400\"><i aria-hidden=\"true\" class=\"fas fa-history text-3xl mb-3 text-gray-400\"></i><p>No update history yet</p></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		} else {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 78, "<div class=\"overflow-x-auto\"><table class=\"table\"><thead><tr><th>Container</th><th>From</th><th>To</th><th>Status</th><th>Duration</th><th>Date</th><th>Actions</th></tr></thead> <tbody>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 78, "<div class=\"overflow-x-auto\"><table class=\"table\"><thead><tr><th scope=\"col\">Container</th><th scope=\"col\">From</th><th scope=\"col\">To</th><th scope=\"col\">Status</th><th scope=\"col\">Duration</th><th scope=\"col\">Date</th><th scope=\"col\">Actions</th></tr></thead> <tbody>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -976,12 +976,12 @@ func historyTab(data UpdatesData) templ.Component {
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 90, "\"> <button type=\"submit\" onclick=\"return confirm('Roll back this update? The previous version will be restored from backup.')\" class=\"text-sm text-orange-400 hover:text-orange-300\" title=\"Rollback to previous version\"><i class=\"fas fa-undo mr-1\"></i>Rollback</button></form>")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 90, "\"> <button type=\"submit\" onclick=\"return confirm('Roll back this update? The previous version will be restored from backup.')\" class=\"text-sm text-orange-400 hover:text-orange-300\" title=\"Rollback to previous version\"><i aria-hidden=\"true\" class=\"fas fa-undo mr-1\"></i>Rollback</button></form>")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
 				} else if h.Status == "completed" {
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 91, "<span class=\"text-xs text-gray-500\" title=\"Rollback window expired (24h)\"><i class=\"fas fa-clock mr-1\"></i>Expired</span>")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 91, "<span class=\"text-xs text-gray-500\" title=\"Rollback window expired (24h)\"><i aria-hidden=\"true\" class=\"fas fa-clock mr-1\"></i>Expired</span>")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}

@@ -27,16 +27,16 @@ templ GitSync(data GitSyncData) {
 					<p class="text-gray-400 mt-1">Bidirectional synchronization between Git repositories and UI-managed stacks</p>
 				</div>
 				<button @click="showCreateModal = true" class="btn-primary">
-					<i class="fas fa-plus mr-2"></i>New Sync Config
+					<i aria-hidden="true" class="fas fa-plus mr-2"></i>New Sync Config
 				</button>
 			</div>
 
 			<!-- Stats Cards -->
 			<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-				<div class="bg-dark-800 rounded-xl border border-dark-600 p-5">
+				<div class="card p-5">
 					<div class="flex items-center gap-3">
 						<div class="w-10 h-10 rounded-lg bg-primary-500/10 flex items-center justify-center">
-							<i class="fas fa-cogs text-primary-400"></i>
+							<i aria-hidden="true" class="fas fa-cogs text-primary-400"></i>
 						</div>
 						<div>
 							<p class="text-2xl font-bold text-white" x-text="stats.total_configs || 0"></p>
@@ -44,10 +44,10 @@ templ GitSync(data GitSyncData) {
 						</div>
 					</div>
 				</div>
-				<div class="bg-dark-800 rounded-xl border border-dark-600 p-5">
+				<div class="card p-5">
 					<div class="flex items-center gap-3">
 						<div class="w-10 h-10 rounded-lg bg-green-500/10 flex items-center justify-center">
-							<i class="fas fa-sync text-green-400"></i>
+							<i aria-hidden="true" class="fas fa-sync text-green-400"></i>
 						</div>
 						<div>
 							<p class="text-2xl font-bold text-white" x-text="stats.active_configs || 0"></p>
@@ -55,10 +55,10 @@ templ GitSync(data GitSyncData) {
 						</div>
 					</div>
 				</div>
-				<div class="bg-dark-800 rounded-xl border border-dark-600 p-5">
+				<div class="card p-5">
 					<div class="flex items-center gap-3">
 						<div class="w-10 h-10 rounded-lg bg-blue-500/10 flex items-center justify-center">
-							<i class="fas fa-clock text-blue-400"></i>
+							<i aria-hidden="true" class="fas fa-clock text-blue-400"></i>
 						</div>
 						<div>
 							<p class="text-2xl font-bold text-white" x-text="stats.total_syncs || 0"></p>
@@ -66,10 +66,10 @@ templ GitSync(data GitSyncData) {
 						</div>
 					</div>
 				</div>
-				<div class="bg-dark-800 rounded-xl border border-dark-600 p-5">
+				<div class="card p-5">
 					<div class="flex items-center gap-3">
 						<div class="w-10 h-10 rounded-lg bg-yellow-500/10 flex items-center justify-center">
-							<i class="fas fa-exclamation-triangle text-yellow-400"></i>
+							<i aria-hidden="true" class="fas fa-exclamation-triangle text-yellow-400"></i>
 						</div>
 						<div>
 							<p class="text-2xl font-bold text-white" x-text="stats.pending_conflicts || 0"></p>
@@ -83,13 +83,13 @@ templ GitSync(data GitSyncData) {
 			<div class="border-b border-dark-600">
 				<nav class="flex gap-6">
 					<button @click="activeTab = 'configs'" :class="activeTab === 'configs' ? 'border-primary-500 text-primary-400' : 'border-transparent text-gray-400 hover:text-gray-300'" class="pb-3 border-b-2 text-sm font-medium transition-colors">
-						<i class="fas fa-cogs mr-2"></i>Configurations
+						<i aria-hidden="true" class="fas fa-cogs mr-2"></i>Configurations
 					</button>
 					<button @click="activeTab = 'events'; loadEvents()" :class="activeTab === 'events' ? 'border-primary-500 text-primary-400' : 'border-transparent text-gray-400 hover:text-gray-300'" class="pb-3 border-b-2 text-sm font-medium transition-colors">
-						<i class="fas fa-stream mr-2"></i>Sync Events
+						<i aria-hidden="true" class="fas fa-stream mr-2"></i>Sync Events
 					</button>
 					<button @click="activeTab = 'conflicts'; loadConflicts()" :class="activeTab === 'conflicts' ? 'border-primary-500 text-primary-400' : 'border-transparent text-gray-400 hover:text-gray-300'" class="pb-3 border-b-2 text-sm font-medium transition-colors">
-						<i class="fas fa-code-branch mr-2"></i>Conflicts
+						<i aria-hidden="true" class="fas fa-code-branch mr-2"></i>Conflicts
 						<span x-show="stats.pending_conflicts > 0" class="ml-1 px-1.5 py-0.5 text-xs rounded-full bg-yellow-500/20 text-yellow-400" x-text="stats.pending_conflicts"></span>
 					</button>
 				</nav>
@@ -97,16 +97,16 @@ templ GitSync(data GitSyncData) {
 
 			<!-- Configurations Tab -->
 			<div x-show="activeTab === 'configs'">
-				<div class="bg-dark-800 rounded-xl border border-dark-600 overflow-hidden">
+				<div class="card overflow-hidden">
 					<template x-if="loading">
 						<div class="p-8 text-center text-gray-400">
-							<i class="fas fa-spinner fa-spin text-2xl mb-3"></i>
+							<i aria-hidden="true" class="fas fa-spinner fa-spin text-2xl mb-3"></i>
 							<p>Loading configurations...</p>
 						</div>
 					</template>
 					<template x-if="!loading && configs.length === 0">
 						<div class="p-8 text-center text-gray-400">
-							<i class="fas fa-code-branch text-3xl mb-3"></i>
+							<i aria-hidden="true" class="fas fa-code-branch text-3xl mb-3"></i>
 							<p>No sync configurations yet</p>
 							<p class="text-sm mt-1">Create one to start syncing between Git and your stacks.</p>
 						</div>
@@ -116,13 +116,13 @@ templ GitSync(data GitSyncData) {
 							<table class="w-full">
 								<thead>
 									<tr class="border-b border-dark-600 text-left">
-										<th class="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-										<th class="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Branch</th>
-										<th class="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Direction</th>
-										<th class="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Auto-Sync</th>
-										<th class="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Last Sync</th>
-										<th class="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-										<th class="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+										<th scope="col" class="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+										<th scope="col" class="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Branch</th>
+										<th scope="col" class="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Direction</th>
+										<th scope="col" class="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Auto-Sync</th>
+										<th scope="col" class="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Last Sync</th>
+										<th scope="col" class="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+										<th scope="col" class="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
 									</tr>
 								</thead>
 								<tbody class="divide-y divide-dark-700">
@@ -161,13 +161,13 @@ templ GitSync(data GitSyncData) {
 											<td class="px-4 py-3">
 												<div class="flex items-center gap-2">
 													<button @click="triggerSync(cfg)" class="p-1.5 text-gray-400 hover:text-green-400 transition-colors" title="Trigger Sync Now" :disabled="!cfg.is_enabled || cfg.syncing">
-														<i class="fas fa-sync text-sm" :class="cfg.syncing ? 'fa-spin' : ''"></i>
+														<i aria-hidden="true" class="fas fa-sync text-sm" :class="cfg.syncing ? 'fa-spin' : ''"></i>
 													</button>
 													<button @click="viewEvents(cfg)" class="p-1.5 text-gray-400 hover:text-blue-400 transition-colors" title="View Events">
-														<i class="fas fa-stream text-sm"></i>
+														<i aria-hidden="true" class="fas fa-stream text-sm"></i>
 													</button>
 													<button @click="deleteConfig(cfg)" class="p-1.5 text-gray-400 hover:text-red-400 transition-colors" title="Delete">
-														<i class="fas fa-trash text-sm"></i>
+														<i aria-hidden="true" class="fas fa-trash text-sm"></i>
 													</button>
 												</div>
 											</td>
@@ -191,16 +191,16 @@ templ GitSync(data GitSyncData) {
 						</template>
 					</select>
 				</div>
-				<div class="bg-dark-800 rounded-xl border border-dark-600 overflow-hidden">
+				<div class="card overflow-hidden">
 					<template x-if="eventsLoading">
 						<div class="p-8 text-center text-gray-400">
-							<i class="fas fa-spinner fa-spin text-2xl mb-3"></i>
+							<i aria-hidden="true" class="fas fa-spinner fa-spin text-2xl mb-3"></i>
 							<p>Loading events...</p>
 						</div>
 					</template>
 					<template x-if="!eventsLoading && events.length === 0">
 						<div class="p-8 text-center text-gray-400">
-							<i class="fas fa-stream text-3xl mb-3"></i>
+							<i aria-hidden="true" class="fas fa-stream text-3xl mb-3"></i>
 							<p>No sync events recorded yet</p>
 						</div>
 					</template>
@@ -209,12 +209,12 @@ templ GitSync(data GitSyncData) {
 							<table class="w-full">
 								<thead>
 									<tr class="border-b border-dark-600 text-left">
-										<th class="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Time</th>
-										<th class="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Config</th>
-										<th class="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Direction</th>
-										<th class="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
-										<th class="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-										<th class="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Message</th>
+										<th scope="col" class="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Time</th>
+										<th scope="col" class="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Config</th>
+										<th scope="col" class="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Direction</th>
+										<th scope="col" class="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
+										<th scope="col" class="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+										<th scope="col" class="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Message</th>
 									</tr>
 								</thead>
 								<tbody class="divide-y divide-dark-700">
@@ -249,16 +249,16 @@ templ GitSync(data GitSyncData) {
 
 			<!-- Conflicts Tab -->
 			<div x-show="activeTab === 'conflicts'">
-				<div class="bg-dark-800 rounded-xl border border-dark-600 overflow-hidden">
+				<div class="card overflow-hidden">
 					<template x-if="conflictsLoading">
 						<div class="p-8 text-center text-gray-400">
-							<i class="fas fa-spinner fa-spin text-2xl mb-3"></i>
+							<i aria-hidden="true" class="fas fa-spinner fa-spin text-2xl mb-3"></i>
 							<p>Loading conflicts...</p>
 						</div>
 					</template>
 					<template x-if="!conflictsLoading && conflicts.length === 0">
 						<div class="p-8 text-center text-gray-400">
-							<i class="fas fa-check-circle text-3xl mb-3 text-green-500"></i>
+							<i aria-hidden="true" class="fas fa-check-circle text-3xl mb-3 text-green-500"></i>
 							<p>No unresolved conflicts</p>
 						</div>
 					</template>
@@ -267,11 +267,11 @@ templ GitSync(data GitSyncData) {
 							<table class="w-full">
 								<thead>
 									<tr class="border-b border-dark-600 text-left">
-										<th class="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Config</th>
-										<th class="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">File Path</th>
-										<th class="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Detected</th>
-										<th class="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-										<th class="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+										<th scope="col" class="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Config</th>
+										<th scope="col" class="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">File Path</th>
+										<th scope="col" class="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Detected</th>
+										<th scope="col" class="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+										<th scope="col" class="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
 									</tr>
 								</thead>
 								<tbody class="divide-y divide-dark-700">
@@ -317,46 +317,46 @@ templ GitSync(data GitSyncData) {
 			<template x-if="showCreateModal">
 				<div class="fixed inset-0 z-50 flex items-center justify-center p-4" @keydown.escape.window="showCreateModal = false">
 					<div class="fixed inset-0 bg-black/60" @click="showCreateModal = false"></div>
-					<div class="relative bg-dark-800 rounded-xl border border-dark-600 w-full max-w-lg max-h-[90vh] overflow-y-auto shadow-2xl">
+					<div class="relative card w-full max-w-lg max-h-[90vh] overflow-y-auto shadow-2xl">
 						<div class="flex items-center justify-between p-5 border-b border-dark-600">
 							<h3 class="text-lg font-semibold text-white">New Sync Configuration</h3>
 							<button @click="showCreateModal = false" class="text-gray-400 hover:text-white">
-								<i class="fas fa-times"></i>
+								<i aria-hidden="true" class="fas fa-times"></i>
 							</button>
 						</div>
 						<div class="p-5 space-y-4">
 							<div>
 								<label class="block text-sm font-medium text-gray-300 mb-2">Name</label>
-								<input type="text" x-model="newConfig.name" class="input w-full" placeholder="my-stack-sync"/>
+								<input type="text" x-model="newConfig.name" class="input w-full" placeholder="my-stack-sync" aria-label="my-stack-sync"/>
 							</div>
 							<div>
 								<label class="block text-sm font-medium text-gray-300 mb-2">Connection ID</label>
-								<input type="text" x-model="newConfig.connection_id" class="input w-full font-mono" placeholder="UUID of the Git connection"/>
+								<input type="text" x-model="newConfig.connection_id" class="input w-full font-mono" placeholder="UUID of the Git connection" aria-label="UUID of the Git connection"/>
 							</div>
 							<div>
 								<label class="block text-sm font-medium text-gray-300 mb-2">Repository ID</label>
-								<input type="text" x-model="newConfig.repository_id" class="input w-full font-mono" placeholder="UUID of the Git repository"/>
+								<input type="text" x-model="newConfig.repository_id" class="input w-full font-mono" placeholder="UUID of the Git repository" aria-label="UUID of the Git repository"/>
 							</div>
 							<div>
 								<label class="block text-sm font-medium text-gray-300 mb-2">Repository Full Name</label>
-								<input type="text" x-model="newConfig.repo_full_name" class="input w-full font-mono" placeholder="org/repo"/>
+								<input type="text" x-model="newConfig.repo_full_name" class="input w-full font-mono" placeholder="org/repo" aria-label="org/repo"/>
 								<p class="text-xs text-gray-500 mt-1">Full name of the Git repository (e.g. owner/repo)</p>
 							</div>
 							<div>
 								<label class="block text-sm font-medium text-gray-300 mb-2">Stack Name</label>
-								<input type="text" x-model="newConfig.stack_name" class="input w-full" placeholder="my-stack"/>
+								<input type="text" x-model="newConfig.stack_name" class="input w-full" placeholder="my-stack" aria-label="my-stack"/>
 							</div>
 							<div>
 								<label class="block text-sm font-medium text-gray-300 mb-2">Target Path</label>
-								<input type="text" x-model="newConfig.target_path" class="input w-full font-mono" placeholder="stacks/my-stack"/>
+								<input type="text" x-model="newConfig.target_path" class="input w-full font-mono" placeholder="stacks/my-stack" aria-label="stacks/my-stack"/>
 							</div>
 							<div>
 								<label class="block text-sm font-medium text-gray-300 mb-2">Branch</label>
-								<input type="text" x-model="newConfig.branch" class="input w-full font-mono" placeholder="main"/>
+								<input type="text" x-model="newConfig.branch" class="input w-full font-mono" placeholder="main" aria-label="main"/>
 							</div>
 							<div>
 								<label class="block text-sm font-medium text-gray-300 mb-2">File Pattern</label>
-								<input type="text" x-model="newConfig.file_pattern" class="input w-full font-mono" placeholder="docker-compose*.yml"/>
+								<input type="text" x-model="newConfig.file_pattern" class="input w-full font-mono" placeholder="docker-compose*.yml" aria-label="docker-compose*.yml"/>
 							</div>
 							<div>
 								<label class="block text-sm font-medium text-gray-300 mb-2">Sync Direction</label>
@@ -388,8 +388,8 @@ templ GitSync(data GitSyncData) {
 						<div class="flex justify-end gap-3 p-5 border-t border-dark-600">
 							<button @click="showCreateModal = false" class="btn-secondary">Cancel</button>
 							<button @click="createConfig()" class="btn-primary" :disabled="!newConfig.name || creating">
-								<i class="fas fa-plus mr-2" x-show="!creating"></i>
-								<i class="fas fa-spinner fa-spin mr-2" x-show="creating"></i>
+								<i aria-hidden="true" class="fas fa-plus mr-2" x-show="!creating"></i>
+								<i aria-hidden="true" class="fas fa-spinner fa-spin mr-2" x-show="creating"></i>
 								<span x-text="creating ? 'Creating...' : 'Create'"></span>
 							</button>
 						</div>
@@ -401,26 +401,26 @@ templ GitSync(data GitSyncData) {
 			<template x-if="showMergeModal">
 				<div class="fixed inset-0 z-50 flex items-center justify-center p-4" @keydown.escape.window="showMergeModal = false">
 					<div class="fixed inset-0 bg-black/60" @click="showMergeModal = false"></div>
-					<div class="relative bg-dark-800 rounded-xl border border-dark-600 w-full max-w-3xl max-h-[90vh] overflow-y-auto shadow-2xl">
+					<div class="relative card w-full max-w-3xl max-h-[90vh] overflow-y-auto shadow-2xl">
 						<div class="flex items-center justify-between p-5 border-b border-dark-600">
 							<h3 class="text-lg font-semibold text-white">
 								Manual Merge: <span class="text-gray-400 font-mono text-sm" x-text="mergeConflict?.file_path"></span>
 							</h3>
 							<button @click="showMergeModal = false" class="text-gray-400 hover:text-white">
-								<i class="fas fa-times"></i>
+								<i aria-hidden="true" class="fas fa-times"></i>
 							</button>
 						</div>
 						<div class="p-5 space-y-4">
 							<div class="grid grid-cols-2 gap-4">
 								<div>
 									<label class="block text-sm font-medium text-gray-300 mb-2">
-										<i class="fas fa-code-branch mr-1 text-blue-400"></i>Git Content
+										<i aria-hidden="true" class="fas fa-code-branch mr-1 text-blue-400"></i>Git Content
 									</label>
 									<pre class="bg-dark-900 border border-dark-600 rounded-lg p-3 text-sm text-gray-300 font-mono overflow-auto max-h-48 whitespace-pre-wrap" x-text="mergeConflict?.git_content"></pre>
 								</div>
 								<div>
 									<label class="block text-sm font-medium text-gray-300 mb-2">
-										<i class="fas fa-desktop mr-1 text-purple-400"></i>UI Content
+										<i aria-hidden="true" class="fas fa-desktop mr-1 text-purple-400"></i>UI Content
 									</label>
 									<pre class="bg-dark-900 border border-dark-600 rounded-lg p-3 text-sm text-gray-300 font-mono overflow-auto max-h-48 whitespace-pre-wrap" x-text="mergeConflict?.ui_content"></pre>
 								</div>
@@ -433,7 +433,7 @@ templ GitSync(data GitSyncData) {
 						<div class="flex justify-end gap-3 p-5 border-t border-dark-600">
 							<button @click="showMergeModal = false" class="btn-secondary">Cancel</button>
 							<button @click="submitManualMerge()" class="btn-primary" :disabled="!mergeContent">
-								<i class="fas fa-check mr-2"></i>Apply Merge
+								<i aria-hidden="true" class="fas fa-check mr-2"></i>Apply Merge
 							</button>
 						</div>
 					</div>

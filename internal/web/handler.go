@@ -680,6 +680,8 @@ type Handler struct {
 	guacdConfig GuacdConfig
 	// BaseURL is the external server URL for absolute link generation
 	baseURL string
+	// First-run onboarding wizard (v26.5.2 session 04b).
+	onboardingSvc OnboardingService
 	// About page / system probes
 	db              DatabaseProber
 	redisProber     RedisProber
@@ -768,6 +770,8 @@ type HandlerDeps struct {
 	GuacdEnabled bool
 	GuacdHost    string
 	GuacdPort    int
+	// First-run onboarding wizard (v26.5.2 session 04b).
+	OnboardingSvc OnboardingService
 	// About page / system probes (nil-safe)
 	DB              DatabaseProber
 	RedisProber     RedisProber
@@ -789,6 +793,7 @@ func NewTemplHandler(deps HandlerDeps) *Handler {
 		totpSigningKey:         deps.TOTPSigningKey,
 		baseURL:                deps.BaseURL,
 		userRepo:               deps.UserRepo,
+		onboardingSvc:          deps.OnboardingSvc,
 		prefsRepo:              deps.PrefsRepo,
 		sessionRepo:            deps.SessionRepo,
 		snippetRepo:            deps.SnippetRepo,

@@ -6,8 +6,6 @@ package web
 
 import (
 	"net/http"
-	"strconv"
-	"strings"
 
 	"github.com/go-chi/chi/v5"
 
@@ -89,40 +87,33 @@ func (h *Handler) AutoUpdatePolicyCreate(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	if err := r.ParseForm(); err != nil {
-		h.setFlash(w, r, "error", "Invalid form data")
+	var form autoUpdatePolicyForm
+	if msg := BindForm(r, &form); msg != "" {
+		h.setFlash(w, r, "error", msg)
 		http.Redirect(w, r, "/updates?tab=policies", http.StatusSeeOther)
 		return
 	}
 
-	containerID := r.FormValue("container_id")
-	containerName := r.FormValue("container_name")
-	if containerID == "" {
-		h.setFlash(w, r, "error", "Container is required")
-		http.Redirect(w, r, "/updates?tab=policies", http.StatusSeeOther)
-		return
-	}
-
-	maxRetries, _ := strconv.Atoi(r.FormValue("max_retries"))
+	maxRetries := form.MaxRetries
 	if maxRetries == 0 {
 		maxRetries = 3
 	}
-	healthCheckWait, _ := strconv.Atoi(r.FormValue("health_check_wait"))
+	healthCheckWait := form.HealthCheckWait
 	if healthCheckWait == 0 {
 		healthCheckWait = 30
 	}
 
 	policy := UpdatePolicyView{
 		TargetType:        "container",
-		TargetID:          containerID,
-		TargetName:        containerName,
+		TargetID:          form.ContainerID,
+		TargetName:        form.ContainerName,
 		IsEnabled:         true,
-		AutoUpdate:        r.FormValue("auto_update") == "on",
-		AutoBackup:        r.FormValue("auto_backup") == "on",
-		IncludePrerelease: r.FormValue("include_prerelease") == "on",
-		Schedule:          strings.TrimSpace(r.FormValue("schedule")),
-		NotifyOnUpdate:    r.FormValue("notify_update") == "on",
-		NotifyOnFailure:   r.FormValue("notify_failure") == "on",
+		AutoUpdate:        form.AutoUpdate,
+		AutoBackup:        form.AutoBackup,
+		IncludePrerelease: form.IncludePrerelease,
+		Schedule:          form.Schedule,
+		NotifyOnUpdate:    form.NotifyUpdate,
+		NotifyOnFailure:   form.NotifyFailure,
 		MaxRetries:        maxRetries,
 		HealthCheckWait:   healthCheckWait,
 	}
@@ -131,10 +122,27 @@ func (h *Handler) AutoUpdatePolicyCreate(w http.ResponseWriter, r *http.Request)
 		h.logger.Error("failed to create auto-update policy", "error", err)
 		h.setFlash(w, r, "error", "Failed to create policy: "+err.Error())
 	} else {
-		h.setFlash(w, r, "success", "Auto-update policy created for "+containerName)
+		h.setFlash(w, r, "success", "Auto-update policy created for "+form.ContainerName)
 	}
 
 	http.Redirect(w, r, "/updates?tab=policies", http.StatusSeeOther)
+}
+
+// autoUpdatePolicyForm captures the create-policy inputs.
+// max_retries / health_check_wait default to 3 / 30 when blank;
+// the substitution lives in the handler because the validator
+// cannot express "0 means use this default".
+type autoUpdatePolicyForm struct {
+	ContainerID       string `form:"container_id" validate:"required"`
+	ContainerName     string `form:"container_name"`
+	MaxRetries        int    `form:"max_retries" validate:"gte=0"`
+	HealthCheckWait   int    `form:"health_check_wait" validate:"gte=0"`
+	AutoUpdate        bool   `form:"auto_update"`
+	AutoBackup        bool   `form:"auto_backup"`
+	IncludePrerelease bool   `form:"include_prerelease"`
+	Schedule          string `form:"schedule"`
+	NotifyUpdate      bool   `form:"notify_update"`
+	NotifyFailure     bool   `form:"notify_failure"`
 }
 
 // AutoUpdatePolicyToggle toggles an auto-update policy on/off.

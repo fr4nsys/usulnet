@@ -143,7 +143,7 @@ func ContainerSettings(data ContainerSettingsData) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<!-- Breadcrumb --> <nav class=\"flex items-center gap-2 text-sm text-gray-400 mb-4\"><a href=\"/containers\" class=\"hover:text-primary-400 transition-colors\">Containers</a> <i class=\"fas fa-chevron-right text-xs\"></i> <a href=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<!-- Breadcrumb --> <nav class=\"flex items-center gap-2 text-sm text-gray-400 mb-4\"><a href=\"/containers\" class=\"hover:text-primary-400 transition-colors\">Containers</a> <i aria-hidden=\"true\" class=\"fas fa-chevron-right text-xs\"></i> <a href=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -169,7 +169,7 @@ func ContainerSettings(data ContainerSettingsData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</a> <i class=\"fas fa-chevron-right text-xs\"></i> <span class=\"text-white\">Settings</span></nav><!-- Header --> <div class=\"flex items-start justify-between mb-6\"><div class=\"flex items-center gap-4\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</a> <i aria-hidden=\"true\" class=\"fas fa-chevron-right text-xs\"></i> <span class=\"text-white\">Settings</span></nav><!-- Header --> <div class=\"flex items-start justify-between mb-6\"><div class=\"flex items-center gap-4\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -332,7 +332,7 @@ func ContainerSettings(data ContainerSettingsData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "\"><div class=\"space-y-6\"><!-- Image & Basic Info --><div class=\"bg-dark-800 rounded-xl border border-dark-600 p-5\"><h2 class=\"text-lg font-semibold text-white mb-4\"><i class=\"fas fa-box mr-2 text-primary-400\"></i>Image & Basic Info</h2><div class=\"grid grid-cols-1 md:grid-cols-2 gap-4\"><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Docker Image *</label> <input type=\"text\" name=\"image\" value=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "\"><div class=\"space-y-6\"><!-- Image & Basic Info --><div class=\"card p-5\"><h2 class=\"text-lg font-semibold text-white mb-4\"><i aria-hidden=\"true\" class=\"fas fa-box mr-2 text-primary-400\"></i>Image & Basic Info</h2><div class=\"grid grid-cols-1 md:grid-cols-2 gap-4\"><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Docker Image *</label> <input type=\"text\" name=\"image\" value=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -345,46 +345,46 @@ func ContainerSettings(data ContainerSettingsData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "\" class=\"w-full px-3 py-2 bg-dark-900 border border-dark-500 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary-500\" placeholder=\"e.g. pihole/pihole\" required></div><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Tag</label> <input type=\"text\" name=\"tag\" value=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "\" class=\"w-full px-3 py-2 bg-dark-900 border border-dark-500 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary-500\" placeholder=\"e.g. pihole/pihole\" required aria-label=\"Docker Image\"></div><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Tag</label> <input type=\"text\" name=\"tag\" value=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var17 string
 			templ_7745c5c3_Var17, templ_7745c5c3_Err = templ.JoinStringErrs(getImageTag(data.Container.Image))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/containers/settings.templ`, Line: 175, Col: 49}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/containers/settings.templ`, Line: 176, Col: 49}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var17))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "\" class=\"w-full px-3 py-2 bg-dark-900 border border-dark-500 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary-500\" placeholder=\"latest\"></div><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Container Name *</label> <input type=\"text\" name=\"name\" value=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "\" class=\"w-full px-3 py-2 bg-dark-900 border border-dark-500 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary-500\" placeholder=\"latest\" aria-label=\"Tag\"></div><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Container Name *</label> <input type=\"text\" name=\"name\" value=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var18 string
 			templ_7745c5c3_Var18, templ_7745c5c3_Err = templ.JoinStringErrs(data.Container.Name)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/containers/settings.templ`, Line: 185, Col: 35}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/containers/settings.templ`, Line: 187, Col: 35}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var18))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "\" class=\"w-full px-3 py-2 bg-dark-900 border border-dark-500 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary-500\" required></div><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Hostname</label> <input type=\"text\" name=\"hostname\" value=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "\" class=\"w-full px-3 py-2 bg-dark-900 border border-dark-500 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary-500\" required aria-label=\"Container Name\"></div><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Hostname</label> <input type=\"text\" name=\"hostname\" value=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var19 string
 			templ_7745c5c3_Var19, templ_7745c5c3_Err = templ.JoinStringErrs(data.Container.Hostname)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/containers/settings.templ`, Line: 195, Col: 39}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/containers/settings.templ`, Line: 198, Col: 39}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var19))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "\" class=\"w-full px-3 py-2 bg-dark-900 border border-dark-500 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary-500\" placeholder=\"Container hostname\"></div></div></div><!-- Web UI Access --><div class=\"bg-dark-800 rounded-xl border border-dark-600 p-5\"><h2 class=\"text-lg font-semibold text-white mb-4\"><i class=\"fas fa-globe mr-2 text-primary-400\"></i>Web UI Access</h2><p class=\"text-sm text-gray-400 mb-4\">Configure a direct link to this container's web interface. If left empty, the first exposed host port will be used automatically.</p><div class=\"flex flex-wrap items-end gap-2\"><div class=\"w-28\"><label class=\"block text-sm font-medium text-gray-300 mb-2\">Protocol</label> <select name=\"webui_protocol\" class=\"w-full px-3 py-2 bg-dark-900 border border-dark-500 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary-500\"><option value=\"\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "\" class=\"w-full px-3 py-2 bg-dark-900 border border-dark-500 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary-500\" placeholder=\"Container hostname\" aria-label=\"Hostname\"></div></div></div><!-- Web UI Access --><div class=\"card p-5\"><h2 class=\"text-lg font-semibold text-white mb-4\"><i aria-hidden=\"true\" class=\"fas fa-globe mr-2 text-primary-400\"></i>Web UI Access</h2><p class=\"text-sm text-gray-400 mb-4\">Configure a direct link to this container's web interface. If left empty, the first exposed host port will be used automatically.</p><div class=\"flex flex-wrap items-end gap-2\"><div class=\"w-28\"><label class=\"block text-sm font-medium text-gray-300 mb-2\">Protocol</label> <select name=\"webui_protocol\" class=\"w-full px-3 py-2 bg-dark-900 border border-dark-500 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary-500\"><option value=\"\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -421,39 +421,39 @@ func ContainerSettings(data ContainerSettingsData) templ.Component {
 			var templ_7745c5c3_Var20 string
 			templ_7745c5c3_Var20, templ_7745c5c3_Err = templ.JoinStringErrs(data.Container.WebUIHost)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/containers/settings.templ`, Line: 226, Col: 40}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/containers/settings.templ`, Line: 230, Col: 40}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var20))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 26, "\" class=\"w-full px-3 py-2 bg-dark-900 border border-dark-500 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary-500\" placeholder=\"(auto-detect)\"></div><div class=\"w-24\"><label class=\"block text-sm font-medium text-gray-300 mb-2\">Port</label> <input type=\"text\" name=\"webui_port\" value=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 26, "\" class=\"w-full px-3 py-2 bg-dark-900 border border-dark-500 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary-500\" placeholder=\"(auto-detect)\" aria-label=\"Host\"></div><div class=\"w-24\"><label class=\"block text-sm font-medium text-gray-300 mb-2\">Port</label> <input type=\"text\" name=\"webui_port\" value=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var21 string
 			templ_7745c5c3_Var21, templ_7745c5c3_Err = templ.JoinStringErrs(data.Container.WebUIPort)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/containers/settings.templ`, Line: 236, Col: 40}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/containers/settings.templ`, Line: 241, Col: 40}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var21))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 27, "\" class=\"w-full px-3 py-2 bg-dark-900 border border-dark-500 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary-500\" placeholder=\"(auto)\"></div><div class=\"w-32\"><label class=\"block text-sm font-medium text-gray-300 mb-2\">Path</label> <input type=\"text\" name=\"webui_path\" value=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 27, "\" class=\"w-full px-3 py-2 bg-dark-900 border border-dark-500 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary-500\" placeholder=\"(auto)\" aria-label=\"Port\"></div><div class=\"w-32\"><label class=\"block text-sm font-medium text-gray-300 mb-2\">Path</label> <input type=\"text\" name=\"webui_path\" value=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var22 string
 			templ_7745c5c3_Var22, templ_7745c5c3_Err = templ.JoinStringErrs(data.Container.WebUIPath)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/containers/settings.templ`, Line: 246, Col: 40}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/containers/settings.templ`, Line: 252, Col: 40}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var22))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 28, "\" class=\"w-full px-3 py-2 bg-dark-900 border border-dark-500 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary-500\" placeholder=\"/admin\"></div><div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 28, "\" class=\"w-full px-3 py-2 bg-dark-900 border border-dark-500 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary-500\" placeholder=\"/admin\" aria-label=\"Path\"></div><div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -471,7 +471,7 @@ func ContainerSettings(data ContainerSettingsData) templ.Component {
 			var templ_7745c5c3_Var24 templ.SafeURL
 			templ_7745c5c3_Var24, templ_7745c5c3_Err = templ.JoinURLErrs(templ.SafeURL(buildWebUIURL(data.Container)))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/containers/settings.templ`, Line: 253, Col: 59}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/containers/settings.templ`, Line: 260, Col: 59}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var24))
 			if templ_7745c5c3_Err != nil {
@@ -490,7 +490,7 @@ func ContainerSettings(data ContainerSettingsData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 31, "\"><i class=\"fas fa-external-link-alt\"></i>Open Web UI</a></div></div></div><!-- Network --><div class=\"bg-dark-800 rounded-xl border border-dark-600 p-5\"><h2 class=\"text-lg font-semibold text-white mb-4\"><i class=\"fas fa-network-wired mr-2 text-primary-400\"></i>Network</h2><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Network Mode</label> <select name=\"network_mode\" class=\"w-full max-w-xs px-3 py-2 bg-dark-900 border border-dark-500 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary-500\"><option value=\"bridge\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 31, "\"><i aria-hidden=\"true\" class=\"fas fa-external-link-alt\"></i>Open Web UI</a></div></div></div><!-- Network --><div class=\"card p-5\"><h2 class=\"text-lg font-semibold text-white mb-4\"><i aria-hidden=\"true\" class=\"fas fa-network-wired mr-2 text-primary-400\"></i>Network</h2><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Network Mode</label> <select name=\"network_mode\" class=\"w-full max-w-xs px-3 py-2 bg-dark-900 border border-dark-500 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary-500\"><option value=\"bridge\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -533,7 +533,7 @@ func ContainerSettings(data ContainerSettingsData) templ.Component {
 					var templ_7745c5c3_Var26 string
 					templ_7745c5c3_Var26, templ_7745c5c3_Err = templ.JoinStringErrs(net)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/containers/settings.templ`, Line: 282, Col: 28}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/containers/settings.templ`, Line: 289, Col: 28}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var26))
 					if templ_7745c5c3_Err != nil {
@@ -556,7 +556,7 @@ func ContainerSettings(data ContainerSettingsData) templ.Component {
 					var templ_7745c5c3_Var27 string
 					templ_7745c5c3_Var27, templ_7745c5c3_Err = templ.JoinStringErrs(net)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/containers/settings.templ`, Line: 282, Col: 84}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/containers/settings.templ`, Line: 289, Col: 84}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var27))
 					if templ_7745c5c3_Err != nil {
@@ -568,111 +568,111 @@ func ContainerSettings(data ContainerSettingsData) templ.Component {
 					}
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 43, "</select></div></div><!-- Port Mappings --><div class=\"bg-dark-800 rounded-xl border border-dark-600 p-5\" x-data=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 43, "</select></div></div><!-- Port Mappings --><div class=\"card p-5\" x-data=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var28 string
 			templ_7745c5c3_Var28, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("portSettings(%s)", portSettingsJSON(data.Container.Ports)))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/containers/settings.templ`, Line: 290, Col: 147}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/containers/settings.templ`, Line: 297, Col: 106}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var28))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 44, "\"><div class=\"flex items-center justify-between mb-4\"><h2 class=\"text-lg font-semibold text-white\"><i class=\"fas fa-plug mr-2 text-primary-400\"></i>Port Mappings</h2><button type=\"button\" @click=\"addPort()\" class=\"text-sm px-3 py-1.5 bg-primary-600 hover:bg-primary-700 text-white rounded-lg transition-colors\"><i class=\"fas fa-plus mr-1\"></i>Add Port</button></div><div class=\"space-y-2\"><div class=\"grid grid-cols-12 gap-2 text-xs text-gray-400 font-medium px-1\"><div class=\"col-span-4\">Host Port</div><div class=\"col-span-4\">Container Port</div><div class=\"col-span-3\">Protocol</div><div class=\"col-span-1\"></div></div><template x-for=\"(port, index) in ports\" :key=\"index\"><div class=\"grid grid-cols-12 gap-2 items-center\"><div class=\"col-span-4\"><input type=\"text\" :name=\"'port_host_' + index\" x-model=\"port.host\" class=\"w-full px-3 py-2 bg-dark-900 border border-dark-500 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary-500\" placeholder=\"8080\"></div><div class=\"col-span-4\"><input type=\"text\" :name=\"'port_container_' + index\" x-model=\"port.container\" class=\"w-full px-3 py-2 bg-dark-900 border border-dark-500 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary-500\" placeholder=\"80\"></div><div class=\"col-span-3\"><select :name=\"'port_protocol_' + index\" x-model=\"port.protocol\" class=\"w-full px-3 py-2 bg-dark-900 border border-dark-500 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary-500\"><option value=\"tcp\">TCP</option> <option value=\"udp\">UDP</option></select></div><div class=\"col-span-1 text-center\"><button type=\"button\" @click=\"removePort(index)\" class=\"text-red-400 hover:text-red-300 p-1\"><i class=\"fas fa-trash text-sm\"></i></button></div></div></template><template x-if=\"ports.length === 0\"><p class=\"text-sm text-gray-500 text-center py-3\">No port mappings configured</p></template></div><input type=\"hidden\" name=\"ports_json\" :value=\"JSON.stringify(ports)\"></div><!-- Volume Mounts --><div class=\"bg-dark-800 rounded-xl border border-dark-600 p-5\" x-data=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 44, "\"><div class=\"flex items-center justify-between mb-4\"><h2 class=\"text-lg font-semibold text-white\"><i aria-hidden=\"true\" class=\"fas fa-plug mr-2 text-primary-400\"></i>Port Mappings</h2><button type=\"button\" @click=\"addPort()\" class=\"text-sm px-3 py-1.5 bg-primary-600 hover:bg-primary-700 text-white rounded-lg transition-colors\"><i aria-hidden=\"true\" class=\"fas fa-plus mr-1\"></i>Add Port</button></div><div class=\"space-y-2\"><div class=\"grid grid-cols-12 gap-2 text-xs text-gray-400 font-medium px-1\"><div class=\"col-span-4\">Host Port</div><div class=\"col-span-4\">Container Port</div><div class=\"col-span-3\">Protocol</div><div class=\"col-span-1\"></div></div><template x-for=\"(port, index) in ports\" :key=\"index\"><div class=\"grid grid-cols-12 gap-2 items-center\"><div class=\"col-span-4\"><input type=\"text\" :name=\"'port_host_' + index\" x-model=\"port.host\" class=\"w-full px-3 py-2 bg-dark-900 border border-dark-500 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary-500\" placeholder=\"8080\" aria-label=\"8080\"></div><div class=\"col-span-4\"><input type=\"text\" :name=\"'port_container_' + index\" x-model=\"port.container\" class=\"w-full px-3 py-2 bg-dark-900 border border-dark-500 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary-500\" placeholder=\"80\" aria-label=\"80\"></div><div class=\"col-span-3\"><select :name=\"'port_protocol_' + index\" x-model=\"port.protocol\" class=\"w-full px-3 py-2 bg-dark-900 border border-dark-500 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary-500\"><option value=\"tcp\">TCP</option> <option value=\"udp\">UDP</option></select></div><div class=\"col-span-1 text-center\"><button type=\"button\" @click=\"removePort(index)\" class=\"text-red-400 hover:text-red-300 p-1\"><i aria-hidden=\"true\" class=\"fas fa-trash text-sm\"></i></button></div></div></template><template x-if=\"ports.length === 0\"><p class=\"text-sm text-gray-500 text-center py-3\">No port mappings configured</p></template></div><input type=\"hidden\" name=\"ports_json\" :value=\"JSON.stringify(ports)\"></div><!-- Volume Mounts --><div class=\"card p-5\" x-data=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var29 string
 			templ_7745c5c3_Var29, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("volumeSettings(%s)", volumeSettingsJSON(data.Container.Volumes)))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/containers/settings.templ`, Line: 351, Col: 153}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/containers/settings.templ`, Line: 360, Col: 112}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var29))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 45, "\"><div class=\"flex items-center justify-between mb-4\"><h2 class=\"text-lg font-semibold text-white\"><i class=\"fas fa-hdd mr-2 text-primary-400\"></i>Volume Mounts</h2><button type=\"button\" @click=\"addVolume()\" class=\"text-sm px-3 py-1.5 bg-primary-600 hover:bg-primary-700 text-white rounded-lg transition-colors\"><i class=\"fas fa-plus mr-1\"></i>Add Volume</button></div><div class=\"space-y-2\"><div class=\"grid grid-cols-12 gap-2 text-xs text-gray-400 font-medium px-1\"><div class=\"col-span-5\">Host Path / Volume</div><div class=\"col-span-5\">Container Path</div><div class=\"col-span-1\">RW</div><div class=\"col-span-1\"></div></div><template x-for=\"(vol, index) in volumes\" :key=\"index\"><div class=\"grid grid-cols-12 gap-2 items-center\"><div class=\"col-span-5\"><input type=\"text\" :name=\"'vol_host_' + index\" x-model=\"vol.host\" class=\"w-full px-3 py-2 bg-dark-900 border border-dark-500 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary-500\" placeholder=\"/host/path or volume_name\"></div><div class=\"col-span-5\"><input type=\"text\" :name=\"'vol_container_' + index\" x-model=\"vol.container\" class=\"w-full px-3 py-2 bg-dark-900 border border-dark-500 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary-500\" placeholder=\"/container/path\"></div><div class=\"col-span-1 flex justify-center\"><input type=\"checkbox\" :name=\"'vol_rw_' + index\" x-model=\"vol.rw\" class=\"rounded border-dark-500 bg-dark-900 text-primary-500\" checked></div><div class=\"col-span-1 text-center\"><button type=\"button\" @click=\"removeVolume(index)\" class=\"text-red-400 hover:text-red-300 p-1\"><i class=\"fas fa-trash text-sm\"></i></button></div></div></template><template x-if=\"volumes.length === 0\"><p class=\"text-sm text-gray-500 text-center py-3\">No volumes configured</p></template></div><input type=\"hidden\" name=\"volumes_json\" :value=\"JSON.stringify(volumes)\"></div><!-- Environment Variables --><div class=\"bg-dark-800 rounded-xl border border-dark-600 p-5\" x-data=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 45, "\"><div class=\"flex items-center justify-between mb-4\"><h2 class=\"text-lg font-semibold text-white\"><i aria-hidden=\"true\" class=\"fas fa-hdd mr-2 text-primary-400\"></i>Volume Mounts</h2><button type=\"button\" @click=\"addVolume()\" class=\"text-sm px-3 py-1.5 bg-primary-600 hover:bg-primary-700 text-white rounded-lg transition-colors\"><i aria-hidden=\"true\" class=\"fas fa-plus mr-1\"></i>Add Volume</button></div><div class=\"space-y-2\"><div class=\"grid grid-cols-12 gap-2 text-xs text-gray-400 font-medium px-1\"><div class=\"col-span-5\">Host Path / Volume</div><div class=\"col-span-5\">Container Path</div><div class=\"col-span-1\">RW</div><div class=\"col-span-1\"></div></div><template x-for=\"(vol, index) in volumes\" :key=\"index\"><div class=\"grid grid-cols-12 gap-2 items-center\"><div class=\"col-span-5\"><input type=\"text\" :name=\"'vol_host_' + index\" x-model=\"vol.host\" class=\"w-full px-3 py-2 bg-dark-900 border border-dark-500 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary-500\" placeholder=\"/host/path or volume_name\" aria-label=\"/host/path or volume_name\"></div><div class=\"col-span-5\"><input type=\"text\" :name=\"'vol_container_' + index\" x-model=\"vol.container\" class=\"w-full px-3 py-2 bg-dark-900 border border-dark-500 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary-500\" placeholder=\"/container/path\" aria-label=\"/container/path\"></div><div class=\"col-span-1 flex justify-center\"><input type=\"checkbox\" :name=\"'vol_rw_' + index\" x-model=\"vol.rw\" class=\"rounded border-dark-500 bg-dark-900 text-primary-500\" checked aria-label=\"Read-write\"></div><div class=\"col-span-1 text-center\"><button type=\"button\" @click=\"removeVolume(index)\" class=\"text-red-400 hover:text-red-300 p-1\"><i aria-hidden=\"true\" class=\"fas fa-trash text-sm\"></i></button></div></div></template><template x-if=\"volumes.length === 0\"><p class=\"text-sm text-gray-500 text-center py-3\">No volumes configured</p></template></div><input type=\"hidden\" name=\"volumes_json\" :value=\"JSON.stringify(volumes)\"></div><!-- Environment Variables --><div class=\"card p-5\" x-data=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var30 string
 			templ_7745c5c3_Var30, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("envSettings(%s)", envSettingsJSON(data.Container.EnvVars)))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/containers/settings.templ`, Line: 411, Col: 147}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/containers/settings.templ`, Line: 423, Col: 106}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var30))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 46, "\"><div class=\"flex items-center justify-between mb-4\"><h2 class=\"text-lg font-semibold text-white\"><i class=\"fas fa-list mr-2 text-primary-400\"></i>Environment Variables</h2><button type=\"button\" @click=\"addEnv()\" class=\"text-sm px-3 py-1.5 bg-primary-600 hover:bg-primary-700 text-white rounded-lg transition-colors\"><i class=\"fas fa-plus mr-1\"></i>Add Variable</button></div><div class=\"space-y-2\"><div class=\"grid grid-cols-12 gap-2 text-xs text-gray-400 font-medium px-1\"><div class=\"col-span-5\">Key</div><div class=\"col-span-6\">Value</div><div class=\"col-span-1\"></div></div><template x-for=\"(env, index) in envVars\" :key=\"index\"><div class=\"grid grid-cols-12 gap-2 items-center\"><div class=\"col-span-5\"><input type=\"text\" :name=\"'env_key_' + index\" x-model=\"env.key\" class=\"w-full px-3 py-2 bg-dark-900 border border-dark-500 rounded-lg text-white text-sm font-mono focus:outline-none focus:ring-2 focus:ring-primary-500\" placeholder=\"VARIABLE_NAME\"></div><div class=\"col-span-6\"><input type=\"text\" :name=\"'env_value_' + index\" x-model=\"env.value\" class=\"w-full px-3 py-2 bg-dark-900 border border-dark-500 rounded-lg text-white text-sm font-mono focus:outline-none focus:ring-2 focus:ring-primary-500\" placeholder=\"value\"></div><div class=\"col-span-1 text-center\"><button type=\"button\" @click=\"removeEnv(index)\" class=\"text-red-400 hover:text-red-300 p-1\"><i class=\"fas fa-trash text-sm\"></i></button></div></div></template><template x-if=\"envVars.length === 0\"><p class=\"text-sm text-gray-500 text-center py-3\">No environment variables configured</p></template></div><input type=\"hidden\" name=\"env_json\" :value=\"JSON.stringify(envVars)\"></div><!-- Devices --><div class=\"bg-dark-800 rounded-xl border border-dark-600 p-5\" x-data=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 46, "\"><div class=\"flex items-center justify-between mb-4\"><h2 class=\"text-lg font-semibold text-white\"><i aria-hidden=\"true\" class=\"fas fa-list mr-2 text-primary-400\"></i>Environment Variables</h2><button type=\"button\" @click=\"addEnv()\" class=\"text-sm px-3 py-1.5 bg-primary-600 hover:bg-primary-700 text-white rounded-lg transition-colors\"><i aria-hidden=\"true\" class=\"fas fa-plus mr-1\"></i>Add Variable</button></div><div class=\"space-y-2\"><div class=\"grid grid-cols-12 gap-2 text-xs text-gray-400 font-medium px-1\"><div class=\"col-span-5\">Key</div><div class=\"col-span-6\">Value</div><div class=\"col-span-1\"></div></div><template x-for=\"(env, index) in envVars\" :key=\"index\"><div class=\"grid grid-cols-12 gap-2 items-center\"><div class=\"col-span-5\"><input type=\"text\" :name=\"'env_key_' + index\" x-model=\"env.key\" class=\"w-full px-3 py-2 bg-dark-900 border border-dark-500 rounded-lg text-white text-sm font-mono focus:outline-none focus:ring-2 focus:ring-primary-500\" placeholder=\"VARIABLE_NAME\" aria-label=\"VARIABLE_NAME\"></div><div class=\"col-span-6\"><input type=\"text\" :name=\"'env_value_' + index\" x-model=\"env.value\" class=\"w-full px-3 py-2 bg-dark-900 border border-dark-500 rounded-lg text-white text-sm font-mono focus:outline-none focus:ring-2 focus:ring-primary-500\" placeholder=\"value\" aria-label=\"value\"></div><div class=\"col-span-1 text-center\"><button type=\"button\" @click=\"removeEnv(index)\" class=\"text-red-400 hover:text-red-300 p-1\"><i aria-hidden=\"true\" class=\"fas fa-trash text-sm\"></i></button></div></div></template><template x-if=\"envVars.length === 0\"><p class=\"text-sm text-gray-500 text-center py-3\">No environment variables configured</p></template></div><input type=\"hidden\" name=\"env_json\" :value=\"JSON.stringify(envVars)\"></div><!-- Devices --><div class=\"card p-5\" x-data=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var31 string
 			templ_7745c5c3_Var31, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("deviceSettings(%s)", deviceSettingsJSON(data.Container.Devices)))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/containers/settings.templ`, Line: 461, Col: 153}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/containers/settings.templ`, Line: 475, Col: 112}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var31))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 47, "\"><div class=\"flex items-center justify-between mb-4\"><h2 class=\"text-lg font-semibold text-white\"><i class=\"fas fa-microchip mr-2 text-primary-400\"></i>Devices</h2><button type=\"button\" @click=\"addDevice()\" class=\"text-sm px-3 py-1.5 bg-primary-600 hover:bg-primary-700 text-white rounded-lg transition-colors\"><i class=\"fas fa-plus mr-1\"></i>Add Device</button></div><div class=\"space-y-2\"><div class=\"grid grid-cols-12 gap-2 text-xs text-gray-400 font-medium px-1\"><div class=\"col-span-5\">Host Device</div><div class=\"col-span-6\">Container Device</div><div class=\"col-span-1\"></div></div><template x-for=\"(dev, index) in devices\" :key=\"index\"><div class=\"grid grid-cols-12 gap-2 items-center\"><div class=\"col-span-5\"><input type=\"text\" :name=\"'dev_host_' + index\" x-model=\"dev.host\" class=\"w-full px-3 py-2 bg-dark-900 border border-dark-500 rounded-lg text-white text-sm font-mono focus:outline-none focus:ring-2 focus:ring-primary-500\" placeholder=\"/dev/dri\"></div><div class=\"col-span-6\"><input type=\"text\" :name=\"'dev_container_' + index\" x-model=\"dev.container\" class=\"w-full px-3 py-2 bg-dark-900 border border-dark-500 rounded-lg text-white text-sm font-mono focus:outline-none focus:ring-2 focus:ring-primary-500\" placeholder=\"/dev/dri\"></div><div class=\"col-span-1 text-center\"><button type=\"button\" @click=\"removeDevice(index)\" class=\"text-red-400 hover:text-red-300 p-1\"><i class=\"fas fa-trash text-sm\"></i></button></div></div></template><template x-if=\"devices.length === 0\"><p class=\"text-sm text-gray-500 text-center py-3\">No devices configured</p></template></div><input type=\"hidden\" name=\"devices_json\" :value=\"JSON.stringify(devices)\"></div><!-- Command & Execution --><div class=\"bg-dark-800 rounded-xl border border-dark-600 p-5\"><h2 class=\"text-lg font-semibold text-white mb-4\"><i class=\"fas fa-terminal mr-2 text-primary-400\"></i>Command & Execution</h2><div class=\"space-y-4\"><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Container Command</label> <input type=\"text\" name=\"command\" value=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 47, "\"><div class=\"flex items-center justify-between mb-4\"><h2 class=\"text-lg font-semibold text-white\"><i aria-hidden=\"true\" class=\"fas fa-microchip mr-2 text-primary-400\"></i>Devices</h2><button type=\"button\" @click=\"addDevice()\" class=\"text-sm px-3 py-1.5 bg-primary-600 hover:bg-primary-700 text-white rounded-lg transition-colors\"><i aria-hidden=\"true\" class=\"fas fa-plus mr-1\"></i>Add Device</button></div><div class=\"space-y-2\"><div class=\"grid grid-cols-12 gap-2 text-xs text-gray-400 font-medium px-1\"><div class=\"col-span-5\">Host Device</div><div class=\"col-span-6\">Container Device</div><div class=\"col-span-1\"></div></div><template x-for=\"(dev, index) in devices\" :key=\"index\"><div class=\"grid grid-cols-12 gap-2 items-center\"><div class=\"col-span-5\"><input type=\"text\" :name=\"'dev_host_' + index\" x-model=\"dev.host\" class=\"w-full px-3 py-2 bg-dark-900 border border-dark-500 rounded-lg text-white text-sm font-mono focus:outline-none focus:ring-2 focus:ring-primary-500\" placeholder=\"/dev/dri\" aria-label=\"/dev/dri\"></div><div class=\"col-span-6\"><input type=\"text\" :name=\"'dev_container_' + index\" x-model=\"dev.container\" class=\"w-full px-3 py-2 bg-dark-900 border border-dark-500 rounded-lg text-white text-sm font-mono focus:outline-none focus:ring-2 focus:ring-primary-500\" placeholder=\"/dev/dri\" aria-label=\"/dev/dri\"></div><div class=\"col-span-1 text-center\"><button type=\"button\" @click=\"removeDevice(index)\" class=\"text-red-400 hover:text-red-300 p-1\"><i aria-hidden=\"true\" class=\"fas fa-trash text-sm\"></i></button></div></div></template><template x-if=\"devices.length === 0\"><p class=\"text-sm text-gray-500 text-center py-3\">No devices configured</p></template></div><input type=\"hidden\" name=\"devices_json\" :value=\"JSON.stringify(devices)\"></div><!-- Command & Execution --><div class=\"card p-5\"><h2 class=\"text-lg font-semibold text-white mb-4\"><i aria-hidden=\"true\" class=\"fas fa-terminal mr-2 text-primary-400\"></i>Command & Execution</h2><div class=\"space-y-4\"><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Container Command</label> <input type=\"text\" name=\"command\" value=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var32 string
 			templ_7745c5c3_Var32, templ_7745c5c3_Err = templ.JoinStringErrs(data.Container.Command)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/containers/settings.templ`, Line: 521, Col: 38}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/containers/settings.templ`, Line: 537, Col: 38}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var32))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 48, "\" class=\"w-full px-3 py-2 bg-dark-900 border border-dark-500 rounded-lg text-white text-sm font-mono focus:outline-none focus:ring-2 focus:ring-primary-500\" placeholder=\"e.g. /bin/sh -c 'echo hello'\"><p class=\"text-xs text-gray-500 mt-1\">Override the default container command</p></div></div></div><!-- Resources --><div class=\"bg-dark-800 rounded-xl border border-dark-600 p-5\"><h2 class=\"text-lg font-semibold text-white mb-4\"><i class=\"fas fa-tachometer-alt mr-2 text-primary-400\"></i>Resources</h2><div class=\"grid grid-cols-1 md:grid-cols-3 gap-4\"><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Memory Limit (MB)</label> <input type=\"number\" name=\"memory_limit\" value=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 48, "\" class=\"w-full px-3 py-2 bg-dark-900 border border-dark-500 rounded-lg text-white text-sm font-mono focus:outline-none focus:ring-2 focus:ring-primary-500\" placeholder=\"e.g. /bin/sh -c 'echo hello'\" aria-label=\"Container Command\"><p class=\"text-xs text-gray-500 mt-1\">Override the default container command</p></div></div></div><!-- Resources --><div class=\"card p-5\"><h2 class=\"text-lg font-semibold text-white mb-4\"><i aria-hidden=\"true\" class=\"fas fa-tachometer-alt mr-2 text-primary-400\"></i>Resources</h2><div class=\"grid grid-cols-1 md:grid-cols-3 gap-4\"><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Memory Limit (MB)</label> <input type=\"number\" name=\"memory_limit\" value=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var33 string
 			templ_7745c5c3_Var33, templ_7745c5c3_Err = templ.JoinStringErrs(formatMemoryMB(data.Container.MemoryLimit))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/containers/settings.templ`, Line: 541, Col: 58}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/containers/settings.templ`, Line: 558, Col: 58}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var33))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 49, "\" class=\"w-full px-3 py-2 bg-dark-900 border border-dark-500 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary-500\" placeholder=\"0 = unlimited\" min=\"0\"></div><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">CPU Shares</label> <input type=\"number\" name=\"cpu_shares\" value=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 49, "\" class=\"w-full px-3 py-2 bg-dark-900 border border-dark-500 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary-500\" placeholder=\"0 = unlimited\" min=\"0\" aria-label=\"Memory Limit (MB)\"></div><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">CPU Shares</label> <input type=\"number\" name=\"cpu_shares\" value=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var34 string
 			templ_7745c5c3_Var34, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", data.Container.CPUShares))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/containers/settings.templ`, Line: 552, Col: 59}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/containers/settings.templ`, Line: 570, Col: 59}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var34))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 50, "\" class=\"w-full px-3 py-2 bg-dark-900 border border-dark-500 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary-500\" placeholder=\"1024 = default\" min=\"0\"></div><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">CPUs (NanoCPUs / 1e9)</label> <input type=\"number\" name=\"nano_cpus\" value=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 50, "\" class=\"w-full px-3 py-2 bg-dark-900 border border-dark-500 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary-500\" placeholder=\"1024 = default\" min=\"0\" aria-label=\"CPU Shares\"></div><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">CPUs (NanoCPUs / 1e9)</label> <input type=\"number\" name=\"nano_cpus\" value=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var35 string
 			templ_7745c5c3_Var35, templ_7745c5c3_Err = templ.JoinStringErrs(formatNanoCPUs(data.Container.NanoCPUs))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/containers/settings.templ`, Line: 563, Col: 55}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/containers/settings.templ`, Line: 582, Col: 55}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var35))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 51, "\" class=\"w-full px-3 py-2 bg-dark-900 border border-dark-500 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary-500\" placeholder=\"0 = unlimited\" min=\"0\" step=\"0.01\"></div></div></div><!-- Security & Privileges --><div class=\"bg-dark-800 rounded-xl border border-dark-600 p-5\"><h2 class=\"text-lg font-semibold text-white mb-4\"><i class=\"fas fa-shield-alt mr-2 text-primary-400\"></i>Security & Privileges</h2><div class=\"space-y-4\"><div class=\"flex items-center gap-3\"><label class=\"relative inline-flex items-center cursor-pointer\"><input type=\"checkbox\" name=\"privileged\" value=\"true\" class=\"sr-only peer\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 51, "\" class=\"w-full px-3 py-2 bg-dark-900 border border-dark-500 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary-500\" placeholder=\"0 = unlimited\" min=\"0\" step=\"0.01\" aria-label=\"CPUs (NanoCPUs / 1e9)\"></div></div></div><!-- Security & Privileges --><div class=\"card p-5\"><h2 class=\"text-lg font-semibold text-white mb-4\"><i aria-hidden=\"true\" class=\"fas fa-shield-alt mr-2 text-primary-400\"></i>Security & Privileges</h2><div class=\"space-y-4\"><div class=\"flex items-center gap-3\"><label class=\"relative inline-flex items-center cursor-pointer\"><input type=\"checkbox\" name=\"privileged\" value=\"true\" class=\"sr-only peer\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -682,7 +682,7 @@ func ContainerSettings(data ContainerSettingsData) templ.Component {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 53, "><div class=\"w-11 h-6 bg-dark-600 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-primary-500 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-600\"></div><span class=\"ms-3 text-sm font-medium text-gray-300\">Privileged Mode</span></label> <span class=\"text-xs text-yellow-400\"><i class=\"fas fa-exclamation-triangle mr-1\"></i>Full access to host</span></div><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Restart Policy</label> <select name=\"restart_policy\" class=\"w-full max-w-xs px-3 py-2 bg-dark-900 border border-dark-500 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary-500\"><option value=\"\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 53, "><div class=\"w-11 h-6 bg-dark-600 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-primary-500 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-600\"></div><span class=\"ms-3 text-sm font-medium text-gray-300\">Privileged Mode</span></label> <span class=\"text-xs text-yellow-400\"><i aria-hidden=\"true\" class=\"fas fa-exclamation-triangle mr-1\"></i>Full access to host</span></div><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Restart Policy</label> <select name=\"restart_policy\" class=\"w-full max-w-xs px-3 py-2 bg-dark-900 border border-dark-500 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary-500\"><option value=\"\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -722,33 +722,33 @@ func ContainerSettings(data ContainerSettingsData) templ.Component {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 61, ">on-failure</option></select></div></div></div><!-- Capabilities --><div class=\"bg-dark-800 rounded-xl border border-dark-600 p-5\" x-data=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 61, ">on-failure</option></select></div></div></div><!-- Capabilities --><div class=\"card p-5\" x-data=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var36 string
 			templ_7745c5c3_Var36, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("capSettings(%s)", capSettingsJSON(data.Container.CapAdd)))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/containers/settings.templ`, Line: 611, Col: 146}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/containers/settings.templ`, Line: 631, Col: 105}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var36))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 62, "\"><div class=\"flex items-center justify-between mb-4\"><h2 class=\"text-lg font-semibold text-white\"><i class=\"fas fa-key mr-2 text-primary-400\"></i>Capabilities (cap-add)</h2><button type=\"button\" @click=\"addCap()\" class=\"text-sm px-3 py-1.5 bg-primary-600 hover:bg-primary-700 text-white rounded-lg transition-colors\"><i class=\"fas fa-plus mr-1\"></i>Add Capability</button></div><div class=\"space-y-2\"><template x-for=\"(cap, index) in caps\" :key=\"index\"><div class=\"flex items-center gap-2\"><select :name=\"'cap_add_' + index\" x-model=\"cap.value\" class=\"flex-1 px-3 py-2 bg-dark-900 border border-dark-500 rounded-lg text-white text-sm font-mono focus:outline-none focus:ring-2 focus:ring-primary-500\"><option value=\"\">Select capability...</option> <option value=\"NET_ADMIN\">NET_ADMIN</option> <option value=\"NET_RAW\">NET_RAW</option> <option value=\"SYS_ADMIN\">SYS_ADMIN</option> <option value=\"SYS_TIME\">SYS_TIME</option> <option value=\"SYS_PTRACE\">SYS_PTRACE</option> <option value=\"SYS_RAWIO\">SYS_RAWIO</option> <option value=\"SYS_MODULE\">SYS_MODULE</option> <option value=\"IPC_LOCK\">IPC_LOCK</option> <option value=\"MKNOD\">MKNOD</option> <option value=\"AUDIT_WRITE\">AUDIT_WRITE</option> <option value=\"AUDIT_CONTROL\">AUDIT_CONTROL</option> <option value=\"DAC_OVERRIDE\">DAC_OVERRIDE</option> <option value=\"DAC_READ_SEARCH\">DAC_READ_SEARCH</option> <option value=\"FOWNER\">FOWNER</option> <option value=\"SETUID\">SETUID</option> <option value=\"SETGID\">SETGID</option> <option value=\"CHOWN\">CHOWN</option> <option value=\"KILL\">KILL</option></select> <button type=\"button\" @click=\"removeCap(index)\" class=\"text-red-400 hover:text-red-300 p-1\"><i class=\"fas fa-trash text-sm\"></i></button></div></template><template x-if=\"caps.length === 0\"><p class=\"text-sm text-gray-500 text-center py-3\">No additional capabilities</p></template></div><input type=\"hidden\" name=\"caps_json\" :value=\"JSON.stringify(caps)\"></div><!-- Actions --><div class=\"flex items-center justify-between bg-dark-800 rounded-xl border border-dark-600 p-5\"><div class=\"text-sm text-gray-400\"><i class=\"fas fa-info-circle mr-1\"></i> Saving settings will stop and recreate the container with the new configuration.</div><div class=\"flex items-center gap-3\"><a href=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 62, "\"><div class=\"flex items-center justify-between mb-4\"><h2 class=\"text-lg font-semibold text-white\"><i aria-hidden=\"true\" class=\"fas fa-key mr-2 text-primary-400\"></i>Capabilities (cap-add)</h2><button type=\"button\" @click=\"addCap()\" class=\"text-sm px-3 py-1.5 bg-primary-600 hover:bg-primary-700 text-white rounded-lg transition-colors\"><i aria-hidden=\"true\" class=\"fas fa-plus mr-1\"></i>Add Capability</button></div><div class=\"space-y-2\"><template x-for=\"(cap, index) in caps\" :key=\"index\"><div class=\"flex items-center gap-2\"><select :name=\"'cap_add_' + index\" x-model=\"cap.value\" class=\"flex-1 px-3 py-2 bg-dark-900 border border-dark-500 rounded-lg text-white text-sm font-mono focus:outline-none focus:ring-2 focus:ring-primary-500\"><option value=\"\">Select capability...</option> <option value=\"NET_ADMIN\">NET_ADMIN</option> <option value=\"NET_RAW\">NET_RAW</option> <option value=\"SYS_ADMIN\">SYS_ADMIN</option> <option value=\"SYS_TIME\">SYS_TIME</option> <option value=\"SYS_PTRACE\">SYS_PTRACE</option> <option value=\"SYS_RAWIO\">SYS_RAWIO</option> <option value=\"SYS_MODULE\">SYS_MODULE</option> <option value=\"IPC_LOCK\">IPC_LOCK</option> <option value=\"MKNOD\">MKNOD</option> <option value=\"AUDIT_WRITE\">AUDIT_WRITE</option> <option value=\"AUDIT_CONTROL\">AUDIT_CONTROL</option> <option value=\"DAC_OVERRIDE\">DAC_OVERRIDE</option> <option value=\"DAC_READ_SEARCH\">DAC_READ_SEARCH</option> <option value=\"FOWNER\">FOWNER</option> <option value=\"SETUID\">SETUID</option> <option value=\"SETGID\">SETGID</option> <option value=\"CHOWN\">CHOWN</option> <option value=\"KILL\">KILL</option></select> <button type=\"button\" @click=\"removeCap(index)\" class=\"text-red-400 hover:text-red-300 p-1\"><i aria-hidden=\"true\" class=\"fas fa-trash text-sm\"></i></button></div></template><template x-if=\"caps.length === 0\"><p class=\"text-sm text-gray-500 text-center py-3\">No additional capabilities</p></template></div><input type=\"hidden\" name=\"caps_json\" :value=\"JSON.stringify(caps)\"></div><!-- Actions --><div class=\"flex items-center justify-between card p-5\"><div class=\"text-sm text-gray-400\"><i aria-hidden=\"true\" class=\"fas fa-info-circle mr-1\"></i> Saving settings will stop and recreate the container with the new configuration.</div><div class=\"flex items-center gap-3\"><a href=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var37 templ.SafeURL
 			templ_7745c5c3_Var37, templ_7745c5c3_Err = templ.JoinURLErrs(templ.SafeURL("/containers/" + data.Container.ID))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/containers/settings.templ`, Line: 667, Col: 65}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/containers/settings.templ`, Line: 687, Col: 65}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var37))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 63, "\" class=\"px-4 py-2 text-gray-400 hover:text-white transition-colors\">Cancel</a> <button type=\"submit\" onclick=\"return confirm('This will recreate the container with the new settings. Continue?')\" class=\"px-6 py-2.5 bg-primary-600 hover:bg-primary-700 text-white font-medium rounded-lg transition-colors\"><i class=\"fas fa-save mr-2\"></i>Save & Recreate</button></div></div></div></form><script>\n\t\t\tfunction portSettings(initial) {\n\t\t\t\treturn {\n\t\t\t\t\tports: initial || [],\n\t\t\t\t\taddPort() { this.ports.push({ host: '', container: '', protocol: 'tcp' }); },\n\t\t\t\t\tremovePort(index) { this.ports.splice(index, 1); }\n\t\t\t\t};\n\t\t\t}\n\n\t\t\tfunction volumeSettings(initial) {\n\t\t\t\treturn {\n\t\t\t\t\tvolumes: initial || [],\n\t\t\t\t\taddVolume() { this.volumes.push({ host: '', container: '', rw: true }); },\n\t\t\t\t\tremoveVolume(index) { this.volumes.splice(index, 1); }\n\t\t\t\t};\n\t\t\t}\n\n\t\t\tfunction envSettings(initial) {\n\t\t\t\treturn {\n\t\t\t\t\tenvVars: initial || [],\n\t\t\t\t\taddEnv() { this.envVars.push({ key: '', value: '' }); },\n\t\t\t\t\tremoveEnv(index) { this.envVars.splice(index, 1); }\n\t\t\t\t};\n\t\t\t}\n\n\t\t\tfunction deviceSettings(initial) {\n\t\t\t\treturn {\n\t\t\t\t\tdevices: initial || [],\n\t\t\t\t\taddDevice() { this.devices.push({ host: '', container: '' }); },\n\t\t\t\t\tremoveDevice(index) { this.devices.splice(index, 1); }\n\t\t\t\t};\n\t\t\t}\n\n\t\t\tfunction capSettings(initial) {\n\t\t\t\treturn {\n\t\t\t\t\tcaps: initial || [],\n\t\t\t\t\taddCap() { this.caps.push({ value: '' }); },\n\t\t\t\t\tremoveCap(index) { this.caps.splice(index, 1); }\n\t\t\t\t};\n\t\t\t}\n\t\t</script>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 63, "\" class=\"px-4 py-2 text-gray-400 hover:text-white transition-colors\">Cancel</a> <button type=\"submit\" onclick=\"return confirm('This will recreate the container with the new settings. Continue?')\" class=\"px-6 py-2.5 bg-primary-600 hover:bg-primary-700 text-white font-medium rounded-lg transition-colors\"><i aria-hidden=\"true\" class=\"fas fa-save mr-2\"></i>Save & Recreate</button></div></div></div></form><script>\n\t\t\tfunction portSettings(initial) {\n\t\t\t\treturn {\n\t\t\t\t\tports: initial || [],\n\t\t\t\t\taddPort() { this.ports.push({ host: '', container: '', protocol: 'tcp' }); },\n\t\t\t\t\tremovePort(index) { this.ports.splice(index, 1); }\n\t\t\t\t};\n\t\t\t}\n\n\t\t\tfunction volumeSettings(initial) {\n\t\t\t\treturn {\n\t\t\t\t\tvolumes: initial || [],\n\t\t\t\t\taddVolume() { this.volumes.push({ host: '', container: '', rw: true }); },\n\t\t\t\t\tremoveVolume(index) { this.volumes.splice(index, 1); }\n\t\t\t\t};\n\t\t\t}\n\n\t\t\tfunction envSettings(initial) {\n\t\t\t\treturn {\n\t\t\t\t\tenvVars: initial || [],\n\t\t\t\t\taddEnv() { this.envVars.push({ key: '', value: '' }); },\n\t\t\t\t\tremoveEnv(index) { this.envVars.splice(index, 1); }\n\t\t\t\t};\n\t\t\t}\n\n\t\t\tfunction deviceSettings(initial) {\n\t\t\t\treturn {\n\t\t\t\t\tdevices: initial || [],\n\t\t\t\t\taddDevice() { this.devices.push({ host: '', container: '' }); },\n\t\t\t\t\tremoveDevice(index) { this.devices.splice(index, 1); }\n\t\t\t\t};\n\t\t\t}\n\n\t\t\tfunction capSettings(initial) {\n\t\t\t\treturn {\n\t\t\t\t\tcaps: initial || [],\n\t\t\t\t\taddCap() { this.caps.push({ value: '' }); },\n\t\t\t\t\tremoveCap(index) { this.caps.splice(index, 1); }\n\t\t\t\t};\n\t\t\t}\n\t\t</script>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -791,7 +791,7 @@ func ContainerSettingsSummary(data ContainerSettingsData) templ.Component {
 		var templ_7745c5c3_Var39 string
 		templ_7745c5c3_Var39, templ_7745c5c3_Err = templ.JoinStringErrs(data.Container.Image)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/containers/settings.templ`, Line: 733, Col: 69}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/containers/settings.templ`, Line: 753, Col: 69}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var39))
 		if templ_7745c5c3_Err != nil {
@@ -804,7 +804,7 @@ func ContainerSettingsSummary(data ContainerSettingsData) templ.Component {
 		var templ_7745c5c3_Var40 string
 		templ_7745c5c3_Var40, templ_7745c5c3_Err = templ.JoinStringErrs(data.Container.Tag)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/containers/settings.templ`, Line: 733, Col: 92}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/containers/settings.templ`, Line: 753, Col: 92}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var40))
 		if templ_7745c5c3_Err != nil {
@@ -817,7 +817,7 @@ func ContainerSettingsSummary(data ContainerSettingsData) templ.Component {
 		var templ_7745c5c3_Var41 string
 		templ_7745c5c3_Var41, templ_7745c5c3_Err = templ.JoinStringErrs(data.Container.NetworkMode)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/containers/settings.templ`, Line: 737, Col: 68}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/containers/settings.templ`, Line: 757, Col: 68}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var41))
 		if templ_7745c5c3_Err != nil {
@@ -831,7 +831,7 @@ func ContainerSettingsSummary(data ContainerSettingsData) templ.Component {
 			var templ_7745c5c3_Var42 string
 			templ_7745c5c3_Var42, templ_7745c5c3_Err = templ.JoinStringErrs(data.Container.RestartPolicy)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/containers/settings.templ`, Line: 743, Col: 36}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/containers/settings.templ`, Line: 763, Col: 36}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var42))
 			if templ_7745c5c3_Err != nil {
@@ -848,7 +848,7 @@ func ContainerSettingsSummary(data ContainerSettingsData) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		if data.Container.Privileged {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 70, "<span class=\"text-sm text-yellow-400\"><i class=\"fas fa-exclamation-triangle mr-1\"></i>Yes</span>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 70, "<span class=\"text-sm text-yellow-400\"><i aria-hidden=\"true\" class=\"fas fa-exclamation-triangle mr-1\"></i>Yes</span>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -863,7 +863,7 @@ func ContainerSettingsSummary(data ContainerSettingsData) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		if len(data.Container.Ports) > 0 {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 73, "<div><span class=\"text-xs text-gray-500 block mb-1\"><i class=\"fas fa-plug mr-1\"></i>Port Mappings</span><div class=\"flex flex-wrap gap-2\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 73, "<div><span class=\"text-xs text-gray-500 block mb-1\"><i aria-hidden=\"true\" class=\"fas fa-plug mr-1\"></i>Port Mappings</span><div class=\"flex flex-wrap gap-2\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -875,7 +875,7 @@ func ContainerSettingsSummary(data ContainerSettingsData) templ.Component {
 				var templ_7745c5c3_Var43 string
 				templ_7745c5c3_Var43, templ_7745c5c3_Err = templ.JoinStringErrs(p.HostPort)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/containers/settings.templ`, Line: 766, Col: 19}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/containers/settings.templ`, Line: 786, Col: 19}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var43))
 				if templ_7745c5c3_Err != nil {
@@ -888,7 +888,7 @@ func ContainerSettingsSummary(data ContainerSettingsData) templ.Component {
 				var templ_7745c5c3_Var44 string
 				templ_7745c5c3_Var44, templ_7745c5c3_Err = templ.JoinStringErrs(p.ContainerPort)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/containers/settings.templ`, Line: 766, Col: 39}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/containers/settings.templ`, Line: 786, Col: 39}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var44))
 				if templ_7745c5c3_Err != nil {
@@ -901,7 +901,7 @@ func ContainerSettingsSummary(data ContainerSettingsData) templ.Component {
 				var templ_7745c5c3_Var45 string
 				templ_7745c5c3_Var45, templ_7745c5c3_Err = templ.JoinStringErrs(p.Protocol)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/containers/settings.templ`, Line: 766, Col: 54}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/containers/settings.templ`, Line: 786, Col: 54}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var45))
 				if templ_7745c5c3_Err != nil {
@@ -922,7 +922,7 @@ func ContainerSettingsSummary(data ContainerSettingsData) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		if len(data.Container.Volumes) > 0 {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 80, "<div><span class=\"text-xs text-gray-500 block mb-1\"><i class=\"fas fa-hdd mr-1\"></i>Volumes</span><div class=\"space-y-1\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 80, "<div><span class=\"text-xs text-gray-500 block mb-1\"><i aria-hidden=\"true\" class=\"fas fa-hdd mr-1\"></i>Volumes</span><div class=\"space-y-1\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -934,7 +934,7 @@ func ContainerSettingsSummary(data ContainerSettingsData) templ.Component {
 				var templ_7745c5c3_Var46 string
 				templ_7745c5c3_Var46, templ_7745c5c3_Err = templ.JoinStringErrs(v.HostPath)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/containers/settings.templ`, Line: 780, Col: 19}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/containers/settings.templ`, Line: 800, Col: 19}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var46))
 				if templ_7745c5c3_Err != nil {
@@ -947,7 +947,7 @@ func ContainerSettingsSummary(data ContainerSettingsData) templ.Component {
 				var templ_7745c5c3_Var47 string
 				templ_7745c5c3_Var47, templ_7745c5c3_Err = templ.JoinStringErrs(v.ContainerPath)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/containers/settings.templ`, Line: 780, Col: 43}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/containers/settings.templ`, Line: 800, Col: 43}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var47))
 				if templ_7745c5c3_Err != nil {
@@ -978,14 +978,14 @@ func ContainerSettingsSummary(data ContainerSettingsData) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		if len(data.Container.EnvVars) > 0 {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 88, "<div><span class=\"text-xs text-gray-500\"><i class=\"fas fa-list mr-1\"></i>Environment Variables: ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 88, "<div><span class=\"text-xs text-gray-500\"><i aria-hidden=\"true\" class=\"fas fa-list mr-1\"></i>Environment Variables: ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var48 string
 			templ_7745c5c3_Var48, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", len(data.Container.EnvVars)))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/containers/settings.templ`, Line: 793, Col: 143}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/containers/settings.templ`, Line: 813, Col: 162}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var48))
 			if templ_7745c5c3_Err != nil {
@@ -1006,14 +1006,14 @@ func ContainerSettingsSummary(data ContainerSettingsData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			if data.Container.MemoryLimit > 0 {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 92, "<span class=\"text-xs text-gray-400\"><i class=\"fas fa-memory mr-1\"></i>Memory: ")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 92, "<span class=\"text-xs text-gray-400\"><i aria-hidden=\"true\" class=\"fas fa-memory mr-1\"></i>Memory: ")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var49 string
 				templ_7745c5c3_Var49, templ_7745c5c3_Err = templ.JoinStringErrs(formatMemoryMB(data.Container.MemoryLimit))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/containers/settings.templ`, Line: 801, Col: 127}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/containers/settings.templ`, Line: 821, Col: 146}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var49))
 				if templ_7745c5c3_Err != nil {
@@ -1025,14 +1025,14 @@ func ContainerSettingsSummary(data ContainerSettingsData) templ.Component {
 				}
 			}
 			if data.Container.CPUShares > 0 {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 94, "<span class=\"text-xs text-gray-400\"><i class=\"fas fa-microchip mr-1\"></i>CPU Shares: ")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 94, "<span class=\"text-xs text-gray-400\"><i aria-hidden=\"true\" class=\"fas fa-microchip mr-1\"></i>CPU Shares: ")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var50 string
 				templ_7745c5c3_Var50, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", data.Container.CPUShares))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/containers/settings.templ`, Line: 804, Col: 135}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/containers/settings.templ`, Line: 824, Col: 154}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var50))
 				if templ_7745c5c3_Err != nil {
@@ -1044,14 +1044,14 @@ func ContainerSettingsSummary(data ContainerSettingsData) templ.Component {
 				}
 			}
 			if data.Container.NanoCPUs > 0 {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 96, "<span class=\"text-xs text-gray-400\"><i class=\"fas fa-microchip mr-1\"></i>CPUs: ")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 96, "<span class=\"text-xs text-gray-400\"><i aria-hidden=\"true\" class=\"fas fa-microchip mr-1\"></i>CPUs: ")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var51 string
 				templ_7745c5c3_Var51, templ_7745c5c3_Err = templ.JoinStringErrs(formatNanoCPUs(data.Container.NanoCPUs))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/containers/settings.templ`, Line: 807, Col: 125}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/containers/settings.templ`, Line: 827, Col: 144}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var51))
 				if templ_7745c5c3_Err != nil {
@@ -1074,13 +1074,13 @@ func ContainerSettingsSummary(data ContainerSettingsData) templ.Component {
 		var templ_7745c5c3_Var52 templ.SafeURL
 		templ_7745c5c3_Var52, templ_7745c5c3_Err = templ.JoinURLErrs(templ.SafeURL("/containers/" + data.Container.ID + "/settings"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/containers/settings.templ`, Line: 815, Col: 74}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/containers/settings.templ`, Line: 835, Col: 74}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var52))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 100, "\" class=\"text-sm text-primary-400 hover:text-primary-300 transition-colors\"><i class=\"fas fa-edit mr-1\"></i>Edit Full Settings</a></div></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 100, "\" class=\"text-sm text-primary-400 hover:text-primary-300 transition-colors\"><i aria-hidden=\"true\" class=\"fas fa-edit mr-1\"></i>Edit Full Settings</a></div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

@@ -16,17 +16,19 @@ import templruntime "github.com/a-h/templ/runtime"
 
 import (
 	"fmt"
+	"github.com/fr4nsys/usulnet/internal/web/templates/components"
 	"github.com/fr4nsys/usulnet/internal/web/templates/layouts"
 )
 
 // ListData carries the inputs the build-list page renders.
 type ListData struct {
-	PageData layouts.PageData
-	Builds   []BuildView
-	Stats    StatsView
-	Total    int
-	Page     int
-	PageSize int
+	PageData   layouts.PageData
+	Builds     []BuildView
+	Stats      StatsView
+	Total      int
+	Page       int
+	PageSize   int
+	EmptyState components.EmptyStateData
 }
 
 // BuildView is the row shape the list and detail pages render. Output
@@ -91,7 +93,7 @@ func List(data ListData) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"space-y-6\"><!-- Header --><div class=\"flex items-center justify-between\"><div><h1 class=\"text-2xl font-display font-bold text-white\">Image Builder</h1><p class=\"text-gray-400 mt-1\">Build, track, and (optionally) sign Docker images</p></div><a href=\"/image-builder/new\" class=\"btn-primary\"><i class=\"fas fa-plus mr-2\"></i>New Build</a></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"space-y-6\"><!-- Header --><div class=\"flex items-center justify-between\"><div><h1 class=\"text-2xl font-display font-bold text-white\">Image Builder</h1><p class=\"text-gray-400 mt-1\">Build, track, and (optionally) sign Docker images</p></div><a href=\"/image-builder/new\" class=\"btn-primary\"><i aria-hidden=\"true\" class=\"fas fa-plus mr-2\"></i>New Build</a></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -106,7 +108,7 @@ func List(data ListData) templ.Component {
 			var templ_7745c5c3_Var3 string
 			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", data.Stats.TotalBuilds))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/imagebuilder/list.templ`, Line: 71, Col: 94}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/imagebuilder/list.templ`, Line: 73, Col: 94}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 			if templ_7745c5c3_Err != nil {
@@ -119,7 +121,7 @@ func List(data ListData) templ.Component {
 			var templ_7745c5c3_Var4 string
 			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", data.Stats.Successful))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/imagebuilder/list.templ`, Line: 75, Col: 97}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/imagebuilder/list.templ`, Line: 77, Col: 97}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 			if templ_7745c5c3_Err != nil {
@@ -132,7 +134,7 @@ func List(data ListData) templ.Component {
 			var templ_7745c5c3_Var5 string
 			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", data.Stats.Failed))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/imagebuilder/list.templ`, Line: 79, Col: 91}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/imagebuilder/list.templ`, Line: 81, Col: 91}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 			if templ_7745c5c3_Err != nil {
@@ -145,7 +147,7 @@ func List(data ListData) templ.Component {
 			var templ_7745c5c3_Var6 string
 			templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", data.Stats.Building))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/imagebuilder/list.templ`, Line: 83, Col: 96}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/imagebuilder/list.templ`, Line: 85, Col: 96}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 			if templ_7745c5c3_Err != nil {
@@ -156,7 +158,7 @@ func List(data ListData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			if len(data.Builds) > 0 {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "<div class=\"card\"><div class=\"overflow-x-auto\"><table class=\"table\"><thead><tr><th>Name</th><th>Tags</th><th>Status</th><th>Duration</th><th>Size</th><th>Signed</th><th>Created</th><th>Actions</th></tr></thead> <tbody>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "<div class=\"card\"><div class=\"overflow-x-auto\"><table class=\"table\"><thead><tr><th scope=\"col\">Name</th><th scope=\"col\">Tags</th><th scope=\"col\">Status</th><th scope=\"col\">Duration</th><th scope=\"col\">Size</th><th scope=\"col\">Signed</th><th scope=\"col\">Created</th><th scope=\"col\">Actions</th></tr></thead> <tbody>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -168,7 +170,7 @@ func List(data ListData) templ.Component {
 					var templ_7745c5c3_Var7 templ.SafeURL
 					templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinURLErrs(templ.SafeURL(fmt.Sprintf("/image-builder/%s", b.ID)))
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/imagebuilder/list.templ`, Line: 107, Col: 74}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/imagebuilder/list.templ`, Line: 109, Col: 74}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 					if templ_7745c5c3_Err != nil {
@@ -182,7 +184,7 @@ func List(data ListData) templ.Component {
 						var templ_7745c5c3_Var8 string
 						templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(b.Name)
 						if templ_7745c5c3_Err != nil {
-							return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/imagebuilder/list.templ`, Line: 109, Col: 21}
+							return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/imagebuilder/list.templ`, Line: 111, Col: 21}
 						}
 						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 						if templ_7745c5c3_Err != nil {
@@ -192,7 +194,7 @@ func List(data ListData) templ.Component {
 						var templ_7745c5c3_Var9 string
 						templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(shortID(b.ID))
 						if templ_7745c5c3_Err != nil {
-							return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/imagebuilder/list.templ`, Line: 111, Col: 28}
+							return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/imagebuilder/list.templ`, Line: 113, Col: 28}
 						}
 						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 						if templ_7745c5c3_Err != nil {
@@ -212,7 +214,7 @@ func List(data ListData) templ.Component {
 							var templ_7745c5c3_Var10 string
 							templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(tag)
 							if templ_7745c5c3_Err != nil {
-								return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/imagebuilder/list.templ`, Line: 118, Col: 116}
+								return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/imagebuilder/list.templ`, Line: 120, Col: 116}
 							}
 							_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 							if templ_7745c5c3_Err != nil {
@@ -232,7 +234,7 @@ func List(data ListData) templ.Component {
 						var templ_7745c5c3_Var11 string
 						templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", len(b.Tags)-2))
 						if templ_7745c5c3_Err != nil {
-							return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/imagebuilder/list.templ`, Line: 122, Col: 83}
+							return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/imagebuilder/list.templ`, Line: 124, Col: 83}
 						}
 						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 						if templ_7745c5c3_Err != nil {
@@ -259,7 +261,7 @@ func List(data ListData) templ.Component {
 						var templ_7745c5c3_Var12 string
 						templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%dms", b.DurationMs))
 						if templ_7745c5c3_Err != nil {
-							return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/imagebuilder/list.templ`, Line: 128, Col: 47}
+							return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/imagebuilder/list.templ`, Line: 130, Col: 47}
 						}
 						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
 						if templ_7745c5c3_Err != nil {
@@ -279,7 +281,7 @@ func List(data ListData) templ.Component {
 						var templ_7745c5c3_Var13 string
 						templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(b.ImageSize)
 						if templ_7745c5c3_Err != nil {
-							return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/imagebuilder/list.templ`, Line: 135, Col: 25}
+							return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/imagebuilder/list.templ`, Line: 137, Col: 25}
 						}
 						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
 						if templ_7745c5c3_Err != nil {
@@ -303,13 +305,13 @@ func List(data ListData) templ.Component {
 						var templ_7745c5c3_Var14 string
 						templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.JoinStringErrs(b.SignatureRef)
 						if templ_7745c5c3_Err != nil {
-							return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/imagebuilder/list.templ`, Line: 142, Col: 136}
+							return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/imagebuilder/list.templ`, Line: 144, Col: 136}
 						}
 						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var14))
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
-						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 22, "\"><i class=\"fas fa-shield-alt mr-1\"></i>Yes</span>")
+						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 22, "\"><i aria-hidden=\"true\" class=\"fas fa-shield-alt mr-1\"></i>Yes</span>")
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
@@ -326,7 +328,7 @@ func List(data ListData) templ.Component {
 					var templ_7745c5c3_Var15 string
 					templ_7745c5c3_Var15, templ_7745c5c3_Err = templ.JoinStringErrs(b.CreatedAt)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/imagebuilder/list.templ`, Line: 149, Col: 57}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/imagebuilder/list.templ`, Line: 151, Col: 57}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var15))
 					if templ_7745c5c3_Err != nil {
@@ -339,7 +341,7 @@ func List(data ListData) templ.Component {
 					var templ_7745c5c3_Var16 templ.SafeURL
 					templ_7745c5c3_Var16, templ_7745c5c3_Err = templ.JoinURLErrs(templ.SafeURL(fmt.Sprintf("/image-builder/%s", b.ID)))
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/imagebuilder/list.templ`, Line: 151, Col: 74}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/imagebuilder/list.templ`, Line: 153, Col: 74}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var16))
 					if templ_7745c5c3_Err != nil {
@@ -356,12 +358,12 @@ func List(data ListData) templ.Component {
 				}
 			}
 			if len(data.Builds) == 0 {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 28, "<div class=\"card p-8 text-center\"><i class=\"fas fa-hammer text-4xl text-gray-400 mb-4\"></i><h3 class=\"text-lg font-medium text-white mb-2\">No builds yet</h3><p class=\"text-gray-400 mb-4\">Start building Docker images from a Dockerfile or a starter template.</p><a href=\"/image-builder/new\" class=\"btn-primary\"><i class=\"fas fa-plus mr-2\"></i>New Build</a></div>")
+				templ_7745c5c3_Err = components.EmptyStateCTAs(data.EmptyState).Render(ctx, templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 29, "</div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 28, "</div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -398,27 +400,27 @@ func buildStatusBadge(status string) templ.Component {
 		ctx = templ.ClearChildren(ctx)
 		switch status {
 		case "success":
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 30, "<span class=\"inline-flex items-center text-xs bg-green-500/10 text-green-400 px-2 py-0.5 rounded\"><i class=\"fas fa-check-circle mr-1\"></i>Success</span>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 29, "<span class=\"inline-flex items-center text-xs bg-green-500/10 text-green-400 px-2 py-0.5 rounded\"><i aria-hidden=\"true\" class=\"fas fa-check-circle mr-1\"></i>Success</span>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		case "failed":
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 31, "<span class=\"inline-flex items-center text-xs bg-red-500/10 text-red-400 px-2 py-0.5 rounded\"><i class=\"fas fa-times-circle mr-1\"></i>Failed</span>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 30, "<span class=\"inline-flex items-center text-xs bg-red-500/10 text-red-400 px-2 py-0.5 rounded\"><i aria-hidden=\"true\" class=\"fas fa-times-circle mr-1\"></i>Failed</span>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		case "building":
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 32, "<span class=\"inline-flex items-center text-xs bg-yellow-500/10 text-yellow-400 px-2 py-0.5 rounded\"><i class=\"fas fa-spinner fa-spin mr-1\"></i>Building</span>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 31, "<span class=\"inline-flex items-center text-xs bg-yellow-500/10 text-yellow-400 px-2 py-0.5 rounded\"><i aria-hidden=\"true\" class=\"fas fa-spinner fa-spin mr-1\"></i>Building</span>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		case "cancelled":
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 33, "<span class=\"inline-flex items-center text-xs bg-gray-500/10 text-gray-400 px-2 py-0.5 rounded\"><i class=\"fas fa-ban mr-1\"></i>Cancelled</span>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 32, "<span class=\"inline-flex items-center text-xs bg-gray-500/10 text-gray-400 px-2 py-0.5 rounded\"><i aria-hidden=\"true\" class=\"fas fa-ban mr-1\"></i>Cancelled</span>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		default:
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 34, "<span class=\"inline-flex items-center text-xs bg-blue-500/10 text-blue-400 px-2 py-0.5 rounded\"><i class=\"fas fa-clock mr-1\"></i>Pending</span>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 33, "<span class=\"inline-flex items-center text-xs bg-blue-500/10 text-blue-400 px-2 py-0.5 rounded\"><i aria-hidden=\"true\" class=\"fas fa-clock mr-1\"></i>Pending</span>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

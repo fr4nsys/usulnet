@@ -12,7 +12,7 @@ templ Nav(active string) {
 				templ.KV("bg-primary-500/10 text-primary-400", active == "browse"),
 				templ.KV("text-gray-400 hover:text-white hover:bg-dark-700", active != "browse") }
 		>
-			<i class="fas fa-store mr-2"></i>Browse
+			<i aria-hidden="true" class="fas fa-store mr-2"></i>Browse
 		</a>
 		<a
 			href="/marketplace/installed"
@@ -20,7 +20,7 @@ templ Nav(active string) {
 				templ.KV("bg-primary-500/10 text-primary-400", active == "installed"),
 				templ.KV("text-gray-400 hover:text-white hover:bg-dark-700", active != "installed") }
 		>
-			<i class="fas fa-check-circle mr-2"></i>Installed
+			<i aria-hidden="true" class="fas fa-check-circle mr-2"></i>Installed
 		</a>
 		<a
 			href="/marketplace/submit"
@@ -28,7 +28,7 @@ templ Nav(active string) {
 				templ.KV("bg-primary-500/10 text-primary-400", active == "submit"),
 				templ.KV("text-gray-400 hover:text-white hover:bg-dark-700", active != "submit") }
 		>
-			<i class="fas fa-plus-circle mr-2"></i>Submit App
+			<i aria-hidden="true" class="fas fa-plus-circle mr-2"></i>Submit App
 		</a>
 	</div>
 }

@@ -1,0 +1,55 @@
+slug: cowrie
+name: Cowrie
+description: Medium-interaction SSH and Telnet honeypot that logs every command an attacker runs.
+long_description: |
+  Cowrie is a well-known SSH and Telnet honeypot written by Michel Oosterhof.
+  It accepts password and key-based auth attempts, presents a faked
+  filesystem, and records every command an attacker types in JSON and
+  TTY-replay logs. Useful as a tarpit, as an early-warning sensor on
+  the perimeter, and as a teaching tool — the recorded sessions show
+  exactly which credentials and which post-auth commands are tried in
+  the wild.
+
+  Image: docker.io/cowrie/cowrie (BSD-3-Clause). The persistent
+  volumes hold the recorded sessions and the runtime config; back
+  them up if the captured intel matters to your operator workflow.
+  Do NOT expose the management interface to the public network —
+  only the honeypot ports themselves should be reachable from the
+  internet.
+category: security
+icon: fa-spider
+icon_color: "#ff6b35"
+version: "2.5.0"
+manifest_version: 1
+website: https://cowrie.readthedocs.io/
+source: https://github.com/cowrie/cowrie
+author: usulnet contributors
+license: BSD-3-Clause
+tags:
+  - honeypot
+  - ssh
+  - telnet
+  - threat-intel
+min_memory_mb: 256
+min_cpu_cores: 0.25
+is_official: true
+is_verified: true
+featured: false
+fields:
+  - key: SSH_PORT
+    label: Honeypot SSH port
+    description: |
+      Host port where the fake SSH service listens. Pick something
+      attackers will scan (22 is canonical, but if you already run
+      a real sshd on 22 use a NAT rule to redirect external 22 here).
+    type: text
+    default: "2222"
+    required: true
+    placeholder: "2222"
+  - key: TELNET_PORT
+    label: Honeypot Telnet port
+    description: Host port for the fake Telnet service.
+    type: text
+    default: "2223"
+    required: true
+    placeholder: "2223"

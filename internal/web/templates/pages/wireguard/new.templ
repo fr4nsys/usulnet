@@ -20,41 +20,41 @@ templ New(data NewData) {
 					<div>
 						<label class="block text-sm font-medium text-gray-300 mb-1">Display Name</label>
 						<input type="text" name="display_name" required placeholder="Office VPN"
-							class="w-full px-3 py-2 bg-dark-600 border border-dark-500 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-primary-500"/>
+							class="w-full px-3 py-2 bg-dark-600 border border-dark-500 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-primary-500" aria-label="Display Name"/>
 					</div>
 					<div class="grid grid-cols-2 gap-4">
 						<div>
 							<label class="block text-sm font-medium text-gray-300 mb-1">Interface Name</label>
 							<input type="text" name="name" value="wg0" placeholder="wg0"
-								class="w-full px-3 py-2 bg-dark-600 border border-dark-500 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-primary-500"/>
+								class="w-full px-3 py-2 bg-dark-600 border border-dark-500 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-primary-500" aria-label="Interface Name"/>
 						</div>
 						<div>
 							<label class="block text-sm font-medium text-gray-300 mb-1">Listen Port</label>
 							<input type="number" name="listen_port" value="51820" min="1" max="65535"
-								class="w-full px-3 py-2 bg-dark-600 border border-dark-500 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-primary-500"/>
+								class="w-full px-3 py-2 bg-dark-600 border border-dark-500 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-primary-500" aria-label="Listen Port"/>
 						</div>
 					</div>
 					<div>
 						<label class="block text-sm font-medium text-gray-300 mb-1">Address (CIDR)</label>
 						<input type="text" name="address" required placeholder="10.0.0.1/24"
-							class="w-full px-3 py-2 bg-dark-600 border border-dark-500 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-primary-500"/>
+							class="w-full px-3 py-2 bg-dark-600 border border-dark-500 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-primary-500" aria-label="Address (CIDR)"/>
 						<p class="text-xs text-gray-500 mt-1">Server address in CIDR notation (e.g., 10.0.0.1/24)</p>
 					</div>
 					<div>
 						<label class="block text-sm font-medium text-gray-300 mb-1">DNS</label>
 						<input type="text" name="dns" value="1.1.1.1" placeholder="1.1.1.1, 8.8.8.8"
-							class="w-full px-3 py-2 bg-dark-600 border border-dark-500 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-primary-500"/>
+							class="w-full px-3 py-2 bg-dark-600 border border-dark-500 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-primary-500" aria-label="DNS"/>
 					</div>
 					<div class="grid grid-cols-2 gap-4">
 						<div>
 							<label class="block text-sm font-medium text-gray-300 mb-1">MTU</label>
 							<input type="number" name="mtu" value="1420" min="576" max="9000"
-								class="w-full px-3 py-2 bg-dark-600 border border-dark-500 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-primary-500"/>
+								class="w-full px-3 py-2 bg-dark-600 border border-dark-500 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-primary-500" aria-label="MTU"/>
 						</div>
 						<div>
 							<label class="block text-sm font-medium text-gray-300 mb-1">Description</label>
 							<input type="text" name="description" placeholder="Optional description"
-								class="w-full px-3 py-2 bg-dark-600 border border-dark-500 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-primary-500"/>
+								class="w-full px-3 py-2 bg-dark-600 border border-dark-500 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-primary-500" aria-label="Description"/>
 						</div>
 					</div>
 					<div>

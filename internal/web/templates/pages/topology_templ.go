@@ -75,7 +75,7 @@ func Topology(data TopologyData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			for _, network := range data.Networks {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<div class=\"card p-4\"><div class=\"flex items-center justify-between mb-4\"><div class=\"flex items-center gap-3\"><div class=\"w-10 h-10 rounded-lg bg-primary-500/20 flex items-center justify-center\"><i class=\"fas fa-network-wired text-primary-400\"></i></div><div><h3 class=\"font-medium text-white\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<div class=\"card p-4\"><div class=\"flex items-center justify-between mb-4\"><div class=\"flex items-center gap-3\"><div class=\"w-10 h-10 rounded-lg bg-primary-500/20 flex items-center justify-center\"><i aria-hidden=\"true\" class=\"fas fa-network-wired text-primary-400\"></i></div><div><h3 class=\"font-medium text-white\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -181,7 +181,7 @@ func Topology(data TopologyData) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "\" class=\"text-gray-400 hover:text-white\"><i class=\"fas fa-external-link-alt\"></i></a></div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "\" class=\"text-gray-400 hover:text-white\"><i aria-hidden=\"true\" class=\"fas fa-external-link-alt\"></i></a></div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}

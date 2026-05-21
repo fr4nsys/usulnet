@@ -106,22 +106,22 @@ func List(data SecurityData) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"space-y-6\"><!-- Header --><div class=\"flex items-center justify-between\"><div><h1 class=\"text-2xl font-display font-bold text-white\">Security Scanner</h1><p class=\"text-gray-400 mt-1\">Container security analysis, CIS benchmarks &amp; CVE scanning</p></div><div class=\"flex items-center gap-2\"><a href=\"/security/trends\" class=\"btn-secondary\"><i class=\"fas fa-chart-line mr-2\"></i>Trends</a><!-- Report Dropdown (Alpine.js click-based) --><div class=\"relative\" x-data=\"{ open: false }\"><button @click=\"open = !open\" @click.outside=\"open = false\" class=\"btn-secondary\"><i class=\"fas fa-file-alt mr-2\"></i>Report <i class=\"fas fa-chevron-down ml-1 text-xs transition-transform\" :class=\"open && 'rotate-180'\"></i></button><div x-show=\"open\" x-transition:enter=\"transition ease-out duration-100\" x-transition:enter-start=\"opacity-0 scale-95\" x-transition:enter-end=\"opacity-100 scale-100\" x-transition:leave=\"transition ease-in duration-75\" x-transition:leave-start=\"opacity-100 scale-100\" x-transition:leave-end=\"opacity-0 scale-95\" class=\"absolute right-0 top-full mt-1 bg-dark-800 border border-dark-700 rounded-lg shadow-xl z-20 min-w-[180px]\" style=\"display: none;\"><a href=\"/security/report?format=html\" target=\"_blank\" @click=\"open = false\" class=\"flex items-center gap-2 px-4 py-2.5 text-sm text-gray-300 hover:bg-dark-700 hover:text-white rounded-t-lg transition-colors\"><i class=\"fas fa-globe w-4 text-center text-blue-400\"></i>HTML Report</a> <a href=\"/security/report?format=json\" @click=\"open = false\" class=\"flex items-center gap-2 px-4 py-2.5 text-sm text-gray-300 hover:bg-dark-700 hover:text-white transition-colors\"><i class=\"fas fa-code w-4 text-center text-green-400\"></i>JSON Export</a> <a href=\"/security/report?format=markdown\" @click=\"open = false\" class=\"flex items-center gap-2 px-4 py-2.5 text-sm text-gray-300 hover:bg-dark-700 hover:text-white rounded-b-lg transition-colors\"><i class=\"fas fa-file-code w-4 text-center text-purple-400\"></i>Markdown</a></div></div><button hx-post=\"/security/scan\" hx-swap=\"none\" class=\"btn-primary\" hx-indicator=\"#scan-indicator\" hx-disabled-elt=\"this\"><i class=\"fas fa-shield-alt mr-2\"></i> <span>Scan All</span> <i id=\"scan-indicator\" class=\"fas fa-spinner fa-spin ml-2 htmx-indicator\"></i></button></div></div><!-- Trivy Status Banner -->")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"space-y-6\"><!-- Header --><div class=\"flex items-center justify-between\"><div><h1 class=\"text-2xl font-display font-bold text-white\">Security Scanner</h1><p class=\"text-gray-400 mt-1\">Container security analysis, CIS benchmarks &amp; CVE scanning</p></div><div class=\"flex items-center gap-2\"><a href=\"/security/trends\" class=\"btn-secondary\"><i aria-hidden=\"true\" class=\"fas fa-chart-line mr-2\"></i>Trends</a><!-- Report Dropdown (Alpine.js click-based) --><div class=\"relative\" x-data=\"{ open: false }\"><button @click=\"open = !open\" @click.outside=\"open = false\" class=\"btn-secondary\"><i aria-hidden=\"true\" class=\"fas fa-file-alt mr-2\"></i>Report <i aria-hidden=\"true\" class=\"fas fa-chevron-down ml-1 text-xs transition-transform\" :class=\"open && 'rotate-180'\"></i></button><div x-show=\"open\" x-transition:enter=\"transition ease-out duration-100\" x-transition:enter-start=\"opacity-0 scale-95\" x-transition:enter-end=\"opacity-100 scale-100\" x-transition:leave=\"transition ease-in duration-75\" x-transition:leave-start=\"opacity-100 scale-100\" x-transition:leave-end=\"opacity-0 scale-95\" class=\"absolute right-0 top-full mt-1 bg-dark-800 border border-dark-700 rounded-lg shadow-xl z-20 min-w-[180px]\" style=\"display: none;\"><a href=\"/security/report?format=html\" target=\"_blank\" @click=\"open = false\" class=\"flex items-center gap-2 px-4 py-2.5 text-sm text-gray-300 hover:bg-dark-700 hover:text-white rounded-t-lg transition-colors\"><i aria-hidden=\"true\" class=\"fas fa-globe w-4 text-center text-blue-400\"></i>HTML Report</a> <a href=\"/security/report?format=json\" @click=\"open = false\" class=\"flex items-center gap-2 px-4 py-2.5 text-sm text-gray-300 hover:bg-dark-700 hover:text-white transition-colors\"><i aria-hidden=\"true\" class=\"fas fa-code w-4 text-center text-green-400\"></i>JSON Export</a> <a href=\"/security/report?format=markdown\" @click=\"open = false\" class=\"flex items-center gap-2 px-4 py-2.5 text-sm text-gray-300 hover:bg-dark-700 hover:text-white rounded-b-lg transition-colors\"><i aria-hidden=\"true\" class=\"fas fa-file-code w-4 text-center text-purple-400\"></i>Markdown</a></div></div><button hx-post=\"/security/scan\" hx-swap=\"none\" class=\"btn-primary\" hx-indicator=\"#scan-indicator\" hx-disabled-elt=\"this\"><i aria-hidden=\"true\" class=\"fas fa-shield-alt mr-2\"></i> <span>Scan All</span> <i id=\"scan-indicator\" class=\"fas fa-spinner fa-spin ml-2 htmx-indicator\"></i></button></div></div><!-- Trivy Status Banner -->")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			if data.TrivyAvailable {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<div class=\"flex items-center gap-3 px-4 py-3 rounded-lg bg-green-500/5 border border-green-500/20\"><div class=\"w-8 h-8 rounded-full bg-green-500/10 flex items-center justify-center flex-shrink-0\"><i class=\"fas fa-check-circle text-green-400\"></i></div><div><span class=\"text-sm font-medium text-green-400\">Trivy CVE scanner active</span> <span class=\"text-xs text-gray-500 ml-2\">Image vulnerability scanning enabled</span></div></div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<div class=\"flex items-center gap-3 px-4 py-3 rounded-lg bg-green-500/5 border border-green-500/20\"><div class=\"w-8 h-8 rounded-full bg-green-500/10 flex items-center justify-center flex-shrink-0\"><i aria-hidden=\"true\" class=\"fas fa-check-circle text-green-400\"></i></div><div><span class=\"text-sm font-medium text-green-400\">Trivy CVE scanner active</span> <span class=\"text-xs text-gray-500 ml-2\">Image vulnerability scanning enabled</span></div></div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			} else {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<div class=\"flex items-center justify-between px-4 py-3 rounded-lg bg-yellow-500/5 border border-yellow-500/20\"><div class=\"flex items-center gap-3\"><div class=\"w-8 h-8 rounded-full bg-yellow-500/10 flex items-center justify-center flex-shrink-0\"><i class=\"fas fa-exclamation-triangle text-yellow-400\"></i></div><div><span class=\"text-sm font-medium text-yellow-400\">Trivy not detected</span><p class=\"text-xs text-gray-500 mt-0.5\">CIS benchmarks active. Install Trivy to enable CVE scanning for container images.</p></div></div><a href=\"https://aquasecurity.github.io/trivy\" target=\"_blank\" rel=\"noopener\" class=\"flex items-center gap-1.5 text-xs text-primary-400 hover:text-primary-300 whitespace-nowrap ml-4\"><i class=\"fas fa-download\"></i>Install Trivy</a></div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<div class=\"flex items-center justify-between px-4 py-3 rounded-lg bg-yellow-500/5 border border-yellow-500/20\"><div class=\"flex items-center gap-3\"><div class=\"w-8 h-8 rounded-full bg-yellow-500/10 flex items-center justify-center flex-shrink-0\"><i aria-hidden=\"true\" class=\"fas fa-exclamation-triangle text-yellow-400\"></i></div><div><span class=\"text-sm font-medium text-yellow-400\">Trivy not detected</span><p class=\"text-xs text-gray-500 mt-0.5\">CIS benchmarks active. Install Trivy to enable CVE scanning for container images.</p></div></div><a href=\"https://aquasecurity.github.io/trivy\" target=\"_blank\" rel=\"noopener\" class=\"flex items-center gap-1.5 text-xs text-primary-400 hover:text-primary-300 whitespace-nowrap ml-4\"><i aria-hidden=\"true\" class=\"fas fa-download\"></i>Install Trivy</a></div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<!-- Overview Cards --><div class=\"grid grid-cols-2 md:grid-cols-5 gap-4\"><div class=\"card p-4\"><div class=\"flex items-center gap-2 mb-1\"><i class=\"fas fa-tachometer-alt text-primary-400 text-sm\"></i> <span class=\"text-xs text-gray-500 uppercase tracking-wider\">Avg Score</span></div><div class=\"text-3xl font-bold text-white\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<!-- Overview Cards --><div class=\"grid grid-cols-2 md:grid-cols-5 gap-4\"><div class=\"card p-4\"><div class=\"flex items-center gap-2 mb-1\"><i aria-hidden=\"true\" class=\"fas fa-tachometer-alt text-primary-400 text-sm\"></i> <span class=\"text-xs text-gray-500 uppercase tracking-wider\">Avg Score</span></div><div class=\"text-3xl font-bold text-white\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -134,7 +134,7 @@ func List(data SecurityData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "</div></div><div class=\"card p-4\"><div class=\"flex items-center gap-2 mb-1\"><i class=\"fas fa-exclamation-circle text-red-400 text-sm\"></i> <span class=\"text-xs text-gray-500 uppercase tracking-wider\">Critical</span></div><div class=\"text-3xl font-bold text-red-400\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "</div></div><div class=\"card p-4\"><div class=\"flex items-center gap-2 mb-1\"><i aria-hidden=\"true\" class=\"fas fa-exclamation-circle text-red-400 text-sm\"></i> <span class=\"text-xs text-gray-500 uppercase tracking-wider\">Critical</span></div><div class=\"text-3xl font-bold text-red-400\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -147,7 +147,7 @@ func List(data SecurityData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "</div></div><div class=\"card p-4\"><div class=\"flex items-center gap-2 mb-1\"><i class=\"fas fa-exclamation-triangle text-orange-400 text-sm\"></i> <span class=\"text-xs text-gray-500 uppercase tracking-wider\">High</span></div><div class=\"text-3xl font-bold text-orange-400\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "</div></div><div class=\"card p-4\"><div class=\"flex items-center gap-2 mb-1\"><i aria-hidden=\"true\" class=\"fas fa-exclamation-triangle text-orange-400 text-sm\"></i> <span class=\"text-xs text-gray-500 uppercase tracking-wider\">High</span></div><div class=\"text-3xl font-bold text-orange-400\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -160,7 +160,7 @@ func List(data SecurityData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "</div></div><div class=\"card p-4\"><div class=\"flex items-center gap-2 mb-1\"><i class=\"fas fa-info-circle text-yellow-400 text-sm\"></i> <span class=\"text-xs text-gray-500 uppercase tracking-wider\">Medium</span></div><div class=\"text-3xl font-bold text-yellow-400\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "</div></div><div class=\"card p-4\"><div class=\"flex items-center gap-2 mb-1\"><i aria-hidden=\"true\" class=\"fas fa-info-circle text-yellow-400 text-sm\"></i> <span class=\"text-xs text-gray-500 uppercase tracking-wider\">Medium</span></div><div class=\"text-3xl font-bold text-yellow-400\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -173,7 +173,7 @@ func List(data SecurityData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "</div></div><div class=\"card p-4\"><div class=\"flex items-center gap-2 mb-1\"><i class=\"fas fa-award text-green-400 text-sm\"></i> <span class=\"text-xs text-gray-500 uppercase tracking-wider\">Grade A</span></div><div class=\"text-3xl font-bold text-green-400\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "</div></div><div class=\"card p-4\"><div class=\"flex items-center gap-2 mb-1\"><i aria-hidden=\"true\" class=\"fas fa-award text-green-400 text-sm\"></i> <span class=\"text-xs text-gray-500 uppercase tracking-wider\">Grade A</span></div><div class=\"text-3xl font-bold text-green-400\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -490,7 +490,7 @@ func List(data SecurityData) templ.Component {
 					return templ_7745c5c3_Err
 				}
 			} else {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 37, "<div class=\"text-center text-gray-500 py-6\"><i class=\"fas fa-chart-pie text-2xl mb-2 opacity-50\"></i><p>No containers scanned yet</p></div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 37, "<div class=\"text-center text-gray-500 py-6\"><i aria-hidden=\"true\" class=\"fas fa-chart-pie text-2xl mb-2 opacity-50\"></i><p>No containers scanned yet</p></div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -609,7 +609,7 @@ func List(data SecurityData) templ.Component {
 					return templ_7745c5c3_Err
 				}
 			} else {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 48, "<div class=\"text-center text-gray-500 py-6\"><i class=\"fas fa-check-circle text-2xl mb-2 text-green-500/50\"></i><p>No issues found</p></div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 48, "<div class=\"text-center text-gray-500 py-6\"><i aria-hidden=\"true\" class=\"fas fa-check-circle text-2xl mb-2 text-green-500/50\"></i><p>No issues found</p></div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -619,7 +619,7 @@ func List(data SecurityData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			if len(data.RecentScans) > 0 {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 50, "<div class=\"card\"><div class=\"px-5 py-4 border-b border-dark-700 flex items-center justify-between\"><h2 class=\"font-medium text-white\"><i class=\"fas fa-history text-gray-500 mr-2\"></i>Recent Scans</h2><span class=\"text-xs text-gray-500\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 50, "<div class=\"card\"><div class=\"px-5 py-4 border-b border-dark-700 flex items-center justify-between\"><h2 class=\"font-medium text-white\"><i aria-hidden=\"true\" class=\"fas fa-history text-gray-500 mr-2\"></i>Recent Scans</h2><span class=\"text-xs text-gray-500\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -721,7 +721,7 @@ func List(data SecurityData) templ.Component {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 60, "<!-- Container List --><div class=\"card\"><div class=\"px-5 py-4 border-b border-dark-700 flex items-center justify-between\"><h2 class=\"font-medium text-white\"><i class=\"fas fa-cubes text-gray-500 mr-2\"></i>Container Security Status</h2><span class=\"text-xs text-gray-500\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 60, "<!-- Container List --><div class=\"card\"><div class=\"px-5 py-4 border-b border-dark-700 flex items-center justify-between\"><h2 class=\"font-medium text-white\"><i aria-hidden=\"true\" class=\"fas fa-cubes text-gray-500 mr-2\"></i>Container Security Status</h2><span class=\"text-xs text-gray-500\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -734,12 +734,12 @@ func List(data SecurityData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 61, "</span></div><div class=\"overflow-x-auto\"><table class=\"table\"><thead><tr><th>Container</th><th>Image</th><th>Score</th><th>Grade</th><th>Issues</th><th>Last Scanned</th><th>Actions</th></tr></thead> <tbody>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 61, "</span></div><div class=\"overflow-x-auto\"><table class=\"table\"><thead><tr><th scope=\"col\">Container</th><th scope=\"col\">Image</th><th scope=\"col\">Score</th><th scope=\"col\">Grade</th><th scope=\"col\">Issues</th><th scope=\"col\">Last Scanned</th><th scope=\"col\">Actions</th></tr></thead> <tbody>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			if len(data.Containers) == 0 {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 62, "<tr><td colspan=\"7\" class=\"text-center py-12 text-gray-500\"><i class=\"fas fa-shield-alt text-4xl mb-3 opacity-30\"></i><p class=\"text-sm\">No containers found. Start some containers to scan them.</p></td></tr>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 62, "<tr><td colspan=\"7\" class=\"text-center py-12 text-gray-500\"><i aria-hidden=\"true\" class=\"fas fa-shield-alt text-4xl mb-3 opacity-30\"></i><p class=\"text-sm\">No containers found. Start some containers to scan them.</p></td></tr>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -937,7 +937,7 @@ func List(data SecurityData) templ.Component {
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 82, "\" class=\"text-primary-400 hover:text-primary-300 text-sm\"><i class=\"fas fa-eye mr-1\"></i>Details</a> <button hx-post=\"")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 82, "\" class=\"text-primary-400 hover:text-primary-300 text-sm\"><i aria-hidden=\"true\" class=\"fas fa-eye mr-1\"></i>Details</a> <button hx-post=\"")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
@@ -950,7 +950,7 @@ func List(data SecurityData) templ.Component {
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 83, "\" hx-swap=\"none\" class=\"text-gray-400 hover:text-white transition-colors\" title=\"Rescan\" hx-disabled-elt=\"this\"><i class=\"fas fa-sync-alt\"></i></button></div></td>")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 83, "\" hx-swap=\"none\" class=\"text-gray-400 hover:text-white transition-colors\" title=\"Rescan\" hx-disabled-elt=\"this\"><i aria-hidden=\"true\" class=\"fas fa-sync-alt\"></i></button></div></td>")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
@@ -968,7 +968,7 @@ func List(data SecurityData) templ.Component {
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 85, "\" hx-swap=\"none\" class=\"text-primary-400 hover:text-primary-300 flex items-center gap-1 text-sm\" hx-disabled-elt=\"this\"><i class=\"fas fa-search mr-1\"></i>Scan</button></td>")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 85, "\" hx-swap=\"none\" class=\"text-primary-400 hover:text-primary-300 flex items-center gap-1 text-sm\" hx-disabled-elt=\"this\"><i aria-hidden=\"true\" class=\"fas fa-search mr-1\"></i>Scan</button></td>")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}

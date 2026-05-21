@@ -6,6 +6,7 @@ package costopt
 
 import (
 	"fmt"
+	"github.com/fr4nsys/usulnet/internal/web/templates/components"
 	"github.com/fr4nsys/usulnet/internal/web/templates/layouts"
 )
 
@@ -90,7 +91,7 @@ templ CostOpt(data CostOptData) {
 			<!-- Recommendations List -->
 			if len(data.Recommendations) == 0 {
 				<div class="card p-12 text-center">
-					<i class="fas fa-check-circle text-4xl text-green-400 mb-4"></i>
+					<i aria-hidden="true" class="fas fa-check-circle text-4xl text-green-400 mb-4"></i>
 					<h3 class="text-lg font-medium text-white mb-2">No Recommendations</h3>
 					<p class="text-gray-400">Resource optimization recommendations will appear here when rightsizing opportunities are found.</p>
 				</div>
@@ -99,14 +100,14 @@ templ CostOpt(data CostOptData) {
 					<table class="w-full text-sm">
 						<thead>
 							<tr class="text-left text-gray-400 border-b border-dark-600">
-								<th class="pb-2 pr-3">Container</th>
-								<th class="pb-2 pr-3">Type</th>
-								<th class="pb-2 pr-3">Severity</th>
-								<th class="pb-2 pr-3">Current</th>
-								<th class="pb-2 pr-3">Recommended</th>
-								<th class="pb-2 pr-3">Reason</th>
-								<th class="pb-2 pr-3">Status</th>
-								<th class="pb-2">Actions</th>
+								<th scope="col" class="pb-2 pr-3">Container</th>
+								<th scope="col" class="pb-2 pr-3">Type</th>
+								<th scope="col" class="pb-2 pr-3">Severity</th>
+								<th scope="col" class="pb-2 pr-3">Current</th>
+								<th scope="col" class="pb-2 pr-3">Recommended</th>
+								<th scope="col" class="pb-2 pr-3">Reason</th>
+								<th scope="col" class="pb-2 pr-3">Status</th>
+								<th scope="col" class="pb-2">Actions</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -119,7 +120,7 @@ templ CostOpt(data CostOptData) {
 										<span class={ costOptTypeBadge(rec.Type), "px-2 py-0.5 text-xs rounded" }>{ costOptTypeLabel(rec.Type) }</span>
 									</td>
 									<td class="py-2 pr-3">
-										<span class={ costOptSeverityBadge(rec.Severity), "px-2 py-0.5 text-xs rounded" }>{ rec.Severity }</span>
+										@components.Chip(costOptSeverityTone(rec.Severity), rec.Severity)
 									</td>
 									<td class="py-2 pr-3 font-mono text-xs text-gray-300">{ rec.CurrentValue }</td>
 									<td class="py-2 pr-3 font-mono text-xs text-green-400">{ rec.RecommendedValue }</td>
@@ -132,12 +133,12 @@ templ CostOpt(data CostOptData) {
 											<div class="flex items-center gap-1">
 												<form method="POST" action={ templ.SafeURL(fmt.Sprintf("/resource-optimization/%s/apply", rec.ID)) } class="inline">
 													<button type="submit" class="p-1.5 text-gray-400 hover:text-green-400 transition-colors" title="Apply recommendation">
-														<i class="fas fa-check text-sm"></i>
+														<i aria-hidden="true" class="fas fa-check text-sm"></i>
 													</button>
 												</form>
 												<form method="POST" action={ templ.SafeURL(fmt.Sprintf("/resource-optimization/%s/dismiss", rec.ID)) } class="inline">
 													<button type="submit" class="p-1.5 text-gray-400 hover:text-red-400 transition-colors" title="Dismiss recommendation">
-														<i class="fas fa-times text-sm"></i>
+														<i aria-hidden="true" class="fas fa-times text-sm"></i>
 													</button>
 												</form>
 											</div>
@@ -155,7 +156,7 @@ templ CostOpt(data CostOptData) {
 				<div class="flex items-center justify-center gap-2 mt-4">
 					if data.CurrentPage > 1 {
 						<a href={ templ.SafeURL(costOptPaginationURL(data, data.CurrentPage-1)) } class="btn-secondary text-sm">
-							<i class="fas fa-chevron-left mr-1"></i>Prev
+							<i aria-hidden="true" class="fas fa-chevron-left mr-1"></i>Prev
 						</a>
 					}
 					<span class="text-sm text-gray-400">
@@ -163,7 +164,7 @@ templ CostOpt(data CostOptData) {
 					</span>
 					if data.CurrentPage < data.TotalPages {
 						<a href={ templ.SafeURL(costOptPaginationURL(data, data.CurrentPage+1)) } class="btn-secondary text-sm">
-							Next<i class="fas fa-chevron-right ml-1"></i>
+							Next<i aria-hidden="true" class="fas fa-chevron-right ml-1"></i>
 						</a>
 					}
 				</div>
@@ -227,16 +228,21 @@ func costOptStatusBadge(status string) string {
 	}
 }
 
-func costOptSeverityBadge(severity string) string {
+// costOptSeverityTone maps cost-optimisation severity strings
+// (critical / warning / info / …) to the shared components.Tone.
+// "warning" is preserved here rather than collapsed into the
+// recon "high"/"medium" ladder because cost-opt's recommendation
+// vocabulary is distinct from the recon scan ladder.
+func costOptSeverityTone(severity string) components.Tone {
 	switch severity {
 	case "critical":
-		return "bg-red-500/20 text-red-400"
+		return components.ToneCritical
 	case "warning":
-		return "bg-yellow-500/20 text-yellow-400"
+		return components.ToneWarning
 	case "info":
-		return "bg-blue-500/20 text-blue-400"
+		return components.ToneInfo
 	default:
-		return "bg-gray-500/20 text-gray-400"
+		return components.ToneNeutral
 	}
 }
 

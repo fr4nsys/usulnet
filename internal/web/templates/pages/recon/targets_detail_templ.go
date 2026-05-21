@@ -47,7 +47,7 @@ func TargetDetail(data TargetDetailData) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"space-y-6\"><!-- Breadcrumb / header --><div class=\"flex items-center justify-between\"><div><a href=\"/recon/targets\" class=\"text-xs text-primary-400 hover:underline\"><i class=\"fas fa-chevron-left mr-1\"></i>Back to targets</a><h1 class=\"text-2xl font-display font-bold text-white mt-1\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"space-y-6\"><!-- Breadcrumb / header --><div class=\"flex items-center justify-between\"><div><a href=\"/recon/targets\" class=\"text-xs text-primary-400 hover:underline\"><i aria-hidden=\"true\" class=\"fas fa-chevron-left mr-1\"></i>Back to targets</a><h1 class=\"text-2xl font-display font-bold text-white mt-1\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -99,19 +99,19 @@ func TargetDetail(data TargetDetailData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "\" hx-confirm=\"Start a new scan against this target?\"><i class=\"fas fa-play mr-2\"></i>Start Scan</button></div></div><!-- Ownership --><div class=\"card p-5\"><h2 class=\"text-lg font-display font-semibold text-white mb-3\">Ownership</h2>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "\" hx-confirm=\"Start a new scan against this target?\"><i aria-hidden=\"true\" class=\"fas fa-play mr-2\"></i>Start Scan</button></div></div><!-- Ownership --><div class=\"card p-5\"><h2 class=\"text-lg font-display font-semibold text-white mb-3\">Ownership</h2>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			if data.Target.OwnershipOK {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<p class=\"text-sm text-green-400\"><i class=\"fas fa-check-circle mr-1\"></i>Ownership verified via ")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<p class=\"text-sm text-green-400\"><i aria-hidden=\"true\" class=\"fas fa-check-circle mr-1\"></i>Ownership verified via ")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var7 string
 				templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(data.Target.OwnershipMethod)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/recon/targets_detail.templ`, Line: 41, Col: 98}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/recon/targets_detail.templ`, Line: 41, Col: 117}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 				if templ_7745c5c3_Err != nil {
@@ -122,13 +122,13 @@ func TargetDetail(data TargetDetailData) templ.Component {
 					return templ_7745c5c3_Err
 				}
 			} else {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "<p class=\"text-sm text-yellow-400 mb-3\"><i class=\"fas fa-exclamation-triangle mr-1\"></i>Ownership must be verified before scans can run.</p>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "<p class=\"text-sm text-yellow-400 mb-3\"><i aria-hidden=\"true\" class=\"fas fa-exclamation-triangle mr-1\"></i>Ownership must be verified before scans can run.</p>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			}
 			if len(data.OwnershipProofs) > 0 {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "<table class=\"w-full text-sm mt-3\"><thead class=\"text-xs uppercase tracking-wide text-gray-400\"><tr><th class=\"text-left py-2\">Method</th><th class=\"text-left py-2\">Status</th><th class=\"text-left py-2\">Challenge</th><th class=\"text-left py-2\">Verified</th></tr></thead> <tbody class=\"divide-y divide-dark-700\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "<table class=\"w-full text-sm mt-3\"><thead class=\"text-xs uppercase tracking-wide text-gray-400\"><tr><th scope=\"col\" class=\"text-left py-2\">Method</th><th scope=\"col\" class=\"text-left py-2\">Status</th><th scope=\"col\" class=\"text-left py-2\">Challenge</th><th scope=\"col\" class=\"text-left py-2\">Verified</th></tr></thead> <tbody class=\"divide-y divide-dark-700\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}

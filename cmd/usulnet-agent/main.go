@@ -10,13 +10,13 @@ package main
 import (
 	"context"
 	"errors"
-	"flag"
 	"fmt"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
 
+	"github.com/spf13/cobra"
 	"gopkg.in/yaml.v3"
 
 	"github.com/fr4nsys/usulnet/internal/agent"
@@ -32,86 +32,122 @@ var (
 	BuildDate = "unknown"
 )
 
-func main() {
-	// Parse flags
-	var (
-		configFile  = flag.String("config", "", "Path to config file")
-		gatewayURL  = flag.String("gateway", envOrDefault("USULNET_GATEWAY_URL", "nats://localhost:4222"), "Gateway NATS URL")
-		token       = flag.String("token", envOrDefault("USULNET_AGENT_TOKEN", ""), "Agent authentication token")
-		dockerHost  = flag.String("docker", envOrDefault("DOCKER_HOST", "unix:///var/run/docker.sock"), "Docker daemon address")
-		hostname    = flag.String("hostname", "", "Override hostname (auto-detected if empty)")
-		logLevel    = flag.String("log-level", envOrDefault("USULNET_LOG_LEVEL", "info"), "Log level (debug, info, warn, error)")
-		logFormat   = flag.String("log-format", envOrDefault("USULNET_LOG_FORMAT", "json"), "Log format (json, console)")
-		dataDir     = flag.String("data-dir", envOrDefault("USULNET_DATA_DIR", "/var/lib/usulnet-agent"), "Data directory for local state")
-		showVersion = flag.Bool("version", false, "Show version and exit")
-	)
-	flag.Parse()
+// Flag-bound vars. Cobra parses into these from rootCmd's persistent flags;
+// every subcommand inherits them.
+var (
+	cfgFile    string
+	gatewayURL string
+	token      string
+	dockerHost string
+	hostname   string
+	logLevel   string
+	logFormat  string
+	dataDir    string
+)
 
-	// Show version
-	if *showVersion {
-		fmt.Printf("usulnet-agent %s (commit: %s, built: %s)\n", Version, Commit, BuildDate)
-		os.Exit(0)
-	}
+var rootCmd = &cobra.Command{
+	Use:   "usulnet-agent",
+	Short: "usulnet remote agent — connect a Docker host to the gateway",
+	Long: `usulnet-agent runs on each remote Docker host and connects to the
+central usulnet gateway over NATS. It receives commands from the
+control plane and executes them locally against the Docker daemon.
 
-	// Setup logger
-	log, err := logger.New(*logLevel, *logFormat)
+Running with no subcommand starts the agent (equivalent to
+"usulnet-agent run"). Use "version" to print build info, or
+"validate-config" to load+check the config without starting.`,
+	// SilenceUsage stops cobra from dumping the full help text after a RunE
+	// error; SilenceErrors stops cobra from prefixing the line itself so
+	// main()'s error handler can format the output consistently.
+	SilenceUsage:  true,
+	SilenceErrors: true,
+	RunE: func(cmd *cobra.Command, args []string) error {
+		return runAgent(cmd)
+	},
+}
+
+var runCmd = &cobra.Command{
+	Use:   "run",
+	Short: "Start the agent and connect to the gateway",
+	Long: `Run the agent connect-loop: load the config, dial the gateway over
+NATS, then serve commands until SIGINT/SIGTERM (graceful) or a
+second signal (force-exit after 30s).
+
+Equivalent to invoking "usulnet-agent" with no subcommand.`,
+	Example: `  usulnet-agent run
+  usulnet-agent run --config /etc/usulnet-agent/config.yaml
+  usulnet-agent run --gateway nats://master:4222 --token $TOKEN`,
+	Args: cobra.NoArgs,
+	RunE: func(cmd *cobra.Command, args []string) error {
+		return runAgent(cmd)
+	},
+}
+
+var versionCmd = &cobra.Command{
+	Use:     "version",
+	Short:   "Print version information",
+	Long:    `Print the usulnet-agent version, commit, and build date.`,
+	Example: `  usulnet-agent version`,
+	Args:    cobra.NoArgs,
+	RunE: func(cmd *cobra.Command, args []string) error {
+		_, err := fmt.Printf("usulnet-agent %s (commit: %s, built: %s)\n", Version, Commit, BuildDate)
+		return err
+	},
+}
+
+var validateConfigCmd = &cobra.Command{
+	Use:   "validate-config",
+	Short: "Load and validate the config without starting the agent",
+	Long: `Load the agent config (from --config and environment) and run
+the required-fields check. Exits 0 if a startable config can be
+assembled; non-zero otherwise. Useful in CI / deploy pipelines to
+catch typos before the agent restarts.`,
+	Example: `  usulnet-agent validate-config --config /etc/usulnet-agent/config.yaml
+  USULNET_AGENT_TOKEN=$TOKEN usulnet-agent validate-config`,
+	Args: cobra.NoArgs,
+	RunE: func(cmd *cobra.Command, args []string) error {
+		cfg, err := assembleConfig()
+		if err != nil {
+			return err
+		}
+		if err := validateConfig(cfg); err != nil {
+			return err
+		}
+		fmt.Println("Agent configuration is valid")
+		return nil
+	},
+}
+
+// runAgent is shared between rootCmd and runCmd — both invoke it.
+func runAgent(cmd *cobra.Command) error {
+	log, err := logger.New(logLevel, logFormat)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Failed to create logger: %v\n", err)
-		os.Exit(1)
+		return fmt.Errorf("create logger: %w", err)
 	}
-	defer log.Sync()
+	defer func() { _ = log.Sync() }()
 
-	// Set agent version
+	cfg, err := assembleConfig()
+	if err != nil {
+		log.Error("Failed to assemble config", "error", err)
+		return err
+	}
+	if err := validateConfig(cfg); err != nil {
+		log.Error("Config validation failed", "error", err)
+		return err
+	}
+
 	agent.Version = Version
-
 	log.Info("Starting usulnet agent",
 		"version", Version,
 		"commit", Commit,
 		"built", BuildDate,
 	)
 
-	// Load config from file if specified. Use Error+Sync+Exit instead of
-	// log.Fatal so the deferred log.Sync() flush above isn't skipped.
-	cfg := agent.DefaultConfig()
-	if *configFile != "" {
-		if err := loadConfigFile(*configFile, &cfg); err != nil {
-			log.Error("Failed to load config file", "error", err)
-			_ = log.Sync()
-			os.Exit(1)
-		}
-	}
-
-	// Override with flags/env
-	if *gatewayURL != "" {
-		cfg.GatewayURL = *gatewayURL
-	}
-	if *token != "" {
-		cfg.Token = *token
-	}
-	if *dockerHost != "" {
-		cfg.DockerHost = *dockerHost
-	}
-	if *hostname != "" {
-		cfg.Hostname = *hostname
-	}
-	if *dataDir != "" {
-		cfg.DataDir = *dataDir
-	}
-	cfg.LogLevel = *logLevel
-
-	// Validate required config
-	if cfg.Token == "" {
-		log.Fatal("Agent token is required. Set USULNET_AGENT_TOKEN or use --token flag")
-	}
-
-	// Create agent
 	ag, err := agent.New(cfg, log)
 	if err != nil {
-		log.Fatal("Failed to create agent", "error", err)
+		return fmt.Errorf("create agent: %w", err)
 	}
 
-	// Setup signal handling
-	ctx, cancel := context.WithCancel(context.Background())
+	ctx, cancel := context.WithCancel(cmd.Context())
 	sigCh := make(chan os.Signal, 1)
 	signal.Notify(sigCh, syscall.SIGINT, syscall.SIGTERM)
 
@@ -120,7 +156,7 @@ func main() {
 		log.Info("Received signal, shutting down", "signal", sig)
 		cancel()
 
-		// Force exit after timeout
+		// Force exit after timeout or on a second signal.
 		select {
 		case <-time.After(30 * time.Second):
 			log.Error("Shutdown timeout, forcing exit")
@@ -131,12 +167,69 @@ func main() {
 		}
 	}()
 
-	// Run agent
 	if err := ag.Run(ctx); err != nil && !errors.Is(err, context.Canceled) {
-		log.Fatal("Agent failed", "error", err)
+		return fmt.Errorf("agent run: %w", err)
 	}
-
 	log.Info("Agent stopped")
+	return nil
+}
+
+// assembleConfig builds an agent.Config from defaults + the optional
+// config file + flag/env overrides. It does NOT validate; use
+// validateConfig for the required-fields check.
+func assembleConfig() (agent.Config, error) {
+	cfg := agent.DefaultConfig()
+	if cfgFile != "" {
+		if err := loadConfigFile(cfgFile, &cfg); err != nil {
+			return cfg, err
+		}
+	}
+	// Flag-equivalent values (already env-resolved by the flag defaults)
+	// override the file. Empty strings are skipped so the YAML wins when
+	// a flag wasn't explicitly set.
+	if gatewayURL != "" {
+		cfg.GatewayURL = gatewayURL
+	}
+	if token != "" {
+		cfg.Token = token
+	}
+	if dockerHost != "" {
+		cfg.DockerHost = dockerHost
+	}
+	if hostname != "" {
+		cfg.Hostname = hostname
+	}
+	if dataDir != "" {
+		cfg.DataDir = dataDir
+	}
+	cfg.LogLevel = logLevel
+	return cfg, nil
+}
+
+// validateConfig enforces the must-have fields. Currently only Token is
+// required; everything else has a usable default.
+func validateConfig(cfg agent.Config) error {
+	if cfg.Token == "" {
+		return errors.New("agent token is required (set USULNET_AGENT_TOKEN or --token)")
+	}
+	return nil
+}
+
+// loadConfigFile loads agent configuration from a YAML file.
+//
+// The file is unmarshaled directly into the supplied agent.Config —
+// yaml tags on agent.Config drive the mapping, so adding new fields no
+// longer requires a parallel mirror struct. Fields absent from the YAML
+// keep their existing (DefaultConfig) values.
+func loadConfigFile(path string, cfg *agent.Config) error {
+	data, err := os.ReadFile(path) // #nosec G304 -- operator-supplied path
+	if err != nil {
+		return fmt.Errorf("read config file: %w", err)
+	}
+	if err := yaml.Unmarshal(data, cfg); err != nil {
+		return fmt.Errorf("parse config file: %w", err)
+	}
+	return nil
 }
 
 // envOrDefault returns the environment variable value or a default.
@@ -147,67 +240,39 @@ func envOrDefault(key, defaultValue string) string {
 	return defaultValue
 }
 
-// agentFileConfig mirrors agent.Config for YAML parsing.
-type agentFileConfig struct {
-	GatewayURL string            `yaml:"gateway_url"`
-	Token      string            `yaml:"token"`
-	DockerHost string            `yaml:"docker_host"`
-	Hostname   string            `yaml:"hostname"`
-	AgentID    string            `yaml:"agent_id"`
-	Labels     map[string]string `yaml:"labels"`
-	DataDir    string            `yaml:"data_dir"`
-	LogLevel   string            `yaml:"log_level"`
-	LogFormat  string            `yaml:"log_format"`
-	TLS        struct {
-		Enabled  bool   `yaml:"enabled"`
-		CertFile string `yaml:"cert_file"`
-		KeyFile  string `yaml:"key_file"`
-		CAFile   string `yaml:"ca_file"`
-	} `yaml:"tls"`
+// dockerHostDefault resolves the default --docker value with the AG3
+// env-var precedence: USULNET_AGENT_DOCKER_HOST wins, then DOCKER_HOST
+// (for Docker tooling parity), then the unix-socket fallback.
+func dockerHostDefault() string {
+	if v := os.Getenv("USULNET_AGENT_DOCKER_HOST"); v != "" {
+		return v
+	}
+	if v := os.Getenv("DOCKER_HOST"); v != "" {
+		return v
+	}
+	return "unix:///var/run/docker.sock"
 }
 
-// loadConfigFile loads configuration from a YAML file.
-func loadConfigFile(path string, cfg *agent.Config) error {
-	data, err := os.ReadFile(path)
-	if err != nil {
-		return fmt.Errorf("read config file: %w", err)
-	}
+func init() {
+	// Persistent flags — visible on every subcommand so
+	// "usulnet-agent --config foo.yaml run" works.
+	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "Path to YAML config file")
+	rootCmd.PersistentFlags().StringVar(&gatewayURL, "gateway", envOrDefault("USULNET_GATEWAY_URL", "nats://localhost:4222"), "Gateway NATS URL (default $USULNET_GATEWAY_URL)")
+	rootCmd.PersistentFlags().StringVar(&token, "token", envOrDefault("USULNET_AGENT_TOKEN", ""), "Agent authentication token (default $USULNET_AGENT_TOKEN)")
+	rootCmd.PersistentFlags().StringVar(&dockerHost, "docker", dockerHostDefault(), "Docker daemon address (default $USULNET_AGENT_DOCKER_HOST, then $DOCKER_HOST)")
+	rootCmd.PersistentFlags().StringVar(&hostname, "hostname", "", "Override hostname (auto-detected if empty)")
+	rootCmd.PersistentFlags().StringVar(&logLevel, "log-level", envOrDefault("USULNET_LOG_LEVEL", "info"), "Log level (debug, info, warn, error)")
+	rootCmd.PersistentFlags().StringVar(&logFormat, "log-format", envOrDefault("USULNET_LOG_FORMAT", "json"), "Log format (json, console)")
+	rootCmd.PersistentFlags().StringVar(&dataDir, "data-dir", envOrDefault("USULNET_DATA_DIR", "/var/lib/usulnet-agent"), "Data directory for local state")
 
-	var fc agentFileConfig
-	if err := yaml.Unmarshal(data, &fc); err != nil {
-		return fmt.Errorf("parse config file: %w", err)
-	}
+	rootCmd.AddCommand(runCmd)
+	rootCmd.AddCommand(versionCmd)
+	rootCmd.AddCommand(validateConfigCmd)
+}
 
-	if fc.GatewayURL != "" {
-		cfg.GatewayURL = fc.GatewayURL
+func main() {
+	if err := rootCmd.Execute(); err != nil {
+		fmt.Fprintln(os.Stderr, "usulnet-agent:", err)
+		os.Exit(1)
 	}
-	if fc.Token != "" {
-		cfg.Token = fc.Token
-	}
-	if fc.DockerHost != "" {
-		cfg.DockerHost = fc.DockerHost
-	}
-	if fc.Hostname != "" {
-		cfg.Hostname = fc.Hostname
-	}
-	if fc.AgentID != "" {
-		cfg.AgentID = fc.AgentID
-	}
-	if fc.Labels != nil {
-		cfg.Labels = fc.Labels
-	}
-	if fc.DataDir != "" {
-		cfg.DataDir = fc.DataDir
-	}
-	if fc.LogLevel != "" {
-		cfg.LogLevel = fc.LogLevel
-	}
-	if fc.TLS.Enabled {
-		cfg.TLSEnabled = true
-		cfg.TLSCertFile = fc.TLS.CertFile
-		cfg.TLSKeyFile = fc.TLS.KeyFile
-		cfg.TLSCAFile = fc.TLS.CAFile
-	}
-
-	return nil
 }

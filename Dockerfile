@@ -84,6 +84,7 @@ RUN mkdir -p css && \
 FROM alpine:3.21
 
 ARG TARGETARCH
+ARG VERSION=dev
 
 # OCI image metadata labels
 LABEL org.opencontainers.image.title="usulnet" \
@@ -91,6 +92,7 @@ LABEL org.opencontainers.image.title="usulnet" \
       org.opencontainers.image.url="https://github.com/fr4nsys/usulnet" \
       org.opencontainers.image.source="https://github.com/fr4nsys/usulnet" \
       org.opencontainers.image.vendor="usulnet" \
+      org.opencontainers.image.version="${VERSION}" \
       org.opencontainers.image.licenses="AGPL-3.0"
 
 # All runtime packages in a single layer (includes nvim editor deps)
@@ -131,6 +133,19 @@ WORKDIR /app
 
 # Copy binary (Templ templates compiled into it)
 COPY --from=builder --chown=usulnet:usulnet /build/usulnet /app/usulnet
+
+# Pre-generate shell tab-completion scripts so operators can `docker cp`
+# them out without running the binary on the host. Cobra's completion
+# subcommand produces shell-portable scripts; we bake one per shell.
+# Runs on TARGETPLATFORM (no --platform on this stage) so the cross-
+# compiled binary executes natively.
+RUN mkdir -p /app/completions/bash /app/completions/zsh \
+             /app/completions/fish /app/completions/powershell && \
+    /app/usulnet completion bash       > /app/completions/bash/usulnet && \
+    /app/usulnet completion zsh        > /app/completions/zsh/_usulnet && \
+    /app/usulnet completion fish       > /app/completions/fish/usulnet.fish && \
+    /app/usulnet completion powershell > /app/completions/powershell/usulnet.ps1 && \
+    chown -R usulnet:usulnet /app/completions
 
 # Copy compiled CSS
 COPY --from=frontend --chown=usulnet:usulnet /frontend/css/style.css /app/web/static/css/style.css

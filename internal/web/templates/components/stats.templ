@@ -2,7 +2,7 @@ package components
 
 // StatCard displays a statistic card with icon
 templ StatCard(title, value, icon, color, subtitle string) {
-	<div class="bg-dark-800 rounded-xl border border-dark-600 p-5 hover:border-dark-500 transition-colors">
+	<div class="card p-5 hover:border-dark-500 transition-colors">
 		<div class="flex items-center justify-between">
 			<div>
 				<p class="text-sm font-medium text-gray-400">{ title }</p>
@@ -20,7 +20,7 @@ templ StatCard(title, value, icon, color, subtitle string) {
 
 // StatCardLarge displays a larger statistic card
 templ StatCardLarge(title, value, icon, color, change, changeLabel string, positive bool) {
-	<div class="bg-dark-800 rounded-xl border border-dark-600 p-6">
+	<div class="card p-6">
 		<div class="flex items-center gap-4">
 			<div class={ "w-14 h-14 rounded-xl flex items-center justify-center", iconBg(color) }>
 				<i class={ "fas " + icon + " text-2xl", iconColor(color) }></i>
@@ -33,9 +33,9 @@ templ StatCardLarge(title, value, icon, color, change, changeLabel string, posit
 				<div class="text-right">
 					<p class={ "text-lg font-semibold", templ.KV("text-green-400", positive), templ.KV("text-red-400", !positive) }>
 						if positive {
-							<i class="fas fa-arrow-up text-sm mr-1"></i>
+							<i aria-hidden="true" class="fas fa-arrow-up text-sm mr-1"></i>
 						} else {
-							<i class="fas fa-arrow-down text-sm mr-1"></i>
+							<i aria-hidden="true" class="fas fa-arrow-down text-sm mr-1"></i>
 						}
 						{ change }
 					</p>

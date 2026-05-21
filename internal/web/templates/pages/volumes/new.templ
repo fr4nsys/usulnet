@@ -13,7 +13,7 @@ templ New(data VolumeNewData) {
 		<div class="max-w-2xl mx-auto space-y-6">
 			<div class="flex items-center gap-4">
 				<a href="/volumes" class="p-2 text-gray-400 hover:text-white hover:bg-dark-700 rounded-lg">
-					<i class="fas fa-arrow-left"></i>
+					<i aria-hidden="true" class="fas fa-arrow-left"></i>
 				</a>
 				<div>
 					<h1 class="text-2xl font-display font-bold text-white">Create Volume</h1>
@@ -23,7 +23,7 @@ templ New(data VolumeNewData) {
 
 			if data.Error != "" {
 				<div class="bg-red-500/10 border border-red-500/20 rounded-lg p-4 text-red-400">
-					<i class="fas fa-exclamation-circle mr-2"></i>{ data.Error }
+					<i aria-hidden="true" class="fas fa-exclamation-circle mr-2"></i>{ data.Error }
 				</div>
 			}
 
@@ -31,7 +31,7 @@ templ New(data VolumeNewData) {
 				<input type="hidden" name="csrf_token" value={ data.PageData.CSRFToken }/>
 				<div>
 					<label class="block text-sm font-medium text-gray-300 mb-2">Volume Name</label>
-					<input type="text" name="name" required class="input" placeholder="my-volume"/>
+					<input type="text" name="name" required class="input" placeholder="my-volume" aria-label="my-volume"/>
 				</div>
 
 				<div>
@@ -55,7 +55,7 @@ templ New(data VolumeNewData) {
 				<div class="flex justify-end gap-3 pt-4">
 					<a href="/volumes" class="btn-secondary">Cancel</a>
 					<button type="submit" class="btn-primary">
-						<i class="fas fa-plus mr-2"></i>Create Volume
+						<i aria-hidden="true" class="fas fa-plus mr-2"></i>Create Volume
 					</button>
 				</div>
 			</form>

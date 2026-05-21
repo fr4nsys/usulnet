@@ -6,6 +6,7 @@ package backupverify
 
 import (
 	"fmt"
+	"github.com/fr4nsys/usulnet/internal/web/templates/components"
 	"github.com/fr4nsys/usulnet/internal/web/templates/layouts"
 )
 
@@ -16,6 +17,7 @@ type ListData struct {
 	Total         int
 	Page          int
 	PageSize      int
+	EmptyState    components.EmptyStateData
 }
 
 type VerificationView struct {
@@ -65,7 +67,7 @@ templ List(data ListData) {
 							<p class="text-2xl font-bold text-white">{ fmt.Sprintf("%d", data.Stats.TotalVerified) }</p>
 						</div>
 						<div class="text-primary-400">
-							<i class="fas fa-check-double text-2xl"></i>
+							<i aria-hidden="true" class="fas fa-check-double text-2xl"></i>
 						</div>
 					</div>
 				</div>
@@ -76,7 +78,7 @@ templ List(data ListData) {
 							<p class="text-2xl font-bold text-green-400">{ fmt.Sprintf("%d", data.Stats.Passed) }</p>
 						</div>
 						<div class="text-green-400">
-							<i class="fas fa-check-circle text-2xl"></i>
+							<i aria-hidden="true" class="fas fa-check-circle text-2xl"></i>
 						</div>
 					</div>
 				</div>
@@ -87,7 +89,7 @@ templ List(data ListData) {
 							<p class="text-2xl font-bold text-red-400">{ fmt.Sprintf("%d", data.Stats.Failed) }</p>
 						</div>
 						<div class="text-red-400">
-							<i class="fas fa-times-circle text-2xl"></i>
+							<i aria-hidden="true" class="fas fa-times-circle text-2xl"></i>
 						</div>
 					</div>
 				</div>
@@ -98,7 +100,7 @@ templ List(data ListData) {
 							<p class="text-2xl font-bold text-white">{ data.Stats.PassRate }</p>
 						</div>
 						<div class="text-blue-400">
-							<i class="fas fa-percentage text-2xl"></i>
+							<i aria-hidden="true" class="fas fa-percentage text-2xl"></i>
 						</div>
 					</div>
 				</div>
@@ -110,14 +112,14 @@ templ List(data ListData) {
 						<table class="table">
 							<thead>
 								<tr>
-									<th>Backup</th>
-									<th>Status</th>
-									<th>Method</th>
-									<th>Checks</th>
-									<th>Files</th>
-									<th>Duration</th>
-									<th>Completed</th>
-									<th>Actions</th>
+									<th scope="col">Backup</th>
+									<th scope="col">Status</th>
+									<th scope="col">Method</th>
+									<th scope="col">Checks</th>
+									<th scope="col">Files</th>
+									<th scope="col">Duration</th>
+									<th scope="col">Completed</th>
+									<th scope="col">Actions</th>
 								</tr>
 							</thead>
 							<tbody>
@@ -171,11 +173,7 @@ templ List(data ListData) {
 			}
 
 			if len(data.Verifications) == 0 {
-				<div class="card p-8 text-center">
-					<i class="fas fa-check-double text-4xl text-gray-400 mb-4"></i>
-					<h3 class="text-lg font-medium text-white mb-2">No verifications yet</h3>
-					<p class="text-gray-400">Run a verification from the Backups page to confirm a backup actually restores</p>
-				</div>
+				@components.EmptyStateCTAs(data.EmptyState)
 			}
 		</div>
 	}
@@ -184,19 +182,19 @@ templ List(data ListData) {
 templ statusBadge(status string) {
 	if status == "passed" {
 		<span class="inline-flex items-center gap-1 text-xs bg-green-500/10 text-green-400 px-2 py-0.5 rounded font-medium">
-			<i class="fas fa-check-circle"></i>Passed
+			<i aria-hidden="true" class="fas fa-check-circle"></i>Passed
 		</span>
 	} else if status == "failed" {
 		<span class="inline-flex items-center gap-1 text-xs bg-red-500/10 text-red-400 px-2 py-0.5 rounded font-medium">
-			<i class="fas fa-times-circle"></i>Failed
+			<i aria-hidden="true" class="fas fa-times-circle"></i>Failed
 		</span>
 	} else if status == "running" {
 		<span class="inline-flex items-center gap-1 text-xs bg-blue-500/10 text-blue-400 px-2 py-0.5 rounded font-medium">
-			<i class="fas fa-spinner fa-spin"></i>Running
+			<i aria-hidden="true" class="fas fa-spinner fa-spin"></i>Running
 		</span>
 	} else {
 		<span class="inline-flex items-center gap-1 text-xs bg-gray-500/10 text-gray-400 px-2 py-0.5 rounded font-medium">
-			<i class="fas fa-clock"></i>Pending
+			<i aria-hidden="true" class="fas fa-clock"></i>Pending
 		</span>
 	}
 }
@@ -216,15 +214,15 @@ templ methodBadge(method string) {
 templ checkIcon(label string, valid *bool) {
 	if valid != nil && *valid {
 		<span class="text-green-400" title={ label + ": OK" }>
-			<i class="fas fa-check text-xs"></i>
+			<i aria-hidden="true" class="fas fa-check text-xs"></i>
 		</span>
 	} else if valid != nil && !*valid {
 		<span class="text-red-400" title={ label + ": Failed" }>
-			<i class="fas fa-times text-xs"></i>
+			<i aria-hidden="true" class="fas fa-times text-xs"></i>
 		</span>
 	} else {
 		<span class="text-gray-600" title={ label + ": N/A" }>
-			<i class="fas fa-minus text-xs"></i>
+			<i aria-hidden="true" class="fas fa-minus text-xs"></i>
 		</span>
 	}
 }

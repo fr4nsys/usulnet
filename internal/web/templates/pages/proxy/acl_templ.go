@@ -67,7 +67,7 @@ func ACLList(data ACLListData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			if data.Connected {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<span class=\"badge badge-success\"><i class=\"fas fa-link mr-1\"></i>Connected</span> <a href=\"/proxy/access-lists/new\" class=\"btn-primary\"><i class=\"fas fa-plus mr-2\"></i>New Access List</a>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<span class=\"badge badge-success\"><i aria-hidden=\"true\" class=\"fas fa-link mr-1\"></i>Connected</span> <a href=\"/proxy/access-lists/new\" class=\"btn-primary\"><i aria-hidden=\"true\" class=\"fas fa-plus mr-2\"></i>New Access List</a>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -86,7 +86,7 @@ func ACLList(data ACLListData) templ.Component {
 			}
 			if data.Connected {
 				if len(data.AccessLists) > 0 {
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<div class=\"card\"><div class=\"overflow-x-auto\"><table class=\"table\"><thead><tr><th>Name</th><th>Auth Users</th><th>IP Rules</th><th>Policy</th><th>Actions</th></tr></thead> <tbody>")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<div class=\"card\"><div class=\"overflow-x-auto\"><table class=\"table\"><thead><tr><th scope=\"col\">Name</th><th scope=\"col\">Auth Users</th><th scope=\"col\">IP Rules</th><th scope=\"col\">Policy</th><th scope=\"col\">Actions</th></tr></thead> <tbody>")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
@@ -211,13 +211,13 @@ func ACLList(data ACLListData) templ.Component {
 						return templ_7745c5c3_Err
 					}
 				} else {
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 21, "<div class=\"card p-8 text-center\"><i class=\"fas fa-shield-alt text-4xl text-gray-400 mb-4\"></i><h3 class=\"text-lg font-medium text-white mb-2\">No access lists</h3><p class=\"text-gray-400 mb-4\">Protect proxy hosts with HTTP basic auth or IP restrictions</p><a href=\"/proxy/access-lists/new\" class=\"btn-primary\"><i class=\"fas fa-plus mr-2\"></i>New Access List</a></div>")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 21, "<div class=\"card p-8 text-center\"><i aria-hidden=\"true\" class=\"fas fa-shield-alt text-4xl text-gray-400 mb-4\"></i><h3 class=\"text-lg font-medium text-white mb-2\">No access lists</h3><p class=\"text-gray-400 mb-4\">Protect proxy hosts with HTTP basic auth or IP restrictions</p><a href=\"/proxy/access-lists/new\" class=\"btn-primary\"><i aria-hidden=\"true\" class=\"fas fa-plus mr-2\"></i>New Access List</a></div>")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
 				}
 			} else {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 22, "<div class=\"card p-8 text-center\"><i class=\"fas fa-plug text-4xl text-gray-400 mb-4\"></i><h3 class=\"text-lg font-medium text-white mb-2\">NPM Not Connected</h3><p class=\"text-gray-400 mb-4\">Connect to NPM first.</p><a href=\"/proxy/setup\" class=\"btn-primary\"><i class=\"fas fa-link mr-2\"></i>Setup Connection</a></div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 22, "<div class=\"card p-8 text-center\"><i aria-hidden=\"true\" class=\"fas fa-plug text-4xl text-gray-400 mb-4\"></i><h3 class=\"text-lg font-medium text-white mb-2\">NPM Not Connected</h3><p class=\"text-gray-400 mb-4\">Connect to NPM first.</p><a href=\"/proxy/setup\" class=\"btn-primary\"><i aria-hidden=\"true\" class=\"fas fa-link mr-2\"></i>Setup Connection</a></div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -301,7 +301,7 @@ func ACLForm(data ACLFormData) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 24, "<div class=\"max-w-2xl mx-auto space-y-6\"><div class=\"flex items-center gap-4\"><a href=\"/proxy/access-lists\" class=\"p-2 text-gray-400 hover:text-white hover:bg-dark-700 rounded-lg\"><i class=\"fas fa-arrow-left\"></i></a><div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 24, "<div class=\"max-w-2xl mx-auto space-y-6\"><div class=\"flex items-center gap-4\"><a href=\"/proxy/access-lists\" class=\"p-2 text-gray-400 hover:text-white hover:bg-dark-700 rounded-lg\"><i aria-hidden=\"true\" class=\"fas fa-arrow-left\"></i></a><div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -321,14 +321,14 @@ func ACLForm(data ACLFormData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			if data.Error != "" {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 28, "<div class=\"bg-red-500/10 border border-red-500/20 rounded-lg p-4 text-red-400\"><i class=\"fas fa-exclamation-triangle mr-2\"></i>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 28, "<div class=\"bg-red-500/10 border border-red-500/20 rounded-lg p-4 text-red-400\"><i aria-hidden=\"true\" class=\"fas fa-exclamation-triangle mr-2\"></i>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var10 string
 				templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(data.Error)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/proxy/acl.templ`, Line: 168, Col: 65}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/proxy/acl.templ`, Line: 168, Col: 84}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 				if templ_7745c5c3_Err != nil {
@@ -388,7 +388,7 @@ func ACLForm(data ACLFormData) templ.Component {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 35, " placeholder=\"My Access List\" class=\"input w-full\"></div><div class=\"flex items-center gap-6\"><div class=\"flex items-center gap-2\"><input type=\"checkbox\" name=\"satisfy_any\" id=\"satisfy-any\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 35, " placeholder=\"My Access List\" class=\"input w-full\" aria-label=\"Name\"></div><div class=\"flex items-center gap-6\"><div class=\"flex items-center gap-2\"><input type=\"checkbox\" name=\"satisfy_any\" id=\"satisfy-any\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -408,7 +408,7 @@ func ACLForm(data ACLFormData) templ.Component {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 39, " class=\"rounded border-gray-600 bg-dark-700 text-primary-500 focus:ring-primary-500\"> <label for=\"pass-auth\" class=\"text-sm text-gray-300\">Pass Auth to Host</label></div></div></div><!-- Authorization (user:pass) --><div class=\"card p-6\"><div class=\"flex items-center justify-between mb-4\"><h3 class=\"text-sm font-medium text-gray-400 uppercase tracking-wider\">Authorization Users</h3><button type=\"button\" onclick=\"addAuthRow()\" class=\"text-sm text-primary-400 hover:text-primary-300\"><i class=\"fas fa-plus mr-1\"></i>Add User</button></div><div id=\"auth-rows\" class=\"space-y-2\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 39, " class=\"rounded border-gray-600 bg-dark-700 text-primary-500 focus:ring-primary-500\"> <label for=\"pass-auth\" class=\"text-sm text-gray-300\">Pass Auth to Host</label></div></div></div><!-- Authorization (user:pass) --><div class=\"card p-6\"><div class=\"flex items-center justify-between mb-4\"><h3 class=\"text-sm font-medium text-gray-400 uppercase tracking-wider\">Authorization Users</h3><button type=\"button\" onclick=\"addAuthRow()\" class=\"text-sm text-primary-400 hover:text-primary-300\"><i aria-hidden=\"true\" class=\"fas fa-plus mr-1\"></i>Add User</button></div><div id=\"auth-rows\" class=\"space-y-2\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -421,37 +421,37 @@ func ACLForm(data ACLFormData) templ.Component {
 					var templ_7745c5c3_Var14 string
 					templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.JoinStringErrs(item.Username)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/proxy/acl.templ`, Line: 220, Col: 72}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/proxy/acl.templ`, Line: 221, Col: 72}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var14))
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 41, "\" placeholder=\"username\" class=\"input flex-1\"> <input type=\"password\" name=\"auth_password[]\" value=\"")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 41, "\" placeholder=\"username\" aria-label=\"username\" class=\"input flex-1\"> <input type=\"password\" name=\"auth_password[]\" value=\"")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
 					var templ_7745c5c3_Var15 string
 					templ_7745c5c3_Var15, templ_7745c5c3_Err = templ.JoinStringErrs(item.Password)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/proxy/acl.templ`, Line: 221, Col: 76}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/proxy/acl.templ`, Line: 222, Col: 76}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var15))
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 42, "\" placeholder=\"password\" class=\"input flex-1\"> <button type=\"button\" onclick=\"this.parentElement.remove()\" class=\"p-2 text-red-400 hover:text-red-300\"><i class=\"fas fa-times\"></i></button></div>")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 42, "\" placeholder=\"password\" aria-label=\"password\" class=\"input flex-1\"> <button type=\"button\" onclick=\"this.parentElement.remove()\" class=\"p-2 text-red-400 hover:text-red-300\"><i aria-hidden=\"true\" class=\"fas fa-times\"></i></button></div>")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
 				}
 			} else {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 43, "<div class=\"flex items-center gap-2 auth-row\"><input type=\"text\" name=\"auth_username[]\" placeholder=\"username\" class=\"input flex-1\"> <input type=\"password\" name=\"auth_password[]\" placeholder=\"password\" class=\"input flex-1\"> <button type=\"button\" onclick=\"this.parentElement.remove()\" class=\"p-2 text-red-400 hover:text-red-300\"><i class=\"fas fa-times\"></i></button></div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 43, "<div class=\"flex items-center gap-2 auth-row\"><input type=\"text\" name=\"auth_username[]\" placeholder=\"username\" aria-label=\"username\" class=\"input flex-1\"> <input type=\"password\" name=\"auth_password[]\" placeholder=\"password\" aria-label=\"password\" class=\"input flex-1\"> <button type=\"button\" onclick=\"this.parentElement.remove()\" class=\"p-2 text-red-400 hover:text-red-300\"><i aria-hidden=\"true\" class=\"fas fa-times\"></i></button></div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 44, "</div></div><!-- Client IP Rules --><div class=\"card p-6\"><div class=\"flex items-center justify-between mb-4\"><h3 class=\"text-sm font-medium text-gray-400 uppercase tracking-wider\">IP Address Rules</h3><button type=\"button\" onclick=\"addClientRow()\" class=\"text-sm text-primary-400 hover:text-primary-300\"><i class=\"fas fa-plus mr-1\"></i>Add Rule</button></div><div id=\"client-rows\" class=\"space-y-2\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 44, "</div></div><!-- Client IP Rules --><div class=\"card p-6\"><div class=\"flex items-center justify-between mb-4\"><h3 class=\"text-sm font-medium text-gray-400 uppercase tracking-wider\">IP Address Rules</h3><button type=\"button\" onclick=\"addClientRow()\" class=\"text-sm text-primary-400 hover:text-primary-300\"><i aria-hidden=\"true\" class=\"fas fa-plus mr-1\"></i>Add Rule</button></div><div id=\"client-rows\" class=\"space-y-2\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -464,19 +464,19 @@ func ACLForm(data ACLFormData) templ.Component {
 					var templ_7745c5c3_Var16 string
 					templ_7745c5c3_Var16, templ_7745c5c3_Err = templ.JoinStringErrs(c.Address)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/proxy/acl.templ`, Line: 251, Col: 69}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/proxy/acl.templ`, Line: 252, Col: 69}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var16))
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 46, "\" placeholder=\"192.168.1.0/24 or allow/deny IP\" class=\"input flex-1\"> <button type=\"button\" onclick=\"this.parentElement.remove()\" class=\"p-2 text-red-400 hover:text-red-300\"><i class=\"fas fa-times\"></i></button></div>")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 46, "\" placeholder=\"192.168.1.0/24 or allow/deny IP\" aria-label=\"192.168.1.0/24 or allow/deny IP\" class=\"input flex-1\"> <button type=\"button\" onclick=\"this.parentElement.remove()\" class=\"p-2 text-red-400 hover:text-red-300\"><i aria-hidden=\"true\" class=\"fas fa-times\"></i></button></div>")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
 				}
 			} else {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 47, "<div class=\"flex items-center gap-2 client-row\"><input type=\"text\" name=\"client_address[]\" placeholder=\"192.168.1.0/24\" class=\"input flex-1\"> <button type=\"button\" onclick=\"this.parentElement.remove()\" class=\"p-2 text-red-400 hover:text-red-300\"><i class=\"fas fa-times\"></i></button></div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 47, "<div class=\"flex items-center gap-2 client-row\"><input type=\"text\" name=\"client_address[]\" placeholder=\"192.168.1.0/24\" aria-label=\"192.168.1.0/24\" class=\"input flex-1\"> <button type=\"button\" onclick=\"this.parentElement.remove()\" class=\"p-2 text-red-400 hover:text-red-300\"><i aria-hidden=\"true\" class=\"fas fa-times\"></i></button></div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -486,12 +486,12 @@ func ACLForm(data ACLFormData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			if data.IsEdit {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 49, "<i class=\"fas fa-save mr-2\"></i>Save Changes")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 49, "<i aria-hidden=\"true\" class=\"fas fa-save mr-2\"></i>Save Changes")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			} else {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 50, "<i class=\"fas fa-plus mr-2\"></i>Create Access List")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 50, "<i aria-hidden=\"true\" class=\"fas fa-plus mr-2\"></i>Create Access List")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -508,18 +508,18 @@ func ACLForm(data ACLFormData) templ.Component {
 				var templ_7745c5c3_Var17 string
 				templ_7745c5c3_Var17, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("/proxy/access-lists/%d", data.ACL.ID))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/proxy/acl.templ`, Line: 289, Col: 76}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/proxy/acl.templ`, Line: 290, Col: 76}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var17))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 53, "\" hx-confirm=\"Delete this access list?\" class=\"btn-danger\"><i class=\"fas fa-trash mr-2\"></i>Delete</button></div></div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 53, "\" hx-confirm=\"Delete this access list?\" class=\"btn-danger\"><i aria-hidden=\"true\" class=\"fas fa-trash mr-2\"></i>Delete</button></div></div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 54, "</div><script>\n\t\t\tfunction addAuthRow() {\n\t\t\t\tconst container = document.getElementById('auth-rows');\n\t\t\t\tconst row = document.createElement('div');\n\t\t\t\trow.className = 'flex items-center gap-2 auth-row';\n\t\t\t\trow.innerHTML = '<input type=\"text\" name=\"auth_username[]\" placeholder=\"username\" class=\"input flex-1\"/>' +\n\t\t\t\t\t'<input type=\"password\" name=\"auth_password[]\" placeholder=\"password\" class=\"input flex-1\"/>' +\n\t\t\t\t\t'<button type=\"button\" onclick=\"this.parentElement.remove()\" class=\"p-2 text-red-400 hover:text-red-300\"><i class=\"fas fa-times\"></i></button>';\n\t\t\t\tcontainer.appendChild(row);\n\t\t\t}\n\n\t\t\tfunction addClientRow() {\n\t\t\t\tconst container = document.getElementById('client-rows');\n\t\t\t\tconst row = document.createElement('div');\n\t\t\t\trow.className = 'flex items-center gap-2 client-row';\n\t\t\t\trow.innerHTML = '<input type=\"text\" name=\"client_address[]\" placeholder=\"192.168.1.0/24\" class=\"input flex-1\"/>' +\n\t\t\t\t\t'<button type=\"button\" onclick=\"this.parentElement.remove()\" class=\"p-2 text-red-400 hover:text-red-300\"><i class=\"fas fa-times\"></i></button>';\n\t\t\t\tcontainer.appendChild(row);\n\t\t\t}\n\t\t</script>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 54, "</div><script>\n\t\t\tfunction addAuthRow() {\n\t\t\t\tconst container = document.getElementById('auth-rows');\n\t\t\t\tconst row = document.createElement('div');\n\t\t\t\trow.className = 'flex items-center gap-2 auth-row';\n\t\t\t\trow.innerHTML = '<input type=\"text\" name=\"auth_username[]\" placeholder=\"username\" aria-label=\"username\" class=\"input flex-1\"/>' +\n\t\t\t\t\t'<input type=\"password\" name=\"auth_password[]\" placeholder=\"password\" aria-label=\"password\" class=\"input flex-1\"/>' +\n\t\t\t\t\t'<button type=\"button\" onclick=\"this.parentElement.remove()\" class=\"p-2 text-red-400 hover:text-red-300\"><i aria-hidden=\"true\" class=\"fas fa-times\"></i></button>';\n\t\t\t\tcontainer.appendChild(row);\n\t\t\t}\n\n\t\t\tfunction addClientRow() {\n\t\t\t\tconst container = document.getElementById('client-rows');\n\t\t\t\tconst row = document.createElement('div');\n\t\t\t\trow.className = 'flex items-center gap-2 client-row';\n\t\t\t\trow.innerHTML = '<input type=\"text\" name=\"client_address[]\" placeholder=\"192.168.1.0/24\" aria-label=\"192.168.1.0/24\" class=\"input flex-1\"/>' +\n\t\t\t\t\t'<button type=\"button\" onclick=\"this.parentElement.remove()\" class=\"p-2 text-red-400 hover:text-red-300\"><i aria-hidden=\"true\" class=\"fas fa-times\"></i></button>';\n\t\t\t\tcontainer.appendChild(row);\n\t\t\t}\n\t\t</script>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

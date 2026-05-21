@@ -26,6 +26,7 @@ import (
 	crontabsvc "github.com/fr4nsys/usulnet/internal/services/crontab"
 	dnssvc "github.com/fr4nsys/usulnet/internal/services/dns"
 	dockerconfigsvc "github.com/fr4nsys/usulnet/internal/services/dockerconfig"
+	egresssvc "github.com/fr4nsys/usulnet/internal/services/egress"
 	firewallsvc "github.com/fr4nsys/usulnet/internal/services/firewall"
 	hostsvc "github.com/fr4nsys/usulnet/internal/services/host"
 	imagesvc "github.com/fr4nsys/usulnet/internal/services/image"
@@ -41,6 +42,7 @@ import (
 	updatesvc "github.com/fr4nsys/usulnet/internal/services/update"
 	volumesvc "github.com/fr4nsys/usulnet/internal/services/volume"
 	wireguardsvc "github.com/fr4nsys/usulnet/internal/services/wireguard"
+	yarasvc "github.com/fr4nsys/usulnet/internal/services/yara"
 )
 
 // initContext carries shared state between the phased init_*.go
@@ -101,6 +103,11 @@ type initContext struct {
 	dnsService          *dnssvc.Service
 	calendarService     *calendarsvc.Service
 	marketplaceService  *marketplacesvc.Service
+	egressService       *egresssvc.Service
+	egressProxy         *egresssvc.Proxy
+	egressListenAddr    string
+	yaraService         *yarasvc.Service
+	yaraToolkitImage    string
 
 	// Phase 5 — initScheduler
 	scheduler     *scheduler.Scheduler

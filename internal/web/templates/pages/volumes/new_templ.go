@@ -49,19 +49,19 @@ func New(data VolumeNewData) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"max-w-2xl mx-auto space-y-6\"><div class=\"flex items-center gap-4\"><a href=\"/volumes\" class=\"p-2 text-gray-400 hover:text-white hover:bg-dark-700 rounded-lg\"><i class=\"fas fa-arrow-left\"></i></a><div><h1 class=\"text-2xl font-display font-bold text-white\">Create Volume</h1><p class=\"text-gray-400 mt-1\">Create a new Docker volume</p></div></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"max-w-2xl mx-auto space-y-6\"><div class=\"flex items-center gap-4\"><a href=\"/volumes\" class=\"p-2 text-gray-400 hover:text-white hover:bg-dark-700 rounded-lg\"><i aria-hidden=\"true\" class=\"fas fa-arrow-left\"></i></a><div><h1 class=\"text-2xl font-display font-bold text-white\">Create Volume</h1><p class=\"text-gray-400 mt-1\">Create a new Docker volume</p></div></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			if data.Error != "" {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<div class=\"bg-red-500/10 border border-red-500/20 rounded-lg p-4 text-red-400\"><i class=\"fas fa-exclamation-circle mr-2\"></i>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<div class=\"bg-red-500/10 border border-red-500/20 rounded-lg p-4 text-red-400\"><i aria-hidden=\"true\" class=\"fas fa-exclamation-circle mr-2\"></i>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var3 string
 				templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(data.Error)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/volumes/new.templ`, Line: 26, Col: 63}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/pages/volumes/new.templ`, Line: 26, Col: 82}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 				if templ_7745c5c3_Err != nil {
@@ -85,7 +85,7 @@ func New(data VolumeNewData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "\"><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Volume Name</label> <input type=\"text\" name=\"name\" required class=\"input\" placeholder=\"my-volume\"></div><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Driver</label> <select name=\"driver\" class=\"input\"><option value=\"local\">local</option> ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "\"><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Volume Name</label> <input type=\"text\" name=\"name\" required class=\"input\" placeholder=\"my-volume\" aria-label=\"my-volume\"></div><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Driver</label> <select name=\"driver\" class=\"input\"><option value=\"local\">local</option> ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -123,7 +123,7 @@ func New(data VolumeNewData) templ.Component {
 					}
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "</select></div><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Labels (optional)</label> <textarea name=\"labels\" rows=\"3\" class=\"input font-mono text-sm\" placeholder=\"key=value&#10;another=label\"></textarea><p class=\"text-xs text-gray-500 mt-1\">One label per line in key=value format</p></div><div class=\"flex justify-end gap-3 pt-4\"><a href=\"/volumes\" class=\"btn-secondary\">Cancel</a> <button type=\"submit\" class=\"btn-primary\"><i class=\"fas fa-plus mr-2\"></i>Create Volume</button></div></form></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "</select></div><div><label class=\"block text-sm font-medium text-gray-300 mb-2\">Labels (optional)</label> <textarea name=\"labels\" rows=\"3\" class=\"input font-mono text-sm\" placeholder=\"key=value&#10;another=label\"></textarea><p class=\"text-xs text-gray-500 mt-1\">One label per line in key=value format</p></div><div class=\"flex justify-end gap-3 pt-4\"><a href=\"/volumes\" class=\"btn-secondary\">Cancel</a> <button type=\"submit\" class=\"btn-primary\"><i aria-hidden=\"true\" class=\"fas fa-plus mr-2\"></i>Create Volume</button></div></form></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

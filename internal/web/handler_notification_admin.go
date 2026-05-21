@@ -61,6 +61,19 @@ func (h *Handler) NotificationChannelsTempl(w http.ResponseWriter, r *http.Reque
 }
 
 // NotificationChannelCreate creates or updates a notification channel.
+// notificationChannelForm captures the "core" channel inputs. The
+// per-backend settings (email_*, slack_*, etc.) stay read via
+// parseChannelSettings because the field set depends on the
+// selected `type` — a single struct DTO would have to enumerate
+// every possible field across every backend.
+type notificationChannelForm struct {
+	Type        string `form:"type" validate:"required"`
+	Name        string `form:"name" validate:"required"`
+	Enabled     bool   `form:"enabled"`
+	MinPriority int    `form:"min_priority"`
+	EditMode    bool   `form:"edit_mode"`
+}
+
 func (h *Handler) NotificationChannelCreate(w http.ResponseWriter, r *http.Request) {
 	if h.notificationConfigRepo == nil {
 		h.setFlash(w, r, "error", "Notification service not configured")
@@ -68,45 +81,32 @@ func (h *Handler) NotificationChannelCreate(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	if err := r.ParseForm(); err != nil {
-		h.setFlash(w, r, "error", "Invalid form data")
-		http.Redirect(w, r, "/admin/notifications/channels", http.StatusSeeOther)
-		return
-	}
-
-	channelType := strings.TrimSpace(r.FormValue("type"))
-	name := strings.TrimSpace(r.FormValue("name"))
-	enabledVal := r.FormValue("enabled")
-	enabled := enabledVal == "true" || enabledVal == "on"
-	minPriorityStr := r.FormValue("min_priority")
-
-	if channelType == "" || name == "" {
-		h.setFlash(w, r, "error", "Type and name are required")
+	var form notificationChannelForm
+	if msg := BindForm(r, &form); msg != "" {
+		h.setFlash(w, r, "error", msg)
 		http.Redirect(w, r, "/admin/notifications/channels", http.StatusSeeOther)
 		return
 	}
 
 	minPriority := channels.PriorityNormal
-	if p, err := strconv.Atoi(minPriorityStr); err == nil {
-		minPriority = channels.Priority(p)
+	if form.MinPriority != 0 {
+		minPriority = channels.Priority(form.MinPriority)
 	}
 
-	settings := parseChannelSettings(r, channelType)
+	settings := parseChannelSettings(r, form.Type)
 
 	config := &channels.ChannelConfig{
-		Name:        name,
-		Type:        channelType,
-		Enabled:     enabled,
+		Name:        form.Name,
+		Type:        form.Type,
+		Enabled:     form.Enabled,
 		Settings:    settings,
 		MinPriority: minPriority,
 	}
 
-	isEdit := r.FormValue("edit_mode") == "true"
-
 	if err := h.notificationConfigRepo.SaveChannelConfig(r.Context(), config); err != nil {
 		h.setFlash(w, r, "error", "Failed to save channel: "+err.Error())
 	} else {
-		if isEdit {
+		if form.EditMode {
 			h.setFlash(w, r, "success", "Channel updated successfully")
 		} else {
 			h.setFlash(w, r, "success", "Channel created successfully")
